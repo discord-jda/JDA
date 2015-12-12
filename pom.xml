@@ -3,12 +3,30 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>net.dv8tion</groupId>
+    <groupId>net.dv8tion.jda</groupId>
     <artifactId>JDA</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>Java Discord API</name>
+    <description>Unofficial Discord api implemented as a Java library</description>
     <build>
+        <sourceDirectory>src</sourceDirectory>
+        <plugins>
+            <plugin>
+	            <artifactId>maven-compiler-plugin</artifactId>
+	            <version>3.3</version>
+	            <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+	            </configuration>
+            </plugin>
+        </plugins>
     </build>
     <repositories>
+        <repository>
+            <id>central</id>
+            <name>Central Repository</name>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </repository>
     </repositories>
     <dependencies>
         <dependency>
