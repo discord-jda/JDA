@@ -1,68 +1,59 @@
 package net.dv8tion.jda;
 
+import net.dv8tion.jda.requests.RequestBuilder;
+import net.dv8tion.jda.requests.RequestType;
+import net.dv8tion.jda.requests.WebSocketClient;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import net.dv8tion.jda.requests.RequestBuilder;
-import net.dv8tion.jda.requests.RequestType;
-import net.dv8tion.jda.requests.WebSocketClient;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 
 
 public class JDA
 {
-    public static void main(String[] args) throws InterruptedException
+    private String authToken;
+    private WebSocketClient client;
+
+    public JDA(String email, String password)
     {
-        JSONObject auth = getAuth();
-
-        String token = null;
-        String gateway = null;
-
         RequestBuilder b = new RequestBuilder();
         b.setSendLoginHeaders(false);
-        b.setData(new JSONObject().put("email", auth.getString("email")).put("password", auth.getString("password")).toString());
+        b.setData(new JSONObject().put("email", email).put("password", password).toString());
         b.setUrl("https://discordapp.com/api/auth/login");
         b.setType(RequestType.POST);
 
-        token = new JSONObject(b.makeRequest()).getString("token");
-        System.out.println("Token: " + token);
-        RequestBuilder.setAuthToken(token);
+        String response = b.makeRequest();
+        if (response != null)
+        {
+            authToken = new JSONObject(response).getString("token");
+        } else
+        {
+            System.out.println("Login incorrect or rejected");
+            System.exit(0);
+        }
+        System.out.println("Token: " + authToken);
+        RequestBuilder.setAuthToken(authToken);
 
         RequestBuilder pb = new RequestBuilder();
         pb.setType(RequestType.GET);
         pb.setUrl("https://discordapp.com/api/gateway");
 
-        gateway = new JSONObject(pb.makeRequest()).getString("url");
+        String gateway = new JSONObject(pb.makeRequest()).getString("url");
 
-        WebSocketClient client = new WebSocketClient(gateway);
-        while (!client.isConnected())
-        {
-            Thread.sleep(50);
-        }
-
-        JSONObject connectObj = new JSONObject();
-        connectObj
-            .put("op", 2)
-            .put("d", new JSONObject()
-                      .put("token", token)
-                      .put("properties", new JSONObject()
-                                .put("$os", "Windows")
-                                .put("$browser", "Java Discord API")
-                                .put("$device", System.getProperty("os.name"))
-                                .put("$referring_domain", "t.co")
-                                .put("$referrer", "")
-                        )
-                      .put("v", 3));
-        System.out.println(connectObj.toString(4));
-        client.send(connectObj.toString());
+        client = new WebSocketClient(gateway, this);
     }
 
-    private static JSONObject getAuth()
+    public static void main(String[] args) throws InterruptedException
+    {
+        JSONObject config = getConfig();
+        new JDA(config.getString("email"), config.getString("password"));
+    }
+
+    private static JSONObject getConfig()
     {
         File config = new File("config.json");
         if (!config.exists())
@@ -97,5 +88,15 @@ public class JDA
             e.printStackTrace();
         }
         return null;
+    }
+
+    public String getAuthToken()
+    {
+        return authToken;
+    }
+
+    public WebSocketClient getClient()
+    {
+        return client;
     }
 }
