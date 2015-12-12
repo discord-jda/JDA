@@ -1,0 +1,14 @@
+# maven compile
+/target/
+
+# eclipse files
+.classpath
+.project
+.settings/
+/bin/
+
+# intellij files
+/.idea/
+*.iml
+*.ipr
+*.iws
