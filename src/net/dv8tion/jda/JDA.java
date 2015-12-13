@@ -1,5 +1,8 @@
 package net.dv8tion.jda;
 
+import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.entities.SelfInfo;
+import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.requests.RequestBuilder;
 import net.dv8tion.jda.requests.RequestType;
 import net.dv8tion.jda.requests.WebSocketClient;
@@ -16,11 +19,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
-
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class JDA
 {
+    private final Map<String, User> userMap = new HashMap<>();
+    private final Map<String, Guild> guildMap = new HashMap<>();
+    private SelfInfo selfInfo = null;
     private String authToken = null;
     private WebSocketClient client;
 
@@ -180,5 +187,25 @@ public class JDA
     public WebSocketClient getClient()
     {
         return client;
+    }
+
+    public Map<String, User> getUserMap()
+    {
+        return userMap;
+    }
+
+    public Map<String, Guild> getGuildMap()
+    {
+        return guildMap;
+    }
+
+    public SelfInfo getSelfInfo()
+    {
+        return selfInfo;
+    }
+
+    public void setSelfInfo(SelfInfo selfInfo)
+    {
+        this.selfInfo = selfInfo;
     }
 }
