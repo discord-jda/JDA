@@ -1,5 +1,7 @@
 package net.dv8tion.jda.entities;
 
+import java.util.List;
+
 /**
  * Represents a Discord Voice Channel.
  *
@@ -24,4 +26,13 @@ public interface VoiceChannel
      * @return
      */
     Guild getGuild();
+
+    /**
+     * An Immutable {@link List} of every {@link User} that is currently connected to this {@link VoiceChannel}.
+     * If there are none currently connected this List will be empty.
+     *
+     * @return
+     *      {@link List}<{@link User}> containing all connected users.
+     */
+    List<User> getUsers();
 }

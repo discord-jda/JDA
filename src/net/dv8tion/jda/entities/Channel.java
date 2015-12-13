@@ -1,5 +1,7 @@
 package net.dv8tion.jda.entities;
 
+import java.util.List;
+
 
 /**
  * Represents a Discord Text Channel.
@@ -31,4 +33,12 @@ public interface Channel
      * @return
      */
     Guild getGuild();
+
+    /**
+     * A List of all uses that have the {@link Permission.MESSAGE_READ} for this channel.
+     *
+     * @return
+     *      A List of Users that can read the messages in this channel.
+     */
+    List<User> getUsers();
 }
