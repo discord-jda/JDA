@@ -1,9 +1,10 @@
 package net.dv8tion.jda.requests;
 
 import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.entities.channel.PrivateChannel;
-import net.dv8tion.jda.entities.guild.Guild;
-import net.dv8tion.jda.entities.user.SelfInfo;
+import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.entities.PrivateChannel;
+import net.dv8tion.jda.entities.SelfInfo;
+
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONObject;
 

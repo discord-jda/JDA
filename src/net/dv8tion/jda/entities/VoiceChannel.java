@@ -1,4 +1,4 @@
-package net.dv8tion.jda.entities.channel;
+package net.dv8tion.jda.entities;
 
 /**
  * Represents a Discord Voice Channel.

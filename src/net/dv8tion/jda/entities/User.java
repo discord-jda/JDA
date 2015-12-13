@@ -1,4 +1,4 @@
-package net.dv8tion.jda.entities.user;
+package net.dv8tion.jda.entities;
 
 public interface User
 {

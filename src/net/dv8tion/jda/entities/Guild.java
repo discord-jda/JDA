@@ -1,4 +1,6 @@
-package net.dv8tion.jda.entities.guild;
+package net.dv8tion.jda.entities;
+
+import net.dv8tion.jda.Region;
 
 /**
  * Represents a Discord Guild. This should contain all information provided from Discord about a Guild.

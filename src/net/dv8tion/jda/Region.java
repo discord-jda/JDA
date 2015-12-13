@@ -1,4 +1,4 @@
-package net.dv8tion.jda.entities.guild;
+package net.dv8tion.jda;
 
 /**
  * Represents the Regions that Discord has servers in.

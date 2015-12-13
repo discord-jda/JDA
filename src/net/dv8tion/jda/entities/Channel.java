@@ -1,6 +1,5 @@
-package net.dv8tion.jda.entities.channel;
+package net.dv8tion.jda.entities;
 
-import net.dv8tion.jda.entities.guild.Guild;
 
 /**
  * Represents a Discord Text Channel.
