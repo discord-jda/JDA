@@ -1,4 +1,4 @@
-package net.dv8tion.jda.user;
+package net.dv8tion.jda.entities.user;
 
 public interface User
 {
@@ -6,13 +6,13 @@ public interface User
      * The Discord ID of the User. This is typically 18 characters long.
      * @return
      */
-    public String getId();
+    String getId();
 
     /**
      * The username of the user. Length is between 2 and 32 (inclusive).
      * @return
      */
-    public String getUsername();
+    String getUsername();
 
     /**
      * The descriminator of the User. Used to differentiate between users with the same usernames.
@@ -20,33 +20,33 @@ public interface User
      * Ex: DV8FromTheWorld#9148
      * @return
      */
-    public String getDiscriminator();
+    String getDiscriminator();
 
     /**
      * The Discord Id for this user's avatar image.
      * If the user has not set an image, this will return null.
      * @return
      */
-    public String getAvatarId();
+    String getAvatarId();
 
     /**
      * The URL for the for the user's avatar image.
      * If the user has not set an image, this will return null.
      * @return
      */
-    public String getAvatarUrl();
+    String getAvatarUrl();
 
     /**
      * The Discord Id for the game that the user is currently playing.
      * If the user is not currently playing a game, this will return null.
      * @return
      */
-    public String getCurrentGameId();
+    String getCurrentGameId();
 
     /**
      * The name of the game that the user is currently playing.
      * If the user is not currently playing a game, this will return null.
      * @return
      */
-    public String getCurrentGameName();
+    String getCurrentGameName();
 }

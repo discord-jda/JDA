@@ -1,4 +1,4 @@
-package net.dv8tion.jda.guild;
+package net.dv8tion.jda.entities.guild;
 
 /**
  * Represents the Regions that Discord has servers in.
@@ -18,7 +18,8 @@ public enum Region
 
     private String id;
     private String name;
-    private Region(String id, String name)
+
+    Region(String id, String name)
     {
         this.id = id;
         this.name = name;
