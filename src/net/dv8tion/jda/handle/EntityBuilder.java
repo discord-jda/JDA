@@ -98,7 +98,7 @@ public class EntityBuilder
             channel = new TextChannelImpl(id, guild);
             guild.getTextChannelsMap().put(id, channel);
         }
-        return channel.setName(json.getString("name")).setTopic(json.getString("topic")).setPosition(json.getInt("position"));
+        return channel.setName(json.getString("name")).setTopic(json.isNull("topic") ? "" : json.getString("topic")).setPosition(json.getInt("position"));
     }
 
     protected TextChannel createVoiceChannel(JSONObject json, String guildId)
@@ -138,7 +138,7 @@ public class EntityBuilder
             api.getUserMap().put(id, userObj);
         }
         userObj.setUserName(user.getString("username"));
-        userObj.setDiscriminator(user.getString("discriminator"));
+        userObj.setDiscriminator(user.get("discriminator").toString());
         userObj.setAvatarId(user.isNull("avatar") ? null : user.getString("avatar"));
         return userObj;
     }
