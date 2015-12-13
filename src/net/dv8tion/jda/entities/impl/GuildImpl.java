@@ -1,13 +1,9 @@
 package net.dv8tion.jda.entities.impl;
 
 import net.dv8tion.jda.Region;
-import net.dv8tion.jda.entities.Channel;
-import net.dv8tion.jda.entities.Guild;
-import net.dv8tion.jda.entities.VoiceChannel;
+import net.dv8tion.jda.entities.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class GuildImpl implements Guild
 {
@@ -20,6 +16,8 @@ public class GuildImpl implements Guild
     private Region region;
     private List<Channel> textChannels = new ArrayList<>();
     private List<VoiceChannel> voiceChannels = new ArrayList<>();
+    private List<Role> roles = new ArrayList<>();
+    private Map<User, List<Role>> userRoles = new HashMap<>();
 
     @Override
     public String getId()
@@ -80,6 +78,28 @@ public class GuildImpl implements Guild
     public List<VoiceChannel> getVoiceChannels()
     {
         return Collections.unmodifiableList(voiceChannels);
+    }
+
+    @Override
+    public List<Role> getRoles()
+    {
+        return Collections.unmodifiableList(roles);
+    }
+
+    public List<Role> getRolesModifiable()
+    {
+        return roles;
+    }
+
+    @Override
+    public List<Role> getRolesForUser(User user)
+    {
+        return userRoles.get(user) == null ? new LinkedList<>() : Collections.unmodifiableList(userRoles.get(user));
+    }
+
+    public Map<User, List<Role>> getRolesMap()
+    {
+        return userRoles;
     }
 
     public GuildImpl setId(String id)

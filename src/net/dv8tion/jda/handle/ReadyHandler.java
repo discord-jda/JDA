@@ -23,16 +23,15 @@ public class ReadyHandler implements ISocketHandler
     public void handle(JSONObject content)
     {
         builder.createSelfInfo(content.getJSONObject("user"));
+        JSONArray guilds = content.getJSONArray("guilds");
+        for (int i = 0; i < guilds.length(); i++)
+        {
+            Guild g = builder.createGuild(guilds.getJSONObject(i));
+        }
 //            JSONArray priv_chats = content.getJSONArray("private_channels");
 //            for (int i = 0; i < priv_chats.length(); i++)
 //            {
 //                api.getPrivChannels().add(EntityBuilder.createPrivateChannel(priv_chats.getJSONObject(i)));
 //            }
-        JSONArray guilds = content.getJSONArray("guilds");
-        for (int i = 0; i < guilds.length(); i++)
-        {
-            Guild g = builder.createGuild(guilds.getJSONObject(i));
-//            api.getGuildMap().put(g.getId(), g);
-        }
     }
 }

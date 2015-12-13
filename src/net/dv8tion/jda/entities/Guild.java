@@ -1,8 +1,8 @@
 package net.dv8tion.jda.entities;
 
-import java.util.List;
-
 import net.dv8tion.jda.Region;
+
+import java.util.List;
 
 /**
  * Represents a Discord Guild. This should contain all information provided from Discord about a Guild.
@@ -72,5 +72,14 @@ public interface Guild
      *      An Immutable List of VoiceChannels.
      */
     List<VoiceChannel> getVoiceChannels();
+
+    /**
+     * The Roles of this Guild
+     *
+     * @return An Immutable List of Roles
+     */
+    List<Role> getRoles();
+
+    List<Role> getRolesForUser(User user);
 
 }
