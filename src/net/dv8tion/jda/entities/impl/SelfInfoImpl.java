@@ -52,7 +52,7 @@ public class SelfInfoImpl extends UserImpl implements SelfInfo
         return this;
     }
 
-    public List<Channel> getModifiableMutedChannels()
+    public List<Channel> getMutedChannelsModifiable()
     {
         if (mutedChannels == null)
             mutedChannels = new ArrayList<Channel>();
