@@ -35,7 +35,7 @@ public interface Guild
      * The Id of the AFK Voice Channel.
      * @return
      */
-    String afkChannelId();
+    String getAfkChannelId();
 
     /**
      * The user Id of the owner of this Guild. Currently, there is no way to transfer ownership of a discord
