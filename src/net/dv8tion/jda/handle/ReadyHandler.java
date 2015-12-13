@@ -11,16 +11,18 @@ import org.json.JSONObject;
 public class ReadyHandler implements ISocketHandler
 {
     private final JDA api;
+    private final EntityBuilder builder;
 
     public ReadyHandler(JDA api)
     {
         this.api = api;
+        this.builder = new EntityBuilder(api);
     }
 
     @Override
     public void handle(JSONObject content)
     {
-        api.setSelfInfo(EntityBuilder.createSelfInfo(content.getJSONObject("user")));
+        builder.createSelfInfo(content.getJSONObject("user"));
 //            JSONArray priv_chats = content.getJSONArray("private_channels");
 //            for (int i = 0; i < priv_chats.length(); i++)
 //            {
@@ -29,8 +31,8 @@ public class ReadyHandler implements ISocketHandler
         JSONArray guilds = content.getJSONArray("guilds");
         for (int i = 0; i < guilds.length(); i++)
         {
-            Guild g = EntityBuilder.createGuild(guilds.getJSONObject(i));
-            api.getGuildMap().put(g.getId(), g);
+            Guild g = builder.createGuild(guilds.getJSONObject(i));
+//            api.getGuildMap().put(g.getId(), g);
         }
     }
 }
