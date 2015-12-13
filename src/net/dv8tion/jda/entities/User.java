@@ -41,7 +41,7 @@ public interface User
      * If the user is not currently playing a game, this will return null.
      * @return
      */
-    String getCurrentGameId();
+    int getCurrentGameId();
 
     /**
      * The name of the game that the user is currently playing.
