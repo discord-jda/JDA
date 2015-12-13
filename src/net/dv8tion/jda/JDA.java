@@ -1,15 +1,18 @@
 package net.dv8tion.jda;
 
-import net.dv8tion.jda.requests.RequestBuilder;
-import net.dv8tion.jda.requests.RequestType;
-import net.dv8tion.jda.requests.WebSocketClient;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+
+import javax.security.auth.login.LoginException;
+
+import net.dv8tion.jda.requests.RequestBuilder;
+import net.dv8tion.jda.requests.RequestType;
+import net.dv8tion.jda.requests.WebSocketClient;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 
@@ -18,8 +21,11 @@ public class JDA
     private String authToken;
     private WebSocketClient client;
 
-    public JDA(String email, String password)
+    public JDA(String email, String password) throws IllegalArgumentException, LoginException
     {
+        if (email == null || email.isEmpty() || password == null || password.isEmpty())
+            throw new IllegalArgumentException("The provided email or password as empty / null.");
+
         RequestBuilder b = new RequestBuilder();
         b.setSendLoginHeaders(false);
         b.setData(new JSONObject().put("email", email).put("password", password).toString());
@@ -27,14 +33,10 @@ public class JDA
         b.setType(RequestType.POST);
 
         String response = b.makeRequest();
-        if (response != null)
-        {
-            authToken = new JSONObject(response).getString("token");
-        } else
-        {
-            System.out.println("Login incorrect or rejected");
-            System.exit(0);
-        }
+        if (response == null)
+            throw new LoginException("The provided email / password combination was incorrect. Please provide valid details.");
+
+        authToken = new JSONObject(response).getString("token");
         System.out.println("Token: " + authToken);
         RequestBuilder.setAuthToken(authToken);
 
@@ -50,7 +52,24 @@ public class JDA
     public static void main(String[] args) throws InterruptedException
     {
         JSONObject config = getConfig();
-        new JDA(config.getString("email"), config.getString("password"));
+        try
+        {
+            new JDA(config.getString("email"), config.getString("password"));
+        }
+        catch (IllegalArgumentException e)
+        {
+            System.out.println("The config was not populated. Please enter an email and password.");
+        }
+        catch (LoginException e)
+        {
+            System.out.println("The provided email / password combination was incorrect. Please provide valid details.");
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+            //TODO: Do NOT let this make it to main.  When someone auto generates the Catch list JSONException should not
+            //       auto generate with IllegalArgumentException and LoginException.
+        }
     }
 
     private static JSONObject getConfig()
@@ -76,11 +95,6 @@ public class JDA
         try
         {
             JSONObject auth = new JSONObject(new String(Files.readAllBytes(Paths.get(config.getPath())), "UTF-8"));
-            if (auth.getString("email") == null || auth.getString("email").isEmpty()
-                    || auth.getString("password") == null || auth.getString("password").isEmpty())
-            {
-                System.out.println("Config not properly populated!");
-            }
             return auth;
         }
         catch (IOException e)
