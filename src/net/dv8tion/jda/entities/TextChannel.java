@@ -35,10 +35,16 @@ public interface TextChannel
     Guild getGuild();
 
     /**
-     * A List of all uses that have the {@link Permission.MESSAGE_READ} for this channel.
-     *
+     * A List of all uses that have the {@link net.dv8tion.jda.Permission#MESSAGE_READ} for this channel.
      * @return
      *      A List of Users that can read the messages in this channel.
      */
     List<User> getUsers();
+
+    /**
+     * The position the Channel is displayed at
+     *
+     * @return The channels position
+     */
+    int getPosition();
 }

@@ -1,6 +1,7 @@
 package net.dv8tion.jda.entities.impl;
 
 import net.dv8tion.jda.OnlineStatus;
+import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.User;
 
 public class UserImpl implements User
@@ -11,6 +12,7 @@ public class UserImpl implements User
     private String avatarId;
     private int gameId = -1;
     private OnlineStatus onlineStatus = OnlineStatus.OFFLINE;
+    private PrivateChannel privateChannel = null;
 
     public UserImpl(String id)
     {
@@ -92,6 +94,12 @@ public class UserImpl implements User
     public UserImpl setOnlineStatus(OnlineStatus onlineStatus)
     {
         this.onlineStatus = onlineStatus;
+        return this;
+    }
+
+    public UserImpl setPrivateChannel(PrivateChannel channel)
+    {
+        this.privateChannel = channel;
         return this;
     }
 

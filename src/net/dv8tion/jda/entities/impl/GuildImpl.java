@@ -14,9 +14,9 @@ public class GuildImpl implements Guild
     private String ownerId;
     private int afkTimeout;
     private Region region;
-    private List<TextChannel> textChannels = new ArrayList<>();
-    private List<VoiceChannel> voiceChannels = new ArrayList<>();
-    private List<Role> roles = new ArrayList<>();
+    private Map<String, TextChannel> textChannels = new HashMap<>();
+    private Map<String, VoiceChannel> voiceChannels = new HashMap<>();
+    private Map<String, Role> roles = new HashMap<>();
     private Map<User, List<Role>> userRoles = new HashMap<>();
 
     public GuildImpl(String id)
@@ -76,22 +76,28 @@ public class GuildImpl implements Guild
     @Override
     public List<TextChannel> getTextChannels()
     {
-        return Collections.unmodifiableList(textChannels);
+        List<TextChannel> list = new ArrayList<>();
+        list.addAll(textChannels.values());
+        return list;
     }
 
     @Override
     public List<VoiceChannel> getVoiceChannels()
     {
-        return Collections.unmodifiableList(voiceChannels);
+        List<VoiceChannel> list = new ArrayList<>();
+        list.addAll(voiceChannels.values());
+        return list;
     }
 
     @Override
     public List<Role> getRoles()
     {
-        return Collections.unmodifiableList(roles);
+        List<Role> list = new ArrayList<>();
+        list.addAll(roles.values());
+        return list;
     }
 
-    public List<Role> getRolesModifiable()
+    public Map<String, Role> getRolesMap()
     {
         return roles;
     }
@@ -102,7 +108,7 @@ public class GuildImpl implements Guild
         return userRoles.get(user) == null ? new LinkedList<>() : Collections.unmodifiableList(userRoles.get(user));
     }
 
-    public Map<User, List<Role>> getRolesMap()
+    public Map<User, List<Role>> getUserRoles()
     {
         return userRoles;
     }
@@ -143,24 +149,12 @@ public class GuildImpl implements Guild
         return this;
     }
 
-    public GuildImpl setTextChannels(List<TextChannel> textChannels)
-    {
-        this.textChannels = textChannels;
-        return this;
-    }
-
-    public GuildImpl setVoiceChannels(List<VoiceChannel> voiceChannels)
-    {
-        this.voiceChannels = voiceChannels;
-        return this;
-    }
-
-    public List<TextChannel> getTextChannelsModifiable()
+    public Map<String, TextChannel> getTextChannelsMap()
     {
         return textChannels;
     }
 
-    public List<VoiceChannel> getVoiceChannelsModifiable()
+    public Map<String, VoiceChannel> getVoiceChannelsMap()
     {
         return voiceChannels;
     }

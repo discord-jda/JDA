@@ -1,10 +1,10 @@
 package net.dv8tion.jda.entities.impl;
 
-import java.util.List;
-
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.User;
+
+import java.util.List;
 
 public class TextChannelImpl implements TextChannel
 {
@@ -12,6 +12,7 @@ public class TextChannelImpl implements TextChannel
     private final Guild guild;
     private String name;
     private String topic;
+    private int position;
 
     public TextChannelImpl(String id, Guild guild)
     {
@@ -49,6 +50,12 @@ public class TextChannelImpl implements TextChannel
         throw new UnsupportedOperationException("Until permissions is finished, getting the Users in a Channel is not supported");
     }
 
+    @Override
+    public int getPosition()
+    {
+        return position;
+    }
+
     public TextChannelImpl setName(String name)
     {
         this.name = name;
@@ -59,6 +66,12 @@ public class TextChannelImpl implements TextChannel
     {
         this.topic = topic;
         return this;
+    }
+
+    public TextChannelImpl setPosition(int position)
+    {
+        this.position = position;
+        return null;
     }
 
     @Override
