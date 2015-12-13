@@ -95,26 +95,13 @@ public class UserImpl implements User
         return this;
     }
 
-    /**
-     * Returns true if one of the following is true:
-     *    A) The provided object is the same User instance as this object
-     *    B) The provided object is a User object with the same id as this object.
-     *    C) The provided object is a String that is equal to our id.
-     */
     @Override
     public boolean equals(Object o)
     {
-        if (o instanceof User)
-        {
-            User oUser = (User) o;
-            return this == oUser || this.getId().equals(oUser.getId());
-        }
-        else if (o instanceof String)
-        {
-            String oString = (String) o;
-            return this.getId().equals(oString);
-        }
-        return false;
+        if (!(o instanceof User))
+            return false;
+        User oUser = (User) o;
+        return this == oUser || this.getId().equals(oUser.getId());
     }
 
     @Override

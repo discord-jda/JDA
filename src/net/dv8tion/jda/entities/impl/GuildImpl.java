@@ -165,26 +165,13 @@ public class GuildImpl implements Guild
         return voiceChannels;
     }
 
-    /**
-     * Returns true if one of the following is true:
-     *    A) The provided object is the same Guild instance as this object
-     *    B) The provided object is a Guild object with the same id as this object.
-     *    C) The provided object is a String that is equal to our id.
-     */
     @Override
     public boolean equals(Object o)
     {
-        if (o instanceof Guild)
-        {
-            Guild oGuild = (Guild) o;
-            return this == oGuild || this.getId().equals(oGuild.getId());
-        }
-        else if (o instanceof String)
-        {
-            String oString = (String) o;
-            return this.getId().equals(oString);
-        }
-        return false;
+        if (!(o instanceof Guild))
+            return false;
+        Guild oGuild = (Guild) o;
+        return this == oGuild || this.getId().equals(oGuild.getId());
     }
 
     @Override

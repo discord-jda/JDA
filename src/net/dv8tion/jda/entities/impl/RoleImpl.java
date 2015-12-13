@@ -98,26 +98,13 @@ public class RoleImpl implements net.dv8tion.jda.entities.Role
         return this;
     }
 
-    /**
-     * Returns true if one of the following is true:
-     *    A) The provided object is the same Role instance as this object
-     *    B) The provided object is a Role object with the same id as this object.
-     *    C) The provided object is a String that is equal to our id.
-     */
     @Override
     public boolean equals(Object o)
     {
-        if (o instanceof Role)
-        {
-            Role oRole = (Role) o;
-            return this == oRole || this.getId().equals(oRole.getId());
-        }
-        else if (o instanceof String)
-        {
-            String oString = (String) o;
-            return this.getId().equals(oString);
-        }
-        return false;
+        if (!(o instanceof Role))
+            return false;
+        Role oRole = (Role) o;
+        return this == oRole || this.getId().equals(oRole.getId());
     }
 
     @Override
