@@ -10,7 +10,7 @@ import net.dv8tion.jda.entities.SelfInfo;
 public class SelfInfoImpl extends UserImpl implements SelfInfo
 {
     private String email;
-    private List<Channel> mutedChannels;
+    private List<Channel> mutedChannels = new ArrayList<>();
     private boolean verified;
 
     @Override
@@ -22,10 +22,7 @@ public class SelfInfoImpl extends UserImpl implements SelfInfo
     @Override
     public List<Channel> getMutedChannels()
     {
-        ArrayList<Channel> unmodifiableList = new ArrayList<Channel>();
-        for (Channel channel : mutedChannels)
-            unmodifiableList.add(channel);
-        return Collections.unmodifiableList(unmodifiableList);
+        return Collections.unmodifiableList(mutedChannels);
     }
 
     @Override
@@ -54,8 +51,6 @@ public class SelfInfoImpl extends UserImpl implements SelfInfo
 
     public List<Channel> getMutedChannelsModifiable()
     {
-        if (mutedChannels == null)
-            mutedChannels = new ArrayList<Channel>();
         return mutedChannels;
     }
 }
