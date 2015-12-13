@@ -2,11 +2,11 @@ package net.dv8tion.jda.entities.impl;
 
 import java.util.List;
 
-import net.dv8tion.jda.entities.Channel;
+import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.User;
 
-public class ChannelImpl implements Channel
+public class TextChannelImpl implements TextChannel
 {
     private String id;
     private String name;
@@ -43,25 +43,25 @@ public class ChannelImpl implements Channel
         throw new UnsupportedOperationException("Until permissions is finished, getting the Users in a Channel is not supported");
     }
 
-    public ChannelImpl setId(String id)
+    public TextChannelImpl setId(String id)
     {
         this.id = id;
         return this;
     }
 
-    public ChannelImpl setName(String name)
+    public TextChannelImpl setName(String name)
     {
         this.name = name;
         return this;
     }
 
-    public ChannelImpl setTopic(String topic)
+    public TextChannelImpl setTopic(String topic)
     {
         this.topic = topic;
         return this;
     }
 
-    public ChannelImpl setGuild(Guild guild)
+    public TextChannelImpl setGuild(Guild guild)
     {
         this.guild = guild;
         return this;

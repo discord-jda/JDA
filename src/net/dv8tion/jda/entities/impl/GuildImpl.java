@@ -14,7 +14,7 @@ public class GuildImpl implements Guild
     private String ownerId;
     private int afkTimeout;
     private Region region;
-    private List<Channel> textChannels = new ArrayList<>();
+    private List<TextChannel> textChannels = new ArrayList<>();
     private List<VoiceChannel> voiceChannels = new ArrayList<>();
     private List<Role> roles = new ArrayList<>();
     private Map<User, List<Role>> userRoles = new HashMap<>();
@@ -69,7 +69,7 @@ public class GuildImpl implements Guild
 
 
     @Override
-    public List<Channel> getTextChannels()
+    public List<TextChannel> getTextChannels()
     {
         return Collections.unmodifiableList(textChannels);
     }
@@ -144,7 +144,7 @@ public class GuildImpl implements Guild
         return this;
     }
 
-    public GuildImpl setTextChannels(List<Channel> textChannels)
+    public GuildImpl setTextChannels(List<TextChannel> textChannels)
     {
         this.textChannels = textChannels;
         return this;
@@ -156,7 +156,7 @@ public class GuildImpl implements Guild
         return this;
     }
 
-    public List<Channel> getTextChannelsModifiable()
+    public List<TextChannel> getTextChannelsModifiable()
     {
         return textChannels;
     }

@@ -14,7 +14,7 @@ public interface SelfInfo extends User
      * A list of Discord Ids of Channels that have been muted on this account.
      * @return
      */
-    List<Channel> getMutedChannels();
+    List<TextChannel> getMutedChannels();
 
     /**
      * The status of this account's verification.

@@ -64,7 +64,7 @@ public interface Guild
      * @return
      *      An Immutable List of Channels.
      */
-    List<Channel> getTextChannels();
+    List<TextChannel> getTextChannels();
 
     /**
      * The VoiceChannels available on the Guild.

@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import net.dv8tion.jda.entities.Channel;
+import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.SelfInfo;
 
 public class SelfInfoImpl extends UserImpl implements SelfInfo
 {
     private String email;
-    private List<Channel> mutedChannels = new ArrayList<>();
+    private List<TextChannel> mutedChannels = new ArrayList<>();
     private boolean verified;
 
     @Override
@@ -20,7 +20,7 @@ public class SelfInfoImpl extends UserImpl implements SelfInfo
     }
 
     @Override
-    public List<Channel> getMutedChannels()
+    public List<TextChannel> getMutedChannels()
     {
         return Collections.unmodifiableList(mutedChannels);
     }
@@ -37,7 +37,7 @@ public class SelfInfoImpl extends UserImpl implements SelfInfo
         return this;
     }
 
-    public SelfInfoImpl setMutedChannels(List<Channel> mutedChannels)
+    public SelfInfoImpl setMutedChannels(List<TextChannel> mutedChannels)
     {
         this.mutedChannels = mutedChannels;
         return this;
@@ -49,7 +49,7 @@ public class SelfInfoImpl extends UserImpl implements SelfInfo
         return this;
     }
 
-    public List<Channel> getMutedChannelsModifiable()
+    public List<TextChannel> getMutedChannelsModifiable()
     {
         return mutedChannels;
     }

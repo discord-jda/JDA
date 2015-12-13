@@ -7,7 +7,7 @@ import java.util.List;
  * Represents a Discord Text Channel.
  * This should provide all necessary functions for interacting with a channel.
  */
-public interface Channel
+public interface TextChannel
 {
     /**
      * The Id of the Channel. This is typically 18 characters long.
