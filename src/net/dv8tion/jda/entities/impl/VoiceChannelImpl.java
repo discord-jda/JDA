@@ -10,10 +10,16 @@ import net.dv8tion.jda.entities.VoiceChannel;
 
 public class VoiceChannelImpl implements VoiceChannel
 {
-    private String id;
+    private final String id;
+    private final Guild guild;
     private String name;
-    private Guild guild;
     private List<User> connectedUsers = new ArrayList<>();
+
+    public VoiceChannelImpl(String id, Guild guild)
+    {
+        this.id = id;
+        this.guild = guild;
+    }
 
     @Override
     public String getId()
@@ -39,21 +45,9 @@ public class VoiceChannelImpl implements VoiceChannel
         return Collections.unmodifiableList(connectedUsers);
     }
 
-    public VoiceChannelImpl setId(String id)
-    {
-        this.id = id;
-        return this;
-    }
-
     public VoiceChannelImpl setName(String name)
     {
         this.name = name;
-        return this;
-    }
-
-    public VoiceChannelImpl setGuild(Guild guild)
-    {
-        this.guild = guild;
         return this;
     }
 

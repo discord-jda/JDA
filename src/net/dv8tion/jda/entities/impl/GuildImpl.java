@@ -7,7 +7,7 @@ import java.util.*;
 
 public class GuildImpl implements Guild
 {
-    private String id;
+    private final String id;
     private String name;
     private String iconId;
     private String afkChannelId;
@@ -18,6 +18,11 @@ public class GuildImpl implements Guild
     private List<VoiceChannel> voiceChannels = new ArrayList<>();
     private List<Role> roles = new ArrayList<>();
     private Map<User, List<Role>> userRoles = new HashMap<>();
+
+    public GuildImpl(String id)
+    {
+        this.id = id;
+    }
 
     @Override
     public String getId()
@@ -100,12 +105,6 @@ public class GuildImpl implements Guild
     public Map<User, List<Role>> getRolesMap()
     {
         return userRoles;
-    }
-
-    public GuildImpl setId(String id)
-    {
-        this.id = id;
-        return this;
     }
 
     public GuildImpl setName(String name)

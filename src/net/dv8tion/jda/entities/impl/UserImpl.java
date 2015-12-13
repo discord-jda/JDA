@@ -5,12 +5,17 @@ import net.dv8tion.jda.entities.User;
 
 public class UserImpl implements User
 {
-    private String id;
+    private final String id;
     private String username;
     private String discriminator;
     private String avatarId;
     private int gameId = -1;
     private OnlineStatus onlineStatus = OnlineStatus.OFFLINE;
+
+    public UserImpl(String id)
+    {
+        this.id = id;
+    }
 
     @Override
     public String getId()
@@ -58,12 +63,6 @@ public class UserImpl implements User
     public OnlineStatus getOnlineStatus()
     {
         return onlineStatus;
-    }
-
-    public UserImpl setId(String id)
-    {
-        this.id = id;
-        return this;
     }
 
     public UserImpl setUserName(String username)

@@ -9,9 +9,15 @@ import net.dv8tion.jda.entities.SelfInfo;
 
 public class SelfInfoImpl extends UserImpl implements SelfInfo
 {
-    private String email;
+    private final String email;
     private List<TextChannel> mutedChannels = new ArrayList<>();
     private boolean verified;
+
+    public SelfInfoImpl(String id, String email)
+    {
+        super(id);
+        this.email = email;
+    }
 
     @Override
     public String getEmail()
@@ -29,12 +35,6 @@ public class SelfInfoImpl extends UserImpl implements SelfInfo
     public boolean isVerified()
     {
         return verified;
-    }
-
-    public SelfInfoImpl setEmail(String email)
-    {
-        this.email = email;
-        return this;
     }
 
     public SelfInfoImpl setMutedChannels(List<TextChannel> mutedChannels)

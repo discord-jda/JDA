@@ -30,10 +30,9 @@ public class EntityBuilder
         GuildImpl guildObj = ((GuildImpl) api.getGuildMap().get(id));
         if (guildObj == null)
         {
-            guildObj = new GuildImpl();
+            guildObj = new GuildImpl(id);
             api.getGuildMap().put(id, guildObj);
         }
-        guildObj.setId(id);
         guildObj.setIconId(guild.isNull("icon") ? null : guild.getString("icon"));
         guildObj.setRegion(Region.getRegion(guild.getString("region")));
         guildObj.setName(guild.getString("name"));
@@ -90,10 +89,9 @@ public class EntityBuilder
         UserImpl userObj = ((UserImpl) api.getUserMap().get(id));
         if (userObj == null)
         {
-            userObj = new UserImpl();
+            userObj = new UserImpl(id);
             api.getUserMap().put(id, userObj);
         }
-        userObj.setId(id);
         userObj.setUserName(user.getString("username"));
         userObj.setDiscriminator(user.getString("discriminator"));
         userObj.setAvatarId(user.isNull("avatar") ? null : user.getString("avatar"));
@@ -105,13 +103,11 @@ public class EntityBuilder
         SelfInfoImpl selfInfo = ((SelfInfoImpl) api.getSelfInfo());
         if (selfInfo == null)
         {
-            selfInfo = new SelfInfoImpl();
+            selfInfo = new SelfInfoImpl(self.getString("id"), self.getString("email"));
             api.setSelfInfo(selfInfo);
         }
         selfInfo.setVerified(self.getBoolean("verified"));
         selfInfo.setUserName(self.getString("username"));
-        selfInfo.setId(self.getString("id"));
-        selfInfo.setEmail(self.getString("email"));
         selfInfo.setDiscriminator(self.getString("discriminator"));
         selfInfo.setAvatarId(self.getString("avatar"));
         return selfInfo;

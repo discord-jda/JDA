@@ -7,12 +7,17 @@ import net.dv8tion.jda.Permission;
  */
 public class RoleImpl implements net.dv8tion.jda.entities.Role
 {
-    private String id;
+    private final String id;
     private String name;
     private int color;
     private int position;
     private int permissions;
     private boolean managed, hoist;
+
+    public RoleImpl(String id)
+    {
+        this.id = id;
+    }
 
     @Override
     public String getId()
@@ -54,12 +59,6 @@ public class RoleImpl implements net.dv8tion.jda.entities.Role
     public boolean isHoist()
     {
         return hoist;
-    }
-
-    public RoleImpl setId(String id)
-    {
-        this.id = id;
-        return this;
     }
 
     public RoleImpl setName(String name)

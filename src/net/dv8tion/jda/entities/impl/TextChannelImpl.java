@@ -8,10 +8,16 @@ import net.dv8tion.jda.entities.User;
 
 public class TextChannelImpl implements TextChannel
 {
-    private String id;
+    private final String id;
+    private final Guild guild;
     private String name;
     private String topic;
-    private Guild guild;
+
+    public TextChannelImpl(String id, Guild guild)
+    {
+        this.id = id;
+        this.guild = guild;
+    }
 
     @Override
     public String getId()
@@ -43,12 +49,6 @@ public class TextChannelImpl implements TextChannel
         throw new UnsupportedOperationException("Until permissions is finished, getting the Users in a Channel is not supported");
     }
 
-    public TextChannelImpl setId(String id)
-    {
-        this.id = id;
-        return this;
-    }
-
     public TextChannelImpl setName(String name)
     {
         this.name = name;
@@ -58,12 +58,6 @@ public class TextChannelImpl implements TextChannel
     public TextChannelImpl setTopic(String topic)
     {
         this.topic = topic;
-        return this;
-    }
-
-    public TextChannelImpl setGuild(Guild guild)
-    {
-        this.guild = guild;
         return this;
     }
 }
