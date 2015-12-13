@@ -1,5 +1,6 @@
 package net.dv8tion.jda.requests;
 
+import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.JDAStatics;
 
 import java.io.BufferedReader;
@@ -11,17 +12,17 @@ import java.net.URL;
 
 public class RequestBuilder
 {
-    private static String authToken;
     protected String data = "";
     protected String url = "";
     protected RequestType type = null;
     protected HttpURLConnection con;
     protected boolean sendLoginHeaders = true;
     protected int code = 200;
+    protected JDA api;
 
-    public static void setAuthToken(String authToken)
+    public RequestBuilder(JDA api)
     {
-        RequestBuilder.authToken = authToken;
+        this.api = api;
     }
 
     public String makeRequest()
@@ -46,7 +47,7 @@ public class RequestBuilder
                             "User-Agent: " + JDAStatics.GITHUB + " " + JDAStatics.VERSION + "\n" +
                             "Content-Type: application/json\n" +
                             "Accept: */*\n" +
-                            "authorization: " + authToken + "\n\n" + data);
+                            "authorization: " + api.getAuthToken() + "\n\n" + data);
                     out.close();
                     clientSocket.close();
                     return null;
@@ -69,7 +70,7 @@ public class RequestBuilder
             con.setRequestProperty("User-Agent", JDAStatics.GITHUB + " " + JDAStatics.VERSION);
             con.setDoOutput(true);
             if (sendLoginHeaders)
-                con.addRequestProperty("authorization", authToken);
+                con.addRequestProperty("authorization", api.getAuthToken());
 
             if (!(data.getBytes().length == 0))
             {
