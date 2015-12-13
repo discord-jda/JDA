@@ -1,13 +1,13 @@
 package net.dv8tion.jda.entities.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import net.dv8tion.jda.Region;
 import net.dv8tion.jda.entities.Channel;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.VoiceChannel;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class GuildImpl implements Guild
 {
@@ -109,6 +109,12 @@ public class GuildImpl implements Guild
     public GuildImpl setAfkTimeout(int afkTimeout)
     {
         this.afkTimeout = afkTimeout;
+        return this;
+    }
+
+    public GuildImpl setAfkChannelId(String channelId)
+    {
+        this.afkChannelId = channelId;
         return this;
     }
 
