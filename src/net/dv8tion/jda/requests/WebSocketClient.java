@@ -1,6 +1,9 @@
 package net.dv8tion.jda.requests;
 
 import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.entities.channel.PrivateChannel;
+import net.dv8tion.jda.entities.guild.Guild;
+import net.dv8tion.jda.entities.user.SelfInfo;
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONObject;
 
@@ -13,11 +16,13 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
     private boolean connected;
     private long keepAliveInterval;
     private JDA api;
+    private MessageHandler handler;
 
     public WebSocketClient(String url, JDA api)
     {
         super(URI.create(url.replace("wss", "ws")));
         this.api = api;
+        this.handler = new MessageHandler();
         this.connect();
         // TODO Auto-generated constructor stub
     }
@@ -68,6 +73,7 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
                 }
             }).start();
         }
+        handler.handle(type, content);
     }
 
     @Override
@@ -88,5 +94,52 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
     public boolean isConnected()
     {
         return connected;
+    }
+
+    private class MessageHandler
+    {
+        public void handle(String type, JSONObject content)
+        {
+            switch (type)
+            {
+                case "READY":
+                    handleReady(content);
+                    break;
+                default:
+            }
+        }
+
+        public void handleReady(JSONObject content)
+        {
+//            api.setSelfInfo(EntityBuilder.createSelfInfo(content.getJSONObject("user")));
+//            JSONArray priv_chats = content.getJSONArray("private_channels");
+//            for (int i = 0; i < priv_chats.length(); i++)
+//            {
+//                api.getPrivChannels().add(EntityBuilder.createPrivateChannel(priv_chats.getJSONObject(i)));
+//            }
+//            JSONArray guilds = content.getJSONArray("guilds");
+//            for (int i = 0; i < guilds.length(); i++)
+//            {
+//                api.getServers().add(EntityBuilder.createGuild(guilds.getJSONObject(i)));
+//            }
+        }
+    }
+
+    private static class EntityBuilder
+    {
+        public static Guild createGuild(JSONObject guild)
+        {
+            return null;
+        }
+
+        public static PrivateChannel createPrivateChannel(JSONObject privatechat)
+        {
+            return null;
+        }
+
+        public static SelfInfo createSelfInfo(JSONObject self)
+        {
+            return null;
+        }
     }
 }
