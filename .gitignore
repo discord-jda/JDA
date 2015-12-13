@@ -1,5 +1,6 @@
 # project files
 config.json
+save.json
 
 # maven compile
 /target/

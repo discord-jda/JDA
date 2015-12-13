@@ -132,7 +132,7 @@ public class JDA
     {
         try
         {
-            Files.write(file, Arrays.asList(object.toString().split("\n")), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            Files.write(file, Arrays.asList(object.toString(4).split("\n")), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
         }
         catch (IOException e)
         {
