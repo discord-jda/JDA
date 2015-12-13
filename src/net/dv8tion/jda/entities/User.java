@@ -1,5 +1,7 @@
 package net.dv8tion.jda.entities;
 
+import net.dv8tion.jda.OnlineStatus;
+
 public interface User
 {
     /**
@@ -49,4 +51,10 @@ public interface User
      * @return
      */
     String getCurrentGameName();
+
+    /**
+     * Returns the {@link OnlineStatus} of the User.
+     * @return
+     */
+    OnlineStatus getOnlineStatus();
 }

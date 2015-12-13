@@ -1,5 +1,6 @@
 package net.dv8tion.jda.entities.impl;
 
+import net.dv8tion.jda.OnlineStatus;
 import net.dv8tion.jda.entities.User;
 
 public class UserImpl implements User
@@ -8,7 +9,8 @@ public class UserImpl implements User
     private String username;
     private String discriminator;
     private String avatarId;
-    private int gameId;
+    private int gameId = -1;
+    private OnlineStatus onlineStatus = OnlineStatus.OFFLINE;
 
     @Override
     public String getId()
@@ -52,6 +54,12 @@ public class UserImpl implements User
         throw new UnsupportedOperationException("Yet to implement games.json parsing");
     }
 
+    @Override
+    public OnlineStatus getOnlineStatus()
+    {
+        return onlineStatus;
+    }
+
     public UserImpl setId(String id)
     {
         this.id = id;
@@ -79,6 +87,12 @@ public class UserImpl implements User
     public UserImpl setCurrentGameId(int gameId)
     {
         this.gameId = gameId;
+        return this;
+    }
+
+    public UserImpl setOnlineStatus(OnlineStatus onlineStatus)
+    {
+        this.onlineStatus = onlineStatus;
         return this;
     }
 }
