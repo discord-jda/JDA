@@ -1,5 +1,7 @@
 package net.dv8tion.jda.entities;
 
+import java.util.List;
+
 import net.dv8tion.jda.Region;
 
 /**
@@ -56,5 +58,19 @@ public interface Guild
      * @return
      */
     Region getRegion();
+
+    /**
+     * The text based Channels available on the Guild.
+     * @return
+     *      An Immutable List of Channels.
+     */
+    List<Channel> getTextChannels();
+
+    /**
+     * The VoiceChannels available on the Guild.
+     * @return
+     *      An Immutable List of VoiceChannels.
+     */
+    List<VoiceChannel> getVoiceChannels();
 
 }

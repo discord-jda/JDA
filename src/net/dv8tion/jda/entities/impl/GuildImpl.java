@@ -1,7 +1,13 @@
 package net.dv8tion.jda.entities.impl;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import net.dv8tion.jda.Region;
+import net.dv8tion.jda.entities.Channel;
 import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.entities.VoiceChannel;
 
 public class GuildImpl implements Guild
 {
@@ -12,6 +18,8 @@ public class GuildImpl implements Guild
     private String ownerId;
     private int afkTimeout;
     private Region region;
+    private List<Channel> textChannels = new ArrayList<>();
+    private List<VoiceChannel> voiceChannels = new ArrayList<>();
 
     @Override
     public String getId()
@@ -61,6 +69,25 @@ public class GuildImpl implements Guild
         return region;
     }
 
+
+    @Override
+    public List<Channel> getTextChannels()
+    {
+        ArrayList<Channel> unmodifiableList = new ArrayList<Channel>();
+        for (Channel channel : textChannels)
+            unmodifiableList.add(channel);
+        return Collections.unmodifiableList(unmodifiableList);
+    }
+
+    @Override
+    public List<VoiceChannel> getVoiceChannels()
+    {
+        ArrayList<VoiceChannel> unmodifiableList = new ArrayList<VoiceChannel>();
+        for (VoiceChannel voiceChannel : voiceChannels)
+            unmodifiableList.add(voiceChannel);
+        return Collections.unmodifiableList(unmodifiableList);
+    }
+
     public GuildImpl setId(String id)
     {
         this.id = id;
@@ -95,5 +122,27 @@ public class GuildImpl implements Guild
     {
         this.region = region;
         return this;
+    }
+
+    public GuildImpl setTextChannels(List<Channel> textChannels)
+    {
+        this.textChannels = textChannels;
+        return this;
+    }
+
+    public GuildImpl setVoiceChannels(List<VoiceChannel> voiceChannels)
+    {
+        this.voiceChannels = voiceChannels;
+        return this;
+    }
+
+    public List<Channel> getTextChannelsModifiable()
+    {
+        return textChannels;
+    }
+
+    public List<VoiceChannel> getVoiceChannelsModifiable()
+    {
+        return voiceChannels;
     }
 }
