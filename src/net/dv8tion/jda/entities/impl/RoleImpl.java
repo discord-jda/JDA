@@ -7,22 +7,17 @@ import net.dv8tion.jda.Permission;
  */
 public class RoleImpl implements net.dv8tion.jda.entities.Role
 {
-    private int position;
+    private String id;
     private String name;
+    private int color;
+    private int position;
     private int permissions;
     private boolean managed, hoist;
-    private String id;
-    private int color;
 
     @Override
-    public int getPosition()
+    public String getId()
     {
-        return position;
-    }
-
-    public void setPosition(int position)
-    {
-        this.position = position;
+        return id;
     }
 
     @Override
@@ -31,9 +26,16 @@ public class RoleImpl implements net.dv8tion.jda.entities.Role
         return name;
     }
 
-    public void setName(String name)
+    @Override
+    public int getColor()
     {
-        this.name = name;
+        return color;
+    }
+
+    @Override
+    public int getPosition()
+    {
+        return position;
     }
 
     @Override
@@ -42,20 +44,10 @@ public class RoleImpl implements net.dv8tion.jda.entities.Role
         return ((1 << perm.getOffset()) & permissions) > 0;
     }
 
-    public void setPermissions(int permissions)
-    {
-        this.permissions = permissions;
-    }
-
     @Override
     public boolean isManaged()
     {
         return managed;
-    }
-
-    public void setManaged(boolean managed)
-    {
-        this.managed = managed;
     }
 
     @Override
@@ -64,30 +56,45 @@ public class RoleImpl implements net.dv8tion.jda.entities.Role
         return hoist;
     }
 
-    public void setHoist(boolean hoist)
-    {
-        this.hoist = hoist;
-    }
-
-    @Override
-    public String getId()
-    {
-        return id;
-    }
-
-    public void setId(String id)
+    public RoleImpl setId(String id)
     {
         this.id = id;
+        return this;
     }
 
-    @Override
-    public int getColor()
+    public RoleImpl setName(String name)
     {
-        return color;
+        this.name = name;
+        return this;
     }
 
-    public void setColor(int color)
+    public RoleImpl setColor(int color)
     {
         this.color = color;
+        return this;
+    }
+
+    public RoleImpl setPosition(int position)
+    {
+        this.position = position;
+        return this;
+    }
+
+    public RoleImpl setPermissions(int permissions)
+    {
+        this.permissions = permissions;
+        return this;
+    }
+
+    public RoleImpl setManaged(boolean managed)
+    {
+        this.managed = managed;
+        return this;
+    }
+
+    public RoleImpl setHoist(boolean hoist)
+    {
+        this.hoist = hoist;
+        return this;
     }
 }
