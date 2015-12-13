@@ -5,4 +5,9 @@ package net.dv8tion.jda.entities;
  */
 public interface PrivateChannel extends Channel
 {
+    /**
+     * The User that this PrivateChannel communicates with.
+     * @return
+     */
+    User getUser();
 }
