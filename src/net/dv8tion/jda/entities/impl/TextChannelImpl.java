@@ -60,4 +60,32 @@ public class TextChannelImpl implements TextChannel
         this.topic = topic;
         return this;
     }
+
+    /**
+     * Returns true if one of the following is true:
+     *    A) The provided object is the same TextChannel instance as this object
+     *    B) The provided object is a TextChannel object with the same id as this object.
+     *    C) The provided object is a String that is equal to our id.
+     */
+    @Override
+    public boolean equals(Object o)
+    {
+        if (o instanceof TextChannel)
+        {
+            TextChannel oTChannel = (TextChannel) o;
+            return this == oTChannel || this.getId().equals(oTChannel.getId());
+        }
+        else if (o instanceof String)
+        {
+            String oString = (String) o;
+            return this.getId().equals(oString);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return getId().hashCode();
+    }
 }

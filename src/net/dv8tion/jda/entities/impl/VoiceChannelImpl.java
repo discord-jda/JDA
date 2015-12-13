@@ -61,4 +61,32 @@ public class VoiceChannelImpl implements VoiceChannel
     {
         return connectedUsers;
     }
+
+    /**
+     * Returns true if one of the following is true:
+     *    A) The provided object is the same VoiceChannel instance as this object
+     *    B) The provided object is a VoiceChannel object with the same id as this object.
+     *    C) The provided object is a String that is equal to our id.
+     */
+    @Override
+    public boolean equals(Object o)
+    {
+        if (o instanceof VoiceChannel)
+        {
+            VoiceChannel oVChannel = (VoiceChannel) o;
+            return this == oVChannel || this.getId().equals(oVChannel.getId());
+        }
+        else if (o instanceof String)
+        {
+            String oString = (String) o;
+            return this.getId().equals(oString);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return getId().hashCode();
+    }
 }
