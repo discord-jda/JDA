@@ -62,4 +62,10 @@ public enum Region
         }
         return UNKNOWN;
     }
+
+    @Override
+    public String toString()
+    {
+        return getName();
+    }
 }
