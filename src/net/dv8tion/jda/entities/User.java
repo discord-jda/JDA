@@ -57,4 +57,10 @@ public interface User
      * @return
      */
     OnlineStatus getOnlineStatus();
+
+    /**
+     * Gets the {@link PrivateChannel} of this {@link User} for use in sending direct messages.
+     * @return
+     */
+    PrivateChannel getPrivateChannel();
 }

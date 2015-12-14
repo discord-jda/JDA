@@ -67,6 +67,14 @@ public class UserImpl implements User
         return onlineStatus;
     }
 
+    @Override
+    public PrivateChannel getPrivateChannel()
+    {
+        if (privateChannel != null)
+            return privateChannel;
+        throw new UnsupportedOperationException("Currently no support for starting a NEW direct message session.");
+    }
+
     public UserImpl setUserName(String username)
     {
         this.username = username;
