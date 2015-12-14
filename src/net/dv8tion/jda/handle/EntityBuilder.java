@@ -27,9 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by Michael Ritter on 13.12.2015.
- */
 public class EntityBuilder
 {
     private final JDA api;
