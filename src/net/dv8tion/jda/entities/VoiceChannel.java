@@ -25,29 +25,35 @@ import java.util.List;
 public interface VoiceChannel
 {
     /**
-     * The Id of the Channel. This is typically 18 characters long.
+     * The Id of the {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel}. This is typically 18 characters long.
+     *
      * @return
+     *      Never-null String containing the {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} id.
      */
     String getId();
 
     /**
-     * The human readable name of the Channel. If no name has been set, this returns null.
+     * The human readable name of the {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel}.
+     *
      * @return
+     *      Never-null String containing the {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} name.
      */
     String getName();
 
     /**
-     * Returns the Guild that this Channel is a part of.
+     * Returns the {@link net.dv8tion.jda.entities.Guild Guild} that this {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} is a part of.
+     *
      * @return
+     *      Never-null {@link net.dv8tion.jda.entities.Guild Guild} that this {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} is a part of.
      */
     Guild getGuild();
 
     /**
-     * An Immutable {@link List} of every {@link User} that is currently connected to this {@link VoiceChannel}.
+     * An Immutable List of every {@link net.dv8tion.jda.entities.User User} that is currently connected to this {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel}.<br>
      * If there are none currently connected this List will be empty.
      *
      * @return
-     *      {@link List}<{@link User}> containing all connected users.
+     *      List of all connected {@link net.dv8tion.jda.entities.User Users}.
      */
     List<User> getUsers();
 }

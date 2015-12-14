@@ -15,17 +15,24 @@
  */
 package net.dv8tion.jda.entities;
 
+/**
+ * Represents the connection used for direct messaging.
+ */
 public interface PrivateChannel
 {
     /**
-     * The Id of the Channel. This is typically 18 characters long.
+     * The Id of the {@link net.dv8tion.jda.entites.PrivateChannel PrivateChannel}. This is typically 18 characters long.
+     *
      * @return
+     *      String containing Id.
      */
     String getId();
 
     /**
-     * The User that this PrivateChannel communicates with.
+     * The {@link net.dv8tion.jda.entites.User User} that this {@link net.dv8tion.jda.entites.PrivateChannel PrivateChannel} communicates with.
+     *
      * @return
+     *      A non-null {@link net.dv8tion.jda.entites.User User}.
      */
     User getUser();
 }

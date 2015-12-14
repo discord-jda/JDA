@@ -17,65 +17,89 @@ package net.dv8tion.jda.entities;
 
 import net.dv8tion.jda.OnlineStatus;
 
+/**
+ * Represents a Discord User.
+ * Contains all publicly available information about a specific Discord User.
+ */
 public interface User
 {
     /**
-     * The Discord ID of the User. This is typically 18 characters long.
+     * The Discord ID of the {@link net.dv8tion.jda.entities.User User}. This is typically 18 characters long.
+     *
      * @return
+     *      Never-null String containing the {@link net.dv8tion.jda.entities.User User} id.
      */
     String getId();
 
     /**
-     * The username of the user. Length is between 2 and 32 (inclusive).
+     * The username of the {@link net.dv8tion.jda.entities.User User}. Length is between 2 and 32 characters (inclusive).
+     *
      * @return
+     *      Never-null String containing the {@link net.dv8tion.jda.entities.User User} username.
      */
     String getUsername();
 
     /**
-     * The descriminator of the User. Used to differentiate between users with the same usernames.
-     * This will be important when the friends list is released for human readable searching.
+     * The descriminator of the {@link net.dv8tion.jda.entities.User User}. Used to differentiate between users with the same usernames.<br>
+     * This will be important when the friends list is released for human readable searching.<br>
      * Ex: DV8FromTheWorld#9148
+     *
      * @return
+     *      Never-null String containing the {@link net.dv8tion.jda.entities.User User} discriminator.
      */
     String getDiscriminator();
 
     /**
      * The Discord Id for this user's avatar image.
      * If the user has not set an image, this will return null.
+     *
      * @return
+     *      Possibly-null String containing the {@link net.dv8tion.jda.entities.User User} avatar id.
      */
     String getAvatarId();
 
     /**
      * The URL for the for the user's avatar image.
      * If the user has not set an image, this will return null.
+     *
      * @return
+     *      Possibly-null String containing the {@link net.dv8tion.jda.entities.User User} avatar url.
      */
     String getAvatarUrl();
 
     /**
      * The Discord Id for the game that the user is currently playing.
-     * If the user is not currently playing a game, this will return null.
+     * If the user is not currently playing a game, this will return -1.
+     *
      * @return
+     *      Positive int if the {@link net.dv8tion.jda.entities.User User} is playing a game, -1 if not.
      */
     int getCurrentGameId();
 
     /**
      * The name of the game that the user is currently playing.
      * If the user is not currently playing a game, this will return null.
+     *
      * @return
+     *      Possibly-null String containing the name of the game that the {@link net.dv8tion.jda.entities.User User} is currently playing.
      */
     String getCurrentGameName();
 
     /**
-     * Returns the {@link OnlineStatus} of the User.
+     * Returns the {@link net.dv8tion.jda.OnlineStatus OnlineStatus} of the User.<br>
+     * If the {@link net.dv8tion.jda.OnlineStatus OnlineStatus} is unrecognized, will return {@link net.dv8tion.jda.OnlineStatus#UNKNOWN UNKNOWN}.
+     *
      * @return
+     *      The current {@link net.dv8tion.jda.OnlineStatus OnlineStatus} of the {@link net.dv8tion.jda.entities.User User}.
      */
     OnlineStatus getOnlineStatus();
 
     /**
-     * Gets the {@link PrivateChannel} of this {@link User} for use in sending direct messages.
+     * Gets the {@link net.dv8tion.jda.entities.PrivateChannel PrivateChannel} of this
+     * {@link net.dv8tion.jda.entities.User User} for use in sending direct messages.
+     *
      * @return
+     *      Never-null {@link net.dv8tion.jda.entities.PrivateChannel PrivateChannel} that is associated with this {@link net.dv8tion.jda.entities.User User}.
      */
     PrivateChannel getPrivateChannel();
 }

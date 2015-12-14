@@ -87,6 +87,13 @@ public class GuildImpl implements Guild
         return region;
     }
 
+    @Override
+    public List<User> getUsers()
+    {
+        List<User> list = new ArrayList<>();
+        list.addAll(userRoles.keySet());
+        return Collections.unmodifiableList(list);
+    }
 
     @Override
     public List<TextChannel> getTextChannels()
