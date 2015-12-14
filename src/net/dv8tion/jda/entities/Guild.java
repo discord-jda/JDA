@@ -93,6 +93,14 @@ public interface Guild
     Region getRegion();
 
     /**
+     * The {@link net.dv8tion.jda.entites.User Users} that are part of this {@link net.dv8tion.jda.entites.Guild Guild}.
+     *
+     * @return
+     *      An Immutable List of {@link net.dv8tion.jda.entites.User Users}.
+     */
+    List<User> getUsers();
+
+    /**
      * The {@link net.dv8tion.jda.entites.TextChannel TextChannels} available on the {@link net.dv8tion.jda.entites.Guild Guild}.
      *
      * @return
