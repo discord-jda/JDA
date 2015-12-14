@@ -78,7 +78,7 @@ public class GuildImpl implements Guild
     {
         List<TextChannel> list = new ArrayList<>();
         list.addAll(textChannels.values());
-        return list;
+        return Collections.unmodifiableList(list);
     }
 
     @Override
@@ -86,7 +86,7 @@ public class GuildImpl implements Guild
     {
         List<VoiceChannel> list = new ArrayList<>();
         list.addAll(voiceChannels.values());
-        return list;
+        return Collections.unmodifiableList(list);
     }
 
     @Override
@@ -94,7 +94,7 @@ public class GuildImpl implements Guild
     {
         List<Role> list = new ArrayList<>();
         list.addAll(roles.values());
-        return list;
+        return Collections.unmodifiableList(list);
     }
 
     public Map<String, Role> getRolesMap()
