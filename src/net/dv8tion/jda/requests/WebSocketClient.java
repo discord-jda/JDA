@@ -64,6 +64,7 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
     {
         JSONObject content = new JSONObject(message);
         String type = content.getString("t");
+        int responseTotal = content.getInt("s");    //TODO: Give this to the handlers so they can pass to events.
         content = content.getJSONObject("d");
         if (type.equals("READY"))
         {
@@ -91,7 +92,7 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
                 new ReadyHandler(api).handle(content);
                 break;
             case "PRESENCE_UPDATE":
-                if (printUnimplemented) System.out.println(message);
+                new PresenceUpdateHandler(api).handle(content);
                 break;
             case "TYPING_START":
                 if (printUnimplemented) System.out.println(message);
