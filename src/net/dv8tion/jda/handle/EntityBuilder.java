@@ -154,7 +154,7 @@ public class EntityBuilder
         selfInfo.setVerified(self.getBoolean("verified"));
         selfInfo.setUserName(self.getString("username"));
         selfInfo.setDiscriminator(self.getString("discriminator"));
-        selfInfo.setAvatarId(self.getString("avatar"));
+        selfInfo.setAvatarId(self.isNull("avatar") ? null : self.getString("avatar"));
         return selfInfo;
     }
 }
