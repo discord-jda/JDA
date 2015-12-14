@@ -26,31 +26,41 @@ public interface Guild
 {
     /**
      * The Id of the {@link net.dv8tion.jda.entites.Guild Guild}. This is typically 18 characters long.
+     *
      * @return
+     *      Never-null String containing the Id.
      */
     String getId();
 
     /**
      * The human readable name of the {@link net.dv8tion.jda.entites.Guild Guild}. If no name has been set, this returns null.
+     *
      * @return
+     *      Never-null String containing the Guild's name.
      */
     String getName();
 
     /**
      * The Discord Id of the {@link net.dv8tion.jda.entites.Guild Guild} icon image. If no icon has been set, this returns null.
+     *
      * @return
+     *      Possibly-null String containing the Guild's icon id.
      */
     String getIconId();
 
     /**
      * The URL of the {@link net.dv8tion.jda.entites.Guild Guild} icon image. If no icon has been set, this returns null.
+     *
      * @return
+     *      Possibly-null String containing the Guild's icon URL.
      */
     String getIconUrl();
 
     /**
      * The Id of the AFK Voice Channel.
+     *
      * @return
+     *      Never-null String containing the AFK Voice Channel id.
      */
     String getAfkChannelId();
 
@@ -58,41 +68,51 @@ public interface Guild
      * The {@link net.dv8tion.jda.entites.User User} Id of the owner of this {@link net.dv8tion.jda.entites.Guild Guild}.<br>
      * Currently, there is no way to transfer ownership of a discord {@link net.dv8tion.jda.entites.Guild Guild},
      *   and a such this {@link net.dv8tion.jda.entites.User User} is also the original creator.
+     *
      * @return
+     *      Never-null String containing the Guild owner's User id.
      */
     String getOwnerId();
 
     /**
      * The amount of time (in seconds) that must pass with no activity to be considered AFK by this {@link net.dv8tion.jda.entites.Guild Guild}.
      * Default is 300 seconds (5 minutes)
+     *
      * @return
+     *      Positive int representing the timeout value.
      */
     int getAfkTimeout();
 
     /**
-     * The {@link net.dv8tion.jda.Region Region} that this {@link net.dv8tion.jda.entites.Guild Guild} exists in.
+     * The {@link net.dv8tion.jda.Region Region} that this {@link net.dv8tion.jda.entites.Guild Guild} exists in.<br>
+     * If the {@link net.dv8tion.jda.Region Region} is not recognized, returns {@link net.dv8tion.jda.Region#UNKNOWN UNKNOWN}.
+     *
      * @return
+     *      The the Region location that the Guild is hosted in. Can return Region.UNKNOWN.
      */
     Region getRegion();
 
     /**
      * The {@link net.dv8tion.jda.entites.TextChannel TextChannels} available on the {@link net.dv8tion.jda.entites.Guild Guild}.
+     *
      * @return
-     *      An Immutable List of Channels.
+     *      An Immutable List of {@link net.dv8tion.jda.entites.TextChannel TextChannels}.
      */
     List<TextChannel> getTextChannels();
 
     /**
      * The {@link net.dv8tion.jda.entites.VoiceChannel VoiceChannels} available on the {@link net.dv8tion.jda.entites.Guild Guild}.
+     *
      * @return
-     *      An Immutable List of VoiceChannels.
+     *      An Immutable List of {@link net.dv8tion.jda.entites.VoiceChannel VoiceChannels}.
      */
     List<VoiceChannel> getVoiceChannels();
 
     /**
      * The {@link net.dv8tion.jda.entities.Role Roles} of this {@link net.dv8tion.jda.Region Region}
      *
-     * @return An Immutable List of {@link net.dv8tion.jda.entities.Role Roles}.
+     * @return
+     *      An Immutable List of {@link net.dv8tion.jda.entities.Role Roles}.
      */
     List<Role> getRoles();
 
