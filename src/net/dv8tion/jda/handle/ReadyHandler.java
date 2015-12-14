@@ -74,6 +74,7 @@ public class ReadyHandler implements ISocketHandler
             builder.createPrivateChannel(priv_chats.getJSONObject(i));
         }
 
+        System.out.println("Finished Loading!");    //TODO: Replace with Logger.INFO
         api.getEventManager().handle(new ReadyEvent());
     }
 }

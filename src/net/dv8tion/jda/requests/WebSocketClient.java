@@ -15,12 +15,14 @@
  */
 package net.dv8tion.jda.requests;
 
+import java.net.URI;
+
 import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.handle.PresenceUpdateHandler;
 import net.dv8tion.jda.handle.ReadyHandler;
+
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONObject;
-
-import java.net.URI;
 
 
 public class WebSocketClient extends org.java_websocket.client.WebSocketClient
@@ -41,8 +43,6 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
     @Override
     public void onOpen(ServerHandshake handshake)
     {
-        System.out.println("Handshake request returned code: " + handshake.getHttpStatus());
-        System.out.println("HTTP Status: " + handshake.getHttpStatusMessage());
         JSONObject connectObj = new JSONObject()
                 .put("op", 2)
                 .put("d", new JSONObject()
@@ -62,7 +62,6 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
     @Override
     public void onMessage(String message)
     {
-        System.out.println(message);
         JSONObject content = new JSONObject(message);
         String type = content.getString("t");
         content = content.getJSONObject("d");
@@ -85,11 +84,50 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
             }).start();
         }
 
+        boolean printUnimplemented = true;    //TODO: Remove, just for development debug.
         switch (type)
         {
             case "READY":
                 new ReadyHandler(api).handle(content);
                 break;
+            case "PRESENCE_UPDATE":
+                if (printUnimplemented) System.out.println(message);
+                break;
+            case "TYPING_START":
+                if (printUnimplemented) System.out.println(message);
+                break;
+            case "MESSAGE_CREATE":
+                if (printUnimplemented) System.out.println(message);
+                break;
+            case "MESSAGE_UPDATE":
+                if (printUnimplemented) System.out.println(message);
+                break;
+            case "MESSAGE_DELETE":
+                if (printUnimplemented) System.out.println(message);
+                break;
+            case "VOICE_STATE_UPDATE":
+                if (printUnimplemented) System.out.println(message);
+                break;
+            case "CHANNEL_UPDATE":
+                if (printUnimplemented) System.out.println(message);
+                break;
+            case "GUILD_ROLE_UPDATE":
+                if (printUnimplemented) System.out.println(message);
+                break;
+            case "GUILD_BAN_ADD":
+                if (printUnimplemented) System.out.println(message);
+                break;
+            case "GUILD_BAN_REMOVE":
+                if (printUnimplemented) System.out.println(message);
+                break;
+            case "GUILD_MEMBER_ADD":
+                if (printUnimplemented) System.out.println(message);
+                break;
+            case "GUILD_MEMBER_REMOVE":
+                if (printUnimplemented) System.out.println(message);
+                break;
+            default:
+                System.out.println(message);    //TODO: Replace with "we don't know this type"
         }
     }
 

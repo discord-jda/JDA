@@ -112,6 +112,7 @@ public class JDA
             String response = b.makeRequest();
             if (response == null)
                 throw new LoginException("The provided email / password combination was incorrect. Please provide valid details.");
+            System.out.println("Login Successful!"); //TODO: Replace with Logger.INFO
 
             authToken = new JSONObject(response).getString("token");
             configs.getJSONObject("tokens").put(email, authToken);
@@ -121,6 +122,10 @@ public class JDA
             pb.setUrl("https://discordapp.com/api/gateway");
 
             gateway = new JSONObject(pb.makeRequest()).getString("url");
+        }
+        else
+        {
+            System.out.println("Login Successful!"); //TODO: Replace with Logger.INFO
         }
 
         writeJson(tokenFile, configs);
