@@ -18,9 +18,6 @@ package net.dv8tion.jda.entities.impl;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.Role;
 
-/**
- * Created by Michael Ritter on 13.12.2015.
- */
 public class RoleImpl implements net.dv8tion.jda.entities.Role
 {
     private final String id;

@@ -28,9 +28,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * Created by Michael Ritter on 13.12.2015.
- */
 public class ReadyHandler implements ISocketHandler
 {
     private final JDA api;

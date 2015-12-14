@@ -15,9 +15,6 @@
  */
 package net.dv8tion.jda;
 
-/**
- * Created by Michael Ritter on 13.12.2015.
- */
 public enum Permission
 {
     CREATE_INSTANT_INVITE(0),
