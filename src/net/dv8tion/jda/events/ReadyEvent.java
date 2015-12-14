@@ -15,8 +15,6 @@
  */
 package net.dv8tion.jda.events;
 
-import net.dv8tion.jda.hooks.Event;
-
 public class ReadyEvent implements Event
 {
 }

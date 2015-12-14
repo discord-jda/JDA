@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.hooks;
 
+import net.dv8tion.jda.events.Event;
+
 import java.util.LinkedList;
 import java.util.List;
 

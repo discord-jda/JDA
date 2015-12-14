@@ -15,14 +15,14 @@
  */
 package net.dv8tion.jda.requests;
 
-import java.net.URI;
-
 import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.handle.MessageCreateHandler;
 import net.dv8tion.jda.handle.PresenceUpdateHandler;
 import net.dv8tion.jda.handle.ReadyHandler;
-
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONObject;
+
+import java.net.URI;
 
 
 public class WebSocketClient extends org.java_websocket.client.WebSocketClient
@@ -98,7 +98,7 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
                 if (printUnimplemented) System.out.println(message);
                 break;
             case "MESSAGE_CREATE":
-                if (printUnimplemented) System.out.println(message);
+                new MessageCreateHandler(api).handle(content);
                 break;
             case "MESSAGE_UPDATE":
                 if (printUnimplemented) System.out.println(message);

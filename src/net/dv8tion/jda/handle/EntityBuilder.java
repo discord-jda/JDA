@@ -23,7 +23,9 @@ import net.dv8tion.jda.entities.impl.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -180,5 +182,40 @@ public class EntityBuilder
                 .setUserName(self.getString("username"))
                 .setDiscriminator(self.getString("discriminator"))
                 .setAvatarId(self.isNull("avatar") ? null : self.getString("avatar"));
+    }
+
+    protected Message createMessage(JSONObject jsonObject)
+    {
+        String id = jsonObject.getString("id");
+        MessageImpl message = new MessageImpl(id, api)
+                .setAuthor(api.getUserMap().get(jsonObject.getJSONObject("author").getString("id")))
+                .setContent(jsonObject.getString("content"))
+                .setTime(OffsetDateTime.parse(jsonObject.getString("timestamp")))
+                .setMentionsEveryone(jsonObject.getBoolean("mention_everyone"))
+                .setTTS(jsonObject.getBoolean("tts"));
+
+        if (!jsonObject.isNull("edited_timestamp"))
+            message.setEditedTime(OffsetDateTime.parse(jsonObject.getString("edited_timestamp")));
+
+        String channelId = jsonObject.getString("channel_id");
+        for (Guild guild : api.getGuildMap().values())
+        {
+            TextChannel textChannel = ((GuildImpl) guild).getTextChannelsMap().get(channelId);
+            if (textChannel != null)
+            {
+                message.setChannel(textChannel);
+                break;
+            }
+        }
+
+        List<User> mentioned = new LinkedList<>();
+        JSONArray mentions = jsonObject.getJSONArray("mentions");
+        for (int i = 0; i < mentions.length(); i++)
+        {
+            mentioned.add(api.getUserMap().get(mentions.getString(i)));
+        }
+        message.setMentionedUsers(mentioned);
+
+        return message;
     }
 }

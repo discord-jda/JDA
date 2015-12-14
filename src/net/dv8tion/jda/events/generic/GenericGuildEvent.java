@@ -15,7 +15,7 @@
  */
 package net.dv8tion.jda.events.generic;
 
-import net.dv8tion.jda.hooks.Event;
+import net.dv8tion.jda.events.Event;
 
 public abstract class GenericGuildEvent implements Event
 {
