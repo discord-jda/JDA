@@ -48,12 +48,13 @@ public class EntityBuilder
             guildObj = new GuildImpl(id);
             api.getGuildMap().put(id, guildObj);
         }
-        guildObj.setIconId(guild.isNull("icon") ? null : guild.getString("icon"));
-        guildObj.setRegion(Region.fromKey(guild.getString("region")));
-        guildObj.setName(guild.getString("name"));
-        guildObj.setOwnerId(guild.getString("owner_id"));
-        guildObj.setAfkTimeout(guild.getInt("afk_timeout"));
-        guildObj.setAfkChannelId(guild.isNull("afk_channel_id") ? null : guild.getString("afk_channel_id"));
+        guildObj
+            .setIconId(guild.isNull("icon") ? null : guild.getString("icon"))
+            .setRegion(Region.fromKey(guild.getString("region")))
+            .setName(guild.getString("name"))
+            .setOwnerId(guild.getString("owner_id"))
+            .setAfkTimeout(guild.getInt("afk_timeout"))
+            .setAfkChannelId(guild.isNull("afk_channel_id") ? null : guild.getString("afk_channel_id"));
 
         JSONArray channels = guild.getJSONArray("channels");
         for (int i = 0; i < channels.length(); i++)
@@ -97,8 +98,9 @@ public class EntityBuilder
         {
             JSONObject presence = presences.getJSONObject(i);
             UserImpl user = ((UserImpl) api.getUserMap().get(presence.getJSONObject("user").getString("id")));
-            user.setCurrentGameId(presence.isNull("game_id") ? -1 : presence.getInt("game_id"));
-            user.setOnlineStatus(OnlineStatus.fromKey(presence.getString("status")));
+            user
+                .setCurrentGameId(presence.isNull("game_id") ? -1 : presence.getInt("game_id"))
+                .setOnlineStatus(OnlineStatus.fromKey(presence.getString("status")));
         }
         return guildObj;
     }
@@ -113,7 +115,10 @@ public class EntityBuilder
             channel = new TextChannelImpl(id, guild);
             guild.getTextChannelsMap().put(id, channel);
         }
-        return channel.setName(json.getString("name")).setTopic(json.isNull("topic") ? "" : json.getString("topic")).setPosition(json.getInt("position"));
+        return channel
+                .setName(json.getString("name"))
+                .setTopic(json.isNull("topic") ? "" : json.getString("topic"))
+                .setPosition(json.getInt("position"));
     }
 
     protected TextChannel createVoiceChannel(JSONObject json, String guildId)
@@ -141,9 +146,13 @@ public class EntityBuilder
         {
             role = new RoleImpl(id);
         }
-        role.setName(roleJson.getString("name")).setPosition(roleJson.getInt("position")).setPermissions(roleJson.getInt("permissions"))
-                .setManaged(roleJson.getBoolean("managed")).setHoist(roleJson.getBoolean("hoist")).setColor(roleJson.getInt("color"));
-        return role;
+        return role
+                .setName(roleJson.getString("name"))
+                .setPosition(roleJson.getInt("position"))
+                .setPermissions(roleJson.getInt("permissions"))
+                .setManaged(roleJson.getBoolean("managed"))
+                .setHoist(roleJson.getBoolean("hoist"))
+                .setColor(roleJson.getInt("color"));
     }
 
     protected User createUser(JSONObject user)
@@ -155,10 +164,10 @@ public class EntityBuilder
             userObj = new UserImpl(id);
             api.getUserMap().put(id, userObj);
         }
-        userObj.setUserName(user.getString("username"));
-        userObj.setDiscriminator(user.get("discriminator").toString());
-        userObj.setAvatarId(user.isNull("avatar") ? null : user.getString("avatar"));
-        return userObj;
+        return userObj
+            .setUserName(user.getString("username"))
+            .setDiscriminator(user.get("discriminator").toString())
+            .setAvatarId(user.isNull("avatar") ? null : user.getString("avatar"));
     }
 
     protected SelfInfo createSelfInfo(JSONObject self)
@@ -169,10 +178,10 @@ public class EntityBuilder
             selfInfo = new SelfInfoImpl(self.getString("id"), self.getString("email"));
             api.setSelfInfo(selfInfo);
         }
-        selfInfo.setVerified(self.getBoolean("verified"));
-        selfInfo.setUserName(self.getString("username"));
-        selfInfo.setDiscriminator(self.getString("discriminator"));
-        selfInfo.setAvatarId(self.isNull("avatar") ? null : self.getString("avatar"));
-        return selfInfo;
+        return (SelfInfo) selfInfo
+                .setVerified(self.getBoolean("verified"))
+                .setUserName(self.getString("username"))
+                .setDiscriminator(self.getString("discriminator"))
+                .setAvatarId(self.isNull("avatar") ? null : self.getString("avatar"));
     }
 }
