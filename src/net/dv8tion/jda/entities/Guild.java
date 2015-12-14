@@ -20,30 +20,30 @@ import net.dv8tion.jda.Region;
 import java.util.List;
 
 /**
- * Represents a Discord Guild. This should contain all information provided from Discord about a Guild.
+ * Represents a Discord {@link net.dv8tion.jda.entites.Guild Guild}. This should contain all information provided from Discord about a Guild.
  */
 public interface Guild
 {
     /**
-     * The Id of the Guild. This is typically 18 characters long.
+     * The Id of the {@link net.dv8tion.jda.entites.Guild Guild}. This is typically 18 characters long.
      * @return
      */
     String getId();
 
     /**
-     * The human readable name of the Guild. If no name has been set, this returns null.
+     * The human readable name of the {@link net.dv8tion.jda.entites.Guild Guild}. If no name has been set, this returns null.
      * @return
      */
     String getName();
 
     /**
-     * The Discord Id for this server's Icon image. If no icon has been set, this returns null.
+     * The Discord Id of the {@link net.dv8tion.jda.entites.Guild Guild} icon image. If no icon has been set, this returns null.
      * @return
      */
     String getIconId();
 
     /**
-     * The URL for this server's Icon image. If no icon has been set, this returns null.
+     * The URL of the {@link net.dv8tion.jda.entites.Guild Guild} icon image. If no icon has been set, this returns null.
      * @return
      */
     String getIconUrl();
@@ -55,46 +55,55 @@ public interface Guild
     String getAfkChannelId();
 
     /**
-     * The user Id of the owner of this Guild. Currently, there is no way to transfer ownership of a discord
-     *   Guild, and a such this user is also the original creator.
+     * The {@link net.dv8tion.jda.entites.User User} Id of the owner of this {@link net.dv8tion.jda.entites.Guild Guild}.<br>
+     * Currently, there is no way to transfer ownership of a discord {@link net.dv8tion.jda.entites.Guild Guild},
+     *   and a such this {@link net.dv8tion.jda.entites.User User} is also the original creator.
      * @return
      */
     String getOwnerId();
 
     /**
-     * The amount of time (in seconds) that must pass with no activity to be considered AFK by this server.
+     * The amount of time (in seconds) that must pass with no activity to be considered AFK by this {@link net.dv8tion.jda.entites.Guild Guild}.
      * Default is 300 seconds (5 minutes)
      * @return
      */
     int getAfkTimeout();
 
     /**
-     * The Region that this server exists in.
+     * The {@link net.dv8tion.jda.Region Region} that this {@link net.dv8tion.jda.entites.Guild Guild} exists in.
      * @return
      */
     Region getRegion();
 
     /**
-     * The text based Channels available on the Guild.
+     * The {@link net.dv8tion.jda.entites.TextChannel TextChannels} available on the {@link net.dv8tion.jda.entites.Guild Guild}.
      * @return
      *      An Immutable List of Channels.
      */
     List<TextChannel> getTextChannels();
 
     /**
-     * The VoiceChannels available on the Guild.
+     * The {@link net.dv8tion.jda.entites.VoiceChannel VoiceChannels} available on the {@link net.dv8tion.jda.entites.Guild Guild}.
      * @return
      *      An Immutable List of VoiceChannels.
      */
     List<VoiceChannel> getVoiceChannels();
 
     /**
-     * The Roles of this Guild
+     * The {@link net.dv8tion.jda.entities.Role Roles} of this {@link net.dv8tion.jda.Region Region}
      *
-     * @return An Immutable List of Roles
+     * @return An Immutable List of {@link net.dv8tion.jda.entities.Role Roles}.
      */
     List<Role> getRoles();
 
+    /**
+     * Provides all of the {@link net.dv8tion.jda.entities.Role Roles} that the provided {@link net.dv8tion.jda.entities.User User}
+     *  has been assigned.
+     * @param user
+     *          The {@link net.dv8tion.jda.entities.User User} that we wish to get the {@link net.dv8tion.jda.entities.Role Roles} related to.
+     * @return
+     *      An Immutable List of {@link net.dv8tion.jda.entities.Role Roles}.
+     */
     List<Role> getRolesForUser(User user);
 
 }

@@ -15,6 +15,9 @@
  */
 package net.dv8tion.jda;
 
+/**
+ * Represents the online presence of a {@link net.dv8tion.jda.entities.User User}.
+ */
 public enum OnlineStatus
 {
     ONLINE("online"),
@@ -29,6 +32,15 @@ public enum OnlineStatus
         this.key = key;
     }
 
+    /**
+     * Will get the {@link net.dv8tion.jda.OnlineStatus OnlineStatus} from the provided key.<br>
+     * If the provided key does no match a presence, this will return {@link net.dv8tion.jda.OnlineStatus#UNKNOWN UNKONWN}
+     *
+     * @param key
+     *          The key relating to the {@link net.dv8tion.jda.OnlineStatus OnlineStatus} we wish to retrieve.
+     * @return
+     *      The matching {@link net.dv8tion.jda.OnlineStatus OnlineStatus}. If there is no match, returns {@link net.dv8tion.jda.OnlineStatus#UNKNOWN UNKONWN}.
+     */
     public static OnlineStatus fromKey(String key)
     {
         for (OnlineStatus onlineStatus : values())

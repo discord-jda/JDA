@@ -38,6 +38,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+/**
+ * Represents the core of the Discord API. All functionality is connected through this.
+ */
 public class JDA
 {
     private final Map<String, User> userMap = new HashMap<>();
@@ -46,17 +49,30 @@ public class JDA
     private String authToken = null;
     private WebSocketClient client;
 
+    /**
+     * Creates a new instance of the Discord API wrapper and attempts to login to Discord.
+     * Upon successful auth with Discord, a token is returned and stored in token.json.
+     *
+     * @param email
+     *          The email of the account attempting to log in.
+     * @param password
+     *          The password of the account attempting to log in.
+     * @throws IllegalArgumentException
+     *          Thrown if this email or password provided are empty or null.
+     * @throws LoginException
+     *          Thrown if the email-password combination fails the auth check with the Discord servers.
+     */
     public JDA(String email, String password) throws IllegalArgumentException, LoginException
     {
         if (email == null || email.isEmpty() || password == null || password.isEmpty())
             throw new IllegalArgumentException("The provided email or password as empty / null.");
 
-        Path saveFile = Paths.get("save.json");
+        Path tokenFile = Paths.get("tokens.json");
         JSONObject configs = null;
         String gateway = null;
-        if (Files.exists(saveFile))
+        if (Files.exists(tokenFile))
         {
-            configs = readJson(saveFile);
+            configs = readJson(tokenFile);
         }
         if (configs == null)
         {
@@ -75,7 +91,7 @@ public class JDA
             }
             catch (JSONException ex)
             {
-                System.out.println("Save-file misformatted. Please delete it for recreation");
+                System.out.println("Token-file misformatted. Please delete it for recreation");
             }
             catch (Exception ex)
             {
@@ -105,10 +121,14 @@ public class JDA
             gateway = new JSONObject(pb.makeRequest()).getString("url");
         }
 
-        writeJson(saveFile, configs);
+        writeJson(tokenFile, configs);
         client = new WebSocketClient(gateway, this);
     }
 
+    /**
+     * Used for the internal test bot. Will be removed.
+     * @param args
+     */
     public static void main(String[] args)
     {
         JSONObject config = getConfig();
@@ -132,6 +152,14 @@ public class JDA
         }
     }
 
+    /**
+     * Takes a provided json file, reads all lines and constructs a {@link org.json.JSONObject JSONObject} from it.
+     *
+     * @param file
+     *          The json file to read.
+     * @return
+     *      The {@link org.json.JSONObject JSONObject} representation of the json in the file.
+     */
     private static JSONObject readJson(Path file)
     {
         try
@@ -140,16 +168,24 @@ public class JDA
         }
         catch (IOException e)
         {
-            System.out.println("Error reading save-file. Defaulting to standard");
+            System.out.println("Error reading token-file. Defaulting to standard");
             e.printStackTrace();
         }
         catch (JSONException e)
         {
-            System.out.println("Save-file misformatted. Creating default one");
+            System.out.println("Token-file misformatted. Creating default one");
         }
         return null;
     }
 
+    /**
+     * Writes the json representation of the provided {@link org.json.JSONObject JSONObject} to the provided file.
+     *
+     * @param file
+     *          The file which will have the json representation of object written into.
+     * @param object
+     *          The {@link org.json.JSONObject JSONObject} to write to file.
+     */
     private static void writeJson(Path file, JSONObject object)
     {
         try
@@ -158,7 +194,7 @@ public class JDA
         }
         catch (IOException e)
         {
-            System.out.println("Error creating save-file");
+            System.out.println("Error creating token-file");
         }
     }
 
@@ -214,11 +250,18 @@ public class JDA
         return guildMap;
     }
 
+    /**
+     * Returns the currently logged in account represented by {@link net.dv8tion.jda.entities.SelfInfo SelfInfo}.<br>
+     * Account settings <b>cannot</b> be modified using this object. If you wish to modify account settings please
+     *   use the {@link net.dv8tion.jda.AccountManager AccountManager}.
+     *
+     * @return
+     *      The currently logged in account.
+     */
     public SelfInfo getSelfInfo()
     {
         return selfInfo;
     }
-
     public void setSelfInfo(SelfInfo selfInfo)
     {
         this.selfInfo = selfInfo;

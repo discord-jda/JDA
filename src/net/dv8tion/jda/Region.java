@@ -16,9 +16,9 @@
 package net.dv8tion.jda;
 
 /**
- * Represents the Regions that Discord has servers in.
- * This is set in a Guild, however the information is provided both when dealing with
- *   Guilds and Voice Channels.
+ * Represents the Regions that Discord has servers in.<br>
+ * This is used by {@link net.dv8tion.jda.entities.Guild Guild} to where the server that hosts the
+ * {@link net.dv8tion.jda.entities.Guild Guild} is located.
  */
 public enum Region
 {
@@ -31,12 +31,12 @@ public enum Region
     US_WEST("us-west", "US West"),
     UNKNOWN("", "Unknown Region");
 
-    private String id;
+    private String key;
     private String name;
 
-    Region(String id, String name)
+    Region(String key, String name)
     {
-        this.id = id;
+        this.key = key;
         this.name = name;
     }
 
@@ -50,27 +50,27 @@ public enum Region
     }
 
     /**
-     * The regionId as defined by Discord.
+     * The Region key as defined by Discord.
      * @return
      */
-    public String getId()
+    public String getKey()
     {
-        return id;
+        return key;
     }
 
     /**
-     * Retrieves the Region based on the provided regionId.
+     * Retrieves the {@link net.dv8tion.jda.Region Region} based on the provided key.
      *
-     * @param regionId
-     *          The regionId, most likely provided from a READY event, Guild information or Voice Channel information.
+     * @param key
+     *          The key relating to the {@link net.dv8tion.jda.Region Region} we wish to retrieve.
      * @return
-     *          The Region matching the regionId. Should no region match, this will return Region.UNKNOWN.
+     *          The {@link net.dv8tion.jda.Region Region} matching the key. If there is no match, returns {@link net.dv8tion.jda.Region#UNKNOWN UNKNOWN}.
      */
-    public static Region getRegion(String regionId)
+    public static Region fromKey(String key)
     {
         for (Region region : values())
         {
-            if (region.getId().equals(regionId))
+            if (region.getKey().equals(key))
             {
                 return region;
             }

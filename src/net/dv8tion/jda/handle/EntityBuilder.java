@@ -49,7 +49,7 @@ public class EntityBuilder
             api.getGuildMap().put(id, guildObj);
         }
         guildObj.setIconId(guild.isNull("icon") ? null : guild.getString("icon"));
-        guildObj.setRegion(Region.getRegion(guild.getString("region")));
+        guildObj.setRegion(Region.fromKey(guild.getString("region")));
         guildObj.setName(guild.getString("name"));
         guildObj.setOwnerId(guild.getString("owner_id"));
         guildObj.setAfkTimeout(guild.getInt("afk_timeout"));
