@@ -20,6 +20,7 @@ import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.impl.GuildImpl;
 import net.dv8tion.jda.entities.impl.SelfInfoImpl;
+import net.dv8tion.jda.events.ReadyEvent;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -75,5 +76,7 @@ public class ReadyHandler implements ISocketHandler
         {
             builder.createPrivateChannel(priv_chats.getJSONObject(i));
         }
+
+        api.getEventManager().handle(new ReadyEvent());
     }
 }

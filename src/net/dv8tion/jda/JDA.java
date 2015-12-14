@@ -18,6 +18,7 @@ package net.dv8tion.jda;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.SelfInfo;
 import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.hooks.EventManager;
 import net.dv8tion.jda.requests.RequestBuilder;
 import net.dv8tion.jda.requests.RequestType;
 import net.dv8tion.jda.requests.WebSocketClient;
@@ -45,6 +46,7 @@ public class JDA
 {
     private final Map<String, User> userMap = new HashMap<>();
     private final Map<String, Guild> guildMap = new HashMap<>();
+    private final EventManager eventManager = new EventManager();
     private SelfInfo selfInfo = null;
     private String authToken = null;
     private WebSocketClient client;
@@ -233,6 +235,11 @@ public class JDA
     public String getAuthToken()
     {
         return authToken;
+    }
+
+    public EventManager getEventManager()
+    {
+        return eventManager;
     }
 
     public WebSocketClient getClient()
