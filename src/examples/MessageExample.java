@@ -1,21 +1,39 @@
 /**
- * Created by Michael Ritter on 15.12.2015.
+ *    Copyright 2015 Austin Keener & Michael Ritter
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package examples;
 
-import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.events.MessageCreateEvent;
-import net.dv8tion.jda.hooks.ListenerAdapter;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import javax.security.auth.login.LoginException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 
-public class Main extends ListenerAdapter
+import javax.security.auth.login.LoginException;
+
+import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.entities.TextChannel;
+import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.events.MessageCreateEvent;
+import net.dv8tion.jda.hooks.ListenerAdapter;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public class MessageExample extends ListenerAdapter
 {
     /**
      * Used for the internal test bot. Will be removed.
@@ -28,7 +46,7 @@ public class Main extends ListenerAdapter
         try
         {
             JDA api = new JDA(config.getString("email"), config.getString("password"));
-            api.getEventManager().register(new Main());
+            api.getEventManager().register(new MessageExample());
         }
         catch (IllegalArgumentException e)
         {
@@ -81,7 +99,32 @@ public class Main extends ListenerAdapter
     @Override
     public void onMessageCreate(MessageCreateEvent event)
     {
-        System.out.println("[" + event.getMessage().getChannel().getName() + ']' +
-                event.getMessage().getAuthor().getUsername() + ": " + event.getMessage().getContent());
+        User author = event.getMessage().getAuthor();
+        TextChannel channel = event.getMessage().getChannel();
+        Guild guild = channel.getGuild();
+        List<User> mentions = event.getMessage().getMentionedUsers();
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("[")
+            .append(guild.getName())
+            .append("]{")
+            .append(channel.getName())
+            .append("} ")
+            .append(author.getUsername())
+            .append(": ")
+            .append(event.getMessage().getContent());
+        System.out.println(builder.toString());
+
+        builder = new StringBuilder();
+        for (User u : mentions)
+        {
+            builder.append(u.getUsername()).append(", ");
+        }
+        String mentionsMessage = builder.toString();
+        if (!mentionsMessage.isEmpty())
+        {
+            mentionsMessage.substring(0, mentionsMessage.length() - 2);
+            System.out.println("The follow users were mentioned: " + mentionsMessage);
+        }
     }
 }
