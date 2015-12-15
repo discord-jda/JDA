@@ -5,14 +5,14 @@ package net.dv8tion.jda.handle;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.events.MessageCreateEvent;
+import net.dv8tion.jda.events.MessageReceivedEvent;
 import org.json.JSONObject;
 
-public class MessageCreateHandler implements ISocketHandler
+public class MessageRecievedHandler implements ISocketHandler
 {
     private final JDA api;
 
-    public MessageCreateHandler(JDA api)
+    public MessageRecievedHandler(JDA api)
     {
         this.api = api;
     }
@@ -24,7 +24,7 @@ public class MessageCreateHandler implements ISocketHandler
         TextChannel channel = api.getChannelMap().get(channel_id);
         if (channel != null)
         {
-            api.getEventManager().handle(new MessageCreateEvent(new EntityBuilder(api).createMessage(content)));
+            api.getEventManager().handle(new MessageReceivedEvent(new EntityBuilder(api).createMessage(content)));
         }
         else
         {

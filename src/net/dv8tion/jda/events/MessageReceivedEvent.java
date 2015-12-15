@@ -18,11 +18,11 @@ package net.dv8tion.jda.events;
 import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.events.generic.GenericMessageEvent;
 
-public class MessageCreateEvent extends GenericMessageEvent
+public class MessageReceivedEvent extends GenericMessageEvent
 {
     private final Message message;
 
-    public MessageCreateEvent(Message message)
+    public MessageReceivedEvent(Message message)
     {
         this.message = message;
     }

@@ -15,8 +15,12 @@
  */
 package net.dv8tion.jda.events;
 
-import net.dv8tion.jda.events.generic.GenericMessageEvent;
+import net.dv8tion.jda.entities.Message;
 
-public class MessageUpdateEvent extends GenericMessageEvent
+public class MessageUpdateEvent extends MessageReceivedEvent
 {
+    public MessageUpdateEvent(Message message)
+    {
+        super(message);
+    }
 }

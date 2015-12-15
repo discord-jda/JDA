@@ -27,7 +27,7 @@ import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.events.MessageCreateEvent;
+import net.dv8tion.jda.events.MessageReceivedEvent;
 import net.dv8tion.jda.hooks.ListenerAdapter;
 
 import org.json.JSONException;
@@ -97,7 +97,7 @@ public class MessageExample extends ListenerAdapter
     }
 
     @Override
-    public void onMessageCreate(MessageCreateEvent event)
+    public void onMessageReceived(MessageReceivedEvent event)
     {
         User author = event.getMessage().getAuthor();
         TextChannel channel = event.getMessage().getChannel();

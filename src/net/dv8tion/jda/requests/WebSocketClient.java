@@ -16,9 +16,7 @@
 package net.dv8tion.jda.requests;
 
 import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.handle.MessageCreateHandler;
-import net.dv8tion.jda.handle.PresenceUpdateHandler;
-import net.dv8tion.jda.handle.ReadyHandler;
+import net.dv8tion.jda.handle.*;
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONObject;
 
@@ -37,7 +35,6 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
         super(URI.create(url.replace("wss", "ws")));
         this.api = api;
         this.connect();
-        // TODO Auto-generated constructor stub
     }
 
     @Override
@@ -46,15 +43,15 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
         JSONObject connectObj = new JSONObject()
                 .put("op", 2)
                 .put("d", new JSONObject()
-                        .put("token", api.getAuthToken())
-                        .put("properties", new JSONObject()
-                                .put("$os", System.getProperty("os.name"))
-                                .put("$browser", "Java Discord API")
-                                .put("$device", "")
-                                .put("$referring_domain", "t.co")
-                                .put("$referrer", "")
-                        )
-                        .put("v", 3));
+                    .put("token", api.getAuthToken())
+                    .put("properties", new JSONObject()
+                        .put("$os", System.getProperty("os.name"))
+                        .put("$browser", "Java Discord API")
+                        .put("$device", "")
+                        .put("$referring_domain", "t.co")
+                        .put("$referrer", "")
+                    )
+                    .put("v", 3));
         send(connectObj.toString());
         connected = true;
     }
@@ -98,7 +95,7 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
                 if (printUnimplemented) System.out.println(message);
                 break;
             case "MESSAGE_CREATE":
-                new MessageCreateHandler(api).handle(content);
+                new MessageRecievedHandler(api).handle(content);
                 break;
             case "MESSAGE_UPDATE":
                 if (printUnimplemented) System.out.println(message);
@@ -109,7 +106,13 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
             case "VOICE_STATE_UPDATE":
                 if (printUnimplemented) System.out.println(message);
                 break;
+            case "CHANNEL_CREATE":
+                if (printUnimplemented) System.out.println(message);
+                break;
             case "CHANNEL_UPDATE":
+                if (printUnimplemented) System.out.println(message);
+                break;
+            case "CHANNEL_DELETE":
                 if (printUnimplemented) System.out.println(message);
                 break;
             case "GUILD_ROLE_UPDATE":

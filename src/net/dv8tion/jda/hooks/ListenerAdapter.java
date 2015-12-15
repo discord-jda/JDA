@@ -28,10 +28,10 @@ public abstract class ListenerAdapter implements EventListener
             onReady(((ReadyEvent) event));
 
         //Message Events
-        else if (event instanceof MessageCreateEvent)
-            onMessageCreate(((MessageCreateEvent) event));
         else if (event instanceof MessageUpdateEvent)
             onMessageUpdate(((MessageUpdateEvent) event));
+        else if (event instanceof MessageReceivedEvent)
+            onMessageReceived(((MessageReceivedEvent) event));
         else if (event instanceof MessageDeleteEvent)
             onMessageDelete(((MessageDeleteEvent) event));
 
@@ -72,7 +72,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onUserGameUpdateEvent(Event event) {}
 
     //Message Events
-    public void onMessageCreate(MessageCreateEvent event) {}
+    public void onMessageReceived(MessageReceivedEvent event) {}
     public void onMessageUpdate(MessageUpdateEvent event) {}
     public void onMessageDelete(MessageDeleteEvent event) {}
 
