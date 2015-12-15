@@ -55,6 +55,18 @@ public class EntityBuilder
             .setAfkTimeout(guild.getInt("afk_timeout"))
             .setAfkChannelId(guild.isNull("afk_channel_id") ? null : guild.getString("afk_channel_id"));
 
+
+        JSONArray roles = guild.getJSONArray("roles");
+        for (int i = 0; i < roles.length(); i++)
+        {
+            Role role = createRole(roles.getJSONObject(i), guildObj.getId());
+            guildObj.getRolesMap().put(role.getId(), role);
+            if (role.getName().equals("@everyone"))
+            {
+                guildObj.setPublicRole(role);
+            }
+        }
+
         JSONArray channels = guild.getJSONArray("channels");
         for (int i = 0; i < channels.length(); i++)
         {
@@ -67,17 +79,6 @@ public class EntityBuilder
             else if (type.equalsIgnoreCase("voice"))
             {
                 createVoiceChannel(channel, guildObj.getId());
-            }
-        }
-
-        JSONArray roles = guild.getJSONArray("roles");
-        for (int i = 0; i < roles.length(); i++)
-        {
-            Role role = createRole(roles.getJSONObject(i), guildObj.getId());
-            guildObj.getRolesMap().put(role.getId(), role);
-            if (role.getName().equals("@everyone"))
-            {
-                guildObj.setPublicRole(role);
             }
         }
 

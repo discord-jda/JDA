@@ -15,23 +15,21 @@
  */
 package examples;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.List;
-
-import javax.security.auth.login.LoginException;
-
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.MessageReceivedEvent;
 import net.dv8tion.jda.hooks.ListenerAdapter;
-
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import javax.security.auth.login.LoginException;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
 
 public class MessageExample extends ListenerAdapter
 {
@@ -126,5 +124,6 @@ public class MessageExample extends ListenerAdapter
             mentionsMessage.substring(0, mentionsMessage.length() - 2);
             System.out.println("The follow users were mentioned: " + mentionsMessage);
         }
+        System.out.println("Users in channel " + channel.getName() + ": " + channel.getUsers().stream().map(User::getUsername).reduce((s1, s2) -> s1 + ", " + s2).get());
     }
 }

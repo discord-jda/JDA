@@ -21,10 +21,11 @@ import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.User;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class TextChannelImpl implements TextChannel
 {
@@ -69,7 +70,8 @@ public class TextChannelImpl implements TextChannel
     @Override
     public List<User> getUsers()
     {
-        throw new UnsupportedOperationException("Until permissions is finished, getting the Users in a Channel is not supported");
+        List<User> users = getGuild().getUsers().stream().filter(user -> checkPermission(user, Permission.MESSAGE_READ)).collect(Collectors.toList());
+        return Collections.unmodifiableList(users);
     }
 
     @Override
@@ -84,14 +86,23 @@ public class TextChannelImpl implements TextChannel
         //Default global permission of @everyone in this guild
         int permission = ((RoleImpl) getGuild().getPublicRole()).getPermissions();
         //override with channel-specific overrides of @everyone
-        permission = rolePermissionOverrides.get(getGuild().getPublicRole()).apply(permission);
+        PermissionOverride override = rolePermissionOverrides.get(getGuild().getPublicRole());
+        if (override != null)
+        {
+            permission = rolePermissionOverrides.get(getGuild().getPublicRole()).apply(permission);
+        }
 
         //handle role-overrides of this user in this channel
         List<Role> rolesOfUser = getGuild().getRolesForUser(user);
-        Optional<PermissionOverride> reduced = rolesOfUser.stream().map(role -> rolePermissionOverrides.get(role)).reduce(PermissionOverride::after);
-        if (reduced.isPresent())
+        override = null;
+        for (Role role : rolesOfUser)
         {
-            permission = reduced.get().apply(permission);
+            PermissionOverride po = rolePermissionOverrides.get(role);
+            override = (po == null) ? override : ((override == null) ? po : po.after(override));
+        }
+        if (override != null)
+        {
+            permission = override.apply(permission);
         }
 
         //handle user-specific overrides
