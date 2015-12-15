@@ -20,8 +20,8 @@ public class MessageCreateHandler implements ISocketHandler
     @Override
     public void handle(JSONObject content)
     {
-        String id = content.getString("id");
-        TextChannel channel = api.getChannelMap().get(id);
+        String channel_id = content.getString("channel_id");
+        TextChannel channel = api.getChannelMap().get(channel_id);
         if (channel != null)
         {
             api.getEventManager().handle(new MessageCreateEvent(new EntityBuilder(api).createMessage(content)));
