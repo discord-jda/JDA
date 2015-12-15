@@ -83,6 +83,12 @@ public class TextChannelImpl implements TextChannel
     @Override
     public boolean checkPermission(User user, Permission perm)
     {
+        //is the user guild owner?
+        if (getGuild().getOwnerId().equals(user.getId()))
+        {
+            return true;
+        }
+
         //Default global permission of @everyone in this guild
         int permission = ((RoleImpl) getGuild().getPublicRole()).getPermissions();
         //override with channel-specific overrides of @everyone
