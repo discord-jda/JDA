@@ -121,7 +121,7 @@ public class MessageExample extends ListenerAdapter
         String mentionsMessage = builder.toString();
         if (!mentionsMessage.isEmpty())
         {
-            mentionsMessage.substring(0, mentionsMessage.length() - 2);
+            mentionsMessage = mentionsMessage.substring(0, mentionsMessage.length() - 2);
             System.out.println("The follow users were mentioned: " + mentionsMessage);
         }
         System.out.println("Users in channel " + channel.getName() + ": " + channel.getUsers().stream().map(User::getUsername).reduce((s1, s2) -> s1 + ", " + s2).get());

@@ -200,6 +200,10 @@ public class EntityBuilder
             selfInfo = new SelfInfoImpl(self.getString("id"), self.getString("email"));
             api.setSelfInfo(selfInfo);
         }
+        if (!api.getUserMap().containsKey(selfInfo.getId()))
+        {
+            api.getUserMap().put(selfInfo.getId(), selfInfo);
+        }
         return (SelfInfo) selfInfo
                 .setVerified(self.getBoolean("verified"))
                 .setUserName(self.getString("username"))
