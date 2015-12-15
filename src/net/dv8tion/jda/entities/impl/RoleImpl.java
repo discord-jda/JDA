@@ -59,7 +59,7 @@ public class RoleImpl implements net.dv8tion.jda.entities.Role
     @Override
     public boolean hasPermission(Permission perm)
     {
-        return ((1 << perm.getOffset()) & permissions) > 0;
+        return ((1 << perm.getOffset()) & permissions) > 0 || ((1 << Permission.MANAGE_ROLES.getOffset()) & permissions) > 0;
     }
 
     @Override
