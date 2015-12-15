@@ -36,7 +36,7 @@ import org.json.JSONObject;
 public class MessageExample extends ListenerAdapter
 {
     /**
-     * Used for the internal test bot. Will be removed.
+     * Used for the internal test bot.
      *
      * @param args
      */
