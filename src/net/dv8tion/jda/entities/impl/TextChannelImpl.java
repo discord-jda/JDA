@@ -83,8 +83,11 @@ public class TextChannelImpl implements TextChannel
     @Override
     public boolean checkPermission(User user, Permission perm)
     {
-        //is the user guild owner?
-        if (getGuild().getOwnerId().equals(user.getId()))
+        //Do we have all permissions possible? (Owner or user has MANAGE_ROLES permission)
+        //If we have all permissions possible, then we will be able to see this room.
+        if (getGuild().getOwnerId().equals(user.getId())
+                || getGuild().getPublicRole().hasPermission(Permission.MANAGE_ROLES)
+                || getGuild().getRolesForUser(user).stream().anyMatch(role -> role.hasPermission(Permission.MANAGE_ROLES)))
         {
             return true;
         }
