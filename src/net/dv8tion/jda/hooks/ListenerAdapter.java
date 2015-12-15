@@ -66,10 +66,10 @@ public abstract class ListenerAdapter implements EventListener
     public void onReady(ReadyEvent event) {}
 
     //User Update Events
-    private void onUserNameUpdateEvent(Event event) {}
-    private void onUserAvatarUpdateEvent(Event event) {}
-    private void onUserOnlineStatusUpdateEvent(Event event) {}
-    private void onUserGameUpdateEvent(Event event) {}
+    public void onUserNameUpdateEvent(Event event) {}
+    public void onUserAvatarUpdateEvent(Event event) {}
+    public void onUserOnlineStatusUpdateEvent(Event event) {}
+    public void onUserGameUpdateEvent(Event event) {}
 
     //Message Events
     public void onMessageCreate(MessageCreateEvent event) {}
@@ -82,7 +82,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildDelete(GuildDeleteEvent event) {}
 
     //Generic Events
-    private void onGenericUserUpdateEvent(Event event) {}
+    public void onGenericUserUpdateEvent(Event event) {}
     public void onGenericMessageEvent(GenericMessageEvent event) {}
     public void onGenericGuildEvent(GenericGuildEvent event) {}
 }
