@@ -15,7 +15,10 @@
  */
 package net.dv8tion.jda.events;
 
+import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.Message;
+import net.dv8tion.jda.entities.TextChannel;
+import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.generic.GenericMessageEvent;
 
 public class MessageReceivedEvent extends GenericMessageEvent
@@ -30,5 +33,20 @@ public class MessageReceivedEvent extends GenericMessageEvent
     public Message getMessage()
     {
         return message;
+    }
+
+    public User getAuthor()
+    {
+        return message.getAuthor();
+    }
+
+    public TextChannel getChannel()
+    {
+        return message.getChannel();
+    }
+
+    public Guild getGuild()
+    {
+        return message.getChannel().getGuild();
     }
 }
