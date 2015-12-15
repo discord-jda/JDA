@@ -92,7 +92,7 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
                 new PresenceUpdateHandler(api).handle(content);
                 break;
             case "TYPING_START":
-                if (printUnimplemented) System.out.println(message);
+                new UserTypingHandler(api).handle(content);
                 break;
             case "MESSAGE_CREATE":
                 new MessageRecievedHandler(api).handle(content);

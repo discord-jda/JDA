@@ -1,0 +1,50 @@
+/**
+ *    Copyright 2015 Austin Keener & Michael Ritter
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package net.dv8tion.jda.events;
+
+import java.time.OffsetDateTime;
+
+import net.dv8tion.jda.entities.TextChannel;
+import net.dv8tion.jda.entities.User;
+
+public class UserTypingEvent implements Event
+{
+    private User user;
+    private TextChannel channel;
+    private OffsetDateTime timestamp;
+
+    public UserTypingEvent(User user, TextChannel channel, OffsetDateTime timestamp)
+    {
+        this.user = user;
+        this.channel = channel;
+        this.timestamp = timestamp;
+    }
+
+    public User getUser()
+    {
+        return user;
+    }
+
+    public TextChannel getChannel()
+    {
+        return channel;
+    }
+
+    public OffsetDateTime getTimestamp()
+    {
+        return timestamp;
+    }
+}
