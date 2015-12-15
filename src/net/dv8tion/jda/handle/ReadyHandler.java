@@ -42,7 +42,7 @@ public class ReadyHandler implements ISocketHandler
     @Override
     public void handle(JSONObject content)
     {
-        //TODO: User-Setings; read_state; guild voice states; channel perm overrides; voice channels
+        //TODO: User-Setings; read_state; guild voice states; voice channels
         builder.createSelfInfo(content.getJSONObject("user"));
         JSONArray muted = content.getJSONObject("user_settings").getJSONArray("muted_channels");
         List<String> mutedChannelIds = new ArrayList<>();

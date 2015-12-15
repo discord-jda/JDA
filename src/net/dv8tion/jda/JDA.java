@@ -91,6 +91,7 @@ public class JDA
                 rb.setType(RequestType.GET);
                 rb.setUrl("https://discordapp.com/api/gateway");
                 gateway = new JSONObject(rb.makeRequest()).getString("url");
+                System.out.println("Using cached Token: " + authToken);
             }
             catch (JSONException ex)
             {
@@ -117,6 +118,7 @@ public class JDA
 
             authToken = new JSONObject(response).getString("token");
             configs.getJSONObject("tokens").put(email, authToken);
+            System.out.println("Created new Token: " + authToken);
 
             RequestBuilder pb = new RequestBuilder(this);
             pb.setType(RequestType.GET);

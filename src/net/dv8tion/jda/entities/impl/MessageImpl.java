@@ -7,6 +7,11 @@ import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.handle.EntityBuilder;
+import net.dv8tion.jda.requests.RequestBuilder;
+import net.dv8tion.jda.requests.RequestType;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
 import java.util.Collections;
@@ -93,11 +98,32 @@ public class MessageImpl implements Message
     }
 
     @Override
-    public void reply(String text)
+    public Message updateMessage(String new_content)
     {
-        throw new UnsupportedOperationException("Replying is not implemented yet");
+        RequestBuilder rb = new RequestBuilder(api);
+        rb.setType(RequestType.PATCH);
+        rb.setUrl("https://discordapp.com/api/channels/" + channel.getId() + "/messages/" + getId());
+        rb.setData(new JSONObject().put("content", new_content).toString());
+
+        try
+        {
+            return new EntityBuilder(api).createMessage(new JSONObject(rb.makeRequest()));
+        }
+        catch (JSONException ex)
+        {
+            return null;
+        }
     }
 
+    @Override
+    public void deleteMessage()
+    {
+        RequestBuilder rb = new RequestBuilder(api);
+        rb.setType(RequestType.DELETE);
+        rb.setGetResponse(false);
+        rb.setUrl("https://discordapp.com/api/channels/" + channel.getId() + "/messages/" + getId());
+        rb.makeRequest();
+    }
 
     public MessageImpl setMentionedUsers(List<User> mentionedUsers)
     {

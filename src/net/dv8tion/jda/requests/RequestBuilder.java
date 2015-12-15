@@ -18,7 +18,10 @@ package net.dv8tion.jda.requests;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.JDAStatics;
 
+import javax.net.SocketFactory;
+import javax.net.ssl.SSLSocketFactory;
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -32,6 +35,7 @@ public class RequestBuilder
     protected RequestType type = null;
     protected HttpURLConnection con;
     protected boolean sendLoginHeaders = true;
+    protected boolean getResponse = true;
     protected int code = 200;
     protected JDA api;
 
@@ -48,21 +52,54 @@ public class RequestBuilder
             {
                 try
                 {
-                    String host = url.split("\\/", 3)[1];
+                    String[] urlparts = url.split("/", 4);
+                    boolean ishttps = urlparts[0].startsWith("https");
                     // apaches api isn't working very well for me
                     // and java doesn't support patch... so why
                     // not completely recode it for what we need?
-                    Socket clientSocket = new Socket(host, 80);
+                    Socket clientSocket;
+
+                    if (ishttps)
+                    {
+                        SocketFactory sslf = SSLSocketFactory.getDefault();
+                        clientSocket = sslf.createSocket(urlparts[2], 443);
+                    }
+                    else
+                    {
+                        clientSocket = new Socket(urlparts[2], 80);
+                    }
+
                     DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream());
-                    out.writeBytes("PATCH " + url + " HTTP/1.1\n" +
-                            "Host: " + host + "\n" +
-                            "Connection: keep-alive\n" +
+                    out.writeBytes("PATCH /" + urlparts[3] + " HTTP/1.1\n" +
+                            "Host: " + urlparts[2] + "\n" +
+                            "Connection: close\n" +
                             "Content-Length: " + data.length() + "\n" +
                             "Origin: http://discordapp.com\n" +
                             "User-Agent: " + JDAStatics.GITHUB + " " + JDAStatics.VERSION + "\n" +
                             "Content-Type: application/json\n" +
                             "Accept: */*\n" +
                             "authorization: " + api.getAuthToken() + "\n\n" + data);
+                    if (getResponse)
+                    {
+                        DataInputStream din = new DataInputStream(clientSocket.getInputStream());
+                        StringBuilder builder = new StringBuilder();
+                        byte[] buffer = new byte[100];
+                        int read;
+                        while ((read = din.read(buffer)) >= 0)
+                        {
+                            builder.append(new String(buffer, 0, read));
+                        }
+                        out.close();
+                        din.close();
+                        clientSocket.close();
+
+                        String[] responseParts = builder.toString().split("\\r\\n\\r\\n");
+                        if (responseParts.length > 1)
+                        {
+                            return responseParts[1];
+                        }
+                        return null;
+                    }
                     out.close();
                     clientSocket.close();
                     return null;
@@ -83,7 +120,7 @@ public class RequestBuilder
             con.setRequestProperty("Content-Type", "application/json; charset=utf-8");
             con.setRequestProperty("Content-Length", Integer.toString(data.getBytes().length));
             con.setRequestProperty("User-Agent", JDAStatics.GITHUB + " " + JDAStatics.VERSION);
-            con.setDoOutput(true);
+            con.setDoOutput(getResponse);
             if (sendLoginHeaders)
                 con.addRequestProperty("authorization", api.getAuthToken());
 
@@ -99,15 +136,19 @@ public class RequestBuilder
 
             if (code == 200 || code == 201)
             {
-                BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-                String inputLine;
-                StringBuilder response = new StringBuilder();
-                while ((inputLine = in.readLine()) != null)
+                if (getResponse)
                 {
-                    response.append(inputLine);
+                    BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                    String inputLine;
+                    StringBuilder response = new StringBuilder();
+                    while ((inputLine = in.readLine()) != null)
+                    {
+                        response.append(inputLine);
+                    }
+                    in.close();
+                    return response.toString();
                 }
-                in.close();
-                return response.toString();
+                return null;
             } else if (code == 204)
             {
                 return "";
@@ -127,6 +168,11 @@ public class RequestBuilder
     public void setSendLoginHeaders(boolean sendLoginHeaders)
     {
         this.sendLoginHeaders = sendLoginHeaders;
+    }
+
+    public void setGetResponse(boolean getResponse)
+    {
+        this.getResponse = getResponse;
     }
 
     public void setData(String data)

@@ -26,13 +26,13 @@ import java.util.List;
 public interface TextChannel
 {
     /**
-     * The Id of the {@link net.dv8tion.jda.entites.TextChannel TextChannel}. This is typically 18 characters long.
+     * The Id of the {@link net.dv8tion.jda.entities.TextChannel TextChannel}. This is typically 18 characters long.
      * @return
      */
     String getId();
 
     /**
-     * The human readable name of the  {@link net.dv8tion.jda.entites.TextChannel TextChannel}.<br>
+     * The human readable name of the  {@link net.dv8tion.jda.entities.TextChannel TextChannel}.<br>
      * If no name has been set, this returns null.
      *
      * @return
@@ -40,8 +40,8 @@ public interface TextChannel
     String getName();
 
     /**
-     * The topic set for the  {@link net.dv8tion.jda.entites.TextChannel TextChannel}.
-     * Can also be thought of as the description of this {@link net.dv8tion.jda.entites.TextChannel TextChannel}.<br>
+     * The topic set for the  {@link net.dv8tion.jda.entities.TextChannel TextChannel}.
+     * Can also be thought of as the description of this {@link net.dv8tion.jda.entities.TextChannel TextChannel}.<br>
      * If no topic has been set, this returns null.
      *
      * @return
@@ -74,6 +74,19 @@ public interface TextChannel
      *      Zero-based int of position of the {@link net.dv8tion.jda.entities.TextChannel TextChannel}.
      */
     int getPosition();
+
+    /**
+     * Sents a plain text {@link net.dv8tion.jda.entities.Message Message} to this channel.
+     * This will fail if the account of the api does not have the {@link net.dv8tion.jda.Permission#MESSAGE_WRITE Write-Permission}
+     * for this channel set
+     * After the Message has been sent, the created {@link net.dv8tion.jda.entities.Message Message} object is returned
+     * This Object will be null, if the sending failed
+     *
+     * @param text the text to send
+     * @return
+     *      the Message created by this function
+     */
+    Message sendMessage(String text);
 
     /**
      * Checks if the given {@link net.dv8tion.jda.entities.User User} has the given {@link net.dv8tion.jda.Permission Permission}

@@ -116,7 +116,7 @@ public class EntityBuilder
         if (channel == null)
         {
             GuildImpl guild = ((GuildImpl) api.getGuildMap().get(guildId));
-            channel = new TextChannelImpl(id, guild);
+            channel = new TextChannelImpl(id, guild, api);
             guild.getTextChannelsMap().put(id, channel);
             api.getChannelMap().put(id, channel);
         }
@@ -211,7 +211,7 @@ public class EntityBuilder
                 .setAvatarId(self.isNull("avatar") ? null : self.getString("avatar"));
     }
 
-    protected Message createMessage(JSONObject jsonObject)
+    public Message createMessage(JSONObject jsonObject)
     {
         String id = jsonObject.getString("id");
         MessageImpl message = new MessageImpl(id, api)
