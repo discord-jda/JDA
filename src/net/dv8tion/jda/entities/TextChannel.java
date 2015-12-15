@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.entities;
 
+import net.dv8tion.jda.Permission;
+
 import java.util.List;
 
 /**
@@ -72,4 +74,14 @@ public interface TextChannel
      *      Zero-based int of position of the {@link net.dv8tion.jda.entities.TextChannel TextChannel}.
      */
     int getPosition();
+
+    /**
+     * Checks if the given {@link net.dv8tion.jda.entities.User User} has the given {@link net.dv8tion.jda.Permission Permission}
+     * in this {@link net.dv8tion.jda.entities.TextChannel Textchannel}
+     *
+     * @param user       the User to check the Permission against
+     * @param permission the Permission to check for
+     * @return if the given User has the given Permission in this Channel
+     */
+    boolean checkPermission(User user, Permission permission);
 }

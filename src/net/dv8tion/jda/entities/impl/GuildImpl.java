@@ -32,6 +32,7 @@ public class GuildImpl implements Guild
     private Map<String, TextChannel> textChannels = new HashMap<>();
     private Map<String, VoiceChannel> voiceChannels = new HashMap<>();
     private Map<String, Role> roles = new HashMap<>();
+    private Role publicRole;
     private Map<User, List<Role>> userRoles = new HashMap<>();
 
     public GuildImpl(String id)
@@ -119,15 +120,21 @@ public class GuildImpl implements Guild
         return Collections.unmodifiableList(list);
     }
 
-    public Map<String, Role> getRolesMap()
-    {
-        return roles;
-    }
-
     @Override
     public List<Role> getRolesForUser(User user)
     {
         return userRoles.get(user) == null ? new LinkedList<>() : Collections.unmodifiableList(userRoles.get(user));
+    }
+
+    @Override
+    public Role getPublicRole()
+    {
+        return publicRole;
+    }
+
+    public Map<String, Role> getRolesMap()
+    {
+        return roles;
     }
 
     public Map<User, List<Role>> getUserRoles()
@@ -168,6 +175,12 @@ public class GuildImpl implements Guild
     public GuildImpl setRegion(Region region)
     {
         this.region = region;
+        return this;
+    }
+
+    public GuildImpl setPublicRole(Role role)
+    {
+        this.publicRole = role;
         return this;
     }
 

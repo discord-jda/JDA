@@ -15,11 +15,16 @@
  */
 package net.dv8tion.jda.entities.impl;
 
+import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.User;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class TextChannelImpl implements TextChannel
 {
@@ -28,6 +33,8 @@ public class TextChannelImpl implements TextChannel
     private String name;
     private String topic;
     private int position;
+    private Map<User, PermissionOverride> userPermissionOverrides = new HashMap<>();
+    private Map<Role, PermissionOverride> rolePermissionOverrides = new HashMap<>();
 
     public TextChannelImpl(String id, Guild guild)
     {
@@ -71,6 +78,31 @@ public class TextChannelImpl implements TextChannel
         return position;
     }
 
+    @Override
+    public boolean checkPermission(User user, Permission perm)
+    {
+        //Default global permission of @everyone in this guild
+        int permission = ((RoleImpl) getGuild().getPublicRole()).getPermissions();
+        //override with channel-specific overrides of @everyone
+        permission = rolePermissionOverrides.get(getGuild().getPublicRole()).apply(permission);
+
+        //handle role-overrides of this user in this channel
+        List<Role> rolesOfUser = getGuild().getRolesForUser(user);
+        Optional<PermissionOverride> reduced = rolesOfUser.stream().map(role -> rolePermissionOverrides.get(role)).reduce(PermissionOverride::after);
+        if (reduced.isPresent())
+        {
+            permission = reduced.get().apply(permission);
+        }
+
+        //handle user-specific overrides
+        PermissionOverride useroverride = userPermissionOverrides.get(user);
+        if (useroverride != null)
+        {
+            permission = useroverride.apply(permission);
+        }
+        return (permission & (1 << perm.getOffset())) > 0;
+    }
+
     public TextChannelImpl setName(String name)
     {
         this.name = name;
@@ -87,6 +119,16 @@ public class TextChannelImpl implements TextChannel
     {
         this.position = position;
         return null;
+    }
+
+    public Map<User, PermissionOverride> getUserPermissionOverrides()
+    {
+        return userPermissionOverrides;
+    }
+
+    public Map<Role, PermissionOverride> getRolePermissionOverrides()
+    {
+        return rolePermissionOverrides;
     }
 
     @Override

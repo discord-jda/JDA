@@ -110,6 +110,11 @@ public class RoleImpl implements net.dv8tion.jda.entities.Role
         return this;
     }
 
+    public int getPermissions()
+    {
+        return permissions;
+    }
+
     @Override
     public boolean equals(Object o)
     {

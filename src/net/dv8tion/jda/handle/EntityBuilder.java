@@ -75,6 +75,10 @@ public class EntityBuilder
         {
             Role role = createRole(roles.getJSONObject(i), guildObj.getId());
             guildObj.getRolesMap().put(role.getId(), role);
+            if (role.getName().equals("@everyone"))
+            {
+                guildObj.setPublicRole(role);
+            }
         }
 
         JSONArray members = guild.getJSONArray("members");
@@ -115,6 +119,23 @@ public class EntityBuilder
             guild.getTextChannelsMap().put(id, channel);
             api.getChannelMap().put(id, channel);
         }
+
+        JSONArray permission_overwrites = json.getJSONArray("permission_overwrites");
+        for (int i = 0; i < permission_overwrites.length(); i++)
+        {
+            JSONObject override = permission_overwrites.getJSONObject(i);
+            String type = override.getString("type");
+            PermissionOverride permover = new PermissionOverride(override.getInt("allow"), override.getInt("deny"));
+            if (type.equals("role"))
+            {
+                channel.getRolePermissionOverrides().put(((GuildImpl) channel.getGuild()).getRolesMap().get(override.getString("id")), permover);
+            }
+            else
+            {
+                channel.getUserPermissionOverrides().put(api.getUserMap().get(override.getString("id")), permover);
+            }
+        }
+
         return channel
                 .setName(json.getString("name"))
                 .setTopic(json.isNull("topic") ? "" : json.getString("topic"))
