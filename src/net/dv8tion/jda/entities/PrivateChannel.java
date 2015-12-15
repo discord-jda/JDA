@@ -21,7 +21,7 @@ package net.dv8tion.jda.entities;
 public interface PrivateChannel
 {
     /**
-     * The Id of the {@link net.dv8tion.jda.entites.PrivateChannel PrivateChannel}. This is typically 18 characters long.
+     * The Id of the {@link net.dv8tion.jda.entities.PrivateChannel PrivateChannel}. This is typically 18 characters long.
      *
      * @return
      *      String containing Id.
@@ -29,10 +29,10 @@ public interface PrivateChannel
     String getId();
 
     /**
-     * The {@link net.dv8tion.jda.entites.User User} that this {@link net.dv8tion.jda.entites.PrivateChannel PrivateChannel} communicates with.
+     * The {@link net.dv8tion.jda.entities.User User} that this {@link net.dv8tion.jda.entities.PrivateChannel PrivateChannel} communicates with.
      *
      * @return
-     *      A non-null {@link net.dv8tion.jda.entites.User User}.
+     *      A non-null {@link net.dv8tion.jda.entities.User User}.
      */
     User getUser();
 }

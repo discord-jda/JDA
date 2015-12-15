@@ -17,6 +17,7 @@ package net.dv8tion.jda;
 
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.SelfInfo;
+import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.hooks.EventManager;
 import net.dv8tion.jda.requests.RequestBuilder;
@@ -27,7 +28,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.security.auth.login.LoginException;
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -46,6 +46,7 @@ public class JDA
 {
     private final Map<String, User> userMap = new HashMap<>();
     private final Map<String, Guild> guildMap = new HashMap<>();
+    private final Map<String, TextChannel> channelMap = new HashMap<>();
     private final EventManager eventManager = new EventManager();
     private SelfInfo selfInfo = null;
     private String authToken = null;
@@ -133,33 +134,6 @@ public class JDA
     }
 
     /**
-     * Used for the internal test bot. Will be removed.
-     * @param args
-     */
-    public static void main(String[] args)
-    {
-        JSONObject config = getConfig();
-        try
-        {
-            new JDA(config.getString("email"), config.getString("password"));
-        }
-        catch (IllegalArgumentException e)
-        {
-            System.out.println("The config was not populated. Please enter an email and password.");
-        }
-        catch (LoginException e)
-        {
-            System.out.println("The provided email / password combination was incorrect. Please provide valid details.");
-        }
-        catch (JSONException e)
-        {
-            e.printStackTrace();
-            //TODO: Do NOT let this make it to main.  When someone auto generates the Catch list JSONException should not
-            //       auto generate with IllegalArgumentException and LoginException.
-        }
-    }
-
-    /**
      * Takes a provided json file, reads all lines and constructs a {@link org.json.JSONObject JSONObject} from it.
      *
      * @param file
@@ -205,38 +179,6 @@ public class JDA
         }
     }
 
-    private static JSONObject getConfig()
-    {
-        File config = new File("config.json");
-        if (!config.exists())
-        {
-            try
-            {
-                Files.write(Paths.get(config.getPath()),
-                        new JSONObject()
-                                .put("email", "")
-                                .put("password", "")
-                                .toString(4).getBytes());
-                System.out.println("config.json created. Populate with login information.");
-                System.exit(0);
-            }
-            catch (JSONException | IOException e)
-            {
-                e.printStackTrace();
-            }
-        }
-        try
-        {
-            JSONObject auth = new JSONObject(new String(Files.readAllBytes(Paths.get(config.getPath())), "UTF-8"));
-            return auth;
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     public String getAuthToken()
     {
         return authToken;
@@ -260,6 +202,11 @@ public class JDA
     public Map<String, Guild> getGuildMap()
     {
         return guildMap;
+    }
+
+    public Map<String, TextChannel> getChannelMap()
+    {
+        return channelMap;
     }
 
     /**

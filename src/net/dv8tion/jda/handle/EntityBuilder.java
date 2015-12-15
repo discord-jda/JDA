@@ -107,12 +107,13 @@ public class EntityBuilder
     protected TextChannel createTextChannel(JSONObject json, String guildId)
     {
         String id = json.getString("id");
-        GuildImpl guild = ((GuildImpl) api.getGuildMap().get(guildId));
-        TextChannelImpl channel = (TextChannelImpl) guild.getTextChannelsMap().get(id);
+        TextChannelImpl channel = (TextChannelImpl) api.getChannelMap().get(id);
         if (channel == null)
         {
+            GuildImpl guild = ((GuildImpl) api.getGuildMap().get(guildId));
             channel = new TextChannelImpl(id, guild);
             guild.getTextChannelsMap().put(id, channel);
+            api.getChannelMap().put(id, channel);
         }
         return channel
                 .setName(json.getString("name"))
