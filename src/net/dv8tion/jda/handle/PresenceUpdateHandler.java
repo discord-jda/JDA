@@ -18,6 +18,11 @@ package net.dv8tion.jda.handle;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.OnlineStatus;
 import net.dv8tion.jda.entities.impl.UserImpl;
+import net.dv8tion.jda.events.UserAvatarUpdateEvent;
+import net.dv8tion.jda.events.UserGameUpdateEvent;
+import net.dv8tion.jda.events.UserNameUpdateEvent;
+import net.dv8tion.jda.events.UserOnlineStatusUpdateEvent;
+import net.dv8tion.jda.events.generic.GenericUserUpdateEvent;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
@@ -47,18 +52,14 @@ public class PresenceUpdateHandler implements ISocketHandler
             if (!user.getUsername().equals(username))
             {
                 user.setUserName(username);
-                //TODO:EVENT Fire UsernameChangeEvent
-            }
-            if (!user.getDiscriminator().equals(discriminator))
-            {
                 user.setDiscriminator(discriminator);
-                //TODO:EVENT Fire DiscriminatorChangeEvent (Is this possible?)
+                api.getEventManager().handle(new UserNameUpdateEvent());
             }
             String oldAvatar = user.getAvatarId();
             if (!(avatarId == null && oldAvatar == null) && !StringUtils.equals(avatarId, oldAvatar))
             {
                 user.setAvatarId(avatarId);
-                //TODO:EVENT Fire UserAvatarChangeEvent
+                api.getEventManager().handle(new UserAvatarUpdateEvent());
             }
         }
 
@@ -68,12 +69,13 @@ public class PresenceUpdateHandler implements ISocketHandler
         if (!user.getOnlineStatus().equals(status))
         {
             user.setOnlineStatus(status);
-            //TODO:EVENT Fire UserOnlineStatusChangeEvent (oh god this naming...)
+            api.getEventManager().handle(new UserOnlineStatusUpdateEvent());
         }
         if (user.getCurrentGameId() != gameId)
         {
             user.setCurrentGameId(gameId);
-            //TODO:EVENT Fire UserGameChangeEvent
+            api.getEventManager().handle(new UserGameUpdateEvent());
         }
+        api.getEventManager().handle(new GenericUserUpdateEvent());
     }
 }

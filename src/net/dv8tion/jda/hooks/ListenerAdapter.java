@@ -16,8 +16,7 @@
 package net.dv8tion.jda.hooks;
 
 import net.dv8tion.jda.events.*;
-import net.dv8tion.jda.events.generic.GenericGuildEvent;
-import net.dv8tion.jda.events.generic.GenericMessageEvent;
+import net.dv8tion.jda.events.generic.*;
 
 public abstract class ListenerAdapter implements EventListener
 {
@@ -35,6 +34,18 @@ public abstract class ListenerAdapter implements EventListener
             onMessageUpdate(((MessageUpdateEvent) event));
         else if (event instanceof MessageDeleteEvent)
             onMessageDelete(((MessageDeleteEvent) event));
+
+        //User Update Events
+        else if (event instanceof UserNameUpdateEvent)
+            onUserNameUpdateEvent(event);
+        else if (event instanceof UserAvatarUpdateEvent)
+            onUserAvatarUpdateEvent(event);
+        else if (event instanceof UserGameUpdateEvent)
+            onUserGameUpdateEvent(event);
+        else if (event instanceof UserOnlineStatusUpdateEvent)
+            onUserOnlineStatusUpdateEvent(event);
+        else if (event instanceof GenericUserUpdateEvent)
+            onGenericUserUpdateEvent(event);
 
         //Guild Events
         else if (event instanceof GuildCreateEvent)
@@ -54,6 +65,12 @@ public abstract class ListenerAdapter implements EventListener
     //JDA Events
     public void onReady(ReadyEvent event) {}
 
+    //User Update Events
+    private void onUserNameUpdateEvent(Event event) {}
+    private void onUserAvatarUpdateEvent(Event event) {}
+    private void onUserOnlineStatusUpdateEvent(Event event) {}
+    private void onUserGameUpdateEvent(Event event) {}
+
     //Message Events
     public void onMessageCreate(MessageCreateEvent event) {}
     public void onMessageUpdate(MessageUpdateEvent event) {}
@@ -65,6 +82,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildDelete(GuildDeleteEvent event) {}
 
     //Generic Events
+    private void onGenericUserUpdateEvent(Event event) {}
     public void onGenericMessageEvent(GenericMessageEvent event) {}
     public void onGenericGuildEvent(GenericGuildEvent event) {}
 }
