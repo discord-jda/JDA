@@ -24,79 +24,47 @@ public abstract class ListenerAdapter implements EventListener
     @Override
     public void onEvent(Event event)
     {
+        //JDA Events
         if (event instanceof ReadyEvent)
-        {
             onReady(((ReadyEvent) event));
-        }
+
+        //Message Events
         else if (event instanceof MessageCreateEvent)
-        {
             onMessageCreate(((MessageCreateEvent) event));
-        }
         else if (event instanceof MessageUpdateEvent)
-        {
             onMessageUpdate(((MessageUpdateEvent) event));
-        }
         else if (event instanceof MessageDeleteEvent)
-        {
             onMessageDelete(((MessageDeleteEvent) event));
-        }
+
+        //Guild Events
         else if (event instanceof GuildCreateEvent)
-        {
             onGuildCreate(((GuildCreateEvent) event));
-        }
         else if (event instanceof GuildUpdateEvent)
-        {
             onGuildUpdate(((GuildUpdateEvent) event));
-        }
         else if (event instanceof GuildDeleteEvent)
-        {
             onGuildDelete(((GuildDeleteEvent) event));
-        }
 
+        //Generic Events
         if (event instanceof GenericMessageEvent)
-        {
             onGenericMessageEvent(((GenericMessageEvent) event));
-        }
         else if (event instanceof GenericGuildEvent)
-        {
             onGenericGuildEvent(((GenericGuildEvent) event));
-        }
-
     }
 
-    public void onReady(ReadyEvent event)
-    {
-    }
+    //JDA Events
+    public void onReady(ReadyEvent event) {}
 
-    public void onMessageCreate(MessageCreateEvent event)
-    {
-    }
+    //Message Events
+    public void onMessageCreate(MessageCreateEvent event) {}
+    public void onMessageUpdate(MessageUpdateEvent event) {}
+    public void onMessageDelete(MessageDeleteEvent event) {}
 
-    public void onMessageUpdate(MessageUpdateEvent event)
-    {
-    }
+    //Guild Events
+    public void onGuildCreate(GuildCreateEvent event) {}
+    public void onGuildUpdate(GuildUpdateEvent event) {}
+    public void onGuildDelete(GuildDeleteEvent event) {}
 
-    public void onMessageDelete(MessageDeleteEvent event)
-    {
-    }
-
-    public void onGuildCreate(GuildCreateEvent event)
-    {
-    }
-
-    public void onGuildUpdate(GuildUpdateEvent event)
-    {
-    }
-
-    public void onGuildDelete(GuildDeleteEvent event)
-    {
-    }
-
-    public void onGenericMessageEvent(GenericMessageEvent event)
-    {
-    }
-
-    public void onGenericGuildEvent(GenericGuildEvent event)
-    {
-    }
+    //Generic Events
+    public void onGenericMessageEvent(GenericMessageEvent event) {}
+    public void onGenericGuildEvent(GenericGuildEvent event) {}
 }
