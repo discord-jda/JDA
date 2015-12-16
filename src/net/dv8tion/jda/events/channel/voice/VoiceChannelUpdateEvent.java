@@ -20,8 +20,8 @@ import net.dv8tion.jda.entities.VoiceChannel;
 
 public class VoiceChannelUpdateEvent extends GenericVoiceChannelEvent
 {
-    public VoiceChannelUpdateEvent(VoiceChannel channel, JDA api)
+    public VoiceChannelUpdateEvent(JDA api, VoiceChannel channel)
     {
-        super(channel, api);
+        super(api, channel);
     }
 }

@@ -16,12 +16,21 @@
 package net.dv8tion.jda.events.guild;
 
 import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.events.Event;
 
 public abstract class GenericGuildEvent extends Event
 {
-    public GenericGuildEvent(JDA api)
+    private Guild guild;
+
+    public GenericGuildEvent(JDA api, Guild guild)
     {
         super(api);
+        this.guild = guild;
+    }
+
+    public Guild getGuild()
+    {
+        return guild;
     }
 }

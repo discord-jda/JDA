@@ -21,8 +21,8 @@ import net.dv8tion.jda.entities.VoiceChannel;
 public class VoiceChannelCreateEvent extends GenericVoiceChannelEvent
 {
 
-    public VoiceChannelCreateEvent(VoiceChannel channel, JDA api)
+    public VoiceChannelCreateEvent(JDA api, VoiceChannel channel)
     {
-        super(channel, api);
+        super(api, channel);
     }
 }

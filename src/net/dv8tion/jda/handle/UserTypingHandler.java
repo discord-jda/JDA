@@ -43,6 +43,7 @@ public class UserTypingHandler implements ISocketHandler
 
         TextChannel channel = api.getChannelMap().get(content.getString("channel_id"));
         OffsetDateTime timestamp = Instant.ofEpochSecond(content.getInt("timestamp")).atOffset(ZoneOffset.UTC);
-        api.getEventManager().handle(new UserTypingEvent(user, channel, timestamp, api));
+        api.getEventManager().handle(
+                new UserTypingEvent(api, user, channel, timestamp));
     }
 }

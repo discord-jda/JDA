@@ -36,7 +36,10 @@ public class MessageRecievedHandler implements ISocketHandler
         TextChannel channel = api.getChannelMap().get(channel_id);
         if (channel != null)
         {
-            api.getEventManager().handle(new MessageReceivedEvent(new EntityBuilder(api).createMessage(content), api));
+            api.getEventManager().handle(
+                    new MessageReceivedEvent(
+                            api,
+                            new EntityBuilder(api).createMessage(content)));
         }
         else
         {

@@ -21,6 +21,6 @@ public class GuildDeleteEvent extends GenericGuildEvent
 {
     public GuildDeleteEvent(JDA api)
     {
-        super(api);
+        super(api, null);
     }
 }

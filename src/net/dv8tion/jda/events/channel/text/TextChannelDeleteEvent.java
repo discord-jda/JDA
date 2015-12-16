@@ -20,8 +20,8 @@ import net.dv8tion.jda.entities.TextChannel;
 
 public class TextChannelDeleteEvent extends GenericTextChannelEvent
 {
-    public TextChannelDeleteEvent(TextChannel channel, JDA api)
+    public TextChannelDeleteEvent(JDA api, TextChannel channel)
     {
-        super(channel, api);
+        super(api, channel);
     }
 }

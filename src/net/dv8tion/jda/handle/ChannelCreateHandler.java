@@ -44,7 +44,8 @@ public class ChannelCreateHandler implements ISocketHandler
         {
             api.getEventManager().handle(
                     new TextChannelCreateEvent(
-                            new EntityBuilder(api).createTextChannel(content, content.getString("guild_id")), api));
+                            api,
+                            new EntityBuilder(api).createTextChannel(content, content.getString("guild_id"))));
         }
         else if (type.equals("voice"))
         {

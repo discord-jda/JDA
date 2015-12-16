@@ -16,12 +16,21 @@
 package net.dv8tion.jda.events.message;
 
 import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.events.Event;
 
 public abstract class GenericMessageEvent extends Event
 {
-    public GenericMessageEvent(JDA api)
+    protected Message message;
+
+    public GenericMessageEvent(JDA api, Message message)
     {
         super(api);
+        this.message = message;
+    }
+
+    public Message getMessage()
+    {
+        return message;
     }
 }

@@ -23,7 +23,7 @@ public abstract class GenericTextChannelEvent extends Event
 {
     private TextChannel channel;
 
-    public GenericTextChannelEvent(TextChannel channel, JDA api)
+    public GenericTextChannelEvent(JDA api, TextChannel channel)
     {
         super(api);
         this.channel = channel;

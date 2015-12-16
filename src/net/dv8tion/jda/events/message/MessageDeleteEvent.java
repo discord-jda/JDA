@@ -21,6 +21,6 @@ public class MessageDeleteEvent extends GenericMessageEvent
 {
     public MessageDeleteEvent(JDA api)
     {
-        super(api);
+        super(api, null);
     }
 }
