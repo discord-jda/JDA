@@ -48,7 +48,7 @@ public abstract class ListenerAdapter implements EventListener
     {
         //JDA Events
         if (event instanceof ReadyEvent)
-            onReady(((ReadyEvent) event));
+            onReady((ReadyEvent) event);
 
         //Message Events
         else if (event instanceof MessageUpdateEvent)
@@ -60,66 +60,66 @@ public abstract class ListenerAdapter implements EventListener
 
         //User Events
         else if (event instanceof UserNameUpdateEvent)
-            onUserNameUpdate(event);
+            onUserNameUpdate((UserNameUpdateEvent) event);
         else if (event instanceof UserAvatarUpdateEvent)
-            onUserAvatarUpdate(event);
+            onUserAvatarUpdate((UserAvatarUpdateEvent) event);
         else if (event instanceof UserGameUpdateEvent)
-            onUserGameUpdate(event);
+            onUserGameUpdate((UserGameUpdateEvent) event);
         else if (event instanceof UserOnlineStatusUpdateEvent)
-            onUserOnlineStatusUpdate(event);
+            onUserOnlineStatusUpdate((UserOnlineStatusUpdateEvent) event);
         else if (event instanceof UserTypingEvent)
-            onUserTyping(event);
+            onUserTyping((UserTypingEvent) event);
         else if (event instanceof GenericUserEvent)
-            onGenericUserEvent(event);
+            onGenericUserEvent((GenericUserEvent) event);
 
         //TextChannel Events
         else if (event instanceof TextChannelCreateEvent)
-            onTextChannelCreate(event);
+            onTextChannelCreate((TextChannelCreateEvent) event);
         else if (event instanceof TextChannelUpdateEvent)
-            onTextChannelUpdate(event);
+            onTextChannelUpdate((TextChannelUpdateEvent) event);
         else if (event instanceof TextChannelDeleteEvent)
-            onTextChannelDelete(event);
+            onTextChannelDelete((TextChannelDeleteEvent) event);
 
         //VoiceChannel Events
         else if (event instanceof VoiceChannelCreateEvent)
-            onVoiceChannelCreate(event);
+            onVoiceChannelCreate((VoiceChannelCreateEvent) event);
         else if (event instanceof VoiceChannelUpdateEvent)
-            onVoiceChannelUpdate(event);
+            onVoiceChannelUpdate((VoiceChannelUpdateEvent) event);
         else if (event instanceof VoiceChannelDeleteEvent)
-            onVoiceChannelDelete(event);
+            onVoiceChannelDelete((VoiceChannelDeleteEvent) event);
 
         //PrivateChannel Events
         else if (event instanceof PrivateChannelCreateEvent)
-            onPrivateChannelCreate(event);
+            onPrivateChannelCreate((PrivateChannelCreateEvent) event);
 
         //Guild Events
         else if (event instanceof GuildCreateEvent)
-            onGuildCreate(((GuildCreateEvent) event));
+            onGuildCreate((GuildCreateEvent) event);
         else if (event instanceof GuildUpdateEvent)
-            onGuildUpdate(((GuildUpdateEvent) event));
+            onGuildUpdate((GuildUpdateEvent) event);
         else if (event instanceof GuildDeleteEvent)
-            onGuildDelete(((GuildDeleteEvent) event));
+            onGuildDelete((GuildDeleteEvent) event);
 
         //Generic Events
         if (event instanceof GenericMessageEvent)
-            onGenericMessageEvent(((GenericMessageEvent) event));
+            onGenericMessageEvent((GenericMessageEvent) event);
         else if (event instanceof GenericTextChannelEvent)
-            onGenericTextChannelEvent(event);
+            onGenericTextChannelEvent((GenericTextChannelEvent) event);
         else if (event instanceof GenericVoiceChannelEvent)
-            onGenericVoiceChannelEvent(event);
+            onGenericVoiceChannelEvent((GenericVoiceChannelEvent) event);
         else if (event instanceof GenericGuildEvent)
-            onGenericGuildEvent(((GenericGuildEvent) event));
+            onGenericGuildEvent((GenericGuildEvent) event);
     }
 
     //JDA Events
     public void onReady(ReadyEvent event) {}
 
     //User Events
-    public void onUserNameUpdate(Event event) {}
-    public void onUserAvatarUpdate(Event event) {}
-    public void onUserOnlineStatusUpdate(Event event) {}
-    public void onUserGameUpdate(Event event) {}
-    public void onUserTyping(Event event) {}
+    public void onUserNameUpdate(UserNameUpdateEvent event) {}
+    public void onUserAvatarUpdate(UserAvatarUpdateEvent event) {}
+    public void onUserOnlineStatusUpdate(UserOnlineStatusUpdateEvent event) {}
+    public void onUserGameUpdate(UserGameUpdateEvent event) {}
+    public void onUserTyping(UserTypingEvent event) {}
 
     //Message Events
     public void onMessageReceived(MessageReceivedEvent event) {}
@@ -127,17 +127,17 @@ public abstract class ListenerAdapter implements EventListener
     public void onMessageDelete(MessageDeleteEvent event) {}
 
     //TextChannel Events
-    public void onTextChannelDelete(Event event) {}
-    public void onTextChannelUpdate(Event event) {}
-    public void onTextChannelCreate(Event event) {}
+    public void onTextChannelDelete(TextChannelDeleteEvent event) {}
+    public void onTextChannelUpdate(TextChannelUpdateEvent event) {}
+    public void onTextChannelCreate(TextChannelCreateEvent event) {}
 
     //VoiceChannel Events
-    public void onVoiceChannelDelete(Event event) {}
-    public void onVoiceChannelUpdate(Event event) {}
-    public void onVoiceChannelCreate(Event event) {}
+    public void onVoiceChannelDelete(VoiceChannelDeleteEvent event) {}
+    public void onVoiceChannelUpdate(VoiceChannelUpdateEvent event) {}
+    public void onVoiceChannelCreate(VoiceChannelCreateEvent event) {}
 
     //PrivateChannel Events
-    public void onPrivateChannelCreate(Event event) {}
+    public void onPrivateChannelCreate(PrivateChannelCreateEvent event) {}
 
     //Guild Events
     public void onGuildCreate(GuildCreateEvent event) {}
@@ -145,9 +145,9 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildDelete(GuildDeleteEvent event) {}
 
     //Generic Events
-    public void onGenericUserEvent(Event event) {}
+    public void onGenericUserEvent(GenericUserEvent event) {}
     public void onGenericMessageEvent(GenericMessageEvent event) {}
-    public void onGenericTextChannelEvent(Event event) {}
-    public void onGenericVoiceChannelEvent(Event event) {}
+    public void onGenericTextChannelEvent(GenericTextChannelEvent event) {}
+    public void onGenericVoiceChannelEvent(GenericVoiceChannelEvent event) {}
     public void onGenericGuildEvent(GenericGuildEvent event) {}
 }
