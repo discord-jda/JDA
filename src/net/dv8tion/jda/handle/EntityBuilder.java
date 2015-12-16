@@ -143,7 +143,7 @@ public class EntityBuilder
                 .setPosition(json.getInt("position"));
     }
 
-    protected TextChannel createVoiceChannel(JSONObject json, String guildId)
+    protected VoiceChannel createVoiceChannel(JSONObject json, String guildId)
     {
         return null;
     }

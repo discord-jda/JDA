@@ -47,6 +47,22 @@ public abstract class ListenerAdapter implements EventListener
         else if (event instanceof GenericUserUpdateEvent)
             onGenericUserUpdateEvent(event);
 
+        //TextChannel Events
+        else if (event instanceof TextChannelCreateEvent)
+            onTextChannelCreateEvent(event);
+        else if (event instanceof TextChannelUpdateEvent)
+            onTextChannelUpdateEvent(event);
+        else if (event instanceof TextChannelDeleteEvent)
+            onTextChannelDeleteEvent(event);
+
+        //VoiceChannel Events
+        else if (event instanceof VoiceChannelCreateEvent)
+            onVoiceChannelCreateEvent(event);
+        else if (event instanceof VoiceChannelUpdateEvent)
+            onVoiceChannelUpdateEvent(event);
+        else if (event instanceof VoiceChannelDeleteEvent)
+            onVoiceChannelDeleteEvent(event);
+
         //Guild Events
         else if (event instanceof GuildCreateEvent)
             onGuildCreate(((GuildCreateEvent) event));
@@ -58,6 +74,10 @@ public abstract class ListenerAdapter implements EventListener
         //Generic Events
         if (event instanceof GenericMessageEvent)
             onGenericMessageEvent(((GenericMessageEvent) event));
+        else if (event instanceof GenericTextChannelEvent)
+            onGenericTextChannelEvent(event);
+        else if (event instanceof GenericVoiceChannelEvent)
+            onGenericVoiceChannelEvent(event);
         else if (event instanceof GenericGuildEvent)
             onGenericGuildEvent(((GenericGuildEvent) event));
     }
@@ -76,6 +96,16 @@ public abstract class ListenerAdapter implements EventListener
     public void onMessageUpdate(MessageUpdateEvent event) {}
     public void onMessageDelete(MessageDeleteEvent event) {}
 
+    //TextChannel Events
+    public void onTextChannelDeleteEvent(Event event) {}
+    public void onTextChannelUpdateEvent(Event event) {}
+    public void onTextChannelCreateEvent(Event event) {}
+
+    //VoiceChannel Events
+    public void onVoiceChannelDeleteEvent(Event event) {}
+    public void onVoiceChannelUpdateEvent(Event event) {}
+    public void onVoiceChannelCreateEvent(Event event) {}
+
     //Guild Events
     public void onGuildCreate(GuildCreateEvent event) {}
     public void onGuildUpdate(GuildUpdateEvent event) {}
@@ -84,5 +114,7 @@ public abstract class ListenerAdapter implements EventListener
     //Generic Events
     public void onGenericUserUpdateEvent(Event event) {}
     public void onGenericMessageEvent(GenericMessageEvent event) {}
+    public void onGenericTextChannelEvent(Event event) {}
+    public void onGenericVoiceChannelEvent(Event event) {}
     public void onGenericGuildEvent(GenericGuildEvent event) {}
 }
