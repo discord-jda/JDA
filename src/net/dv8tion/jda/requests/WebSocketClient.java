@@ -107,7 +107,7 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
                 if (printUnimplemented) System.out.println(message);
                 break;
             case "CHANNEL_CREATE":
-                if (printUnimplemented) System.out.println(message);
+                new ChannelCreateHandler(api).handle(content);
                 break;
             case "CHANNEL_UPDATE":
                 if (printUnimplemented) System.out.println(message);
