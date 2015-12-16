@@ -47,6 +47,7 @@ public class JDA
     private final Map<String, User> userMap = new HashMap<>();
     private final Map<String, Guild> guildMap = new HashMap<>();
     private final Map<String, TextChannel> channelMap = new HashMap<>();
+    private final Map<String, String> offline_pms = new HashMap<>();
     private final EventManager eventManager = new EventManager();
     private SelfInfo selfInfo = null;
     private String authToken = null;
@@ -209,6 +210,11 @@ public class JDA
     public Map<String, TextChannel> getChannelMap()
     {
         return channelMap;
+    }
+
+    public Map<String, String> getOffline_pms()
+    {
+        return offline_pms;
     }
 
     /**

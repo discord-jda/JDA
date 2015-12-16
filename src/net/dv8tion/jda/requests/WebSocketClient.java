@@ -125,10 +125,10 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
                 if (printUnimplemented) System.out.println(message);
                 break;
             case "GUILD_MEMBER_ADD":
-                if (printUnimplemented) System.out.println(message);
+                new GuildMemberAddHandler(api).handle(content);
                 break;
             case "GUILD_MEMBER_REMOVE":
-                if (printUnimplemented) System.out.println(message);
+                new GuildMemberRemoveListener(api).handle(content);
                 break;
             default:
                 System.out.println(message);    //TODO: Replace with "we don't know this type"

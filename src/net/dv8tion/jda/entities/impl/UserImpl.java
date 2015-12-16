@@ -126,6 +126,11 @@ public class UserImpl implements User
         return this;
     }
 
+    public boolean hasPrivateChannel()
+    {
+        return privateChannel != null;
+    }
+
     @Override
     public boolean equals(Object o)
     {

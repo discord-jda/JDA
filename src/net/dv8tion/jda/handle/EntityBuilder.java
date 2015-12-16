@@ -151,8 +151,11 @@ public class EntityBuilder
     protected PrivateChannel createPrivateChannel(JSONObject privatechat)
     {
         UserImpl user = ((UserImpl) api.getUserMap().get(privatechat.getJSONObject("recipient").getString("id")));
-        if (user == null)   //The API can give us private channels connected to Users that we can no longer communicate with.
-            return null;    //As such, can't and shouldn't attempt to create a PrivateChannel.
+        if (user == null)
+        {   //The API can give us private channels connected to Users that we can no longer communicate with.
+            api.getOffline_pms().put(privatechat.getJSONObject("recipient").getString("id"), privatechat.getString("id"));
+            return null;
+        }
 
         PrivateChannelImpl priv = new PrivateChannelImpl(privatechat.getString("id"), user);
         user.setPrivateChannel(priv);
