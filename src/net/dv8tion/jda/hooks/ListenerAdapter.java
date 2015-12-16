@@ -60,37 +60,37 @@ public abstract class ListenerAdapter implements EventListener
 
         //User Events
         else if (event instanceof UserNameUpdateEvent)
-            onUserNameUpdateEvent(event);
+            onUserNameUpdate(event);
         else if (event instanceof UserAvatarUpdateEvent)
-            onUserAvatarUpdateEvent(event);
+            onUserAvatarUpdate(event);
         else if (event instanceof UserGameUpdateEvent)
-            onUserGameUpdateEvent(event);
+            onUserGameUpdate(event);
         else if (event instanceof UserOnlineStatusUpdateEvent)
-            onUserOnlineStatusUpdateEvent(event);
+            onUserOnlineStatusUpdate(event);
         else if (event instanceof UserTypingEvent)
-            onUserTypingEvent(event);
+            onUserTyping(event);
         else if (event instanceof GenericUserEvent)
-            onGenericUserUpdateEvent(event);
+            onGenericUserEvent(event);
 
         //TextChannel Events
         else if (event instanceof TextChannelCreateEvent)
-            onTextChannelCreateEvent(event);
+            onTextChannelCreate(event);
         else if (event instanceof TextChannelUpdateEvent)
-            onTextChannelUpdateEvent(event);
+            onTextChannelUpdate(event);
         else if (event instanceof TextChannelDeleteEvent)
-            onTextChannelDeleteEvent(event);
+            onTextChannelDelete(event);
 
         //VoiceChannel Events
         else if (event instanceof VoiceChannelCreateEvent)
-            onVoiceChannelCreateEvent(event);
+            onVoiceChannelCreate(event);
         else if (event instanceof VoiceChannelUpdateEvent)
-            onVoiceChannelUpdateEvent(event);
+            onVoiceChannelUpdate(event);
         else if (event instanceof VoiceChannelDeleteEvent)
-            onVoiceChannelDeleteEvent(event);
+            onVoiceChannelDelete(event);
 
         //PrivateChannel Events
         else if (event instanceof PrivateChannelCreateEvent)
-            onPrivateChannelCreateEvent(event);
+            onPrivateChannelCreate(event);
 
         //Guild Events
         else if (event instanceof GuildCreateEvent)
@@ -115,11 +115,11 @@ public abstract class ListenerAdapter implements EventListener
     public void onReady(ReadyEvent event) {}
 
     //User Events
-    public void onUserNameUpdateEvent(Event event) {}
-    public void onUserAvatarUpdateEvent(Event event) {}
-    public void onUserOnlineStatusUpdateEvent(Event event) {}
-    public void onUserGameUpdateEvent(Event event) {}
-    public void onUserTypingEvent(Event event) {}
+    public void onUserNameUpdate(Event event) {}
+    public void onUserAvatarUpdate(Event event) {}
+    public void onUserOnlineStatusUpdate(Event event) {}
+    public void onUserGameUpdate(Event event) {}
+    public void onUserTyping(Event event) {}
 
     //Message Events
     public void onMessageReceived(MessageReceivedEvent event) {}
@@ -127,17 +127,17 @@ public abstract class ListenerAdapter implements EventListener
     public void onMessageDelete(MessageDeleteEvent event) {}
 
     //TextChannel Events
-    public void onTextChannelDeleteEvent(Event event) {}
-    public void onTextChannelUpdateEvent(Event event) {}
-    public void onTextChannelCreateEvent(Event event) {}
+    public void onTextChannelDelete(Event event) {}
+    public void onTextChannelUpdate(Event event) {}
+    public void onTextChannelCreate(Event event) {}
 
     //VoiceChannel Events
-    public void onVoiceChannelDeleteEvent(Event event) {}
-    public void onVoiceChannelUpdateEvent(Event event) {}
-    public void onVoiceChannelCreateEvent(Event event) {}
+    public void onVoiceChannelDelete(Event event) {}
+    public void onVoiceChannelUpdate(Event event) {}
+    public void onVoiceChannelCreate(Event event) {}
 
     //PrivateChannel Events
-    public void onPrivateChannelCreateEvent(Event event) {}
+    public void onPrivateChannelCreate(Event event) {}
 
     //Guild Events
     public void onGuildCreate(GuildCreateEvent event) {}
@@ -145,7 +145,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildDelete(GuildDeleteEvent event) {}
 
     //Generic Events
-    public void onGenericUserUpdateEvent(Event event) {}
+    public void onGenericUserEvent(Event event) {}
     public void onGenericMessageEvent(GenericMessageEvent event) {}
     public void onGenericTextChannelEvent(Event event) {}
     public void onGenericVoiceChannelEvent(Event event) {}
