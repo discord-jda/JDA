@@ -15,11 +15,14 @@
  */
 package net.dv8tion.jda.entities.impl;
 
+import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Permission;
-import net.dv8tion.jda.entities.Guild;
-import net.dv8tion.jda.entities.Role;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.entities.*;
+import net.dv8tion.jda.handle.EntityBuilder;
+import net.dv8tion.jda.requests.RequestBuilder;
+import net.dv8tion.jda.requests.RequestType;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,16 +34,18 @@ public class TextChannelImpl implements TextChannel
 {
     private final String id;
     private final Guild guild;
+    private final JDA api;
     private String name;
     private String topic;
     private int position;
     private Map<User, PermissionOverride> userPermissionOverrides = new HashMap<>();
     private Map<Role, PermissionOverride> rolePermissionOverrides = new HashMap<>();
 
-    public TextChannelImpl(String id, Guild guild)
+    public TextChannelImpl(String id, Guild guild, JDA api)
     {
         this.id = id;
         this.guild = guild;
+        this.api = api;
     }
 
     @Override
@@ -78,6 +83,25 @@ public class TextChannelImpl implements TextChannel
     public int getPosition()
     {
         return position;
+    }
+
+    @Override
+    public Message sendMessage(String text)
+    {
+        RequestBuilder rb = new RequestBuilder(api);
+        rb.setType(RequestType.POST);
+        rb.setUrl("https://discordapp.com/api/channels/" + getId() + "/messages");
+        rb.setData(new JSONObject().put("content", text).toString());
+        JSONObject response = new JSONObject(rb.makeRequest());
+        try
+        {
+            return new EntityBuilder(api).createMessage(response);
+        }
+        catch (JSONException ex)
+        {
+            //sending failed
+            return null;
+        }
     }
 
     @Override

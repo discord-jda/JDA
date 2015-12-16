@@ -80,10 +80,19 @@ public interface Message
     boolean isTTS();
 
     /**
-     * Replies to this message with a blank String.
-     * This will not mention anyone
+     * Edits this Messages content to the provided String.
+     * If The Message was not created by this account, this does not have any effect
+     * If this method failed, null gets returned
      *
-     * @param text the content of the new message
+     * @param new_content the new content of the Message
+     * @return a new Message-Object for the edited message
      */
-    void reply(String text);
+    Message updateMessage(String new_content);
+
+    /**
+     * Deletes this Message from the server.
+     * Calling this function on a Message created by another User while not having the
+     * {@link net.dv8tion.jda.Permission#MESSAGE_MANAGE MESSAGE_MANAGE Permission} will have no effect
+     */
+    void deleteMessage();
 }
