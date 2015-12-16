@@ -13,9 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.events;
+package net.dv8tion.jda.events.channel.voice;
 
-public class TextChannelUpdateEvent
+import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.entities.VoiceChannel;
+
+public class VoiceChannelDeleteEvent extends GenericVoiceChannelEvent
 {
-
+    public VoiceChannelDeleteEvent(VoiceChannel channel, JDA api)
+    {
+        super(channel, api);
+    }
 }

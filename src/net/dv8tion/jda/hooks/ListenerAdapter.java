@@ -15,8 +15,25 @@
  */
 package net.dv8tion.jda.hooks;
 
-import net.dv8tion.jda.events.*;
-import net.dv8tion.jda.events.generic.*;
+import net.dv8tion.jda.events.Event;
+import net.dv8tion.jda.events.ReadyEvent;
+import net.dv8tion.jda.events.channel.text.GenericTextChannelEvent;
+import net.dv8tion.jda.events.channel.text.TextChannelCreateEvent;
+import net.dv8tion.jda.events.channel.text.TextChannelDeleteEvent;
+import net.dv8tion.jda.events.channel.text.TextChannelUpdateEvent;
+import net.dv8tion.jda.events.channel.voice.GenericVoiceChannelEvent;
+import net.dv8tion.jda.events.channel.voice.VoiceChannelCreateEvent;
+import net.dv8tion.jda.events.channel.voice.VoiceChannelDeleteEvent;
+import net.dv8tion.jda.events.channel.voice.VoiceChannelUpdateEvent;
+import net.dv8tion.jda.events.guild.GenericGuildEvent;
+import net.dv8tion.jda.events.guild.GuildCreateEvent;
+import net.dv8tion.jda.events.guild.GuildDeleteEvent;
+import net.dv8tion.jda.events.guild.GuildUpdateEvent;
+import net.dv8tion.jda.events.message.GenericMessageEvent;
+import net.dv8tion.jda.events.message.MessageDeleteEvent;
+import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.events.message.MessageUpdateEvent;
+import net.dv8tion.jda.events.user.*;
 
 public abstract class ListenerAdapter implements EventListener
 {

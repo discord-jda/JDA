@@ -13,10 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.events;
+package net.dv8tion.jda.events.channel.text;
 
-import net.dv8tion.jda.events.generic.GenericMessageEvent;
+import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.entities.TextChannel;
 
-public class MessageDeleteEvent extends GenericMessageEvent
+public class TextChannelDeleteEvent extends GenericTextChannelEvent
 {
+    public TextChannelDeleteEvent(TextChannel channel, JDA api)
+    {
+        super(channel, api);
+    }
 }

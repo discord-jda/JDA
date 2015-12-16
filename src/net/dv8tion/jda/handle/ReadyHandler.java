@@ -75,6 +75,6 @@ public class ReadyHandler implements ISocketHandler
         }
 
         System.out.println("Finished Loading!");    //TODO: Replace with Logger.INFO
-        api.getEventManager().handle(new ReadyEvent());
+        api.getEventManager().handle(new ReadyEvent(api));
     }
 }

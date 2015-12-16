@@ -18,12 +18,7 @@ package net.dv8tion.jda.handle;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.OnlineStatus;
 import net.dv8tion.jda.entities.impl.UserImpl;
-import net.dv8tion.jda.events.UserAvatarUpdateEvent;
-import net.dv8tion.jda.events.UserGameUpdateEvent;
-import net.dv8tion.jda.events.UserNameUpdateEvent;
-import net.dv8tion.jda.events.UserOnlineStatusUpdateEvent;
-import net.dv8tion.jda.events.generic.GenericUserUpdateEvent;
-
+import net.dv8tion.jda.events.user.*;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
@@ -53,13 +48,13 @@ public class PresenceUpdateHandler implements ISocketHandler
             {
                 user.setUserName(username);
                 user.setDiscriminator(discriminator);
-                api.getEventManager().handle(new UserNameUpdateEvent());
+                api.getEventManager().handle(new UserNameUpdateEvent(api));
             }
             String oldAvatar = user.getAvatarId();
             if (!(avatarId == null && oldAvatar == null) && !StringUtils.equals(avatarId, oldAvatar))
             {
                 user.setAvatarId(avatarId);
-                api.getEventManager().handle(new UserAvatarUpdateEvent());
+                api.getEventManager().handle(new UserAvatarUpdateEvent(api));
             }
         }
 
@@ -69,13 +64,13 @@ public class PresenceUpdateHandler implements ISocketHandler
         if (!user.getOnlineStatus().equals(status))
         {
             user.setOnlineStatus(status);
-            api.getEventManager().handle(new UserOnlineStatusUpdateEvent());
+            api.getEventManager().handle(new UserOnlineStatusUpdateEvent(api));
         }
         if (user.getCurrentGameId() != gameId)
         {
             user.setCurrentGameId(gameId);
-            api.getEventManager().handle(new UserGameUpdateEvent());
+            api.getEventManager().handle(new UserGameUpdateEvent(api));
         }
-        api.getEventManager().handle(new GenericUserUpdateEvent());
+        api.getEventManager().handle(new GenericUserUpdateEvent(api));
     }
 }

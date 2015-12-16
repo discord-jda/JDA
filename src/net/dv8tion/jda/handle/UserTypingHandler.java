@@ -15,16 +15,15 @@
  */
 package net.dv8tion.jda.handle;
 
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.events.UserTypingEvent;
-
+import net.dv8tion.jda.events.user.UserTypingEvent;
 import org.json.JSONObject;
+
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 
 public class UserTypingHandler implements ISocketHandler
 {
@@ -44,6 +43,6 @@ public class UserTypingHandler implements ISocketHandler
 
         TextChannel channel = api.getChannelMap().get(content.getString("channel_id"));
         OffsetDateTime timestamp = Instant.ofEpochSecond(content.getInt("timestamp")).atOffset(ZoneOffset.UTC);
-        api.getEventManager().handle(new UserTypingEvent(user, channel, timestamp));
+        api.getEventManager().handle(new UserTypingEvent(user, channel, timestamp, api));
     }
 }

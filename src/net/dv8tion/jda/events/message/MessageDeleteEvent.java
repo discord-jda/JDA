@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.events.generic;
+package net.dv8tion.jda.events.message;
 
-import net.dv8tion.jda.events.Event;
+import net.dv8tion.jda.JDA;
 
-public abstract class GenericMessageEvent implements Event
+public class MessageDeleteEvent extends GenericMessageEvent
 {
-    
+    public MessageDeleteEvent(JDA api)
+    {
+        super(api);
+    }
 }

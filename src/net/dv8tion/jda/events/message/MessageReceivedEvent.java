@@ -13,20 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.events;
+package net.dv8tion.jda.events.message;
 
+import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.events.generic.GenericMessageEvent;
 
 public class MessageReceivedEvent extends GenericMessageEvent
 {
     private final Message message;
 
-    public MessageReceivedEvent(Message message)
+    public MessageReceivedEvent(Message message, JDA api)
     {
+        super(api);
         this.message = message;
     }
 

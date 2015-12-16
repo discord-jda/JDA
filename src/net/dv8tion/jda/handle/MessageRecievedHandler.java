@@ -17,7 +17,7 @@ package net.dv8tion.jda.handle;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.events.MessageReceivedEvent;
+import net.dv8tion.jda.events.message.MessageReceivedEvent;
 import org.json.JSONObject;
 
 public class MessageRecievedHandler implements ISocketHandler
@@ -36,7 +36,7 @@ public class MessageRecievedHandler implements ISocketHandler
         TextChannel channel = api.getChannelMap().get(channel_id);
         if (channel != null)
         {
-            api.getEventManager().handle(new MessageReceivedEvent(new EntityBuilder(api).createMessage(content)));
+            api.getEventManager().handle(new MessageReceivedEvent(new EntityBuilder(api).createMessage(content), api));
         }
         else
         {

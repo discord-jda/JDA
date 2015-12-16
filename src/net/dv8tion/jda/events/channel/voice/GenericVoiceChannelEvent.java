@@ -13,10 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.events;
+package net.dv8tion.jda.events.channel.voice;
 
-import net.dv8tion.jda.events.generic.GenericGuildEvent;
+import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.entities.VoiceChannel;
+import net.dv8tion.jda.events.Event;
 
-public class GuildDeleteEvent extends GenericGuildEvent
+public abstract class GenericVoiceChannelEvent extends Event
 {
+    private VoiceChannel channel;
+
+    public GenericVoiceChannelEvent(VoiceChannel channel, JDA api)
+    {
+        super(api);
+        this.channel = channel;
+    }
+
+    public VoiceChannel getChannel()
+    {
+        return channel;
+    }
 }

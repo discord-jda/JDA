@@ -13,22 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.events.generic;
+package net.dv8tion.jda.events.user;
 
+import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.TextChannel;
+import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.Event;
 
-public abstract class GenericTextChannelEvent implements Event
-{
-    private TextChannel channel;
+import java.time.OffsetDateTime;
 
-    public GenericTextChannelEvent(TextChannel channel)
+public class UserTypingEvent extends Event
+{
+    private User user;
+    private TextChannel channel;
+    private OffsetDateTime timestamp;
+
+    public UserTypingEvent(User user, TextChannel channel, OffsetDateTime timestamp, JDA api)
     {
+        super(api);
+        this.user = user;
         this.channel = channel;
+        this.timestamp = timestamp;
+    }
+
+    public User getUser()
+    {
+        return user;
     }
 
     public TextChannel getChannel()
     {
         return channel;
+    }
+
+    public OffsetDateTime getTimestamp()
+    {
+        return timestamp;
     }
 }

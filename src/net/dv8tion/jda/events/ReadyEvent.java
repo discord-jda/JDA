@@ -15,6 +15,12 @@
  */
 package net.dv8tion.jda.events;
 
-public class ReadyEvent implements Event
+import net.dv8tion.jda.JDA;
+
+public class ReadyEvent extends Event
 {
+    public ReadyEvent(JDA api)
+    {
+        super(api);
+    }
 }

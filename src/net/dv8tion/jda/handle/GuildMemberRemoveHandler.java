@@ -8,11 +8,11 @@ import net.dv8tion.jda.entities.impl.GuildImpl;
 import net.dv8tion.jda.entities.impl.UserImpl;
 import org.json.JSONObject;
 
-public class GuildMemberRemoveListener implements ISocketHandler
+public class GuildMemberRemoveHandler implements ISocketHandler
 {
     private final JDA api;
 
-    public GuildMemberRemoveListener(JDA api)
+    public GuildMemberRemoveHandler(JDA api)
     {
         this.api = api;
     }

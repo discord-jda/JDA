@@ -13,10 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.events;
+package net.dv8tion.jda.events.guild;
 
-import net.dv8tion.jda.events.generic.GenericGuildEvent;
+import net.dv8tion.jda.JDA;
 
-public class GuildUpdateEvent extends GenericGuildEvent
+public class GuildCreateEvent extends GenericGuildEvent
 {
+    public GuildCreateEvent(JDA api)
+    {
+        super(api);
+    }
 }

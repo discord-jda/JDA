@@ -128,7 +128,7 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
                 new GuildMemberAddHandler(api).handle(content);
                 break;
             case "GUILD_MEMBER_REMOVE":
-                new GuildMemberRemoveListener(api).handle(content);
+                new GuildMemberRemoveHandler(api).handle(content);
                 break;
             default:
                 System.out.println(message);    //TODO: Replace with "we don't know this type"

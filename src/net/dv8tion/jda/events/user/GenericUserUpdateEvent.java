@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.events;
+package net.dv8tion.jda.events.user;
 
-import net.dv8tion.jda.entities.VoiceChannel;
-import net.dv8tion.jda.events.generic.GenericVoiceChannelEvent;
+import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.events.Event;
 
-public class VoiceChannelCreateEvent extends GenericVoiceChannelEvent
+public class GenericUserUpdateEvent extends Event
 {
-
-    public VoiceChannelCreateEvent(VoiceChannel channel)
+    public GenericUserUpdateEvent(JDA api)
     {
-        super(channel);
+        super(api);
     }
 }

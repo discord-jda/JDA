@@ -13,9 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.events;
+package net.dv8tion.jda.events.user;
 
-public class TextChannelDeleteEvent
+import net.dv8tion.jda.JDA;
+
+public class UserAvatarUpdateEvent extends GenericUserUpdateEvent
 {
-
+    public UserAvatarUpdateEvent(JDA api)
+    {
+        super(api);
+    }
 }

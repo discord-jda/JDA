@@ -16,8 +16,7 @@
 package net.dv8tion.jda.handle;
 
 import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.events.TextChannelCreateEvent;
-
+import net.dv8tion.jda.events.channel.text.TextChannelCreateEvent;
 import org.json.JSONObject;
 
 public class ChannelCreateHandler implements ISocketHandler
@@ -36,7 +35,7 @@ public class ChannelCreateHandler implements ISocketHandler
         {
             api.getEventManager().handle(
                     new TextChannelCreateEvent(
-                            new EntityBuilder(api).createTextChannel(content, content.getString("guild_id"))));
+                            new EntityBuilder(api).createTextChannel(content, content.getString("guild_id")), api));
         }
         else if (type.equals("voice"))
         {

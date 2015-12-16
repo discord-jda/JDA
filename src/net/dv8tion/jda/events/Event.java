@@ -15,6 +15,24 @@
  */
 package net.dv8tion.jda.events;
 
-public interface Event
+import net.dv8tion.jda.JDA;
+
+public abstract class Event
 {
+    protected final JDA api;
+
+    public Event(JDA api)
+    {
+        this.api = api;
+    }
+
+    /**
+     * Returns the JDA instance corresponding to this Event
+     *
+     * @return The corresponding JDA instance
+     */
+    public JDA getJDAInstance()
+    {
+        return api;
+    }
 }

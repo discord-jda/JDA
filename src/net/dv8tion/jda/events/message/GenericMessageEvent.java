@@ -13,10 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.events.generic;
+package net.dv8tion.jda.events.message;
 
+import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.events.Event;
 
-public abstract class GenericGuildEvent implements Event
+public abstract class GenericMessageEvent extends Event
 {
+    public GenericMessageEvent(JDA api)
+    {
+        super(api);
+    }
 }
