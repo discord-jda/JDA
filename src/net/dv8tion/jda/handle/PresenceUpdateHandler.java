@@ -48,13 +48,13 @@ public class PresenceUpdateHandler implements ISocketHandler
             {
                 user.setUserName(username);
                 user.setDiscriminator(discriminator);
-                api.getEventManager().handle(new UserNameUpdateEvent(api));
+                api.getEventManager().handle(new UserNameUpdateEvent(api, user));
             }
             String oldAvatar = user.getAvatarId();
             if (!(avatarId == null && oldAvatar == null) && !StringUtils.equals(avatarId, oldAvatar))
             {
                 user.setAvatarId(avatarId);
-                api.getEventManager().handle(new UserAvatarUpdateEvent(api));
+                api.getEventManager().handle(new UserAvatarUpdateEvent(api, user));
             }
         }
 
@@ -64,13 +64,13 @@ public class PresenceUpdateHandler implements ISocketHandler
         if (!user.getOnlineStatus().equals(status))
         {
             user.setOnlineStatus(status);
-            api.getEventManager().handle(new UserOnlineStatusUpdateEvent(api));
+            api.getEventManager().handle(new UserOnlineStatusUpdateEvent(api, user));
         }
         if (user.getCurrentGameId() != gameId)
         {
             user.setCurrentGameId(gameId);
-            api.getEventManager().handle(new UserGameUpdateEvent(api));
+            api.getEventManager().handle(new UserGameUpdateEvent(api, user));
         }
-        api.getEventManager().handle(new GenericUserUpdateEvent(api));
+        api.getEventManager().handle(new GenericUserEvent(api, user));
     }
 }

@@ -16,11 +16,12 @@
 package net.dv8tion.jda.events.user;
 
 import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.entities.User;
 
-public class UserOnlineStatusUpdateEvent extends GenericUserUpdateEvent
+public class UserOnlineStatusUpdateEvent extends GenericUserEvent
 {
-    public UserOnlineStatusUpdateEvent(JDA api)
+    public UserOnlineStatusUpdateEvent(JDA api, User user)
     {
-        super(api);
+        super(api, user);
     }
 }

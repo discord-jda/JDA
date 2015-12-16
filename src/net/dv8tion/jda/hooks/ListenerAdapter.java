@@ -34,11 +34,12 @@ import net.dv8tion.jda.events.message.GenericMessageEvent;
 import net.dv8tion.jda.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.events.message.MessageUpdateEvent;
-import net.dv8tion.jda.events.user.GenericUserUpdateEvent;
+import net.dv8tion.jda.events.user.GenericUserEvent;
 import net.dv8tion.jda.events.user.UserAvatarUpdateEvent;
 import net.dv8tion.jda.events.user.UserGameUpdateEvent;
 import net.dv8tion.jda.events.user.UserNameUpdateEvent;
 import net.dv8tion.jda.events.user.UserOnlineStatusUpdateEvent;
+import net.dv8tion.jda.events.user.UserTypingEvent;
 
 public abstract class ListenerAdapter implements EventListener
 {
@@ -57,7 +58,7 @@ public abstract class ListenerAdapter implements EventListener
         else if (event instanceof MessageDeleteEvent)
             onMessageDelete(((MessageDeleteEvent) event));
 
-        //User Update Events
+        //User Events
         else if (event instanceof UserNameUpdateEvent)
             onUserNameUpdateEvent(event);
         else if (event instanceof UserAvatarUpdateEvent)
@@ -66,7 +67,9 @@ public abstract class ListenerAdapter implements EventListener
             onUserGameUpdateEvent(event);
         else if (event instanceof UserOnlineStatusUpdateEvent)
             onUserOnlineStatusUpdateEvent(event);
-        else if (event instanceof GenericUserUpdateEvent)
+        else if (event instanceof UserTypingEvent)
+            onUserTypingEvent(event);
+        else if (event instanceof GenericUserEvent)
             onGenericUserUpdateEvent(event);
 
         //TextChannel Events
@@ -111,11 +114,12 @@ public abstract class ListenerAdapter implements EventListener
     //JDA Events
     public void onReady(ReadyEvent event) {}
 
-    //User Update Events
+    //User Events
     public void onUserNameUpdateEvent(Event event) {}
     public void onUserAvatarUpdateEvent(Event event) {}
     public void onUserOnlineStatusUpdateEvent(Event event) {}
     public void onUserGameUpdateEvent(Event event) {}
+    public void onUserTypingEvent(Event event) {}
 
     //Message Events
     public void onMessageReceived(MessageReceivedEvent event) {}

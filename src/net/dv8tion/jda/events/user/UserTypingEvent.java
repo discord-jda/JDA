@@ -20,25 +20,17 @@ import java.time.OffsetDateTime;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.events.Event;
 
-public class UserTypingEvent extends Event
+public class UserTypingEvent extends GenericUserEvent
 {
-    private User user;
     private TextChannel channel;
     private OffsetDateTime timestamp;
 
     public UserTypingEvent(JDA api, User user, TextChannel channel, OffsetDateTime timestamp)
     {
-        super(api);
-        this.user = user;
+        super(api, user);
         this.channel = channel;
         this.timestamp = timestamp;
-    }
-
-    public User getUser()
-    {
-        return user;
     }
 
     public TextChannel getChannel()
