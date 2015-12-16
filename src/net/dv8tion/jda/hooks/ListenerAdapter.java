@@ -17,6 +17,7 @@ package net.dv8tion.jda.hooks;
 
 import net.dv8tion.jda.events.Event;
 import net.dv8tion.jda.events.ReadyEvent;
+import net.dv8tion.jda.events.channel.priv.PrivateChannelCreateEvent;
 import net.dv8tion.jda.events.channel.text.GenericTextChannelEvent;
 import net.dv8tion.jda.events.channel.text.TextChannelCreateEvent;
 import net.dv8tion.jda.events.channel.text.TextChannelDeleteEvent;
@@ -33,7 +34,11 @@ import net.dv8tion.jda.events.message.GenericMessageEvent;
 import net.dv8tion.jda.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.events.message.MessageUpdateEvent;
-import net.dv8tion.jda.events.user.*;
+import net.dv8tion.jda.events.user.GenericUserUpdateEvent;
+import net.dv8tion.jda.events.user.UserAvatarUpdateEvent;
+import net.dv8tion.jda.events.user.UserGameUpdateEvent;
+import net.dv8tion.jda.events.user.UserNameUpdateEvent;
+import net.dv8tion.jda.events.user.UserOnlineStatusUpdateEvent;
 
 public abstract class ListenerAdapter implements EventListener
 {
@@ -80,6 +85,10 @@ public abstract class ListenerAdapter implements EventListener
         else if (event instanceof VoiceChannelDeleteEvent)
             onVoiceChannelDeleteEvent(event);
 
+        //PrivateChannel Events
+        else if (event instanceof PrivateChannelCreateEvent)
+            onPrivateChannelCreateEvent(event);
+
         //Guild Events
         else if (event instanceof GuildCreateEvent)
             onGuildCreate(((GuildCreateEvent) event));
@@ -122,6 +131,9 @@ public abstract class ListenerAdapter implements EventListener
     public void onVoiceChannelDeleteEvent(Event event) {}
     public void onVoiceChannelUpdateEvent(Event event) {}
     public void onVoiceChannelCreateEvent(Event event) {}
+
+    //PrivateChannel Events
+    public void onPrivateChannelCreateEvent(Event event) {}
 
     //Guild Events
     public void onGuildCreate(GuildCreateEvent event) {}
