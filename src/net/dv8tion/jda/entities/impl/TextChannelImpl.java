@@ -16,11 +16,13 @@
 package net.dv8tion.jda.entities.impl;
 
 import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.MessageBuilder;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.requests.RequestBuilder;
 import net.dv8tion.jda.requests.RequestType;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -88,10 +90,21 @@ public class TextChannelImpl implements TextChannel
     @Override
     public Message sendMessage(String text)
     {
+        return sendMessage(new MessageBuilder().appendString(text).build());
+    }
+
+    @Override
+    public Message sendMessage(Message msg)
+    {
+        JSONArray mentions = new JSONArray();
+        for (User user : msg.getMentionedUsers())
+        {
+            mentions.put(user.getId());
+        }
         RequestBuilder rb = new RequestBuilder(api);
         rb.setType(RequestType.POST);
         rb.setUrl("https://discordapp.com/api/channels/" + getId() + "/messages");
-        rb.setData(new JSONObject().put("content", text).toString());
+        rb.setData(new JSONObject().put("content", msg.getContent()).put("mentions", mentions).toString());
         JSONObject response = new JSONObject(rb.makeRequest());
         try
         {

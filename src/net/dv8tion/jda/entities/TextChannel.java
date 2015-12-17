@@ -89,6 +89,18 @@ public interface TextChannel
     Message sendMessage(String text);
 
     /**
+     * Sends a given {@link net.dv8tion.jda.entities.Message Message} to this Channel
+     * This method only extracts the mentions and text out of the given Message-Object
+     * Therefore this can also be used to resend already received Messages
+     * To allow above behaviour, this method returns a new {@link net.dv8tion.jda.entities.Message Message} instance. The passed one is not modified!
+     * If the sending of the Message failed (probably Permissions), this method returns null
+     *
+     * @param msg the {@link net.dv8tion.jda.entities.Message Message} to send
+     * @return The created {@link net.dv8tion.jda.entities.Message Message} object or null if it failed
+     */
+    Message sendMessage(Message msg);
+
+    /**
      * Checks if the given {@link net.dv8tion.jda.entities.User User} has the given {@link net.dv8tion.jda.Permission Permission}
      * in this {@link net.dv8tion.jda.entities.TextChannel Textchannel}
      *
