@@ -16,11 +16,27 @@
 package net.dv8tion.jda.events.message;
 
 import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.entities.TextChannel;
 
 public class MessageDeleteEvent extends GenericMessageEvent
 {
-    public MessageDeleteEvent(JDA api)
+    private final String message_id;
+    private final TextChannel channel;
+
+    public MessageDeleteEvent(JDA api, String msg_id, TextChannel chan)
     {
         super(api, null);
+        this.message_id = msg_id;
+        this.channel = chan;
+    }
+
+    public String getMessage_id()
+    {
+        return message_id;
+    }
+
+    public TextChannel getChannel()
+    {
+        return channel;
     }
 }

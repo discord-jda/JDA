@@ -47,6 +47,7 @@ public class JDA
     private final Map<String, User> userMap = new HashMap<>();
     private final Map<String, Guild> guildMap = new HashMap<>();
     private final Map<String, TextChannel> channelMap = new HashMap<>();
+    //Userid -> channelid
     private final Map<String, String> offline_pms = new HashMap<>();
     private final EventManager eventManager = new EventManager();
     private SelfInfo selfInfo = null;

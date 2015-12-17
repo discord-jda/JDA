@@ -98,10 +98,10 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
                 new MessageRecievedHandler(api).handle(content);
                 break;
             case "MESSAGE_UPDATE":
-                if (printUnimplemented) System.out.println(message);
+                new MessageUpdateHandler(api).handle(content);
                 break;
             case "MESSAGE_DELETE":
-                if (printUnimplemented) System.out.println(message);
+                new MessageDeleteHandler(api).handle(content);
                 break;
             case "VOICE_STATE_UPDATE":
                 if (printUnimplemented) System.out.println(message);
@@ -129,6 +129,12 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
                 break;
             case "GUILD_MEMBER_REMOVE":
                 new GuildMemberRemoveHandler(api).handle(content);
+                break;
+            case "GUILD_CREATE":
+                if (printUnimplemented) System.out.println(message);
+                break;
+            case "GUILD_DELETE":
+                if (printUnimplemented) System.out.println(message);
                 break;
             default:
                 System.out.println(message);    //TODO: Replace with "we don't know this type"
