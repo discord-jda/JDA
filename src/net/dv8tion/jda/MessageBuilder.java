@@ -30,13 +30,34 @@ public class MessageBuilder
     /**
      * Appends a formatted string to the Message
      *
-     * @param text       the text to append
-     * @param formatting the format to apply to the text
+     * @param text   the text to append
+     * @param format the format(s) to apply to the text
      * @return this instance
      */
-    public MessageBuilder appendString(String text, Formatting formatting)
+    public MessageBuilder appendString(String text, Formatting... format)
     {
-        builder.append(formatting.getOpenTag()).append(text).append(formatting.getCloseTag());
+        boolean blockPresent = false;
+        for (Formatting formatting : format)
+        {
+            if (formatting == Formatting.BLOCK)
+            {
+                blockPresent = true;
+                continue;
+            }
+            builder.append(formatting.getTag());
+        }
+        if (blockPresent)
+            builder.append(Formatting.BLOCK.getTag());
+
+        builder.append(text);
+
+        if (blockPresent)
+            builder.append(Formatting.BLOCK.getTag());
+        for (int i = format.length - 1; i >= 0; i--)
+        {
+            if (format[i] == Formatting.BLOCK) continue;
+            builder.append(format[i].getTag());
+        }
         return this;
     }
 
@@ -44,7 +65,7 @@ public class MessageBuilder
      * Appends a code-block to the Message
      *
      * @param text     the code to append
-     * @param language the language of the code. If unknown use an empty string or use the {@link Formatting#BLOCK BLOCK Formatting}
+     * @param language the language of the code. If unknown use an empty string
      * @return this instance
      */
     public MessageBuilder appendCodeBlock(String text, String language)
@@ -77,41 +98,26 @@ public class MessageBuilder
     }
 
     /**
-     * Holds the Available formatting used in {@link #appendString(String, Formatting)}
+     * Holds the Available formatting used in {@link #appendString(String, Formatting...)}
      */
     public enum Formatting
     {
         ITALICS("*"),
         BOLD("**"),
-        BOLD_ITALICS("***"),
         STRIKETHROUGH("~~"),
         UNDERLINE("__"),
-        UNDERLINE_ITALICS("__*", "*__"),
-        UNDERLINE_BOLD("__**", "**__"),
-        UNDERLINE_BOLD_ITALICS("__***", "***__"),
-        BLOCK("```\n", "```");
+        BLOCK("`");
 
-        private final String open, close;
+        private final String tag;
 
-        Formatting(String open)
+        Formatting(String tag)
         {
-            this(open, open);
+            this.tag = tag;
         }
 
-        Formatting(String open, String close)
+        private String getTag()
         {
-            this.open = open;
-            this.close = close;
-        }
-
-        private String getOpenTag()
-        {
-            return open;
-        }
-
-        private String getCloseTag()
-        {
-            return close;
+            return tag;
         }
 
     }
