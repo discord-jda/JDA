@@ -36,14 +36,13 @@ public class GuildMemberRemoveHandler extends SocketHandler
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("guild_id"));
         UserImpl user = ((UserImpl) api.getUserMap().get(content.getJSONObject("user").getString("id")));
         guild.getUserRoles().remove(user);
-        if (user.hasPrivateChannel())
+        if (!api.getGuildMap().values().stream().anyMatch(g -> ((GuildImpl) g).getUserRoles().containsKey(user)))
         {
-            boolean exists = api.getGuildMap().values().stream().anyMatch(g -> (((GuildImpl) g).getUserRoles().containsKey(user)));
-            if (!exists)
+            if (user.hasPrivateChannel())
             {
                 api.getOffline_pms().put(user.getId(), user.getPrivateChannel().getId());
-                api.getUserMap().remove(user.getId());
             }
+            api.getUserMap().remove(user.getId());
         }
         api.getEventManager().handle(
                 new GuildMemberLeaveEvent(
