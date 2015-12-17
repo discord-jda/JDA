@@ -21,8 +21,8 @@ import net.dv8tion.jda.entities.TextChannel;
 public class TextChannelCreateEvent extends GenericTextChannelEvent
 {
 
-    public TextChannelCreateEvent(JDA api, TextChannel channel)
+    public TextChannelCreateEvent(JDA api, int responseNumber, TextChannel channel)
     {
-        super(api, channel);
+        super(api, responseNumber, channel);
     }
 }

@@ -135,7 +135,7 @@ public class MessageExample extends ListenerAdapter
             }
             else if (event.getMessage().getContent().equalsIgnoreCase("!clear"))
             {
-                MessageHistory history = new MessageHistory(event.getJDAInstance(), event.getChannel());
+                MessageHistory history = new MessageHistory(event.getJDA(), event.getChannel());
                 List<Message> messages = history.retrieveAll();
                 messages.forEach(Message::deleteMessage);
             }

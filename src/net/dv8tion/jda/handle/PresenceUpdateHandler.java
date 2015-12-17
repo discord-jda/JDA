@@ -22,13 +22,12 @@ import net.dv8tion.jda.events.user.*;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
-public class PresenceUpdateHandler implements ISocketHandler
+public class PresenceUpdateHandler extends SocketHandler
 {
-    private JDA api;
 
-    public PresenceUpdateHandler(JDA api)
+    public PresenceUpdateHandler(JDA api, int responseNumber)
     {
-        this.api = api;
+        super(api, responseNumber);
     }
 
     @Override
@@ -48,13 +47,19 @@ public class PresenceUpdateHandler implements ISocketHandler
             {
                 user.setUserName(username);
                 user.setDiscriminator(discriminator);
-                api.getEventManager().handle(new UserNameUpdateEvent(api, user));
+                api.getEventManager().handle(
+                        new UserNameUpdateEvent(
+                                api, responseNumber,
+                                user));
             }
             String oldAvatar = user.getAvatarId();
             if (!(avatarId == null && oldAvatar == null) && !StringUtils.equals(avatarId, oldAvatar))
             {
                 user.setAvatarId(avatarId);
-                api.getEventManager().handle(new UserAvatarUpdateEvent(api, user));
+                api.getEventManager().handle(
+                        new UserAvatarUpdateEvent(
+                                api, responseNumber,
+                                user));
             }
         }
 
@@ -64,13 +69,22 @@ public class PresenceUpdateHandler implements ISocketHandler
         if (!user.getOnlineStatus().equals(status))
         {
             user.setOnlineStatus(status);
-            api.getEventManager().handle(new UserOnlineStatusUpdateEvent(api, user));
+            api.getEventManager().handle(
+                    new UserOnlineStatusUpdateEvent(
+                            api, responseNumber,
+                            user));
         }
         if (user.getCurrentGameId() != gameId)
         {
             user.setCurrentGameId(gameId);
-            api.getEventManager().handle(new UserGameUpdateEvent(api, user));
+            api.getEventManager().handle(
+                    new UserGameUpdateEvent(
+                            api, responseNumber,
+                            user));
         }
-        api.getEventManager().handle(new GenericUserEvent(api, user));
+        api.getEventManager().handle(
+                new GenericUserEvent(
+                        api, responseNumber,
+                        user));
     }
 }

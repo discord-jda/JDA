@@ -20,13 +20,12 @@ import net.dv8tion.jda.entities.impl.GuildImpl;
 import net.dv8tion.jda.entities.impl.UserImpl;
 import org.json.JSONObject;
 
-public class GuildMemberRemoveHandler implements ISocketHandler
+public class GuildMemberRemoveHandler extends SocketHandler
 {
-    private final JDA api;
 
-    public GuildMemberRemoveHandler(JDA api)
+    public GuildMemberRemoveHandler(JDA api, int responseNumber)
     {
-        this.api = api;
+        super(api, responseNumber);
     }
 
     @Override

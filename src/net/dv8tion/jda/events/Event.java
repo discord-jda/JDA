@@ -20,10 +20,12 @@ import net.dv8tion.jda.JDA;
 public abstract class Event
 {
     protected final JDA api;
+    protected final int responseNumber;
 
-    public Event(JDA api)
+    public Event(JDA api, int responseNumber)
     {
         this.api = api;
+        this.responseNumber = responseNumber;
     }
 
     /**
@@ -31,8 +33,13 @@ public abstract class Event
      *
      * @return The corresponding JDA instance
      */
-    public JDA getJDAInstance()
+    public JDA getJDA()
     {
         return api;
+    }
+
+    public int getResponseNumber()
+    {
+        return responseNumber;
     }
 }

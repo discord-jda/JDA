@@ -15,9 +15,20 @@
  */
 package net.dv8tion.jda.handle;
 
+import net.dv8tion.jda.JDA;
+
 import org.json.JSONObject;
 
-public interface ISocketHandler
+public abstract class SocketHandler
 {
-    void handle(JSONObject content);
+    protected JDA api;
+    protected int responseNumber;
+
+    public SocketHandler(JDA api, int responseNumber)
+    {
+        this.api = api;
+        this.responseNumber = responseNumber;
+    }
+
+    public abstract void handle(JSONObject content);
 }

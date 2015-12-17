@@ -21,13 +21,12 @@ import net.dv8tion.jda.events.channel.text.TextChannelCreateEvent;
 
 import org.json.JSONObject;
 
-public class ChannelCreateHandler implements ISocketHandler
+public class ChannelCreateHandler extends SocketHandler
 {
-    private JDA api;
 
-    public ChannelCreateHandler(JDA api)
+    public ChannelCreateHandler(JDA api, int responseNumber)
     {
-        this.api = api;
+        super(api, responseNumber);
     }
     @Override
     public void handle(JSONObject content)
@@ -44,7 +43,7 @@ public class ChannelCreateHandler implements ISocketHandler
         {
             api.getEventManager().handle(
                     new TextChannelCreateEvent(
-                            api,
+                            api, responseNumber,
                             new EntityBuilder(api).createTextChannel(content, content.getString("guild_id"))));
         }
         else if (type.equals("voice"))
@@ -52,13 +51,14 @@ public class ChannelCreateHandler implements ISocketHandler
             //TODO:IMPLEMENT - implement the VoiceChannelCreate event fire after the EntitiyBuilder.createVoiceChannel has been implemented
 //            api.getEventManager().handle(
 //                    new VoiceChannelCreateEvent(
+//                            api, responseNumber,
 //                            new EntityBuilder(api).createVoiceChannel(content, content.getString("guild_id"))));
         }
         else if (type.equalsIgnoreCase("private"))
         {
             api.getEventManager().handle(
                     new PrivateChannelCreateEvent(
-                            api,
+                            api, responseNumber,
                             new EntityBuilder(api).createPrivateChannel(content).getUser()));
         }
         else

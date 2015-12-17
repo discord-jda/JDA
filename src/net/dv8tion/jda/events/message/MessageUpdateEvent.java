@@ -20,8 +20,8 @@ import net.dv8tion.jda.entities.Message;
 
 public class MessageUpdateEvent extends MessageReceivedEvent
 {
-    public MessageUpdateEvent(JDA api, Message message)
+    public MessageUpdateEvent(JDA api, int responseNumber, Message message)
     {
-        super(api, message);
+        super(api, responseNumber, message);
     }
 }

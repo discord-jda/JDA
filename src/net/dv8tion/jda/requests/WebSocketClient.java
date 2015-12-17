@@ -61,7 +61,8 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
     {
         JSONObject content = new JSONObject(message);
         String type = content.getString("t");
-        int responseTotal = content.getInt("s");    //TODO: Give this to the handlers so they can pass to events.
+        int responseTotal = content.getInt("s");
+        api.setResponseTotal(responseTotal);
         content = content.getJSONObject("d");
         if (type.equals("READY"))
         {
@@ -86,28 +87,28 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
         switch (type)
         {
             case "READY":
-                new ReadyHandler(api).handle(content);
+                new ReadyHandler(api, responseTotal).handle(content);
                 break;
             case "PRESENCE_UPDATE":
-                new PresenceUpdateHandler(api).handle(content);
+                new PresenceUpdateHandler(api, responseTotal).handle(content);
                 break;
             case "TYPING_START":
-                new UserTypingHandler(api).handle(content);
+                new UserTypingHandler(api, responseTotal).handle(content);
                 break;
             case "MESSAGE_CREATE":
-                new MessageRecievedHandler(api).handle(content);
+                new MessageRecievedHandler(api, responseTotal).handle(content);
                 break;
             case "MESSAGE_UPDATE":
-                new MessageUpdateHandler(api).handle(content);
+                new MessageUpdateHandler(api, responseTotal).handle(content);
                 break;
             case "MESSAGE_DELETE":
-                new MessageDeleteHandler(api).handle(content);
+                new MessageDeleteHandler(api, responseTotal).handle(content);
                 break;
             case "VOICE_STATE_UPDATE":
                 if (printUnimplemented) System.out.println(message);
                 break;
             case "CHANNEL_CREATE":
-                new ChannelCreateHandler(api).handle(content);
+                new ChannelCreateHandler(api, responseTotal).handle(content);
                 break;
             case "CHANNEL_UPDATE":
                 if (printUnimplemented) System.out.println(message);
@@ -125,10 +126,10 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
                 if (printUnimplemented) System.out.println(message);
                 break;
             case "GUILD_MEMBER_ADD":
-                new GuildMemberAddHandler(api).handle(content);
+                new GuildMemberAddHandler(api, responseTotal).handle(content);
                 break;
             case "GUILD_MEMBER_REMOVE":
-                new GuildMemberRemoveHandler(api).handle(content);
+                new GuildMemberRemoveHandler(api, responseTotal).handle(content);
                 break;
             case "GUILD_CREATE":
                 if (printUnimplemented) System.out.println(message);

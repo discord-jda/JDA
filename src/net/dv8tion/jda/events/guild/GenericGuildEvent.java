@@ -23,9 +23,9 @@ public abstract class GenericGuildEvent extends Event
 {
     private Guild guild;
 
-    public GenericGuildEvent(JDA api, Guild guild)
+    public GenericGuildEvent(JDA api, int responseNumber, Guild guild)
     {
-        super(api);
+        super(api, responseNumber);
         this.guild = guild;
     }
 

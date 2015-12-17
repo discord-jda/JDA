@@ -28,14 +28,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class ReadyHandler implements ISocketHandler
+public class ReadyHandler extends SocketHandler
 {
-    private final JDA api;
     private final EntityBuilder builder;
 
-    public ReadyHandler(JDA api)
+    public ReadyHandler(JDA api, int responseNumber)
     {
-        this.api = api;
+        super(api, responseNumber);
         this.builder = new EntityBuilder(api);
     }
 
@@ -75,6 +74,6 @@ public class ReadyHandler implements ISocketHandler
         }
 
         System.out.println("Finished Loading!");    //TODO: Replace with Logger.INFO
-        api.getEventManager().handle(new ReadyEvent(api));
+        api.getEventManager().handle(new ReadyEvent(api, responseNumber));
     }
 }

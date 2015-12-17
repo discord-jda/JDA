@@ -26,9 +26,9 @@ public class UserTypingEvent extends GenericUserEvent
     private TextChannel channel;
     private OffsetDateTime timestamp;
 
-    public UserTypingEvent(JDA api, User user, TextChannel channel, OffsetDateTime timestamp)
+    public UserTypingEvent(JDA api, int responseNumber, User user, TextChannel channel, OffsetDateTime timestamp)
     {
-        super(api, user);
+        super(api, responseNumber, user);
         this.channel = channel;
         this.timestamp = timestamp;
     }

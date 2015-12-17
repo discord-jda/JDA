@@ -23,9 +23,9 @@ public class GenericUserEvent extends Event
 {
     protected User user;
 
-    public GenericUserEvent(JDA api, User user)
+    public GenericUserEvent(JDA api, int responseNumber, User user)
     {
-        super(api);
+        super(api, responseNumber);
         this.user = user;
     }
 

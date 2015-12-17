@@ -20,13 +20,12 @@ import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 import org.json.JSONObject;
 
-public class MessageRecievedHandler implements ISocketHandler
+public class MessageRecievedHandler extends SocketHandler
 {
-    private final JDA api;
 
-    public MessageRecievedHandler(JDA api)
+    public MessageRecievedHandler(JDA api, int responseNumber)
     {
-        this.api = api;
+        super(api, responseNumber);
     }
 
     @Override
@@ -38,7 +37,7 @@ public class MessageRecievedHandler implements ISocketHandler
         {
             api.getEventManager().handle(
                     new MessageReceivedEvent(
-                            api,
+                            api, responseNumber,
                             new EntityBuilder(api).createMessage(content)));
         }
         else

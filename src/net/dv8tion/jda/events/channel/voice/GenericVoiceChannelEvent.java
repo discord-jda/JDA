@@ -23,9 +23,9 @@ public abstract class GenericVoiceChannelEvent extends Event
 {
     private VoiceChannel channel;
 
-    public GenericVoiceChannelEvent(JDA api, VoiceChannel channel)
+    public GenericVoiceChannelEvent(JDA api, int responseNumber, VoiceChannel channel)
     {
-        super(api);
+        super(api, responseNumber);
         this.channel = channel;
     }
 

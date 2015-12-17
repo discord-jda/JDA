@@ -20,8 +20,8 @@ import net.dv8tion.jda.entities.User;
 
 public class UserOnlineStatusUpdateEvent extends GenericUserEvent
 {
-    public UserOnlineStatusUpdateEvent(JDA api, User user)
+    public UserOnlineStatusUpdateEvent(JDA api, int responseNumber, User user)
     {
-        super(api, user);
+        super(api, responseNumber, user);
     }
 }

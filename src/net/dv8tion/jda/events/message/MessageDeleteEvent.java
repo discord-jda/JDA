@@ -23,9 +23,9 @@ public class MessageDeleteEvent extends GenericMessageEvent
     private final String messageId;
     private final TextChannel channel;
 
-    public MessageDeleteEvent(JDA api, String messageId, TextChannel channel)
+    public MessageDeleteEvent(JDA api, int responseNumber, String messageId, TextChannel channel)
     {
-        super(api, null);
+        super(api, responseNumber, null);
         this.messageId = messageId;
         this.channel = channel;
     }

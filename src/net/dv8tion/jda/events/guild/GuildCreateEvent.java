@@ -20,8 +20,8 @@ import net.dv8tion.jda.entities.Guild;
 
 public class GuildCreateEvent extends GenericGuildEvent
 {
-    public GuildCreateEvent(JDA api, Guild guild)
+    public GuildCreateEvent(JDA api, int responseNumber, Guild guild)
     {
-        super(api, guild);
+        super(api, responseNumber, guild);
     }
 }

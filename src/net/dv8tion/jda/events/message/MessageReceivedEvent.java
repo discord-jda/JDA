@@ -23,9 +23,9 @@ import net.dv8tion.jda.entities.User;
 
 public class MessageReceivedEvent extends GenericMessageEvent
 {
-    public MessageReceivedEvent(JDA api, Message message)
+    public MessageReceivedEvent(JDA api, int responseNumber, Message message)
     {
-        super(api, message);
+        super(api, responseNumber, message);
     }
 
     public User getAuthor()

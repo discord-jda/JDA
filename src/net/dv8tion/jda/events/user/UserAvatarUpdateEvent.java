@@ -20,8 +20,8 @@ import net.dv8tion.jda.entities.User;
 
 public class UserAvatarUpdateEvent extends GenericUserEvent
 {
-    public UserAvatarUpdateEvent(JDA api, User user)
+    public UserAvatarUpdateEvent(JDA api, int responseNumber, User user)
     {
-        super(api, user);
+        super(api, responseNumber, user);
     }
 }

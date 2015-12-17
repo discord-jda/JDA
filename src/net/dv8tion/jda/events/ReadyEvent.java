@@ -19,8 +19,8 @@ import net.dv8tion.jda.JDA;
 
 public class ReadyEvent extends Event
 {
-    public ReadyEvent(JDA api)
+    public ReadyEvent(JDA api, int responseNumber)
     {
-        super(api);
+        super(api, responseNumber);
     }
 }

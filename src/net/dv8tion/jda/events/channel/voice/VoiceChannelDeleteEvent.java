@@ -20,8 +20,8 @@ import net.dv8tion.jda.entities.VoiceChannel;
 
 public class VoiceChannelDeleteEvent extends GenericVoiceChannelEvent
 {
-    public VoiceChannelDeleteEvent(JDA api, VoiceChannel channel)
+    public VoiceChannelDeleteEvent(JDA api, int responseNumber, VoiceChannel channel)
     {
-        super(api, channel);
+        super(api, responseNumber, channel);
     }
 }

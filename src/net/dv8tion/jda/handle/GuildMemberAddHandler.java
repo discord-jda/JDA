@@ -25,13 +25,12 @@ import org.json.JSONObject;
 
 import java.util.LinkedList;
 
-public class GuildMemberAddHandler implements ISocketHandler
+public class GuildMemberAddHandler extends SocketHandler
 {
-    private final JDA api;
 
-    public GuildMemberAddHandler(JDA api)
+    public GuildMemberAddHandler(JDA api, int responseNumber)
     {
-        this.api = api;
+        super(api, responseNumber);
     }
 
     @Override

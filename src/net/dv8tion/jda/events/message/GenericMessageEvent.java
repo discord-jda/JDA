@@ -23,9 +23,9 @@ public abstract class GenericMessageEvent extends Event
 {
     protected Message message;
 
-    public GenericMessageEvent(JDA api, Message message)
+    public GenericMessageEvent(JDA api, int responseNumber, Message message)
     {
-        super(api);
+        super(api, responseNumber);
         this.message = message;
     }
 

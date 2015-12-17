@@ -20,13 +20,12 @@ import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.events.message.MessageDeleteEvent;
 import org.json.JSONObject;
 
-public class MessageDeleteHandler implements ISocketHandler
+public class MessageDeleteHandler extends SocketHandler
 {
-    private final JDA api;
 
-    public MessageDeleteHandler(JDA api)
+    public MessageDeleteHandler(JDA api, int responseNumber)
     {
-        this.api = api;
+        super(api, responseNumber);
     }
 
     @Override
@@ -35,7 +34,10 @@ public class MessageDeleteHandler implements ISocketHandler
         TextChannel channel = api.getChannelMap().get(content.getString("channel_id"));
         if (channel != null)
         {
-            api.getEventManager().handle(new MessageDeleteEvent(api, content.getString("id"), channel));
+            api.getEventManager().handle(
+                    new MessageDeleteEvent(
+                            api, responseNumber,
+                            content.getString("id"), channel));
         }
         else
         {

@@ -47,12 +47,12 @@ public class JDA
     private final Map<String, User> userMap = new HashMap<>();
     private final Map<String, Guild> guildMap = new HashMap<>();
     private final Map<String, TextChannel> channelMap = new HashMap<>();
-    //Userid -> channelid
-    private final Map<String, String> offline_pms = new HashMap<>();
+    private final Map<String, String> offline_pms = new HashMap<>();    //Userid -> channelid
     private final EventManager eventManager = new EventManager();
     private SelfInfo selfInfo = null;
     private String authToken = null;
     private WebSocketClient client;
+    private int responseTotal;
 
     /**
      * Creates a new instance of the Discord API wrapper and attempts to login to Discord.
@@ -233,5 +233,15 @@ public class JDA
     public void setSelfInfo(SelfInfo selfInfo)
     {
         this.selfInfo = selfInfo;
+    }
+
+    public int getResponseTotal()
+    {
+        return responseTotal;
+    }
+
+    public void setResponseTotal(int responseTotal)
+    {
+        this.responseTotal = responseTotal;
     }
 }

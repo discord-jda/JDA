@@ -27,13 +27,12 @@ import net.dv8tion.jda.events.user.UserTypingEvent;
 
 import org.json.JSONObject;
 
-public class UserTypingHandler implements ISocketHandler
+public class UserTypingHandler extends SocketHandler
 {
-    private JDA api;
 
-    public UserTypingHandler(JDA api)
+    public UserTypingHandler(JDA api, int responseNumber)
     {
-        this.api = api;
+        super(api, responseNumber);
     }
 
     @Override
@@ -45,7 +44,7 @@ public class UserTypingHandler implements ISocketHandler
 
         TextChannel channel = api.getChannelMap().get(content.getString("channel_id"));
         OffsetDateTime timestamp = Instant.ofEpochSecond(content.getInt("timestamp")).atOffset(ZoneOffset.UTC);
-        api.getEventManager().handle(new UserTypingEvent(api, user, channel, timestamp));
-        api.getEventManager().handle(new GenericUserEvent(api, user));
+        api.getEventManager().handle(new UserTypingEvent(api, responseNumber, user, channel, timestamp));
+        api.getEventManager().handle(new GenericUserEvent(api, responseNumber, user));
     }
 }

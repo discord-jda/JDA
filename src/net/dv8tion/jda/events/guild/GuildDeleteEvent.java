@@ -19,8 +19,8 @@ import net.dv8tion.jda.JDA;
 
 public class GuildDeleteEvent extends GenericGuildEvent
 {
-    public GuildDeleteEvent(JDA api)
+    public GuildDeleteEvent(JDA api, int responseNumber)
     {
-        super(api, null);
+        super(api, responseNumber, null);
     }
 }
