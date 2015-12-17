@@ -16,7 +16,10 @@
 package examples;
 
 import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.MessageBuilder;
+import net.dv8tion.jda.MessageHistory;
 import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
@@ -36,7 +39,7 @@ public class MessageExample extends ListenerAdapter
     /**
      * Used for the internal test bot.
      *
-     * @param args
+     * @param args not used
      */
     public static void main(String[] args)
     {
@@ -126,7 +129,16 @@ public class MessageExample extends ListenerAdapter
         System.out.println("Users in channel " + channel.getName() + ": " + channel.getUsers().stream().map(User::getUsername).reduce((s1, s2) -> s1 + ", " + s2).get());
         if (author.getUsername().equalsIgnoreCase("kantenkugel") || author.getUsername().equalsIgnoreCase("dv8fromtheworld"))
         {
-            channel.sendMessage("Hi");
+            if (event.getMessage().getContent().equalsIgnoreCase("hi"))
+            {
+                channel.sendMessage(new MessageBuilder().appendString("Hello, ").appendMention(author).build());
+            }
+            else if (event.getMessage().getContent().equalsIgnoreCase("!clear"))
+            {
+                MessageHistory history = new MessageHistory(event.getJDAInstance(), event.getChannel());
+                List<Message> messages = history.retrieveAll();
+                messages.forEach(Message::deleteMessage);
+            }
         }
     }
 }
