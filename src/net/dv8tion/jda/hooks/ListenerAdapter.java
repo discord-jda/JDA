@@ -52,11 +52,11 @@ public abstract class ListenerAdapter implements EventListener
 
         //Message Events
         else if (event instanceof MessageUpdateEvent)
-            onMessageUpdate(((MessageUpdateEvent) event));
+            onMessageUpdate((MessageUpdateEvent) event);
         else if (event instanceof MessageReceivedEvent)
-            onMessageReceived(((MessageReceivedEvent) event));
+            onMessageReceived((MessageReceivedEvent) event);
         else if (event instanceof MessageDeleteEvent)
-            onMessageDelete(((MessageDeleteEvent) event));
+            onMessageDelete((MessageDeleteEvent) event);
 
         //User Events
         else if (event instanceof UserNameUpdateEvent)
