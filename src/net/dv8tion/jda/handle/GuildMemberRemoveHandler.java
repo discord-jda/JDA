@@ -18,6 +18,8 @@ package net.dv8tion.jda.handle;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.impl.GuildImpl;
 import net.dv8tion.jda.entities.impl.UserImpl;
+import net.dv8tion.jda.events.guild.GuildMemberLeaveEvent;
+
 import org.json.JSONObject;
 
 public class GuildMemberRemoveHandler extends SocketHandler
@@ -43,5 +45,9 @@ public class GuildMemberRemoveHandler extends SocketHandler
                 api.getUserMap().remove(user.getId());
             }
         }
+        api.getEventManager().handle(
+                new GuildMemberLeaveEvent(
+                        api, responseNumber,
+                        guild, user.getId()));
     }
 }

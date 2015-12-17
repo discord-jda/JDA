@@ -27,8 +27,13 @@ import net.dv8tion.jda.events.channel.voice.VoiceChannelCreateEvent;
 import net.dv8tion.jda.events.channel.voice.VoiceChannelDeleteEvent;
 import net.dv8tion.jda.events.channel.voice.VoiceChannelUpdateEvent;
 import net.dv8tion.jda.events.guild.GenericGuildEvent;
+import net.dv8tion.jda.events.guild.GenericGuildMemberEvent;
 import net.dv8tion.jda.events.guild.GuildCreateEvent;
 import net.dv8tion.jda.events.guild.GuildDeleteEvent;
+import net.dv8tion.jda.events.guild.GuildMemberBanEvent;
+import net.dv8tion.jda.events.guild.GuildMemberJoinEvent;
+import net.dv8tion.jda.events.guild.GuildMemberLeaveEvent;
+import net.dv8tion.jda.events.guild.GuildMemberUnbanEvent;
 import net.dv8tion.jda.events.guild.GuildUpdateEvent;
 import net.dv8tion.jda.events.message.GenericMessageEvent;
 import net.dv8tion.jda.events.message.MessageDeleteEvent;
@@ -99,6 +104,14 @@ public abstract class ListenerAdapter implements EventListener
             onGuildUpdate((GuildUpdateEvent) event);
         else if (event instanceof GuildDeleteEvent)
             onGuildDelete((GuildDeleteEvent) event);
+        else if (event instanceof GuildMemberJoinEvent)
+            onGuildMemberJoin((GuildMemberJoinEvent) event);
+        else if (event instanceof GuildMemberLeaveEvent)
+            onGuildMemberLeave((GuildMemberLeaveEvent) event);
+        else if (event instanceof GuildMemberBanEvent)
+            onGuildMemberBan((GuildMemberBanEvent) event);
+        else if (event instanceof GuildMemberUnbanEvent)
+            onGuildMemberUnban((GuildMemberUnbanEvent) event);
 
         //Generic Events
         if (event instanceof GenericMessageEvent)
@@ -107,6 +120,8 @@ public abstract class ListenerAdapter implements EventListener
             onGenericTextChannelEvent((GenericTextChannelEvent) event);
         else if (event instanceof GenericVoiceChannelEvent)
             onGenericVoiceChannelEvent((GenericVoiceChannelEvent) event);
+        else if (event instanceof GenericGuildMemberEvent)
+            onGenericGuildMemberEvent((GenericGuildMemberEvent) event);
         else if (event instanceof GenericGuildEvent)
             onGenericGuildEvent((GenericGuildEvent) event);
     }
@@ -143,11 +158,16 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildCreate(GuildCreateEvent event) {}
     public void onGuildUpdate(GuildUpdateEvent event) {}
     public void onGuildDelete(GuildDeleteEvent event) {}
+    public void onGuildMemberJoin(GuildMemberJoinEvent event) {}
+    public void onGuildMemberLeave(GuildMemberLeaveEvent event) {}
+    public void onGuildMemberBan(GuildMemberBanEvent event) {}
+    public void onGuildMemberUnban(GuildMemberUnbanEvent event) {}
 
     //Generic Events
     public void onGenericUserEvent(GenericUserEvent event) {}
     public void onGenericMessageEvent(GenericMessageEvent event) {}
     public void onGenericTextChannelEvent(GenericTextChannelEvent event) {}
     public void onGenericVoiceChannelEvent(GenericVoiceChannelEvent event) {}
+    public void onGenericGuildMemberEvent(GenericGuildMemberEvent event) {}
     public void onGenericGuildEvent(GenericGuildEvent event) {}
 }

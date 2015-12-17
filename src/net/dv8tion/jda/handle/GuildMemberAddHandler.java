@@ -15,15 +15,17 @@
  */
 package net.dv8tion.jda.handle;
 
+import java.util.LinkedList;
+
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.impl.GuildImpl;
 import net.dv8tion.jda.entities.impl.PrivateChannelImpl;
 import net.dv8tion.jda.entities.impl.UserImpl;
-import org.json.JSONObject;
+import net.dv8tion.jda.events.guild.GuildMemberJoinEvent;
 
-import java.util.LinkedList;
+import org.json.JSONObject;
 
 public class GuildMemberAddHandler extends SocketHandler
 {
@@ -45,5 +47,9 @@ public class GuildMemberAddHandler extends SocketHandler
             api.getOffline_pms().remove(user.getId());
         }
         guild.getUserRoles().put(user, new LinkedList<>());
+        api.getEventManager().handle(
+                new GuildMemberJoinEvent(
+                        api, responseNumber,
+                        guild, user));
     }
 }
