@@ -13,17 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.events.guild;
+package net.dv8tion.jda.events.guild.member;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.events.guild.GenericGuildEvent;
 
-public class GuildMemberLeaveEvent extends GenericGuildMemberEvent
+public class GenericGuildMemberEvent extends GenericGuildEvent
 {
+    protected User user;
 
-    public GuildMemberLeaveEvent(JDA api, int responseNumber, Guild guild, User user)
+    public GenericGuildMemberEvent(JDA api, int responseNumber, Guild guild, User user)
     {
-        super(api, responseNumber, guild, user);
+        super(api, responseNumber, guild);
+        this.user = user;
+    }
+
+    public User getUser()
+    {
+        return user;
     }
 }

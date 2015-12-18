@@ -18,8 +18,8 @@ package net.dv8tion.jda.handle;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.impl.GuildImpl;
-import net.dv8tion.jda.events.guild.GuildMemberBanEvent;
-import net.dv8tion.jda.events.guild.GuildMemberUnbanEvent;
+import net.dv8tion.jda.events.guild.member.GuildMemberBanEvent;
+import net.dv8tion.jda.events.guild.member.GuildMemberUnbanEvent;
 
 import org.json.JSONObject;
 

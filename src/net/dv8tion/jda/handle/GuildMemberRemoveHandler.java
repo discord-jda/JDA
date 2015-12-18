@@ -18,7 +18,7 @@ package net.dv8tion.jda.handle;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.impl.GuildImpl;
 import net.dv8tion.jda.entities.impl.UserImpl;
-import net.dv8tion.jda.events.guild.GuildMemberLeaveEvent;
+import net.dv8tion.jda.events.guild.member.GuildMemberLeaveEvent;
 
 import org.json.JSONObject;
 

@@ -23,7 +23,7 @@ import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.impl.GuildImpl;
 import net.dv8tion.jda.entities.impl.PrivateChannelImpl;
 import net.dv8tion.jda.entities.impl.UserImpl;
-import net.dv8tion.jda.events.guild.GuildMemberJoinEvent;
+import net.dv8tion.jda.events.guild.member.GuildMemberJoinEvent;
 
 import org.json.JSONObject;
 

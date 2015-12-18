@@ -138,7 +138,7 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
                 if (printUnimplemented) System.out.println(message);
                 break;
             default:
-                System.out.println(message);    //TODO: Replace with "we don't know this type"
+                System.out.println("Unrecognized event:\n" + message);    //TODO: Replace with "we don't know this type"
         }
     }
 

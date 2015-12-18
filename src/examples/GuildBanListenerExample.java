@@ -23,8 +23,8 @@ import java.nio.file.Paths;
 import javax.security.auth.login.LoginException;
 
 import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.events.guild.GuildMemberBanEvent;
-import net.dv8tion.jda.events.guild.GuildMemberUnbanEvent;
+import net.dv8tion.jda.events.guild.member.GuildMemberBanEvent;
+import net.dv8tion.jda.events.guild.member.GuildMemberUnbanEvent;
 import net.dv8tion.jda.hooks.ListenerAdapter;
 
 import org.json.JSONException;
