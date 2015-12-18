@@ -120,10 +120,10 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
                 if (printUnimplemented) System.out.println(message);
                 break;
             case "GUILD_BAN_ADD":
-                if (printUnimplemented) System.out.println(message);
+                new GuildMemberBanHandler(api, responseTotal, true).handle(content);
                 break;
             case "GUILD_BAN_REMOVE":
-                if (printUnimplemented) System.out.println(message);
+                new GuildMemberBanHandler(api, responseTotal, false).handle(content);
                 break;
             case "GUILD_MEMBER_ADD":
                 new GuildMemberAddHandler(api, responseTotal).handle(content);

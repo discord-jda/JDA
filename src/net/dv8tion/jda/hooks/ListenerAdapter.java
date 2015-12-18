@@ -57,7 +57,7 @@ public abstract class ListenerAdapter implements EventListener
 
         //Message Events
         else if (event instanceof MessageUpdateEvent)
-            onMessageUpdate((MessageUpdateEvent) event);
+            onMessageUpdate((MessageUpdateEvent) event);    //Update must be before Received because it is a subclass of Received.
         else if (event instanceof MessageReceivedEvent)
             onMessageReceived((MessageReceivedEvent) event);
         else if (event instanceof MessageDeleteEvent)
@@ -74,8 +74,8 @@ public abstract class ListenerAdapter implements EventListener
             onUserOnlineStatusUpdate((UserOnlineStatusUpdateEvent) event);
         else if (event instanceof UserTypingEvent)
             onUserTyping((UserTypingEvent) event);
-        else if (event instanceof GenericUserEvent)
-            onGenericUserEvent((GenericUserEvent) event);
+        else if (event instanceof GenericUserEvent)         //We check this here so that we don't catch 4 different update events.
+            onGenericUserEvent((GenericUserEvent) event);   //Must be after all the others because they are subclasses of the Generic.
 
         //TextChannel Events
         else if (event instanceof TextChannelCreateEvent)
@@ -106,14 +106,16 @@ public abstract class ListenerAdapter implements EventListener
             onGuildDelete((GuildDeleteEvent) event);
         else if (event instanceof GuildMemberJoinEvent)
             onGuildMemberJoin((GuildMemberJoinEvent) event);
-        else if (event instanceof GuildMemberLeaveEvent)
-            onGuildMemberLeave((GuildMemberLeaveEvent) event);
         else if (event instanceof GuildMemberBanEvent)
             onGuildMemberBan((GuildMemberBanEvent) event);
         else if (event instanceof GuildMemberUnbanEvent)
             onGuildMemberUnban((GuildMemberUnbanEvent) event);
+        //Leave needs to be checked in a separate if-statement so that the Ban and Kick events will also fire this.
+        if (event instanceof GuildMemberLeaveEvent)
+            onGuildMemberLeave((GuildMemberLeaveEvent) event);
 
         //Generic Events
+        //Start a new if statement so that these are no overridden by the above events.
         if (event instanceof GenericMessageEvent)
             onGenericMessageEvent((GenericMessageEvent) event);
         else if (event instanceof GenericTextChannelEvent)

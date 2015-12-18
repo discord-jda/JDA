@@ -17,18 +17,20 @@ package net.dv8tion.jda.events.guild;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.entities.User;
 
 public class GenericGuildMemberEvent extends GenericGuildEvent
 {
-    protected String userId;
+    protected User user;
 
-    public GenericGuildMemberEvent(JDA api, int responseNumber, Guild guild, String userId)
+    public GenericGuildMemberEvent(JDA api, int responseNumber, Guild guild, User user)
     {
         super(api, responseNumber, guild);
+        this.user = user;
     }
 
-    public String getUserId()
+    public User getUser()
     {
-        return userId;
+        return user;
     }
 }

@@ -17,12 +17,13 @@ package net.dv8tion.jda.events.guild;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.entities.User;
 
-public class GuildMemberBanEvent extends GenericGuildMemberEvent
+public class GuildMemberBanEvent extends GuildMemberLeaveEvent
 {
 
-    public GuildMemberBanEvent(JDA api, int responseNumber, Guild guild, String userId)
+    public GuildMemberBanEvent(JDA api, int responseNumber, Guild guild, User user)
     {
-        super(api, responseNumber, guild, userId);
+        super(api, responseNumber, guild, user);
     }
 }

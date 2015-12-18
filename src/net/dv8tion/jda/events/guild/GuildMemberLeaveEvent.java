@@ -17,12 +17,13 @@ package net.dv8tion.jda.events.guild;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.entities.User;
 
 public class GuildMemberLeaveEvent extends GenericGuildMemberEvent
 {
 
-    public GuildMemberLeaveEvent(JDA api, int responseNumber, Guild guild, String userId)
+    public GuildMemberLeaveEvent(JDA api, int responseNumber, Guild guild, User user)
     {
-        super(api, responseNumber, guild, userId);
+        super(api, responseNumber, guild, user);
     }
 }
