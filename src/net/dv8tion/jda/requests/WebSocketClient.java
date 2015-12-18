@@ -17,10 +17,14 @@ package net.dv8tion.jda.requests;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.handle.*;
+import org.java_websocket.client.DefaultSSLWebSocketClientFactory;
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONObject;
 
+import javax.net.ssl.SSLContext;
 import java.net.URI;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 
 
 public class WebSocketClient extends org.java_websocket.client.WebSocketClient
@@ -32,7 +36,21 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
 
     public WebSocketClient(String url, JDA api)
     {
-        super(URI.create(url.replace("wss", "ws")));
+        super(URI.create(url));
+        if (url.startsWith("wss"))
+        {
+            try
+            {
+                SSLContext sslContext;
+                sslContext = SSLContext.getInstance("TLS");
+                sslContext.init(null, null, null);
+                this.setWebSocketFactory(new DefaultSSLWebSocketClientFactory(sslContext));
+            }
+            catch (NoSuchAlgorithmException | KeyManagementException e)
+            {
+                e.printStackTrace();
+            }
+        }
         this.api = api;
         this.connect();
     }
