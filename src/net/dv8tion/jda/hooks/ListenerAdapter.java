@@ -37,6 +37,7 @@ import net.dv8tion.jda.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.events.guild.member.GuildMemberUnbanEvent;
 import net.dv8tion.jda.events.message.GenericMessageEvent;
 import net.dv8tion.jda.events.message.MessageDeleteEvent;
+import net.dv8tion.jda.events.message.MessageEmbedEvent;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.events.message.MessageUpdateEvent;
 import net.dv8tion.jda.events.user.GenericUserEvent;
@@ -62,6 +63,8 @@ public abstract class ListenerAdapter implements EventListener
             onMessageReceived((MessageReceivedEvent) event);
         else if (event instanceof MessageDeleteEvent)
             onMessageDelete((MessageDeleteEvent) event);
+        else if (event instanceof MessageEmbedEvent)
+            onMessageEmbed((MessageEmbedEvent) event);
 
         //User Events
         else if (event instanceof UserNameUpdateEvent)
@@ -142,6 +145,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onMessageReceived(MessageReceivedEvent event) {}
     public void onMessageUpdate(MessageUpdateEvent event) {}
     public void onMessageDelete(MessageDeleteEvent event) {}
+    public void onMessageEmbed(MessageEmbedEvent event) {}
 
     //TextChannel Events
     public void onTextChannelDelete(TextChannelDeleteEvent event) {}

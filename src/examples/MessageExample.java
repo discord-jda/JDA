@@ -15,6 +15,14 @@
  */
 package examples;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+
+import javax.security.auth.login.LoginException;
+
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.MessageBuilder;
 import net.dv8tion.jda.MessageHistory;
@@ -22,17 +30,12 @@ import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.events.message.MessageEmbedEvent;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.hooks.ListenerAdapter;
+
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import javax.security.auth.login.LoginException;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.List;
 
 public class MessageExample extends ListenerAdapter
 {
@@ -94,6 +97,15 @@ public class MessageExample extends ListenerAdapter
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public void onMessageEmbed(MessageEmbedEvent event)
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Found embed(s) Types: ");
+        event.getMessageEmbeds().stream().forEach(embed -> builder.append(embed.getType()).append(", "));
+        System.out.println(builder.toString().substring(0, builder.length() - 2));
     }
 
     @Override

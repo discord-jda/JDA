@@ -15,19 +15,40 @@
  */
 package net.dv8tion.jda.handle;
 
-import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.OnlineStatus;
-import net.dv8tion.jda.Region;
-import net.dv8tion.jda.entities.*;
-import net.dv8tion.jda.entities.impl.*;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import net.dv8tion.jda.EmbedType;
+import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.OnlineStatus;
+import net.dv8tion.jda.Region;
+import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.entities.Message;
+import net.dv8tion.jda.entities.MessageEmbed;
+import net.dv8tion.jda.entities.MessageEmbed.Provider;
+import net.dv8tion.jda.entities.MessageEmbed.Thumbnail;
+import net.dv8tion.jda.entities.MessageEmbed.VideoInfo;
+import net.dv8tion.jda.entities.PrivateChannel;
+import net.dv8tion.jda.entities.Role;
+import net.dv8tion.jda.entities.SelfInfo;
+import net.dv8tion.jda.entities.TextChannel;
+import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.entities.VoiceChannel;
+import net.dv8tion.jda.entities.impl.GuildImpl;
+import net.dv8tion.jda.entities.impl.MessageEmbedImpl;
+import net.dv8tion.jda.entities.impl.MessageImpl;
+import net.dv8tion.jda.entities.impl.PermissionOverride;
+import net.dv8tion.jda.entities.impl.PrivateChannelImpl;
+import net.dv8tion.jda.entities.impl.RoleImpl;
+import net.dv8tion.jda.entities.impl.SelfInfoImpl;
+import net.dv8tion.jda.entities.impl.TextChannelImpl;
+import net.dv8tion.jda.entities.impl.UserImpl;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class EntityBuilder
 {
@@ -248,5 +269,57 @@ public class EntityBuilder
         message.setMentionedUsers(mentioned);
 
         return message;
+    }
+
+    protected MessageEmbed createMessageEmbed(JSONObject messageEmbed)
+    {
+        MessageEmbedImpl embed = new MessageEmbedImpl()
+            .setUrl(messageEmbed.getString("url"))
+            .setTitle(messageEmbed.isNull("title") ? null : messageEmbed.getString("title"))
+            .setDescription(messageEmbed.isNull("description") ? null : messageEmbed.getString("description"));
+
+        EmbedType type = EmbedType.fromKey(messageEmbed.getString("type"));
+        if (type.equals(EmbedType.UNKNOWN))
+            throw new IllegalArgumentException("Discord provided us an unknown embed type.  Json: " + messageEmbed);
+        embed.setType(type);
+
+        if (messageEmbed.has("thumbnail"))
+        {
+            JSONObject thumbnailJson = messageEmbed.getJSONObject("thumbnail");
+            embed.setThumbnail(new Thumbnail(
+                    thumbnailJson.getString("url"),
+                    thumbnailJson.getString("proxy_url"),
+                    thumbnailJson.getInt("width"),
+                    thumbnailJson.getInt("height")));
+        }
+        else embed.setThumbnail(null);
+
+        if (messageEmbed.has("provider"))
+        {
+            JSONObject providerJson = messageEmbed.getJSONObject("provider");
+            embed.setSiteProvider(new Provider(
+                    providerJson.isNull("name") ? null : providerJson.getString("name"),
+                    providerJson.isNull("url") ? null : providerJson.getString("url")));
+        }
+        else embed.setSiteProvider(null);
+
+        if (messageEmbed.has("author"))
+        {
+            JSONObject authorJson = messageEmbed.getJSONObject("author");
+            embed.setAuthor(new Provider(
+                    authorJson.isNull("name") ? null : authorJson.getString("name"),
+                    authorJson.isNull("url") ? null : authorJson.getString("url")));
+        }
+        else embed.setAuthor(null);
+
+        if (messageEmbed.has("video"))
+        {
+            JSONObject videoJson = messageEmbed.getJSONObject("video");
+            embed.setVideoInfo(new VideoInfo(
+                    videoJson.getString("url"),
+                    videoJson.getInt("width"),
+                    videoJson.getInt("height")));
+        }
+        return embed;
     }
 }
