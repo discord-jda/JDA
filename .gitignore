@@ -4,6 +4,7 @@ tokens.json
 
 # maven compile
 /target/
+dependency-reduced-pom.xml
 
 # eclipse files
 .classpath
