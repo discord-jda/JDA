@@ -99,7 +99,10 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
                 new MessageRecievedHandler(api, responseTotal).handle(content);
                 break;
             case "MESSAGE_UPDATE":
-                new MessageUpdateHandler(api, responseTotal).handle(content);
+                if (content.has("author"))
+                    new MessageUpdateHandler(api, responseTotal).handle(content);
+                else
+                    if (printUnimplemented) System.out.println(message);//TODO: Implement MessageEmbedHandler
                 break;
             case "MESSAGE_DELETE":
                 new MessageDeleteHandler(api, responseTotal).handle(content);
