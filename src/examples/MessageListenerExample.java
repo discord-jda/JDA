@@ -37,7 +37,7 @@ import net.dv8tion.jda.hooks.ListenerAdapter;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class MessageExample extends ListenerAdapter
+public class MessageListenerExample extends ListenerAdapter
 {
     /**
      * Used for the internal test bot.
@@ -50,7 +50,7 @@ public class MessageExample extends ListenerAdapter
         try
         {
             JDA api = new JDA(config.getString("email"), config.getString("password"));
-            api.getEventManager().register(new MessageExample());
+            api.getEventManager().register(new MessageListenerExample());
         }
         catch (IllegalArgumentException e)
         {
@@ -66,37 +66,6 @@ public class MessageExample extends ListenerAdapter
             //TODO: Do NOT let this make it to main.  When someone auto generates the Catch list JSONException should not
             //       auto generate with IllegalArgumentException and LoginException.
         }
-    }
-
-    private static JSONObject getConfig()
-    {
-        File config = new File("config.json");
-        if (!config.exists())
-        {
-            try
-            {
-                Files.write(Paths.get(config.getPath()),
-                        new JSONObject()
-                                .put("email", "")
-                                .put("password", "")
-                                .toString(4).getBytes());
-                System.out.println("config.json created. Populate with login information.");
-                System.exit(0);
-            }
-            catch (JSONException | IOException e)
-            {
-                e.printStackTrace();
-            }
-        }
-        try
-        {
-            return new JSONObject(new String(Files.readAllBytes(Paths.get(config.getPath())), "UTF-8"));
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     @Override
@@ -152,5 +121,36 @@ public class MessageExample extends ListenerAdapter
                 messages.forEach(Message::deleteMessage);
             }
         }
+    }
+
+    private static JSONObject getConfig()
+    {
+        File config = new File("config.json");
+        if (!config.exists())
+        {
+            try
+            {
+                Files.write(Paths.get(config.getPath()),
+                        new JSONObject()
+                                .put("email", "")
+                                .put("password", "")
+                                .toString(4).getBytes());
+                System.out.println("config.json created. Populate with login information.");
+                System.exit(0);
+            }
+            catch (JSONException | IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+        try
+        {
+            return new JSONObject(new String(Files.readAllBytes(Paths.get(config.getPath())), "UTF-8"));
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
