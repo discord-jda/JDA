@@ -142,10 +142,10 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
             case "GUILD_CREATE":
                 if (printUnimplemented) System.out.println(message);
                 break;
-            case "GUILD_DELETE":
+            case "GUILD_UPDATE":
                 if (printUnimplemented) System.out.println(message);
                 break;
-            case "GUILD_ROLE_UPDATE":
+            case "GUILD_DELETE":
                 if (printUnimplemented) System.out.println(message);
                 break;
             case "GUILD_MEMBER_ADD":
@@ -162,6 +162,15 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
                 break;
             case "GUILD_BAN_REMOVE":
                 new GuildMemberBanHandler(api, responseTotal, false).handle(content);
+                break;
+            case "GUILD_ROLE_CREATE":
+                if (printUnimplemented) System.out.println(message);
+                break;
+            case "GUILD_ROLE_UPDATE":
+                if (printUnimplemented) System.out.println(message);
+                break;
+            case "GUILD_ROLE_DELETE":
+                if (printUnimplemented) System.out.println(message);
                 break;
             default:
                 System.out.println("Unrecognized event:\n" + message);    //TODO: Replace with "we don't know this type"
