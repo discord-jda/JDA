@@ -34,6 +34,8 @@ import net.dv8tion.jda.events.guild.member.GenericGuildMemberEvent;
 import net.dv8tion.jda.events.guild.member.GuildMemberBanEvent;
 import net.dv8tion.jda.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.events.guild.member.GuildMemberLeaveEvent;
+import net.dv8tion.jda.events.guild.member.GuildMemberRoleAddEvent;
+import net.dv8tion.jda.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.events.guild.member.GuildMemberUnbanEvent;
 import net.dv8tion.jda.events.message.GenericMessageEvent;
 import net.dv8tion.jda.events.message.MessageDeleteEvent;
@@ -113,6 +115,11 @@ public abstract class ListenerAdapter implements EventListener
             onGuildMemberBan((GuildMemberBanEvent) event);
         else if (event instanceof GuildMemberUnbanEvent)
             onGuildMemberUnban((GuildMemberUnbanEvent) event);
+        else if (event instanceof GuildMemberRoleAddEvent)
+            onGuildMemberRoleAdd((GuildMemberRoleAddEvent) event);
+        else if (event instanceof GuildMemberRoleRemoveEvent)
+            onGuildMemberRoleRemove((GuildMemberRoleRemoveEvent) event);
+
         //Leave needs to be checked in a separate if-statement so that the Ban and Kick events will also fire this.
         if (event instanceof GuildMemberLeaveEvent)
             onGuildMemberLeave((GuildMemberLeaveEvent) event);
@@ -168,6 +175,8 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildMemberLeave(GuildMemberLeaveEvent event) {}
     public void onGuildMemberBan(GuildMemberBanEvent event) {}
     public void onGuildMemberUnban(GuildMemberUnbanEvent event) {}
+    public void onGuildMemberRoleAdd(GuildMemberRoleAddEvent event) {}
+    public void onGuildMemberRoleRemove(GuildMemberRoleRemoveEvent event) {}
 
     //Generic Events
     public void onGenericUserEvent(GenericUserEvent event) {}

@@ -29,7 +29,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class WebSocketClient extends org.java_websocket.client.WebSocketClient
 {
-
+    private Thread keepAliveThread;
     private boolean connected;
     private long keepAliveInterval;
     private JDA api;
@@ -85,7 +85,7 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
         if (type.equals("READY"))
         {
             keepAliveInterval = content.getLong("heartbeat_interval");
-            new Thread(() -> {
+            keepAliveThread = new Thread(() -> {
                 while (!getConnection().isClosed())
                 {
                     send(new JSONObject().put("op", 1).put("d", System.currentTimeMillis()).toString());
@@ -98,7 +98,9 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
                         System.exit(0);
                     }
                 }
-            }).start();
+            });
+            keepAliveThread.setDaemon(true);
+            keepAliveThread.start();
         }
 
         boolean printUnimplemented = true;    //TODO: Remove, just for development debug.
@@ -137,26 +139,29 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
             case "CHANNEL_DELETE":
                 if (printUnimplemented) System.out.println(message);
                 break;
+            case "GUILD_CREATE":
+                if (printUnimplemented) System.out.println(message);
+                break;
+            case "GUILD_DELETE":
+                if (printUnimplemented) System.out.println(message);
+                break;
             case "GUILD_ROLE_UPDATE":
                 if (printUnimplemented) System.out.println(message);
+                break;
+            case "GUILD_MEMBER_ADD":
+                new GuildMemberAddHandler(api, responseTotal).handle(content);
+                break;
+            case "GUILD_MEMBER_UPDATE":
+                new GuildMemberRoleHandler(api, responseTotal).handle(content);
+                break;
+            case "GUILD_MEMBER_REMOVE":
+                new GuildMemberRemoveHandler(api, responseTotal).handle(content);
                 break;
             case "GUILD_BAN_ADD":
                 new GuildMemberBanHandler(api, responseTotal, true).handle(content);
                 break;
             case "GUILD_BAN_REMOVE":
                 new GuildMemberBanHandler(api, responseTotal, false).handle(content);
-                break;
-            case "GUILD_MEMBER_ADD":
-                new GuildMemberAddHandler(api, responseTotal).handle(content);
-                break;
-            case "GUILD_MEMBER_REMOVE":
-                new GuildMemberRemoveHandler(api, responseTotal).handle(content);
-                break;
-            case "GUILD_CREATE":
-                if (printUnimplemented) System.out.println(message);
-                break;
-            case "GUILD_DELETE":
-                if (printUnimplemented) System.out.println(message);
                 break;
             default:
                 System.out.println("Unrecognized event:\n" + message);    //TODO: Replace with "we don't know this type"
@@ -177,6 +182,17 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
     public void onError(Exception ex)
     {
         ex.printStackTrace();
+    }
+
+    @Override
+    public void close()
+    {
+        if (keepAliveThread != null)
+        {
+            keepAliveThread.interrupt();
+            keepAliveThread = null;
+        }
+        super.close();
     }
 
     public boolean isConnected()
