@@ -26,6 +26,8 @@ import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.events.guild.GuildLeaveEvent;
+import net.dv8tion.jda.events.guild.GuildRoleCreateEvent;
+import net.dv8tion.jda.events.guild.GuildRoleDeleteEvent;
 import net.dv8tion.jda.events.guild.member.GuildMemberBanEvent;
 import net.dv8tion.jda.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.events.guild.member.GuildMemberRoleRemoveEvent;
@@ -102,6 +104,18 @@ public class GuildListenerExample extends ListenerAdapter
         {
             System.out.println(r.getName());
         }
+    }
+
+    @Override
+    public void onGuildRoleCreate(GuildRoleCreateEvent event)
+    {
+        System.out.println("The " + event.getGuild().getName() + " Guild just created a new role called: " + event.getRole().getName());
+    }
+
+    @Override
+    public void onGuildRoleDelete(GuildRoleDeleteEvent event)
+    {
+        System.out.println("The following role was deleted from the " + event.getGuild().getName() + " guild: " + event.getRole().getName());
     }
 
     //Simple config system to make life easier. THIS IS NOT REQUIRED FOR JDA.

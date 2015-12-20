@@ -29,6 +29,8 @@ import net.dv8tion.jda.handle.GuildMemberAddHandler;
 import net.dv8tion.jda.handle.GuildMemberBanHandler;
 import net.dv8tion.jda.handle.GuildMemberRemoveHandler;
 import net.dv8tion.jda.handle.GuildMemberRoleHandler;
+import net.dv8tion.jda.handle.GuildRoleCreateHandler;
+import net.dv8tion.jda.handle.GuildRoleDeleteHandler;
 import net.dv8tion.jda.handle.MessageDeleteHandler;
 import net.dv8tion.jda.handle.MessageEmbedHandler;
 import net.dv8tion.jda.handle.MessageRecievedHandler;
@@ -179,13 +181,13 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
                 new GuildMemberBanHandler(api, responseTotal, false).handle(content);
                 break;
             case "GUILD_ROLE_CREATE":
-                if (printUnimplemented) System.out.println(message);
+                new GuildRoleCreateHandler(api, responseTotal).handle(content);
                 break;
             case "GUILD_ROLE_UPDATE":
                 if (printUnimplemented) System.out.println(message);
                 break;
             case "GUILD_ROLE_DELETE":
-                if (printUnimplemented) System.out.println(message);
+                new GuildRoleDeleteHandler(api, responseTotal).handle(content);
                 break;
             default:
                 System.out.println("Unrecognized event:\n" + message);    //TODO: Replace with "we don't know this type"
