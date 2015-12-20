@@ -16,12 +16,21 @@
 package net.dv8tion.jda.events.user;
 
 import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.OnlineStatus;
 import net.dv8tion.jda.entities.User;
 
 public class UserOnlineStatusUpdateEvent extends GenericUserEvent
 {
-    public UserOnlineStatusUpdateEvent(JDA api, int responseNumber, User user)
+    protected OnlineStatus previousOnlineStatus;
+
+    public UserOnlineStatusUpdateEvent(JDA api, int responseNumber, User user, OnlineStatus previousOnlineStatus)
     {
         super(api, responseNumber, user);
+        this.previousOnlineStatus = previousOnlineStatus;
+    }
+
+    public OnlineStatus getPreviousOnlineStatus()
+    {
+        return previousOnlineStatus;
     }
 }

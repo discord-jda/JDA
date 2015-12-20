@@ -20,8 +20,16 @@ import net.dv8tion.jda.entities.User;
 
 public class UserNameUpdateEvent extends GenericUserEvent
 {
-    public UserNameUpdateEvent(JDA api, int responseNumber, User user)
+    protected String previousUsername;
+
+    public UserNameUpdateEvent(JDA api, int responseNumber, User user, String previousUsername)
     {
         super(api, responseNumber, user);
+        this.previousUsername = previousUsername;
+    }
+
+    public String getPreviousUsername()
+    {
+        return previousUsername;
     }
 }

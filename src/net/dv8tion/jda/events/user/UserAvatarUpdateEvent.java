@@ -20,8 +20,21 @@ import net.dv8tion.jda.entities.User;
 
 public class UserAvatarUpdateEvent extends GenericUserEvent
 {
-    public UserAvatarUpdateEvent(JDA api, int responseNumber, User user)
+    protected String previousAvatarId;
+
+    public UserAvatarUpdateEvent(JDA api, int responseNumber, User user, String previousAvatarId)
     {
         super(api, responseNumber, user);
+        this.previousAvatarId = previousAvatarId;
+    }
+
+    public String getPreviousAvatarId()
+    {
+        return previousAvatarId;
+    }
+
+    public String getPreviousAvatarUrl()
+    {
+        return previousAvatarId == null ? null : "https://cdn.discordapp.com/avatars/" + user.getId() + "/" + previousAvatarId + ".jpg";
     }
 }

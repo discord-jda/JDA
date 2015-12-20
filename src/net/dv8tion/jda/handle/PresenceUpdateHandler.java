@@ -45,21 +45,23 @@ public class PresenceUpdateHandler extends SocketHandler
 
             if (!user.getUsername().equals(username))
             {
+                String oldUsername = user.getUsername();
                 user.setUserName(username);
                 user.setDiscriminator(discriminator);
                 api.getEventManager().handle(
                         new UserNameUpdateEvent(
                                 api, responseNumber,
-                                user));
+                                user, oldUsername));
             }
             String oldAvatar = user.getAvatarId();
             if (!(avatarId == null && oldAvatar == null) && !StringUtils.equals(avatarId, oldAvatar))
             {
+                String oldAvatarId = user.getAvatarId();
                 user.setAvatarId(avatarId);
                 api.getEventManager().handle(
                         new UserAvatarUpdateEvent(
                                 api, responseNumber,
-                                user));
+                                user, oldAvatarId));
             }
         }
 
@@ -68,19 +70,21 @@ public class PresenceUpdateHandler extends SocketHandler
 
         if (!user.getOnlineStatus().equals(status))
         {
+            OnlineStatus oldStatus = user.getOnlineStatus();
             user.setOnlineStatus(status);
             api.getEventManager().handle(
                     new UserOnlineStatusUpdateEvent(
                             api, responseNumber,
-                            user));
+                            user, oldStatus));
         }
         if (user.getCurrentGameId() != gameId)
         {
+            int oldGameId = user.getCurrentGameId();
             user.setCurrentGameId(gameId);
             api.getEventManager().handle(
                     new UserGameUpdateEvent(
                             api, responseNumber,
-                            user));
+                            user, oldGameId));
         }
         api.getEventManager().handle(
                 new GenericUserEvent(
