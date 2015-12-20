@@ -120,22 +120,20 @@ public abstract class ListenerAdapter implements EventListener
             onVoiceJoin((VoiceJoinEvent) event);
         else if (event instanceof VoiceLeaveEvent)
             onVoiceLeave((VoiceLeaveEvent) event);
-        else if (event instanceof GenericVoiceEvent)
-            onGenericVoice((GenericVoiceEvent) event);
 
         //Leave needs to be checked in a separate if-statement so that the Ban and Kick events will also fire this.
         if (event instanceof GuildMemberLeaveEvent)
             onGuildMemberLeave((GuildMemberLeaveEvent) event);
 
             //Grouped Mute/Deaf events
-        else if (event instanceof VoiceMuteEvent)
+        if (event instanceof VoiceMuteEvent)
             onVoiceMute((VoiceMuteEvent) event);
         else if (event instanceof VoiceDeafEvent)
             onVoiceDeaf((VoiceDeafEvent) event);
 
         //Generic Events
         //Start a new if statement so that these are no overridden by the above events.
-        else if (event instanceof GenericMessageEvent)
+        if (event instanceof GenericMessageEvent)
             onGenericMessage((GenericMessageEvent) event);
         else if (event instanceof GenericTextChannelEvent)
             onGenericTextChannel((GenericTextChannelEvent) event);
@@ -143,7 +141,11 @@ public abstract class ListenerAdapter implements EventListener
             onGenericVoiceChannel((GenericVoiceChannelEvent) event);
         else if (event instanceof GenericGuildMemberEvent)
             onGenericGuildMember((GenericGuildMemberEvent) event);
-        else if (event instanceof GenericGuildEvent)
+        else if (event instanceof GenericVoiceEvent)
+            onGenericVoice((GenericVoiceEvent) event);
+
+        //Generic events that have generic subclasses (the subclasses as above).
+        if (event instanceof GenericGuildEvent)
             onGenericGuild((GenericGuildEvent) event);
     }
 
@@ -190,62 +192,21 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildRoleDelete(GuildRoleDeleteEvent event) {}
 
     //Voice Events
-    public void onVoiceSelfMute(VoiceSelfMuteEvent event)
-    {
-    }
-
-    public void onVoiceServerMute(VoiceServerMuteEvent event)
-    {
-    }
-
-    public void onVoiceSelfDeaf(VoiceSelfDeafEvent event)
-    {
-    }
-
-    public void onVoiceServerDeaf(VoiceServerDeafEvent event)
-    {
-    }
-
-    public void onVoiceMute(VoiceMuteEvent event)
-    {
-    }
-
-    public void onVoiceDeaf(VoiceDeafEvent event)
-    {
-    }
-
-    public void onVoiceJoin(VoiceJoinEvent event)
-    {
-    }
-
-    public void onVoiceLeave(VoiceLeaveEvent event)
-    {
-    }
-
-    public void onGenericVoice(GenericVoiceEvent event)
-    {
-    }
+    public void onVoiceSelfMute(VoiceSelfMuteEvent event) {}
+    public void onVoiceSelfDeaf(VoiceSelfDeafEvent event) {}
+    public void onVoiceServerMute(VoiceServerMuteEvent event) {}
+    public void onVoiceServerDeaf(VoiceServerDeafEvent event) {}
+    public void onVoiceMute(VoiceMuteEvent event) {}
+    public void onVoiceDeaf(VoiceDeafEvent event) {}
+    public void onVoiceJoin(VoiceJoinEvent event) {}
+    public void onVoiceLeave(VoiceLeaveEvent event) {}
 
     //Generic Events
     public void onGenericUserEvent(GenericUserEvent event) {}
-
-    public void onGenericMessage(GenericMessageEvent event)
-    {
-    }
-
-    public void onGenericTextChannel(GenericTextChannelEvent event)
-    {
-    }
-
-    public void onGenericVoiceChannel(GenericVoiceChannelEvent event)
-    {
-    }
-
-    public void onGenericGuildMember(GenericGuildMemberEvent event)
-    {
-    }
-
-    public void onGenericGuild(GenericGuildEvent event)
-    {
-    }
+    public void onGenericMessage(GenericMessageEvent event) {}
+    public void onGenericTextChannel(GenericTextChannelEvent event) {}
+    public void onGenericVoiceChannel(GenericVoiceChannelEvent event) {}
+    public void onGenericGuildMember(GenericGuildMemberEvent event) {}
+    public void onGenericGuild(GenericGuildEvent event) {}
+    public void onGenericVoice(GenericVoiceEvent event) {}
 }
