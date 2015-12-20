@@ -192,13 +192,14 @@ public class EntityBuilder
         {
             role = new RoleImpl(id);
         }
-        return role
-                .setName(roleJson.getString("name"))
-                .setPosition(roleJson.getInt("position"))
-                .setPermissions(roleJson.getInt("permissions"))
-                .setManaged(roleJson.getBoolean("managed"))
-                .setHoist(roleJson.getBoolean("hoist"))
-                .setColor(roleJson.getInt("color"));
+        role.setName(roleJson.getString("name"))
+            .setPosition(roleJson.getInt("position"))
+            .setPermissions(roleJson.getInt("permissions"))
+            .setManaged(roleJson.getBoolean("managed"))
+            .setHoist(roleJson.getBoolean("hoist"))
+            .setColor(roleJson.getInt("color"));
+        guild.getRolesMap().put(id, role);
+        return role;
     }
 
     protected User createUser(JSONObject user)

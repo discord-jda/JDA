@@ -35,7 +35,6 @@ public class GuildRoleCreateHandler extends SocketHandler
     {
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("guild_id"));
         Role newRole = new EntityBuilder(api).createRole(content.getJSONObject("role"), guild.getId());
-        guild.getRolesMap().put(newRole.getId(), newRole);
         api.getEventManager().handle(
                 new GuildRoleCreateEvent(
                         api, responseNumber,
