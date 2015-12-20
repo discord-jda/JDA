@@ -43,7 +43,6 @@ public class VoiceChangeHandler extends SocketHandler
                 if (oldChannel != null)
                 {
                     status.setChannel(null);
-                    status.setGuild(null);
                     ((VoiceChannelImpl) oldChannel).getUsersModifiable().remove(user);
                     api.getEventManager().handle(new VoiceLeaveEvent(api, responseNumber, user, oldChannel));
                 }
@@ -56,7 +55,6 @@ public class VoiceChangeHandler extends SocketHandler
                 VoiceChannel oldChannel = status.getChannel();
                 VoiceChannel newChannel = api.getVoiceChannelMap().get("channel_id");
                 status.setChannel(newChannel);
-                status.setGuild(newChannel.getGuild());
                 if (oldChannel != null)
                 {
                     ((VoiceChannelImpl) oldChannel).getUsersModifiable().remove(user);

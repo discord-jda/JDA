@@ -26,7 +26,6 @@ public class VoiceStatusImpl implements VoiceStatus
     private boolean deaf = false, serverDeaf = false;
     private final User user;
     private VoiceChannel channel;
-    private Guild guild;
 
     public VoiceStatusImpl(User user)
     {
@@ -66,7 +65,7 @@ public class VoiceStatusImpl implements VoiceStatus
     @Override
     public Guild getGuild()
     {
-        return guild;
+        return (channel == null) ? null : channel.getGuild();
     }
 
     @Override
@@ -98,10 +97,5 @@ public class VoiceStatusImpl implements VoiceStatus
     public void setChannel(VoiceChannel channel)
     {
         this.channel = channel;
-    }
-
-    public void setGuild(Guild guild)
-    {
-        this.guild = guild;
     }
 }
