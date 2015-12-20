@@ -26,30 +26,11 @@ import net.dv8tion.jda.events.channel.voice.GenericVoiceChannelEvent;
 import net.dv8tion.jda.events.channel.voice.VoiceChannelCreateEvent;
 import net.dv8tion.jda.events.channel.voice.VoiceChannelDeleteEvent;
 import net.dv8tion.jda.events.channel.voice.VoiceChannelUpdateEvent;
-import net.dv8tion.jda.events.guild.GenericGuildEvent;
-import net.dv8tion.jda.events.guild.GuildJoinEvent;
-import net.dv8tion.jda.events.guild.GuildLeaveEvent;
-import net.dv8tion.jda.events.guild.GuildRoleCreateEvent;
-import net.dv8tion.jda.events.guild.GuildRoleDeleteEvent;
-import net.dv8tion.jda.events.guild.GuildUpdateEvent;
-import net.dv8tion.jda.events.guild.member.GenericGuildMemberEvent;
-import net.dv8tion.jda.events.guild.member.GuildMemberBanEvent;
-import net.dv8tion.jda.events.guild.member.GuildMemberJoinEvent;
-import net.dv8tion.jda.events.guild.member.GuildMemberLeaveEvent;
-import net.dv8tion.jda.events.guild.member.GuildMemberRoleAddEvent;
-import net.dv8tion.jda.events.guild.member.GuildMemberRoleRemoveEvent;
-import net.dv8tion.jda.events.guild.member.GuildMemberUnbanEvent;
-import net.dv8tion.jda.events.message.GenericMessageEvent;
-import net.dv8tion.jda.events.message.MessageDeleteEvent;
-import net.dv8tion.jda.events.message.MessageEmbedEvent;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.events.message.MessageUpdateEvent;
-import net.dv8tion.jda.events.user.GenericUserEvent;
-import net.dv8tion.jda.events.user.UserAvatarUpdateEvent;
-import net.dv8tion.jda.events.user.UserGameUpdateEvent;
-import net.dv8tion.jda.events.user.UserNameUpdateEvent;
-import net.dv8tion.jda.events.user.UserOnlineStatusUpdateEvent;
-import net.dv8tion.jda.events.user.UserTypingEvent;
+import net.dv8tion.jda.events.guild.*;
+import net.dv8tion.jda.events.guild.member.*;
+import net.dv8tion.jda.events.message.*;
+import net.dv8tion.jda.events.user.*;
+import net.dv8tion.jda.events.voice.*;
 
 public abstract class ListenerAdapter implements EventListener
 {
@@ -126,22 +107,44 @@ public abstract class ListenerAdapter implements EventListener
         else if (event instanceof GuildRoleDeleteEvent)
             onGuildRoleDelete((GuildRoleDeleteEvent) event);
 
+            //Voice Events
+        else if (event instanceof VoiceSelfMuteEvent)
+            onVoiceSelfMute((VoiceSelfMuteEvent) event);
+        else if (event instanceof VoiceServerMuteEvent)
+            onVoiceServerMute((VoiceServerMuteEvent) event);
+        else if (event instanceof VoiceSelfDeafEvent)
+            onVoiceSelfDeaf((VoiceSelfDeafEvent) event);
+        else if (event instanceof VoiceServerDeafEvent)
+            onVoiceServerDeaf((VoiceServerDeafEvent) event);
+        else if (event instanceof VoiceJoinEvent)
+            onVoiceJoin((VoiceJoinEvent) event);
+        else if (event instanceof VoiceLeaveEvent)
+            onVoiceLeave((VoiceLeaveEvent) event);
+        else if (event instanceof GenericVoiceEvent)
+            onGenericVoice((GenericVoiceEvent) event);
+
         //Leave needs to be checked in a separate if-statement so that the Ban and Kick events will also fire this.
         if (event instanceof GuildMemberLeaveEvent)
             onGuildMemberLeave((GuildMemberLeaveEvent) event);
 
+            //Grouped Mute/Deaf events
+        else if (event instanceof VoiceMuteEvent)
+            onVoiceMute((VoiceMuteEvent) event);
+        else if (event instanceof VoiceDeafEvent)
+            onVoiceDeaf((VoiceDeafEvent) event);
+
         //Generic Events
         //Start a new if statement so that these are no overridden by the above events.
-        if (event instanceof GenericMessageEvent)
-            onGenericMessageEvent((GenericMessageEvent) event);
+        else if (event instanceof GenericMessageEvent)
+            onGenericMessage((GenericMessageEvent) event);
         else if (event instanceof GenericTextChannelEvent)
-            onGenericTextChannelEvent((GenericTextChannelEvent) event);
+            onGenericTextChannel((GenericTextChannelEvent) event);
         else if (event instanceof GenericVoiceChannelEvent)
-            onGenericVoiceChannelEvent((GenericVoiceChannelEvent) event);
+            onGenericVoiceChannel((GenericVoiceChannelEvent) event);
         else if (event instanceof GenericGuildMemberEvent)
-            onGenericGuildMemberEvent((GenericGuildMemberEvent) event);
+            onGenericGuildMember((GenericGuildMemberEvent) event);
         else if (event instanceof GenericGuildEvent)
-            onGenericGuildEvent((GenericGuildEvent) event);
+            onGenericGuild((GenericGuildEvent) event);
     }
 
     //JDA Events
@@ -186,11 +189,63 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildRoleCreate(GuildRoleCreateEvent event) {}
     public void onGuildRoleDelete(GuildRoleDeleteEvent event) {}
 
+    //Voice Events
+    public void onVoiceSelfMute(VoiceSelfMuteEvent event)
+    {
+    }
+
+    public void onVoiceServerMute(VoiceServerMuteEvent event)
+    {
+    }
+
+    public void onVoiceSelfDeaf(VoiceSelfDeafEvent event)
+    {
+    }
+
+    public void onVoiceServerDeaf(VoiceServerDeafEvent event)
+    {
+    }
+
+    public void onVoiceMute(VoiceMuteEvent event)
+    {
+    }
+
+    public void onVoiceDeaf(VoiceDeafEvent event)
+    {
+    }
+
+    public void onVoiceJoin(VoiceJoinEvent event)
+    {
+    }
+
+    public void onVoiceLeave(VoiceLeaveEvent event)
+    {
+    }
+
+    public void onGenericVoice(GenericVoiceEvent event)
+    {
+    }
+
     //Generic Events
     public void onGenericUserEvent(GenericUserEvent event) {}
-    public void onGenericMessageEvent(GenericMessageEvent event) {}
-    public void onGenericTextChannelEvent(GenericTextChannelEvent event) {}
-    public void onGenericVoiceChannelEvent(GenericVoiceChannelEvent event) {}
-    public void onGenericGuildMemberEvent(GenericGuildMemberEvent event) {}
-    public void onGenericGuildEvent(GenericGuildEvent event) {}
+
+    public void onGenericMessage(GenericMessageEvent event)
+    {
+    }
+
+    public void onGenericTextChannel(GenericTextChannelEvent event)
+    {
+    }
+
+    public void onGenericVoiceChannel(GenericVoiceChannelEvent event)
+    {
+    }
+
+    public void onGenericGuildMember(GenericGuildMemberEvent event)
+    {
+    }
+
+    public void onGenericGuild(GenericGuildEvent event)
+    {
+    }
 }

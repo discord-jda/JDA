@@ -102,4 +102,12 @@ public interface User
      *      Never-null {@link net.dv8tion.jda.entities.PrivateChannel PrivateChannel} that is associated with this {@link net.dv8tion.jda.entities.User User}.
      */
     PrivateChannel getPrivateChannel();
+
+    /**
+     * Gets the {@link net.dv8tion.jda.entities.VoiceStatus VoiceStatus} Object holding the current {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel}
+     * and mute/deaf status of the User
+     *
+     * @return The User's {@link net.dv8tion.jda.entities.VoiceStatus VoiceStatus}
+     */
+    VoiceStatus getVoiceStatus();
 }

@@ -18,6 +18,7 @@ package net.dv8tion.jda.entities.impl;
 import net.dv8tion.jda.OnlineStatus;
 import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.entities.VoiceStatus;
 
 public class UserImpl implements User
 {
@@ -28,10 +29,12 @@ public class UserImpl implements User
     private int gameId = -1;
     private OnlineStatus onlineStatus = OnlineStatus.OFFLINE;
     private PrivateChannel privateChannel = null;
+    private VoiceStatus voiceStatus;
 
     public UserImpl(String id)
     {
         this.id = id;
+        this.voiceStatus = new VoiceStatusImpl(this);
     }
 
     @Override
@@ -88,6 +91,12 @@ public class UserImpl implements User
         if (privateChannel != null)
             return privateChannel;
         throw new UnsupportedOperationException("Currently no support for starting a NEW direct message session.");
+    }
+
+    @Override
+    public VoiceStatus getVoiceStatus()
+    {
+        return voiceStatus;
     }
 
     public UserImpl setUserName(String username)

@@ -15,34 +15,16 @@
  */
 package net.dv8tion.jda.requests;
 
-import java.net.URI;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-
-import javax.net.ssl.SSLContext;
-
 import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.handle.ChannelCreateHandler;
-import net.dv8tion.jda.handle.ChannelDeleteHandler;
-import net.dv8tion.jda.handle.GuildJoinHandler;
-import net.dv8tion.jda.handle.GuildLeaveHandler;
-import net.dv8tion.jda.handle.GuildMemberAddHandler;
-import net.dv8tion.jda.handle.GuildMemberBanHandler;
-import net.dv8tion.jda.handle.GuildMemberRemoveHandler;
-import net.dv8tion.jda.handle.GuildMemberRoleHandler;
-import net.dv8tion.jda.handle.GuildRoleCreateHandler;
-import net.dv8tion.jda.handle.GuildRoleDeleteHandler;
-import net.dv8tion.jda.handle.MessageDeleteHandler;
-import net.dv8tion.jda.handle.MessageEmbedHandler;
-import net.dv8tion.jda.handle.MessageRecievedHandler;
-import net.dv8tion.jda.handle.MessageUpdateHandler;
-import net.dv8tion.jda.handle.PresenceUpdateHandler;
-import net.dv8tion.jda.handle.ReadyHandler;
-import net.dv8tion.jda.handle.UserTypingHandler;
-
+import net.dv8tion.jda.handle.*;
 import org.java_websocket.client.DefaultSSLWebSocketClientFactory;
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONObject;
+
+import javax.net.ssl.SSLContext;
+import java.net.URI;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 
 
 public class WebSocketClient extends org.java_websocket.client.WebSocketClient
@@ -146,7 +128,7 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
                 new MessageDeleteHandler(api, responseTotal).handle(content);
                 break;
             case "VOICE_STATE_UPDATE":
-                if (printUnimplemented) System.out.println(message);
+                new VoiceChangeHandler(api, responseTotal).handle(content);
                 break;
             case "CHANNEL_CREATE":
                 new ChannelCreateHandler(api, responseTotal).handle(content);
