@@ -18,7 +18,7 @@ package net.dv8tion.jda.handle;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.events.channel.priv.PrivateChannelCreateEvent;
 import net.dv8tion.jda.events.channel.text.TextChannelCreateEvent;
-
+import net.dv8tion.jda.events.channel.voice.VoiceChannelCreateEvent;
 import org.json.JSONObject;
 
 public class ChannelCreateHandler extends SocketHandler
@@ -48,11 +48,10 @@ public class ChannelCreateHandler extends SocketHandler
         }
         else if (type.equals("voice"))
         {
-            //TODO:IMPLEMENT - implement the VoiceChannelCreate event fire after the EntitiyBuilder.createVoiceChannel has been implemented
-//            api.getEventManager().handle(
-//                    new VoiceChannelCreateEvent(
-//                            api, responseNumber,
-//                            new EntityBuilder(api).createVoiceChannel(content, content.getString("guild_id"))));
+            api.getEventManager().handle(
+                    new VoiceChannelCreateEvent(
+                            api, responseNumber,
+                            new EntityBuilder(api).createVoiceChannel(content, content.getString("guild_id"))));
         }
         else if (type.equalsIgnoreCase("private"))
         {

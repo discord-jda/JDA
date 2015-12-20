@@ -15,40 +15,23 @@
  */
 package net.dv8tion.jda.handle;
 
+import net.dv8tion.jda.EmbedType;
+import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.OnlineStatus;
+import net.dv8tion.jda.Region;
+import net.dv8tion.jda.entities.*;
+import net.dv8tion.jda.entities.MessageEmbed.Provider;
+import net.dv8tion.jda.entities.MessageEmbed.Thumbnail;
+import net.dv8tion.jda.entities.MessageEmbed.VideoInfo;
+import net.dv8tion.jda.entities.impl.*;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import net.dv8tion.jda.EmbedType;
-import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.OnlineStatus;
-import net.dv8tion.jda.Region;
-import net.dv8tion.jda.entities.Guild;
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.MessageEmbed;
-import net.dv8tion.jda.entities.MessageEmbed.Provider;
-import net.dv8tion.jda.entities.MessageEmbed.Thumbnail;
-import net.dv8tion.jda.entities.MessageEmbed.VideoInfo;
-import net.dv8tion.jda.entities.PrivateChannel;
-import net.dv8tion.jda.entities.Role;
-import net.dv8tion.jda.entities.SelfInfo;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.entities.VoiceChannel;
-import net.dv8tion.jda.entities.impl.GuildImpl;
-import net.dv8tion.jda.entities.impl.MessageEmbedImpl;
-import net.dv8tion.jda.entities.impl.MessageImpl;
-import net.dv8tion.jda.entities.impl.PermissionOverride;
-import net.dv8tion.jda.entities.impl.PrivateChannelImpl;
-import net.dv8tion.jda.entities.impl.RoleImpl;
-import net.dv8tion.jda.entities.impl.SelfInfoImpl;
-import net.dv8tion.jda.entities.impl.TextChannelImpl;
-import net.dv8tion.jda.entities.impl.UserImpl;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 public class EntityBuilder
 {
@@ -166,7 +149,16 @@ public class EntityBuilder
 
     protected VoiceChannel createVoiceChannel(JSONObject json, String guildId)
     {
-        return null;
+        String id = json.getString("id");
+        VoiceChannelImpl vc = ((VoiceChannelImpl) api.getVoiceChannelMap().get(id));
+        if (vc == null)
+        {
+            GuildImpl guild = (GuildImpl) api.getGuildMap().get(guildId);
+            vc = new VoiceChannelImpl(id, guild);
+            guild.getVoiceChannelsMap().put(id, vc);
+            api.getVoiceChannelMap().put(id, vc);
+        }
+        return vc.setName(json.getString("name"));
     }
 
     protected PrivateChannel createPrivateChannel(JSONObject privatechat)

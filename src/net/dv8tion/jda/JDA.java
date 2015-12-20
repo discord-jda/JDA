@@ -15,10 +15,7 @@
  */
 package net.dv8tion.jda;
 
-import net.dv8tion.jda.entities.Guild;
-import net.dv8tion.jda.entities.SelfInfo;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.hooks.EventManager;
 import net.dv8tion.jda.requests.RequestBuilder;
 import net.dv8tion.jda.requests.RequestType;
@@ -47,6 +44,7 @@ public class JDA
     private final Map<String, User> userMap = new HashMap<>();
     private final Map<String, Guild> guildMap = new HashMap<>();
     private final Map<String, TextChannel> channelMap = new HashMap<>();
+    private final Map<String, VoiceChannel> voiceChannelMap = new HashMap<>();
     private final Map<String, String> offline_pms = new HashMap<>();    //Userid -> channelid
     private final EventManager eventManager = new EventManager();
     private SelfInfo selfInfo = null;
@@ -211,6 +209,11 @@ public class JDA
     public Map<String, TextChannel> getChannelMap()
     {
         return channelMap;
+    }
+
+    public Map<String, VoiceChannel> getVoiceChannelMap()
+    {
+        return voiceChannelMap;
     }
 
     public Map<String, String> getOffline_pms()
