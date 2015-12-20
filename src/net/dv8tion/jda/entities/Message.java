@@ -96,7 +96,7 @@ public interface Message
      * If The Message was not created by this account, this does not have any effect
      * If this method failed, null gets returned
      *
-     * @param new_content the new content of the Message
+     * @param newContent the new content of the Message
      * @return a new Message-Object for the edited message
      */
     Message updateMessage(String newContent);

@@ -224,7 +224,7 @@ public class JDA
     /**
      * Returns the currently logged in account represented by {@link net.dv8tion.jda.entities.SelfInfo SelfInfo}.<br>
      * Account settings <b>cannot</b> be modified using this object. If you wish to modify account settings please
-     *   use the {@link net.dv8tion.jda.AccountManager AccountManager}.
+     *   use the AccountManager.
      *
      * @return
      *      The currently logged in account.

@@ -21,7 +21,7 @@ public interface Role
 {
     /**
      * The position of this {@link net.dv8tion.jda.entities.Role Role} in the {@link net.dv8tion.jda.entities.Guild Guild} hierarchy.<br>
-     * (higher value -> higher role).<br>
+     * (higher value means higher role).<br>
      * The @everyone {@link net.dv8tion.jda.entities.Role Role} always return -1
      *
      * @return
