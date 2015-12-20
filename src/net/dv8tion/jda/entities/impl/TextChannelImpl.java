@@ -175,7 +175,7 @@ public class TextChannelImpl implements TextChannel
     public TextChannelImpl setPosition(int position)
     {
         this.position = position;
-        return null;
+        return this;
     }
 
     public Map<User, PermissionOverride> getUserPermissionOverrides()

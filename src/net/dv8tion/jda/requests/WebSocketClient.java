@@ -23,6 +23,7 @@ import javax.net.ssl.SSLContext;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.handle.ChannelCreateHandler;
+import net.dv8tion.jda.handle.ChannelDeleteHandler;
 import net.dv8tion.jda.handle.GuildJoinHandler;
 import net.dv8tion.jda.handle.GuildLeaveHandler;
 import net.dv8tion.jda.handle.GuildMemberAddHandler;
@@ -154,7 +155,7 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
                 if (printUnimplemented) System.out.println(message);
                 break;
             case "CHANNEL_DELETE":
-                if (printUnimplemented) System.out.println(message);
+                new ChannelDeleteHandler(api, responseTotal).handle(content);
                 break;
             case "GUILD_CREATE":
                 new GuildJoinHandler(api, responseTotal).handle(content);
