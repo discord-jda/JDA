@@ -16,12 +16,13 @@
 package net.dv8tion.jda.events.channel.text;
 
 import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.events.Event;
 
 public abstract class GenericTextChannelEvent extends Event
 {
-    private TextChannel channel;
+    protected TextChannel channel;
 
     public GenericTextChannelEvent(JDA api, int responseNumber, TextChannel channel)
     {
@@ -32,5 +33,10 @@ public abstract class GenericTextChannelEvent extends Event
     public TextChannel getChannel()
     {
         return channel;
+    }
+
+    public Guild getGuild()
+    {
+        return channel.getGuild();
     }
 }
