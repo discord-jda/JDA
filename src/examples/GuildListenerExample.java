@@ -24,14 +24,18 @@ import javax.security.auth.login.LoginException;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Role;
+import net.dv8tion.jda.events.guild.GuildJoinEvent;
+import net.dv8tion.jda.events.guild.GuildLeaveEvent;
+import net.dv8tion.jda.events.guild.member.GuildMemberBanEvent;
 import net.dv8tion.jda.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.events.guild.member.GuildMemberRoleRemoveEvent;
+import net.dv8tion.jda.events.guild.member.GuildMemberUnbanEvent;
 import net.dv8tion.jda.hooks.ListenerAdapter;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class RoleListenerExample extends ListenerAdapter
+public class GuildListenerExample extends ListenerAdapter
 {
     /**
      * Used for the internal test bot.
@@ -44,7 +48,7 @@ public class RoleListenerExample extends ListenerAdapter
         try
         {
             JDA api = new JDA(config.getString("email"), config.getString("password"));
-            api.getEventManager().register(new RoleListenerExample());
+            api.getEventManager().register(new GuildListenerExample());
         }
         catch (IllegalArgumentException e)
         {
@@ -54,12 +58,30 @@ public class RoleListenerExample extends ListenerAdapter
         {
             System.out.println("The provided email / password combination was incorrect. Please provide valid details.");
         }
-        catch (JSONException e)
-        {
-            e.printStackTrace();
-            //TODO: Do NOT let this make it to main.  When someone auto generates the Catch list JSONException should not
-            //       auto generate with IllegalArgumentException and LoginException.
-        }
+    }
+
+    @Override
+    public void onGuildJoin(GuildJoinEvent event)
+    {
+        System.out.println("I joined a new Guild! Guild Name: " + event.getGuild().getName());
+    }
+
+    @Override
+    public void onGuildLeave(GuildLeaveEvent event)
+    {
+        System.out.println("I left a guild... Hope I wasn't kicked.  Guild Name: " + event.getGuild().getName());
+    }
+
+    @Override
+    public void onGuildMemberBan(GuildMemberBanEvent event)
+    {
+        System.out.println("Didn't like " + event.getUser().getUsername() + " anyways.");
+    }
+
+    @Override
+    public void onGuildMemberUnban(GuildMemberUnbanEvent event)
+    {
+        System.out.println(event.getUserName() + " was unbanned.  Better keep an eye on them...");
     }
 
     @Override
@@ -82,6 +104,7 @@ public class RoleListenerExample extends ListenerAdapter
         }
     }
 
+    //Simple config system to make life easier. THIS IS NOT REQUIRED FOR JDA.
     private static JSONObject getConfig()
     {
         File config = new File("config.json");

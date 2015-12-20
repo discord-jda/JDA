@@ -27,8 +27,8 @@ import net.dv8tion.jda.events.channel.voice.VoiceChannelCreateEvent;
 import net.dv8tion.jda.events.channel.voice.VoiceChannelDeleteEvent;
 import net.dv8tion.jda.events.channel.voice.VoiceChannelUpdateEvent;
 import net.dv8tion.jda.events.guild.GenericGuildEvent;
-import net.dv8tion.jda.events.guild.GuildCreateEvent;
-import net.dv8tion.jda.events.guild.GuildDeleteEvent;
+import net.dv8tion.jda.events.guild.GuildJoinEvent;
+import net.dv8tion.jda.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.events.guild.GuildUpdateEvent;
 import net.dv8tion.jda.events.guild.member.GenericGuildMemberEvent;
 import net.dv8tion.jda.events.guild.member.GuildMemberBanEvent;
@@ -103,12 +103,12 @@ public abstract class ListenerAdapter implements EventListener
             onPrivateChannelCreate((PrivateChannelCreateEvent) event);
 
         //Guild Events
-        else if (event instanceof GuildCreateEvent)
-            onGuildCreate((GuildCreateEvent) event);
+        else if (event instanceof GuildJoinEvent)
+            onGuildJoin((GuildJoinEvent) event);
         else if (event instanceof GuildUpdateEvent)
             onGuildUpdate((GuildUpdateEvent) event);
-        else if (event instanceof GuildDeleteEvent)
-            onGuildDelete((GuildDeleteEvent) event);
+        else if (event instanceof GuildLeaveEvent)
+            onGuildLeave((GuildLeaveEvent) event);
         else if (event instanceof GuildMemberJoinEvent)
             onGuildMemberJoin((GuildMemberJoinEvent) event);
         else if (event instanceof GuildMemberBanEvent)
@@ -168,9 +168,9 @@ public abstract class ListenerAdapter implements EventListener
     public void onPrivateChannelCreate(PrivateChannelCreateEvent event) {}
 
     //Guild Events
-    public void onGuildCreate(GuildCreateEvent event) {}
+    public void onGuildJoin(GuildJoinEvent event) {}
     public void onGuildUpdate(GuildUpdateEvent event) {}
-    public void onGuildDelete(GuildDeleteEvent event) {}
+    public void onGuildLeave(GuildLeaveEvent event) {}
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {}
     public void onGuildMemberLeave(GuildMemberLeaveEvent event) {}
     public void onGuildMemberBan(GuildMemberBanEvent event) {}

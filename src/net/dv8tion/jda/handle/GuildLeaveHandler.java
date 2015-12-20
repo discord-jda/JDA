@@ -13,14 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.events.guild;
+package net.dv8tion.jda.handle;
 
 import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.events.guild.GuildLeaveEvent;
 
-public class GuildDeleteEvent extends GenericGuildEvent
+import org.json.JSONObject;
+
+public class GuildLeaveHandler extends SocketHandler
 {
-    public GuildDeleteEvent(JDA api, int responseNumber)
+
+    public GuildLeaveHandler(JDA api, int responseNumber)
     {
-        super(api, responseNumber, null);
+        super(api, responseNumber);
+    }
+
+    @Override
+    public void handle(JSONObject content)
+    {
+        Guild guild = api.getGuildMap().get(content.getString("id"));
+        api.getEventManager().handle(
+                new GuildLeaveEvent(
+                        api, responseNumber,
+                        guild));
     }
 }

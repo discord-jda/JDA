@@ -15,16 +15,31 @@
  */
 package net.dv8tion.jda.requests;
 
-import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.handle.*;
-import org.java_websocket.client.DefaultSSLWebSocketClientFactory;
-import org.java_websocket.handshake.ServerHandshake;
-import org.json.JSONObject;
-
-import javax.net.ssl.SSLContext;
 import java.net.URI;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+
+import javax.net.ssl.SSLContext;
+
+import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.handle.ChannelCreateHandler;
+import net.dv8tion.jda.handle.GuildJoinHandler;
+import net.dv8tion.jda.handle.GuildLeaveHandler;
+import net.dv8tion.jda.handle.GuildMemberAddHandler;
+import net.dv8tion.jda.handle.GuildMemberBanHandler;
+import net.dv8tion.jda.handle.GuildMemberRemoveHandler;
+import net.dv8tion.jda.handle.GuildMemberRoleHandler;
+import net.dv8tion.jda.handle.MessageDeleteHandler;
+import net.dv8tion.jda.handle.MessageEmbedHandler;
+import net.dv8tion.jda.handle.MessageRecievedHandler;
+import net.dv8tion.jda.handle.MessageUpdateHandler;
+import net.dv8tion.jda.handle.PresenceUpdateHandler;
+import net.dv8tion.jda.handle.ReadyHandler;
+import net.dv8tion.jda.handle.UserTypingHandler;
+
+import org.java_websocket.client.DefaultSSLWebSocketClientFactory;
+import org.java_websocket.handshake.ServerHandshake;
+import org.json.JSONObject;
 
 
 public class WebSocketClient extends org.java_websocket.client.WebSocketClient
@@ -140,13 +155,13 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
                 if (printUnimplemented) System.out.println(message);
                 break;
             case "GUILD_CREATE":
-                if (printUnimplemented) System.out.println(message);
+                new GuildJoinHandler(api, responseTotal).handle(content);
                 break;
             case "GUILD_UPDATE":
                 if (printUnimplemented) System.out.println(message);
                 break;
             case "GUILD_DELETE":
-                if (printUnimplemented) System.out.println(message);
+                new GuildLeaveHandler(api, responseTotal).handle(content);
                 break;
             case "GUILD_MEMBER_ADD":
                 new GuildMemberAddHandler(api, responseTotal).handle(content);

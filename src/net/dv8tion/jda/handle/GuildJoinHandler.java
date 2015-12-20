@@ -13,15 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.events.guild;
+package net.dv8tion.jda.handle;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.events.guild.GuildJoinEvent;
 
-public class GuildCreateEvent extends GenericGuildEvent
+import org.json.JSONObject;
+
+public class GuildJoinHandler extends SocketHandler
 {
-    public GuildCreateEvent(JDA api, int responseNumber, Guild guild)
+
+    public GuildJoinHandler(JDA api, int responseNumber)
     {
-        super(api, responseNumber, guild);
+        super(api, responseNumber);
     }
+
+    @Override
+    public void handle(JSONObject content)
+    {
+        Guild guild = new EntityBuilder(api).createGuild(content);
+        api.getEventManager().handle(
+                new GuildJoinEvent(
+                        api, responseNumber,
+                        guild));
+    }
+
 }
