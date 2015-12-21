@@ -82,7 +82,8 @@ public interface TextChannel
      * After the Message has been sent, the created {@link net.dv8tion.jda.entities.Message Message} object is returned
      * This Object will be null, if the sending failed
      *
-     * @param text the text to send
+     * @param text
+     *          the text to send
      * @return
      *      the Message created by this function
      */
@@ -95,18 +96,23 @@ public interface TextChannel
      * To allow above behaviour, this method returns a new {@link net.dv8tion.jda.entities.Message Message} instance. The passed one is not modified!
      * If the sending of the Message failed (probably Permissions), this method returns null
      *
-     * @param msg the {@link net.dv8tion.jda.entities.Message Message} to send
-     * @return The created {@link net.dv8tion.jda.entities.Message Message} object or null if it failed
+     * @param msg
+     *          the {@link net.dv8tion.jda.entities.Message Message} to send
+     * @return
+     *      The created {@link net.dv8tion.jda.entities.Message Message} object or null if it failed
      */
     Message sendMessage(Message msg);
 
     /**
      * Checks if the given {@link net.dv8tion.jda.entities.User User} has the given {@link net.dv8tion.jda.Permission Permission}
-     * in this {@link net.dv8tion.jda.entities.TextChannel Textchannel}
+     * in this {@link net.dv8tion.jda.entities.TextChannel TextChannel}
      *
-     * @param user       the User to check the Permission against
-     * @param permission the Permission to check for
-     * @return if the given User has the given Permission in this Channel
+     * @param user
+     *          the User to check the Permission against
+     * @param permission
+     *          the Permission to check for
+     * @return
+     *      if the given User has the given Permission in this Channel
      */
     boolean checkPermission(User user, Permission permission);
 }

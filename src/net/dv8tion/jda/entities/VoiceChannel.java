@@ -17,6 +17,8 @@ package net.dv8tion.jda.entities;
 
 import java.util.List;
 
+import net.dv8tion.jda.Permission;
+
 /**
  * Represents a Discord Voice Channel.
  *
@@ -49,6 +51,15 @@ public interface VoiceChannel
     Guild getGuild();
 
     /**
+     * The position the {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} is displayed at.<br>
+     * Useful for displaying a list of {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannels}.
+     *
+     * @return
+     *      Zero-based int of position of the {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel}.
+     */
+    int getPosition();
+
+    /**
      * An Immutable List of every {@link net.dv8tion.jda.entities.User User} that is currently connected to this {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel}.<br>
      * If there are none currently connected this List will be empty.
      *
@@ -56,4 +67,17 @@ public interface VoiceChannel
      *      List of all connected {@link net.dv8tion.jda.entities.User Users}.
      */
     List<User> getUsers();
+
+    /**
+     * Checks if the given {@link net.dv8tion.jda.entities.User User} has the given {@link net.dv8tion.jda.Permission Permission}
+     * in this {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel}
+     *
+     * @param user
+     *          the User to check the Permission against
+     * @param permission
+     *          the Permission to check for
+     * @return
+     *      if the given User has the given Permission in this Channel
+     */
+    boolean checkPermission(User user, Permission permission);
 }

@@ -71,21 +71,6 @@ public class EntityBuilder
             }
         }
 
-        JSONArray channels = guild.getJSONArray("channels");
-        for (int i = 0; i < channels.length(); i++)
-        {
-            JSONObject channel = channels.getJSONObject(i);
-            String type = channel.getString("type");
-            if (type.equalsIgnoreCase("text"))
-            {
-                createTextChannel(channel, guildObj.getId());
-            }
-            else if (type.equalsIgnoreCase("voice"))
-            {
-                createVoiceChannel(channel, guildObj.getId());
-            }
-        }
-
         JSONArray members = guild.getJSONArray("members");
         Map<String, Role> rolesMap = guildObj.getRolesMap();
         Map<User, List<Role>> userRoles = guildObj.getUserRoles();
@@ -101,6 +86,22 @@ public class EntityBuilder
                 userRoles.get(user).add(rolesMap.get(roleId));
             }
         }
+
+        JSONArray channels = guild.getJSONArray("channels");
+        for (int i = 0; i < channels.length(); i++)
+        {
+            JSONObject channel = channels.getJSONObject(i);
+            String type = channel.getString("type");
+            if (type.equalsIgnoreCase("text"))
+            {
+                createTextChannel(channel, guildObj.getId());
+            }
+            else if (type.equalsIgnoreCase("voice"))
+            {
+                createVoiceChannel(channel, guildObj.getId());
+            }
+        }
+
         JSONArray presences = guild.getJSONArray("presences");
         for (int i = 0; i < presences.length(); i++)
         {
@@ -158,7 +159,25 @@ public class EntityBuilder
             guild.getVoiceChannelsMap().put(id, vc);
             api.getVoiceChannelMap().put(id, vc);
         }
-        return vc.setName(json.getString("name"));
+
+        JSONArray permission_overwrites = json.getJSONArray("permission_overwrites");
+        for (int i = 0; i < permission_overwrites.length(); i++)
+        {
+            JSONObject override = permission_overwrites.getJSONObject(i);
+            String type = override.getString("type");
+            PermissionOverride permover = new PermissionOverride(override.getInt("allow"), override.getInt("deny"));
+            if (type.equals("role"))
+            {
+                vc.getRolePermissionOverrides().put(((GuildImpl) vc.getGuild()).getRolesMap().get(override.getString("id")), permover);
+            }
+            else
+            {
+                vc.getUserPermissionOverrides().put(api.getUserMap().get(override.getString("id")), permover);
+            }
+        }
+
+        return vc.setName(json.getString("name"))
+                .setPosition(json.getInt("position"));
     }
 
     protected PrivateChannel createPrivateChannel(JSONObject privatechat)
