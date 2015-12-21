@@ -207,7 +207,7 @@ public class EntityBuilder
             .setPosition(roleJson.getInt("position"))
             .setPermissions(roleJson.getInt("permissions"))
             .setManaged(roleJson.getBoolean("managed"))
-            .setHoist(roleJson.getBoolean("hoist"))
+            .setGrouped(roleJson.getBoolean("hoist"))
             .setColor(roleJson.getInt("color"));
         guild.getRolesMap().put(id, role);
         return role;

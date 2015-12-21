@@ -15,18 +15,16 @@
  */
 package net.dv8tion.jda.requests;
 
-import java.net.URI;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-
-import javax.net.ssl.SSLContext;
-
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.handle.*;
-
 import org.java_websocket.client.DefaultSSLWebSocketClientFactory;
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONObject;
+
+import javax.net.ssl.SSLContext;
+import java.net.URI;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 
 
 public class WebSocketClient extends org.java_websocket.client.WebSocketClient
@@ -169,7 +167,7 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
                 new GuildRoleCreateHandler(api, responseTotal).handle(content);
                 break;
             case "GUILD_ROLE_UPDATE":
-                if (printUnimplemented) System.out.println(message);
+                new GuildRoleUpdateHandler(api, responseTotal).handle(content);
                 break;
             case "GUILD_ROLE_DELETE":
                 new GuildRoleDeleteHandler(api, responseTotal).handle(content);

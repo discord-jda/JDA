@@ -22,6 +22,7 @@ import net.dv8tion.jda.events.channel.text.*;
 import net.dv8tion.jda.events.channel.voice.*;
 import net.dv8tion.jda.events.guild.*;
 import net.dv8tion.jda.events.guild.member.*;
+import net.dv8tion.jda.events.guild.role.*;
 import net.dv8tion.jda.events.message.*;
 import net.dv8tion.jda.events.user.*;
 import net.dv8tion.jda.events.voice.*;
@@ -111,6 +112,18 @@ public abstract class ListenerAdapter implements EventListener
         else if (event instanceof GuildRoleDeleteEvent)
             onGuildRoleDelete((GuildRoleDeleteEvent) event);
 
+        //GuildRoleUpdateEvents
+        else if (event instanceof GuildRoleUpdateNameEvent)
+            onGuildRoleUpdateName(((GuildRoleUpdateNameEvent) event));
+        else if (event instanceof GuildRoleUpdateColorEvent)
+            onGuildRoleUpdateColor(((GuildRoleUpdateColorEvent) event));
+        else if (event instanceof GuildRoleUpdatePositionEvent)
+            onGuildRoleUpdatePosition(((GuildRoleUpdatePositionEvent) event));
+        else if (event instanceof GuildRoleUpdatePermissionEvent)
+            onGuildRoleUpdatePermission(((GuildRoleUpdatePermissionEvent) event));
+        else if (event instanceof GuildRoleUpdateGroupedEvent)
+            onGuildRoleUpdateGrouped(((GuildRoleUpdateGroupedEvent) event));
+
             //Voice Events
         else if (event instanceof VoiceSelfMuteEvent)
             onVoiceSelfMute((VoiceSelfMuteEvent) event);
@@ -135,6 +148,10 @@ public abstract class ListenerAdapter implements EventListener
         else if (event instanceof VoiceDeafEvent)
             onVoiceDeaf((VoiceDeafEvent) event);
 
+        //Single GuildRoleUpdate event
+        if (event instanceof GuildRoleUpdateEvent)
+            onGuildRoleUpdate(((GuildRoleUpdateEvent) event));
+
         //Generic Events
         //Start a new if statement so that these are no overridden by the above events.
         if (event instanceof GenericMessageEvent)
@@ -147,6 +164,8 @@ public abstract class ListenerAdapter implements EventListener
             onGenericGuildMember((GenericGuildMemberEvent) event);
         else if (event instanceof GenericVoiceEvent)
             onGenericVoice((GenericVoiceEvent) event);
+        else if (event instanceof GenericGuildRoleUpdateEvent)
+            onGenericGuildRoleUpdate(((GenericGuildRoleUpdateEvent) event));
 
         //Generic events that have generic subclasses (the subclasses as above).
         if (event instanceof GenericGuildEvent)
@@ -204,6 +223,14 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildRoleCreate(GuildRoleCreateEvent event) {}
     public void onGuildRoleDelete(GuildRoleDeleteEvent event) {}
 
+    //Guild Role Update Events
+    public void onGuildRoleUpdate(GuildRoleUpdateEvent event) {}
+    public void onGuildRoleUpdateName(GuildRoleUpdateNameEvent event) {}
+    public void onGuildRoleUpdateColor(GuildRoleUpdateColorEvent event) {}
+    public void onGuildRoleUpdatePosition(GuildRoleUpdatePositionEvent event) {}
+    public void onGuildRoleUpdatePermission(GuildRoleUpdatePermissionEvent event) {}
+    public void onGuildRoleUpdateGrouped(GuildRoleUpdateGroupedEvent event) {}
+
     //Voice Events
     public void onVoiceSelfMute(VoiceSelfMuteEvent event) {}
     public void onVoiceSelfDeaf(VoiceSelfDeafEvent event) {}
@@ -224,4 +251,5 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericGuildMember(GenericGuildMemberEvent event) {}
     public void onGenericGuild(GenericGuildEvent event) {}
     public void onGenericVoice(GenericVoiceEvent event) {}
+    public void onGenericGuildRoleUpdate(GenericGuildRoleUpdateEvent event) {}
 }

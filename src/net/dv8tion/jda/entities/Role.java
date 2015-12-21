@@ -47,13 +47,13 @@ public interface Role
     boolean isManaged();
 
     /**
-     * Is this {@link net.dv8tion.jda.entities.Role Role} hoist?<br>
+     * Is this {@link net.dv8tion.jda.entities.Role Role} grouped?<br>
      * (Users with this Role are grouped in the online-list)
      *
      * @return
-     *      If this {@link net.dv8tion.jda.entities.Role Role} is hoist.
+     *      If this {@link net.dv8tion.jda.entities.Role Role} is grouped.
      */
-    boolean isHoist();
+    boolean isGrouped();
 
     /**
      * The ID of this {@link net.dv8tion.jda.entities.Role Role}.

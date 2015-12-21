@@ -25,7 +25,7 @@ public class RoleImpl implements net.dv8tion.jda.entities.Role
     private int color;
     private int position;
     private int permissions;
-    private boolean managed, hoist;
+    private boolean managed, grouped;
 
     public RoleImpl(String id)
     {
@@ -69,9 +69,9 @@ public class RoleImpl implements net.dv8tion.jda.entities.Role
     }
 
     @Override
-    public boolean isHoist()
+    public boolean isGrouped()
     {
-        return hoist;
+        return grouped;
     }
 
     public RoleImpl setName(String name)
@@ -104,9 +104,9 @@ public class RoleImpl implements net.dv8tion.jda.entities.Role
         return this;
     }
 
-    public RoleImpl setHoist(boolean hoist)
+    public RoleImpl setGrouped(boolean grouped)
     {
-        this.hoist = hoist;
+        this.grouped = grouped;
         return this;
     }
 
