@@ -15,100 +15,31 @@
  */
 package net.dv8tion.jda.events.channel.voice;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.VoiceChannel;
-import net.dv8tion.jda.entities.impl.PermissionOverride;
-import net.dv8tion.jda.entities.impl.VoiceChannelImpl;
+
+import java.util.List;
 
 public class VoiceChannelUpdatePermissionsEvent extends GenericVoiceChannelUpdateEvent
 {
-    protected Map<Role, PermissionOverride> roleOverrideCreated;
-    protected Map<Role, PermissionOverride> roleOverrideChangedNew = null;
-    protected Map<Role, PermissionOverride> roleOverrideChangedOld;
-    protected Map<Role, PermissionOverride> roleOverrideDeleted;
-    protected Map<User, PermissionOverride> userOverrideCreated;
-    protected Map<User, PermissionOverride> userOverrideChangedNew = null;
-    protected Map<User, PermissionOverride> userOverrideChangedOld;
-    protected Map<User, PermissionOverride> userOverrideDeleted;
-
-    public VoiceChannelUpdatePermissionsEvent(JDA api, int responseNumber, VoiceChannel channel,
-            Map<Role, PermissionOverride> roleOverrideCreated,
-            Map<Role, PermissionOverride> roleOverrideChangedOld,
-            Map<Role, PermissionOverride> roleOverrideDeleted,
-            Map<User, PermissionOverride> userOverrideCreated,
-            Map<User, PermissionOverride> userOverrideChangedOld,
-            Map<User, PermissionOverride> userOverrideDeleted)
+    private final List<Role> changedRoles;
+    private final List<User> changedUserRoles;
+    public VoiceChannelUpdatePermissionsEvent(JDA api, int responseNumber, VoiceChannel channel, List<Role> changedRoles, List<User> changedUserRoles)
     {
         super(api, responseNumber, channel);
-        this.roleOverrideCreated = roleOverrideCreated;
-        this.roleOverrideChangedOld = roleOverrideChangedOld;
-        this.roleOverrideDeleted = roleOverrideDeleted;
-        this.userOverrideCreated = userOverrideCreated;
-        this.userOverrideChangedOld = userOverrideChangedOld;
-        this.userOverrideDeleted = userOverrideDeleted;
+        this.changedRoles = changedRoles;
+        this.changedUserRoles = changedUserRoles;
     }
 
-    public Map<Role, PermissionOverride> getRoleOverridesCreated()
+    public List<Role> getChangedRoles()
     {
-        return Collections.unmodifiableMap(roleOverrideCreated);
+        return changedRoles;
     }
 
-    public Map<Role, PermissionOverride> getRoleOverridesChangedOld()
+    public List<User> getUsersWithPermissionChanges()
     {
-        return Collections.unmodifiableMap(roleOverrideChangedOld);
-    }
-
-    public Map<Role, PermissionOverride> getRoleOverridesChangedNew()
-    {
-        if (this.roleOverrideChangedNew == null)
-        {
-            HashMap<Role, PermissionOverride> roleOverrideNew = new HashMap<>();
-            for (Role role : roleOverrideChangedOld.keySet())
-            {
-                roleOverrideNew.put(role, ((VoiceChannelImpl) channel).getRolePermissionOverrides().get(role));
-            }
-            this.roleOverrideChangedNew = Collections.unmodifiableMap(roleOverrideNew);
-        }
-        return this.roleOverrideChangedNew;
-    }
-
-    public Map<Role, PermissionOverride> getRoleOverridesDeleted()
-    {
-        return Collections.unmodifiableMap(roleOverrideDeleted);
-    }
-
-    public Map<User, PermissionOverride> getUserOverridesCreated()
-    {
-        return Collections.unmodifiableMap(userOverrideCreated);
-    }
-
-    public Map<User, PermissionOverride> getUserOverridesChangedNew()
-    {
-        if (this.userOverrideChangedNew == null)
-        {
-            HashMap<User, PermissionOverride> userOverrideNew = new HashMap<>();
-            for (User user : userOverrideChangedOld.keySet())
-            {
-                userOverrideNew.put(user, ((VoiceChannelImpl) channel).getUserPermissionOverrides().get(user));
-            }
-            this.userOverrideChangedNew = Collections.unmodifiableMap(userOverrideNew);
-        }
-        return this.userOverrideChangedNew;
-    }
-
-    public Map<User, PermissionOverride> getUserOverridesChangedOld()
-    {
-        return Collections.unmodifiableMap(userOverrideChangedOld);
-    }
-
-    public Map<User, PermissionOverride> getUserOverridesDeleted()
-    {
-        return Collections.unmodifiableMap(userOverrideDeleted);
+        return changedUserRoles;
     }
 }
