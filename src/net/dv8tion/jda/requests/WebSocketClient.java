@@ -15,16 +15,18 @@
  */
 package net.dv8tion.jda.requests;
 
-import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.handle.*;
-import org.java_websocket.client.DefaultSSLWebSocketClientFactory;
-import org.java_websocket.handshake.ServerHandshake;
-import org.json.JSONObject;
-
-import javax.net.ssl.SSLContext;
 import java.net.URI;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+
+import javax.net.ssl.SSLContext;
+
+import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.handle.*;
+
+import org.java_websocket.client.DefaultSSLWebSocketClientFactory;
+import org.java_websocket.handshake.ServerHandshake;
+import org.json.JSONObject;
 
 
 public class WebSocketClient extends org.java_websocket.client.WebSocketClient
@@ -134,7 +136,7 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
                 new ChannelCreateHandler(api, responseTotal).handle(content);
                 break;
             case "CHANNEL_UPDATE":
-                if (printUnimplemented) System.out.println(message);
+                new ChannelUpdateHandler(api, responseTotal).handle(content);
                 break;
             case "CHANNEL_DELETE":
                 new ChannelDeleteHandler(api, responseTotal).handle(content);
@@ -143,7 +145,7 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
                 new GuildJoinHandler(api, responseTotal).handle(content);
                 break;
             case "GUILD_UPDATE":
-                if (printUnimplemented) System.out.println(message);
+                new GuildUpdateHandler(api, responseTotal).handle(content);
                 break;
             case "GUILD_DELETE":
                 new GuildLeaveHandler(api, responseTotal).handle(content);

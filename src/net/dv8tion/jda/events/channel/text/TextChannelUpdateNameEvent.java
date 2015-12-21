@@ -18,10 +18,17 @@ package net.dv8tion.jda.events.channel.text;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.TextChannel;
 
-public class TextChannelUpdateEvent extends GenericTextChannelEvent
+public class TextChannelUpdateNameEvent extends GenericTextChannelUpdateEvent
 {
-    public TextChannelUpdateEvent(JDA api, int responseNumber, TextChannel channel)
+    protected String oldName;
+    public TextChannelUpdateNameEvent(JDA api, int responseNumber, TextChannel channel, String oldName)
     {
         super(api, responseNumber, channel);
+        this.oldName = oldName;
+    }
+
+    public String getOldName()
+    {
+        return oldName;
     }
 }

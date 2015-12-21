@@ -13,15 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.events.channel.voice;
+package net.dv8tion.jda.events.channel.text;
 
 import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.entities.VoiceChannel;
+import net.dv8tion.jda.entities.TextChannel;
 
-public class VoiceChannelUpdateEvent extends GenericVoiceChannelEvent
+public class TextChannelUpdatePositionEvent extends GenericTextChannelUpdateEvent
 {
-    public VoiceChannelUpdateEvent(JDA api, int responseNumber, VoiceChannel channel)
+    protected int oldPosition;
+
+    public TextChannelUpdatePositionEvent(JDA api, int responseNumber, TextChannel channel, int oldPosition)
     {
         super(api, responseNumber, channel);
+        this.oldPosition = oldPosition;
+    }
+
+    public int getOldPosition()
+    {
+        return oldPosition;
     }
 }

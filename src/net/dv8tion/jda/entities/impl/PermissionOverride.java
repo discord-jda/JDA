@@ -26,4 +26,14 @@ public class PermissionOverride
         int deny = (this.deny | before.deny) & (~allow);
         return new PermissionOverride(allow, deny);
     }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof PermissionOverride))
+            return false;
+
+        PermissionOverride oPermOver = (PermissionOverride) o;
+        return this.allow == oPermOver.allow && this.deny == oPermOver.deny;
+    }
 }

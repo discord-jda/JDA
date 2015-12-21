@@ -23,10 +23,8 @@ import java.nio.file.Paths;
 import javax.security.auth.login.LoginException;
 
 import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.events.channel.text.TextChannelCreateEvent;
-import net.dv8tion.jda.events.channel.text.TextChannelDeleteEvent;
-import net.dv8tion.jda.events.channel.voice.VoiceChannelCreateEvent;
-import net.dv8tion.jda.events.channel.voice.VoiceChannelDeleteEvent;
+import net.dv8tion.jda.events.channel.text.*;
+import net.dv8tion.jda.events.channel.voice.*;
 import net.dv8tion.jda.hooks.ListenerAdapter;
 
 import org.json.JSONException;
@@ -52,6 +50,9 @@ public class ChannelListenerExample extends ListenerAdapter
         }
     }
 
+    // ------------------------------
+    // ----- TextChannel Events -----
+    // ------------------------------
     @Override
     public void onTextChannelCreate(TextChannelCreateEvent event)
     {
@@ -65,6 +66,34 @@ public class ChannelListenerExample extends ListenerAdapter
     }
 
     @Override
+    public void onTextChannelUpdateName(TextChannelUpdateNameEvent event)
+    {
+        System.out.println("TextChannel " + event.getOldName() + " was renamed: " + event.getChannel().getName() + " in guild " + event.getGuild().getName());
+    }
+
+    @Override
+    public void onTextChannelUpdateTopic(TextChannelUpdateTopicEvent event)
+    {
+        System.out.println("The " + event.getChannel().getName() + " TextChannel's topic just from\n" + event.getOldTopic() + "\n to\n" + event.getChannel().getTopic());
+    }
+
+    @Override
+    public void onTextChannelUpdatePosition(TextChannelUpdatePositionEvent event)
+    {
+        System.out.println("The position of " + event.getChannel().getName() + " TextChannl just moved from " + event.getOldPosition() + " to " + event.getChannel().getPosition());
+        System.out.println("Be sure to update your channel lists!");
+    }
+
+    @Override
+    public void onTextChannelUpdatePermissions(TextChannelUpdatePermissionsEvent event)
+    {
+        System.out.println("TextChannel Permissions changed. There are a lot of details in this event and I'm too lazy to show them all. Just read the Javadoc ;_;");
+    }
+
+    // ------------------------------
+    // ---- VoiceChannel Events -----
+    // ------------------------------
+    @Override
     public void onVoiceChannelCreate(VoiceChannelCreateEvent event)
     {
         System.out.println("A VoiceChannel named: " + event.getChannel().getName() + " was created in guild: " + event.getGuild().getName());
@@ -74,6 +103,27 @@ public class ChannelListenerExample extends ListenerAdapter
     public void onVoiceChannelDelete(VoiceChannelDeleteEvent event)
     {
         System.out.println("A VoiceChannel named: " + event.getChannel().getName() + " was deleted from guild: " + event.getGuild().getName());
+    }
+
+    @Override
+    public void onVoiceChannelUpdateName(VoiceChannelUpdateNameEvent event)
+    {
+        System.out.println("VoiceChannel " + event.getOldName() + " was renamed: " + event.getChannel().getName() + " in guild " + event.getGuild().getName());
+    }
+
+    //No onVoiceChannelUpdateTopic method because VoiceChannels don't have Topics.
+
+    @Override
+    public void onVoiceChannelUpdatePosition(VoiceChannelUpdatePositionEvent event)
+    {
+        System.out.println("The position of " + event.getChannel().getName() + " VoiceChannl just moved from " + event.getOldPosition() + " to " + event.getChannel().getPosition());
+        System.out.println("Be sure to update your channel lists!");
+    }
+
+    @Override
+    public void onVoiceChannelUpdatePermissions(VoiceChannelUpdatePermissionsEvent event)
+    {
+        System.out.println("VoiceChannel Permissions changed. There are a lot of details in this event and I'm too lazy to show them all. Just read the Javadoc ;_;");
     }
 
     //Simple config system to make life easier. THIS IS NOT REQUIRED FOR JDA.
