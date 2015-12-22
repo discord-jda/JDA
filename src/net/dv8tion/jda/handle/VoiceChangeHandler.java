@@ -50,7 +50,8 @@ public class VoiceChangeHandler extends SocketHandler
         }
         else
         {
-            if (!content.getString("channel_id").equals(status.getChannel().getId()))
+            if (status.getChannel() == null ||
+                    !content.getString("channel_id").equals(status.getChannel().getId()))
             {
                 VoiceChannel oldChannel = status.getChannel();
                 VoiceChannel newChannel = api.getVoiceChannelMap().get("channel_id");
