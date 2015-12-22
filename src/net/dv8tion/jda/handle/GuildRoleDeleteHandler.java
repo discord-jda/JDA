@@ -15,19 +15,18 @@
  */
 package net.dv8tion.jda.handle;
 
-import java.util.List;
-
-import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.entities.impl.GuildImpl;
+import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.guild.GuildRoleDeleteEvent;
-
 import org.json.JSONObject;
+
+import java.util.List;
 
 public class GuildRoleDeleteHandler extends SocketHandler
 {
 
-    public GuildRoleDeleteHandler(JDA api, int responseNumber)
+    public GuildRoleDeleteHandler(JDAImpl api, int responseNumber)
     {
         super(api, responseNumber);
     }

@@ -15,10 +15,10 @@
  */
 package net.dv8tion.jda.handle;
 
-import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.impl.GuildImpl;
+import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.entities.impl.SelfInfoImpl;
 import net.dv8tion.jda.events.ReadyEvent;
 import org.json.JSONArray;
@@ -32,7 +32,7 @@ public class ReadyHandler extends SocketHandler
 {
     private final EntityBuilder builder;
 
-    public ReadyHandler(JDA api, int responseNumber)
+    public ReadyHandler(JDAImpl api, int responseNumber)
     {
         super(api, responseNumber);
         this.builder = new EntityBuilder(api);

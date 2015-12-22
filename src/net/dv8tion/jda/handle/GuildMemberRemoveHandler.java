@@ -15,17 +15,16 @@
  */
 package net.dv8tion.jda.handle;
 
-import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.impl.GuildImpl;
+import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.entities.impl.UserImpl;
 import net.dv8tion.jda.events.guild.member.GuildMemberLeaveEvent;
-
 import org.json.JSONObject;
 
 public class GuildMemberRemoveHandler extends SocketHandler
 {
 
-    public GuildMemberRemoveHandler(JDA api, int responseNumber)
+    public GuildMemberRemoveHandler(JDAImpl api, int responseNumber)
     {
         super(api, responseNumber);
     }

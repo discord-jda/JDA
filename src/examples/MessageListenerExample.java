@@ -15,14 +15,6 @@
  */
 package examples;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.List;
-
-import javax.security.auth.login.LoginException;
-
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.MessageBuilder;
 import net.dv8tion.jda.MessageHistory;
@@ -33,9 +25,15 @@ import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.message.MessageEmbedEvent;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.hooks.ListenerAdapter;
-
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import javax.security.auth.login.LoginException;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
 
 public class MessageListenerExample extends ListenerAdapter
 {
@@ -49,8 +47,9 @@ public class MessageListenerExample extends ListenerAdapter
         JSONObject config = getConfig();
         try
         {
-            JDA api = new JDA(config.getString("email"), config.getString("password"));
-            api.getEventManager().register(new MessageListenerExample());
+            JDA api = JDA.newInstance();
+            api.addEventListener(new MessageListenerExample());
+            api.login(config.getString("email"), config.getString("password"));
         }
         catch (IllegalArgumentException e)
         {

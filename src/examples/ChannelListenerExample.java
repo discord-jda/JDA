@@ -15,20 +15,18 @@
  */
 package examples;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
-import javax.security.auth.login.LoginException;
-
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.events.channel.text.*;
 import net.dv8tion.jda.events.channel.voice.*;
 import net.dv8tion.jda.hooks.ListenerAdapter;
-
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import javax.security.auth.login.LoginException;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class ChannelListenerExample extends ListenerAdapter
 {
@@ -37,8 +35,9 @@ public class ChannelListenerExample extends ListenerAdapter
         JSONObject config = getConfig();
         try
         {
-            JDA api = new JDA(config.getString("email"), config.getString("password"));
-            api.getEventManager().register(new ChannelListenerExample());
+            JDA api = JDA.newInstance();
+            api.addEventListener(new ChannelListenerExample());
+            api.login(config.getString("email"), config.getString("password"));
         }
         catch (IllegalArgumentException e)
         {

@@ -15,22 +15,21 @@
  */
 package net.dv8tion.jda.handle;
 
+import net.dv8tion.jda.entities.TextChannel;
+import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.entities.impl.JDAImpl;
+import net.dv8tion.jda.events.user.GenericUserEvent;
+import net.dv8tion.jda.events.user.UserTypingEvent;
+import org.json.JSONObject;
+
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
-import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.events.user.GenericUserEvent;
-import net.dv8tion.jda.events.user.UserTypingEvent;
-
-import org.json.JSONObject;
-
 public class UserTypingHandler extends SocketHandler
 {
 
-    public UserTypingHandler(JDA api, int responseNumber)
+    public UserTypingHandler(JDAImpl api, int responseNumber)
     {
         super(api, responseNumber);
     }

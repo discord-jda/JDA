@@ -15,13 +15,9 @@
  */
 package net.dv8tion.jda.handle;
 
-import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.entities.impl.GuildImpl;
-import net.dv8tion.jda.entities.impl.PermissionOverride;
-import net.dv8tion.jda.entities.impl.TextChannelImpl;
-import net.dv8tion.jda.entities.impl.VoiceChannelImpl;
+import net.dv8tion.jda.entities.impl.*;
 import net.dv8tion.jda.events.channel.text.TextChannelUpdateNameEvent;
 import net.dv8tion.jda.events.channel.text.TextChannelUpdatePermissionsEvent;
 import net.dv8tion.jda.events.channel.text.TextChannelUpdatePositionEvent;
@@ -39,7 +35,7 @@ import java.util.List;
 public class ChannelUpdateHandler extends SocketHandler
 {
 
-    public ChannelUpdateHandler(JDA api, int responseNumber)
+    public ChannelUpdateHandler(JDAImpl api, int responseNumber)
     {
         super(api, responseNumber);
     }

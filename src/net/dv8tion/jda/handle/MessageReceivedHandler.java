@@ -15,15 +15,15 @@
  */
 package net.dv8tion.jda.handle;
 
-import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.TextChannel;
+import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 import org.json.JSONObject;
 
-public class MessageRecievedHandler extends SocketHandler
+public class MessageReceivedHandler extends SocketHandler
 {
 
-    public MessageRecievedHandler(JDA api, int responseNumber)
+    public MessageReceivedHandler(JDAImpl api, int responseNumber)
     {
         super(api, responseNumber);
     }
@@ -31,8 +31,8 @@ public class MessageRecievedHandler extends SocketHandler
     @Override
     public void handle(JSONObject content)
     {
-        String channel_id = content.getString("channel_id");
-        TextChannel channel = api.getChannelMap().get(channel_id);
+        String channelId = content.getString("channel_id");
+        TextChannel channel = api.getChannelMap().get(channelId);
         if (channel != null)
         {
             api.getEventManager().handle(

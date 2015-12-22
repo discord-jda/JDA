@@ -16,7 +16,6 @@
 package net.dv8tion.jda.handle;
 
 import net.dv8tion.jda.EmbedType;
-import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.OnlineStatus;
 import net.dv8tion.jda.Region;
 import net.dv8tion.jda.entities.*;
@@ -35,9 +34,9 @@ import java.util.Map;
 
 public class EntityBuilder
 {
-    private final JDA api;
+    private final JDAImpl api;
 
-    public EntityBuilder(JDA api)
+    public EntityBuilder(JDAImpl api)
     {
         this.api = api;
     }

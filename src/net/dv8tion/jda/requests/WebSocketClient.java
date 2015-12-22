@@ -15,7 +15,7 @@
  */
 package net.dv8tion.jda.requests;
 
-import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.handle.*;
 import org.java_websocket.client.DefaultSSLWebSocketClientFactory;
 import org.java_websocket.handshake.ServerHandshake;
@@ -32,9 +32,9 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
     private Thread keepAliveThread;
     private boolean connected;
     private long keepAliveInterval;
-    private JDA api;
+    private JDAImpl api;
 
-    public WebSocketClient(String url, JDA api)
+    public WebSocketClient(String url, JDAImpl api)
     {
         super(URI.create(url));
         if (url.startsWith("wss"))
@@ -116,7 +116,7 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
                 new UserTypingHandler(api, responseTotal).handle(content);
                 break;
             case "MESSAGE_CREATE":
-                new MessageRecievedHandler(api, responseTotal).handle(content);
+                new MessageReceivedHandler(api, responseTotal).handle(content);
                 break;
             case "MESSAGE_UPDATE":
                 if (content.has("author"))

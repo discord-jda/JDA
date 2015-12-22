@@ -17,6 +17,7 @@ package net.dv8tion.jda;
 
 import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.TextChannel;
+import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.requests.RequestBuilder;
 import net.dv8tion.jda.requests.RequestType;
@@ -27,7 +28,7 @@ import java.util.List;
 
 public class MessageHistory
 {
-    private final JDA api;
+    private final JDAImpl api;
     private final TextChannel channel;
     private String lastId = null;
     private boolean atEnd = false;
@@ -35,7 +36,7 @@ public class MessageHistory
 
     public MessageHistory(JDA api, TextChannel channel)
     {
-        this.api = api;
+        this.api = ((JDAImpl) api);
         this.channel = channel;
     }
 

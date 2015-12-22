@@ -15,7 +15,6 @@
  */
 package net.dv8tion.jda.entities.impl;
 
-import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.MessageBuilder;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.*;
@@ -36,14 +35,14 @@ public class TextChannelImpl implements TextChannel
 {
     private final String id;
     private final Guild guild;
-    private final JDA api;
+    private final JDAImpl api;
     private String name;
     private String topic;
     private int position;
     private Map<User, PermissionOverride> userPermissionOverrides = new HashMap<>();
     private Map<Role, PermissionOverride> rolePermissionOverrides = new HashMap<>();
 
-    public TextChannelImpl(String id, Guild guild, JDA api)
+    public TextChannelImpl(String id, Guild guild, JDAImpl api)
     {
         this.id = id;
         this.guild = guild;

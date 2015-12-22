@@ -15,19 +15,18 @@
  */
 package net.dv8tion.jda.handle;
 
-import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.impl.GuildImpl;
+import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.guild.member.GuildMemberBanEvent;
 import net.dv8tion.jda.events.guild.member.GuildMemberUnbanEvent;
-
 import org.json.JSONObject;
 
 public class GuildMemberBanHandler extends SocketHandler
 {
     protected boolean banned;
 
-    public GuildMemberBanHandler(JDA api, int responseNumber, boolean banned)
+    public GuildMemberBanHandler(JDAImpl api, int responseNumber, boolean banned)
     {
         super(api, responseNumber);
         this.banned = banned;

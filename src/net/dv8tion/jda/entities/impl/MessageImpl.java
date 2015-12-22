@@ -3,7 +3,6 @@
  */
 package net.dv8tion.jda.entities.impl;
 
-import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.User;
@@ -21,7 +20,7 @@ import java.util.List;
 public class MessageImpl implements Message
 {
     private final String id;
-    private final JDA api;
+    private final JDAImpl api;
     private List<User> mentionedUsers = new LinkedList<>();
     private boolean mentionsEveryone;
     private boolean isTTS;
@@ -31,7 +30,7 @@ public class MessageImpl implements Message
     private TextChannel channel;
     private String content;
 
-    public MessageImpl(String id, JDA api)
+    public MessageImpl(String id, JDAImpl api)
     {
         this.id = id;
         this.api = api;

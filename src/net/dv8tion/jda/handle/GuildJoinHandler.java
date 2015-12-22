@@ -15,16 +15,15 @@
  */
 package net.dv8tion.jda.handle;
 
-import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.guild.GuildJoinEvent;
-
 import org.json.JSONObject;
 
 public class GuildJoinHandler extends SocketHandler
 {
 
-    public GuildJoinHandler(JDA api, int responseNumber)
+    public GuildJoinHandler(JDAImpl api, int responseNumber)
     {
         super(api, responseNumber);
     }

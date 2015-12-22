@@ -15,7 +15,7 @@
  */
 package net.dv8tion.jda.handle;
 
-import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.channel.priv.PrivateChannelCreateEvent;
 import net.dv8tion.jda.events.channel.text.TextChannelCreateEvent;
 import net.dv8tion.jda.events.channel.voice.VoiceChannelCreateEvent;
@@ -24,7 +24,7 @@ import org.json.JSONObject;
 public class ChannelCreateHandler extends SocketHandler
 {
 
-    public ChannelCreateHandler(JDA api, int responseNumber)
+    public ChannelCreateHandler(JDAImpl api, int responseNumber)
     {
         super(api, responseNumber);
     }

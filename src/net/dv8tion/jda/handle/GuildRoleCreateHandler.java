@@ -15,17 +15,16 @@
  */
 package net.dv8tion.jda.handle;
 
-import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.entities.impl.GuildImpl;
+import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.guild.GuildRoleCreateEvent;
-
 import org.json.JSONObject;
 
 public class GuildRoleCreateHandler extends SocketHandler
 {
 
-    public GuildRoleCreateHandler(JDA api, int responseNumber)
+    public GuildRoleCreateHandler(JDAImpl api, int responseNumber)
     {
         super(api, responseNumber);
     }

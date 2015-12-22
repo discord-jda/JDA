@@ -15,25 +15,24 @@
  */
 package net.dv8tion.jda.handle;
 
+import net.dv8tion.jda.entities.Role;
+import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.entities.impl.GuildImpl;
+import net.dv8tion.jda.entities.impl.JDAImpl;
+import net.dv8tion.jda.events.guild.member.GuildMemberRoleAddEvent;
+import net.dv8tion.jda.events.guild.member.GuildMemberRoleRemoveEvent;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.entities.Role;
-import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.entities.impl.GuildImpl;
-import net.dv8tion.jda.events.guild.member.GuildMemberRoleAddEvent;
-import net.dv8tion.jda.events.guild.member.GuildMemberRoleRemoveEvent;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 public class GuildMemberRoleHandler extends SocketHandler
 {
 
-    public GuildMemberRoleHandler(JDA api, int responseNumber)
+    public GuildMemberRoleHandler(JDAImpl api, int responseNumber)
     {
         super(api, responseNumber);
     }
@@ -48,7 +47,7 @@ public class GuildMemberRoleHandler extends SocketHandler
         List<Role> rolesOld = guild.getUserRoles().get(user);
 
         //Find the roles removed.
-        List<Role> removedRoles = new LinkedList<Role>();
+        List<Role> removedRoles = new LinkedList<>();
         for (Role role : rolesOld)
         {
             boolean roleFound = false;

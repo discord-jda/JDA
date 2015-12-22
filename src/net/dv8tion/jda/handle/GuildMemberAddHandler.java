@@ -15,22 +15,21 @@
  */
 package net.dv8tion.jda.handle;
 
-import java.util.LinkedList;
-
-import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.impl.GuildImpl;
+import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.entities.impl.PrivateChannelImpl;
 import net.dv8tion.jda.entities.impl.UserImpl;
 import net.dv8tion.jda.events.guild.member.GuildMemberJoinEvent;
-
 import org.json.JSONObject;
+
+import java.util.LinkedList;
 
 public class GuildMemberAddHandler extends SocketHandler
 {
 
-    public GuildMemberAddHandler(JDA api, int responseNumber)
+    public GuildMemberAddHandler(JDAImpl api, int responseNumber)
     {
         super(api, responseNumber);
     }

@@ -15,8 +15,8 @@
  */
 package net.dv8tion.jda.handle;
 
-import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.OnlineStatus;
+import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.entities.impl.UserImpl;
 import net.dv8tion.jda.events.user.*;
 import org.apache.commons.lang3.StringUtils;
@@ -25,7 +25,7 @@ import org.json.JSONObject;
 public class PresenceUpdateHandler extends SocketHandler
 {
 
-    public PresenceUpdateHandler(JDA api, int responseNumber)
+    public PresenceUpdateHandler(JDAImpl api, int responseNumber)
     {
         super(api, responseNumber);
     }

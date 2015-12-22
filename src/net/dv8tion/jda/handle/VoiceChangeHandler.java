@@ -15,9 +15,9 @@
  */
 package net.dv8tion.jda.handle;
 
-import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.VoiceChannel;
+import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.entities.impl.VoiceChannelImpl;
 import net.dv8tion.jda.entities.impl.VoiceStatusImpl;
 import net.dv8tion.jda.events.voice.*;
@@ -25,7 +25,7 @@ import org.json.JSONObject;
 
 public class VoiceChangeHandler extends SocketHandler
 {
-    public VoiceChangeHandler(JDA api, int responseNumber)
+    public VoiceChangeHandler(JDAImpl api, int responseNumber)
     {
         super(api, responseNumber);
     }

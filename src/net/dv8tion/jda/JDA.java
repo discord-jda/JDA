@@ -16,210 +16,46 @@
 package net.dv8tion.jda;
 
 import net.dv8tion.jda.entities.*;
-import net.dv8tion.jda.hooks.EventManager;
-import net.dv8tion.jda.requests.RequestBuilder;
-import net.dv8tion.jda.requests.RequestType;
-import net.dv8tion.jda.requests.WebSocketClient;
-import org.apache.commons.lang3.StringUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
+import net.dv8tion.jda.entities.impl.JDAImpl;
+import net.dv8tion.jda.hooks.EventListener;
 
 import javax.security.auth.login.LoginException;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 
 /**
  * Represents the core of the Discord API. All functionality is connected through this.
  */
-public class JDA
+public abstract class JDA
 {
-    private final Map<String, User> userMap = new HashMap<>();
-    private final Map<String, Guild> guildMap = new HashMap<>();
-    private final Map<String, TextChannel> channelMap = new HashMap<>();
-    private final Map<String, VoiceChannel> voiceChannelMap = new HashMap<>();
-    private final Map<String, String> offline_pms = new HashMap<>();    //Userid -> channelid
-    private final EventManager eventManager = new EventManager();
-    private SelfInfo selfInfo = null;
-    private String authToken = null;
-    private WebSocketClient client;
-    private int responseTotal;
-
-    /**
-     * Creates a new instance of the Discord API wrapper and attempts to login to Discord.
-     * Upon successful auth with Discord, a token is returned and stored in token.json.
-     *
-     * @param email
-     *          The email of the account attempting to log in.
-     * @param password
-     *          The password of the account attempting to log in.
-     * @throws IllegalArgumentException
-     *          Thrown if this email or password provided are empty or null.
-     * @throws LoginException
-     *          Thrown if the email-password combination fails the auth check with the Discord servers.
-     */
-    public JDA(String email, String password) throws IllegalArgumentException, LoginException
+    public static JDA newInstance()
     {
-        if (email == null || email.isEmpty() || password == null || password.isEmpty())
-            throw new IllegalArgumentException("The provided email or password as empty / null.");
-
-        Path tokenFile = Paths.get("tokens.json");
-        JSONObject configs = null;
-        String gateway = null;
-        if (Files.exists(tokenFile))
-        {
-            configs = readJson(tokenFile);
-        }
-        if (configs == null)
-        {
-            configs = new JSONObject().put("tokens", new JSONObject()).put("version", 1);
-        }
-
-        if (configs.getJSONObject("tokens").has(email))
-        {
-            try
-            {
-                authToken = configs.getJSONObject("tokens").getString(email);
-                RequestBuilder rb = new RequestBuilder(this);
-                rb.setType(RequestType.GET);
-                rb.setUrl("https://discordapp.com/api/gateway");
-                gateway = new JSONObject(rb.makeRequest()).getString("url");
-                System.out.println("Using cached Token: " + authToken);
-            }
-            catch (JSONException ex)
-            {
-                System.out.println("Token-file misformatted. Please delete it for recreation");
-            }
-            catch (Exception ex)
-            {
-                //ignore
-            }
-        }
-
-        if (gateway == null)                                    //no token saved or invalid
-        {
-            RequestBuilder b = new RequestBuilder(this);
-            b.setSendLoginHeaders(false);
-            b.setData(new JSONObject().put("email", email).put("password", password).toString());
-            b.setUrl("https://discordapp.com/api/auth/login");
-            b.setType(RequestType.POST);
-
-            String response = b.makeRequest();
-            if (response == null)
-                throw new LoginException("The provided email / password combination was incorrect. Please provide valid details.");
-            System.out.println("Login Successful!"); //TODO: Replace with Logger.INFO
-
-            authToken = new JSONObject(response).getString("token");
-            configs.getJSONObject("tokens").put(email, authToken);
-            System.out.println("Created new Token: " + authToken);
-
-            RequestBuilder pb = new RequestBuilder(this);
-            pb.setType(RequestType.GET);
-            pb.setUrl("https://discordapp.com/api/gateway");
-
-            gateway = new JSONObject(pb.makeRequest()).getString("url");
-        }
-        else
-        {
-            System.out.println("Login Successful!"); //TODO: Replace with Logger.INFO
-        }
-
-        writeJson(tokenFile, configs);
-        client = new WebSocketClient(gateway, this);
+        return new JDAImpl();
     }
 
-    /**
-     * Takes a provided json file, reads all lines and constructs a {@link org.json.JSONObject JSONObject} from it.
-     *
-     * @param file
-     *          The json file to read.
-     * @return
-     *      The {@link org.json.JSONObject JSONObject} representation of the json in the file.
-     */
-    private static JSONObject readJson(Path file)
-    {
-        try
-        {
-            return new JSONObject(StringUtils.join(Files.readAllLines(file, StandardCharsets.UTF_8), ""));
-        }
-        catch (IOException e)
-        {
-            System.out.println("Error reading token-file. Defaulting to standard");
-            e.printStackTrace();
-        }
-        catch (JSONException e)
-        {
-            System.out.println("Token-file misformatted. Creating default one");
-        }
-        return null;
-    }
+    public abstract void login(String email, String password) throws IllegalArgumentException, LoginException;
 
-    /**
-     * Writes the json representation of the provided {@link org.json.JSONObject JSONObject} to the provided file.
-     *
-     * @param file
-     *          The file which will have the json representation of object written into.
-     * @param object
-     *          The {@link org.json.JSONObject JSONObject} to write to file.
-     */
-    private static void writeJson(Path file, JSONObject object)
-    {
-        try
-        {
-            Files.write(file, Arrays.asList(object.toString(4).split("\n")), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-        }
-        catch (IOException e)
-        {
-            System.out.println("Error creating token-file");
-        }
-    }
+    public abstract String getAuthToken();
 
-    public String getAuthToken()
-    {
-        return authToken;
-    }
+    public abstract void addEventListener(EventListener listener);
 
-    public EventManager getEventManager()
-    {
-        return eventManager;
-    }
+    public abstract void removeEventListener(EventListener listener);
 
-    public WebSocketClient getClient()
-    {
-        return client;
-    }
+    public abstract List<User> getUsers();
 
-    public Map<String, User> getUserMap()
-    {
-        return userMap;
-    }
+    public abstract User getUserById(String id);
 
-    public Map<String, Guild> getGuildMap()
-    {
-        return guildMap;
-    }
+    public abstract List<Guild> getGuilds();
 
-    public Map<String, TextChannel> getChannelMap()
-    {
-        return channelMap;
-    }
+    public abstract Guild getGuildById(String id);
 
-    public Map<String, VoiceChannel> getVoiceChannelMap()
-    {
-        return voiceChannelMap;
-    }
+    public abstract List<TextChannel> getTextChannels();
 
-    public Map<String, String> getOffline_pms()
-    {
-        return offline_pms;
-    }
+    public abstract TextChannel getTextChannelById(String id);
+
+    public abstract List<VoiceChannel> getVoiceChannels();
+
+    public abstract VoiceChannel getVoiceChannelById(String id);
 
     /**
      * Returns the currently logged in account represented by {@link net.dv8tion.jda.entities.SelfInfo SelfInfo}.<br>
@@ -229,22 +65,7 @@ public class JDA
      * @return
      *      The currently logged in account.
      */
-    public SelfInfo getSelfInfo()
-    {
-        return selfInfo;
-    }
-    public void setSelfInfo(SelfInfo selfInfo)
-    {
-        this.selfInfo = selfInfo;
-    }
+    public abstract SelfInfo getSelfInfo();
 
-    public int getResponseTotal()
-    {
-        return responseTotal;
-    }
-
-    public void setResponseTotal(int responseTotal)
-    {
-        this.responseTotal = responseTotal;
-    }
+    public abstract int getResponseTotal();
 }

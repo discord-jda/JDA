@@ -15,20 +15,19 @@
  */
 package net.dv8tion.jda.handle;
 
-import java.util.LinkedList;
-
-import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.MessageEmbed;
 import net.dv8tion.jda.entities.TextChannel;
+import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.message.MessageEmbedEvent;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.LinkedList;
 
 public class MessageEmbedHandler extends SocketHandler
 {
 
-    public MessageEmbedHandler(JDA api, int responseNumber)
+    public MessageEmbedHandler(JDAImpl api, int responseNumber)
     {
         super(api, responseNumber);
     }
@@ -39,7 +38,7 @@ public class MessageEmbedHandler extends SocketHandler
         EntityBuilder builder = new EntityBuilder(api);
         String messageId = content.getString("id");
         TextChannel channel = api.getChannelMap().get(content.getString("channel_id"));
-        LinkedList<MessageEmbed> embeds = new LinkedList<MessageEmbed>();
+        LinkedList<MessageEmbed> embeds = new LinkedList<>();
 
         JSONArray embedsJson = content.getJSONArray("embeds");
         for (int i = 0; i < embedsJson.length(); i++)
