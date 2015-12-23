@@ -16,10 +16,14 @@
 package net.dv8tion.jda;
 
 /**
- *
+ * Contains static information relating to JDA and this build of JDA.
  */
 public class JDAInfo
 {
     public static final String GITHUB = "https://github.com/DV8FromTheWorld/JDA";
-    public static final String VERSION = "@buildVersion@";
+    public static final String VERSION_MAJOR = "@versionMajor@";
+    public static final String VERSION_MINOR = "@versionMinor@";
+    public static final String VERSION_REVISION = "@versionRevision@";
+    public static final String VERSION_BUILD = "@versionBuild@";
+    public static final String VERSION = String.format("%s.%s.%s_%s", VERSION_MAJOR, VERSION_MINOR, VERSION_REVISION, VERSION_BUILD);
 }

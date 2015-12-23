@@ -2,7 +2,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 
 apply plugin: 'java'
 
-version = new Version(major: 1, minor: 0, revision: 0).toString()
+version = new Version(major: 1, minor: 0, revision: 0)
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -26,7 +26,12 @@ sourceSets {
 task processVersion (type: Copy) {
     from sourceSets.main.java
     into filteredSourceDir
-    filter(ReplaceTokens, tokens: [buildVersion: version])
+    filter(ReplaceTokens, tokens: [
+            versionMajor: version.getMajor(),
+            versionMinor: version.getMinor(),
+            versionRevision: version.getRevision(),
+            versionBuild: version.getBuild()
+    ])
 }
 
 jar {
@@ -59,10 +64,25 @@ dependencies {
 class Version {
     int major, minor, revision
 
-    String toString() {
-        def buildNumber = System.getenv("BUILD_NUMBER") ? System.getenv("BUILD_NUMBER") : "TEST"
-        "${major}.${minor}.${revision}_${buildNumber}"
+    String getMajor() {
+        "${major}"
     }
+
+    String getMinor() {
+        "${minor}"
+    }
+
+    String getRevision() {
+        "${revision}"
+    }
+
+    String getBuild() {
+        System.getenv("BUILD_NUMBER") ? System.getenv("BUILD_NUMBER") : "TEST"
+    }
+
+    String toString() {
+        "${getMajor()}.${getMinor()}.${getRevision()}_${getBuild()}"
+}
 }
 
 
