@@ -1,7 +1,5 @@
 # JDA (Java Discord API)
 JDA strives to provide a clean and full wrapping of the Discord REST api and its Websocket-Events for Java.
-<p>
-Not much here yet for explinations, but there are examples of listening to events: [Link](https://github.com/DV8FromTheWorld/JDA/tree/master/src/examples/java).
 
 ## Creating the JDA Object
 Creating the JDA Object is done via the JDABuilder class.
@@ -20,10 +18,10 @@ JDA jda = new JDABuilder().setEmail("email").setPassword("password").buildBlocki
 
 ## Events
 There a TON of events in JDA that you can listen to.<br>
-You have 2 choices:
-  1. Extend ListenerAdapter and use the provided methods that fire the specific events for you. [Event Methods](https://github.com/DV8FromTheWorld/JDA/blob/master/src/main/java/net/dv8tion/jda/hooks/ListenerAdapter.java#L179-L254)
+There are 2 ways of writing your Event-Listener:
+  1. Extend ListenerAdapter and use the provided methods that get fire dependent on the Event-Type. [Event Methods](https://github.com/DV8FromTheWorld/JDA/blob/master/src/main/java/net/dv8tion/jda/hooks/ListenerAdapter.java#L179-L254)
   2. Implement EventListener and listen to onEvent and figure out if it is the event you want (Not suggested)<br>
-<br>
+
 Listeners can be registered either in the JDABuilder (will catch all Events; recommended), or in the JDA instance (initial Events, especially the *READY*-Event could get lost)
 
 #### Examples:
@@ -56,14 +54,17 @@ public class MessageListener extends ListenerAdapter
     @Override
     public void onMessageReceived(MessageReceivedEvent event)
     {
-        System.out.printf("[%s]{%s] %s: %s\n", event.getGuild().getName(),
+        System.out.printf("[%s][%s] %s: %s\n", event.getGuild().getName(),
             event.getChannel().getName(), event.getAuthor().getUsername(),
             event.getMessage().getContent());
     }
 }
 ```
 
-### Dependencies:
+## More Examples
+We provide a small set of Examples in the [Example Directory](https://github.com/DV8FromTheWorld/JDA/tree/master/src/examples/java).
+
+## Dependencies:
 All dependencies are managed automatically by Gradle.
  * Java-Websocket
    * Version: **1.3.0**
