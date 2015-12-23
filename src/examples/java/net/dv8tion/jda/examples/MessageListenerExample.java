@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package examples;
+package net.dv8tion.jda.examples;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.MessageBuilder;

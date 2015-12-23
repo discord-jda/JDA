@@ -1,0 +1,74 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+apply plugin: 'java'
+
+version = new Version(major: 1, minor: 0, revision: 0).toString()
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+def filteredSourceDir = file("${buildDir}/filtered")
+
+sourceSets {
+    // This source set will contain all sources that we filter 
+    filtered {
+        java {
+            srcDirs = [
+                    filteredSourceDir,
+                    "src/test/java",
+                    "src/examples/java"
+            ]
+        }
+    }
+}
+
+// copy the main sources and filter any '@buildVersion@' occurences. 
+task processVersion (type: Copy) {
+    from sourceSets.main.java
+    into filteredSourceDir
+    filter(ReplaceTokens, tokens: [buildVersion: version])
+}
+
+jar {
+    baseName = project.name
+    manifest {
+        attributes 'Implementation-Version': version
+    }
+}
+
+//create a single Jar with all dependencies
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Version': version
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
+    compile group: 'org.json', name: 'json', version: '20150729'
+    compile group: 'org.java-websocket', name: 'Java-WebSocket', version: '1.3.0'
+}
+
+class Version {
+    int major, minor, revision
+
+    String toString() {
+        def buildNumber = System.getenv("BUILD_NUMBER") ? System.getenv("BUILD_NUMBER") : "TEST"
+        "${major}.${minor}.${revision}_${buildNumber}"
+    }
+}
+
+
+// tell the compileJava task to compile the filtered source 
+compileJava.source = sourceSets.filtered.java
+compileJava.dependsOn processVersion
+
+//Creates the w/ dependencies jar.
+assemble.dependsOn fatJar
