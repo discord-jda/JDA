@@ -16,7 +16,7 @@
 package net.dv8tion.jda.requests;
 
 import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.JDAStatics;
+import net.dv8tion.jda.JDAInfo;
 
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLSocketFactory;
@@ -75,7 +75,7 @@ public class RequestBuilder
                             "Connection: close\n" +
                             "Content-Length: " + data.length() + "\n" +
                             "Origin: http://discordapp.com\n" +
-                            "User-Agent: " + JDAStatics.GITHUB + " " + JDAStatics.VERSION + "\n" +
+                            "User-Agent: " + JDAInfo.GITHUB + " " + JDAInfo.VERSION + "\n" +
                             "Content-Type: application/json\n" +
                             "Accept: */*\n" +
                             "authorization: " + api.getAuthToken() + "\n\n" + data);
@@ -119,7 +119,7 @@ public class RequestBuilder
 
             con.setRequestProperty("Content-Type", "application/json; charset=utf-8");
             con.setRequestProperty("Content-Length", Integer.toString(data.getBytes().length));
-            con.setRequestProperty("User-Agent", JDAStatics.GITHUB + " " + JDAStatics.VERSION);
+            con.setRequestProperty("User-Agent", JDAInfo.GITHUB + " " + JDAInfo.VERSION);
             con.setDoOutput(getResponse);
             if (sendLoginHeaders)
                 con.addRequestProperty("authorization", api.getAuthToken());

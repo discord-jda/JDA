@@ -15,7 +15,10 @@
  */
 package net.dv8tion.jda;
 
-public class JDAStatics
+/**
+ *
+ */
+public class JDAInfo
 {
     public static final String GITHUB = "https://github.com/DV8FromTheWorld/JDA";
     public static final String VERSION = "@buildVersion@";
