@@ -1,4 +1,4 @@
-# JDA
+# JDA (Java Discord API)
 JDA strives to provide a clean and full wrapping of the Discord REST api for the Java language.
 <p>
 Not much here yet for explinations, but there are examples of listening to events: [Link](https://github.com/DV8FromTheWorld/JDA/tree/master/src/examples/java).
