@@ -2,9 +2,9 @@
 config.json
 tokens.json
 
-# maven compile
-/target/
-dependency-reduced-pom.xml
+# gradle
+/build/
+/.gradle/
 
 # eclipse files
 .classpath
