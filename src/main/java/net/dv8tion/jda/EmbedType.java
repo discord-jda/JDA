@@ -15,6 +15,10 @@
  */
 package net.dv8tion.jda;
 
+/**
+ * Represents the embedded resource type.<br>
+ * These are typically either Images, Videos or Links.
+ */
 public enum EmbedType
 {
     IMAGE("image"),
@@ -28,6 +32,17 @@ public enum EmbedType
         this.key = key;
     }
 
+    /**
+     * Attemps to find the EmbedType from the provided key.<br>
+     * If the provided key doesn't match any known {@link net.dv8tion.jda.EmbedType EmbedType},
+     * this will return {@link net.dv8tion.jda.EmbedType#UNKNOWN UNKNOWN}.
+     *
+     * @param key
+     *          The key related to the {@link net.dv8tion.jda.EmbedType EmbedType}.
+     * @return
+     *      The {@link net.dv8tion.jda.EmbedType EmbedType} matching the provided key,
+     *      or {@link net.dv8tion.jda.EmbedType#UNKNOWN UNKNOWN}.
+     */
     public static EmbedType fromKey(String key)
     {
         for (EmbedType type : values())

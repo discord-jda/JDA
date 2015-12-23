@@ -16,7 +16,7 @@
 package net.dv8tion.jda;
 
 /**
- * Contains static information relating to JDA and this build of JDA.
+ * Contains information to this specific build of JDA.
  */
 public class JDAInfo
 {

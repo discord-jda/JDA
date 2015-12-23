@@ -16,6 +16,7 @@
 package net.dv8tion.jda.examples;
 
 import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.JDABuilder;
 import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.events.guild.GuildLeaveEvent;
@@ -47,9 +48,11 @@ public class GuildListenerExample extends ListenerAdapter
         JSONObject config = getConfig();
         try
         {
-            JDA api = JDA.newInstance();
-            api.addEventListener(new GuildListenerExample());
-            api.login(config.getString("email"), config.getString("password"));
+            JDA api = new JDABuilder()
+                    .setEmail(config.getString("email"))
+                    .setPassword(config.getString("password"))
+                    .addListener(new GuildListenerExample())
+                    .build();
         }
         catch (IllegalArgumentException e)
         {

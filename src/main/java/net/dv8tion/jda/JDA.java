@@ -28,12 +28,20 @@ import java.util.List;
  */
 public abstract class JDA
 {
-    public static JDA newInstance()
-    {
-        return new JDAImpl();
-    }
-
-    public abstract void login(String email, String password) throws IllegalArgumentException, LoginException;
+    /**
+     * Attempts to login to Discord.
+     * Upon successful auth with Discord, a token is generated and stored in token.json.
+     *
+     * @param email
+     *          The email of the account attempting to log in.
+     * @param password
+     *          The password of the account attempting to log in.
+     * @throws IllegalArgumentException
+     *          Thrown if this email or password provided are empty or null.
+     * @throws LoginException
+     *          Thrown if the email-password combination fails the auth check with the Discord servers.
+     */
+    protected abstract void login(String email, String password) throws IllegalArgumentException, LoginException;
 
     public abstract String getAuthToken();
 

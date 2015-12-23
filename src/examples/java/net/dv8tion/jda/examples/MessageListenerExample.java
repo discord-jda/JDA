@@ -16,6 +16,7 @@
 package net.dv8tion.jda.examples;
 
 import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.JDABuilder;
 import net.dv8tion.jda.MessageBuilder;
 import net.dv8tion.jda.MessageHistory;
 import net.dv8tion.jda.entities.Guild;
@@ -47,9 +48,11 @@ public class MessageListenerExample extends ListenerAdapter
         JSONObject config = getConfig();
         try
         {
-            JDA api = JDA.newInstance();
-            api.addEventListener(new MessageListenerExample());
-            api.login(config.getString("email"), config.getString("password"));
+            JDA api = new JDABuilder()
+                    .setEmail(config.getString("email"))
+                    .setPassword(config.getString("password"))
+                    .addListener(new MessageListenerExample())
+                    .build();
         }
         catch (IllegalArgumentException e)
         {

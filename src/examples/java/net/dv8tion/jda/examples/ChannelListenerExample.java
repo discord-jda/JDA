@@ -16,6 +16,7 @@
 package net.dv8tion.jda.examples;
 
 import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.JDABuilder;
 import net.dv8tion.jda.events.channel.text.*;
 import net.dv8tion.jda.events.channel.voice.*;
 import net.dv8tion.jda.hooks.ListenerAdapter;
@@ -35,9 +36,11 @@ public class ChannelListenerExample extends ListenerAdapter
         JSONObject config = getConfig();
         try
         {
-            JDA api = JDA.newInstance();
-            api.addEventListener(new ChannelListenerExample());
-            api.login(config.getString("email"), config.getString("password"));
+            JDA api = new JDABuilder()
+                    .setEmail(config.getString("email"))
+                    .setPassword(config.getString("password"))
+                    .addListener(new ChannelListenerExample())
+                    .build();
         }
         catch (IllegalArgumentException e)
         {
