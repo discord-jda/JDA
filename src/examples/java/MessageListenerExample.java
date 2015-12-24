@@ -81,45 +81,65 @@ public class MessageListenerExample extends ListenerAdapter
     @Override
     public void onMessageReceived(MessageReceivedEvent event)
     {
-        User author = event.getMessage().getAuthor();
-        TextChannel channel = event.getMessage().getChannel();
-        Guild guild = channel.getGuild();
-        List<User> mentions = event.getMessage().getMentionedUsers();
-
+        User author = event.getAuthor();
+        boolean isPrivate = event.isPrivate();
         StringBuilder builder = new StringBuilder();
-        builder.append("[")
-            .append(guild.getName())
-            .append("]{")
-            .append(channel.getName())
-            .append("} ")
-            .append(author.getUsername())
-            .append(": ")
-            .append(event.getMessage().getContent());
+
+        if (!isPrivate)
+        {
+            TextChannel channel = event.getTextChannel();
+            Guild guild = channel.getGuild();
+
+            builder.append("[")
+                    .append(guild.getName())
+                    .append("]{")
+                    .append(channel.getName())
+                    .append("} ");
+        }
+        else
+        {
+            builder.append("[PRIVATE]");
+        }
+        builder.append(author.getUsername())
+                .append(": ")
+                .append(event.getMessage().getContent());
         System.out.println(builder.toString());
 
-        builder = new StringBuilder();
-        for (User u : mentions)
+        if (!isPrivate)
         {
-            builder.append(u.getUsername()).append(", ");
+            List<User> mentions = event.getMessage().getMentionedUsers();
+            builder = new StringBuilder();
+            for (User u : mentions)
+            {
+                builder.append(u.getUsername()).append(", ");
+            }
+            String mentionsMessage = builder.toString();
+            if (!mentionsMessage.isEmpty())
+            {
+                mentionsMessage = mentionsMessage.substring(0, mentionsMessage.length() - 2);
+                System.out.println("The follow users were mentioned: " + mentionsMessage);
+            }
+            System.out.println("Users in channel " + event.getTextChannel().getName() + ": " +
+                    event.getTextChannel().getUsers().stream().map(User::getUsername).reduce((s1, s2) -> s1 + ", " + s2).get());
         }
-        String mentionsMessage = builder.toString();
-        if (!mentionsMessage.isEmpty())
-        {
-            mentionsMessage = mentionsMessage.substring(0, mentionsMessage.length() - 2);
-            System.out.println("The follow users were mentioned: " + mentionsMessage);
-        }
-        System.out.println("Users in channel " + channel.getName() + ": " + channel.getUsers().stream().map(User::getUsername).reduce((s1, s2) -> s1 + ", " + s2).get());
+
         if (author.getUsername().equalsIgnoreCase("kantenkugel") || author.getUsername().equalsIgnoreCase("dv8fromtheworld"))
         {
             if (event.getMessage().getContent().equalsIgnoreCase("hi"))
             {
-                channel.sendMessage(new MessageBuilder().appendString("Hello, ").appendMention(author).build());
+                if (!isPrivate)
+                {
+                    event.getTextChannel().sendMessage(new MessageBuilder().appendString("Hello, ").appendMention(author).build());
+                }
             }
             else if (event.getMessage().getContent().equalsIgnoreCase("!clear"))
             {
-                MessageHistory history = new MessageHistory(event.getJDA(), event.getChannel());
-                List<Message> messages = history.retrieveAll();
-                messages.forEach(Message::deleteMessage);
+                if (!isPrivate)
+                {
+                    MessageHistory history = new MessageHistory(event.getJDA(), event.getTextChannel());
+                    List<Message> messages = history.retrieveAll();
+                    messages.forEach(Message::deleteMessage);
+                }
             }
         }
     }

@@ -29,6 +29,7 @@ public interface Message
 
     /**
      * A immutable list of all mentioned users. if noone was mentioned, this list is empty
+     * In {@link net.dv8tion.jda.entities.PrivateChannel PrivateChannel's}, this always returns an empty List
      *
      * @return list of mentioned users
      */
@@ -36,6 +37,7 @@ public interface Message
 
     /**
      * Is this Message mentioning everyone using @everyone?
+     * In {@link net.dv8tion.jda.entities.PrivateChannel PrivateChannel's}, this always returns false
      *
      * @return if mentioning everyone
      */
@@ -78,11 +80,33 @@ public interface Message
     String getContent();
 
     /**
-     * The channel this message was sent in
+     * Checks, whether this Message was sent in a {@link net.dv8tion.jda.entities.PrivateChannel PrivateChannel} (Private Message),
+     * or in a {@link net.dv8tion.jda.entities.TextChannel TextChannel} (sent in Guild channel)
      *
-     * @return the messages channel
+     * @return
+     *      true, if this Message is from a PrivateChannel, false if it is from a TextChannel
      */
-    TextChannel getChannel();
+    boolean isPrivate();
+
+    /**
+     * The {@link net.dv8tion.jda.entities.TextChannel TextChannel} this message was sent in.
+     * This returns null, if this Message was sent in a {@link net.dv8tion.jda.entities.PrivateChannel PrivateChannel}
+     * To check the type of this Message, you can call {@link #isPrivate()}
+     *
+     * @return
+     *      Null-able TextChannel, this Message was sent in
+     */
+    TextChannel getTextChannel();
+
+    /**
+     * The {@link net.dv8tion.jda.entities.PrivateChannel PrivateChannel} this message was sent in.
+     * This returns null, if this Message was sent in a {@link net.dv8tion.jda.entities.TextChannel TextChannel}
+     * To check the type of this Message, you can call {@link #isPrivate()}
+     *
+     * @return
+     *      Null-able PrivateChannel, this Message was sent in
+     */
+    PrivateChannel getPrivateChannel();
 
     /**
      * Is this Message supposed to be TTS (Text-to-speach)

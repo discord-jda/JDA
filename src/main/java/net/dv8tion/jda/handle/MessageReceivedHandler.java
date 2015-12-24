@@ -31,18 +31,9 @@ public class MessageReceivedHandler extends SocketHandler
     @Override
     public void handle(JSONObject content)
     {
-        String channelId = content.getString("channel_id");
-        TextChannel channel = api.getChannelMap().get(channelId);
-        if (channel != null)
-        {
-            api.getEventManager().handle(
-                    new MessageReceivedEvent(
-                            api, responseNumber,
-                            new EntityBuilder(api).createMessage(content)));
-        }
-        else
-        {
-            //TODO PRIVATE MESSAGE
-        }
+        api.getEventManager().handle(
+                new MessageReceivedEvent(
+                        api, responseNumber,
+                        new EntityBuilder(api).createMessage(content)));
     }
 }

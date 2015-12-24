@@ -4,6 +4,7 @@
 package net.dv8tion.jda.entities.impl;
 
 import net.dv8tion.jda.entities.Message;
+import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.handle.EntityBuilder;
@@ -27,7 +28,9 @@ public class MessageImpl implements Message
     private OffsetDateTime time;
     private OffsetDateTime editedTime = null;
     private User author;
-    private TextChannel channel;
+    private boolean isPrivate;
+    private TextChannel textChannel = null;
+    private PrivateChannel privateChannel = null;
     private String content;
 
     public MessageImpl(String id, JDAImpl api)
@@ -85,9 +88,21 @@ public class MessageImpl implements Message
     }
 
     @Override
-    public TextChannel getChannel()
+    public boolean isPrivate()
     {
-        return channel;
+        return isPrivate;
+    }
+
+    @Override
+    public TextChannel getTextChannel()
+    {
+        return textChannel;
+    }
+
+    @Override
+    public PrivateChannel getPrivateChannel()
+    {
+        return privateChannel;
     }
 
     @Override
@@ -99,9 +114,10 @@ public class MessageImpl implements Message
     @Override
     public Message updateMessage(String new_content)
     {
+        String channelId = isPrivate ? privateChannel.getId() : textChannel.getId();
         RequestBuilder rb = new RequestBuilder(api);
         rb.setType(RequestType.PATCH);
-        rb.setUrl("https://discordapp.com/api/channels/" + channel.getId() + "/messages/" + getId());
+        rb.setUrl("https://discordapp.com/api/channels/" + channelId + "/messages/" + getId());
         rb.setData(new JSONObject().put("content", new_content).toString());
 
         try
@@ -117,10 +133,11 @@ public class MessageImpl implements Message
     @Override
     public void deleteMessage()
     {
+        String channelId = isPrivate ? privateChannel.getId() : textChannel.getId();
         RequestBuilder rb = new RequestBuilder(api);
         rb.setType(RequestType.DELETE);
         rb.setGetResponse(false);
-        rb.setUrl("https://discordapp.com/api/channels/" + channel.getId() + "/messages/" + getId());
+        rb.setUrl("https://discordapp.com/api/channels/" + channelId + "/messages/" + getId());
         rb.makeRequest();
     }
 
@@ -160,9 +177,21 @@ public class MessageImpl implements Message
         return this;
     }
 
-    public MessageImpl setChannel(TextChannel channel)
+    public MessageImpl setIsPrivate(boolean isPrivate)
     {
-        this.channel = channel;
+        this.isPrivate = isPrivate;
+        return this;
+    }
+
+    public MessageImpl setTextChannel(TextChannel channel)
+    {
+        this.textChannel = channel;
+        return this;
+    }
+
+    public MessageImpl setPrivateChannel(PrivateChannel channel)
+    {
+        this.privateChannel = channel;
         return this;
     }
 

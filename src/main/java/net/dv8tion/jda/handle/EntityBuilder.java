@@ -27,10 +27,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class EntityBuilder
 {
@@ -260,24 +257,41 @@ public class EntityBuilder
             message.setEditedTime(OffsetDateTime.parse(jsonObject.getString("edited_timestamp")));
 
         String channelId = jsonObject.getString("channel_id");
-        for (Guild guild : api.getGuildMap().values())
+        TextChannel textChannel = api.getChannelMap().get(channelId);
+        if (textChannel != null)
         {
-            TextChannel textChannel = ((GuildImpl) guild).getTextChannelsMap().get(channelId);
-            if (textChannel != null)
+            message.setTextChannel(textChannel);
+            message.setIsPrivate(false);
+            List<User> mentioned = new LinkedList<>();
+            JSONArray mentions = jsonObject.getJSONArray("mentions");
+            for (int i = 0; i < mentions.length(); i++)
             {
-                message.setChannel(textChannel);
-                break;
+                JSONObject mention = mentions.getJSONObject(0);
+                mentioned.add(api.getUserMap().get(mention.getString("id")));
             }
+            message.setMentionedUsers(mentioned);
         }
-
-        List<User> mentioned = new LinkedList<>();
-        JSONArray mentions = jsonObject.getJSONArray("mentions");
-        for (int i = 0; i < mentions.length(); i++)
+        else
         {
-            JSONObject mention = mentions.getJSONObject(0);
-            mentioned.add(api.getUserMap().get(mention.getString("id")));
+            message.setIsPrivate(true);
+            if (message.getAuthor() != api.getSelfInfo())
+            {
+                message.setPrivateChannel(message.getAuthor().getPrivateChannel());
+            }
+            else
+            {
+                Optional<User> user = api.getUsers().stream().filter(u -> u.getPrivateChannel() != null && u.getPrivateChannel().getId().equals(channelId)).findAny();
+                if (user.isPresent())
+                {
+                    message.setPrivateChannel(user.get().getPrivateChannel());
+                }
+                else
+                {
+                    System.out.println("Could not find Private Channel of id "+channelId);
+                }
+            }
+
         }
-        message.setMentionedUsers(mentioned);
 
         return message;
     }
