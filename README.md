@@ -64,6 +64,21 @@ public class MessageListener extends ListenerAdapter
 ## More Examples
 We provide a small set of Examples in the [Example Directory](https://github.com/DV8FromTheWorld/JDA/tree/master/src/examples/java).
 
+## TODO
+* Private Messages
+  * Sending Private Messages
+  * Figure out a good Event system that handles both, private and guild messages
+  * Implement the Handler-code types other than MESSAGE_CREATE
+* Invites
+* Changing the own Presence
+* Modifying the server
+* Permissions
+  * Implement Exceptions
+  * Revisit the Permission calculation
+* Read-States (which Message was last read in which channel)
+  * Message-ACK
+* Voice (planned last, gonna take some while)
+
 ## Dependencies:
 All dependencies are managed automatically by Gradle.
  * Java-Websocket
