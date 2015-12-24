@@ -68,22 +68,13 @@ public interface User
     String getAvatarUrl();
 
     /**
-     * The Discord Id for the game that the user is currently playing.
-     * If the user is not currently playing a game, this will return -1.
-     *
-     * @return
-     *      Positive int if the {@link net.dv8tion.jda.entities.User User} is playing a game, -1 if not.
-     */
-    int getCurrentGameId();
-
-    /**
      * The name of the game that the user is currently playing.
      * If the user is not currently playing a game, this will return null.
      *
      * @return
      *      Possibly-null String containing the name of the game that the {@link net.dv8tion.jda.entities.User User} is currently playing.
      */
-    String getCurrentGameName();
+    String getCurrentGame();
 
     /**
      * Returns the {@link net.dv8tion.jda.OnlineStatus OnlineStatus} of the User.<br>

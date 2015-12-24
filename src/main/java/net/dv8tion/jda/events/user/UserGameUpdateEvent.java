@@ -20,16 +20,16 @@ import net.dv8tion.jda.entities.User;
 
 public class UserGameUpdateEvent extends GenericUserEvent
 {
-    protected int previousGameId;
+    protected String previousGameName;
 
-    public UserGameUpdateEvent(JDA api, int responseNumber, User user, int previousGameId)
+    public UserGameUpdateEvent(JDA api, int responseNumber, User user, String previousGameName)
     {
         super(api, responseNumber, user);
-        this.previousGameId = previousGameId;
+        this.previousGameName = previousGameName;
     }
 
-    public int getPreviousGameId()
+    public String getPreviousGameId()
     {
-        return previousGameId;
+        return previousGameName;
     }
 }

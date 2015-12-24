@@ -26,7 +26,7 @@ public class UserImpl implements User
     private String username;
     private String discriminator;
     private String avatarId;
-    private int gameId = -1;
+    private String gameName = null;
     private OnlineStatus onlineStatus = OnlineStatus.OFFLINE;
     private PrivateChannel privateChannel = null;
     private VoiceStatus voiceStatus;
@@ -68,15 +68,9 @@ public class UserImpl implements User
     }
 
     @Override
-    public int getCurrentGameId()
+    public String getCurrentGame()
     {
-        return gameId;
-    }
-
-    @Override
-    public String getCurrentGameName()
-    {
-        throw new UnsupportedOperationException("Yet to implement games.json parsing");
+        return gameName;
     }
 
     @Override
@@ -117,9 +111,9 @@ public class UserImpl implements User
         return this;
     }
 
-    public UserImpl setCurrentGameId(int gameId)
+    public UserImpl setCurrentGame(String name)
     {
-        this.gameId = gameId;
+        this.gameName = name;
         return this;
     }
 

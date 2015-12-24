@@ -107,7 +107,7 @@ public class EntityBuilder
             JSONObject presence = presences.getJSONObject(i);
             UserImpl user = ((UserImpl) api.getUserMap().get(presence.getJSONObject("user").getString("id")));
             user
-                .setCurrentGameId(presence.isNull("game_id") ? -1 : presence.getInt("game_id"))
+                .setCurrentGame(presence.isNull("game") ? null : presence.getJSONObject("game").getString("name"))
                 .setOnlineStatus(OnlineStatus.fromKey(presence.getString("status")));
         }
         return guildObj;

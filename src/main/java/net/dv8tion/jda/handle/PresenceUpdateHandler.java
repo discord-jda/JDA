@@ -65,7 +65,7 @@ public class PresenceUpdateHandler extends SocketHandler
             }
         }
 
-        int gameId = content.isNull("game_id") ? -1 : content.getInt("game_id");
+        String gameName = content.isNull("game") ? null : content.getJSONObject("game").getString("name");
         OnlineStatus status = OnlineStatus.fromKey(content.getString("status"));
 
         if (!user.getOnlineStatus().equals(status))
@@ -77,14 +77,14 @@ public class PresenceUpdateHandler extends SocketHandler
                             api, responseNumber,
                             user, oldStatus));
         }
-        if (user.getCurrentGameId() != gameId)
+        if (!user.getCurrentGame().equals(gameName))
         {
-            int oldGameId = user.getCurrentGameId();
-            user.setCurrentGameId(gameId);
+            String oldGameName = user.getCurrentGame();
+            user.setCurrentGame(gameName);
             api.getEventManager().handle(
                     new UserGameUpdateEvent(
                             api, responseNumber,
-                            user, oldGameId));
+                            user, oldGameName));
         }
         api.getEventManager().handle(
                 new GenericUserEvent(
