@@ -15,13 +15,13 @@
  */
 package net.dv8tion.jda.entities.impl;
 
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import net.dv8tion.jda.MessageBuilder;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.handle.EntityBuilder;
-import net.dv8tion.jda.requests.RequestBuilder;
-import net.dv8tion.jda.requests.RequestType;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -95,17 +95,18 @@ public class TextChannelImpl implements TextChannel
     @Override
     public Message sendMessage(Message msg)
     {
-        RequestBuilder rb = new RequestBuilder(api);
-        rb.setType(RequestType.POST);
-        rb.setUrl("https://discordapp.com/api/channels/" + getId() + "/messages");
-        rb.setData(new JSONObject().put("content", msg.getContent()).toString());
-        JSONObject response = new JSONObject(rb.makeRequest());
         try
         {
-            return new EntityBuilder(api).createMessage(response);
+            String response = Unirest.post("https://discordapp.com/api/channels/{chanId}/messages")
+                    .routeParam("chanId", getId())
+                    .body(new JSONObject().put("content", msg.getContent()).toString())
+                    .asString().getBody();
+            System.out.println(response);
+            return new EntityBuilder(api).createMessage(new JSONObject(response));
         }
-        catch (JSONException ex)
+        catch (JSONException | UnirestException ex)
         {
+            ex.printStackTrace();
             //sending failed
             return null;
         }

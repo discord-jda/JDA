@@ -15,12 +15,11 @@
  */
 package net.dv8tion.jda;
 
+import com.mashape.unirest.http.Unirest;
 import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.handle.EntityBuilder;
-import net.dv8tion.jda.requests.RequestBuilder;
-import net.dv8tion.jda.requests.RequestType;
 import org.json.JSONArray;
 
 import java.util.LinkedList;
@@ -89,13 +88,13 @@ public class MessageHistory
             return null;
         }
         amount = Math.min(amount, 100);
-        RequestBuilder rb = new RequestBuilder(api);
-        rb.setType(RequestType.GET);
-        rb.setUrl("https://discordapp.com/api/channels/" + channel.getId() + "/messages?limit=" + amount + (lastId != null ? "&before=" + lastId : ""));
         LinkedList<Message> out = new LinkedList<>();
         try
         {
-            JSONArray array = new JSONArray(rb.makeRequest());
+            JSONArray array = Unirest.get("https://discordapp.com/api/channels/{chanId}/messages?limit={limit}" + (lastId != null ? "&before=" + lastId : ""))
+                    .routeParam("chanId", channel.getId()).routeParam("limit", Integer.toString(amount))
+                    .asJson().getBody().getArray();
+
             EntityBuilder builder = new EntityBuilder(api);
             for (int i = 0; i < array.length(); i++)
             {

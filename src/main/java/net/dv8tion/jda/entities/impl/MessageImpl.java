@@ -3,13 +3,13 @@
  */
 package net.dv8tion.jda.entities.impl;
 
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.handle.EntityBuilder;
-import net.dv8tion.jda.requests.RequestBuilder;
-import net.dv8tion.jda.requests.RequestType;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -112,20 +112,20 @@ public class MessageImpl implements Message
     }
 
     @Override
-    public Message updateMessage(String new_content)
+    public Message updateMessage(String newContent)
     {
         String channelId = isPrivate ? privateChannel.getId() : textChannel.getId();
-        RequestBuilder rb = new RequestBuilder(api);
-        rb.setType(RequestType.PATCH);
-        rb.setUrl("https://discordapp.com/api/channels/" + channelId + "/messages/" + getId());
-        rb.setData(new JSONObject().put("content", new_content).toString());
-
         try
         {
-            return new EntityBuilder(api).createMessage(new JSONObject(rb.makeRequest()));
+            JSONObject response = Unirest.patch("https://discordapp.com/api/channels/{channelId}/messages/{msgId}")
+                    .routeParam("channelId", channelId).routeParam("msgId", getId())
+                    .body(new JSONObject().put("content", newContent).toString())
+                    .asJson().getBody().getObject();
+            return new EntityBuilder(api).createMessage(response);
         }
-        catch (JSONException ex)
+        catch (JSONException | UnirestException ex)
         {
+            ex.printStackTrace();
             return null;
         }
     }
@@ -134,11 +134,16 @@ public class MessageImpl implements Message
     public void deleteMessage()
     {
         String channelId = isPrivate ? privateChannel.getId() : textChannel.getId();
-        RequestBuilder rb = new RequestBuilder(api);
-        rb.setType(RequestType.DELETE);
-        rb.setGetResponse(false);
-        rb.setUrl("https://discordapp.com/api/channels/" + channelId + "/messages/" + getId());
-        rb.makeRequest();
+        try
+        {
+            Unirest.delete("https://discordapp.com/api/channels/{chanId}/messages/{msgId}")
+                    .routeParam("chanId", channelId).routeParam("msgId", getId())
+                    .asString();
+        }
+        catch (JSONException | UnirestException ex)
+        {
+            ex.printStackTrace();
+        }
     }
 
     public MessageImpl setMentionedUsers(List<User> mentionedUsers)
