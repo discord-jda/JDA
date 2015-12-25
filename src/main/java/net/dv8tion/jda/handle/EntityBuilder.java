@@ -24,6 +24,7 @@ import net.dv8tion.jda.entities.MessageEmbed.Thumbnail;
 import net.dv8tion.jda.entities.MessageEmbed.VideoInfo;
 import net.dv8tion.jda.entities.impl.*;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
@@ -203,8 +204,15 @@ public class EntityBuilder
             .setPosition(roleJson.getInt("position"))
             .setPermissions(roleJson.getInt("permissions"))
             .setManaged(roleJson.getBoolean("managed"))
-            .setGrouped(roleJson.getBoolean("hoist"))
-            .setColor(roleJson.getInt("color"));
+            .setGrouped(roleJson.getBoolean("hoist"));
+        try
+        {
+            role.setColor(roleJson.getInt("color"));
+        }
+        catch (JSONException ex)
+        {
+            role.setColor(0);
+        }
         guild.getRolesMap().put(id, role);
         return role;
     }
