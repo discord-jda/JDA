@@ -95,15 +95,10 @@ public class TextChannelImpl implements TextChannel
     @Override
     public Message sendMessage(Message msg)
     {
-        JSONArray mentions = new JSONArray();
-        for (User user : msg.getMentionedUsers())
-        {
-            mentions.put(user.getId());
-        }
         RequestBuilder rb = new RequestBuilder(api);
         rb.setType(RequestType.POST);
         rb.setUrl("https://discordapp.com/api/channels/" + getId() + "/messages");
-        rb.setData(new JSONObject().put("content", msg.getContent()).put("mentions", mentions).toString());
+        rb.setData(new JSONObject().put("content", msg.getContent()).toString());
         JSONObject response = new JSONObject(rb.makeRequest());
         try
         {

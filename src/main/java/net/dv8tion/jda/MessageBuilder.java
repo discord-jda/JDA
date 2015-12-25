@@ -94,7 +94,7 @@ public class MessageBuilder
      */
     public MessageBuilder appendMention(User user)
     {
-        builder.append('@').append(user.getUsername());
+        builder.append("<@").append(user.getId()).append('>');
         mentioned.add(user);
         return this;
     }
