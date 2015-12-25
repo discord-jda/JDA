@@ -77,7 +77,7 @@ public class PresenceUpdateHandler extends SocketHandler
                             api, responseNumber,
                             user, oldStatus));
         }
-        if (!user.getCurrentGame().equals(gameName))
+        if (!StringUtils.equals(user.getCurrentGame(), gameName))
         {
             String oldGameName = user.getCurrentGame();
             user.setCurrentGame(gameName);
