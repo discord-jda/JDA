@@ -19,6 +19,7 @@ import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.handle.*;
 import org.java_websocket.client.DefaultSSLWebSocketClientFactory;
 import org.java_websocket.handshake.ServerHandshake;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.net.ssl.SSLContext;
@@ -104,76 +105,85 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
         }
 
         boolean printUnimplemented = true;    //TODO: Remove, just for development debug.
-        switch (type)
+        try
         {
-            case "READY":
-                new ReadyHandler(api, responseTotal).handle(content);
-                break;
-            case "PRESENCE_UPDATE":
-                new PresenceUpdateHandler(api, responseTotal).handle(content);
-                break;
-            case "TYPING_START":
-                new UserTypingHandler(api, responseTotal).handle(content);
-                break;
-            case "MESSAGE_CREATE":
-                new MessageReceivedHandler(api, responseTotal).handle(content);
-                break;
-            case "MESSAGE_UPDATE":
-                if (content.has("author"))
-                    new MessageUpdateHandler(api, responseTotal).handle(content);
-                else
-                    new MessageEmbedHandler(api, responseTotal).handle(content);
-                break;
-            case "MESSAGE_DELETE":
-                new MessageDeleteHandler(api, responseTotal).handle(content);
-                break;
-            case "VOICE_STATE_UPDATE":
-                new VoiceChangeHandler(api, responseTotal).handle(content);
-                break;
-            case "CHANNEL_CREATE":
-                new ChannelCreateHandler(api, responseTotal).handle(content);
-                break;
-            case "CHANNEL_UPDATE":
-                new ChannelUpdateHandler(api, responseTotal).handle(content);
-                break;
-            case "CHANNEL_DELETE":
-                new ChannelDeleteHandler(api, responseTotal).handle(content);
-                break;
-            case "GUILD_CREATE":
-                new GuildJoinHandler(api, responseTotal).handle(content);
-                break;
-            case "GUILD_UPDATE":
-                new GuildUpdateHandler(api, responseTotal).handle(content);
-                break;
-            case "GUILD_DELETE":
-                new GuildLeaveHandler(api, responseTotal).handle(content);
-                break;
-            case "GUILD_MEMBER_ADD":
-                new GuildMemberAddHandler(api, responseTotal).handle(content);
-                break;
-            case "GUILD_MEMBER_UPDATE":
-                new GuildMemberRoleHandler(api, responseTotal).handle(content);
-                break;
-            case "GUILD_MEMBER_REMOVE":
-                new GuildMemberRemoveHandler(api, responseTotal).handle(content);
-                break;
-            case "GUILD_BAN_ADD":
-                new GuildMemberBanHandler(api, responseTotal, true).handle(content);
-                break;
-            case "GUILD_BAN_REMOVE":
-                new GuildMemberBanHandler(api, responseTotal, false).handle(content);
-                break;
-            case "GUILD_ROLE_CREATE":
-                new GuildRoleCreateHandler(api, responseTotal).handle(content);
-                break;
-            case "GUILD_ROLE_UPDATE":
-                new GuildRoleUpdateHandler(api, responseTotal).handle(content);
-                break;
-            case "GUILD_ROLE_DELETE":
-                new GuildRoleDeleteHandler(api, responseTotal).handle(content);
-                break;
-            default:
-                System.out.println("Unrecognized event:\n" + message);    //TODO: Replace with "we don't know this type"
+            switch (type)
+            {
+                case "READY":
+                    new ReadyHandler(api, responseTotal).handle(content);
+                    break;
+                case "PRESENCE_UPDATE":
+                    new PresenceUpdateHandler(api, responseTotal).handle(content);
+                    break;
+                case "TYPING_START":
+                    new UserTypingHandler(api, responseTotal).handle(content);
+                    break;
+                case "MESSAGE_CREATE":
+                    new MessageReceivedHandler(api, responseTotal).handle(content);
+                    break;
+                case "MESSAGE_UPDATE":
+                    if (content.has("author"))
+                        new MessageUpdateHandler(api, responseTotal).handle(content);
+                    else
+                        new MessageEmbedHandler(api, responseTotal).handle(content);
+                    break;
+                case "MESSAGE_DELETE":
+                    new MessageDeleteHandler(api, responseTotal).handle(content);
+                    break;
+                case "VOICE_STATE_UPDATE":
+                    new VoiceChangeHandler(api, responseTotal).handle(content);
+                    break;
+                case "CHANNEL_CREATE":
+                    new ChannelCreateHandler(api, responseTotal).handle(content);
+                    break;
+                case "CHANNEL_UPDATE":
+                    new ChannelUpdateHandler(api, responseTotal).handle(content);
+                    break;
+                case "CHANNEL_DELETE":
+                    new ChannelDeleteHandler(api, responseTotal).handle(content);
+                    break;
+                case "GUILD_CREATE":
+                    new GuildJoinHandler(api, responseTotal).handle(content);
+                    break;
+                case "GUILD_UPDATE":
+                    new GuildUpdateHandler(api, responseTotal).handle(content);
+                    break;
+                case "GUILD_DELETE":
+                    new GuildLeaveHandler(api, responseTotal).handle(content);
+                    break;
+                case "GUILD_MEMBER_ADD":
+                    new GuildMemberAddHandler(api, responseTotal).handle(content);
+                    break;
+                case "GUILD_MEMBER_UPDATE":
+                    new GuildMemberRoleHandler(api, responseTotal).handle(content);
+                    break;
+                case "GUILD_MEMBER_REMOVE":
+                    new GuildMemberRemoveHandler(api, responseTotal).handle(content);
+                    break;
+                case "GUILD_BAN_ADD":
+                    new GuildMemberBanHandler(api, responseTotal, true).handle(content);
+                    break;
+                case "GUILD_BAN_REMOVE":
+                    new GuildMemberBanHandler(api, responseTotal, false).handle(content);
+                    break;
+                case "GUILD_ROLE_CREATE":
+                    new GuildRoleCreateHandler(api, responseTotal).handle(content);
+                    break;
+                case "GUILD_ROLE_UPDATE":
+                    new GuildRoleUpdateHandler(api, responseTotal).handle(content);
+                    break;
+                case "GUILD_ROLE_DELETE":
+                    new GuildRoleDeleteHandler(api, responseTotal).handle(content);
+                    break;
+                default:
+                    System.out.println("Unrecognized event:\n" + message);    //TODO: Replace with "we don't know this type"
+            }
+        }
+        catch (JSONException ex)
+        {
+            System.err.println("Got an unexpected Json-parse error. Please redirect following message to the devs:");
+            System.err.println('\t' + ex.getMessage());
+            System.err.println('\t' + type + " -> " + content);
         }
     }
 
