@@ -7,7 +7,7 @@ apply plugin: 'signing'
 def versionObj = new Version(major: 1, minor: 0, revision: 0)
 group = "net.dv8tion"
 archivesBaseName = "JDA"
-version = versionObj.toString()
+version = "${versionObj.toString()}-SNAPSHOT"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
