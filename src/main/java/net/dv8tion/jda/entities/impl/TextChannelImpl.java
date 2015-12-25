@@ -101,7 +101,6 @@ public class TextChannelImpl implements TextChannel
                     .routeParam("chanId", getId())
                     .body(new JSONObject().put("content", msg.getContent()).toString())
                     .asString().getBody();
-            System.out.println(response);
             return new EntityBuilder(api).createMessage(new JSONObject(response));
         }
         catch (JSONException | UnirestException ex)

@@ -280,7 +280,7 @@ public class EntityBuilder
             }
             else
             {
-                Optional<User> user = api.getUsers().stream().filter(u -> u.getPrivateChannel() != null && u.getPrivateChannel().getId().equals(channelId)).findAny();
+                Optional<User> user = api.getUsers().stream().filter(u -> ((UserImpl) u).getPrivateChannel(false) != null && u.getPrivateChannel().getId().equals(channelId)).findAny();
                 if (user.isPresent())
                 {
                     message.setPrivateChannel(user.get().getPrivateChannel());

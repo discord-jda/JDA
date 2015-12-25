@@ -82,9 +82,14 @@ public class UserImpl implements User
     @Override
     public PrivateChannel getPrivateChannel()
     {
-        if (privateChannel != null)
-            return privateChannel;
-        throw new UnsupportedOperationException("Currently no support for starting a NEW direct message session.");
+        return getPrivateChannel(true);
+    }
+
+    public PrivateChannel getPrivateChannel(boolean create)
+    {
+        if(create && privateChannel == null)
+            throw new UnsupportedOperationException("Currently no support for starting a NEW direct message session.");
+        return privateChannel;
     }
 
     @Override
