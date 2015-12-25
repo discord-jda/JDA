@@ -165,4 +165,4 @@ compileJava.source = sourceSets.filtered.java
 compileJava.dependsOn processVersion
 
 //Creates the w/ dependencies jar.
-install.dependsOn fatJar
+uploadArchives.dependsOn fatJar
