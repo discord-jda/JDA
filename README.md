@@ -66,10 +66,10 @@ We provide a small set of Examples in the [Example Directory](https://github.com
 
 ## Download
 You can get the compiled Jar file of the latest build here:
+[Build Server Downloads](http://home.dv8tion.net:8080/JDA)
 
-[With dependencies](http://home.dv8tion.net:8080/job/JDA/lastSuccessfulBuild/artifact/build/libs/JDA-all-1.0.0_10.jar)
-
-[Without dependencies](http://home.dv8tion.net:8080/job/JDA/lastSuccessfulBuild/artifact/build/libs/JDA-1.0.0_10.jar)
+Maven Downloads Coming Soon™!<br>
+Gradle Downloads Coming Soon™!
 
 ## TODO
 * Private Messages
