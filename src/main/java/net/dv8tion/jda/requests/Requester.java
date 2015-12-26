@@ -41,7 +41,7 @@ public class Requester
 
     public JSONObject delete(String url)
     {
-        return toObject(addHeaders(Unirest.patch(url)));
+        return toObject(addHeaders(Unirest.delete(url)));
     }
 
     public JSONObject post(String url, JSONObject body)
@@ -61,7 +61,7 @@ public class Requester
 
     public JSONArray deleteA(String url)
     {
-        return toArray(addHeaders(Unirest.patch(url)));
+        return toArray(addHeaders(Unirest.delete(url)));
     }
 
     public JSONArray postA(String url, JSONObject body)
