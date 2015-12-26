@@ -70,7 +70,7 @@ Current Promoted Version:
 ![JDA promoted verison](https://www.dropbox.com/s/4jddygn33340uf4/version.png?dl=1)
 
 You can get the latest promoted build here:
-[Promoted Build Downloads](http://home.dv8tion.net:8080/job/JDA/promotion/)
+[Promoted Build Downloads](http://home.dv8tion.net:8080/job/JDA/Promoted%20Build/)
 
 
 If you want the most up-to-date builds, you can get them here: [Beta Build Downloads](http://home.dv8tion.net:8080/job/JDA/)<br>
