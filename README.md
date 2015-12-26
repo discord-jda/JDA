@@ -65,8 +65,16 @@ public class MessageListener extends ListenerAdapter
 We provide a small set of Examples in the [Example Directory](https://github.com/DV8FromTheWorld/JDA/tree/master/src/examples/java).
 
 ## Download
-You can get the compiled Jar file of the latest build here:
-[Build Server Downloads](http://home.dv8tion.net:8080/JDA)
+Current Promoted Version:
+
+![JDA promoted verison](https://www.dropbox.com/s/4jddygn33340uf4/version.png?dl=1)
+
+You can get the latest promoted build here:
+[Promoted Build Downloads](http://home.dv8tion.net:8080/job/JDA/promotion/)
+
+
+If you want the most up-to-date builds, you can get them here: [Beta Build Downloads](http://home.dv8tion.net:8080/job/JDA/)<br>
+**Note:** It is quite possible that these are broken or bugged. Use with caution.
 
 Maven Downloads Coming Soon™!<br>
 Gradle Downloads Coming Soon™!
