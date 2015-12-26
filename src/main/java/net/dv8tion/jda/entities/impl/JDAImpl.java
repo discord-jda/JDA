@@ -15,15 +15,13 @@
  */
 package net.dv8tion.jda.entities.impl;
 
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.hooks.EventListener;
 import net.dv8tion.jda.hooks.EventManager;
+import net.dv8tion.jda.requests.Requester;
 import net.dv8tion.jda.requests.WebSocketClient;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.impl.Log4JLogger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -35,7 +33,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
-import java.util.logging.Level;
 
 
 /**
@@ -52,6 +49,7 @@ public class JDAImpl extends JDA
     private SelfInfo selfInfo = null;
     private String authToken = null;
     private WebSocketClient client;
+    private final Requester requester = new Requester(this);
     private int responseTotal;
 
     public JDAImpl()
@@ -90,15 +88,12 @@ public class JDAImpl extends JDA
             configs = new JSONObject().put("tokens", new JSONObject()).put("version", 1);
         }
 
-        Unirest.setDefaultHeader("Content-Type", "application/json");
-
         if (configs.getJSONObject("tokens").has(email))
         {
             try
             {
                 authToken = configs.getJSONObject("tokens").getString(email);
-                Unirest.setDefaultHeader("authorization", authToken);
-                gateway = Unirest.get("https://discordapp.com/api/gateway").asJson().getBody().getObject().getString("url");
+                gateway = getRequester().get("https://discordapp.com/api/gateway").getString("url");
                 System.out.println("Using cached Token: " + authToken);
             }
             catch (JSONException ex)
@@ -115,23 +110,20 @@ public class JDAImpl extends JDA
         {
             try
             {
-                Unirest.clearDefaultHeaders();
-                String response = Unirest.post("https://discordapp.com/api/auth/login")
-                        .body(new JSONObject().put("email", email).put("password", password).toString())
-                        .asString().getBody();
+                authToken = null;
+                JSONObject response = getRequester().post("https://discordapp.com/api/auth/login", new JSONObject().put("email", email).put("password", password));
 
-                if (response == null || response.isEmpty())
+                if (response == null || !response.has("token"))
                     throw new LoginException("The provided email / password combination was incorrect. Please provide valid details.");
                 System.out.println("Login Successful!"); //TODO: Replace with Logger.INFO
 
-                authToken = new JSONObject(response).getString("token");
+                authToken = response.getString("token");
                 configs.getJSONObject("tokens").put(email, authToken);
                 System.out.println("Created new Token: " + authToken);
 
-                Unirest.setDefaultHeader("authorization", authToken);
-                gateway = Unirest.get("https://discordapp.com/api/gateway").asJson().getBody().getObject().getString("url");
+                gateway = getRequester().get("https://discordapp.com/api/gateway").getString("url");
             }
-            catch (UnirestException ex)
+            catch (JSONException ex)
             {
                 ex.printStackTrace();
             }
@@ -328,5 +320,10 @@ public class JDAImpl extends JDA
     public void setResponseTotal(int responseTotal)
     {
         this.responseTotal = responseTotal;
+    }
+
+    public Requester getRequester()
+    {
+        return requester;
     }
 }

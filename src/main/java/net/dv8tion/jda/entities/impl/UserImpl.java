@@ -15,8 +15,6 @@
  */
 package net.dv8tion.jda.entities.impl;
 
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
 import net.dv8tion.jda.OnlineStatus;
 import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.User;
@@ -97,13 +95,11 @@ public class UserImpl implements User
         if(create && privateChannel == null) {
             try
             {
-                JSONObject response = Unirest.post("https://discordapp.com/api/users/{selfId}/channels")
-                        .routeParam("selfId", api.getSelfInfo().getId())
-                        .body(new JSONObject().put("recipient_id", getId()).toString())
-                        .asJson().getBody().getObject();
+                JSONObject response = api.getRequester().post("https://discordapp.com/api/users/" + api.getSelfInfo().getId() + "/channels",
+                        new JSONObject().put("recipient_id", getId()));
                 new EntityBuilder(api).createPrivateChannel(response);
             }
-            catch (UnirestException | JSONException ex)
+            catch (JSONException ex)
             {
                 ex.printStackTrace();
             }

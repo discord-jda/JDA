@@ -3,8 +3,6 @@
  */
 package net.dv8tion.jda.entities.impl;
 
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
 import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.TextChannel;
@@ -117,13 +115,10 @@ public class MessageImpl implements Message
         String channelId = isPrivate ? privateChannel.getId() : textChannel.getId();
         try
         {
-            JSONObject response = Unirest.patch("https://discordapp.com/api/channels/{channelId}/messages/{msgId}")
-                    .routeParam("channelId", channelId).routeParam("msgId", getId())
-                    .body(new JSONObject().put("content", newContent).toString())
-                    .asJson().getBody().getObject();
+            JSONObject response = api.getRequester().patch("https://discordapp.com/api/channels/" + channelId + "/messages/" + getId(), new JSONObject().put("content", newContent));
             return new EntityBuilder(api).createMessage(response);
         }
-        catch (JSONException | UnirestException ex)
+        catch (JSONException ex)
         {
             ex.printStackTrace();
             return null;
@@ -134,16 +129,7 @@ public class MessageImpl implements Message
     public void deleteMessage()
     {
         String channelId = isPrivate ? privateChannel.getId() : textChannel.getId();
-        try
-        {
-            Unirest.delete("https://discordapp.com/api/channels/{chanId}/messages/{msgId}")
-                    .routeParam("chanId", channelId).routeParam("msgId", getId())
-                    .asString();
-        }
-        catch (JSONException | UnirestException ex)
-        {
-            ex.printStackTrace();
-        }
+        api.getRequester().delete("https://discordapp.com/api/channels/" + channelId + "/messages/" + getId());
     }
 
     public MessageImpl setMentionedUsers(List<User> mentionedUsers)

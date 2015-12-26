@@ -15,7 +15,6 @@
  */
 package net.dv8tion.jda;
 
-import com.mashape.unirest.http.Unirest;
 import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
@@ -91,9 +90,8 @@ public class MessageHistory
         LinkedList<Message> out = new LinkedList<>();
         try
         {
-            JSONArray array = Unirest.get("https://discordapp.com/api/channels/{chanId}/messages?limit={limit}" + (lastId != null ? "&before=" + lastId : ""))
-                    .routeParam("chanId", channel.getId()).routeParam("limit", Integer.toString(amount))
-                    .asJson().getBody().getArray();
+            JSONArray array = api.getRequester().getA("https://discordapp.com/api/channels/" + channel.getId()
+                    + "/messages?limit=" + amount + (lastId != null ? "&before=" + lastId : ""));
 
             EntityBuilder builder = new EntityBuilder(api);
             for (int i = 0; i < array.length(); i++)
