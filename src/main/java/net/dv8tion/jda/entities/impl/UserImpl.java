@@ -15,14 +15,20 @@
  */
 package net.dv8tion.jda.entities.impl;
 
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import net.dv8tion.jda.OnlineStatus;
 import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.VoiceStatus;
+import net.dv8tion.jda.handle.EntityBuilder;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class UserImpl implements User
 {
     private final String id;
+    private final JDAImpl api;
     private String username;
     private String discriminator;
     private String avatarId;
@@ -31,9 +37,10 @@ public class UserImpl implements User
     private PrivateChannel privateChannel = null;
     private VoiceStatus voiceStatus;
 
-    public UserImpl(String id)
+    public UserImpl(String id, JDAImpl api)
     {
         this.id = id;
+        this.api = api;
         this.voiceStatus = new VoiceStatusImpl(this);
     }
 
@@ -87,8 +94,20 @@ public class UserImpl implements User
 
     public PrivateChannel getPrivateChannel(boolean create)
     {
-        if(create && privateChannel == null)
-            throw new UnsupportedOperationException("Currently no support for starting a NEW direct message session.");
+        if(create && privateChannel == null) {
+            try
+            {
+                JSONObject response = Unirest.post("https://discordapp.com/api/users/{selfId}/channels")
+                        .routeParam("selfId", api.getSelfInfo().getId())
+                        .body(new JSONObject().put("recipient_id", getId()).toString())
+                        .asJson().getBody().getObject();
+                new EntityBuilder(api).createPrivateChannel(response);
+            }
+            catch (UnirestException | JSONException ex)
+            {
+                ex.printStackTrace();
+            }
+        }
         return privateChannel;
     }
 

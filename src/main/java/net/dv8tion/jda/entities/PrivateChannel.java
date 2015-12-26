@@ -35,4 +35,30 @@ public interface PrivateChannel
      *      A non-null {@link net.dv8tion.jda.entities.User User}.
      */
     User getUser();
+
+    /**
+     * Sents a plain text {@link net.dv8tion.jda.entities.Message Message} to this channel.
+     * After the Message has been sent, the created {@link net.dv8tion.jda.entities.Message Message} object is returned
+     * This Object will be null, if the sending failed
+     *
+     * @param text
+     *          the text to send
+     * @return
+     *      the Message created by this function
+     */
+    Message sendMessage(String text);
+
+    /**
+     * Sends a given {@link net.dv8tion.jda.entities.Message Message} to this Channel
+     * This method only extracts the mentions and text out of the given Message-Object
+     * Therefore this can also be used to resend already received Messages
+     * To allow above behaviour, this method returns a new {@link net.dv8tion.jda.entities.Message Message} instance. The passed one is not modified!
+     * If the sending of the Message failed, this method returns null
+     *
+     * @param msg
+     *          the {@link net.dv8tion.jda.entities.Message Message} to send
+     * @return
+     *      The created {@link net.dv8tion.jda.entities.Message Message} object or null if it failed
+     */
+    Message sendMessage(Message msg);
 }

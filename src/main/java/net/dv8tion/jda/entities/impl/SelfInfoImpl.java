@@ -15,12 +15,12 @@
  */
 package net.dv8tion.jda.entities.impl;
 
+import net.dv8tion.jda.entities.SelfInfo;
+import net.dv8tion.jda.entities.TextChannel;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import net.dv8tion.jda.entities.SelfInfo;
-import net.dv8tion.jda.entities.TextChannel;
 
 public class SelfInfoImpl extends UserImpl implements SelfInfo
 {
@@ -28,9 +28,9 @@ public class SelfInfoImpl extends UserImpl implements SelfInfo
     private List<TextChannel> mutedChannels = new ArrayList<>();
     private boolean verified;
 
-    public SelfInfoImpl(String id, String email)
+    public SelfInfoImpl(String id, String email, JDAImpl api)
     {
-        super(id);
+        super(id, api);
         this.email = email;
     }
 

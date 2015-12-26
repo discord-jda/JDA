@@ -41,7 +41,7 @@ public class GuildMemberAddHandler extends SocketHandler
         User user = new EntityBuilder(api).createUser(content.getJSONObject("user"));
         if (api.getOffline_pms().containsKey(user.getId()))
         {
-            PrivateChannel pc = new PrivateChannelImpl(api.getOffline_pms().get(user.getId()), user);
+            PrivateChannel pc = new PrivateChannelImpl(api.getOffline_pms().get(user.getId()), user, api);
             ((UserImpl) user).setPrivateChannel(pc);
             api.getOffline_pms().remove(user.getId());
         }

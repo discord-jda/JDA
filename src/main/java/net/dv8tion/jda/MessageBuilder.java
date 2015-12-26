@@ -26,6 +26,19 @@ public class MessageBuilder
 {
     private final StringBuilder builder = new StringBuilder();
     private final List<User> mentioned = new LinkedList<>();
+    private boolean isTTS = false;
+
+    /**
+     * Makes the created Message a TTS message
+     *
+     * @param tts whether the created Message should be a tts message
+     * @return this instance
+     */
+    public MessageBuilder setTTS(boolean tts)
+    {
+        this.isTTS = tts;
+        return this;
+    }
 
     /**
      * Appends a string to the Message
@@ -106,7 +119,7 @@ public class MessageBuilder
      */
     public Message build()
     {
-        return new MessageImpl("", null).setContent(builder.toString()).setMentionedUsers(mentioned);
+        return new MessageImpl("", null).setContent(builder.toString()).setTTS(isTTS).setMentionedUsers(mentioned);
     }
 
     /**

@@ -15,7 +15,6 @@
  */
 package net.dv8tion.jda.entities.impl;
 
-import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import net.dv8tion.jda.MessageBuilder;
@@ -99,7 +98,7 @@ public class TextChannelImpl implements TextChannel
         {
             String response = Unirest.post("https://discordapp.com/api/channels/{chanId}/messages")
                     .routeParam("chanId", getId())
-                    .body(new JSONObject().put("content", msg.getContent()).toString())
+                    .body(new JSONObject().put("content", msg.getContent()).put("tts", msg.isTTS()).toString())
                     .asString().getBody();
             return new EntityBuilder(api).createMessage(new JSONObject(response));
         }

@@ -177,7 +177,7 @@ public class EntityBuilder
                 .setPosition(json.getInt("position"));
     }
 
-    protected PrivateChannel createPrivateChannel(JSONObject privatechat)
+    public PrivateChannel createPrivateChannel(JSONObject privatechat)
     {
         UserImpl user = ((UserImpl) api.getUserMap().get(privatechat.getJSONObject("recipient").getString("id")));
         if (user == null)
@@ -186,7 +186,7 @@ public class EntityBuilder
             return null;
         }
 
-        PrivateChannelImpl priv = new PrivateChannelImpl(privatechat.getString("id"), user);
+        PrivateChannelImpl priv = new PrivateChannelImpl(privatechat.getString("id"), user, api);
         user.setPrivateChannel(priv);
         return priv;
     }
@@ -223,7 +223,7 @@ public class EntityBuilder
         UserImpl userObj = ((UserImpl) api.getUserMap().get(id));
         if (userObj == null)
         {
-            userObj = new UserImpl(id);
+            userObj = new UserImpl(id, api);
             api.getUserMap().put(id, userObj);
         }
         return userObj
@@ -237,7 +237,7 @@ public class EntityBuilder
         SelfInfoImpl selfInfo = ((SelfInfoImpl) api.getSelfInfo());
         if (selfInfo == null)
         {
-            selfInfo = new SelfInfoImpl(self.getString("id"), self.getString("email"));
+            selfInfo = new SelfInfoImpl(self.getString("id"), self.getString("email"), api);
             api.setSelfInfo(selfInfo);
         }
         if (!api.getUserMap().containsKey(selfInfo.getId()))

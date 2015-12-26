@@ -15,18 +15,27 @@
  */
 package net.dv8tion.jda.entities.impl;
 
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
+import net.dv8tion.jda.MessageBuilder;
+import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.handle.EntityBuilder;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class PrivateChannelImpl implements PrivateChannel
 {
     private final String id;
     private final User user;
+    private final JDAImpl api;
 
-    public PrivateChannelImpl(String id, User user)
+    public PrivateChannelImpl(String id, User user, JDAImpl api)
     {
         this.id = id;
         this.user = user;
+        this.api = api;
     }
     @Override
     public String getId()
@@ -38,6 +47,31 @@ public class PrivateChannelImpl implements PrivateChannel
     public User getUser()
     {
         return user;
+    }
+
+    @Override
+    public Message sendMessage(String text)
+    {
+        return sendMessage(new MessageBuilder().appendString(text).build());
+    }
+
+    @Override
+    public Message sendMessage(Message msg)
+    {
+        try
+        {
+            String response = Unirest.post("https://discordapp.com/api/channels/{chanId}/messages")
+                    .routeParam("chanId", getId())
+                    .body(new JSONObject().put("content", msg.getContent()).toString())
+                    .asString().getBody();
+            return new EntityBuilder(api).createMessage(new JSONObject(response));
+        }
+        catch (JSONException | UnirestException ex)
+        {
+            ex.printStackTrace();
+            //sending failed
+            return null;
+        }
     }
 
     @Override
