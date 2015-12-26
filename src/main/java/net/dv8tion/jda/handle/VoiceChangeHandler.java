@@ -54,7 +54,7 @@ public class VoiceChangeHandler extends SocketHandler
                     !content.getString("channel_id").equals(status.getChannel().getId()))
             {
                 VoiceChannel oldChannel = status.getChannel();
-                VoiceChannel newChannel = api.getVoiceChannelMap().get("channel_id");
+                VoiceChannel newChannel = api.getVoiceChannelMap().get(content.getString("channel_id"));
                 status.setChannel(newChannel);
                 if (oldChannel != null)
                 {
