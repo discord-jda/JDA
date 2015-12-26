@@ -23,6 +23,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.net.ssl.SSLContext;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.net.URI;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -35,9 +37,11 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
     private long keepAliveInterval;
     private JDAImpl api;
 
-    public WebSocketClient(String url, JDAImpl api)
+    public WebSocketClient(String url, JDAImpl api, InetSocketAddress proxy)
     {
         super(URI.create(url));
+        if (proxy != null)
+            this.setProxy(proxy);
         if (url.startsWith("wss"))
         {
             try
