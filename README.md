@@ -36,7 +36,7 @@ public class ReadyListener implements EventListener
     @Override
     public void onEvent(Event event)
     {
-        if(Event instanceof ReadyEvent)
+        if(event instanceof ReadyEvent)
             System.out.println("API is ready!");
     }
 }
