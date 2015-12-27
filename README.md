@@ -95,11 +95,12 @@ Gradle Downloads Coming Soon™!
 * Voice (planned last, gonna take some while)
 
 ## Dependencies:
+This project requires **Java 8**.<br>
 All dependencies are managed automatically by Gradle.
- * Java-Websocket
-   * Version: **1.3.0**
-   * [Github](https://github.com/TooTallNate/Java-WebSocket)
-   * [Central Repository](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.java-websocket%22%20AND%20a%3A%22Java-WebSocket%22)
+ * NV Websocket Client
+   * Version: **1.16**
+   * [Github](https://github.com/TakahikoKawasaki/nv-websocket-client)
+   * [Central Repository](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.neovisionaries%22%20AND%20a%3A%22nv-websocket-client%22)
  * Apache Commons Lang3
    * Version: **3.4**
    * [Website](https://commons.apache.org/proper/commons-lang/)
