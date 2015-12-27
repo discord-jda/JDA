@@ -65,7 +65,8 @@ public class PresenceUpdateHandler extends SocketHandler
             }
         }
 
-        String gameName = content.isNull("game") ? null : content.getJSONObject("game").getString("name");
+        String gameName = (content.isNull("game") || content.getJSONObject("game").isNull("name"))
+                ? null : content.getJSONObject("game").get("name").toString();
         OnlineStatus status = OnlineStatus.fromKey(content.getString("status"));
 
         if (!user.getOnlineStatus().equals(status))

@@ -38,6 +38,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class JDABuilder
 {
+    protected static boolean proxySet = false;
+    protected static boolean jdaCreated = false;
+    protected static String proxyUrl = null;
+    protected static int proxyPort = -1;
     List<EventListener> listeners;
     String email = null;
     String pass = null;
@@ -98,9 +102,33 @@ public class JDABuilder
      * @return
      *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
      */
-    public JDABuilder setPassword(String password)
-    {
+    public JDABuilder setPassword(String password) {
         this.pass = password;
+        return this;
+    }
+
+    /**
+     * Sets the proxy that will be used by <b>ALL</b> JDA instances.<br>
+     * Once this is set <b>IT CANNOT BE CHANGED.</b><br>
+     * After a JDA instance as been created, this method can never be called again, even if you are creating a new JDA object.<br>
+     * <b>Note:</b> currently this only supports HTTP proxies.
+     *
+     * @param proxyUrl
+     *          The url of the proxy.
+     * @param proxyPort
+     *          The port of the proxy.  Usually this is 8080.
+     * @return
+     *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @throws UnsupportedOperationException
+     *          If this method is called after proxy settings have already been set or after at least 1 JDA object has been created.
+     */
+    public JDABuilder setProxy(String proxyUrl, int proxyPort)
+    {
+        if (proxySet || jdaCreated)
+            throw new UnsupportedOperationException("You cannot change the proxy after a proxy has been set or a JDA object has been created. Proxy settings are global among all instances!");
+        proxySet = true;
+        this.proxyUrl = proxyUrl;
+        this.proxyPort = proxyPort;
         return this;
     }
 
@@ -150,7 +178,12 @@ public class JDABuilder
      */
     public JDA build() throws LoginException, IllegalArgumentException
     {
-        JDAImpl jda = new JDAImpl();
+        jdaCreated = true;
+        JDAImpl jda;
+        if (proxySet)
+            jda = new JDAImpl(proxyUrl, proxyPort);
+        else
+            jda = new JDAImpl();
         listeners.forEach(listener ->  jda.addEventListener(listener));
         jda.login(email, pass);
         return jda;
