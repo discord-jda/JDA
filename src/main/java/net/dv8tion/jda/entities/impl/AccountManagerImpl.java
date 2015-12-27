@@ -13,47 +13,58 @@ public class AccountManagerImpl implements AccountManager
     private String username = null;
 
     private String password;
-    
+
     private final JDAImpl api;
 
     public AccountManagerImpl(JDAImpl api, String password)
     {
         this.api = api;
-        this.password=password;
+        this.password = password;
     }
 
     public void update()
     {
-        JSONObject object = new JSONObject();
-        object.put("avatar", avatar == null ?  api.getSelfInfo().getAvatarId() : avatar);
-        object.put("email", email == null ?  api.getSelfInfo().getEmail() : email);
-        if (new_password != null)
+        try
         {
-            object.put("new_password", new_password);
+            JSONObject object = new JSONObject();
+            object.put("avatar", avatar == null ? api.getSelfInfo().getAvatarId() : avatar);
+            object.put("email", email == null ? api.getSelfInfo().getEmail() : email);
+            if (new_password != null)
+            {
+                object.put("new_password", new_password);
+            }
+            object.put("password", password);
+            object.put("username", username == null ? api.getSelfInfo().getUsername() : username);
+
+            JSONObject result = api.getRequester().patch("https://discordapp.com/api/users/@me", object);
+
+            if (result == null)
+            {
+                throw new Exception("Something went wrong while changing the account settings.");
+            }
+
+            SelfInfoImpl self = (SelfInfoImpl) api.getSelfInfo();
+
+            self.setAvatarId(result.getString("avatar"));
+            self.setDiscriminator(result.getString("discriminator"));
+            self.setEmail(result.getString("email"));
+            // self.setID(result.getString("id")); ID should never change unless something really really bad happens
+            api.setAuthToken(result.getString("token"));
+            self.setUserName(result.getString("username"));
+            self.setVerified(result.getBoolean("verified"));
+            if (new_password != null)
+            {
+                this.password = new_password;
+            }
+
+            this.avatar = null;
+            this.email = null;
+            this.new_password = null;
+            this.username = null;
+        } catch (Exception e)
+        {
+            e.printStackTrace();
         }
-        object.put("password", password);
-        object.put("username", username == null ? api.getSelfInfo().getUsername() : username);
-        
-        System.out.println("A" + object);
-        
-        JSONObject result = api.getRequester().patch("https://discordapp.com/api/users/@me", object);
-        
-        System.out.println("B" + result);
-        
-        SelfInfoImpl self = (SelfInfoImpl) api.getSelfInfo();
-        
-        self.setAvatarId(result.getString("avatar"));
-        self.setDiscriminator(result.getString("discriminator"));
-        self.setEmail(result.getString("email"));      
-        //self.setID(result.getString("id")); ID should never change unless something really really bad happens
-        api.setAuthToken(result.getString("token"));
-        self.setUserName(result.getString("username"));
-        self.setVerified(result.getBoolean("verified"));
-        
-        this.avatar = null;
-        this.email = null;
-        this.new_password = null;
-        this.username = null;
     }
 
     @Override
