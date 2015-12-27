@@ -16,13 +16,10 @@
 package net.dv8tion.jda;
 
 import net.dv8tion.jda.entities.*;
-import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.hooks.EventListener;
 import org.apache.http.HttpHost;
 
 import javax.security.auth.login.LoginException;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 import java.util.List;
 
 
@@ -77,6 +74,15 @@ public abstract class JDA
      *      The currently logged in account.
      */
     public abstract SelfInfo getSelfInfo();
+
+    /**
+     * Returns the {@link net.dv8tion.jda.entities.AccountManager AccountManager} for the currently logged in account.<br>
+     * Account settings <b>can only</b> be modified using this object. 
+     *
+     * @return
+     *      The AccountManager for the currently logged in account.
+     */
+    public abstract AccountManager getAccountManager();
 
     public abstract int getResponseTotal();
 

@@ -29,9 +29,6 @@ import org.json.JSONObject;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -53,6 +50,7 @@ public class JDAImpl extends JDA
     private final Map<String, String> offline_pms = new HashMap<>();    //Userid -> channelid
     private final EventManager eventManager = new EventManager();
     private SelfInfo selfInfo = null;
+    private AccountManagerImpl accountManager;
     private String authToken = null;
     private WebSocketClient client;
     private final Requester requester = new Requester(this);
@@ -90,6 +88,8 @@ public class JDAImpl extends JDA
         if (email == null || email.isEmpty() || password == null || password.isEmpty())
             throw new IllegalArgumentException("The provided email or password as empty / null.");
 
+        accountManager=new AccountManagerImpl(this, password);
+        
         Path tokenFile = Paths.get("tokens.json");
         JSONObject configs = null;
         String gateway = null;
@@ -201,6 +201,11 @@ public class JDAImpl extends JDA
     public String getAuthToken()
     {
         return authToken;
+    }
+
+    public void setAuthToken(String token)
+    {
+        this.authToken = token;
     }
 
     @Override
@@ -345,5 +350,11 @@ public class JDAImpl extends JDA
     public HttpHost getGlobalProxy()
     {
         return proxy;
+    }
+
+    @Override
+    public AccountManager getAccountManager()
+    {
+        return accountManager;
     }
 }
