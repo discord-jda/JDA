@@ -80,7 +80,7 @@ repositories {
 dependencies {
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
     compile group: 'org.json', name: 'json', version: '20150729'
-    compile group: 'org.java-websocket', name: 'Java-WebSocket', version: '1.3.0'
+    compile 'com.neovisionaries:nv-websocket-client:1.16'
     compile group: 'com.mashape.unirest', name: 'unirest-java', version: '1.4.7'
 }
 

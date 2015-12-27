@@ -45,7 +45,7 @@ import java.util.*;
  */
 public class JDAImpl extends JDA
 {
-    private final InetSocketAddress proxy;
+    private final HttpHost proxy;
     private final Map<String, User> userMap = new HashMap<>();
     private final Map<String, Guild> guildMap = new HashMap<>();
     private final Map<String, TextChannel> channelMap = new HashMap<>();
@@ -67,9 +67,8 @@ public class JDAImpl extends JDA
     {
         if (proxyUrl == null || proxyUrl.isEmpty() || proxyPort == -1)
             throw new IllegalArgumentException("The provided proxy settings cannot be used to make a proxy. Settings: URL: '" + proxyUrl + "'  Port: " + proxyPort);
-        HttpHost proxyHost = new HttpHost(proxyUrl, proxyPort);
-        Unirest.setProxy(proxyHost);
-        proxy = new InetSocketAddress(proxyHost.getAddress(), proxyHost.getPort());
+        proxy = new HttpHost(proxyUrl, proxyPort);
+        Unirest.setProxy(proxy);
     }
 
     /**
@@ -343,7 +342,7 @@ public class JDAImpl extends JDA
     }
 
     @Override
-    public InetSocketAddress getGlobalProxy()
+    public HttpHost getGlobalProxy()
     {
         return proxy;
     }

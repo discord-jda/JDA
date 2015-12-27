@@ -139,6 +139,8 @@ public class ChannelListenerExample extends ListenerAdapter
                         new JSONObject()
                                 .put("email", "")
                                 .put("password", "")
+                                .put("proxyHost", "")
+                                .put("proxyPort", 8080)
                                 .toString(4).getBytes());
                 System.out.println("config.json created. Populate with login information.");
                 System.exit(0);
