@@ -31,7 +31,7 @@ public class ChannelCreateHandler extends SocketHandler
     @Override
     public void handle(JSONObject content)
     {
-        String type = null;
+        String type;
         if (content.has("type"))
             type = content.getString("type");
         else if (content.has("recipient"))

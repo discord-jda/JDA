@@ -41,7 +41,7 @@ public enum Permission
     VOICE_MOVE_OTHERS(24),
     VOICE_USE_VAD(25);
 
-    private int offset;
+    private final int offset;
 
     Permission(int offset)
     {

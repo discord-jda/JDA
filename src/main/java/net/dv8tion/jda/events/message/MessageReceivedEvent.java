@@ -27,26 +27,26 @@ public class MessageReceivedEvent extends GenericMessageEvent
 
     public User getAuthor()
     {
-        return message.getAuthor();
+        return getMessage().getAuthor();
     }
 
     public boolean isPrivate()
     {
-        return message.isPrivate();
+        return getMessage().isPrivate();
     }
 
     public TextChannel getTextChannel()
     {
-        return message.getTextChannel();
+        return getMessage().getTextChannel();
     }
 
     public PrivateChannel getPrivateChannel()
     {
-        return message.getPrivateChannel();
+        return getMessage().getPrivateChannel();
     }
 
     public Guild getGuild()
     {
-        return message.isPrivate() ? null : message.getTextChannel().getGuild();
+        return getMessage().isPrivate() ? null : getMessage().getTextChannel().getGuild();
     }
 }

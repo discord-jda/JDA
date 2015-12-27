@@ -26,7 +26,7 @@ public enum EmbedType
     LINK("link"),
     UNKNOWN("");
 
-    private String key;
+    private final String key;
     EmbedType(String key)
     {
         this.key = key;

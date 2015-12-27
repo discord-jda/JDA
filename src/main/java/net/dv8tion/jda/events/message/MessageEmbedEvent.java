@@ -15,17 +15,17 @@
  */
 package net.dv8tion.jda.events.message;
 
-import java.util.List;
-
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.MessageEmbed;
 import net.dv8tion.jda.entities.TextChannel;
 
+import java.util.List;
+
 public class MessageEmbedEvent extends GenericMessageEvent
 {
-    protected String messageId;
-    protected TextChannel channel;
-    protected List<MessageEmbed> embeds;
+    private final String messageId;
+    private final TextChannel channel;
+    private final List<MessageEmbed> embeds;
 
     public MessageEmbedEvent(JDA api, int responseNumber, String messageId, TextChannel channel, List<MessageEmbed> embeds)
     {

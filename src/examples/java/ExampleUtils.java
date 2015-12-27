@@ -24,9 +24,9 @@ import java.nio.file.Paths;
 public class ExampleUtils
 {
     //Simple config system to make life easier. THIS IS NOT REQUIRED FOR JDA.
-    public static JSONObject getConfig(String file)
+    public static JSONObject getConfig()
     {
-        File config = new File(file);
+        File config = new File("config.json");
         if (!config.exists())
         {
             try

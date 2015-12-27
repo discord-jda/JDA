@@ -28,6 +28,7 @@ public interface TextChannel
     /**
      * The Id of the {@link net.dv8tion.jda.entities.TextChannel TextChannel}. This is typically 18 characters long.
      * @return
+     *      The Id of this TextChannel
      */
     String getId();
 
@@ -36,6 +37,7 @@ public interface TextChannel
      * If no name has been set, this returns null.
      *
      * @return
+     *      The name of this TextChannel
      */
     String getName();
 

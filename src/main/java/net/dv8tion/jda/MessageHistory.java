@@ -30,7 +30,7 @@ public class MessageHistory
     private final TextChannel channel;
     private String lastId = null;
     private boolean atEnd = false;
-    private List<Message> queued = new LinkedList<>();
+    private final List<Message> queued = new LinkedList<>();
 
     public MessageHistory(JDA api, TextChannel channel)
     {

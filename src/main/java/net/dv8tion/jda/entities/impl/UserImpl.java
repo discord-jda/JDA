@@ -33,7 +33,7 @@ public class UserImpl implements User
     private String gameName = null;
     private OnlineStatus onlineStatus = OnlineStatus.OFFLINE;
     private PrivateChannel privateChannel = null;
-    private VoiceStatus voiceStatus;
+    private final VoiceStatus voiceStatus;
 
     public UserImpl(String id, JDAImpl api)
     {

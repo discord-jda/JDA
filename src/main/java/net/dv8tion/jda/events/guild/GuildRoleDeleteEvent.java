@@ -21,7 +21,7 @@ import net.dv8tion.jda.entities.Role;
 
 public class GuildRoleDeleteEvent extends GenericGuildEvent
 {
-    protected Role deletedRole;
+    private final Role deletedRole;
 
     public GuildRoleDeleteEvent(JDA api, int responseNumber, Guild guild, Role deletedRole)
     {
