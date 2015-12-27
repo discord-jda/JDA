@@ -26,14 +26,9 @@ import net.dv8tion.jda.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.events.guild.member.GuildMemberUnbanEvent;
 import net.dv8tion.jda.hooks.ListenerAdapter;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.security.auth.login.LoginException;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 public class GuildListenerExample extends ListenerAdapter
 {
@@ -44,7 +39,7 @@ public class GuildListenerExample extends ListenerAdapter
      */
     public static void main(String[] args)
     {
-        JSONObject config = getConfig();
+        JSONObject config = ExampleUtils.getConfig("config.json");
         try
         {
             JDA api = new JDABuilder()
@@ -117,39 +112,5 @@ public class GuildListenerExample extends ListenerAdapter
     public void onGuildRoleDelete(GuildRoleDeleteEvent event)
     {
         System.out.println("The following role was deleted from the " + event.getGuild().getName() + " guild: " + event.getRole().getName());
-    }
-
-    //Simple config system to make life easier. THIS IS NOT REQUIRED FOR JDA.
-    private static JSONObject getConfig()
-    {
-        File config = new File("config.json");
-        if (!config.exists())
-        {
-            try
-            {
-                Files.write(Paths.get(config.getPath()),
-                        new JSONObject()
-                                .put("email", "")
-                                .put("password", "")
-                                .put("proxyHost", "")
-                                .put("proxyPort", 8080)
-                                .toString(4).getBytes());
-                System.out.println("config.json created. Populate with login information.");
-                System.exit(0);
-            }
-            catch (JSONException | IOException e)
-            {
-                e.printStackTrace();
-            }
-        }
-        try
-        {
-            return new JSONObject(new String(Files.readAllBytes(Paths.get(config.getPath())), "UTF-8"));
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-        return null;
     }
 }
