@@ -73,7 +73,7 @@ public class PrivateChannelImpl implements PrivateChannel
 
     public void sendTyping()
     {
-        api.getRequester().post("https://discordapp.com/api/channels/" + getId() + "/typing");
+        api.getRequester().post("https://discordapp.com/api/channels/" + getId() + "/typing", new JSONObject());
     }
 
     @Override

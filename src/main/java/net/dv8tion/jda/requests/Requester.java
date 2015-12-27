@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.requests;
 
+import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.BaseRequest;
@@ -42,18 +43,6 @@ public class Requester
     public JSONObject delete(String url)
     {
         return toObject(addHeaders(Unirest.delete(url)));
-    }
-
-    public void post(String url)
-    {
-        try
-        {
-            addHeaders(Unirest.post(url)).asJson();
-        }
-        catch (UnirestException e)
-        {
-            e.printStackTrace();
-        }
     }
 
     public JSONObject post(String url, JSONObject body)
@@ -90,7 +79,8 @@ public class Requester
     {
         try
         {
-            return request.asJson().getBody().getObject();
+            JsonNode body = request.asJson().getBody();
+            return body == null ? null : body.getObject();
         }
         catch (UnirestException e)
         {
@@ -103,7 +93,8 @@ public class Requester
     {
         try
         {
-            return request.asJson().getBody().getArray();
+            JsonNode body = request.asJson().getBody();
+            return body == null ? null : body.getArray();
         }
         catch (UnirestException e)
         {
