@@ -44,7 +44,7 @@ public class AccountManagerImpl implements AccountManager
 
             SelfInfoImpl self = (SelfInfoImpl) api.getSelfInfo();
 
-            self.setAvatarId(result.getString("avatar"));
+            self.setAvatarId(result.isNull("avatar") ? null : result.getString("avatar"));
             self.setDiscriminator(result.getString("discriminator"));
             self.setEmail(result.getString("email"));
             // self.setID(result.getString("id")); ID should never change unless something really really bad happens
