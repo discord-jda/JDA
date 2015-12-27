@@ -59,7 +59,7 @@ public class ExampleUtils
                 case 1:
                     object
                         .put("proxyHost", "")
-                        .put("proxyPort", "8080");
+                        .put("proxyPort", 8080);
                     //Setting new version and writing
                     object.put("version", 2);
                     Files.write(Paths.get(config.getPath()), object.toString(4).getBytes());
