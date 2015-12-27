@@ -40,7 +40,7 @@ public class MessageListenerExample extends ListenerAdapter
      */
     public static void main(String[] args)
     {
-        JSONObject config = ExampleUtils.getConfig("config.json");
+        JSONObject config = ExampleUtils.getConfig();
         try
         {
             JDABuilder builder = new JDABuilder()

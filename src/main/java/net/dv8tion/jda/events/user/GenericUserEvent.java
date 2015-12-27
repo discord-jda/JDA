@@ -21,7 +21,7 @@ import net.dv8tion.jda.events.Event;
 
 public class GenericUserEvent extends Event
 {
-    protected User user;
+    private final User user;
 
     public GenericUserEvent(JDA api, int responseNumber, User user)
     {

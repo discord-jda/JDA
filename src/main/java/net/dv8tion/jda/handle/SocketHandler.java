@@ -20,8 +20,8 @@ import org.json.JSONObject;
 
 public abstract class SocketHandler
 {
-    protected JDAImpl api;
-    protected int responseNumber;
+    protected final JDAImpl api;
+    protected final int responseNumber;
 
     public SocketHandler(JDAImpl api, int responseNumber)
     {

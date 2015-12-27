@@ -31,8 +31,8 @@ public enum Region
     US_WEST("us-west", "US West"),
     UNKNOWN("", "Unknown Region");
 
-    private String key;
-    private String name;
+    private final String key;
+    private final String name;
 
     Region(String key, String name)
     {
@@ -43,6 +43,7 @@ public enum Region
     /**
      * The human readable region name.
      * @return
+     *      The name of this region
      */
     public String getName()
     {
@@ -52,6 +53,7 @@ public enum Region
     /**
      * The Region key as defined by Discord.
      * @return
+     *      The key (internal name) of this region
      */
     public String getKey()
     {

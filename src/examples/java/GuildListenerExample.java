@@ -39,7 +39,7 @@ public class GuildListenerExample extends ListenerAdapter
      */
     public static void main(String[] args)
     {
-        JSONObject config = ExampleUtils.getConfig("config.json");
+        JSONObject config = ExampleUtils.getConfig();
         try
         {
             JDA api = new JDABuilder()
