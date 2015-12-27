@@ -15,49 +15,61 @@
  */
 package net.dv8tion.jda.requests;
 
+import com.neovisionaries.ws.client.*;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.handle.*;
-import org.java_websocket.client.DefaultSSLWebSocketClientFactory;
-import org.java_websocket.handshake.ServerHandshake;
+import org.apache.http.HttpHost;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import javax.net.ssl.SSLContext;
-import java.net.URI;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.InetSocketAddress;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.DataFormatException;
+import java.util.zip.Inflater;
 
 
-public class WebSocketClient extends org.java_websocket.client.WebSocketClient
+public class WebSocketClient extends WebSocketAdapter
 {
     private Thread keepAliveThread;
+    private WebSocket socket;
     private boolean connected;
     private long keepAliveInterval;
     private JDAImpl api;
 
-    public WebSocketClient(String url, JDAImpl api)
+    public WebSocketClient(String url, JDAImpl api, HttpHost proxy)
     {
-        super(URI.create(url));
-        if (url.startsWith("wss"))
-        {
-            try
-            {
-                SSLContext sslContext;
-                sslContext = SSLContext.getInstance("TLS");
-                sslContext.init(null, null, null);
-                this.setWebSocketFactory(new DefaultSSLWebSocketClientFactory(sslContext));
-            }
-            catch (NoSuchAlgorithmException | KeyManagementException e)
-            {
-                e.printStackTrace();
-            }
-        }
         this.api = api;
-        this.connect();
+        WebSocketFactory factory = new WebSocketFactory();
+        if (proxy != null)
+        {
+            ProxySettings settings = factory.getProxySettings();
+            settings.setHost(proxy.getHostName());
+            settings.setPort(proxy.getPort());
+        }
+        try
+        {
+            socket = factory.createSocket(url)
+//                    .addHeader("Accept-Encoding", "gzip")
+                    .addListener(this)
+                    .connect();
+        }
+        catch (IOException | WebSocketException e)
+        {
+            //Completely fail here. We couldn't make the connection.
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void send(String message)
+    {
+        socket.sendText(message);
     }
 
     @Override
-    public void onOpen(ServerHandshake handshake)
+    public void onConnected(WebSocket websocket, Map<String, List<String>> headers)
     {
         JSONObject connectObj = new JSONObject()
                 .put("op", 2)
@@ -71,12 +83,13 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
                         .put("$referrer", "")
                     )
                     .put("v", 3));
+//                    .put("compress", true); //Should be used to make gzip READY, but isn't working..
         send(connectObj.toString());
         connected = true;
     }
 
     @Override
-    public void onMessage(String message)
+    public void onTextMessage(WebSocket websocket, String message)
     {
         JSONObject content = new JSONObject(message);
         String type = content.getString("t");
@@ -87,14 +100,11 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
         {
             keepAliveInterval = content.getLong("heartbeat_interval");
             keepAliveThread = new Thread(() -> {
-                while (!getConnection().isClosed())
-                {
+                while (socket.isOpen()) {
                     send(new JSONObject().put("op", 1).put("d", System.currentTimeMillis()).toString());
-                    try
-                    {
+                    try {
                         Thread.sleep(keepAliveInterval);
-                    } catch (InterruptedException e)
-                    {
+                    } catch (InterruptedException e) {
                         e.printStackTrace();
                         System.exit(0);
                     }
@@ -105,10 +115,8 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
         }
 
         boolean printUnimplemented = true;    //TODO: Remove, just for development debug.
-        try
-        {
-            switch (type)
-            {
+        try {
+            switch (type) {
                 case "READY":
                     new ReadyHandler(api, responseTotal).handle(content);
                     break;
@@ -187,23 +195,50 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
         }
     }
 
+    //Currently unused because I (DV8FromTheWorld) am a scrub and couldn't get Discord to send a gzip READY response to test.
     @Override
-    public void onClose(int code, String reason, boolean remote)
+    public void onBinaryMessage(WebSocket websocket, byte[] binary) throws UnsupportedEncodingException, DataFormatException
+    {
+        System.out.println("Got gzip?!");
+        //Thanks to ShadowLordAlpha
+        // Get the compressed message and inflate it
+        StringBuilder builder = new StringBuilder();
+        Inflater decompresser = new Inflater();
+        decompresser.setInput(binary, 0, binary.length);
+        byte[] result = new byte[100];
+        while(!decompresser.finished())
+        {
+            int resultLength = decompresser.inflate(result);
+            builder.append(new String(result, 0, resultLength, "UTF-8"));
+        }
+        decompresser.end();
+
+        // send the inflated message to the TextMessage method
+        onTextMessage(websocket, builder.toString());
+    }
+
+    @Override
+    public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer)
     {
         System.out.println("The connection was closed!");
-        System.out.println("By remote? " + remote);
-        System.out.println("Reason: " + reason);
-        System.out.println("Close code: " + code);
+        System.out.println("By remote? " + closedByServer);
+        System.out.println("Reason: " + serverCloseFrame.getCloseReason());
+        System.out.println("Close code: " + serverCloseFrame.getCloseCode());
         connected = false;
     }
 
     @Override
-    public void onError(Exception ex)
+    public void onUnexpectedError(WebSocket websocket, WebSocketException cause)
     {
-        ex.printStackTrace();
+        handleCallbackError(websocket, cause);
     }
 
     @Override
+    public void handleCallbackError(WebSocket websocket, Throwable cause)
+    {
+        cause.printStackTrace();
+    }
+
     public void close()
     {
         if (keepAliveThread != null)
@@ -211,7 +246,7 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient
             keepAliveThread.interrupt();
             keepAliveThread = null;
         }
-        super.close();
+        socket.sendClose();
     }
 
     public boolean isConnected()

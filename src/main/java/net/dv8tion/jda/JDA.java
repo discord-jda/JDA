@@ -18,8 +18,11 @@ package net.dv8tion.jda;
 import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.hooks.EventListener;
+import org.apache.http.HttpHost;
 
 import javax.security.auth.login.LoginException;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.util.List;
 
 
@@ -76,4 +79,12 @@ public abstract class JDA
     public abstract SelfInfo getSelfInfo();
 
     public abstract int getResponseTotal();
+
+    /**
+     * The proxy settings used by all JDA instances.
+     *
+     * @return
+     *      The proxy settings used by all JDA instances. If JDA currently isn't using a proxy, {@link java.net.Proxy#NO_PROXY Proxy.NO_PROXY} is returned.
+     */
+    public abstract HttpHost getGlobalProxy();
 }

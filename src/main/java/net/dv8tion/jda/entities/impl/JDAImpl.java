@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.entities.impl;
 
+import com.mashape.unirest.http.Unirest;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.hooks.EventListener;
@@ -22,11 +23,15 @@ import net.dv8tion.jda.hooks.EventManager;
 import net.dv8tion.jda.requests.Requester;
 import net.dv8tion.jda.requests.WebSocketClient;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHost;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,6 +45,7 @@ import java.util.*;
  */
 public class JDAImpl extends JDA
 {
+    private final HttpHost proxy;
     private final Map<String, User> userMap = new HashMap<>();
     private final Map<String, Guild> guildMap = new HashMap<>();
     private final Map<String, TextChannel> channelMap = new HashMap<>();
@@ -54,7 +60,15 @@ public class JDAImpl extends JDA
 
     public JDAImpl()
     {
+        proxy = null;
+    }
 
+    public JDAImpl(String proxyUrl, int proxyPort)
+    {
+        if (proxyUrl == null || proxyUrl.isEmpty() || proxyPort == -1)
+            throw new IllegalArgumentException("The provided proxy settings cannot be used to make a proxy. Settings: URL: '" + proxyUrl + "'  Port: " + proxyPort);
+        proxy = new HttpHost(proxyUrl, proxyPort);
+        Unirest.setProxy(proxy);
     }
 
     /**
@@ -134,7 +148,7 @@ public class JDAImpl extends JDA
         }
 
         writeJson(tokenFile, configs);
-        client = new WebSocketClient(gateway, this);
+        client = new WebSocketClient(gateway, this, proxy);
     }
 
     /**
@@ -325,5 +339,11 @@ public class JDAImpl extends JDA
     public Requester getRequester()
     {
         return requester;
+    }
+
+    @Override
+    public HttpHost getGlobalProxy()
+    {
+        return proxy;
     }
 }

@@ -47,11 +47,20 @@ public class MessageListenerExample extends ListenerAdapter
         JSONObject config = getConfig();
         try
         {
-            JDA api = new JDABuilder()
+            JDABuilder builder = new JDABuilder()
                     .setEmail(config.getString("email"))
                     .setPassword(config.getString("password"))
-                    .addListener(new MessageListenerExample())
-                    .build();
+                    .addListener(new MessageListenerExample());
+
+            //If a proxy was set in the config.json
+            String proxyHost = config.getString("proxyHost");
+            if (!proxyHost.isEmpty())
+            {
+                //Set the global JDA proxy. Once set, proxy settings cannot be changed and all JDA objects will use the same settings.
+                builder.setProxy(proxyHost, config.getInt("proxyPort"));
+            }
+
+            JDA jda = builder.build();
         }
         catch (IllegalArgumentException e)
         {
@@ -155,6 +164,8 @@ public class MessageListenerExample extends ListenerAdapter
                         new JSONObject()
                                 .put("email", "")
                                 .put("password", "")
+                                .put("proxyHost", "")
+                                .put("proxyPort", 8080)
                                 .toString(4).getBytes());
                 System.out.println("config.json created. Populate with login information.");
                 System.exit(0);

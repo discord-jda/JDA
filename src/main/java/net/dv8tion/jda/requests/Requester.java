@@ -111,6 +111,7 @@ public class Requester
             request.header("Content-Type", "application/json");
         }
         request.header("user-agent", JDAInfo.GITHUB + " " + JDAInfo.VERSION);
+//        request.header("Accept-Encoding", "gzip");
         return request;
     }
 }
