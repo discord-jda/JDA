@@ -44,6 +44,18 @@ public class Requester
         return toObject(addHeaders(Unirest.delete(url)));
     }
 
+    public void post(String url)
+    {
+        try
+        {
+            addHeaders(Unirest.post(url)).asJson();
+        }
+        catch (UnirestException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     public JSONObject post(String url, JSONObject body)
     {
         return toObject(addHeaders(Unirest.post(url)).body(body.toString()));

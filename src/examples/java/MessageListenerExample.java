@@ -86,6 +86,10 @@ public class MessageListenerExample extends ListenerAdapter
     @Override
     public void onMessageReceived(MessageReceivedEvent event)
     {
+        if (event.isPrivate())
+            event.getPrivateChannel().sendTyping();
+        else
+            event.getTextChannel().sendTyping();
         User author = event.getAuthor();
         boolean isPrivate = event.isPrivate();
         StringBuilder builder = new StringBuilder();

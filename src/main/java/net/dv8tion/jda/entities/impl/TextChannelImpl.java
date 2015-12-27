@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.entities.impl;
 
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import net.dv8tion.jda.MessageBuilder;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.*;
@@ -105,6 +107,11 @@ public class TextChannelImpl implements TextChannel
             //sending failed
             return null;
         }
+    }
+
+    public void sendTyping()
+    {
+        api.getRequester().post("https://discordapp.com/api/channels/" + getId() + "/typing");
     }
 
     @Override

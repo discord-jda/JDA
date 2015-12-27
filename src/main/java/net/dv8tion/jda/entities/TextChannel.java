@@ -106,6 +106,13 @@ public interface TextChannel
     Message sendMessage(Message msg);
 
     /**
+     * Sends the typing status to discord. This is what is used to make the message "X is typing..." appear.<br>
+     * The typing status only lasts for 5 seconds, so if you wish to show continuous typing you will need to
+     * call this method once every 5 seconds.
+     */
+    void sendTyping();
+
+    /**
      * Checks if the given {@link net.dv8tion.jda.entities.User User} has the given {@link net.dv8tion.jda.Permission Permission}
      * in this {@link net.dv8tion.jda.entities.TextChannel TextChannel}
      *
