@@ -47,6 +47,7 @@ public class JDAImpl extends JDA
     private final Map<String, String> offline_pms = new HashMap<>();    //Userid -> channelid
     private final EventManager eventManager = new EventManager();
     private SelfInfo selfInfo = null;
+    private AccountManagerImpl accountManager;
     private String authToken = null;
     private WebSocketClient client;
     private final Requester requester = new Requester(this);
@@ -76,6 +77,8 @@ public class JDAImpl extends JDA
         if (email == null || email.isEmpty() || password == null || password.isEmpty())
             throw new IllegalArgumentException("The provided email or password as empty / null.");
 
+        accountManager=new AccountManagerImpl(this, password);
+        
         Path tokenFile = Paths.get("tokens.json");
         JSONObject configs = null;
         String gateway = null;
@@ -325,5 +328,16 @@ public class JDAImpl extends JDA
     public Requester getRequester()
     {
         return requester;
+    }
+
+    public void setAuthToken(String authToken)
+    {
+        this.authToken=authToken;
+    }
+
+    @Override
+    public AccountManager getAccountManager()
+    {
+        return accountManager;
     }
 }

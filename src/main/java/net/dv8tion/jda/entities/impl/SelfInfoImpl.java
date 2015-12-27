@@ -24,7 +24,7 @@ import java.util.List;
 
 public class SelfInfoImpl extends UserImpl implements SelfInfo
 {
-    private final String email;
+    private String email;
     private List<TextChannel> mutedChannels = new ArrayList<>();
     private boolean verified;
 
@@ -82,5 +82,11 @@ public class SelfInfoImpl extends UserImpl implements SelfInfo
     public int hashCode()
     {
         return getId().hashCode();
+    }
+    
+    public SelfInfoImpl setEmail(String email)
+    {
+        this.email=email;
+        return this;
     }
 }
