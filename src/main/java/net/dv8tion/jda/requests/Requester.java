@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.requests;
 
+import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.BaseRequest;
@@ -78,7 +79,8 @@ public class Requester
     {
         try
         {
-            return request.asJson().getBody().getObject();
+            JsonNode body = request.asJson().getBody();
+            return body == null ? null : body.getObject();
         }
         catch (UnirestException e)
         {
@@ -91,7 +93,8 @@ public class Requester
     {
         try
         {
-            return request.asJson().getBody().getArray();
+            JsonNode body = request.asJson().getBody();
+            return body == null ? null : body.getArray();
         }
         catch (UnirestException e)
         {

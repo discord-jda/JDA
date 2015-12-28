@@ -15,17 +15,17 @@
  */
 package net.dv8tion.jda.events.guild.member;
 
-import java.util.Collections;
-import java.util.List;
-
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.entities.User;
 
+import java.util.Collections;
+import java.util.List;
+
 public class GuildMemberRoleRemoveEvent extends GenericGuildMemberEvent
 {
-    private List<Role> removedRoles;
+    private final List<Role> removedRoles;
 
     public GuildMemberRoleRemoveEvent(JDA api, int responseNumber, Guild guild, User user, List<Role> removedRoles)
     {

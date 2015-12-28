@@ -22,7 +22,7 @@ import net.dv8tion.jda.events.Event;
 
 public abstract class GenericTextChannelEvent extends Event
 {
-    protected TextChannel channel;
+    private final TextChannel channel;
 
     public GenericTextChannelEvent(JDA api, int responseNumber, TextChannel channel)
     {

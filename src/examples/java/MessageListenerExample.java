@@ -22,6 +22,7 @@ import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.events.InviteReceivedEvent;
 import net.dv8tion.jda.events.message.MessageEmbedEvent;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.hooks.ListenerAdapter;
@@ -40,7 +41,7 @@ public class MessageListenerExample extends ListenerAdapter
      */
     public static void main(String[] args)
     {
-        JSONObject config = ExampleUtils.getConfig("config.json");
+        JSONObject config = ExampleUtils.getConfig();
         try
         {
             JDABuilder builder = new JDABuilder()
@@ -84,8 +85,18 @@ public class MessageListenerExample extends ListenerAdapter
     }
 
     @Override
+    public void onInviteReceived(InviteReceivedEvent event)
+    {
+        System.out.println("Got invite " + event.getInvite().getUrl());
+    }
+
+    @Override
     public void onMessageReceived(MessageReceivedEvent event)
     {
+        if (event.isPrivate())
+            event.getPrivateChannel().sendTyping();
+        else
+            event.getTextChannel().sendTyping();
         User author = event.getAuthor();
         boolean isPrivate = event.isPrivate();
         StringBuilder builder = new StringBuilder();

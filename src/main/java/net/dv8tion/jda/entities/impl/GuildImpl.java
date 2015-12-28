@@ -29,11 +29,11 @@ public class GuildImpl implements Guild
     private String ownerId;
     private int afkTimeout;
     private Region region;
-    private Map<String, TextChannel> textChannels = new HashMap<>();
-    private Map<String, VoiceChannel> voiceChannels = new HashMap<>();
-    private Map<String, Role> roles = new HashMap<>();
+    private final Map<String, TextChannel> textChannels = new HashMap<>();
+    private final Map<String, VoiceChannel> voiceChannels = new HashMap<>();
+    private final Map<String, Role> roles = new HashMap<>();
     private Role publicRole;
-    private Map<User, List<Role>> userRoles = new HashMap<>();
+    private final Map<User, List<Role>> userRoles = new HashMap<>();
 
     public GuildImpl(String id)
     {

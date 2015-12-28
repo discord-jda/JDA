@@ -24,7 +24,7 @@ import org.json.JSONObject;
 
 public class GuildMemberBanHandler extends SocketHandler
 {
-    protected boolean banned;
+    private final boolean banned;
 
     public GuildMemberBanHandler(JDAImpl api, int responseNumber, boolean banned)
     {

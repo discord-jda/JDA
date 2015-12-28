@@ -20,7 +20,7 @@ import net.dv8tion.jda.entities.VoiceChannel;
 
 public class VoiceChannelUpdatePositionEvent extends GenericVoiceChannelUpdateEvent
 {
-    protected int oldPosition;
+    private final int oldPosition;
 
     public VoiceChannelUpdatePositionEvent(JDA api, int responseNumber, VoiceChannel channel, int oldPosition)
     {
