@@ -140,4 +140,10 @@ public interface Guild
      * @return The @everyone {@link net.dv8tion.jda.entities.Role Role}
      */
     Role getPublicRole();
+
+    /**
+     * Leave the guild.
+     * <b>This will delete the guild if the current account owns it!</b>
+     */
+    void leave();
 }
