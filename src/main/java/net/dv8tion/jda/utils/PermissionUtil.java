@@ -50,8 +50,14 @@ public class PermissionUtil
             return true;
         }
 
-        //Default global permission of @everyone in this guild
+        //Default to binary OR of all global permissions in this guild
         int permission = ((RoleImpl) guild.getPublicRole()).getPermissions();
+        List<Role> rolesOfUser = guild.getRolesForUser(user);
+        for (Role role : rolesOfUser)
+        {
+            permission = permission | ((RoleImpl) role).getPermissions();
+        }
+
         //override with channel-specific overrides of @everyone
         PermissionOverride override = roleOverrides.get(guild.getPublicRole());
         if (override != null)
@@ -59,8 +65,7 @@ public class PermissionUtil
             permission = roleOverrides.get(guild.getPublicRole()).apply(permission);
         }
 
-        //handle role-overrides of this user in this channel
-        List<Role> rolesOfUser = guild.getRolesForUser(user);
+        //handle role-overrides of this user in this channel (allow > disallow)
         override = null;
         for (Role role : rolesOfUser)
         {
