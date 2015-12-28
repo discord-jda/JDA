@@ -96,7 +96,7 @@ public class TextChannelImpl implements TextChannel
         try
         {
             JSONObject response = api.getRequester().post("https://discordapp.com/api/channels/" + getId() + "/messages",
-                    new JSONObject().put("content", msg.getContent()).put("tts", msg.isTTS()));
+                    new JSONObject().put("content", msg.getRawContent()).put("tts", msg.isTTS()));
             return new EntityBuilder(api).createMessage(response);
         }
         catch (JSONException ex)
