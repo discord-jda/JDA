@@ -3,16 +3,19 @@
  */
 package net.dv8tion.jda.entities;
 
+import net.dv8tion.jda.utils.AvatarUtil;
+
 public interface AccountManager
 {
     /**
      * Set the avatar of the connected account.
      * This change will only be applied, when {@link #update()} is called
+     * Avatars can get generated through the methods of {@link net.dv8tion.jda.utils.AvatarUtil AvatarUtil}
      * 
      * @param avatar
-     *      a base64 encoded image, "null" to remove or null to discard changes
+     *      a Avatar object, null to keep current Avatar or {@link net.dv8tion.jda.utils.AvatarUtil#DELETE_AVATAR AvatarUtil#DELETE_AVATAR} to remove the avatar
      */
-    AccountManager setAvatar(String avatar);
+    AccountManager setAvatar(AvatarUtil.Avatar avatar);
 
     /**
      * Set the email of the connected account.
