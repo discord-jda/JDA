@@ -22,7 +22,7 @@ import net.dv8tion.jda.events.Event;
 
 public abstract class GenericVoiceChannelEvent extends Event
 {
-    protected VoiceChannel channel;
+    private final VoiceChannel channel;
 
     public GenericVoiceChannelEvent(JDA api, int responseNumber, VoiceChannel channel)
     {

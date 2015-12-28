@@ -42,7 +42,7 @@ public class JDABuilder
     protected static boolean jdaCreated = false;
     protected static String proxyUrl = null;
     protected static int proxyPort = -1;
-    List<EventListener> listeners;
+    final List<EventListener> listeners;
     String email = null;
     String pass = null;
 
@@ -71,7 +71,7 @@ public class JDABuilder
     {
         this.email = email;
         this.pass = password;
-        listeners = new LinkedList<EventListener>();
+        listeners = new LinkedList<>();
     }
 
     /**
@@ -127,8 +127,8 @@ public class JDABuilder
         if (proxySet || jdaCreated)
             throw new UnsupportedOperationException("You cannot change the proxy after a proxy has been set or a JDA object has been created. Proxy settings are global among all instances!");
         proxySet = true;
-        this.proxyUrl = proxyUrl;
-        this.proxyPort = proxyPort;
+        JDABuilder.proxyUrl = proxyUrl;
+        JDABuilder.proxyPort = proxyPort;
         return this;
     }
 
@@ -184,7 +184,7 @@ public class JDABuilder
             jda = new JDAImpl(proxyUrl, proxyPort);
         else
             jda = new JDAImpl();
-        listeners.forEach(listener ->  jda.addEventListener(listener));
+        listeners.forEach(jda::addEventListener);
         jda.login(email, pass);
         return jda;
     }

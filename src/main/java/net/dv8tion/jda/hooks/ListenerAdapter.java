@@ -16,6 +16,7 @@
 package net.dv8tion.jda.hooks;
 
 import net.dv8tion.jda.events.Event;
+import net.dv8tion.jda.events.InviteReceivedEvent;
 import net.dv8tion.jda.events.ReadyEvent;
 import net.dv8tion.jda.events.channel.priv.PrivateChannelCreateEvent;
 import net.dv8tion.jda.events.channel.text.*;
@@ -41,6 +42,8 @@ public abstract class ListenerAdapter implements EventListener
             onMessageUpdate((MessageUpdateEvent) event);    //Update must be before Received because it is a subclass of Received.
         else if (event instanceof MessageReceivedEvent)
             onMessageReceived((MessageReceivedEvent) event);
+        else if (event instanceof InviteReceivedEvent)
+            onInviteReceived(((InviteReceivedEvent) event));
         else if (event instanceof MessageDeleteEvent)
             onMessageDelete((MessageDeleteEvent) event);
         else if (event instanceof MessageEmbedEvent)
@@ -191,6 +194,8 @@ public abstract class ListenerAdapter implements EventListener
     public void onMessageUpdate(MessageUpdateEvent event) {}
     public void onMessageDelete(MessageDeleteEvent event) {}
     public void onMessageEmbed(MessageEmbedEvent event) {}
+
+    public void onInviteReceived(InviteReceivedEvent event) {}
 
     //TextChannel Events
     public void onTextChannelDelete(TextChannelDeleteEvent event) {}

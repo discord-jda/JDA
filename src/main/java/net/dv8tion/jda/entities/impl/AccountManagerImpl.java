@@ -1,12 +1,12 @@
 package net.dv8tion.jda.entities.impl;
 
 import net.dv8tion.jda.entities.AccountManager;
+import net.dv8tion.jda.utils.AvatarUtil;
 import org.json.JSONObject;
 
 public class AccountManagerImpl implements AccountManager
 {
-
-    private String avatar = null;
+    private AvatarUtil.Avatar avatar = null;
     private String email = null;
     private String new_password = null;
     private String username = null;
@@ -26,7 +26,7 @@ public class AccountManagerImpl implements AccountManager
         try
         {
             JSONObject object = new JSONObject();
-            object.put("avatar", avatar == null ? api.getSelfInfo().getAvatarId() : (avatar.equals("null") ? JSONObject.NULL : avatar));
+            object.put("avatar", avatar == null ? api.getSelfInfo().getAvatarId() : (avatar == AvatarUtil.DELETE_AVATAR ? JSONObject.NULL : avatar.getEncoded()));
             object.put("email", email == null ? api.getSelfInfo().getEmail() : email);
             if (new_password != null)
             {
@@ -44,7 +44,7 @@ public class AccountManagerImpl implements AccountManager
 
             SelfInfoImpl self = (SelfInfoImpl) api.getSelfInfo();
 
-            self.setAvatarId(result.getString("avatar"));
+            self.setAvatarId(result.isNull("avatar") ? null : result.getString("avatar"));
             self.setDiscriminator(result.getString("discriminator"));
             self.setEmail(result.getString("email"));
             // self.setID(result.getString("id")); ID should never change unless something really really bad happens
@@ -67,7 +67,7 @@ public class AccountManagerImpl implements AccountManager
     }
 
     @Override
-    public AccountManager setAvatar(String avatar)
+    public AccountManager setAvatar(AvatarUtil.Avatar avatar)
     {
         this.avatar = avatar;
         return this;

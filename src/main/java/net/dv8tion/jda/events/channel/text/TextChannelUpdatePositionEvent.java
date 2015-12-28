@@ -20,7 +20,7 @@ import net.dv8tion.jda.entities.TextChannel;
 
 public class TextChannelUpdatePositionEvent extends GenericTextChannelUpdateEvent
 {
-    protected int oldPosition;
+    private final int oldPosition;
 
     public TextChannelUpdatePositionEvent(JDA api, int responseNumber, TextChannel channel, int oldPosition)
     {

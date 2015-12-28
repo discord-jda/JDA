@@ -21,7 +21,7 @@ import net.dv8tion.jda.events.Event;
 
 public abstract class GenericGuildEvent extends Event
 {
-    private Guild guild;
+    private final Guild guild;
 
     public GenericGuildEvent(JDA api, int responseNumber, Guild guild)
     {

@@ -28,6 +28,7 @@ public interface TextChannel
     /**
      * The Id of the {@link net.dv8tion.jda.entities.TextChannel TextChannel}. This is typically 18 characters long.
      * @return
+     *      The Id of this TextChannel
      */
     String getId();
 
@@ -36,6 +37,7 @@ public interface TextChannel
      * If no name has been set, this returns null.
      *
      * @return
+     *      The name of this TextChannel
      */
     String getName();
 
@@ -102,6 +104,13 @@ public interface TextChannel
      *      The created {@link net.dv8tion.jda.entities.Message Message} object or null if it failed
      */
     Message sendMessage(Message msg);
+
+    /**
+     * Sends the typing status to discord. This is what is used to make the message "X is typing..." appear.<br>
+     * The typing status only lasts for 5 seconds, so if you wish to show continuous typing you will need to
+     * call this method once every 5 seconds.
+     */
+    void sendTyping();
 
     /**
      * Checks if the given {@link net.dv8tion.jda.entities.User User} has the given {@link net.dv8tion.jda.Permission Permission}

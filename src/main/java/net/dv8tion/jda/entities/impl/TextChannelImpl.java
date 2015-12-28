@@ -19,6 +19,7 @@ import net.dv8tion.jda.MessageBuilder;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.handle.EntityBuilder;
+import net.dv8tion.jda.utils.PermissionUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -36,8 +37,8 @@ public class TextChannelImpl implements TextChannel
     private String name;
     private String topic;
     private int position;
-    private Map<User, PermissionOverride> userPermissionOverrides = new HashMap<>();
-    private Map<Role, PermissionOverride> rolePermissionOverrides = new HashMap<>();
+    private final Map<User, PermissionOverride> userPermissionOverrides = new HashMap<>();
+    private final Map<Role, PermissionOverride> rolePermissionOverrides = new HashMap<>();
 
     public TextChannelImpl(String id, Guild guild, JDAImpl api)
     {
@@ -106,47 +107,15 @@ public class TextChannelImpl implements TextChannel
         }
     }
 
+    public void sendTyping()
+    {
+        api.getRequester().post("https://discordapp.com/api/channels/" + getId() + "/typing", new JSONObject());
+    }
+
     @Override
     public boolean checkPermission(User user, Permission perm)
     {
-        //Do we have all permissions possible? (Owner or user has MANAGE_ROLES permission)
-        //If we have all permissions possible, then we will be able to see this room.
-        if (getGuild().getOwnerId().equals(user.getId())
-                || getGuild().getPublicRole().hasPermission(Permission.MANAGE_ROLES)
-                || getGuild().getRolesForUser(user).stream().anyMatch(role -> role.hasPermission(Permission.MANAGE_ROLES)))
-        {
-            return true;
-        }
-
-        //Default global permission of @everyone in this guild
-        int permission = ((RoleImpl) getGuild().getPublicRole()).getPermissions();
-        //override with channel-specific overrides of @everyone
-        PermissionOverride override = rolePermissionOverrides.get(getGuild().getPublicRole());
-        if (override != null)
-        {
-            permission = rolePermissionOverrides.get(getGuild().getPublicRole()).apply(permission);
-        }
-
-        //handle role-overrides of this user in this channel
-        List<Role> rolesOfUser = getGuild().getRolesForUser(user);
-        override = null;
-        for (Role role : rolesOfUser)
-        {
-            PermissionOverride po = rolePermissionOverrides.get(role);
-            override = (po == null) ? override : ((override == null) ? po : po.after(override));
-        }
-        if (override != null)
-        {
-            permission = override.apply(permission);
-        }
-
-        //handle user-specific overrides
-        PermissionOverride useroverride = userPermissionOverrides.get(user);
-        if (useroverride != null)
-        {
-            permission = useroverride.apply(permission);
-        }
-        return (permission & (1 << perm.getOffset())) > 0;
+        return PermissionUtil.checkPermission(this, user, perm);
     }
 
     public TextChannelImpl setName(String name)

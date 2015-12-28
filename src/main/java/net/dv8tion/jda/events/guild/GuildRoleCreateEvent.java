@@ -21,7 +21,7 @@ import net.dv8tion.jda.entities.Role;
 
 public class GuildRoleCreateEvent extends GenericGuildEvent
 {
-    protected Role createdRole;
+    private final Role createdRole;
 
     public GuildRoleCreateEvent(JDA api, int responseNumber, Guild guild, Role createdRole)
     {
