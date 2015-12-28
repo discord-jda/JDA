@@ -96,7 +96,7 @@ public class InviteUtil
 
         public String getUrl()
         {
-            return "https://discordapp.com/" + code;
+            return "https://discord.gg/" + code;
         }
 
         public String getGuildName()

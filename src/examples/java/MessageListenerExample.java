@@ -22,6 +22,7 @@ import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.events.InviteReceivedEvent;
 import net.dv8tion.jda.events.message.MessageEmbedEvent;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.hooks.ListenerAdapter;
@@ -81,6 +82,12 @@ public class MessageListenerExample extends ListenerAdapter
         builder.append("Found embed(s) Types: ");
         event.getMessageEmbeds().stream().forEach(embed -> builder.append(embed.getType()).append(", "));
         System.out.println(builder.toString().substring(0, builder.length() - 2));
+    }
+
+    @Override
+    public void onInviteReceived(InviteReceivedEvent event)
+    {
+        System.out.println("Got invite " + event.getInvite().getUrl());
     }
 
     @Override
