@@ -3,18 +3,21 @@
  */
 package net.dv8tion.jda.entities;
 
+import net.dv8tion.jda.utils.AvatarUtil;
+
 public interface AccountManager
 {
     /**
      * Set the avatar of the connected account.
      * This change will only be applied, when {@link #update()} is called
+     * Avatars can get generated through the methods of {@link net.dv8tion.jda.utils.AvatarUtil AvatarUtil}
      * 
      * @param avatar
-     *      a base64 encoded image, "null" to remove or null to discard changes
+     *      a Avatar object, null to keep current Avatar or {@link net.dv8tion.jda.utils.AvatarUtil#DELETE_AVATAR AvatarUtil#DELETE_AVATAR} to remove the avatar
      * @return
      * 	  this
      */
-    public AccountManager setAvatar(String avatar);
+    AccountManager setAvatar(AvatarUtil.Avatar avatar);
 
     /**
      * Set the email of the connected account.
@@ -25,7 +28,7 @@ public interface AccountManager
      * @return
      * 	  this
      */
-    public AccountManager setEmail(String email);
+    AccountManager setEmail(String email);
 
     /**
      * Set the password of the connected account.
@@ -36,7 +39,7 @@ public interface AccountManager
      * @return
      * 	  this
      */
-    public AccountManager setPassword(String password);
+    AccountManager setPassword(String password);
 
     /**
      * Set the username of the connected account.
@@ -47,12 +50,12 @@ public interface AccountManager
      * @return
      * 	  this
      */
-    public AccountManager setUsername(String username);
+    AccountManager setUsername(String username);
 
     /**
      * Updates the profile of the connected account, sends the changed data to the Discord server.
      */
-    public void update();
+    void update();
 
     /**
      * Set currently played game of the connected account.
@@ -63,7 +66,7 @@ public interface AccountManager
      * @return
      * 	  this
      */
-    public AccountManager setGame(String game);
+    AccountManager setGame(String game);
 
     /**
      * Set status of the connected account.
@@ -74,5 +77,5 @@ public interface AccountManager
      * @return
      * 	  this
      */
-    public AccountManager setIdle(boolean idle);
+    AccountManager setIdle(boolean idle);
 }
