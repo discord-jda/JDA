@@ -45,7 +45,7 @@ public class EntityBuilder
         GuildImpl guildObj = ((GuildImpl) api.getGuildMap().get(id));
         if (guildObj == null)
         {
-            guildObj = new GuildImpl(id);
+            guildObj = new GuildImpl(api, id);
             api.getGuildMap().put(id, guildObj);
         }
         guildObj
