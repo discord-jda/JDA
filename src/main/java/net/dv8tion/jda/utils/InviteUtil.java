@@ -62,6 +62,16 @@ public class InviteUtil
         ((JDAImpl) jda).getRequester().post("https://discordapp.com/api/invite/" + code, new JSONObject());
     }
 
+    public static void delete(Invite invite, JDA jda)
+    {
+        delete(invite.getCode(), jda);
+    }
+
+    public static void delete(String code, JDA jda)
+    {
+        ((JDAImpl) jda).getRequester().delete("https://discordapp.com/api/invite/" + code);
+    }
+
     public static class Invite
     {
         private final String code;
