@@ -34,9 +34,11 @@ public class GuildImpl implements Guild
     private final Map<String, Role> roles = new HashMap<>();
     private Role publicRole;
     private final Map<User, List<Role>> userRoles = new HashMap<>();
+    private final JDAImpl api;
 
-    public GuildImpl(String id)
+    public GuildImpl(JDAImpl api, String id)
     {
+        this.api = api;
         this.id = id;
     }
 
@@ -207,5 +209,11 @@ public class GuildImpl implements Guild
     public int hashCode()
     {
         return getId().hashCode();
+    }
+
+    @Override
+    public void leave()
+    {
+        api.getRequester().delete("https://discordapp.com/api/guilds/"+id);
     }
 }
