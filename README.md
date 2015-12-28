@@ -81,10 +81,11 @@ Gradle Downloads Coming Soon™!
 
 ## TODO
 * Private Messages
-  * Sending Private Messages
+  * ~~Sending Private Messages~~
   * Figure out a good Event system that handles both, private and guild messages
   * Implement the Handler-code types other than MESSAGE_CREATE
-* Invites
+* ~~Invites~~
+* ~~Changing Account details (username, email, avatar, password)~~
 * Changing the own Presence
 * Modifying the server
 * Permissions
