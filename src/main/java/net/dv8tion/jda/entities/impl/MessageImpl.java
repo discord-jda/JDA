@@ -30,6 +30,7 @@ public class MessageImpl implements Message
     private TextChannel textChannel = null;
     private PrivateChannel privateChannel = null;
     private String content;
+    private String subContent = null;
 
     public MessageImpl(String id, JDAImpl api)
     {
@@ -81,6 +82,21 @@ public class MessageImpl implements Message
 
     @Override
     public String getContent()
+    {
+        if (subContent == null)
+        {
+            String tmp = content;
+            for (User user : mentionedUsers)
+            {
+                tmp = tmp.replace("<@" + user.getId() + ">", "@" + user.getUsername());
+            }
+            subContent = tmp;
+        }
+        return subContent;
+    }
+
+    @Override
+    public String getRawContent()
     {
         return content;
     }

@@ -73,11 +73,21 @@ public interface Message
     User getAuthor();
 
     /**
-     * The purely textual content of this message.
+     * The textual content of this message.
+     * Mentioned users will get returned as @Username
+     * If you want the actual Content (mentions as <@id>), use {@link #getRawContent()} instead
      *
      * @return message-text
      */
     String getContent();
+
+    /**
+     * The raw textual content of this message.
+     * Mentioned users will get returned as <@id>
+     *
+     * @return raw message-text
+     */
+    String getRawContent();
 
     /**
      * Checks, whether this Message was sent in a {@link net.dv8tion.jda.entities.PrivateChannel PrivateChannel} (Private Message),
