@@ -1,17 +1,17 @@
 package net.dv8tion.jda.entities.impl;
 
-import org.json.JSONObject;
-
 import net.dv8tion.jda.OnlineStatus;
 import net.dv8tion.jda.entities.AccountManager;
+import net.dv8tion.jda.entities.SelfInfo;
 import net.dv8tion.jda.utils.AvatarUtil;
+import org.json.JSONObject;
 
 public class AccountManagerImpl implements AccountManager
 {
 
     private AvatarUtil.Avatar avatar = null;
     private String email = null;
-    private String new_password = null;
+    private String newPassword = null;
     private String username = null;
 
     private String password;
@@ -41,7 +41,7 @@ public class AccountManagerImpl implements AccountManager
     @Override
     public AccountManager setPassword(String password)
     {
-        this.new_password = password;
+        this.newPassword = password;
         return this;
     }
 
@@ -56,7 +56,15 @@ public class AccountManagerImpl implements AccountManager
     public AccountManager setGame(String game)
     {
         ((SelfInfoImpl) api.getSelfInfo()).setCurrentGame(game);
-        updateStatusAndGame(game, api.getSelfInfo().getOnlineStatus() == OnlineStatus.AWAY ? System.currentTimeMillis() : JSONObject.NULL);
+        updateStatusAndGame();
+        return this;
+    }
+
+    @Override
+    public AccountManager setIdle(boolean idle)
+    {
+        ((SelfInfoImpl) api.getSelfInfo()).setOnlineStatus(idle ? OnlineStatus.AWAY : OnlineStatus.ONLINE);
+        updateStatusAndGame();
         return this;
     }
 
@@ -67,9 +75,9 @@ public class AccountManagerImpl implements AccountManager
             JSONObject object = new JSONObject();
             object.put("avatar", avatar == null ? api.getSelfInfo().getAvatarId() : (avatar == AvatarUtil.DELETE_AVATAR ? JSONObject.NULL : avatar.getEncoded()));
             object.put("email", email == null ? api.getSelfInfo().getEmail() : email);
-            if (new_password != null)
+            if (newPassword != null)
             {
-                object.put("new_password", new_password);
+                object.put("new_password", newPassword);
             }
             object.put("password", password);
             object.put("username", username == null ? api.getSelfInfo().getUsername() : username);
@@ -91,14 +99,14 @@ public class AccountManagerImpl implements AccountManager
             api.setAuthToken(result.getString("token"));
             self.setUserName(result.getString("username"));
             self.setVerified(result.getBoolean("verified"));
-            if (new_password != null)
+            if (newPassword != null)
             {
-                this.password = new_password;
+                this.password = newPassword;
             }
 
             this.avatar = null;
             this.email = null;
-            this.new_password = null;
+            this.newPassword = null;
             this.username = null;
         } catch (Exception e)
         {
@@ -106,17 +114,12 @@ public class AccountManagerImpl implements AccountManager
         }
     }
 
-    @Override
-    public AccountManager setIdle(boolean idle)
+    private void updateStatusAndGame()
     {
-        ((SelfInfoImpl) api.getSelfInfo()).setOnlineStatus(idle ? OnlineStatus.AWAY : OnlineStatus.ONLINE);
-        updateStatusAndGame(api.getSelfInfo().getCurrentGame(), idle ? System.currentTimeMillis() : JSONObject.NULL);
-        return this;
-    }
-
-    private void updateStatusAndGame(String game, Object idle)
-    {
-        JSONObject object = new JSONObject().put("op", 3).put("d", new JSONObject().put("game", new JSONObject().put("name", game)).put("idle_since", idle));
-        api.getClient().send(object.toString());
+        SelfInfo selfInfo = api.getSelfInfo();
+        JSONObject content = new JSONObject()
+                .put("game", selfInfo.getCurrentGame() == null ? JSONObject.NULL : new JSONObject().put("name", selfInfo.getCurrentGame()))
+                .put("idle_since", selfInfo.getOnlineStatus() == OnlineStatus.AWAY ? System.currentTimeMillis() : JSONObject.NULL);
+        api.getClient().send(new JSONObject().put("op", 3).put("d", content).toString());
     }
 }
