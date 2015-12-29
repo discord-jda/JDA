@@ -27,6 +27,7 @@ public class PrivateChannelCreateEvent extends Event
     public PrivateChannelCreateEvent(JDA api, int responseNumber, User user)
     {
         super(api, responseNumber);
+        this.user = user;
     }
 
     public User getUser()

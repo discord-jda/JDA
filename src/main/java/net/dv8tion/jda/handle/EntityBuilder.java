@@ -28,7 +28,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class EntityBuilder
 {
@@ -273,7 +276,7 @@ public class EntityBuilder
         TextChannel textChannel = api.getChannelMap().get(channelId);
         if (textChannel != null)
         {
-            message.setTextChannel(textChannel);
+            message.setChannelId(textChannel.getId());
             message.setIsPrivate(false);
             List<User> mentioned = new LinkedList<>();
             JSONArray mentions = jsonObject.getJSONArray("mentions");
@@ -287,23 +290,15 @@ public class EntityBuilder
         else
         {
             message.setIsPrivate(true);
-            if (message.getAuthor() != api.getSelfInfo())
+            PrivateChannel privateChannel = api.getPmChannelMap().get(channelId);
+            if (privateChannel != null)
             {
-                message.setPrivateChannel(message.getAuthor().getPrivateChannel());
+                message.setChannelId(privateChannel.getId());
             }
             else
             {
-                Optional<User> user = api.getUsers().stream().filter(u -> ((UserImpl) u).getPrivateChannel(false) != null && u.getPrivateChannel().getId().equals(channelId)).findAny();
-                if (user.isPresent())
-                {
-                    message.setPrivateChannel(user.get().getPrivateChannel());
-                }
-                else
-                {
-                    System.out.println("Could not find Private Channel of id "+channelId);
-                }
+                System.out.println("Could not find Private Channel of id " + channelId);
             }
-
         }
 
         return message;
@@ -317,8 +312,8 @@ public class EntityBuilder
             .setDescription(messageEmbed.isNull("description") ? null : messageEmbed.getString("description"));
 
         EmbedType type = EmbedType.fromKey(messageEmbed.getString("type"));
-        if (type.equals(EmbedType.UNKNOWN))
-            throw new IllegalArgumentException("Discord provided us an unknown embed type.  Json: " + messageEmbed);
+//        if (type.equals(EmbedType.UNKNOWN))
+//            throw new IllegalArgumentException("Discord provided us an unknown embed type.  Json: " + messageEmbed);
         embed.setType(type);
 
         if (messageEmbed.has("thumbnail"))

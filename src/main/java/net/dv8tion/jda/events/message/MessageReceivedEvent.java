@@ -37,16 +37,16 @@ public class MessageReceivedEvent extends GenericMessageEvent
 
     public TextChannel getTextChannel()
     {
-        return getMessage().getTextChannel();
+        return getJDA().getTextChannelById(getMessage().getChannelId());
     }
 
     public PrivateChannel getPrivateChannel()
     {
-        return getMessage().getPrivateChannel();
+        return getJDA().getPrivateChannelById(getMessage().getChannelId());
     }
 
     public Guild getGuild()
     {
-        return getMessage().isPrivate() ? null : getMessage().getTextChannel().getGuild();
+        return isPrivate() ? null : getTextChannel().getGuild();
     }
 }

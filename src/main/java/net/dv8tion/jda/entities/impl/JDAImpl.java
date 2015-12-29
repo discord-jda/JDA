@@ -47,6 +47,7 @@ public class JDAImpl extends JDA
     private final Map<String, Guild> guildMap = new HashMap<>();
     private final Map<String, TextChannel> channelMap = new HashMap<>();
     private final Map<String, VoiceChannel> voiceChannelMap = new HashMap<>();
+    private final Map<String, PrivateChannel> pmChannelMap = new HashMap<>();
     private final Map<String, String> offline_pms = new HashMap<>();    //Userid -> channelid
     private final EventManager eventManager = new EventManager();
     private SelfInfo selfInfo = null;
@@ -304,6 +305,17 @@ public class JDAImpl extends JDA
     public VoiceChannel getVoiceChannelById(String id)
     {
         return voiceChannelMap.get(id);
+    }
+
+    @Override
+    public PrivateChannel getPrivateChannelById(String id)
+    {
+        return pmChannelMap.get(id);
+    }
+
+    public Map<String, PrivateChannel> getPmChannelMap()
+    {
+        return pmChannelMap;
     }
 
     public Map<String, String> getOffline_pms()

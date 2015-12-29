@@ -65,6 +65,8 @@ public abstract class JDA
 
     public abstract VoiceChannel getVoiceChannelById(String id);
 
+    public abstract PrivateChannel getPrivateChannelById(String id);
+
     /**
      * Returns the currently logged in account represented by {@link net.dv8tion.jda.entities.SelfInfo SelfInfo}.<br>
      * Account settings <b>cannot</b> be modified using this object. If you wish to modify account settings please

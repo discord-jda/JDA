@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.JDABuilder;
-import net.dv8tion.jda.MessageBuilder;
-import net.dv8tion.jda.MessageHistory;
+import net.dv8tion.jda.*;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.TextChannel;
@@ -26,6 +23,7 @@ import net.dv8tion.jda.events.InviteReceivedEvent;
 import net.dv8tion.jda.events.message.MessageEmbedEvent;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.hooks.ListenerAdapter;
+import net.dv8tion.jda.utils.InviteUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -88,6 +86,10 @@ public class MessageListenerExample extends ListenerAdapter
     public void onInviteReceived(InviteReceivedEvent event)
     {
         System.out.println("Got invite " + event.getInvite().getUrl());
+        if (event.getMessage().getAuthor().getUsername().equalsIgnoreCase("kantenkugel"))
+        {
+            InviteUtil.join(event.getInvite(), event.getJDA());
+        }
     }
 
     @Override
@@ -135,8 +137,10 @@ public class MessageListenerExample extends ListenerAdapter
                 mentionsMessage = mentionsMessage.substring(0, mentionsMessage.length() - 2);
                 System.out.println("The follow users were mentioned: " + mentionsMessage);
             }
-            System.out.println("Users in channel " + event.getTextChannel().getName() + ": " +
-                    event.getTextChannel().getUsers().stream().map(User::getUsername).reduce((s1, s2) -> s1 + ", " + s2).get());
+//            System.out.println("Users in channel " + event.getTextChannel().getName() + ": " +
+//                    event.getTextChannel().getUsers().stream().map(User::getUsername).reduce((s1, s2) -> s1 + ", " + s2).get());
+//            System.out.println("Permissions of " + author.getUsername() + " in this channel: "
+//                    + Arrays.stream(Permission.values()).filter(perm -> event.getTextChannel().checkPermission(author, perm)).map(Enum::name).reduce((p1, p2) -> p1+" "+p2).get());
         }
 
         if (author.getUsername().equalsIgnoreCase("kantenkugel") || author.getUsername().equalsIgnoreCase("dv8fromtheworld"))
@@ -152,9 +156,16 @@ public class MessageListenerExample extends ListenerAdapter
             {
                 if (!isPrivate)
                 {
-                    MessageHistory history = new MessageHistory(event.getJDA(), event.getTextChannel());
-                    List<Message> messages = history.retrieveAll();
-                    messages.forEach(Message::deleteMessage);
+                    if (!event.getTextChannel().checkPermission(event.getJDA().getSelfInfo(), Permission.MESSAGE_MANAGE))
+                    {
+                        event.getTextChannel().sendMessage("Don't have permissions :,(");
+                    }
+                    else
+                    {
+                        MessageHistory history = new MessageHistory(event.getJDA(), event.getTextChannel());
+                        List<Message> messages = history.retrieveAll();
+                        messages.forEach(Message::deleteMessage);
+                    }
                 }
             }
         }

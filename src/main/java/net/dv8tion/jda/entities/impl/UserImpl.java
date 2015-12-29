@@ -87,12 +87,8 @@ public class UserImpl implements User
     @Override
     public PrivateChannel getPrivateChannel()
     {
-        return getPrivateChannel(true);
-    }
-
-    public PrivateChannel getPrivateChannel(boolean create)
-    {
-        if(create && privateChannel == null) {
+        if (privateChannel == null)
+        {
             try
             {
                 JSONObject response = api.getRequester().post("https://discordapp.com/api/users/" + api.getSelfInfo().getId() + "/channels",
@@ -146,6 +142,7 @@ public class UserImpl implements User
     public UserImpl setPrivateChannel(PrivateChannel channel)
     {
         this.privateChannel = channel;
+        api.getPmChannelMap().put(getId(), channel);
         return this;
     }
 
