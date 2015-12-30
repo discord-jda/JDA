@@ -142,7 +142,7 @@ public class UserImpl implements User
     public UserImpl setPrivateChannel(PrivateChannel channel)
     {
         this.privateChannel = channel;
-        api.getPmChannelMap().put(getId(), channel);
+        api.getPmChannelMap().put(channel.getId(), channel);
         return this;
     }
 

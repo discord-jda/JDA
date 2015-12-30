@@ -35,6 +35,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -248,6 +249,12 @@ public class JDAImpl extends JDA
     public User getUserById(String id)
     {
         return userMap.get(id);
+    }
+
+    @Override
+    public List<User> getUsersByName(String name)
+    {
+        return userMap.values().stream().filter(u -> u.getUsername().equalsIgnoreCase(name)).collect(Collectors.toList());
     }
 
     public Map<String, Guild> getGuildMap()

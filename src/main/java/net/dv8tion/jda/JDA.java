@@ -53,6 +53,8 @@ public abstract class JDA
 
     public abstract User getUserById(String id);
 
+    public abstract List<User> getUsersByName(String name);
+
     public abstract List<Guild> getGuilds();
 
     public abstract Guild getGuildById(String id);
