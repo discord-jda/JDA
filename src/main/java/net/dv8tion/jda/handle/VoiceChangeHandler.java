@@ -34,6 +34,11 @@ public class VoiceChangeHandler extends SocketHandler
     public void handle(JSONObject content)
     {
         User user = api.getUserMap().get(content.getString("user_id"));
+        if (user == null)
+        {
+            //User for event doesn't exist in registry... skipping
+            return;
+        }
         VoiceStatusImpl status = (VoiceStatusImpl) user.getVoiceStatus();
         if (content.isNull("channel_id"))
         {

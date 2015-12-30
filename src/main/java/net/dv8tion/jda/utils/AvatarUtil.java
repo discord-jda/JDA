@@ -29,6 +29,7 @@ import java.util.Base64;
 public class AvatarUtil
 {
     public static final Avatar DELETE_AVATAR = new Avatar(null);
+    private static final int SIZE = 128;
 
     public static Avatar getAvatar(File avatarFile) throws UnsupportedEncodingException
     {
@@ -62,10 +63,10 @@ public class AvatarUtil
     }
 
     private static BufferedImage resize(BufferedImage originalImage){
-        BufferedImage resizedImage = new BufferedImage(128, 128,
+        BufferedImage resizedImage = new BufferedImage(SIZE, SIZE,
                 originalImage.getType() == 0 ? BufferedImage.TYPE_INT_ARGB : originalImage.getType());
         Graphics2D g = resizedImage.createGraphics();
-        g.drawImage(originalImage, 0, 0, 128, 128, Color.white, null);
+        g.drawImage(originalImage, 0, 0, SIZE, SIZE, Color.white, null);
         g.dispose();
         g.setComposite(AlphaComposite.Src);
 
