@@ -297,7 +297,7 @@ public class EntityBuilder
             }
             else
             {
-                System.out.println("Could not find Private Channel of id " + channelId);
+                throw new IllegalArgumentException("Could not find Private Channel of id " + channelId);
             }
         }
 

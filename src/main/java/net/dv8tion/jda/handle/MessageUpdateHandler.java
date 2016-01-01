@@ -15,9 +15,11 @@
  */
 package net.dv8tion.jda.handle;
 
+import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.message.MessageUpdateEvent;
+import net.dv8tion.jda.events.message.priv.PrivateMessageUpdateEvent;
 import org.json.JSONObject;
 
 public class MessageUpdateHandler extends SocketHandler
@@ -31,18 +33,20 @@ public class MessageUpdateHandler extends SocketHandler
     @Override
     public void handle(JSONObject content)
     {
-        String channelId = content.getString("channel_id");
-        TextChannel channel = api.getChannelMap().get(channelId);
-        if (channel != null)
+        Message message = new EntityBuilder(api).createMessage(content);
+        if (!message.isPrivate())
         {
             api.getEventManager().handle(
                     new MessageUpdateEvent(
                             api, responseNumber,
-                            new EntityBuilder(api).createMessage(content)));
+                            message));
         }
         else
         {
-            //TODO PRIVATE MESSAGE
+            api.getEventManager().handle(
+                    new PrivateMessageUpdateEvent(
+                            api, responseNumber,
+                            message, api.getPmChannelMap().get(message.getChannelId())));
         }
     }
 }

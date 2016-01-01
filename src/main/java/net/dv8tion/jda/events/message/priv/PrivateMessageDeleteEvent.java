@@ -13,30 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.events.message;
+package net.dv8tion.jda.events.message.priv;
 
 import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.events.Event;
+import net.dv8tion.jda.entities.PrivateChannel;
 
-public abstract class GenericMessageEvent extends Event
+public class PrivateMessageDeleteEvent extends GenericPrivateMessageEvent
 {
-    private final Message message;
+    private final String messageId;
 
-    public GenericMessageEvent(JDA api, int responseNumber, Message message)
+    public PrivateMessageDeleteEvent(JDA api, int responseNumber, String messageId, PrivateChannel channel)
     {
-        super(api, responseNumber);
-        this.message = message;
+        super(api, responseNumber, null, channel);
+        this.messageId = messageId;
     }
 
-    public Message getMessage()
+    public String getMessageId()
     {
-        return message;
-    }
-
-    public User getAuthor()
-    {
-        return message == null ? null : getMessage().getAuthor();
+        return messageId;
     }
 }

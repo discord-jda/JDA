@@ -25,6 +25,7 @@ import net.dv8tion.jda.events.guild.*;
 import net.dv8tion.jda.events.guild.member.*;
 import net.dv8tion.jda.events.guild.role.*;
 import net.dv8tion.jda.events.message.*;
+import net.dv8tion.jda.events.message.priv.*;
 import net.dv8tion.jda.events.user.*;
 import net.dv8tion.jda.events.voice.*;
 
@@ -42,12 +43,20 @@ public abstract class ListenerAdapter implements EventListener
             onMessageReceived((MessageReceivedEvent) event);
         else if (event instanceof MessageUpdateEvent)
             onMessageUpdate((MessageUpdateEvent) event);
-        else if (event instanceof InviteReceivedEvent)
-            onInviteReceived(((InviteReceivedEvent) event));
         else if (event instanceof MessageDeleteEvent)
             onMessageDelete((MessageDeleteEvent) event);
         else if (event instanceof MessageEmbedEvent)
             onMessageEmbed((MessageEmbedEvent) event);
+        else if (event instanceof PrivateMessageReceivedEvent)
+            onPrivateMessageReceived((PrivateMessageReceivedEvent) event);
+        else if (event instanceof PrivateMessageUpdateEvent)
+            onPrivateMessageUpdate((PrivateMessageUpdateEvent) event);
+        else if (event instanceof PrivateMessageDeleteEvent)
+            onPrivateMessageDelete((PrivateMessageDeleteEvent) event);
+        else if (event instanceof PrivateMessageEmbedEvent)
+            onPrivateMessageEmbed((PrivateMessageEmbedEvent) event);
+        else if (event instanceof InviteReceivedEvent)
+            onInviteReceived(((InviteReceivedEvent) event));
 
         //User Events
         else if (event instanceof UserNameUpdateEvent)
@@ -159,6 +168,8 @@ public abstract class ListenerAdapter implements EventListener
         //Start a new if statement so that these are no overridden by the above events.
         if (event instanceof GenericMessageEvent)
             onGenericMessage((GenericMessageEvent) event);
+        else if (event instanceof GenericPrivateMessageEvent)
+            onGenericPrivateMessage((GenericPrivateMessageEvent) event);
         else if (event instanceof GenericTextChannelUpdateEvent)
             onGenericTextChannelUpdate((GenericTextChannelUpdateEvent) event);
         else if (event instanceof GenericVoiceChannelUpdateEvent)
@@ -194,6 +205,10 @@ public abstract class ListenerAdapter implements EventListener
     public void onMessageUpdate(MessageUpdateEvent event) {}
     public void onMessageDelete(MessageDeleteEvent event) {}
     public void onMessageEmbed(MessageEmbedEvent event) {}
+    public void onPrivateMessageReceived(PrivateMessageReceivedEvent event) {}
+    public void onPrivateMessageUpdate(PrivateMessageUpdateEvent event) {}
+    public void onPrivateMessageDelete(PrivateMessageDeleteEvent event) {}
+    public void onPrivateMessageEmbed(PrivateMessageEmbedEvent event) {}
 
     public void onInviteReceived(InviteReceivedEvent event) {}
 
@@ -249,6 +264,7 @@ public abstract class ListenerAdapter implements EventListener
     //Generic Events
     public void onGenericUserEvent(GenericUserEvent event) {}
     public void onGenericMessage(GenericMessageEvent event) {}
+    public void onGenericPrivateMessage(GenericPrivateMessageEvent event) {}
     public void onGenericTextChannel(GenericTextChannelEvent event) {}
     public void onGenericTextChannelUpdate(GenericTextChannelUpdateEvent event) {}
     public void onGenericVoiceChannel(GenericVoiceChannelEvent event) {}

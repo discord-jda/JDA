@@ -19,6 +19,7 @@ import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.InviteReceivedEvent;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.utils.InviteUtil;
 import org.json.JSONObject;
 
@@ -38,10 +39,20 @@ public class MessageReceivedHandler extends SocketHandler
     public void handle(JSONObject content)
     {
         Message message = new EntityBuilder(api).createMessage(content);
-        api.getEventManager().handle(
-                new MessageReceivedEvent(
-                        api, responseNumber,
-                        message));
+        if (!message.isPrivate())
+        {
+            api.getEventManager().handle(
+                    new MessageReceivedEvent(
+                            api, responseNumber,
+                            message));
+        }
+        else
+        {
+            api.getEventManager().handle(
+                    new PrivateMessageReceivedEvent(
+                            api, responseNumber,
+                            message, api.getPmChannelMap().get(message.getChannelId())));
+        }
 
         //searching for invites
         Matcher matcher = invitePattern.matcher(message.getContent());
