@@ -38,10 +38,10 @@ public abstract class ListenerAdapter implements EventListener
             onReady((ReadyEvent) event);
 
         //Message Events
-        else if (event instanceof MessageUpdateEvent)
-            onMessageUpdate((MessageUpdateEvent) event);    //Update must be before Received because it is a subclass of Received.
         else if (event instanceof MessageReceivedEvent)
             onMessageReceived((MessageReceivedEvent) event);
+        else if (event instanceof MessageUpdateEvent)
+            onMessageUpdate((MessageUpdateEvent) event);
         else if (event instanceof InviteReceivedEvent)
             onInviteReceived(((InviteReceivedEvent) event));
         else if (event instanceof MessageDeleteEvent)
