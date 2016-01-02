@@ -15,24 +15,29 @@
  */
 package net.dv8tion.jda.events.message;
 
+import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.entities.MessageEmbed;
+import net.dv8tion.jda.entities.PrivateChannel;
+import net.dv8tion.jda.entities.TextChannel;
+import net.dv8tion.jda.events.Event;
+
 import java.util.List;
 
-import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.entities.MessageEmbed;
-import net.dv8tion.jda.entities.TextChannel;
-
-public class MessageEmbedEvent extends GenericMessageEvent
+public class MessageEmbedEvent extends Event
 {
-    protected String messageId;
-    protected TextChannel channel;
-    protected List<MessageEmbed> embeds;
+    private final boolean isPrivate;
+    private final String messageId;
+    private final String channelId;
+    private final List<MessageEmbed> embeds;
 
-    public MessageEmbedEvent(JDA api, int responseNumber, String messageId, TextChannel channel, List<MessageEmbed> embeds)
+    public MessageEmbedEvent(JDA api, int responseNumber, String messageId, String channelId, List<MessageEmbed> embeds, boolean isPrivate)
     {
-        super(api, responseNumber, null);
+        super(api, responseNumber);
         this.messageId = messageId;
-        this.channel = channel;
+        this.channelId = channelId;
         this.embeds = embeds;
+        this.isPrivate = isPrivate;
     }
 
     public String getMessageId()
@@ -40,9 +45,19 @@ public class MessageEmbedEvent extends GenericMessageEvent
         return messageId;
     }
 
-    public TextChannel getChannel()
+    public TextChannel getTextChannel()
     {
-        return channel;
+        return getJDA().getTextChannelById(channelId);
+    }
+
+    public PrivateChannel getPrivateChannel()
+    {
+        return getJDA().getPrivateChannelById(channelId);
+    }
+
+    public Guild getGuild()
+    {
+        return isPrivate ? null : getTextChannel().getGuild();
     }
 
     public List<MessageEmbed> getMessageEmbeds()

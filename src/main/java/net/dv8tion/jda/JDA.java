@@ -16,57 +16,43 @@
 package net.dv8tion.jda;
 
 import net.dv8tion.jda.entities.*;
-import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.hooks.EventListener;
 import org.apache.http.HttpHost;
 
 import javax.security.auth.login.LoginException;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 import java.util.List;
 
 
 /**
  * Represents the core of the Discord API. All functionality is connected through this.
  */
-public abstract class JDA
+public interface JDA
 {
-    /**
-     * Attempts to login to Discord.
-     * Upon successful auth with Discord, a token is generated and stored in token.json.
-     *
-     * @param email
-     *          The email of the account attempting to log in.
-     * @param password
-     *          The password of the account attempting to log in.
-     * @throws IllegalArgumentException
-     *          Thrown if this email or password provided are empty or null.
-     * @throws LoginException
-     *          Thrown if the email-password combination fails the auth check with the Discord servers.
-     */
-    protected abstract void login(String email, String password) throws IllegalArgumentException, LoginException;
+    String getAuthToken();
 
-    public abstract String getAuthToken();
+    void addEventListener(EventListener listener);
 
-    public abstract void addEventListener(EventListener listener);
+    void removeEventListener(EventListener listener);
 
-    public abstract void removeEventListener(EventListener listener);
+    List<User> getUsers();
 
-    public abstract List<User> getUsers();
+    User getUserById(String id);
 
-    public abstract User getUserById(String id);
+    List<User> getUsersByName(String name);
 
-    public abstract List<Guild> getGuilds();
+    List<Guild> getGuilds();
 
-    public abstract Guild getGuildById(String id);
+    Guild getGuildById(String id);
 
-    public abstract List<TextChannel> getTextChannels();
+    List<TextChannel> getTextChannels();
 
-    public abstract TextChannel getTextChannelById(String id);
+    TextChannel getTextChannelById(String id);
 
-    public abstract List<VoiceChannel> getVoiceChannels();
+    List<VoiceChannel> getVoiceChannels();
 
-    public abstract VoiceChannel getVoiceChannelById(String id);
+    VoiceChannel getVoiceChannelById(String id);
+
+    PrivateChannel getPrivateChannelById(String id);
 
     /**
      * Returns the currently logged in account represented by {@link net.dv8tion.jda.entities.SelfInfo SelfInfo}.<br>
@@ -76,9 +62,18 @@ public abstract class JDA
      * @return
      *      The currently logged in account.
      */
-    public abstract SelfInfo getSelfInfo();
+    SelfInfo getSelfInfo();
 
-    public abstract int getResponseTotal();
+    /**
+     * Returns the {@link net.dv8tion.jda.entities.AccountManager AccountManager} for the currently logged in account.<br>
+     * Account settings <b>can only</b> be modified using this object. 
+     *
+     * @return
+     *      The AccountManager for the currently logged in account.
+     */
+    AccountManager getAccountManager();
+
+    int getResponseTotal();
 
     /**
      * The proxy settings used by all JDA instances.
@@ -86,5 +81,9 @@ public abstract class JDA
      * @return
      *      The proxy settings used by all JDA instances. If JDA currently isn't using a proxy, {@link java.net.Proxy#NO_PROXY Proxy.NO_PROXY} is returned.
      */
-    public abstract HttpHost getGlobalProxy();
+    HttpHost getGlobalProxy();
+
+    void setDebug(boolean enableDebug);
+
+    boolean isDebug();
 }

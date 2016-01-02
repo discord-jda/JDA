@@ -15,9 +15,12 @@
  */
 package net.dv8tion.jda.handle;
 
+import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.message.MessageDeleteEvent;
+import net.dv8tion.jda.events.message.guild.GuildMessageDeleteEvent;
+import net.dv8tion.jda.events.message.priv.PrivateMessageDeleteEvent;
 import org.json.JSONObject;
 
 public class MessageDeleteHandler extends SocketHandler
@@ -31,17 +34,31 @@ public class MessageDeleteHandler extends SocketHandler
     @Override
     public void handle(JSONObject content)
     {
-        TextChannel channel = api.getChannelMap().get(content.getString("channel_id"));
+        String messageId = content.getString("id");
+        String channelId = content.getString("channel_id");
+        TextChannel channel = api.getChannelMap().get(channelId);
+
         if (channel != null)
         {
             api.getEventManager().handle(
-                    new MessageDeleteEvent(
+                    new GuildMessageDeleteEvent(
                             api, responseNumber,
-                            content.getString("id"), channel));
+                            messageId, channel));
         }
         else
         {
-            //TODO: handle private channel
+            PrivateChannel privChannel = api.getPmChannelMap().get(channelId);
+            if (privChannel == null)
+                throw new IllegalArgumentException("Message deleted in unknown channel! (unknown channel id). JSON: " + content);
+            api.getEventManager().handle(
+                    new PrivateMessageDeleteEvent(
+                            api, responseNumber,
+                            messageId, privChannel));
         }
+        //Combo event
+        api.getEventManager().handle(
+                new MessageDeleteEvent(
+                        api, responseNumber,
+                        messageId, channelId, channel != null));
     }
 }

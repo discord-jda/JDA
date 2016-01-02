@@ -29,33 +29,34 @@ import org.json.JSONObject;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
  * Represents the core of the Discord API. All functionality is connected through this.
  */
-public class JDAImpl extends JDA
+public class JDAImpl implements JDA
 {
     private final HttpHost proxy;
     private final Map<String, User> userMap = new HashMap<>();
     private final Map<String, Guild> guildMap = new HashMap<>();
     private final Map<String, TextChannel> channelMap = new HashMap<>();
     private final Map<String, VoiceChannel> voiceChannelMap = new HashMap<>();
+    private final Map<String, PrivateChannel> pmChannelMap = new HashMap<>();
     private final Map<String, String> offline_pms = new HashMap<>();    //Userid -> channelid
     private final EventManager eventManager = new EventManager();
     private SelfInfo selfInfo = null;
+    private AccountManagerImpl accountManager;
     private String authToken = null;
     private WebSocketClient client;
     private final Requester requester = new Requester(this);
+    private boolean debug;
     private int responseTotal;
 
     public JDAImpl()
@@ -84,12 +85,13 @@ public class JDAImpl extends JDA
      * @throws LoginException
      *          Thrown if the email-password combination fails the auth check with the Discord servers.
      */
-    @Override
     public void login(String email, String password) throws IllegalArgumentException, LoginException
     {
         if (email == null || email.isEmpty() || password == null || password.isEmpty())
             throw new IllegalArgumentException("The provided email or password as empty / null.");
 
+        accountManager=new AccountManagerImpl(this, password);
+        
         Path tokenFile = Paths.get("tokens.json");
         JSONObject configs = null;
         String gateway = null;
@@ -203,6 +205,11 @@ public class JDAImpl extends JDA
         return authToken;
     }
 
+    public void setAuthToken(String token)
+    {
+        this.authToken = token;
+    }
+
     @Override
     public void addEventListener(EventListener listener)
     {
@@ -242,6 +249,12 @@ public class JDAImpl extends JDA
     public User getUserById(String id)
     {
         return userMap.get(id);
+    }
+
+    @Override
+    public List<User> getUsersByName(String name)
+    {
+        return userMap.values().stream().filter(u -> u.getUsername().equalsIgnoreCase(name)).collect(Collectors.toList());
     }
 
     public Map<String, Guild> getGuildMap()
@@ -301,6 +314,17 @@ public class JDAImpl extends JDA
         return voiceChannelMap.get(id);
     }
 
+    @Override
+    public PrivateChannel getPrivateChannelById(String id)
+    {
+        return pmChannelMap.get(id);
+    }
+
+    public Map<String, PrivateChannel> getPmChannelMap()
+    {
+        return pmChannelMap;
+    }
+
     public Map<String, String> getOffline_pms()
     {
         return offline_pms;
@@ -345,5 +369,23 @@ public class JDAImpl extends JDA
     public HttpHost getGlobalProxy()
     {
         return proxy;
+    }
+
+    @Override
+    public AccountManager getAccountManager()
+    {
+        return accountManager;
+    }
+
+    @Override
+    public void setDebug(boolean enableDebug)
+    {
+        this.debug = enableDebug;
+    }
+
+    @Override
+    public boolean isDebug()
+    {
+        return debug;
     }
 }

@@ -73,11 +73,21 @@ public interface Message
     User getAuthor();
 
     /**
-     * The purely textual content of this message.
+     * The textual content of this message.
+     * Mentioned users will get returned as @Username
+     * If you want the actual Content (mentions as &lt;@id&gt;), use {@link #getRawContent()} instead
      *
      * @return message-text
      */
     String getContent();
+
+    /**
+     * The raw textual content of this message.
+     * Mentioned users will get returned as &lt;@id&gt;
+     *
+     * @return raw message-text
+     */
+    String getRawContent();
 
     /**
      * Checks, whether this Message was sent in a {@link net.dv8tion.jda.entities.PrivateChannel PrivateChannel} (Private Message),
@@ -89,24 +99,15 @@ public interface Message
     boolean isPrivate();
 
     /**
-     * The {@link net.dv8tion.jda.entities.TextChannel TextChannel} this message was sent in.
-     * This returns null, if this Message was sent in a {@link net.dv8tion.jda.entities.PrivateChannel PrivateChannel}
-     * To check the type of this Message, you can call {@link #isPrivate()}
+     * Returns the Id of the Channel this Message was sent in.
+     * This can be the id of either a {@link net.dv8tion.jda.entities.TextChannel TextChannel} or a {@link net.dv8tion.jda.entities.PrivateChannel PrivateChannel}
+     * To get the corresponding channel, you can use {@link net.dv8tion.jda.JDA#getTextChannelById(String)} or {@link net.dv8tion.jda.JDA#getPrivateChannelById(String)}
+     * (Hint: {@link #isPrivate()} could be helpful!)
      *
      * @return
-     *      Null-able TextChannel, this Message was sent in
+     *      The Id of the Channel this was sent in
      */
-    TextChannel getTextChannel();
-
-    /**
-     * The {@link net.dv8tion.jda.entities.PrivateChannel PrivateChannel} this message was sent in.
-     * This returns null, if this Message was sent in a {@link net.dv8tion.jda.entities.TextChannel TextChannel}
-     * To check the type of this Message, you can call {@link #isPrivate()}
-     *
-     * @return
-     *      Null-able PrivateChannel, this Message was sent in
-     */
-    PrivateChannel getPrivateChannel();
+    String getChannelId();
 
     /**
      * Is this Message supposed to be TTS (Text-to-speach)

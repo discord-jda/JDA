@@ -42,9 +42,10 @@ public class JDABuilder
     protected static boolean jdaCreated = false;
     protected static String proxyUrl = null;
     protected static int proxyPort = -1;
-    List<EventListener> listeners;
+    final List<EventListener> listeners;
     String email = null;
     String pass = null;
+    boolean debug = false;
 
     /**
      * Creates a completely empty JDABuilder.<br>
@@ -71,7 +72,7 @@ public class JDABuilder
     {
         this.email = email;
         this.pass = password;
-        listeners = new LinkedList<EventListener>();
+        listeners = new LinkedList<>();
     }
 
     /**
@@ -127,11 +128,22 @@ public class JDABuilder
         if (proxySet || jdaCreated)
             throw new UnsupportedOperationException("You cannot change the proxy after a proxy has been set or a JDA object has been created. Proxy settings are global among all instances!");
         proxySet = true;
-        this.proxyUrl = proxyUrl;
-        this.proxyPort = proxyPort;
+        JDABuilder.proxyUrl = proxyUrl;
+        JDABuilder.proxyPort = proxyPort;
         return this;
     }
 
+    /**
+     * Enables developer debug of JDA.<br>
+     * Enabling this will print stack traces instead of java logger message when exceptions are encountered.
+     *
+     * @param debug
+     *          True - enables debug printing.
+     */
+    public void setDebug(boolean debug)
+    {
+       this.debug = debug;
+    }
     /**
      * Adds a listener to the list of listeners that will be used to populate the {@link net.dv8tion.jda.JDA} object.
      *
@@ -184,7 +196,8 @@ public class JDABuilder
             jda = new JDAImpl(proxyUrl, proxyPort);
         else
             jda = new JDAImpl();
-        listeners.forEach(listener ->  jda.addEventListener(listener));
+        jda.setDebug(debug);
+        listeners.forEach(jda::addEventListener);
         jda.login(email, pass);
         return jda;
     }

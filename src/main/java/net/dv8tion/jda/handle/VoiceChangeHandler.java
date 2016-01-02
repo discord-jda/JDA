@@ -34,6 +34,11 @@ public class VoiceChangeHandler extends SocketHandler
     public void handle(JSONObject content)
     {
         User user = api.getUserMap().get(content.getString("user_id"));
+        if (user == null)
+        {
+            //User for event doesn't exist in registry... skipping
+            return;
+        }
         VoiceStatusImpl status = (VoiceStatusImpl) user.getVoiceStatus();
         if (content.isNull("channel_id"))
         {
@@ -66,12 +71,14 @@ public class VoiceChangeHandler extends SocketHandler
             }
         }
 
-        if (content.getBoolean("self_mute") != status.isMuted())
+        boolean isSelfMute = !content.isNull("self_mute") && content.getBoolean("self_mute");
+        if (isSelfMute != status.isMuted())
         {
             status.setMute(!status.isMuted());
             api.getEventManager().handle(new VoiceSelfMuteEvent(api, responseNumber, user));
         }
-        if (content.getBoolean("self_deaf") != status.isDeaf())
+        boolean isSelfDeaf = !content.isNull("self_deaf") && content.getBoolean("self_deaf");
+        if (isSelfDeaf != status.isDeaf())
         {
             status.setDeaf(!status.isDeaf());
             api.getEventManager().handle(new VoiceSelfDeafEvent(api, responseNumber, user));

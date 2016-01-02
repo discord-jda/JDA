@@ -15,13 +15,21 @@
  */
 package net.dv8tion.jda.handle;
 
-import net.dv8tion.jda.entities.TextChannel;
+import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.impl.JDAImpl;
+import net.dv8tion.jda.events.InviteReceivedEvent;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent;
+import net.dv8tion.jda.utils.InviteUtil;
 import org.json.JSONObject;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MessageReceivedHandler extends SocketHandler
 {
+    private static final Pattern invitePattern = Pattern.compile("\\bhttps://discord.gg/([a-zA-Z0-9]+)\\b");
 
     public MessageReceivedHandler(JDAImpl api, int responseNumber)
     {
@@ -31,9 +39,38 @@ public class MessageReceivedHandler extends SocketHandler
     @Override
     public void handle(JSONObject content)
     {
+        Message message = new EntityBuilder(api).createMessage(content);
+        if (!message.isPrivate())
+        {
+            api.getEventManager().handle(
+                    new GuildMessageReceivedEvent(
+                            api, responseNumber,
+                            message, api.getChannelMap().get(message.getChannelId())));
+        }
+        else
+        {
+            api.getEventManager().handle(
+                    new PrivateMessageReceivedEvent(
+                            api, responseNumber,
+                            message, api.getPmChannelMap().get(message.getChannelId())));
+        }
+        //Combo event
         api.getEventManager().handle(
                 new MessageReceivedEvent(
                         api, responseNumber,
-                        new EntityBuilder(api).createMessage(content)));
+                        message));
+
+        //searching for invites
+        Matcher matcher = invitePattern.matcher(message.getContent());
+        while (matcher.find())
+        {
+            api.getEventManager().handle(
+                    new InviteReceivedEvent(
+                            api, responseNumber,
+                            message,
+                            InviteUtil.resolve(matcher.group(1))
+                    )
+            );
+        }
     }
 }

@@ -20,7 +20,7 @@ import net.dv8tion.jda.entities.VoiceChannel;
 
 public class VoiceChannelUpdateNameEvent extends GenericVoiceChannelUpdateEvent
 {
-    protected String oldName;
+    private final String oldName;
 
     public VoiceChannelUpdateNameEvent(JDA api, int responseNumber, VoiceChannel channel, String oldName)
     {

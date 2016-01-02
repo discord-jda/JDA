@@ -16,18 +16,23 @@
 package net.dv8tion.jda.events.message;
 
 import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.TextChannel;
+import net.dv8tion.jda.events.Event;
 
-public class MessageDeleteEvent extends GenericMessageEvent
+public class MessageDeleteEvent extends Event
 {
+    private final boolean isPrivate;
     private final String messageId;
-    private final TextChannel channel;
+    private final String channelId;
 
-    public MessageDeleteEvent(JDA api, int responseNumber, String messageId, TextChannel channel)
+    public MessageDeleteEvent(JDA api, int responseNumber, String messageId, String channelId, boolean isPrivate)
     {
-        super(api, responseNumber, null);
+        super(api, responseNumber);
         this.messageId = messageId;
-        this.channel = channel;
+        this.channelId = channelId;
+        this.isPrivate = isPrivate;
     }
 
     public String getMessageId()
@@ -35,8 +40,18 @@ public class MessageDeleteEvent extends GenericMessageEvent
         return messageId;
     }
 
-    public TextChannel getChannel()
+    public TextChannel getTextChannel()
     {
-        return channel;
+        return getJDA().getTextChannelById(channelId);
+    }
+
+    public PrivateChannel getPrivateChannel()
+    {
+        return getJDA().getPrivateChannelById(channelId);
+    }
+
+    public Guild getGuild()
+    {
+        return isPrivate ? null : getTextChannel().getGuild();
     }
 }

@@ -20,7 +20,7 @@ import net.dv8tion.jda.entities.TextChannel;
 
 public class TextChannelUpdateTopicEvent extends GenericTextChannelUpdateEvent
 {
-    protected String oldTopic;
+    private final String oldTopic;
 
     public TextChannelUpdateTopicEvent(JDA api, int responseNumber, TextChannel channel, String oldTopic)
     {

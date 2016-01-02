@@ -101,7 +101,7 @@ public interface MessageEmbed
      * Represents the information Discord provided about a thumbnail image that should be
      *   displayed with an embed message.
      */
-    public class Thumbnail
+    class Thumbnail
     {
         protected final String url;
         protected final String proxyUrl;
@@ -166,7 +166,7 @@ public interface MessageEmbed
      * Multipurpose class that represents a provider of content,
      * whether directly through creation or indirectly through hosting.
      */
-    public class Provider
+    class Provider
     {
         protected final String name;
         protected final String url;
@@ -207,7 +207,7 @@ public interface MessageEmbed
      * The videos represented are expected to be played using an HTML5 player from the
      * site which the url belongs to.
      */
-    public class VideoInfo
+    class VideoInfo
     {
         protected final String url;
         protected final int width;

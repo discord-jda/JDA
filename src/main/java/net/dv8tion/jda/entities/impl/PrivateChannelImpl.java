@@ -59,7 +59,7 @@ public class PrivateChannelImpl implements PrivateChannel
         try
         {
             JSONObject response = api.getRequester().post("https://discordapp.com/api/channels/" + getId() + "/messages",
-                    new JSONObject().put("content", msg.getContent()));
+                    new JSONObject().put("content", msg.getRawContent()));
 
             return new EntityBuilder(api).createMessage(response);
         }
@@ -69,6 +69,11 @@ public class PrivateChannelImpl implements PrivateChannel
             //sending failed
             return null;
         }
+    }
+
+    public void sendTyping()
+    {
+        api.getRequester().post("https://discordapp.com/api/channels/" + getId() + "/typing", new JSONObject());
     }
 
     @Override

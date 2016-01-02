@@ -22,7 +22,7 @@ import java.util.List;
 
 public class EventManager
 {
-    private List<EventListener> listeners = new LinkedList<>();
+    private final List<EventListener> listeners = new LinkedList<>();
 
     public EventManager()
     {

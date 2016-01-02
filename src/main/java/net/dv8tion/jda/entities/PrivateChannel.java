@@ -61,4 +61,11 @@ public interface PrivateChannel
      *      The created {@link net.dv8tion.jda.entities.Message Message} object or null if it failed
      */
     Message sendMessage(Message msg);
+
+    /**
+     * Sends the typing status to discord. This is what is used to make the message "X is typing..." appear.<br>
+     * The typing status only lasts for 5 seconds, so if you wish to show continuous typing you will need to
+     * call this method once every 5 seconds.
+     */
+    void sendTyping();
 }

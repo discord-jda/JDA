@@ -4,8 +4,6 @@
 package net.dv8tion.jda.entities.impl;
 
 import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.PrivateChannel;
-import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.handle.EntityBuilder;
 import org.json.JSONException;
@@ -21,15 +19,15 @@ public class MessageImpl implements Message
     private final String id;
     private final JDAImpl api;
     private List<User> mentionedUsers = new LinkedList<>();
-    private boolean mentionsEveryone;
-    private boolean isTTS;
+    private boolean mentionsEveryone = false;
+    private boolean isTTS = false;
     private OffsetDateTime time;
     private OffsetDateTime editedTime = null;
     private User author;
+    private String channelId;
     private boolean isPrivate;
-    private TextChannel textChannel = null;
-    private PrivateChannel privateChannel = null;
     private String content;
+    private String subContent = null;
 
     public MessageImpl(String id, JDAImpl api)
     {
@@ -82,25 +80,34 @@ public class MessageImpl implements Message
     @Override
     public String getContent()
     {
+        if (subContent == null)
+        {
+            String tmp = content;
+            for (User user : mentionedUsers)
+            {
+                tmp = tmp.replace("<@" + user.getId() + ">", "@" + user.getUsername());
+            }
+            subContent = tmp;
+        }
+        return subContent;
+    }
+
+    @Override
+    public String getRawContent()
+    {
         return content;
+    }
+
+    @Override
+    public String getChannelId()
+    {
+        return channelId;
     }
 
     @Override
     public boolean isPrivate()
     {
         return isPrivate;
-    }
-
-    @Override
-    public TextChannel getTextChannel()
-    {
-        return textChannel;
-    }
-
-    @Override
-    public PrivateChannel getPrivateChannel()
-    {
-        return privateChannel;
     }
 
     @Override
@@ -112,7 +119,6 @@ public class MessageImpl implements Message
     @Override
     public Message updateMessage(String newContent)
     {
-        String channelId = isPrivate ? privateChannel.getId() : textChannel.getId();
         try
         {
             JSONObject response = api.getRequester().patch("https://discordapp.com/api/channels/" + channelId + "/messages/" + getId(), new JSONObject().put("content", newContent));
@@ -128,7 +134,6 @@ public class MessageImpl implements Message
     @Override
     public void deleteMessage()
     {
-        String channelId = isPrivate ? privateChannel.getId() : textChannel.getId();
         api.getRequester().delete("https://discordapp.com/api/channels/" + channelId + "/messages/" + getId());
     }
 
@@ -174,15 +179,9 @@ public class MessageImpl implements Message
         return this;
     }
 
-    public MessageImpl setTextChannel(TextChannel channel)
+    public MessageImpl setChannelId(String channelId)
     {
-        this.textChannel = channel;
-        return this;
-    }
-
-    public MessageImpl setPrivateChannel(PrivateChannel channel)
-    {
-        this.privateChannel = channel;
+        this.channelId = channelId;
         return this;
     }
 

@@ -17,11 +17,12 @@ package net.dv8tion.jda.events.message;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Message;
+import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.Event;
 
 public abstract class GenericMessageEvent extends Event
 {
-    protected Message message;
+    private final Message message;
 
     public GenericMessageEvent(JDA api, int responseNumber, Message message)
     {
@@ -32,5 +33,10 @@ public abstract class GenericMessageEvent extends Event
     public Message getMessage()
     {
         return message;
+    }
+
+    public User getAuthor()
+    {
+        return message == null ? null : getMessage().getAuthor();
     }
 }

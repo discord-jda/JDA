@@ -16,9 +16,12 @@
 package net.dv8tion.jda.handle;
 
 import net.dv8tion.jda.entities.MessageEmbed;
+import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.message.MessageEmbedEvent;
+import net.dv8tion.jda.events.message.guild.GuildMessageEmbedEvent;
+import net.dv8tion.jda.events.message.priv.PrivateMessageEmbedEvent;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -37,7 +40,8 @@ public class MessageEmbedHandler extends SocketHandler
     {
         EntityBuilder builder = new EntityBuilder(api);
         String messageId = content.getString("id");
-        TextChannel channel = api.getChannelMap().get(content.getString("channel_id"));
+        String channelId = content.getString("channel_id");
+        TextChannel channel = api.getChannelMap().get(channelId);
         LinkedList<MessageEmbed> embeds = new LinkedList<>();
 
         JSONArray embedsJson = content.getJSONArray("embeds");
@@ -45,9 +49,27 @@ public class MessageEmbedHandler extends SocketHandler
         {
             embeds.add(builder.createMessageEmbed(embedsJson.getJSONObject(i)));
         }
+        if (channel != null)
+        {
+            api.getEventManager().handle(
+                    new GuildMessageEmbedEvent(
+                            api, responseNumber,
+                            messageId, channel, embeds));
+        }
+        else
+        {
+            PrivateChannel privChannel = api.getPmChannelMap().get(channelId);
+            if (privChannel == null)
+                throw new IllegalArgumentException("Unrecognized Channel Id! JSON: " + content);
+            api.getEventManager().handle(
+                    new PrivateMessageEmbedEvent(
+                            api, responseNumber,
+                            messageId, privChannel, embeds));
+        }
+        //Combo event
         api.getEventManager().handle(
                 new MessageEmbedEvent(
                         api, responseNumber,
-                        messageId, channel, embeds));
+                        messageId, channelId, embeds, channel != null));
     }
 }

@@ -22,7 +22,7 @@ import net.dv8tion.jda.events.guild.GenericGuildEvent;
 
 public class GenericGuildMemberEvent extends GenericGuildEvent
 {
-    protected User user;
+    private final User user;
 
     public GenericGuildMemberEvent(JDA api, int responseNumber, Guild guild, User user)
     {

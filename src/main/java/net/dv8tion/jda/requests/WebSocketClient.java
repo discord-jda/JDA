@@ -24,7 +24,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.DataFormatException;
@@ -37,7 +36,7 @@ public class WebSocketClient extends WebSocketAdapter
     private WebSocket socket;
     private boolean connected;
     private long keepAliveInterval;
-    private JDAImpl api;
+    private final JDAImpl api;
 
     public WebSocketClient(String url, JDAImpl api, HttpHost proxy)
     {
@@ -114,7 +113,6 @@ public class WebSocketClient extends WebSocketAdapter
             keepAliveThread.start();
         }
 
-        boolean printUnimplemented = true;    //TODO: Remove, just for development debug.
         try {
             switch (type) {
                 case "READY":
@@ -192,6 +190,14 @@ public class WebSocketClient extends WebSocketAdapter
             System.err.println("Got an unexpected Json-parse error. Please redirect following message to the devs:");
             System.err.println('\t' + ex.getMessage());
             System.err.println('\t' + type + " -> " + content);
+        }
+        catch (IllegalArgumentException ex)
+        {
+            System.err.println("JDA encountered an internal error.");
+            if (api.isDebug())
+                ex.printStackTrace();
+            else
+                System.err.println(ex.getMessage());
         }
     }
 

@@ -37,6 +37,12 @@ public class PresenceUpdateHandler extends SocketHandler
         String id = jsonUser.getString("id");
         UserImpl user = (UserImpl) api.getUserMap().get(id);
 
+        if (user == null)
+        {
+            //User for update doesn't exist, ignoring
+            return;
+        }
+
         if (jsonUser.has("username"))
         {
             String username = jsonUser.getString("username");

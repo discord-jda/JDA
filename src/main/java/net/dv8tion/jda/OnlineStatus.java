@@ -25,7 +25,7 @@ public enum OnlineStatus
     OFFLINE("offline"),
     UNKNOWN("");
 
-    private String key;
+    private final String key;
 
     OnlineStatus(String key)
     {
