@@ -76,14 +76,26 @@ You can get the latest promoted build here:
 If you want the most up-to-date builds, you can get them here: [Beta Build Downloads](http://home.dv8tion.net:8080/job/JDA/)<br>
 **Note:** It is quite possible that these are broken or bugged. Use with caution.
 
-Maven Downloads Coming Soon™!<br>
-Gradle Downloads Coming Soon™!
+Version 1.1.0 (Build 57) is also available via maven central
+
+Maven:
+```
+<dependency>
+    <groupId>net.dv8tion</groupId>
+    <artifactId>JDA</artifactId>
+    <version>1.1.0_57</version>
+</dependency>
+```
+Gradle:
+```
+compile 'net.dv8tion:JDA:1.1.0_57'
+```
 
 ## TODO
-* Private Messages
+* ~~Private Messages~~
   * ~~Sending Private Messages~~
   * ~~Figure out a good Event system that handles both, private and guild messages~~
-  * Implement the Handler-code types other than MESSAGE_CREATE
+  * ~~Implement the Handler-code types other than MESSAGE_CREATE~~
 * ~~Invites~~
 * ~~Changing Account details (username, email, avatar, password)~~
 * ~~Changing the own Presence~~
