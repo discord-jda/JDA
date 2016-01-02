@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.entities;
 
+import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Region;
 
 import java.util.List;
@@ -146,4 +147,11 @@ public interface Guild
      * <b>This will delete the guild if the current account owns it!</b>
      */
     void leave();
+
+    /**
+     * Returns the {@link net.dv8tion.jda.JDA JDA} instance of this Guild
+     * @return
+     *      the corresponding JDA instance
+     */
+    JDA getJDA();
 }

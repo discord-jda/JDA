@@ -15,9 +15,10 @@
  */
 package net.dv8tion.jda.entities;
 
-import java.util.List;
-
+import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Permission;
+
+import java.util.List;
 
 /**
  * Represents a Discord Voice Channel.
@@ -80,4 +81,11 @@ public interface VoiceChannel
      *      if the given User has the given Permission in this Channel
      */
     boolean checkPermission(User user, Permission permission);
+
+    /**
+     * Returns the {@link net.dv8tion.jda.JDA JDA} instance of this VoiceChannel
+     * @return
+     *      the corresponding JDA instance
+     */
+    JDA getJDA();
 }

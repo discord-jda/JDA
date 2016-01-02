@@ -15,21 +15,37 @@
  */
 package net.dv8tion.jda.entities.impl;
 
+import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Permission;
+import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.Role;
 
 public class RoleImpl implements net.dv8tion.jda.entities.Role
 {
     private final String id;
+    private final Guild guild;
     private String name;
     private int color;
     private int position;
     private int permissions;
     private boolean managed, grouped;
 
-    public RoleImpl(String id)
+    public RoleImpl(String id, Guild guild)
     {
         this.id = id;
+        this.guild = guild;
+    }
+
+    @Override
+    public Guild getGuild()
+    {
+        return guild;
+    }
+
+    @Override
+    public JDA getJDA()
+    {
+        return guild.getJDA();
     }
 
     @Override

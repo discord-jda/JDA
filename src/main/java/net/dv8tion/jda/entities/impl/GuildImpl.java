@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.entities.impl;
 
+import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Region;
 import net.dv8tion.jda.entities.*;
 
@@ -40,6 +41,12 @@ public class GuildImpl implements Guild
     {
         this.api = api;
         this.id = id;
+    }
+
+    @Override
+    public JDA getJDA()
+    {
+        return api;
     }
 
     @Override

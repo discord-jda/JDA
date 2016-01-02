@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.entities.impl;
 
+import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.OnlineStatus;
 import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.User;
@@ -40,6 +41,12 @@ public class UserImpl implements User
         this.id = id;
         this.api = api;
         this.voiceStatus = new VoiceStatusImpl(this);
+    }
+
+    @Override
+    public JDA getJDA()
+    {
+        return api;
     }
 
     @Override

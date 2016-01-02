@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.entities.impl;
 
+import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.MessageBuilder;
 import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.PrivateChannel;
@@ -35,6 +36,13 @@ public class PrivateChannelImpl implements PrivateChannel
         this.user = user;
         this.api = api;
     }
+
+    @Override
+    public JDA getJDA()
+    {
+        return api;
+    }
+
     @Override
     public String getId()
     {

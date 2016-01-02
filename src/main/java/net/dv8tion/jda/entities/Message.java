@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.entities;
 
+import net.dv8tion.jda.JDA;
+
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -132,4 +134,11 @@ public interface Message
      * {@link net.dv8tion.jda.Permission#MESSAGE_MANAGE MESSAGE_MANAGE Permission} will have no effect
      */
     void deleteMessage();
+
+    /**
+     * Returns the {@link net.dv8tion.jda.JDA JDA} instance of this Message
+     * @return
+     *      the corresponding JDA instance
+     */
+    JDA getJDA();
 }

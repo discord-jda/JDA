@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.entities;
 
+import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.OnlineStatus;
 
 /**
@@ -101,4 +102,11 @@ public interface User
      * @return The User's {@link net.dv8tion.jda.entities.VoiceStatus VoiceStatus}
      */
     VoiceStatus getVoiceStatus();
+
+    /**
+     * Returns the {@link net.dv8tion.jda.JDA JDA} instance of this User
+     * @return
+     *      the corresponding JDA instance
+     */
+    JDA getJDA();
 }

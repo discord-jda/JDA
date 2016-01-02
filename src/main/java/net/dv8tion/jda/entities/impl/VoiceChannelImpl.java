@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.entities.impl;
 
+import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.Role;
@@ -38,6 +39,12 @@ public class VoiceChannelImpl implements VoiceChannel
     {
         this.id = id;
         this.guild = guild;
+    }
+
+    @Override
+    public JDA getJDA()
+    {
+        return guild.getJDA();
     }
 
     @Override

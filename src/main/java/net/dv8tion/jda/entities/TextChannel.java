@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.entities;
 
+import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Permission;
 
 import java.util.List;
@@ -124,4 +125,11 @@ public interface TextChannel
      *      if the given User has the given Permission in this Channel
      */
     boolean checkPermission(User user, Permission permission);
+
+    /**
+     * Returns the {@link net.dv8tion.jda.JDA JDA} instance of this TextChannel
+     * @return
+     *      the corresponding JDA instance
+     */
+    JDA getJDA();
 }
