@@ -15,14 +15,13 @@
  */
 package net.dv8tion.jda.handle;
 
+import org.json.JSONObject;
+
 import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
-import net.dv8tion.jda.events.message.MessageEmbedEvent;
 import net.dv8tion.jda.events.message.MessageUpdateEvent;
 import net.dv8tion.jda.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.events.message.priv.PrivateMessageUpdateEvent;
-import org.json.JSONObject;
 
 public class MessageUpdateHandler extends SocketHandler
 {
