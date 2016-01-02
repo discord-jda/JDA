@@ -54,6 +54,11 @@ public class MessageReceivedHandler extends SocketHandler
                             api, responseNumber,
                             message, api.getPmChannelMap().get(message.getChannelId())));
         }
+        //Combo event
+        api.getEventManager().handle(
+                new MessageReceivedEvent(
+                        api, responseNumber,
+                        message));
 
         //searching for invites
         Matcher matcher = invitePattern.matcher(message.getContent());

@@ -17,32 +17,41 @@ package net.dv8tion.jda.events.message;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.*;
+import net.dv8tion.jda.events.Event;
 
-public class MessageReceivedEvent extends GenericMessageEvent
+public class MessageReceivedEvent extends Event
 {
+    private final Message message;
+
     public MessageReceivedEvent(JDA api, int responseNumber, Message message)
     {
-        super(api, responseNumber, message);
+        super(api, responseNumber);
+        this.message = message;
+    }
+
+    public Message getMessage()
+    {
+        return message;
     }
 
     public User getAuthor()
     {
-        return getMessage().getAuthor();
+        return message.getAuthor();
     }
 
     public boolean isPrivate()
     {
-        return getMessage().isPrivate();
+        return message.isPrivate();
     }
 
     public TextChannel getTextChannel()
     {
-        return getJDA().getTextChannelById(getMessage().getChannelId());
+        return getJDA().getTextChannelById(message.getChannelId());
     }
 
     public PrivateChannel getPrivateChannel()
     {
-        return getJDA().getPrivateChannelById(getMessage().getChannelId());
+        return getJDA().getPrivateChannelById(message.getChannelId());
     }
 
     public Guild getGuild()

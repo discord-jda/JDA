@@ -40,7 +40,8 @@ public class MessageEmbedHandler extends SocketHandler
     {
         EntityBuilder builder = new EntityBuilder(api);
         String messageId = content.getString("id");
-        TextChannel channel = api.getChannelMap().get(content.getString("channel_id"));
+        String channelId = content.getString("channel_id");
+        TextChannel channel = api.getChannelMap().get(channelId);
         LinkedList<MessageEmbed> embeds = new LinkedList<>();
 
         JSONArray embedsJson = content.getJSONArray("embeds");
@@ -57,7 +58,7 @@ public class MessageEmbedHandler extends SocketHandler
         }
         else
         {
-            PrivateChannel privChannel = api.getPmChannelMap().get(content.getString("channel_id"));
+            PrivateChannel privChannel = api.getPmChannelMap().get(channelId);
             if (privChannel == null)
                 throw new IllegalArgumentException("Unrecognized Channel Id! JSON: " + content);
             api.getEventManager().handle(
@@ -65,5 +66,10 @@ public class MessageEmbedHandler extends SocketHandler
                             api, responseNumber,
                             messageId, privChannel, embeds));
         }
+        //Combo event
+        api.getEventManager().handle(
+                new MessageEmbedEvent(
+                        api, responseNumber,
+                        messageId, channelId, embeds, channel != null));
     }
 }
