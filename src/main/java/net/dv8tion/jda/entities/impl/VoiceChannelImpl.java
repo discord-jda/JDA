@@ -21,6 +21,7 @@ import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.VoiceChannel;
+import net.dv8tion.jda.managers.ChannelManager;
 import net.dv8tion.jda.utils.PermissionUtil;
 
 import java.util.*;
@@ -83,6 +84,12 @@ public class VoiceChannelImpl implements VoiceChannel
         return PermissionUtil.checkPermission(this, user, perm);
     }
 
+    @Override
+    public ChannelManager getManager()
+    {
+        return new ChannelManager(this);
+    }
+
     public VoiceChannelImpl setName(String name)
     {
         this.name = name;
@@ -114,6 +121,12 @@ public class VoiceChannelImpl implements VoiceChannel
     public Map<Role, PermissionOverride> getRolePermissionOverrides()
     {
         return rolePermissionOverrides;
+    }
+
+    @Override
+    public String getTopic()
+    {
+        return null;
     }
 
     @Override

@@ -1,12 +1,13 @@
-package net.dv8tion.jda.entities.impl;
+package net.dv8tion.jda.managers;
 
 import net.dv8tion.jda.OnlineStatus;
-import net.dv8tion.jda.entities.AccountManager;
 import net.dv8tion.jda.entities.SelfInfo;
+import net.dv8tion.jda.entities.impl.JDAImpl;
+import net.dv8tion.jda.entities.impl.SelfInfoImpl;
 import net.dv8tion.jda.utils.AvatarUtil;
 import org.json.JSONObject;
 
-public class AccountManagerImpl implements AccountManager
+public class AccountManager
 {
 
     private AvatarUtil.Avatar avatar = null;
@@ -18,41 +19,82 @@ public class AccountManagerImpl implements AccountManager
 
     private final JDAImpl api;
 
-    public AccountManagerImpl(JDAImpl api, String password)
+    public AccountManager(JDAImpl api, String password)
     {
         this.api = api;
         this.password = password;
     }
 
-    @Override
+    /**
+     * Set the avatar of the connected account.
+     * This change will only be applied, when {@link #update()} is called
+     * Avatars can get generated through the methods of {@link net.dv8tion.jda.utils.AvatarUtil AvatarUtil}
+     *
+     * @param avatar
+     *      a Avatar object, null to keep current Avatar or {@link net.dv8tion.jda.utils.AvatarUtil#DELETE_AVATAR AvatarUtil#DELETE_AVATAR} to remove the avatar
+     * @return
+     * 	  this
+     */
     public AccountManager setAvatar(AvatarUtil.Avatar avatar)
     {
         this.avatar = avatar;
         return this;
     }
 
-    @Override
+    /**
+     * Set the email of the connected account.
+     * This change will only be applied, when {@link #update()} is called
+     *
+     * @param email
+     *      the new email or null to discard changes
+     * @return
+     * 	  this
+     */
     public AccountManager setEmail(String email)
     {
         this.email = email;
         return this;
     }
 
-    @Override
+    /**
+     * Set the password of the connected account.
+     * This change will only be applied, when {@link #update()} is called
+     *
+     * @param password
+     *      the new password or null to discard changes
+     * @return
+     * 	  this
+     */
     public AccountManager setPassword(String password)
     {
         this.newPassword = password;
         return this;
     }
 
-    @Override
+    /**
+     * Set the username of the connected account.
+     * This change will only be applied, when {@link #update()} is called
+     *
+     * @param username
+     *      the new username or null to discard changes
+     * @return
+     * 	  this
+     */
     public AccountManager setUsername(String username)
     {
         this.username = username;
         return this;
     }
 
-    @Override
+    /**
+     * Set currently played game of the connected account.
+     * This change will be applied <b>immediately</b>
+     *
+     * @param game
+     *      the name of the game that should be displayed
+     * @return
+     * 	  this
+     */
     public AccountManager setGame(String game)
     {
         ((SelfInfoImpl) api.getSelfInfo()).setCurrentGame(game);
@@ -60,7 +102,15 @@ public class AccountManagerImpl implements AccountManager
         return this;
     }
 
-    @Override
+    /**
+     * Set status of the connected account.
+     * This change will be applied <b>immediately</b>
+     *
+     * @param idle
+     *      weather the account should be displayed as idle o not
+     * @return
+     * 	  this
+     */
     public AccountManager setIdle(boolean idle)
     {
         ((SelfInfoImpl) api.getSelfInfo()).setOnlineStatus(idle ? OnlineStatus.AWAY : OnlineStatus.ONLINE);
@@ -68,7 +118,13 @@ public class AccountManagerImpl implements AccountManager
         return this;
     }
 
-    public void update()
+    /**
+     * Updates the profile of the connected account, sends the changed data to the Discord server.
+     *
+     * @return
+     *      this
+     */
+    public AccountManager update()
     {
         try
         {
@@ -112,6 +168,7 @@ public class AccountManagerImpl implements AccountManager
         {
             e.printStackTrace();
         }
+        return this;
     }
 
     private void updateStatusAndGame()

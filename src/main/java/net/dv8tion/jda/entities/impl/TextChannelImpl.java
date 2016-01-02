@@ -20,6 +20,7 @@ import net.dv8tion.jda.MessageBuilder;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.handle.EntityBuilder;
+import net.dv8tion.jda.managers.ChannelManager;
 import net.dv8tion.jda.utils.PermissionUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -123,6 +124,13 @@ public class TextChannelImpl implements TextChannel
     {
         return PermissionUtil.checkPermission(this, user, perm);
     }
+
+    @Override
+    public ChannelManager getManager()
+    {
+        return new ChannelManager(this);
+    }
+
 
     public TextChannelImpl setName(String name)
     {

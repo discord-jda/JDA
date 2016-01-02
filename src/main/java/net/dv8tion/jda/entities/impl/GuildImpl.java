@@ -18,6 +18,7 @@ package net.dv8tion.jda.entities.impl;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Region;
 import net.dv8tion.jda.entities.*;
+import net.dv8tion.jda.managers.GuildManager;
 
 import java.util.*;
 
@@ -141,6 +142,12 @@ public class GuildImpl implements Guild
         return publicRole;
     }
 
+    @Override
+    public GuildManager getManager()
+    {
+        return new GuildManager(this);
+    }
+
     public Map<String, Role> getRolesMap()
     {
         return roles;
@@ -216,11 +223,5 @@ public class GuildImpl implements Guild
     public int hashCode()
     {
         return getId().hashCode();
-    }
-
-    @Override
-    public void leave()
-    {
-        api.getRequester().delete("https://discordapp.com/api/guilds/"+id);
     }
 }
