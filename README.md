@@ -91,6 +91,10 @@ Gradle:
 compile 'net.dv8tion:JDA:1.1.0_57'
 ```
 
+## Contributing to JDA
+If you want to contribute to JDA, make sure to base your branch off of our development branch (or a feature-branch)
+and create your PR into that same branch. **We will be rejecting any PRs to master or between branches!**
+
 ## TODO
 * ~~Private Messages~~
   * ~~Sending Private Messages~~
