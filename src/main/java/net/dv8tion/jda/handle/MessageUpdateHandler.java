@@ -19,6 +19,7 @@ import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.message.MessageUpdateEvent;
+import net.dv8tion.jda.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.events.message.priv.PrivateMessageUpdateEvent;
 import org.json.JSONObject;
 
@@ -37,9 +38,9 @@ public class MessageUpdateHandler extends SocketHandler
         if (!message.isPrivate())
         {
             api.getEventManager().handle(
-                    new MessageUpdateEvent(
+                    new GuildMessageUpdateEvent(
                             api, responseNumber,
-                            message));
+                            message, api.getChannelMap().get(message.getChannelId())));
         }
         else
         {

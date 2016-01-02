@@ -19,6 +19,7 @@ import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.message.MessageDeleteEvent;
+import net.dv8tion.jda.events.message.guild.GuildMessageDeleteEvent;
 import net.dv8tion.jda.events.message.priv.PrivateMessageDeleteEvent;
 import org.json.JSONObject;
 
@@ -37,7 +38,7 @@ public class MessageDeleteHandler extends SocketHandler
         if (channel != null)
         {
             api.getEventManager().handle(
-                    new MessageDeleteEvent(
+                    new GuildMessageDeleteEvent(
                             api, responseNumber,
                             content.getString("id"), channel));
         }

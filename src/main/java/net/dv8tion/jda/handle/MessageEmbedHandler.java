@@ -20,6 +20,7 @@ import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.message.MessageEmbedEvent;
+import net.dv8tion.jda.events.message.guild.GuildMessageEmbedEvent;
 import net.dv8tion.jda.events.message.priv.PrivateMessageEmbedEvent;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -50,7 +51,7 @@ public class MessageEmbedHandler extends SocketHandler
         if (channel != null)
         {
             api.getEventManager().handle(
-                    new MessageEmbedEvent(
+                    new GuildMessageEmbedEvent(
                             api, responseNumber,
                             messageId, channel, embeds));
         }

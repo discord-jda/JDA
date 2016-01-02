@@ -25,6 +25,7 @@ import net.dv8tion.jda.events.guild.*;
 import net.dv8tion.jda.events.guild.member.*;
 import net.dv8tion.jda.events.guild.role.*;
 import net.dv8tion.jda.events.message.*;
+import net.dv8tion.jda.events.message.guild.*;
 import net.dv8tion.jda.events.message.priv.*;
 import net.dv8tion.jda.events.user.*;
 import net.dv8tion.jda.events.voice.*;
@@ -39,14 +40,16 @@ public abstract class ListenerAdapter implements EventListener
             onReady((ReadyEvent) event);
 
         //Message Events
-        else if (event instanceof MessageReceivedEvent)
-            onMessageReceived((MessageReceivedEvent) event);
-        else if (event instanceof MessageUpdateEvent)
-            onMessageUpdate((MessageUpdateEvent) event);
-        else if (event instanceof MessageDeleteEvent)
-            onMessageDelete((MessageDeleteEvent) event);
-        else if (event instanceof MessageEmbedEvent)
-            onMessageEmbed((MessageEmbedEvent) event);
+        //Guild (TextChannel) Message Events
+        else if (event instanceof GuildMessageReceivedEvent)
+            onGuildMessageReceived((GuildMessageReceivedEvent) event);
+        else if (event instanceof GuildMessageUpdateEvent)
+            onGuildMessageUpdate((GuildMessageUpdateEvent) event);
+        else if (event instanceof GuildMessageDeleteEvent)
+            onGuildMessageDelete((GuildMessageDeleteEvent) event);
+        else if (event instanceof GuildMessageEmbedEvent)
+            onGuildMessageEmbed((GuildMessageEmbedEvent) event);
+        //Private Message Events
         else if (event instanceof PrivateMessageReceivedEvent)
             onPrivateMessageReceived((PrivateMessageReceivedEvent) event);
         else if (event instanceof PrivateMessageUpdateEvent)
@@ -55,6 +58,16 @@ public abstract class ListenerAdapter implements EventListener
             onPrivateMessageDelete((PrivateMessageDeleteEvent) event);
         else if (event instanceof PrivateMessageEmbedEvent)
             onPrivateMessageEmbed((PrivateMessageEmbedEvent) event);
+        //Combined Message Events (Combines Guild and Private message into 1 event)
+        else if (event instanceof MessageReceivedEvent)
+            onMessageReceived((MessageReceivedEvent) event);
+        else if (event instanceof MessageUpdateEvent)
+            onMessageUpdate((MessageUpdateEvent) event);
+        else if (event instanceof MessageDeleteEvent)
+            onMessageDelete((MessageDeleteEvent) event);
+        else if (event instanceof MessageEmbedEvent)
+            onMessageEmbed((MessageEmbedEvent) event);
+        //Invite Messages
         else if (event instanceof InviteReceivedEvent)
             onInviteReceived(((InviteReceivedEvent) event));
 
@@ -166,10 +179,10 @@ public abstract class ListenerAdapter implements EventListener
 
         //Generic Events
         //Start a new if statement so that these are no overridden by the above events.
-        if (event instanceof GenericMessageEvent)
-            onGenericMessage((GenericMessageEvent) event);
-        else if (event instanceof GenericPrivateMessageEvent)
+        if (event instanceof GenericPrivateMessageEvent)
             onGenericPrivateMessage((GenericPrivateMessageEvent) event);
+        else if (event instanceof GenericGuildMessageEvent)
+            onGenericGuildMessage((GenericGuildMessageEvent) event);
         else if (event instanceof GenericTextChannelUpdateEvent)
             onGenericTextChannelUpdate((GenericTextChannelUpdateEvent) event);
         else if (event instanceof GenericVoiceChannelUpdateEvent)
@@ -188,6 +201,8 @@ public abstract class ListenerAdapter implements EventListener
             onGenericTextChannel((GenericTextChannelEvent) event);
         else if (event instanceof GenericVoiceChannelEvent)
             onGenericVoiceChannel((GenericVoiceChannelEvent) event);
+        else if (event instanceof GenericMessageEvent)
+            onGenericMessage((GenericMessageEvent) event);
     }
 
     //JDA Events
@@ -201,14 +216,21 @@ public abstract class ListenerAdapter implements EventListener
     public void onUserTyping(UserTypingEvent event) {}
 
     //Message Events
-    public void onMessageReceived(MessageReceivedEvent event) {}
-    public void onMessageUpdate(MessageUpdateEvent event) {}
-    public void onMessageDelete(MessageDeleteEvent event) {}
-    public void onMessageEmbed(MessageEmbedEvent event) {}
+    //Guild (TextChannel) Message Events
+    public void onGuildMessageReceived(GuildMessageReceivedEvent event) {}
+    public void onGuildMessageUpdate(GuildMessageUpdateEvent event) {}
+    public void onGuildMessageDelete(GuildMessageDeleteEvent event) {}
+    public void onGuildMessageEmbed(GuildMessageEmbedEvent event) {}
+    //Private Message Events
     public void onPrivateMessageReceived(PrivateMessageReceivedEvent event) {}
     public void onPrivateMessageUpdate(PrivateMessageUpdateEvent event) {}
     public void onPrivateMessageDelete(PrivateMessageDeleteEvent event) {}
     public void onPrivateMessageEmbed(PrivateMessageEmbedEvent event) {}
+    //Combined Message Events (Combines Guild and Private message into 1 event)
+    public void onMessageReceived(MessageReceivedEvent event) {}
+    public void onMessageUpdate(MessageUpdateEvent event) {}
+    public void onMessageDelete(MessageDeleteEvent event) {}
+    public void onMessageEmbed(MessageEmbedEvent event) {}
 
     public void onInviteReceived(InviteReceivedEvent event) {}
 
@@ -264,6 +286,7 @@ public abstract class ListenerAdapter implements EventListener
     //Generic Events
     public void onGenericUserEvent(GenericUserEvent event) {}
     public void onGenericMessage(GenericMessageEvent event) {}
+    public void onGenericGuildMessage(GenericGuildMessageEvent event) {}
     public void onGenericPrivateMessage(GenericPrivateMessageEvent event) {}
     public void onGenericTextChannel(GenericTextChannelEvent event) {}
     public void onGenericTextChannelUpdate(GenericTextChannelUpdateEvent event) {}

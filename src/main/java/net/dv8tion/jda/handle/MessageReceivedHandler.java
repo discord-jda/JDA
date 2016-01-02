@@ -19,6 +19,7 @@ import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.InviteReceivedEvent;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.utils.InviteUtil;
 import org.json.JSONObject;
@@ -42,9 +43,9 @@ public class MessageReceivedHandler extends SocketHandler
         if (!message.isPrivate())
         {
             api.getEventManager().handle(
-                    new MessageReceivedEvent(
+                    new GuildMessageReceivedEvent(
                             api, responseNumber,
-                            message));
+                            message, api.getChannelMap().get(message.getChannelId())));
         }
         else
         {
