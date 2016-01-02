@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 /**
  * Represents the core of the Discord API. All functionality is connected through this.
  */
-public class JDAImpl extends JDA
+public class JDAImpl implements JDA
 {
     private final HttpHost proxy;
     private final Map<String, User> userMap = new HashMap<>();
@@ -84,7 +84,6 @@ public class JDAImpl extends JDA
      * @throws LoginException
      *          Thrown if the email-password combination fails the auth check with the Discord servers.
      */
-    @Override
     public void login(String email, String password) throws IllegalArgumentException, LoginException
     {
         if (email == null || email.isEmpty() || password == null || password.isEmpty())
