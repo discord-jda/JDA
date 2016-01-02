@@ -4,7 +4,7 @@ apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-def versionObj = new Version(major: 1, minor: 0, revision: 2)
+def versionObj = new Version(major: 1, minor: 1, revision: 0)
 group = "net.dv8tion"
 archivesBaseName = "JDA"
 version = "${versionObj.toString()}"
