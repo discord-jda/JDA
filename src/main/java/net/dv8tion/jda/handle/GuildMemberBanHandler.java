@@ -39,7 +39,6 @@ public class GuildMemberBanHandler extends SocketHandler
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("guild_id"));
         if (banned)
         {
-            System.out.println("ID is: " + userJson.getString("id"));
             User user = api.getUserMap().get(userJson.getString("id"));
             api.getEventManager().handle(
                     new GuildMemberBanEvent(
@@ -48,8 +47,6 @@ public class GuildMemberBanHandler extends SocketHandler
         }
         else
         {
-
-            System.out.println("ID is: " + userJson.getString("id"));
             String id = userJson.getString("id");
             String username = userJson.getString("username");
             String discriminator = userJson.get("discriminator").toString();
