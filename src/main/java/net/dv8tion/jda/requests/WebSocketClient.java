@@ -124,6 +124,9 @@ public class WebSocketClient extends WebSocketAdapter
                 case "TYPING_START":
                     new UserTypingHandler(api, responseTotal).handle(content);
                     break;
+                case "MESSAGE_ACK":
+                    new MessageAcknowledgedHandler(api, responseTotal).handle(content);
+                    break;
                 case "MESSAGE_CREATE":
                     new MessageReceivedHandler(api, responseTotal).handle(content);
                     break;

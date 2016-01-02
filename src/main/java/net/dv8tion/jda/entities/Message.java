@@ -132,4 +132,9 @@ public interface Message
      * {@link net.dv8tion.jda.Permission#MESSAGE_MANAGE MESSAGE_MANAGE Permission} will have no effect
      */
     void deleteMessage();
+
+    /**
+     * Marks this Message as read.
+     */
+    void acknowledge();
 }
