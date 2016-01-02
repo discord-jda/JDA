@@ -56,6 +56,7 @@ public class JDAImpl implements JDA
     private String authToken = null;
     private WebSocketClient client;
     private final Requester requester = new Requester(this);
+    private boolean debug;
     private int responseTotal;
 
     public JDAImpl()
@@ -374,5 +375,17 @@ public class JDAImpl implements JDA
     public AccountManager getAccountManager()
     {
         return accountManager;
+    }
+
+    @Override
+    public void setDebug(boolean enableDebug)
+    {
+        this.debug = enableDebug;
+    }
+
+    @Override
+    public boolean isDebug()
+    {
+        return debug;
     }
 }

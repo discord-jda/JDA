@@ -45,6 +45,7 @@ public class JDABuilder
     final List<EventListener> listeners;
     String email = null;
     String pass = null;
+    boolean debug = false;
 
     /**
      * Creates a completely empty JDABuilder.<br>
@@ -133,6 +134,17 @@ public class JDABuilder
     }
 
     /**
+     * Enables developer debug of JDA.<br>
+     * Enabling this will print stack traces instead of java logger message when exceptions are encountered.
+     *
+     * @param debug
+     *          True - enables debug printing.
+     */
+    public void setDebug(boolean debug)
+    {
+       this.debug = debug;
+    }
+    /**
      * Adds a listener to the list of listeners that will be used to populate the {@link net.dv8tion.jda.JDA} object.
      *
      * @param listener
@@ -184,6 +196,7 @@ public class JDABuilder
             jda = new JDAImpl(proxyUrl, proxyPort);
         else
             jda = new JDAImpl();
+        jda.setDebug(debug);
         listeners.forEach(jda::addEventListener);
         jda.login(email, pass);
         return jda;

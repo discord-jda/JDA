@@ -191,6 +191,14 @@ public class WebSocketClient extends WebSocketAdapter
             System.err.println('\t' + ex.getMessage());
             System.err.println('\t' + type + " -> " + content);
         }
+        catch (IllegalArgumentException ex)
+        {
+            System.err.println("JDA encountered an internal error.");
+            if (api.isDebug())
+                ex.printStackTrace();
+            else
+                System.err.println(ex.getMessage());
+        }
     }
 
     //Currently unused because I (DV8FromTheWorld) am a scrub and couldn't get Discord to send a gzip READY response to test.

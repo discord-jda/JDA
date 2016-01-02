@@ -82,4 +82,8 @@ public interface JDA
      *      The proxy settings used by all JDA instances. If JDA currently isn't using a proxy, {@link java.net.Proxy#NO_PROXY Proxy.NO_PROXY} is returned.
      */
     HttpHost getGlobalProxy();
+
+    void setDebug(boolean enableDebug);
+
+    boolean isDebug();
 }
