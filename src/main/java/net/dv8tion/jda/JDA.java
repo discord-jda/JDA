@@ -19,7 +19,6 @@ import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.hooks.EventListener;
 import org.apache.http.HttpHost;
 
-import javax.security.auth.login.LoginException;
 import java.util.List;
 
 
