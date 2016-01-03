@@ -92,7 +92,7 @@ compile 'net.dv8tion:JDA:1.1.0_57'
 ```
 
 ## Getting Help
-If you need help, or just want to talk with the JDA or other Discord Devs, you can join the [Unofficial Discord API](https://discord.gg/0SBTUU1wZTUS0HMl) Guild.
+If you need help, or just want to talk with the JDA or other Discord Devs, you can join the [Unofficial Discord API](https://discord.gg/0SBTUU1wZTUydsWv) Guild.
 
 Once you joined, you can find JDA-specific help in the #java_jda channel
 
