@@ -17,6 +17,7 @@ package net.dv8tion.jda;
 
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.ReadyEvent;
+import net.dv8tion.jda.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.hooks.EventListener;
 import net.dv8tion.jda.hooks.ListenerAdapter;
 
@@ -46,6 +47,15 @@ public class JDABuilder
     String email = null;
     String pass = null;
     boolean debug = false;
+
+    protected final ListenerAdapter acknowledgeListener = new ListenerAdapter()
+    {
+        @Override
+        public void onMessageReceived(MessageReceivedEvent event)
+        {
+            event.getMessage().acknowledge();
+        };
+    };
 
     /**
      * Creates a completely empty JDABuilder.<br>
@@ -164,7 +174,7 @@ public class JDABuilder
      * @param listener
      *          The listener to remove from the list.
      * @return
-     *      Returns the net.dv8tion.jda.JDABuilder instance. Useful for chaining.
+     *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
      */
     public JDABuilder removeListener(EventListener listener)
     {
@@ -242,5 +252,27 @@ public class JDABuilder
         listeners.remove(readyListener);
         jda.removeEventListener(readyListener);
         return jda;
+    }
+
+    /**
+     * Tells the api if it should auto-acknowledge recieved Messages.
+     * This does  not affect Messages send before the api was build.
+     * Will trigger the {@link net.dv8tion.jda.events.message.MessageAcknowledgedEvent MessageAcknowledgedEvent} and it's counterpart for each Message
+     * 
+     * @param acknowledge
+     *          wether the api should auto-acknowledge Messages or not
+     * @return
+     *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public JDABuilder setAutoAcknowledgeMessages(boolean acknowledge){
+        if (acknowledge)
+        {
+            this.addListener(acknowledgeListener);
+        }
+        else
+        {
+            this.removeListener(acknowledgeListener);
+        }
+        return this;
     }
 }
