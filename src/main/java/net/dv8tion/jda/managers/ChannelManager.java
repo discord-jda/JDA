@@ -29,12 +29,7 @@ public class ChannelManager
 {
     private final Channel channel;
 
-    public ChannelManager(TextChannel channel)
-    {
-        this.channel = channel;
-    }
-
-    public ChannelManager(VoiceChannel channel)
+    public ChannelManager(Channel channel)
     {
         this.channel = channel;
     }
