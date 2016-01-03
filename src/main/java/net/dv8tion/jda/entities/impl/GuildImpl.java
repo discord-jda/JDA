@@ -18,7 +18,10 @@ package net.dv8tion.jda.entities.impl;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Region;
 import net.dv8tion.jda.entities.*;
+import net.dv8tion.jda.handle.EntityBuilder;
+import net.dv8tion.jda.managers.ChannelManager;
 import net.dv8tion.jda.managers.GuildManager;
+import org.json.JSONObject;
 
 import java.util.*;
 
@@ -115,11 +118,51 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    public ChannelManager createTextChannel(String name)
+    {
+        if (name == null)
+        {
+            throw new IllegalArgumentException("TextChannel name must not be null");
+        }
+        JSONObject response = api.getRequester().post("https://discordapp.com/api/guilds/" + getId() + "/channels", new JSONObject().put("name", name).put("type", "text"));
+        if (response == null || !response.has("id"))
+        {
+            //error creating guild
+            throw new RuntimeException("Creating a new TextChannel failed. Reason: " + (response == null ? "Unknown" : response.toString()));
+        }
+        else
+        {
+            TextChannel channel = new EntityBuilder(api).createTextChannel(response, getId());
+            return new ChannelManager(channel);
+        }
+    }
+
+    @Override
     public List<VoiceChannel> getVoiceChannels()
     {
         List<VoiceChannel> list = new ArrayList<>();
         list.addAll(voiceChannels.values());
         return Collections.unmodifiableList(list);
+    }
+
+    @Override
+    public ChannelManager createVoiceChannel(String name)
+    {
+        if (name == null)
+        {
+            throw new IllegalArgumentException("VoiceChannel name must not be null");
+        }
+        JSONObject response = api.getRequester().post("https://discordapp.com/api/guilds/" + getId() + "/channels", new JSONObject().put("name", name).put("type", "voice"));
+        if (response == null || !response.has("id"))
+        {
+            //error creating guild
+            throw new RuntimeException("Creating a new VoiceChannel failed. Reason: " + (response == null ? "Unknown" : response.toString()));
+        }
+        else
+        {
+            VoiceChannel channel = new EntityBuilder(api).createVoiceChannel(response, getId());
+            return new ChannelManager(channel);
+        }
     }
 
     @Override

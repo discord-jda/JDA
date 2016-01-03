@@ -119,7 +119,7 @@ public class EntityBuilder
         return guildObj;
     }
 
-    protected TextChannel createTextChannel(JSONObject json, String guildId)
+    public TextChannel createTextChannel(JSONObject json, String guildId)
     {
         String id = json.getString("id");
         TextChannelImpl channel = (TextChannelImpl) api.getChannelMap().get(id);
@@ -153,7 +153,7 @@ public class EntityBuilder
                 .setPosition(json.getInt("position"));
     }
 
-    protected VoiceChannel createVoiceChannel(JSONObject json, String guildId)
+    public VoiceChannel createVoiceChannel(JSONObject json, String guildId)
     {
         String id = json.getString("id");
         VoiceChannelImpl vc = ((VoiceChannelImpl) api.getVoiceChannelMap().get(id));

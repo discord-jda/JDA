@@ -22,9 +22,6 @@ import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.utils.AvatarUtil;
 import org.json.JSONObject;
 
-import java.util.HashSet;
-import java.util.Set;
-
 public class GuildManager
 {
     enum Timeout
@@ -57,6 +54,16 @@ public class GuildManager
     public GuildManager(Guild guild)
     {
         this.guild = guild;
+    }
+
+    /**
+     * Returns the {@link net.dv8tion.jda.entities.Guild Guild} object of this Manager. Useful if this Manager was returned via a create function
+     * @return
+     *      the Guild of this Manager
+     */
+    public Guild getGuild()
+    {
+        return guild;
     }
 
     /**

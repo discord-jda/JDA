@@ -17,6 +17,7 @@ package net.dv8tion.jda.entities;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Permission;
+import net.dv8tion.jda.managers.RoleManager;
 
 public interface Role
 {
@@ -90,6 +91,15 @@ public interface Role
      *      the Guild containing this Role
      */
     Guild getGuild();
+
+    /**
+     * Returns the {@link net.dv8tion.jda.managers.RoleManager RoleManager} for this Role.
+     * In the RoleManager, you can modify all its values.
+     *
+     * @return
+     *      The RoleManager of this Role
+     */
+    RoleManager getManager();
 
     /**
      * Returns the {@link net.dv8tion.jda.JDA JDA} instance of this Role

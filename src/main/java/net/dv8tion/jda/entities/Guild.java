@@ -17,6 +17,7 @@ package net.dv8tion.jda.entities;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Region;
+import net.dv8tion.jda.managers.ChannelManager;
 import net.dv8tion.jda.managers.GuildManager;
 
 import java.util.List;
@@ -111,12 +112,34 @@ public interface Guild
     List<TextChannel> getTextChannels();
 
     /**
+     * Creates a new {@link net.dv8tion.jda.entities.TextChannel TextChannel} in this Guild.
+     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.Permission#MANAGE_CHANNEL MANAGE_CHANNEL Permission}
+     *
+     * @param name
+     *      the name of the TextChannel to create
+     * @return
+     *      the ChannelManager for the created TextChannel
+     */
+    ChannelManager createTextChannel(String name);
+
+    /**
      * The {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannels} available on the {@link net.dv8tion.jda.entities.Guild Guild}.
      *
      * @return
      *      An Immutable List of {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannels}.
      */
     List<VoiceChannel> getVoiceChannels();
+
+    /**
+     * Creates a new {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} in this Guild.
+     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.Permission#MANAGE_CHANNEL MANAGE_CHANNEL Permission}
+     *
+     * @param name
+     *      the name of the VoiceChannel to create
+     * @return
+     *      the ChannelManager for the created VoiceChannel
+     */
+    ChannelManager createVoiceChannel(String name);
 
     /**
      * The {@link net.dv8tion.jda.entities.Role Roles} of this {@link net.dv8tion.jda.entities.Guild Guild}

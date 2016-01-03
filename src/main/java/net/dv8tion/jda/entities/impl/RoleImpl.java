@@ -19,6 +19,7 @@ import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.Role;
+import net.dv8tion.jda.managers.RoleManager;
 
 public class RoleImpl implements net.dv8tion.jda.entities.Role
 {
@@ -88,6 +89,12 @@ public class RoleImpl implements net.dv8tion.jda.entities.Role
     public boolean isGrouped()
     {
         return grouped;
+    }
+
+    @Override
+    public RoleManager getManager()
+    {
+        return new RoleManager(this);
     }
 
     public RoleImpl setName(String name)

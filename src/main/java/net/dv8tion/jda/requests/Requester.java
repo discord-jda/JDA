@@ -75,6 +75,11 @@ public class Requester
         return toArray(addHeaders(Unirest.patch(url)).body(body.toString()));
     }
 
+    public JSONArray patchA(String url, JSONArray body)
+    {
+        return toArray(addHeaders(Unirest.patch(url)).body(body.toString()));
+    }
+
     private JSONObject toObject(BaseRequest request)
     {
         try

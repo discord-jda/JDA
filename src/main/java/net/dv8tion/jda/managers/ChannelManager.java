@@ -57,6 +57,16 @@ public class ChannelManager
     }
 
     /**
+     * Returns the {@link net.dv8tion.jda.entities.Channel Channel} object of this Manager. Useful if this Manager was returned via a create function
+     * @return
+     *      the Channel of this Manager
+     */
+    public Channel getChannel()
+    {
+        return channel;
+    }
+
+    /**
      * Sets the topic of this Channel.
      * This is not available for {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannels}
      * and will result in a {@link java.lang.UnsupportedOperationException UnsupportedOperationException}
