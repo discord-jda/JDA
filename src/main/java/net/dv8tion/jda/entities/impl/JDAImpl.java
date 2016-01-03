@@ -20,6 +20,7 @@ import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.hooks.EventListener;
 import net.dv8tion.jda.hooks.EventManager;
+import net.dv8tion.jda.managers.AccountManager;
 import net.dv8tion.jda.requests.Requester;
 import net.dv8tion.jda.requests.WebSocketClient;
 import org.apache.commons.lang3.StringUtils;
@@ -52,7 +53,7 @@ public class JDAImpl implements JDA
     private final Map<String, String> offline_pms = new HashMap<>();    //Userid -> channelid
     private final EventManager eventManager = new EventManager();
     private SelfInfo selfInfo = null;
-    private AccountManagerImpl accountManager;
+    private AccountManager accountManager;
     private String authToken = null;
     private WebSocketClient client;
     private final Requester requester = new Requester(this);
@@ -90,7 +91,7 @@ public class JDAImpl implements JDA
         if (email == null || email.isEmpty() || password == null || password.isEmpty())
             throw new IllegalArgumentException("The provided email or password as empty / null.");
 
-        accountManager=new AccountManagerImpl(this, password);
+        accountManager=new AccountManager(this, password);
         
         Path tokenFile = Paths.get("tokens.json");
         JSONObject configs = null;

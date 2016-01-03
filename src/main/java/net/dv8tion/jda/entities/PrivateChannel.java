@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.entities;
 
+import net.dv8tion.jda.JDA;
+
 /**
  * Represents the connection used for direct messaging.
  */
@@ -68,4 +70,11 @@ public interface PrivateChannel
      * call this method once every 5 seconds.
      */
     void sendTyping();
+
+    /**
+     * Returns the {@link net.dv8tion.jda.JDA JDA} instance of this PrivateChannel
+     * @return
+     *      the corresponding JDA instance
+     */
+    JDA getJDA();
 }

@@ -76,14 +76,37 @@ You can get the latest promoted build here:
 If you want the most up-to-date builds, you can get them here: [Beta Build Downloads](http://home.dv8tion.net:8080/job/JDA/)<br>
 **Note:** It is quite possible that these are broken or bugged. Use with caution.
 
-Maven Downloads Coming Soon™!<br>
-Gradle Downloads Coming Soon™!
+Version 1.1.0 (Build 57) is also available via maven central
+
+Maven:
+```
+<dependency>
+    <groupId>net.dv8tion</groupId>
+    <artifactId>JDA</artifactId>
+    <version>1.1.0_57</version>
+</dependency>
+```
+Gradle:
+```
+compile 'net.dv8tion:JDA:1.1.0_57'
+```
+
+## Getting Help
+If you need help, or just want to talk with the JDA or other Discord Devs, you can join the [Unofficial Discord API](https://discord.gg/0SBTUU1wZTUS0HMl) Guild.
+
+Once you joined, you can find JDA-specific help in the #java_jda channel
+
+## Contributing to JDA
+If you want to contribute to JDA, make sure to base your branch off of our development branch (or a feature-branch)
+and create your PR into that same branch. **We will be rejecting any PRs to master or between branches!**
+
+It is also highly recommended to get in touch with the Devs via the Discord API Guild (see section above).
 
 ## TODO
-* Private Messages
+* ~~Private Messages~~
   * ~~Sending Private Messages~~
-  * Figure out a good Event system that handles both, private and guild messages
-  * Implement the Handler-code types other than MESSAGE_CREATE
+  * ~~Figure out a good Event system that handles both, private and guild messages~~
+  * ~~Implement the Handler-code types other than MESSAGE_CREATE~~
 * ~~Invites~~
 * ~~Changing Account details (username, email, avatar, password)~~
 * ~~Changing the own Presence~~

@@ -15,10 +15,12 @@
  */
 package net.dv8tion.jda.entities.impl;
 
+import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.MessageBuilder;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.handle.EntityBuilder;
+import net.dv8tion.jda.managers.ChannelManager;
 import net.dv8tion.jda.utils.PermissionUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,18 +35,22 @@ public class TextChannelImpl implements TextChannel
 {
     private final String id;
     private final Guild guild;
-    private final JDAImpl api;
     private String name;
     private String topic;
     private int position;
     private final Map<User, PermissionOverride> userPermissionOverrides = new HashMap<>();
     private final Map<Role, PermissionOverride> rolePermissionOverrides = new HashMap<>();
 
-    public TextChannelImpl(String id, Guild guild, JDAImpl api)
+    public TextChannelImpl(String id, Guild guild)
     {
         this.id = id;
         this.guild = guild;
-        this.api = api;
+    }
+
+    @Override
+    public JDA getJDA()
+    {
+        return guild.getJDA();
     }
 
     @Override
@@ -93,6 +99,7 @@ public class TextChannelImpl implements TextChannel
     @Override
     public Message sendMessage(Message msg)
     {
+        JDAImpl api = (JDAImpl) getJDA();
         try
         {
             JSONObject response = api.getRequester().post("https://discordapp.com/api/channels/" + getId() + "/messages",
@@ -109,7 +116,7 @@ public class TextChannelImpl implements TextChannel
 
     public void sendTyping()
     {
-        api.getRequester().post("https://discordapp.com/api/channels/" + getId() + "/typing", new JSONObject());
+        ((JDAImpl) getJDA()).getRequester().post("https://discordapp.com/api/channels/" + getId() + "/typing", new JSONObject());
     }
 
     @Override
@@ -117,6 +124,13 @@ public class TextChannelImpl implements TextChannel
     {
         return PermissionUtil.checkPermission(this, user, perm);
     }
+
+    @Override
+    public ChannelManager getManager()
+    {
+        return new ChannelManager(this);
+    }
+
 
     public TextChannelImpl setName(String name)
     {

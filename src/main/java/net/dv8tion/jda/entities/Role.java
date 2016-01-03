@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.entities;
 
+import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Permission;
 
 public interface Role
@@ -82,4 +83,18 @@ public interface Role
      *      If the given {@link net.dv8tion.jda.Permission Permission} is available to this {@link net.dv8tion.jda.entities.Role Role}
      */
     boolean hasPermission(Permission perm);
+
+    /**
+     * Returns the {@link net.dv8tion.jda.entities.Guild Guild} this Role exists in
+     * @return
+     *      the Guild containing this Role
+     */
+    Guild getGuild();
+
+    /**
+     * Returns the {@link net.dv8tion.jda.JDA JDA} instance of this Role
+     * @return
+     *      the corresponding JDA instance
+     */
+    JDA getJDA();
 }

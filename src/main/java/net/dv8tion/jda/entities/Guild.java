@@ -15,7 +15,9 @@
  */
 package net.dv8tion.jda.entities;
 
+import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Region;
+import net.dv8tion.jda.managers.GuildManager;
 
 import java.util.List;
 
@@ -142,8 +144,18 @@ public interface Guild
     Role getPublicRole();
 
     /**
-     * Leave the guild.
-     * <b>This will delete the guild if the current account owns it!</b>
+     * Returns the {@link net.dv8tion.jda.managers.GuildManager GuildManager} for this Guild.
+     * In the GuildManager, you can modify most of its properties, and leave or delete it.
+     *
+     * @return
+     *      The GuildManager of this Guild
      */
-    void leave();
+    GuildManager getManager();
+
+    /**
+     * Returns the {@link net.dv8tion.jda.JDA JDA} instance of this Guild
+     * @return
+     *      the corresponding JDA instance
+     */
+    JDA getJDA();
 }

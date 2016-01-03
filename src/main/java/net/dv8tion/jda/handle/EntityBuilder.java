@@ -126,7 +126,7 @@ public class EntityBuilder
         if (channel == null)
         {
             GuildImpl guild = ((GuildImpl) api.getGuildMap().get(guildId));
-            channel = new TextChannelImpl(id, guild, api);
+            channel = new TextChannelImpl(id, guild);
             guild.getTextChannelsMap().put(id, channel);
             api.getChannelMap().put(id, channel);
         }
@@ -206,7 +206,7 @@ public class EntityBuilder
         RoleImpl role = ((RoleImpl) guild.getRolesMap().get(id));
         if (role == null)
         {
-            role = new RoleImpl(id);
+            role = new RoleImpl(id, guild);
         }
         role.setName(roleJson.getString("name"))
             .setPosition(roleJson.getInt("position"))

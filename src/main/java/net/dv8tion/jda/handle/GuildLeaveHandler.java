@@ -36,5 +36,6 @@ public class GuildLeaveHandler extends SocketHandler
                 new GuildLeaveEvent(
                         api, responseNumber,
                         guild));
+        api.getGuildMap().remove(guild.getId());
     }
 }
