@@ -1,3 +1,18 @@
+/**
+ *    Copyright 2015 Austin Keener & Michael Ritter
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package net.dv8tion.jda.managers;
 
 import net.dv8tion.jda.OnlineStatus;
@@ -115,6 +130,27 @@ public class AccountManager
     {
         ((SelfInfoImpl) api.getSelfInfo()).setOnlineStatus(idle ? OnlineStatus.AWAY : OnlineStatus.ONLINE);
         updateStatusAndGame();
+        return this;
+    }
+
+    /**
+     * Used to update the password used with authentication.<br>
+     * This is <b><u>NOT</u></b> used to changed the password. This is used when the password of
+     * the account was changed using a different service (Discord website or Discord client) while the
+     * bot was still running.
+     * <p>
+     * If you would like to change the account's password, please use {@link #setPassword(String)}.
+     *
+     * @param password
+     *          The non-null updated account password.
+     * @return
+     *      This {@link net.dv8tion.jda.managers.AccountManager} instance.
+     */
+    public AccountManager updatePassword(String password)
+    {
+        if (password == null)
+            throw new IllegalArgumentException("Provided password cannot be null!");
+        this.password = password;
         return this;
     }
 

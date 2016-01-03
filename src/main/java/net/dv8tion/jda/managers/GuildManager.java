@@ -1,12 +1,12 @@
 /**
- * Copyright 2015 Austin Keener & Michael Ritter
- * <p>
+ *    Copyright 2015 Austin Keener & Michael Ritter
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,14 +27,29 @@ import java.util.Set;
 
 public class GuildManager
 {
-    private static final Set<Integer> allowedTimeouts;
-    static {
-        allowedTimeouts = new HashSet<>();
-        allowedTimeouts.add(60);
-        allowedTimeouts.add(300);
-        allowedTimeouts.add(900);
-        allowedTimeouts.add(1800);
-        allowedTimeouts.add(3600);
+    enum Timeout
+    {
+        SECONDS_60(60),
+        SECONDS_300(300),
+        SECONDS_900(900),
+        SECONDS_1800(1800),
+        SECONDS_3600(3600);
+
+        private final int seconds;
+        Timeout(int seconds)
+        {
+            this.seconds = seconds;
+        }
+
+        public int getSeconds()
+        {
+            return seconds;
+        }
+
+        public String toString()
+        {
+            return "" + seconds;
+        }
     }
 
     private final Guild guild;
@@ -56,7 +71,7 @@ public class GuildManager
     {
         if (name == null)
         {
-            throw new IllegalArgumentException("Name must not be null!");
+            throw new IllegalArgumentException("Guild name must not be null!");
         }
         if (name.equals(guild.getName()))
         {
@@ -87,7 +102,7 @@ public class GuildManager
     /**
      * Changes the icon of this Guild
      * You can create the icon via the {@link net.dv8tion.jda.utils.AvatarUtil AvatarUtil} class.
-     * Passing in null, will remove the current icon from the server
+     * Passing in null, will remove the current icon from the Guild
      *
      * @param avatar
      *      the new icon
@@ -129,13 +144,9 @@ public class GuildManager
      * @return
      *      this
      */
-    public GuildManager setAfkTimeout(int timeout)
+    public GuildManager setAfkTimeout(Timeout timeout)
     {
-        if (!allowedTimeouts.contains(timeout))
-        {
-            throw new IllegalArgumentException("Timeout of " + timeout + " not allowed... Allowed: " + allowedTimeouts.toString());
-        }
-        update(getFrame().put("afk_timeout", timeout));
+        update(getFrame().put("afk_timeout", timeout.getSeconds()));
         return this;
     }
 
