@@ -181,6 +181,9 @@ public class WebSocketClient extends WebSocketAdapter
                 case "GUILD_ROLE_DELETE":
                     new GuildRoleDeleteHandler(api, responseTotal).handle(content);
                     break;
+                case "USER_UPDATE":
+                    new UserUpdateHandler(api, responseTotal).handle(content);
+                    break;
                 default:
                     System.out.println("Unrecognized event:\n" + message);    //TODO: Replace with "we don't know this type"
             }

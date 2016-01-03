@@ -176,21 +176,12 @@ public class AccountManager
 
             JSONObject result = api.getRequester().patch("https://discordapp.com/api/users/@me", object);
 
-            if (result == null)
+            if (result == null || !result.has("token"))
             {
                 throw new Exception("Something went wrong while changing the account settings.");
             }
 
-            SelfInfoImpl self = (SelfInfoImpl) api.getSelfInfo();
-
-            self.setAvatarId(result.isNull("avatar") ? null : result.getString("avatar"));
-            self.setDiscriminator(result.getString("discriminator"));
-            self.setEmail(result.getString("email"));
-            // self.setID(result.getString("id")); ID should never change unless
-            // something really really bad happens
             api.setAuthToken(result.getString("token"));
-            self.setUserName(result.getString("username"));
-            self.setVerified(result.getBoolean("verified"));
             if (newPassword != null)
             {
                 this.password = newPassword;
