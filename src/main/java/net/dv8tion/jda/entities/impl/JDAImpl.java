@@ -18,9 +18,13 @@ package net.dv8tion.jda.entities.impl;
 import com.mashape.unirest.http.Unirest;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.*;
+import net.dv8tion.jda.events.Event;
+import net.dv8tion.jda.events.guild.GuildJoinEvent;
+import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.hooks.EventListener;
 import net.dv8tion.jda.hooks.EventManager;
 import net.dv8tion.jda.managers.AccountManager;
+import net.dv8tion.jda.managers.GuildManager;
 import net.dv8tion.jda.requests.Requester;
 import net.dv8tion.jda.requests.WebSocketClient;
 import org.apache.commons.lang3.StringUtils;
@@ -36,6 +40,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 
@@ -272,6 +277,45 @@ public class JDAImpl implements JDA
     }
 
     @Override
+    public GuildManager createGuild(String name)
+    {
+        if (name == null)
+        {
+            throw new IllegalArgumentException("Guild name must not be null");
+        }
+        JSONObject response = getRequester().post("https://discordapp.com/api/guilds", new JSONObject().put("name", name));
+        if (response == null || !response.has("id"))
+        {
+            //error creating guild
+            throw new RuntimeException("Creating a new Guild failed. Reason: " + (response == null ? "Unknown" : response.toString()));
+        }
+        else
+        {
+            Guild g = new EntityBuilder(this).createGuild(response);
+            return new GuildManager(g);
+        }
+    }
+
+    @Override
+    public void createGuildAsync(String name, Consumer<Guild> callback)
+    {
+        if (name == null)
+        {
+            throw new IllegalArgumentException("Guild name must not be null");
+        }
+        JSONObject response = getRequester().post("https://discordapp.com/api/guilds", new JSONObject().put("name", name));
+        if (response == null || !response.has("id"))
+        {
+            //error creating guild
+            throw new RuntimeException("Creating a new Guild failed. Reason: " + (response == null ? "Unknown" : response.toString()));
+        }
+        else
+        {
+            addEventListener(new AsyncCallback(callback, response.getString("id")));
+        }
+    }
+
+    @Override
     public Guild getGuildById(String id)
     {
         return guildMap.get(id);
@@ -388,5 +432,27 @@ public class JDAImpl implements JDA
     public boolean isDebug()
     {
         return debug;
+    }
+
+    private static class AsyncCallback implements EventListener
+    {
+        private final Consumer<Guild> cb;
+        private final String id;
+
+        public AsyncCallback(Consumer<Guild> cb, String guildId)
+        {
+            this.cb = cb;
+            this.id = guildId;
+        }
+
+        @Override
+        public void onEvent(Event event)
+        {
+            if (event instanceof GuildJoinEvent && ((GuildJoinEvent) event).getGuild().getId().equals(id))
+            {
+                event.getJDA().removeEventListener(this);
+                cb.accept(((GuildJoinEvent) event).getGuild());
+            }
+        }
     }
 }

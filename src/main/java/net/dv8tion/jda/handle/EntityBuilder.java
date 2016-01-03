@@ -42,7 +42,7 @@ public class EntityBuilder
         this.api = api;
     }
 
-    protected Guild createGuild(JSONObject guild)
+    public Guild createGuild(JSONObject guild)
     {
         String id = guild.getString("id");
         GuildImpl guildObj = ((GuildImpl) api.getGuildMap().get(id));
@@ -71,50 +71,59 @@ public class EntityBuilder
             }
         }
 
-        JSONArray members = guild.getJSONArray("members");
-        Map<String, Role> rolesMap = guildObj.getRolesMap();
-        Map<User, List<Role>> userRoles = guildObj.getUserRoles();
-        for (int i = 0; i < members.length(); i++)
+        if (guild.has("members"))
         {
-            JSONObject member = members.getJSONObject(i);
-            User user = createUser(member.getJSONObject("user"));
-            userRoles.put(user, new ArrayList<>());
-            JSONArray roleArr = member.getJSONArray("roles");
-            for (int j = 0; j < roleArr.length(); j++)
+            JSONArray members = guild.getJSONArray("members");
+            Map<String, Role> rolesMap = guildObj.getRolesMap();
+            Map<User, List<Role>> userRoles = guildObj.getUserRoles();
+            for (int i = 0; i < members.length(); i++)
             {
-                String roleId = roleArr.getString(j);
-                userRoles.get(user).add(rolesMap.get(roleId));
+                JSONObject member = members.getJSONObject(i);
+                User user = createUser(member.getJSONObject("user"));
+                userRoles.put(user, new ArrayList<>());
+                JSONArray roleArr = member.getJSONArray("roles");
+                for (int j = 0; j < roleArr.length(); j++)
+                {
+                    String roleId = roleArr.getString(j);
+                    userRoles.get(user).add(rolesMap.get(roleId));
+                }
             }
         }
 
-        JSONArray channels = guild.getJSONArray("channels");
-        for (int i = 0; i < channels.length(); i++)
+        if (guild.has("channels"))
         {
-            JSONObject channel = channels.getJSONObject(i);
-            String type = channel.getString("type");
-            if (type.equalsIgnoreCase("text"))
+            JSONArray channels = guild.getJSONArray("channels");
+            for (int i = 0; i < channels.length(); i++)
             {
-                createTextChannel(channel, guildObj.getId());
-            }
-            else if (type.equalsIgnoreCase("voice"))
-            {
-                createVoiceChannel(channel, guildObj.getId());
+                JSONObject channel = channels.getJSONObject(i);
+                String type = channel.getString("type");
+                if (type.equalsIgnoreCase("text"))
+                {
+                    createTextChannel(channel, guildObj.getId());
+                }
+                else if (type.equalsIgnoreCase("voice"))
+                {
+                    createVoiceChannel(channel, guildObj.getId());
+                }
             }
         }
 
-        JSONArray presences = guild.getJSONArray("presences");
-        for (int i = 0; i < presences.length(); i++)
+        if (guild.has("presences"))
         {
-            JSONObject presence = presences.getJSONObject(i);
-            UserImpl user = ((UserImpl) api.getUserMap().get(presence.getJSONObject("user").getString("id")));
-            if (user == null)
+            JSONArray presences = guild.getJSONArray("presences");
+            for (int i = 0; i < presences.length(); i++)
             {
-                //corresponding user to presence not found... ignoring
-                continue;
+                JSONObject presence = presences.getJSONObject(i);
+                UserImpl user = ((UserImpl) api.getUserMap().get(presence.getJSONObject("user").getString("id")));
+                if (user == null)
+                {
+                    //corresponding user to presence not found... ignoring
+                    continue;
+                }
+                user
+                        .setCurrentGame(presence.isNull("game") || presence.getJSONObject("game").isNull("name") ? null : presence.getJSONObject("game").get("name").toString())
+                        .setOnlineStatus(OnlineStatus.fromKey(presence.getString("status")));
             }
-            user
-                .setCurrentGame(presence.isNull("game") || presence.getJSONObject("game").isNull("name") ? null : presence.getJSONObject("game").get("name").toString())
-                .setOnlineStatus(OnlineStatus.fromKey(presence.getString("status")));
         }
         return guildObj;
     }
