@@ -175,6 +175,14 @@ public interface Guild
      */
     GuildManager getManager();
 
+    void kick(User user);
+
+    void ban(User user, int delDays);
+
+    List<User> getBans();
+
+    void unBan(String userId);
+
     /**
      * Returns the {@link net.dv8tion.jda.JDA JDA} instance of this Guild
      * @return

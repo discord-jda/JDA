@@ -55,6 +55,11 @@ public class Requester
         return toObject(addHeaders(Unirest.patch(url)).body(body.toString()));
     }
 
+    public JSONObject put(String url, JSONObject body)
+    {
+        return toObject(addHeaders(Unirest.put(url)).body(body.toString()));
+    }
+
     public JSONArray getA(String url)
     {
         return toArray(addHeaders(Unirest.get(url)));
