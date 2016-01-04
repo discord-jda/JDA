@@ -266,7 +266,7 @@ public class GuildManager
      * @return
      *      unmodifiable list of currently banned Users
      */
-    List<User> getBans()
+    public List<User> getBans()
     {
         List<User> bans = new LinkedList<>();
         JSONArray bannedArr = ((JDAImpl) guild.getJDA()).getRequester().getA("https://discordapp.com/api/guilds/" + guild.getId() + "/bans");
