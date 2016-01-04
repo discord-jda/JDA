@@ -22,8 +22,15 @@ import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.utils.AvatarUtil;
 import org.json.JSONObject;
 
+/**
+ * Manager used to modify aspects of a {@link net.dv8tion.jda.entities.Guild Guild}.
+ */
 public class GuildManager
 {
+    /**
+     * Represents the idle time allowed until a user is moved to the
+     * AFK {@link net.dv8tion.jda.entities.VoiceChannel} if one is set.
+     */
     enum Timeout
     {
         SECONDS_60(60),
@@ -38,11 +45,25 @@ public class GuildManager
             this.seconds = seconds;
         }
 
+        /**
+         * The amount of seconds represented by this {@link net.dv8tion.jda.managers.GuildManager.Timeout}.
+         *
+         * @return
+         *      An positive non-zero int representing the timeout amount in seconds.
+         */
         public int getSeconds()
         {
             return seconds;
         }
 
+        /**
+         * The timeout as a string.<br>
+         * Examples:    "60"  "300"   etc
+         *
+         * @return
+         *      Seconds as a string.
+         */
+        @Override
         public String toString()
         {
             return "" + seconds;
@@ -51,6 +72,13 @@ public class GuildManager
 
     private final Guild guild;
 
+    /**
+     * Creates a {@link net.dv8tion.jda.managers.GuildManager} that can be used to manage
+     * different aspects of the provided {@link net.dv8tion.jda.entities.Guild}.
+     *
+     * @param guild
+     *          The {@link net.dv8tion.jda.entities.Guild} which the manager deals with.
+     */
     public GuildManager(Guild guild)
     {
         this.guild = guild;

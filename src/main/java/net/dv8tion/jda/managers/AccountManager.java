@@ -22,6 +22,9 @@ import net.dv8tion.jda.entities.impl.SelfInfoImpl;
 import net.dv8tion.jda.utils.AvatarUtil;
 import org.json.JSONObject;
 
+/**
+ * Manager used to modify aspects of the logged in account's information.
+ */
 public class AccountManager
 {
 

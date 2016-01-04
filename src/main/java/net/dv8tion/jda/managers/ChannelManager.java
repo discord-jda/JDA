@@ -25,6 +25,10 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Manager used to modify aspects of a {@link net.dv8tion.jda.entities.TextChannel TextChannel}
+ * or {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel}.
+ */
 public class ChannelManager
 {
     private final Channel channel;

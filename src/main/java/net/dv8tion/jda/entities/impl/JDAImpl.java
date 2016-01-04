@@ -17,6 +17,8 @@ package net.dv8tion.jda.entities.impl;
 
 import com.mashape.unirest.http.Unirest;
 import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.Region;
+import net.dv8tion.jda.builders.GuildBuilder;
 import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.events.Event;
 import net.dv8tion.jda.events.guild.GuildJoinEvent;
@@ -277,13 +279,17 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public GuildManager createGuild(String name)
+    public GuildManager createGuild(GuildBuilder guildBuilder)
     {
-        if (name == null)
+        if (guildBuilder.getName() == null)
         {
             throw new IllegalArgumentException("Guild name must not be null");
         }
-        JSONObject response = getRequester().post("https://discordapp.com/api/guilds", new JSONObject().put("name", name));
+        JSONObject response = getRequester().post("https://discordapp.com/api/guilds",
+                new JSONObject()
+                        .put("name", guildBuilder.getName())
+                        .put("region", guildBuilder.getRegion().getKey())
+                        .put("icon", guildBuilder.getIcon().getEncoded()));
         if (response == null || !response.has("id"))
         {
             //error creating guild
@@ -297,13 +303,19 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public void createGuildAsync(String name, Consumer<GuildManager> callback)
+    public void createGuildAsync(GuildBuilder guildBuilder, Consumer<GuildManager> callback)
     {
-        if (name == null)
-        {
+        if (guildBuilder.getName() == null)
             throw new IllegalArgumentException("Guild name must not be null");
-        }
-        JSONObject response = getRequester().post("https://discordapp.com/api/guilds", new JSONObject().put("name", name));
+        if (guildBuilder.getRegion().equals(Region.UNKNOWN))
+            throw new IllegalArgumentException("Cannot create a guild with Region type UNKNOWN!");
+
+        JSONObject response = getRequester().post("https://discordapp.com/api/guilds",
+                new JSONObject()
+                        .put("name", guildBuilder.getName())
+                        .put("region", guildBuilder.getRegion().getKey())
+                        .put("icon", guildBuilder.getIcon() == null || guildBuilder.getIcon().getEncoded() == null ?
+                                    JSONObject.NULL : guildBuilder.getIcon().getEncoded()));
         if (response == null || !response.has("id"))
         {
             //error creating guild
