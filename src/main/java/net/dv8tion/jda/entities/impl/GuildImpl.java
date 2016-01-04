@@ -193,19 +193,6 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public void kick(User u)
-    {
-        api.getRequester().delete("https://discordapp.com/api/guilds/" + getId() + "/members/" + u.getId());
-    }
-
-    @Override
-    public void ban(User u, int delDays)
-    {
-        api.getRequester().put("https://discordapp.com/api/guilds/" + getId() + "/bans/" + u.getId()
-                + (delDays > 0 ? "?delete-message-days=" + delDays : ""), new JSONObject());
-    }
-
-    @Override
     public List<User> getBans()
     {
         List<User> bans = new LinkedList<>();
@@ -228,12 +215,6 @@ public class GuildImpl implements Guild
             }
         }
         return bans;
-    }
-
-    @Override
-    public void unBan(String userId)
-    {
-        api.getRequester().delete("https://discordapp.com/api/guilds/" + getId() + "/bans/" + userId);
     }
 
     public Map<String, Role> getRolesMap()

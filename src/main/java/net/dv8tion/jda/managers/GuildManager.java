@@ -17,6 +17,7 @@ package net.dv8tion.jda.managers;
 
 import net.dv8tion.jda.Region;
 import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.utils.AvatarUtil;
@@ -86,8 +87,9 @@ public class GuildManager
 
     /**
      * Returns the {@link net.dv8tion.jda.entities.Guild Guild} object of this Manager. Useful if this Manager was returned via a create function
+     *
      * @return
-     *      the Guild of this Manager
+     *      the {@link net.dv8tion.jda.entities.Guild Guild} of this Manager
      */
     public Guild getGuild()
     {
@@ -98,9 +100,9 @@ public class GuildManager
      * Changes the name of this Guild
      *
      * @param name
-     *      the new name of the Guild
+     *          the new name of the Guild
      * @return
-     *      this
+     *      This {@link net.dv8tion.jda.managers.GuildManager GuildManager} instance. Useful for chaining.
      */
     public GuildManager setName(String name)
     {
@@ -117,12 +119,13 @@ public class GuildManager
     }
 
     /**
-     * Changes the {@link net.dv8tion.jda.Region Region} of this Guild
+     * Changes the {@link net.dv8tion.jda.Region Region} of this {@link net.dv8tion.jda.entities.Guild Guild}.
      *
      * @param region
-     *      the new Region
+     *          the new {@link net.dv8tion.jda.Region Region}
      * @return
-     *      this
+     *
+     *      This {@link net.dv8tion.jda.managers.GuildManager GuildManager} instance. Useful for chaining.
      */
     public GuildManager setRegion(Region region)
     {
@@ -135,14 +138,14 @@ public class GuildManager
     }
 
     /**
-     * Changes the icon of this Guild
+     * Changes the icon of this Guild.<br>
      * You can create the icon via the {@link net.dv8tion.jda.utils.AvatarUtil AvatarUtil} class.
      * Passing in null, will remove the current icon from the Guild
      *
      * @param avatar
-     *      the new icon
+     *          the new icon
      * @return
-     *      this
+     *      This {@link net.dv8tion.jda.managers.GuildManager GuildManager} instance. Useful for chaining.
      */
     public GuildManager setIcon(AvatarUtil.Avatar avatar)
     {
@@ -155,9 +158,9 @@ public class GuildManager
      * If passed null, this will disable the AFK-Channel
      *
      * @param channel
-     *      the new afk-channel
+     *          the new afk-channel
      * @return
-     *      this
+     *      This {@link net.dv8tion.jda.managers.GuildManager GuildManager} instance. Useful for chaining.
      */
     public GuildManager setAfkChannel(VoiceChannel channel)
     {
@@ -177,7 +180,7 @@ public class GuildManager
      * @param timeout
      *      the new afk timeout
      * @return
-     *      this
+     *      This {@link net.dv8tion.jda.managers.GuildManager GuildManager} instance. Useful for chaining.
      */
     public GuildManager setAfkTimeout(Timeout timeout)
     {
@@ -186,9 +189,99 @@ public class GuildManager
     }
 
     /**
-     * Leaves or Deletes this Guild.
-     * If the logged in User is the owner of this Guild, the Guild is deleted.
-     * Otherwise, this guild will be left
+     * Kicks a {@link net.dv8tion.jda.entities.User User} from the {@link net.dv8tion.jda.entities.Guild Guild}.<br>
+     * <p>
+     * <b>Note:</b> {@link net.dv8tion.jda.entities.Guild#getUsers()} will still contain the {@link net.dv8tion.jda.entities.User User}
+     * until Discord sends the {@link net.dv8tion.jda.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
+     *
+     * @param user
+     *          The {@link net.dv8tion.jda.entities.User User} to kick from the from the {@link net.dv8tion.jda.entities.Guild Guild}.
+     */
+    public void kick(User user)
+    {
+        kick(user.getId());
+    }
+
+    /**
+     * Kicks the {@link net.dv8tion.jda.entities.User User} specified by the userId from the from the {@link net.dv8tion.jda.entities.Guild Guild}.
+     * <p>
+     * <b>Note:</b> {@link net.dv8tion.jda.entities.Guild#getUsers()} will still contain the {@link net.dv8tion.jda.entities.User User}
+     * until Discord sends the {@link net.dv8tion.jda.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
+     *
+     * @param userId
+     *          The id of the {@link net.dv8tion.jda.entities.User User} to kick from the from the {@link net.dv8tion.jda.entities.Guild Guild}.
+     */
+    public void kick(String userId)
+    {
+        ((JDAImpl) guild.getJDA()).getRequester().delete("https://discordapp.com/api/guilds/"
+                + guild.getId() + "/members/" + userId);
+    }
+
+    /**
+     * Bans a {@link net.dv8tion.jda.entities.User User} and deletes messages sent by the user
+     * based on the amount of delDays.<br>
+     * If you wish to ban a user without deleting any messages, provide delDays with a value of 0.
+     * <p>
+     * <b>Note:</b> {@link net.dv8tion.jda.entities.Guild#getUsers()} will still contain the {@link net.dv8tion.jda.entities.User User}
+     * until Discord sends the {@link net.dv8tion.jda.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
+     *
+     * @param user
+     *          The {@link net.dv8tion.jda.entities.User User} to ban.
+     * @param delDays
+     *          The history of messages, in days, that will be deleted.
+     */
+    public void ban(User user, int delDays)
+    {
+        ban(user.getId(), delDays);
+    }
+
+    /**
+     * Bans the {@link net.dv8tion.jda.entities.User User} specified by the userId nd deletes messages sent by the user
+     * based on the amount of delDays.<br>
+     * If you wish to ban a user without deleting any messages, provide delDays with a value of 0.
+     * <p>
+     * <b>Note:</b> {@link net.dv8tion.jda.entities.Guild#getUsers()} will still contain the {@link net.dv8tion.jda.entities.User User}
+     * until Discord sends the {@link net.dv8tion.jda.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
+     *
+     * @param userId
+     *          The id of the {@link net.dv8tion.jda.entities.User User} to ban.
+     * @param delDays
+     *          The history of messages, in days, that will be deleted.
+     */
+    public void ban(String userId, int delDays)
+    {
+        ((JDAImpl) guild.getJDA()).getRequester().put("https://discordapp.com/api/guilds/"
+                + guild.getId() + "/bans/" + userId + (delDays > 0 ? "?delete-message-days=" + delDays : ""), new JSONObject());
+    }
+
+    /**
+     * Unbans the provided {@link net.dv8tion.jda.entities.User User} from the {@link net.dv8tion.jda.entities.Guild Guild}.
+     *
+     * @param user
+     *          The {@link net.dv8tion.jda.entities.User User} to unban.
+     */
+    public void unBan(User user)
+    {
+        unBan(user.getId());
+    }
+
+    /**
+     * Unbans the {@link net.dv8tion.jda.entities.User User} from the {@link net.dv8tion.jda.entities.Guild Guild} based on the provided userId.
+     *
+     * @param userId
+     *          The id of the {@link net.dv8tion.jda.entities.User User} to unban.
+     */
+    public void unBan(String userId)
+    {
+        ((JDAImpl) guild.getJDA()).getRequester().delete("https://discordapp.com/api/guilds/"
+                + guild.getId() + "/bans/" + userId);
+    }
+
+    /**
+     * Leaves or Deletes this {@link net.dv8tion.jda.entities.Guild Guild}.
+     * If the logged in {@link net.dv8tion.jda.entities.User User} is the owner of
+     * this {@link net.dv8tion.jda.entities.Guild Guild}, the {@link net.dv8tion.jda.entities.Guild Guild} is deleted.
+     * Otherwise, this guild will be left.
      */
     public void leaveOrDelete()
     {

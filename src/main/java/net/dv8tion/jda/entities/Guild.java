@@ -175,13 +175,12 @@ public interface Guild
      */
     GuildManager getManager();
 
-    void kick(User user);
-
-    void ban(User user, int delDays);
-
+    /**
+     * Gets an unmodifiable list of the currently banned {@link net.dv8tion.jda.entities.User Users}.<br>
+     * If you wish to ban or unban a user, please use {@link}
+     * @return
+     */
     List<User> getBans();
-
-    void unBan(String userId);
 
     /**
      * Returns the {@link net.dv8tion.jda.JDA JDA} instance of this Guild
