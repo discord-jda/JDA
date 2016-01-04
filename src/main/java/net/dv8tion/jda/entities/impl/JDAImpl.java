@@ -115,16 +115,16 @@ public class JDAImpl implements JDA
             try
             {
                 authToken = configs.getJSONObject("tokens").getString(email);
-                gateway = getRequester().get("https://discordapp.com/api/gateway").getString("url");
-                System.out.println("Using cached Token: " + authToken);
+                if (getRequester().get("https://discordapp.com/api/users/@me/guilds") == null)
+                {
+                    //token is valid (returns array, cant be returned as JSONObject)
+                    gateway = getRequester().get("https://discordapp.com/api/gateway").getString("url");
+                    System.out.println("Using cached Token: " + authToken);
+                }
             }
             catch (JSONException ex)
             {
                 System.out.println("Token-file misformatted. Please delete it for recreation");
-            }
-            catch (Exception ex)
-            {
-                ex.printStackTrace();
             }
         }
 

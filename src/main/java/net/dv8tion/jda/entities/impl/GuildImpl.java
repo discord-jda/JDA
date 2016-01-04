@@ -201,7 +201,8 @@ public class GuildImpl implements Guild
     @Override
     public void ban(User u, int delDays)
     {
-        api.getRequester().put("https://discordapp.com/api/guilds/" + getId() + "/bans/" + u.getId() + (delDays > 0 ? "?delete-message-days=0" : ""), new JSONObject());
+        api.getRequester().put("https://discordapp.com/api/guilds/" + getId() + "/bans/" + u.getId()
+                + (delDays > 0 ? "?delete-message-days=" + delDays : ""), new JSONObject());
     }
 
     @Override
