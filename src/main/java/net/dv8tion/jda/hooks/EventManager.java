@@ -41,7 +41,8 @@ public class EventManager
 
     public void handle(Event event)
     {
-        for (EventListener listener : listeners)
+        List<EventListener> listenerCopy = new LinkedList<>(listeners);
+        for (EventListener listener : listenerCopy)
         {
             listener.onEvent(event);
         }

@@ -20,8 +20,13 @@ import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
+import net.dv8tion.jda.entities.impl.UserImpl;
 import net.dv8tion.jda.utils.AvatarUtil;
+import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Manager used to modify aspects of a {@link net.dv8tion.jda.entities.Guild Guild}.
@@ -252,6 +257,37 @@ public class GuildManager
     {
         ((JDAImpl) guild.getJDA()).getRequester().put("https://discordapp.com/api/guilds/"
                 + guild.getId() + "/bans/" + userId + (delDays > 0 ? "?delete-message-days=" + delDays : ""), new JSONObject());
+    }
+
+    /**
+     * Gets an unmodifiable list of the currently banned {@link net.dv8tion.jda.entities.User Users}.<br>
+     * If you wish to ban or unban a user, please use one of the ban or unban methods of this Manager
+     *
+     * @return
+     *      unmodifiable list of currently banned Users
+     */
+    List<User> getBans()
+    {
+        List<User> bans = new LinkedList<>();
+        JSONArray bannedArr = ((JDAImpl) guild.getJDA()).getRequester().getA("https://discordapp.com/api/guilds/" + guild.getId() + "/bans");
+        for (int i = 0; i < bannedArr.length(); i++)
+        {
+            JSONObject userObj = bannedArr.getJSONObject(i).getJSONObject("user");
+            User u = guild.getJDA().getUserById(userObj.getString("id"));
+            if (u != null)
+            {
+                bans.add(u);
+            }
+            else
+            {
+                //Create user here, instead of using the EntityBuilder (don't want to add users to registry)
+                bans.add(new UserImpl(userObj.getString("id"), ((JDAImpl) guild.getJDA()))
+                        .setUserName(userObj.getString("username"))
+                        .setDiscriminator(userObj.get("discriminator").toString())
+                        .setAvatarId(userObj.isNull("avatar") ? null : userObj.getString("avatar")));
+            }
+        }
+        return bans;
     }
 
     /**

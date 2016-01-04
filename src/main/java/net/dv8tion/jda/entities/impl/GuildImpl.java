@@ -21,7 +21,6 @@ import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.managers.ChannelManager;
 import net.dv8tion.jda.managers.GuildManager;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.*;
@@ -190,31 +189,6 @@ public class GuildImpl implements Guild
     public GuildManager getManager()
     {
         return new GuildManager(this);
-    }
-
-    @Override
-    public List<User> getBans()
-    {
-        List<User> bans = new LinkedList<>();
-        JSONArray bannedArr = api.getRequester().getA("https://discordapp.com/api/guilds/" + getId() + "/bans");
-        for (int i = 0; i < bannedArr.length(); i++)
-        {
-            JSONObject userObj = bannedArr.getJSONObject(i).getJSONObject("user");
-            User u = api.getUserById(userObj.getString("id"));
-            if (u != null)
-            {
-                bans.add(u);
-            }
-            else
-            {
-                //Create user here, instead of using the EntityBuilder (don't want to add users to registry)
-                bans.add(new UserImpl(userObj.getString("id"), api)
-                        .setUserName(userObj.getString("username"))
-                        .setDiscriminator(userObj.get("discriminator").toString())
-                        .setAvatarId(userObj.isNull("avatar") ? null : userObj.getString("avatar")));
-            }
-        }
-        return bans;
     }
 
     public Map<String, Role> getRolesMap()
