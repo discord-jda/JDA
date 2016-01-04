@@ -291,7 +291,7 @@ public class EntityBuilder
             JSONArray mentions = jsonObject.getJSONArray("mentions");
             for (int i = 0; i < mentions.length(); i++)
             {
-                JSONObject mention = mentions.getJSONObject(0);
+                JSONObject mention = mentions.getJSONObject(i);
                 mentioned.add(api.getUserMap().get(mention.getString("id")));
             }
             message.setMentionedUsers(mentioned);
