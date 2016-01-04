@@ -61,7 +61,7 @@ public interface JDA
      * Creates a new {@link net.dv8tion.jda.entities.Guild Guild}.
      * The created Guild will have the default {@link net.dv8tion.jda.Region#US_WEST US_WEST Region}.
      * This function will wait until the Guild was fully created by the Discord-Server (default channels,...),
-     * and then call the provided callback-function with the Guild-object
+     * and then call the provided callback-function with the GuildManager-object
      * To create a Guild synchronously, use {@link #createGuild(String)} instead
      *
      * @param name
@@ -69,7 +69,7 @@ public interface JDA
      * @param callback
      *      the callback-function that gets called once the guild was fully initialized
      */
-    void createGuildAsync(String name, Consumer<Guild> callback);
+    void createGuildAsync(String name, Consumer<GuildManager> callback);
 
     Guild getGuildById(String id);
 

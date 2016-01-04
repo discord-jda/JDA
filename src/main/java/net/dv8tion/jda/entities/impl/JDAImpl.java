@@ -297,7 +297,7 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public void createGuildAsync(String name, Consumer<Guild> callback)
+    public void createGuildAsync(String name, Consumer<GuildManager> callback)
     {
         if (name == null)
         {
@@ -436,10 +436,10 @@ public class JDAImpl implements JDA
 
     private static class AsyncCallback implements EventListener
     {
-        private final Consumer<Guild> cb;
+        private final Consumer<GuildManager> cb;
         private final String id;
 
-        public AsyncCallback(Consumer<Guild> cb, String guildId)
+        public AsyncCallback(Consumer<GuildManager> cb, String guildId)
         {
             this.cb = cb;
             this.id = guildId;
@@ -451,7 +451,7 @@ public class JDAImpl implements JDA
             if (event instanceof GuildJoinEvent && ((GuildJoinEvent) event).getGuild().getId().equals(id))
             {
                 event.getJDA().removeEventListener(this);
-                cb.accept(((GuildJoinEvent) event).getGuild());
+                cb.accept(((GuildJoinEvent) event).getGuild().getManager());
             }
         }
     }
