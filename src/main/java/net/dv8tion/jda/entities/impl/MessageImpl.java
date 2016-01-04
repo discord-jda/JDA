@@ -209,4 +209,9 @@ public class MessageImpl implements Message
         this.content = content;
         return this;
     }
+
+    public void acknowledge()
+    {
+        api.getRequester().post("https://discordapp.com/api/channels/"+channelId+"/messages/"+id+"/ack", new JSONObject());
+    }
 }
