@@ -22,6 +22,7 @@ import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.entities.impl.UserImpl;
 import net.dv8tion.jda.utils.AvatarUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -78,6 +79,12 @@ public class GuildManager
 
     private final Guild guild;
 
+    private Timeout timeout = null;
+    private String name = null;
+    private Region region = null;
+    private AvatarUtil.Avatar icon = null;
+    private String afkChannelId;
+
     /**
      * Creates a {@link net.dv8tion.jda.managers.GuildManager} that can be used to manage
      * different aspects of the provided {@link net.dv8tion.jda.entities.Guild}.
@@ -88,6 +95,7 @@ public class GuildManager
     public GuildManager(Guild guild)
     {
         this.guild = guild;
+        this.afkChannelId = guild.getAfkChannelId();
     }
 
     /**
@@ -102,65 +110,77 @@ public class GuildManager
     }
 
     /**
-     * Changes the name of this Guild
+     * Changes the name of this Guild.
+     * This change will only be applied, if {@link #update()} is called.
+     * So multiple changes can be made at once.
      *
      * @param name
-     *          the new name of the Guild
+     *          the new name of the Guild, or null to keep current one
      * @return
      *      This {@link net.dv8tion.jda.managers.GuildManager GuildManager} instance. Useful for chaining.
      */
     public GuildManager setName(String name)
     {
-        if (name == null)
+        if (guild.getName().equals(name))
         {
-            throw new IllegalArgumentException("Guild name must not be null!");
+            this.name = null;
         }
-        if (name.equals(guild.getName()))
+        else
         {
-            return this;
+            this.name = name;
         }
-        update(new JSONObject().put("name", name));
         return this;
     }
 
     /**
      * Changes the {@link net.dv8tion.jda.Region Region} of this {@link net.dv8tion.jda.entities.Guild Guild}.
+     * This change will only be applied, if {@link #update()} is called.
+     * So multiple changes can be made at once.
      *
      * @param region
-     *          the new {@link net.dv8tion.jda.Region Region}
+     *          the new {@link net.dv8tion.jda.Region Region}, or null to keep current one
      * @return
-     *
      *      This {@link net.dv8tion.jda.managers.GuildManager GuildManager} instance. Useful for chaining.
      */
     public GuildManager setRegion(Region region)
     {
         if (region == guild.getRegion() || region == Region.UNKNOWN)
         {
-            return this;
+            this.region = null;
         }
-        update(getFrame().put("region", region.getKey()));
+        else
+        {
+            this.region = region;
+        }
         return this;
     }
 
     /**
      * Changes the icon of this Guild.<br>
      * You can create the icon via the {@link net.dv8tion.jda.utils.AvatarUtil AvatarUtil} class.
-     * Passing in null, will remove the current icon from the Guild
+     * Passing in null will keep the current icon,
+     * while {@link net.dv8tion.jda.utils.AvatarUtil#DELETE_AVATAR DELETE_AVATAR} removes the current one.
+     *
+     * This change will only be applied, if {@link #update()} is called.
+     * So multiple changes can be made at once.
      *
      * @param avatar
-     *          the new icon
+     *          the new icon, null to keep current, or AvatarUtil.DELETE_AVATAR to delete
      * @return
      *      This {@link net.dv8tion.jda.managers.GuildManager GuildManager} instance. Useful for chaining.
      */
     public GuildManager setIcon(AvatarUtil.Avatar avatar)
     {
-        update(getFrame().put("icon", avatar == null ? JSONObject.NULL : avatar.getEncoded()));
+        this.icon = avatar;
         return this;
     }
 
     /**
      * Changes the AFK {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} of this Guild
-     * If passed null, this will disable the AFK-Channel
+     * If passed null, this will disable the AFK-Channel.
+     *
+     * This change will only be applied, if {@link #update()} is called.
+     * So multiple changes can be made at once.
      *
      * @param channel
      *          the new afk-channel
@@ -173,24 +193,46 @@ public class GuildManager
         {
             throw new IllegalArgumentException("Given VoiceChannel is not member of modifying Guild");
         }
-        update(getFrame().put("afk_channel_id", channel == null ? JSONObject.NULL : channel.getId()));
+        this.afkChannelId = channel == null ? null : channel.getId();
         return this;
     }
 
     /**
      * Changes the AFK Timeout of this Guild
      * After given timeout (in seconds) Users being AFK in voice are being moved to the AFK-Channel
-     * Valid timeouts are: 60, 300, 900, 1800, 3600
+     * Valid timeouts are: 60, 300, 900, 1800, 3600.
+     *
+     * This change will only be applied, if {@link #update()} is called.
+     * So multiple changes can be made at once.
      *
      * @param timeout
-     *      the new afk timeout
+     *      the new afk timeout, or null to keep current one
      * @return
      *      This {@link net.dv8tion.jda.managers.GuildManager GuildManager} instance. Useful for chaining.
      */
     public GuildManager setAfkTimeout(Timeout timeout)
     {
-        update(getFrame().put("afk_timeout", timeout.getSeconds()));
+        this.timeout = timeout;
         return this;
+    }
+
+    /**
+     * This method will apply all accumulated changes received by setters
+     */
+    public void update()
+    {
+        JSONObject frame = getFrame();
+        if(name != null)
+            frame.put("name", name);
+        if(region != null)
+            frame.put("region", region.getKey());
+        if(timeout != null)
+            frame.put("afk_timeout", timeout.getSeconds());
+        if(icon != null)
+            frame.put("icon", icon == AvatarUtil.DELETE_AVATAR ? JSONObject.NULL : icon.getEncoded());
+        if(!StringUtils.equals(afkChannelId, guild.getAfkChannelId()))
+            frame.put("afk_channel_id", afkChannelId == null ? JSONObject.NULL : afkChannelId);
+        update(frame);
     }
 
     /**
@@ -318,6 +360,7 @@ public class GuildManager
      * If the logged in {@link net.dv8tion.jda.entities.User User} is the owner of
      * this {@link net.dv8tion.jda.entities.Guild Guild}, the {@link net.dv8tion.jda.entities.Guild Guild} is deleted.
      * Otherwise, this guild will be left.
+     * This change will be applied immediately
      */
     public void leaveOrDelete()
     {

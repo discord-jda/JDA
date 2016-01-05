@@ -30,9 +30,15 @@ public class RoleManager
 {
     private final Role role;
 
+    private String name = null;
+    private int color = -1;
+    private Boolean grouped = null;
+    private int perms;
+
     public RoleManager(Role role)
     {
         this.role = role;
+        perms = ((RoleImpl) role).getPermissions();
     }
 
     /**
@@ -47,64 +53,76 @@ public class RoleManager
 
     /**
      * Sets the name of this Role.
+     * This change will only be applied, if {@link #update()} is called.
+     * So multiple changes can be made at once.
      *
      * @param name
-     *      The new name of the Role
+     *      The new name of the Role, or null to keep current one
      * @return
      *      this
      */
     public RoleManager setName(String name)
     {
-        if (name == null)
+        if (role.getName().equals(name))
         {
-            throw new IllegalArgumentException("Role name must not be null!");
+            this.name = null;
         }
-        if (name.equals(role.getName()))
+        else
         {
-            return this;
+            this.name = name;
         }
-        update(getFrame().put("name", name));
         return this;
     }
 
     /**
      * Sets the color of this Role.
+     * This change will only be applied, if {@link #update()} is called.
+     * So multiple changes can be made at once.
      *
      * @param color
-     *      The new color of the Role
+     *      The new color of the Role, or -1 to keep current one
      * @return
      *      this
      */
     public RoleManager setColor(int color)
     {
-        if (color == role.getColor())
+        if (color == role.getColor() || color < 0)
         {
-            return this;
+            this.color = -1;
         }
-        update(getFrame().put("color", color));
+        else
+        {
+            this.color = Math.min(0xFFFFFF, color);
+        }
         return this;
     }
 
     /**
      * Sets, whether this Role should be grouped in the member-overview.
+     * This change will only be applied, if {@link #update()} is called.
+     * So multiple changes can be made at once.
      *
      * @param group
-     *      Whether or not to group this Role
+     *      Whether or not to group this Role, or null to keep current grouping status
      * @return
      *      this
      */
-    public RoleManager setGrouped(boolean group)
+    public RoleManager setGrouped(Boolean group)
     {
-        if (group == role.isGrouped())
+        if (group == null || group == role.isGrouped())
         {
-            return this;
+            this.grouped = null;
         }
-        update(getFrame().put("hoist", group));
+        else
+        {
+            this.grouped = group;
+        }
         return this;
     }
 
     /**
      * Moves this Role up or down in the list of Roles (changing position attribute)
+     * This change takes effect immediately!
      *
      * @param offset
      *      the amount of positions to move up (offset &lt; 0) or down (offset &gt; 0)
@@ -128,7 +146,9 @@ public class RoleManager
     }
 
     /**
-     * Gives this Role one or more {@link net.dv8tion.jda.Permission Permissions}
+     * Gives this Role one or more {@link net.dv8tion.jda.Permission Permissions}.
+     * This change will only be applied, if {@link #update()} is called.
+     * So multiple changes can be made at once.
      *
      * @param perms
      *      the Permissions to give this Role
@@ -137,17 +157,17 @@ public class RoleManager
      */
     public RoleManager give(Permission... perms)
     {
-        int permissions = ((RoleImpl) role).getPermissions();
         for (Permission perm : perms)
         {
-            permissions = permissions | (1 << perm.getOffset());
+            this.perms = this.perms | (1 << perm.getOffset());
         }
-        update(getFrame().put("permissions", permissions));
         return this;
     }
 
     /**
-     * Removes one or more {@link net.dv8tion.jda.Permission Permissions} from this Role
+     * Removes one or more {@link net.dv8tion.jda.Permission Permissions} from this Role.
+     * This change will only be applied, if {@link #update()} is called.
+     * So multiple changes can be made at once.
      *
      * @param perms
      *      the Permissions to remove from this Role
@@ -156,17 +176,28 @@ public class RoleManager
      */
     public RoleManager revoke(Permission... perms)
     {
-        int permissions = ((RoleImpl) role).getPermissions();
         for (Permission perm : perms)
         {
-            permissions = permissions & (~(1 << perm.getOffset()));
+            this.perms = this.perms & (~(1 << perm.getOffset()));
         }
-        update(getFrame().put("permissions", permissions));
         return this;
+    }
+
+    public void update()
+    {
+        JSONObject frame = getFrame();
+        if(name != null)
+            frame.put("name", name);
+        if(color >= 0)
+            frame.put("color", color);
+        if(grouped != null)
+            frame.put("hoist", grouped.booleanValue());
+        update(frame);
     }
 
     /**
      * Deletes this Role
+     * This change takes effect immediately!
      */
     public void delete()
     {
@@ -179,7 +210,7 @@ public class RoleManager
                 .put("name", role.getName())
                 .put("color", role.getColor())
                 .put("hoist", role.isGrouped())
-                .put("permissions", ((RoleImpl) role).getPermissions());
+                .put("permissions", perms);
     }
 
     private void update(JSONObject object)

@@ -33,6 +33,10 @@ public class ChannelManager
 {
     private final Channel channel;
 
+    private String name = null;
+    private String topic = null;
+    private Map<Integer, Channel> newPositions = new HashMap<>();
+
     public ChannelManager(Channel channel)
     {
         this.channel = channel;
@@ -40,23 +44,24 @@ public class ChannelManager
 
     /**
      * Sets the name of this Channel.
+     * This change will only be applied, if {@link #update()} is called.
+     * So multiple changes can be made at once.
      *
      * @param name
-     *      The new name of the Channel
+     *      The new name of the Channel, or null to keep current one
      * @return
      *      this
      */
     public ChannelManager setName(String name)
     {
-        if (name == null)
+        if (channel.getName().equals(name))
         {
-            throw new IllegalArgumentException("Channel name must not be null!");
+            this.name = null;
         }
-        if (name.equals(channel.getName()))
+        else
         {
-            return this;
+            this.name = name;
         }
-        update(channel, getFrame(channel).put("name", name));
         return this;
     }
 
@@ -73,10 +78,13 @@ public class ChannelManager
     /**
      * Sets the topic of this Channel.
      * This is not available for {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannels}
-     * and will result in a {@link java.lang.UnsupportedOperationException UnsupportedOperationException}
+     * and will result in a {@link java.lang.UnsupportedOperationException UnsupportedOperationException}.
+     *
+     * This change will only be applied, if {@link #update()} is called.
+     * So multiple changes can be made at once.
      *
      * @param topic
-     *      The new topic of the Channel
+     *      The new topic of the Channel, or null to keep current one
      * @return
      *      this
      * @throws java.lang.UnsupportedOperationException
@@ -90,31 +98,36 @@ public class ChannelManager
         }
         if (StringUtils.equals(topic, channel.getTopic()))
         {
-            return this;
+            this.topic = null;
         }
-        update(channel, getFrame(channel).put("topic", topic == null ? JSONObject.NULL : topic));
+        else
+        {
+            this.topic = topic;
+        }
         return this;
     }
 
     /**
      * Sets the position of this Channel.
      * If another Channel of the same Type and target newPosition already exists in this Guild,
-     * this channel will get placed above the existing one (newPosition gets decremented)
+     * this channel will get placed above the existing one (newPosition gets decremented).
+     *
+     * This change will only be applied, if {@link #update()} is called.
+     * So multiple changes can be made at once.
      *
      * @param newPosition
-     *      The new position of the Channel
+     *      The new position of the Channel, or -1 to keep current one
      * @return
      *      this
      */
     public ChannelManager setPosition(int newPosition)
     {
-        newPosition = Math.max(0, newPosition);
-        if (newPosition == channel.getPosition())
+        newPositions.clear();
+        if (newPosition < 0 || newPosition == channel.getPosition())
         {
             return this;
         }
         Map<Integer, Channel> currentPositions = new HashMap<>();
-        Map<Integer, Channel> toChange = new HashMap<>();
 
         if (channel instanceof TextChannel)
         {
@@ -126,16 +139,15 @@ public class ChannelManager
         }
         if (currentPositions.containsKey(newPosition))
         {
-            int newPos = newPosition;
-            toChange.put(newPos, channel);
+            newPositions.put(newPosition, channel);
             //check if there is space above this channel (a hole to fill)
-            if (currentPositions.keySet().stream().filter(n -> n < newPos).count() < newPos)
+            if (currentPositions.keySet().stream().filter(n -> n < newPosition).count() < newPosition)
             {
-                for (int i = newPos; i > 0; i--)
+                for (int i = newPosition; i > 0; i--)
                 {
                     if (currentPositions.containsKey(i))
                     {
-                        toChange.put(i - 1, currentPositions.get(i));
+                        newPositions.put(i - 1, currentPositions.get(i));
                     }
                     else
                     {
@@ -145,11 +157,11 @@ public class ChannelManager
             }
             else    //no space above, shift below channels further down
             {
-                for (int i = newPos; true; i++)
+                for (int i = newPosition; true; i++)
                 {
                     if (currentPositions.containsKey(i))
                     {
-                        toChange.put(i + 1, currentPositions.get(i));
+                        newPositions.put(i + 1, currentPositions.get(i));
                     }
                     else
                     {
@@ -157,19 +169,45 @@ public class ChannelManager
                     }
                 }
             }
-            toChange.forEach((key, val) -> {
-                update(val, getFrame(val).put("position", key));
-            });
         }
         return this;
     }
 
     /**
      * Deletes this Channel
+     * This method takes immediate effect
      */
     public void delete()
     {
         ((JDAImpl) channel.getJDA()).getRequester().delete("https://discordapp.com/api/channels/" + channel.getId());
+    }
+
+    /**
+     * This method will apply all accumulated changes received by setters
+     */
+    public void update()
+    {
+        JSONObject frame = getFrame(channel);
+        if (this.name != null)
+        {
+            frame.put("name", this.name);
+        }
+        if (this.topic != null)
+        {
+            frame.put("topic", this.topic);
+        }
+        for (Map.Entry<Integer, Channel> posEntry : newPositions.entrySet())
+        {
+            if (posEntry.getValue() == channel)
+            {
+                frame.put("position", posEntry.getKey());
+            }
+            else
+            {
+                update(posEntry.getValue(), getFrame(posEntry.getValue()).put("position", posEntry.getKey()));
+            }
+        }
+        update(channel, frame);
     }
 
     private JSONObject getFrame(Channel chan)
@@ -177,7 +215,7 @@ public class ChannelManager
         return new JSONObject()
                 .put("name", chan.getName())
                 .put("position", chan.getPosition())
-                .put("topic", chan.getTopic() == null ? JSONObject.NULL : chan.getTopic());
+                .put("topic", chan.getTopic() == null ? "" : chan.getTopic());
     }
 
     private void update(Channel chan, JSONObject o)
