@@ -21,6 +21,7 @@ import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.managers.ChannelManager;
 import net.dv8tion.jda.managers.GuildManager;
+import net.dv8tion.jda.managers.RoleManager;
 import org.json.JSONObject;
 
 import java.util.*;
@@ -127,7 +128,7 @@ public class GuildImpl implements Guild
         JSONObject response = api.getRequester().post("https://discordapp.com/api/guilds/" + getId() + "/channels", new JSONObject().put("name", name).put("type", "text"));
         if (response == null || !response.has("id"))
         {
-            //error creating guild
+            //error creating textchannel
             throw new RuntimeException("Creating a new TextChannel failed. Reason: " + (response == null ? "Unknown" : response.toString()));
         }
         else
@@ -155,7 +156,7 @@ public class GuildImpl implements Guild
         JSONObject response = api.getRequester().post("https://discordapp.com/api/guilds/" + getId() + "/channels", new JSONObject().put("name", name).put("type", "voice"));
         if (response == null || !response.has("id"))
         {
-            //error creating guild
+            //error creating voicechannel
             throw new RuntimeException("Creating a new VoiceChannel failed. Reason: " + (response == null ? "Unknown" : response.toString()));
         }
         else
@@ -171,6 +172,22 @@ public class GuildImpl implements Guild
         List<Role> list = new ArrayList<>();
         list.addAll(roles.values());
         return Collections.unmodifiableList(list);
+    }
+
+    @Override
+    public RoleManager createRole()
+    {
+        JSONObject response = api.getRequester().post("https://discordapp.com/api/guilds/" + getId() + "/roles", new JSONObject());
+        if (response == null || !response.has("id"))
+        {
+            //error creating role
+            throw new RuntimeException("Creating a new Role failed. Reason: " + (response == null ? "Unknown" : response.toString()));
+        }
+        else
+        {
+            Role role = new EntityBuilder(api).createRole(response, getId());
+            return new RoleManager(role);
+        }
     }
 
     @Override

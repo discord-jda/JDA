@@ -208,7 +208,7 @@ public class EntityBuilder
         return priv;
     }
 
-    protected Role createRole(JSONObject roleJson, String guildId)
+    public Role createRole(JSONObject roleJson, String guildId)
     {
         String id = roleJson.getString("id");
         GuildImpl guild = ((GuildImpl) api.getGuildMap().get(guildId));
@@ -216,6 +216,7 @@ public class EntityBuilder
         if (role == null)
         {
             role = new RoleImpl(id, guild);
+            guild.getRolesMap().put(id, role);
         }
         role.setName(roleJson.getString("name"))
             .setPosition(roleJson.getInt("position"))
@@ -230,7 +231,6 @@ public class EntityBuilder
         {
             role.setColor(0);
         }
-        guild.getRolesMap().put(id, role);
         return role;
     }
 

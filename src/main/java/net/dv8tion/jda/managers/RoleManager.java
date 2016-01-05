@@ -15,9 +15,11 @@
  */
 package net.dv8tion.jda.managers;
 
+import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.entities.impl.RoleImpl;
+import net.dv8tion.jda.handle.EntityBuilder;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -126,6 +128,44 @@ public class RoleManager
     }
 
     /**
+     * Gives this Role one or more {@link net.dv8tion.jda.Permission Permissions}
+     *
+     * @param perms
+     *      the Permissions to give this Role
+     * @return
+     *      this
+     */
+    public RoleManager give(Permission... perms)
+    {
+        int permissions = ((RoleImpl) role).getPermissions();
+        for (Permission perm : perms)
+        {
+            permissions = permissions | (1 << perm.getOffset());
+        }
+        update(getFrame().put("permissions", permissions));
+        return this;
+    }
+
+    /**
+     * Removes one or more {@link net.dv8tion.jda.Permission Permissions} from this Role
+     *
+     * @param perms
+     *      the Permissions to remove from this Role
+     * @return
+     *      this
+     */
+    public RoleManager revoke(Permission... perms)
+    {
+        int permissions = ((RoleImpl) role).getPermissions();
+        for (Permission perm : perms)
+        {
+            permissions = permissions & (~(1 << perm.getOffset()));
+        }
+        update(getFrame().put("permissions", permissions));
+        return this;
+    }
+
+    /**
      * Deletes this Role
      */
     public void delete()
@@ -144,6 +184,12 @@ public class RoleManager
 
     private void update(JSONObject object)
     {
-        ((JDAImpl) role.getJDA()).getRequester().patch("https://discordapp.com/api/guilds/" + role.getGuild().getId() + "/roles/" + role.getId(), object);
+        JSONObject response = ((JDAImpl) role.getJDA()).getRequester().patch("https://discordapp.com/api/guilds/" + role.getGuild().getId() + "/roles/" + role.getId(), object);
+        if (response == null || !response.has("id"))
+        {
+            throw new RuntimeException("Setting values of Role " + role.getName() + " with ID " + role.getId()
+                    + " failed... Reason: " + (response == null ? "Unknown" : response.toString()));
+        }
+        new EntityBuilder(((JDAImpl) role.getJDA())).createRole(response, role.getGuild().getId());
     }
 }

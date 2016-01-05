@@ -19,6 +19,7 @@ import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Region;
 import net.dv8tion.jda.managers.ChannelManager;
 import net.dv8tion.jda.managers.GuildManager;
+import net.dv8tion.jda.managers.RoleManager;
 
 import java.util.List;
 
@@ -148,6 +149,15 @@ public interface Guild
      *      An Immutable List of {@link net.dv8tion.jda.entities.Role Roles}.
      */
     List<Role> getRoles();
+
+    /**
+     * Creates a new {@link net.dv8tion.jda.entities.Role Role} in this Guild.
+     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.Permission#MANAGE_ROLES MANAGE_ROLES Permission}
+     *
+     * @return
+     *  the RoleManager for the created Role
+     */
+    RoleManager createRole();
 
     /**
      * Provides all of the {@link net.dv8tion.jda.entities.Role Roles} that the provided {@link net.dv8tion.jda.entities.User User}
