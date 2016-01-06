@@ -71,7 +71,7 @@ public interface PrivateChannel
      * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.entities.TextChannel TextChannel}.
      * <p>
      * <b>Note:</b> This method is blocking, which can cause problems when uploading large files.<br>
-     * Consider {@link #sendFileAsync(java.io.File, java.util.function.Consumer) sendFileAsync(File, Consumer<Message>)} for an alternative.
+     * Consider {@link #sendFileAsync(java.io.File, java.util.function.Consumer) sendFileAsync(File, Consumer)} for an alternative.
      *
      * @param file
      *          The file to upload to the {@link net.dv8tion.jda.entities.TextChannel TextChannel}.
