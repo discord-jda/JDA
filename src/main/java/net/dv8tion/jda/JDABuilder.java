@@ -46,7 +46,6 @@ public class JDABuilder
     String email = null;
     String pass = null;
     boolean debug = false;
-    boolean autoAck = false;
 
     /**
      * Creates a completely empty JDABuilder.<br>
@@ -198,7 +197,6 @@ public class JDABuilder
         else
             jda = new JDAImpl();
         jda.setDebug(debug);
-        jda.setAutoAck(autoAck);
         listeners.forEach(jda::addEventListener);
         jda.login(email, pass);
         return jda;
@@ -244,21 +242,5 @@ public class JDABuilder
         listeners.remove(readyListener);
         jda.removeEventListener(readyListener);
         return jda;
-    }
-
-    /**
-     * Tells the api if it should auto-acknowledge recieved Messages.
-     * This does  not affect Messages send before the api was build.
-     * Will trigger the {@link net.dv8tion.jda.events.message.MessageAcknowledgedEvent MessageAcknowledgedEvent} and it's counterpart for each Message
-     * Auto-Acknowledging can impact the performance, as it sends a extra request to the Server for each received Message and gets extra MessageAcknowledgeEvents
-     *
-     * @param acknowledge
-     *          wether the api should auto-acknowledge Messages or not
-     * @return
-     *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
-     */
-    public JDABuilder setAutoAcknowledgeMessages(boolean acknowledge){
-        this.autoAck = acknowledge;
-        return this;
     }
 }

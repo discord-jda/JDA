@@ -40,10 +40,6 @@ public class MessageReceivedHandler extends SocketHandler
     public void handle(JSONObject content)
     {
         Message message = new EntityBuilder(api).createMessage(content);
-        if (api.isAutoAck())
-        {
-            message.acknowledge();
-        }
         if (!message.isPrivate())
         {
             api.getEventManager().handle(

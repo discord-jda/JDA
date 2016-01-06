@@ -45,19 +45,16 @@ public abstract class ListenerAdapter implements EventListener
     //Message Events
     //Guild (TextChannel) Message Events
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {}
-    public void onGuildMessageAcknowledged(GuildMessageAcknowledgedEvent event) {}
     public void onGuildMessageUpdate(GuildMessageUpdateEvent event) {}
     public void onGuildMessageDelete(GuildMessageDeleteEvent event) {}
     public void onGuildMessageEmbed(GuildMessageEmbedEvent event) {}
     //Private Message Events
     public void onPrivateMessageReceived(PrivateMessageReceivedEvent event) {}
-    public void onPrivateMessageAcknowledged(PrivateMessageAcknowledgedEvent event) {}
     public void onPrivateMessageUpdate(PrivateMessageUpdateEvent event) {}
     public void onPrivateMessageDelete(PrivateMessageDeleteEvent event) {}
     public void onPrivateMessageEmbed(PrivateMessageEmbedEvent event) {}
     //Combined Message Events (Combines Guild and Private message into 1 event)
     public void onMessageReceived(MessageReceivedEvent event) {}
-    public void onMessageAcknowledged(MessageAcknowledgedEvent event) {}
     public void onMessageUpdate(MessageUpdateEvent event) {}
     public void onMessageDelete(MessageDeleteEvent event) {}
     public void onMessageEmbed(MessageEmbedEvent event) {}
@@ -138,8 +135,6 @@ public abstract class ListenerAdapter implements EventListener
         //Guild (TextChannel) Message Events
         else if (event instanceof GuildMessageReceivedEvent)
             onGuildMessageReceived((GuildMessageReceivedEvent) event);
-        else if (event instanceof GuildMessageAcknowledgedEvent)
-            onGuildMessageAcknowledged((GuildMessageAcknowledgedEvent) event);
         else if (event instanceof GuildMessageUpdateEvent)
             onGuildMessageUpdate((GuildMessageUpdateEvent) event);
         else if (event instanceof GuildMessageDeleteEvent)
@@ -149,8 +144,6 @@ public abstract class ListenerAdapter implements EventListener
         //Private Message Events
         else if (event instanceof PrivateMessageReceivedEvent)
             onPrivateMessageReceived((PrivateMessageReceivedEvent) event);
-        else if (event instanceof PrivateMessageAcknowledgedEvent)
-            onPrivateMessageAcknowledged((PrivateMessageAcknowledgedEvent) event);
         else if (event instanceof PrivateMessageUpdateEvent)
             onPrivateMessageUpdate((PrivateMessageUpdateEvent) event);
         else if (event instanceof PrivateMessageDeleteEvent)
@@ -160,8 +153,6 @@ public abstract class ListenerAdapter implements EventListener
         //Combined Message Events (Combines Guild and Private message into 1 event)
         else if (event instanceof MessageReceivedEvent)
             onMessageReceived((MessageReceivedEvent) event);
-        else if (event instanceof MessageAcknowledgedEvent)
-            onMessageAcknowledged((MessageAcknowledgedEvent) event);
         else if (event instanceof MessageUpdateEvent)
             onMessageUpdate((MessageUpdateEvent) event);
         else if (event instanceof MessageDeleteEvent)

@@ -136,11 +136,6 @@ public interface Message
     void deleteMessage();
 
     /**
-     * Marks this Message as read.
-     */
-    void acknowledge();
-
-    /**
      * Returns the {@link net.dv8tion.jda.JDA JDA} instance of this Message
      * @return
      *      the corresponding JDA instance

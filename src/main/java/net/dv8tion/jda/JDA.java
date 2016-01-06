@@ -116,8 +116,4 @@ public interface JDA
     void setDebug(boolean enableDebug);
 
     boolean isDebug();
-
-    void setAutoAck(boolean autoAck);
-
-    boolean isAutoAck();
 }

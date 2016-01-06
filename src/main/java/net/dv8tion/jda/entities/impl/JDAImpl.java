@@ -65,7 +65,6 @@ public class JDAImpl implements JDA
     private WebSocketClient client;
     private final Requester requester = new Requester(this);
     private boolean debug;
-    private boolean autoAck;
     private int responseTotal;
 
     public JDAImpl()
@@ -445,18 +444,6 @@ public class JDAImpl implements JDA
     public boolean isDebug()
     {
         return debug;
-    }
-
-    @Override
-    public void setAutoAck(boolean autoAck)
-    {
-        this.autoAck = autoAck;
-    }
-
-    @Override
-    public boolean isAutoAck()
-    {
-        return autoAck;
     }
 
     private static class AsyncCallback implements EventListener
