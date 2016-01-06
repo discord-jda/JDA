@@ -278,6 +278,23 @@ public class EntityBuilder
                 .setMentionsEveryone(jsonObject.getBoolean("mention_everyone"))
                 .setTTS(jsonObject.getBoolean("tts"));
 
+        List<Message.Attachment> attachments = new LinkedList<>();
+        JSONArray jsonAttachments = jsonObject.getJSONArray("attachments");
+        for (int i = 0; i < jsonAttachments.length(); i++)
+        {
+            JSONObject jsonAttachment = jsonAttachments.getJSONObject(i);
+            attachments.add(new Message.Attachment(
+                    jsonAttachment.getString("id"),
+                    jsonAttachment.getString("url"),
+                    jsonAttachment.getString("proxy_url"),
+                    jsonAttachment.getString("filename"),
+                    jsonAttachment.getInt("size"),
+                    jsonAttachment.has("height") ? jsonAttachment.getInt("height") : 0,
+                    jsonAttachment.has("width") ? jsonAttachment.getInt("width") : 0
+            ));
+        }
+        message.setAttachments(attachments);
+
         if (!jsonObject.isNull("edited_timestamp"))
             message.setEditedTime(OffsetDateTime.parse(jsonObject.getString("edited_timestamp")));
 

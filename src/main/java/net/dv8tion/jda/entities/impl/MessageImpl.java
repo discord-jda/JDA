@@ -31,18 +31,19 @@ import java.util.List;
 
 public class MessageImpl implements Message
 {
-    private final String id;
     private final JDAImpl api;
-    private List<User> mentionedUsers = new LinkedList<>();
+    private final String id;
     private boolean mentionsEveryone = false;
     private boolean isTTS = false;
-    private OffsetDateTime time;
-    private OffsetDateTime editedTime = null;
-    private User author;
-    private String channelId;
     private boolean isPrivate;
+    private String channelId;
     private String content;
     private String subContent = null;
+    private User author;
+    private OffsetDateTime time;
+    private OffsetDateTime editedTime = null;
+    private List<User> mentionedUsers = new LinkedList<>();
+    private List<Attachment> attachments = new LinkedList<>();
 
     public MessageImpl(String id, JDAImpl api)
     {
@@ -123,6 +124,12 @@ public class MessageImpl implements Message
     public String getChannelId()
     {
         return channelId;
+    }
+
+    @Override
+    public List<Attachment> getAttachments()
+    {
+        return Collections.unmodifiableList(attachments);
     }
 
     @Override
@@ -218,6 +225,12 @@ public class MessageImpl implements Message
     public MessageImpl setContent(String content)
     {
         this.content = content;
+        return this;
+    }
+
+    public MessageImpl setAttachments(List<Attachment> attachments)
+    {
+        this.attachments = attachments;
         return this;
     }
 }

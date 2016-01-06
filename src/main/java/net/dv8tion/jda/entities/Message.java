@@ -20,6 +20,11 @@ import net.dv8tion.jda.JDA;
 import java.time.OffsetDateTime;
 import java.util.List;
 
+/**
+ * Represents a Text message received from Discord.<br>
+ * This repsents message received from both {@link net.dv8tion.jda.entities.TextChannel TextChannels}
+ * and from {@link net.dv8tion.jda.entities.PrivateChannel PrivateChannels}.
+ */
 public interface Message
 {
     /**
@@ -112,6 +117,15 @@ public interface Message
     String getChannelId();
 
     /**
+     * An unmodifiable list of {@link net.dv8tion.jda.entities.Message.Attachment Attachment} that are attached to this message.<br>
+     * Most likely this will only ever be 1 {@link net.dv8tion.jda.entities.Message.Attachment Attachment} at most.
+     *
+     * @return
+     *      Unmodifiable list of {@link net.dv8tion.jda.entities.Message.Attachment Attachments}.
+     */
+    List<Attachment> getAttachments();
+
+    /**
      * Is this Message supposed to be TTS (Text-to-speach)
      *
      * @return if message is tts
@@ -141,4 +155,120 @@ public interface Message
      *      the corresponding JDA instance
      */
     JDA getJDA();
+
+    /**
+     * Represents a {@link net.dv8tion.jda.entities.Message Message} file attachment.
+     */
+    class Attachment
+    {
+        private final String id;
+        private final String url;
+        private final String proxyUrl;
+        private final String fileName;
+        private final int size;
+        private final int height;
+        private final int width;
+
+        public Attachment(String id, String url, String proxyUrl, String fileName, int size, int height, int width)
+        {
+            this.id = id;
+            this.url = url;
+            this.proxyUrl = proxyUrl;
+            this.fileName = fileName;
+            this.size = size;
+            this.height = height;
+            this.width = width;
+        }
+
+        /**
+         * The id of the attachment. This is not the id of the message that the attachment was attached to.
+         *
+         * @return
+         *      Non-null String containing the Attachment ID.
+         */
+        public String getId()
+        {
+            return id;
+        }
+
+        /**
+         * The url of the Attachment, most likely on the Discord servers.
+         *
+         * @return
+         *      Non-null String containing the Attachment URL.
+         */
+        public String getUrl()
+        {
+            return url;
+        }
+
+        /**
+         * The url of the Attachment, proxied by Discord.
+         *
+         * @return
+         *      Non-null String containing the proxied Attachment url.
+         */
+        public String getProxyUrl()
+        {
+            return proxyUrl;
+        }
+
+        /**
+         * The file name of the Attachment when it was first uploaded.
+         *
+         * @return
+         *      Non-null String containing the Attachment file name.
+         */
+        public String getFileName()
+        {
+            return fileName;
+        }
+
+        /**
+         * The size of the attachment in bytes.<br>
+         * Example: if {@link #getSize() getSize()} returns 1024, then the attachment is 1024 bytes, or 1KB, in size.
+         *
+         * @return
+         *      Positive int containing the size of the Attachment.
+         */
+        public int getSize()
+        {
+            return size;
+        }
+
+        /**
+         * The height of the Attachment if this Attachment is an image.<br>
+         * If this Attachment is not an image, this returns 0.
+         *
+         * @return
+         *      Never-negative int containing image Attachment height.
+         */
+        public int getHeight()
+        {
+            return height;
+        }
+
+        /**
+         * The width of the Attachment if this Attachment is an image.<br>
+         * If this Attachment is not an image, this returns 0.
+         *
+         * @return
+         *      Never-negative int containing image Attachment width.
+         */
+        public int getWidth()
+        {
+            return width;
+        }
+
+        /**
+         * Based on the values of getHeight and getWidth being larger than zero.
+         *
+         * @return
+         *      True if width and height are greater than zero.
+         */
+        public boolean isImage()
+        {
+            return height > 0 && width > 0;
+        }
+    }
 }
