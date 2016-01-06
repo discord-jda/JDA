@@ -15,7 +15,12 @@
  */
 package net.dv8tion.jda.entities.impl;
 
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.JDAInfo;
 import net.dv8tion.jda.MessageBuilder;
 import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.PrivateChannel;
@@ -23,6 +28,9 @@ import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.handle.EntityBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.File;
+import java.util.function.Consumer;
 
 public class PrivateChannelImpl implements PrivateChannel
 {
@@ -77,6 +85,40 @@ public class PrivateChannelImpl implements PrivateChannel
             //sending failed
             return null;
         }
+    }
+    @Override
+    public Message sendFile(File file)
+    {
+        JDAImpl api = (JDAImpl) getJDA();
+        try
+        {
+            HttpResponse<JsonNode> response = Unirest.post("https://discordapp.com/api/channels/" + getId() + "/messages")
+                    .header("authorization", getJDA().getAuthToken())
+                    .header("user-agent", JDAInfo.GITHUB + " " + JDAInfo.VERSION)
+                    .field("file", file)
+                    .asJson();
+
+            JSONObject messageJson = new JSONObject(response.getBody().toString());
+            return new EntityBuilder(api).createMessage(messageJson);
+        }
+        catch (UnirestException e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public void sendFileAsync(File file, Consumer<Message> callback)
+    {
+        Thread thread = new Thread(() ->
+        {
+            Message message = sendFile(file);
+            if (callback != null)
+                callback.accept(message);
+        });
+        thread.setDaemon(true);
+        thread.start();
     }
 
     public void sendTyping()

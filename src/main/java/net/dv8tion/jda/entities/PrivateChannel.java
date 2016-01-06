@@ -17,6 +17,9 @@ package net.dv8tion.jda.entities;
 
 import net.dv8tion.jda.JDA;
 
+import java.io.File;
+import java.util.function.Consumer;
+
 /**
  * Represents the connection used for direct messaging.
  */
@@ -63,6 +66,29 @@ public interface PrivateChannel
      *      The created {@link net.dv8tion.jda.entities.Message Message} object or null if it failed
      */
     Message sendMessage(Message msg);
+
+    /**
+     * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.entities.TextChannel TextChannel}.
+     * <p>
+     * <b>Note:</b> This method is blocking, which can cause problems when uploading large files.<br>
+     * Consider {@link #sendFileAsync(java.io.File, java.util.function.Consumer) sendFileAsync(File, Consumer<Message>)} for an alternative.
+     *
+     * @param file
+     *          The file to upload to the {@link net.dv8tion.jda.entities.TextChannel TextChannel}.
+     * @return
+     *      The {@link net.dv8tion.jda.entities.Message Message} created from this upload.
+     */
+    Message sendFile(File file);
+
+    /**
+     * Asynchronously uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.entities.TextChannel TextChannel}.
+     *
+     * @param file
+     *          The file to upload to the {@link net.dv8tion.jda.entities.TextChannel TextChannel}.
+     * @param callback
+     *          Function to deal with the returned {@link net.dv8tion.jda.entities.Message Message} after asynchronous uploading completes.
+     */
+    void sendFileAsync(File file, Consumer<Message> callback);
 
     /**
      * Sends the typing status to discord. This is what is used to make the message "X is typing..." appear.<br>
