@@ -15,13 +15,16 @@
  */
 package net.dv8tion.jda.managers;
 
+import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.Region;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.entities.impl.UserImpl;
+import net.dv8tion.jda.exceptions.PermissionException;
 import net.dv8tion.jda.utils.AvatarUtil;
+import net.dv8tion.jda.utils.PermissionUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -121,6 +124,8 @@ public class GuildManager
      */
     public GuildManager setName(String name)
     {
+        checkPermission(Permission.MANAGE_SERVER);
+
         if (guild.getName().equals(name))
         {
             this.name = null;
@@ -144,6 +149,8 @@ public class GuildManager
      */
     public GuildManager setRegion(Region region)
     {
+        checkPermission(Permission.MANAGE_SERVER);
+
         if (region == guild.getRegion() || region == Region.UNKNOWN)
         {
             this.region = null;
@@ -171,6 +178,8 @@ public class GuildManager
      */
     public GuildManager setIcon(AvatarUtil.Avatar avatar)
     {
+        checkPermission(Permission.MANAGE_SERVER);
+
         this.icon = avatar;
         return this;
     }
@@ -189,6 +198,8 @@ public class GuildManager
      */
     public GuildManager setAfkChannel(VoiceChannel channel)
     {
+        checkPermission(Permission.MANAGE_SERVER);
+
         if (channel != null && channel.getGuild() != guild)
         {
             throw new IllegalArgumentException("Given VoiceChannel is not member of modifying Guild");
@@ -212,6 +223,8 @@ public class GuildManager
      */
     public GuildManager setAfkTimeout(Timeout timeout)
     {
+        checkPermission(Permission.MANAGE_SERVER);
+
         this.timeout = timeout;
         return this;
     }
@@ -221,6 +234,8 @@ public class GuildManager
      */
     public void update()
     {
+        checkPermission(Permission.MANAGE_SERVER);
+
         JSONObject frame = getFrame();
         if(name != null)
             frame.put("name", name);
@@ -260,6 +275,8 @@ public class GuildManager
      */
     public void kick(String userId)
     {
+        checkPermission(Permission.MANAGE_SERVER);
+
         ((JDAImpl) guild.getJDA()).getRequester().delete("https://discordapp.com/api/guilds/"
                 + guild.getId() + "/members/" + userId);
     }
@@ -297,6 +314,8 @@ public class GuildManager
      */
     public void ban(String userId, int delDays)
     {
+        checkPermission(Permission.BAN_MEMBERS);
+
         ((JDAImpl) guild.getJDA()).getRequester().put("https://discordapp.com/api/guilds/"
                 + guild.getId() + "/bans/" + userId + (delDays > 0 ? "?delete-message-days=" + delDays : ""), new JSONObject());
     }
@@ -351,6 +370,8 @@ public class GuildManager
      */
     public void unBan(String userId)
     {
+        checkPermission(Permission.BAN_MEMBERS);
+
         ((JDAImpl) guild.getJDA()).getRequester().delete("https://discordapp.com/api/guilds/"
                 + guild.getId() + "/bans/" + userId);
     }
@@ -375,5 +396,12 @@ public class GuildManager
     private void update(JSONObject object)
     {
         ((JDAImpl) guild.getJDA()).getRequester().patch("https://discordapp.com/api/guilds/" + guild.getId(), object);
+    }
+
+    private void checkPermission(Permission perm)
+    {
+        if (!PermissionUtil.checkPermission(getGuild(), getGuild().getJDA().getSelfInfo(), perm))
+            throw new PermissionException(perm);
+
     }
 }

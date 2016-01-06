@@ -19,6 +19,7 @@ import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.MessageBuilder;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.*;
+import net.dv8tion.jda.exceptions.PermissionException;
 import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.managers.ChannelManager;
 import net.dv8tion.jda.utils.PermissionUtil;
@@ -99,6 +100,11 @@ public class TextChannelImpl implements TextChannel
     @Override
     public Message sendMessage(Message msg)
     {
+        SelfInfo self = getJDA().getSelfInfo();
+        if (!checkPermission(self, Permission.MESSAGE_WRITE))
+            throw new PermissionException(Permission.MESSAGE_WRITE);
+        //TODO: PermissionException for Permission.MESSAGE_ATTACH_FILES maybe
+
         JDAImpl api = (JDAImpl) getJDA();
         try
         {

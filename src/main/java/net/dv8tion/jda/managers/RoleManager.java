@@ -19,7 +19,9 @@ import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.entities.impl.RoleImpl;
+import net.dv8tion.jda.exceptions.PermissionException;
 import net.dv8tion.jda.handle.EntityBuilder;
+import net.dv8tion.jda.utils.PermissionUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -63,6 +65,8 @@ public class RoleManager
      */
     public RoleManager setName(String name)
     {
+        checkPermission(Permission.MANAGE_ROLES);
+
         if (role.getName().equals(name))
         {
             this.name = null;
@@ -86,6 +90,8 @@ public class RoleManager
      */
     public RoleManager setColor(int color)
     {
+        checkPermission(Permission.MANAGE_ROLES);
+
         if (color == role.getColor() || color < 0)
         {
             this.color = -1;
@@ -109,6 +115,8 @@ public class RoleManager
      */
     public RoleManager setGrouped(Boolean group)
     {
+        checkPermission(Permission.MANAGE_ROLES);
+
         if (group == null || group == role.isGrouped())
         {
             this.grouped = null;
@@ -131,6 +139,8 @@ public class RoleManager
      */
     public RoleManager move(int offset)
     {
+        checkPermission(Permission.MANAGE_ROLES);
+
         List<Role> newOrder = new ArrayList<>();
         role.getGuild().getRoles().stream().filter(r -> r != role && r != role.getGuild().getPublicRole())
                 .sorted((c1, c2) -> Integer.compare(c1.getPosition(), c2.getPosition())).forEachOrdered(newOrder::add);
@@ -157,6 +167,8 @@ public class RoleManager
      */
     public RoleManager give(Permission... perms)
     {
+        checkPermission(Permission.MANAGE_ROLES);
+
         for (Permission perm : perms)
         {
             this.perms = this.perms | (1 << perm.getOffset());
@@ -176,6 +188,8 @@ public class RoleManager
      */
     public RoleManager revoke(Permission... perms)
     {
+        checkPermission(Permission.MANAGE_ROLES);
+
         for (Permission perm : perms)
         {
             this.perms = this.perms & (~(1 << perm.getOffset()));
@@ -185,6 +199,8 @@ public class RoleManager
 
     public void update()
     {
+        checkPermission(Permission.MANAGE_ROLES);
+
         JSONObject frame = getFrame();
         if(name != null)
             frame.put("name", name);
@@ -201,6 +217,8 @@ public class RoleManager
      */
     public void delete()
     {
+        checkPermission(Permission.MANAGE_ROLES);
+
         ((JDAImpl) role.getJDA()).getRequester().delete("https://discordapp.com/api/guilds/" + role.getGuild().getId() + "/roles/" + role.getId());
     }
 
@@ -222,5 +240,11 @@ public class RoleManager
                     + " failed... Reason: " + (response == null ? "Unknown" : response.toString()));
         }
         new EntityBuilder(((JDAImpl) role.getJDA())).createRole(response, role.getGuild().getId());
+    }
+
+    private void checkPermission(Permission perm)
+    {
+        if (!PermissionUtil.checkPermission(role.getGuild(), role.getJDA().getSelfInfo(), perm))
+            throw new PermissionException(perm);
     }
 }

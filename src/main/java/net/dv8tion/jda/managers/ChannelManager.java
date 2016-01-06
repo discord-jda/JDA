@@ -15,10 +15,12 @@
  */
 package net.dv8tion.jda.managers;
 
+import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.Channel;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
+import net.dv8tion.jda.exceptions.PermissionException;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
@@ -54,6 +56,8 @@ public class ChannelManager
      */
     public ChannelManager setName(String name)
     {
+        checkPermission(Permission.MANAGE_CHANNEL);
+
         if (channel.getName().equals(name))
         {
             this.name = null;
@@ -92,6 +96,8 @@ public class ChannelManager
      */
     public ChannelManager setTopic(String topic)
     {
+        checkPermission(Permission.MANAGE_CHANNEL);
+
         if (channel instanceof VoiceChannel)
         {
             throw new UnsupportedOperationException("Setting a Topic on VoiceChannels is not allowed!");
@@ -122,6 +128,8 @@ public class ChannelManager
      */
     public ChannelManager setPosition(int newPosition)
     {
+        checkPermission(Permission.MANAGE_CHANNEL);
+
         newPositions.clear();
         if (newPosition < 0 || newPosition == channel.getPosition())
         {
@@ -179,6 +187,8 @@ public class ChannelManager
      */
     public void delete()
     {
+        checkPermission(Permission.MANAGE_CHANNEL);
+
         ((JDAImpl) channel.getJDA()).getRequester().delete("https://discordapp.com/api/channels/" + channel.getId());
     }
 
@@ -221,5 +231,11 @@ public class ChannelManager
     private void update(Channel chan, JSONObject o)
     {
         ((JDAImpl) chan.getJDA()).getRequester().patch("https://discordapp.com/api/channels/" + chan.getId(), o);
+    }
+
+    private void checkPermission(Permission perm)
+    {
+        if (!channel.checkPermission(channel.getJDA().getSelfInfo(), perm))
+            throw new PermissionException(perm);
     }
 }

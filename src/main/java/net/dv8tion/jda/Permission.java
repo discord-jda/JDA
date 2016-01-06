@@ -39,7 +39,9 @@ public enum Permission
     VOICE_MUTE_OTHERS(22),
     VOICE_DEAF_OTHERS(23),
     VOICE_MOVE_OTHERS(24),
-    VOICE_USE_VAD(25);
+    VOICE_USE_VAD(25),
+
+    UNKNOWN(-1);
 
     private final int offset;
 

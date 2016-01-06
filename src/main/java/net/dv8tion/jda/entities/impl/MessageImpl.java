@@ -16,8 +16,10 @@
 package net.dv8tion.jda.entities.impl;
 
 import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.exceptions.PermissionException;
 import net.dv8tion.jda.handle.EntityBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -138,6 +140,8 @@ public class MessageImpl implements Message
     @Override
     public Message updateMessage(String newContent)
     {
+        if (!api.getSelfInfo().getId().equals(getAuthor().getId()))
+            throw new UnsupportedOperationException("Attempted to update message that was not sent by this account. You cannot modify other User's messages!");
         try
         {
             JSONObject response = api.getRequester().patch("https://discordapp.com/api/channels/" + channelId + "/messages/" + getId(), new JSONObject().put("content", newContent));
@@ -153,6 +157,13 @@ public class MessageImpl implements Message
     @Override
     public void deleteMessage()
     {
+        if (!api.getSelfInfo().getId().equals(getAuthor().getId()))
+        {
+            if (isPrivate())
+                throw new PermissionException("Cannot delete another User's messages in a PrivateChannel.");
+            else if (!api.getTextChannelById(getChannelId()).checkPermission(api.getSelfInfo(), Permission.MESSAGE_MANAGE))
+                throw new PermissionException(Permission.MESSAGE_MANAGE);
+        }
         api.getRequester().delete("https://discordapp.com/api/channels/" + channelId + "/messages/" + getId());
     }
 
