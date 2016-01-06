@@ -114,6 +114,8 @@ It is also highly recommended to get in touch with the Devs via the Discord API 
 * Permissions
   * Implement Exceptions
   * ~~Revisit the Permission calculation~~
+* Read-States (which Message was last read in which channel)
+  * ~~Message-ACK~~
 * Voice (planned last, gonna take some while)
 
 ## Dependencies:

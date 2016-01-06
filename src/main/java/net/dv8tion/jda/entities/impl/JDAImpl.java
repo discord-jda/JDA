@@ -65,6 +65,7 @@ public class JDAImpl implements JDA
     private WebSocketClient client;
     private final Requester requester = new Requester(this);
     private boolean debug;
+    private boolean enableAck;
     private int responseTotal;
 
     public JDAImpl()
@@ -444,6 +445,42 @@ public class JDAImpl implements JDA
     public boolean isDebug()
     {
         return debug;
+    }
+
+    /**
+     * Enables or disables the ack functionality of JDA.<br>
+     * <b>Read the Javadocs of {@link #ack(Message)}</b> for guidelines on how and when to ack!
+     *
+     * @param enable
+     *      whether or not to enable ack functionality
+     */
+    public void setAllowAck(boolean enable)
+    {
+        this.enableAck = enable;
+    }
+
+    public boolean isAckAllowed()
+    {
+        return enableAck;
+    }
+
+    /**
+     * Acks a specific message. This feature is disabled by default.
+     * To enable them, call {@link #setAllowAck(boolean)}.<br>
+     * IMPORTANT: It is highly discouraged to ack every message and may lead to rate-limits and other bad stuff.
+     * Use this wisely (only if needed, or on a long enough interval).
+     * Acking a specific Message also acks every Message before (only ack last one if possible)
+     *
+     * @param msg
+     *      the message to ack
+     */
+    public void ack(Message msg)
+    {
+        if (!enableAck)
+        {
+            throw new RuntimeException("Acking is disabled by default. <b>READ THE JAVADOCS</b> for how to use them!");
+        }
+        getRequester().post("https://discordapp.com/api/channels/"+msg.getChannelId()+"/messages/"+msg.getId()+"/ack", new JSONObject());
     }
 
     private static class AsyncCallback implements EventListener
