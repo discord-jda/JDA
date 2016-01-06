@@ -18,6 +18,7 @@ package net.dv8tion.jda.managers;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.Region;
 import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
@@ -29,6 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -348,7 +350,7 @@ public class GuildManager
                         .setAvatarId(userObj.isNull("avatar") ? null : userObj.getString("avatar")));
             }
         }
-        return bans;
+        return Collections.unmodifiableList(bans);
     }
 
     /**
@@ -374,6 +376,64 @@ public class GuildManager
 
         ((JDAImpl) guild.getJDA()).getRequester().delete("https://discordapp.com/api/guilds/"
                 + guild.getId() + "/bans/" + userId);
+    }
+
+    /**
+     * Gives the {@link net.dv8tion.jda.entities.User User} the specified {@link net.dv8tion.jda.entities.Role Role}.<br>
+     * If the {@link net.dv8tion.jda.entities.User User} already has the provided {@link net.dv8tion.jda.entities.Role Role}
+     * this method will do nothing.
+     *
+     * @param user
+     *          The {@link net.dv8tion.jda.entities.User User} that is gaining a new {@link net.dv8tion.jda.entities.Role Role}.
+     * @param role
+     *          The {@link net.dv8tion.jda.entities.Role Role} that is being assigned to the {@link net.dv8tion.jda.entities.User User}.
+     */
+    public void addRoleToUser(User user, Role role)
+    {
+        checkPermission(Permission.MANAGE_ROLES);
+
+        List<Role> roles = guild.getRolesForUser(user);
+        if(guild.getPublicRole().equals(role) || roles.contains(role))
+            return;
+
+        List<String> roleIds = new LinkedList<>();
+        roles.forEach(r -> roleIds.add(r.getId()));
+        roleIds.add(role.getId());
+        ((JDAImpl) guild.getJDA()).getRequester().patch(
+                "https://discordapp.com/api/guilds/" + guild.getId() + "/members/" + user.getId(),
+                new JSONObject().put("roles", roleIds));
+    }
+
+    /**
+     * Removes the specified {@link net.dv8tion.jda.entities.Role Role} from the {@link net.dv8tion.jda.entities.User User}.<br>
+     * If the {@link net.dv8tion.jda.entities.User User} does not have the specified {@link net.dv8tion.jda.entities.Role Role}
+     * this method will do nothing.
+     * <p>
+     * <b>NOTE:</b> you cannot remove the {@link net.dv8tion.jda.entities.Guild Guild} public role from a {@link net.dv8tion.jda.entities.User User}.
+     * Attempting to do so will result in nothing happening.
+     *
+     * @param user
+     *          The {@link net.dv8tion.jda.entities.User User} that is having a {@link net.dv8tion.jda.entities.Role Role} removed.
+     * @param role
+     *           The {@link net.dv8tion.jda.entities.Role Role} that is being removed from the {@link net.dv8tion.jda.entities.User User}.
+     */
+    public void removeRoleFromUser(User user, Role role)
+    {
+        checkPermission(Permission.MANAGE_ROLES);
+
+        List<Role> roles = guild.getRolesForUser(user);
+        if(guild.getPublicRole().getId().equals(role.getId()) || !roles.contains(role))
+            return;
+
+        List<String> roleIds = new LinkedList<>();
+        roles.forEach(r ->
+        {
+            if (!r.getId().equals(role.getId()))
+                roleIds.add(r.getId());
+        });
+        ((JDAImpl) guild.getJDA()).getRequester().patch(
+                "https://discordapp.com/api/guilds/" + guild.getId() + "/members/" + user.getId(),
+                new JSONObject().put("roles", roleIds));
     }
 
     /**
