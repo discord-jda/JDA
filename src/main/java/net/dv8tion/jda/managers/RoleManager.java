@@ -25,6 +25,7 @@ import net.dv8tion.jda.utils.PermissionUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,6 +102,21 @@ public class RoleManager
             this.color = Math.min(0xFFFFFF, color);
         }
         return this;
+    }
+
+    /**
+     * Sets the color of this Role.
+     * This change will only be applied, if {@link #update()} is called.
+     * So multiple changes can be made at once.
+     *
+     * @param color
+     *      The new color of the Role, or null to keep current one
+     * @return
+     *      this
+     */
+    public RoleManager setColor(Color color)
+    {
+        return setColor(color == null ? -1 : color.getRGB() & 0xFFFFFF);
     }
 
     /**

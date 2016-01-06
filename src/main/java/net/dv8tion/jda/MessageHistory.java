@@ -16,6 +16,7 @@
 package net.dv8tion.jda;
 
 import net.dv8tion.jda.entities.Message;
+import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.exceptions.PermissionException;
@@ -28,15 +29,24 @@ import java.util.List;
 public class MessageHistory
 {
     private final JDAImpl api;
-    private final TextChannel channel;
+    private final String channelId;
     private String lastId = null;
     private boolean atEnd = false;
     private final List<Message> queued = new LinkedList<>();
 
     public MessageHistory(JDA api, TextChannel channel)
     {
+        if (!channel.checkPermission(api.getSelfInfo(), Permission.MESSAGE_HISTORY))
+            throw new PermissionException(Permission.MESSAGE_HISTORY);
+
         this.api = ((JDAImpl) api);
-        this.channel = channel;
+        this.channelId = channel.getId();
+    }
+
+    public MessageHistory(JDA api, PrivateChannel channel)
+    {
+        this.api = ((JDAImpl) api);
+        this.channelId = channel.getId();
     }
 
     /**
@@ -83,9 +93,6 @@ public class MessageHistory
      */
     public List<Message> retrieve(int amount)
     {
-        if (!channel.checkPermission(api.getSelfInfo(), Permission.MESSAGE_HISTORY))
-            throw new PermissionException(Permission.MESSAGE_HISTORY);
-
         if (atEnd)
         {
             return null;
@@ -94,7 +101,7 @@ public class MessageHistory
         LinkedList<Message> out = new LinkedList<>();
         try
         {
-            JSONArray array = api.getRequester().getA("https://discordapp.com/api/channels/" + channel.getId()
+            JSONArray array = api.getRequester().getA("https://discordapp.com/api/channels/" + channelId
                     + "/messages?limit=" + amount + (lastId != null ? "&before=" + lastId : ""));
 
             EntityBuilder builder = new EntityBuilder(api);
