@@ -32,10 +32,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -59,6 +56,39 @@ public class TextChannelImpl implements TextChannel
     public JDA getJDA()
     {
         return guild.getJDA();
+    }
+
+    @Override
+    public PermissionOverride getOverrideForUser(User user)
+    {
+        return userPermissionOverrides.get(user);
+    }
+
+    @Override
+    public PermissionOverride getOverrideForRole(Role role)
+    {
+        return rolePermissionOverrides.get(role);
+    }
+
+    @Override
+    public List<PermissionOverride> getPermissionOverrides()
+    {
+        List<PermissionOverride> overrides = new LinkedList<>();
+        overrides.addAll(userPermissionOverrides.values());
+        overrides.addAll(rolePermissionOverrides.values());
+        return Collections.unmodifiableList(overrides);
+    }
+
+    @Override
+    public List<PermissionOverride> getUserPermissionOverrides()
+    {
+        return Collections.unmodifiableList(new LinkedList<PermissionOverride>(userPermissionOverrides.values()));
+    }
+
+    @Override
+    public List<PermissionOverride> getRolePermissionOverrides()
+    {
+        return Collections.unmodifiableList(new LinkedList<PermissionOverride>(rolePermissionOverrides.values()));
     }
 
     @Override
@@ -170,7 +200,7 @@ public class TextChannelImpl implements TextChannel
     @Override
     public boolean checkPermission(User user, Permission perm)
     {
-        return PermissionUtil.checkPermission(this, user, perm);
+        return PermissionUtil.checkPermission(user, perm, this);
     }
 
     @Override
@@ -198,12 +228,12 @@ public class TextChannelImpl implements TextChannel
         return this;
     }
 
-    public Map<User, PermissionOverride> getUserPermissionOverrides()
+    public Map<User, PermissionOverride> getUserPermissionOverridesMap()
     {
         return userPermissionOverrides;
     }
 
-    public Map<Role, PermissionOverride> getRolePermissionOverrides()
+    public Map<Role, PermissionOverride> getRolePermissionOverridesMap()
     {
         return rolePermissionOverrides;
     }

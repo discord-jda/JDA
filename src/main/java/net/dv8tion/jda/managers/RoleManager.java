@@ -260,7 +260,7 @@ public class RoleManager
 
     private void checkPermission(Permission perm)
     {
-        if (!PermissionUtil.checkPermission(role.getGuild(), role.getJDA().getSelfInfo(), perm))
+        if (!PermissionUtil.checkPermission(role.getJDA().getSelfInfo(), perm, role.getGuild()))
             throw new PermissionException(perm);
     }
 }

@@ -104,4 +104,10 @@ public interface Channel
      *      the corresponding JDA instance
      */
     JDA getJDA();
+
+    PermissionOverride getOverrideForUser(User user);
+    PermissionOverride getOverrideForRole(Role role);
+    List<PermissionOverride> getPermissionOverrides();
+    List<PermissionOverride> getUserPermissionOverrides();
+    List<PermissionOverride> getRolePermissionOverrides();
 }

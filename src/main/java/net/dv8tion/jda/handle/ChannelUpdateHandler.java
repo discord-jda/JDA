@@ -15,8 +15,7 @@
  */
 package net.dv8tion.jda.handle;
 
-import net.dv8tion.jda.entities.Role;
-import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.entities.impl.*;
 import net.dv8tion.jda.events.channel.text.TextChannelUpdateNameEvent;
 import net.dv8tion.jda.events.channel.text.TextChannelUpdatePermissionsEvent;
@@ -35,6 +34,10 @@ import java.util.stream.Collectors;
 
 public class ChannelUpdateHandler extends SocketHandler
 {
+    private List<Role> changedRoles = new ArrayList<>();
+    private List<User> changedUsers = new ArrayList<>();
+    private List<Role> containedRoles = new ArrayList<>();
+    private List<User> containedUsers = new ArrayList<>();
 
     public ChannelUpdateHandler(JDAImpl api, int responseNumber)
     {
@@ -44,10 +47,6 @@ public class ChannelUpdateHandler extends SocketHandler
     @Override
     public void handle(JSONObject content)
     {
-        List<Role> changedRoles = new ArrayList<>();
-        List<User> changedUsers = new ArrayList<>();
-        List<Role> containedRoles = new ArrayList<>();
-        List<User> containedUsers = new ArrayList<>();
 
         String name = content.getString("name");
         int position = content.getInt("position");
@@ -94,58 +93,22 @@ public class ChannelUpdateHandler extends SocketHandler
                 //If a PermissionOverride was created or updated it stores it in the proper Map to be reported by the Event.
                 for (int i = 0; i < permOverwrites.length(); i++)
                 {
-                    JSONObject override = permOverwrites.getJSONObject(i);
-                    PermissionOverride newOverride = new PermissionOverride(override.getInt("allow"), override.getInt("deny"));
-                    switch (override.getString("type"))
-                    {
-                        case "role":
-                        {
-                            Role role = ((GuildImpl) channel.getGuild()).getRolesMap().get(override.getString("id"));
-                            if (role == null)
-                                throw new IllegalArgumentException("CHANNEL_UPDATE attempted to create or update a PermissionOverride for a Role that doesn't exist! JSON: " + content);
-                            PermissionOverride oldOverride = channel.getRolePermissionOverrides().get(role);
-
-                            if (oldOverride == null || !newOverride.equals(oldOverride))    //updated
-                            {
-                                changedRoles.add(role);
-                                channel.getRolePermissionOverrides().put(role, newOverride);
-                            }
-                            containedRoles.add(role);
-                            break;
-                        }
-                        case "member":
-                        {
-                            User user = api.getUserMap().get(override.getString("id"));
-                            if (user == null)
-                                throw new IllegalArgumentException("CHANNEL_UPDATE attempted to create or update a PermissionOverride for User that doesn't exist! JSON: " + content);
-                            PermissionOverride oldOverride = channel.getUserPermissionOverrides().get(user);
-
-                            if (oldOverride == null || !oldOverride.equals(newOverride))    //Created
-                            {
-                                changedUsers.add(user);
-                                channel.getUserPermissionOverrides().put(user, newOverride);
-                            }
-                            containedUsers.add(user);
-                            break;
-                        }
-                        default:
-                            throw new IllegalArgumentException("CHANNEL_UPDATE provided an unrecognized PermissionOverride type. JSON: " + content);
-                    }
+                    handlePermissionOverride(permOverwrites.getJSONObject(i), channel, content);
                 }
 
                 //Check if any overrides were deleted because of this event.
                 //Get the current overrides. (we copy them to a new list because the Set returned is backed by the Map, meaning our removes would remove from the Map. Not good.
                 //Loop through all of the json defined overrides. If we find a match, remove the User or Role from our lists.
                 //Any entries remaining in these lists after this for loop is over will be removed from the Channel's overrides.
-                List<Role> collect = channel.getRolePermissionOverrides().keySet().stream().filter(role -> !containedRoles.contains(role)).collect(Collectors.toList());
+                List<Role> collect = channel.getRolePermissionOverridesMap().keySet().stream().filter(role -> !containedRoles.contains(role)).collect(Collectors.toList());
                 collect.forEach(role -> {
                     changedRoles.add(role);
-                    channel.getRolePermissionOverrides().remove(role);
+                    channel.getRolePermissionOverridesMap().remove(role);
                 });
-                List<User> collect1 = channel.getUserPermissionOverrides().keySet().stream().filter(user -> !containedUsers.contains(user)).collect(Collectors.toList());
+                List<User> collect1 = channel.getUserPermissionOverridesMap().keySet().stream().filter(user -> !containedUsers.contains(user)).collect(Collectors.toList());
                 collect1.forEach(user -> {
                     changedUsers.add(user);
-                    channel.getUserPermissionOverrides().remove(user);
+                    channel.getUserPermissionOverridesMap().remove(user);
                 });
 
                 //If this update modified permissions in any way.
@@ -190,56 +153,20 @@ public class ChannelUpdateHandler extends SocketHandler
                 //If a PermissionOverride was created or updated it stores it in the proper Map to be reported by the Event.
                 for (int i = 0; i < permOverwrites.length(); i++)
                 {
-                    JSONObject override = permOverwrites.getJSONObject(i);
-                    PermissionOverride newOverride = new PermissionOverride(override.getInt("allow"), override.getInt("deny"));
-                    switch (override.getString("type"))
-                    {
-                        case "role":
-                        {
-                            Role role = ((GuildImpl) channel.getGuild()).getRolesMap().get(override.getString("id"));
-                            if (role == null)
-                                throw new IllegalArgumentException("CHANNEL_UPDATE attempted to create or update a PermissionOverride for a Role that doesn't exist! JSON: " + content);
-                            PermissionOverride oldOverride = channel.getRolePermissionOverrides().get(role);
-
-                            if (oldOverride == null || !newOverride.equals(oldOverride))    //updated
-                            {
-                                changedRoles.add(role);
-                                channel.getRolePermissionOverrides().put(role, newOverride);
-                            }
-                            containedRoles.add(role);
-                            break;
-                        }
-                        case "member":
-                        {
-                            User user = api.getUserMap().get(override.getString("id"));
-                            if (user == null)
-                                throw new IllegalArgumentException("CHANNEL_UPDATE attempted to create or update a PermissionOverride for User that doesn't exist! JSON: " + content);
-                            PermissionOverride oldOverride = channel.getUserPermissionOverrides().get(user);
-
-                            if (oldOverride == null || !oldOverride.equals(newOverride))    //Created
-                            {
-                                changedUsers.add(user);
-                                channel.getUserPermissionOverrides().put(user, newOverride);
-                            }
-                            containedUsers.add(user);
-                            break;
-                        }
-                        default:
-                            throw new IllegalArgumentException("CHANNEL_UPDATE provided an unrecognized PermissionOverride type. JSON: " + content);
-                    }
+                    handlePermissionOverride(permOverwrites.getJSONObject(i), channel, content);
                 }
 
                 //Check if any overrides were deleted because of this event.
                 //Get the current overrides. (we copy them to a new list because the Set returned is backed by the Map, meaning our removes would remove from the Map. Not good.
                 //Loop through all of the json defined overrides. If we find a match, remove the User or Role from our lists.
                 //Any entries remaining in these lists after this for loop is over will be removed from the Channel's overrides.
-                channel.getRolePermissionOverrides().keySet().stream().filter(role -> !containedRoles.contains(role)).forEach(role -> {
+                channel.getRolePermissionOverridesMap().keySet().stream().filter(role -> !containedRoles.contains(role)).forEach(role -> {
                     changedRoles.add(role);
-                    channel.getRolePermissionOverrides().remove(role);
+                    channel.getRolePermissionOverridesMap().remove(role);
                 });
-                channel.getUserPermissionOverrides().keySet().stream().filter(user -> !containedUsers.contains(user)).forEach(user -> {
+                channel.getUserPermissionOverridesMap().keySet().stream().filter(user -> !containedUsers.contains(user)).forEach(user -> {
                     changedUsers.add(user);
-                    channel.getUserPermissionOverrides().remove(user);
+                    channel.getUserPermissionOverridesMap().remove(user);
                 });
 
                 //If this update modified permissions in any way.
@@ -256,6 +183,69 @@ public class ChannelUpdateHandler extends SocketHandler
             }
             default:
                 throw new IllegalArgumentException("CHANNEL_UPDATE provided an unrecognized channel type JSON: " + content);
+        }
+    }
+
+    private void handlePermissionOverride(JSONObject override, Channel channel, JSONObject content)
+    {
+        String id = override.getString("id");
+        int allow = override.getInt("allow");
+        int deny = override.getInt("deny");
+
+        switch (override.getString("type"))
+        {
+            case "role":
+            {
+                Role role = ((GuildImpl) channel.getGuild()).getRolesMap().get(id);
+                if (role == null)
+                    throw new IllegalArgumentException("CHANNEL_UPDATE attempted to create or update a PermissionOverride for a Role that doesn't exist! JSON: " + content);
+                PermissionOverride permOverride;
+                if (channel instanceof TextChannel)
+                    permOverride = ((TextChannelImpl) channel).getRolePermissionOverridesMap().get(role);
+                else
+                    permOverride = ((VoiceChannelImpl) channel).getRolePermissionOverridesMap().get(role);
+
+                if (permOverride == null)    //Created
+                {
+                    permOverride = new EntityBuilder(api).createPermissionOverride(override, channel);
+                    changedRoles.add(role);
+                }
+                else if (permOverride.getAllowedRaw() != allow || permOverride.getDeniedRaw() != deny) //Updated
+                {
+                    ((PermissionOverrideImpl) permOverride).setAllow(allow);
+                    ((PermissionOverrideImpl) permOverride).setDeny(deny);
+                    changedRoles.add(role);
+                }
+                containedRoles.add(role);
+                break;
+            }
+            case "member":
+            {
+                User user = api.getUserMap().get(override.getString("id"));
+                if (user == null)
+                    throw new IllegalArgumentException("CHANNEL_UPDATE attempted to create or update a PermissionOverride for User that doesn't exist! JSON: " + content);
+                PermissionOverride permOverride;
+                if (channel instanceof TextChannel)
+                    permOverride = ((TextChannelImpl) channel).getUserPermissionOverridesMap().get(user);
+                else
+                    permOverride = ((VoiceChannelImpl) channel).getUserPermissionOverridesMap().get(user);
+
+                if (permOverride == null)    //Created
+                {
+                    permOverride = new EntityBuilder(api).createPermissionOverride(override, channel);
+                    changedUsers.add(user);
+                }
+                else if (permOverride.getAllowedRaw() != allow || permOverride.getDeniedRaw() != deny)  //Updated
+                {
+                    ((PermissionOverrideImpl) permOverride).setAllow(allow);
+                    ((PermissionOverrideImpl) permOverride).setDeny(deny);
+                    changedUsers.add(user);
+                }
+                containedUsers.add(user);
+                break;
+            }
+            default:
+                throw new IllegalArgumentException("CHANNEL_UPDATE provided an unrecognized PermissionOverride type. JSON: " + content);
         }
     }
 }

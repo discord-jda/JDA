@@ -140,20 +140,10 @@ public class EntityBuilder
             api.getChannelMap().put(id, channel);
         }
 
-        JSONArray permission_overwrites = json.getJSONArray("permission_overwrites");
-        for (int i = 0; i < permission_overwrites.length(); i++)
+        JSONArray permissionOverwrites = json.getJSONArray("permission_overwrites");
+        for (int i = 0; i < permissionOverwrites.length(); i++)
         {
-            JSONObject override = permission_overwrites.getJSONObject(i);
-            String type = override.getString("type");
-            PermissionOverride permover = new PermissionOverride(override.getInt("allow"), override.getInt("deny"));
-            if (type.equals("role"))
-            {
-                channel.getRolePermissionOverrides().put(((GuildImpl) channel.getGuild()).getRolesMap().get(override.getString("id")), permover);
-            }
-            else
-            {
-                channel.getUserPermissionOverrides().put(api.getUserMap().get(override.getString("id")), permover);
-            }
+            createPermissionOverride(permissionOverwrites.getJSONObject(i), channel);
         }
 
         return channel
@@ -165,32 +155,23 @@ public class EntityBuilder
     public VoiceChannel createVoiceChannel(JSONObject json, String guildId)
     {
         String id = json.getString("id");
-        VoiceChannelImpl vc = ((VoiceChannelImpl) api.getVoiceChannelMap().get(id));
-        if (vc == null)
+        VoiceChannelImpl channel = ((VoiceChannelImpl) api.getVoiceChannelMap().get(id));
+        if (channel == null)
         {
             GuildImpl guild = (GuildImpl) api.getGuildMap().get(guildId);
-            vc = new VoiceChannelImpl(id, guild);
-            guild.getVoiceChannelsMap().put(id, vc);
-            api.getVoiceChannelMap().put(id, vc);
+            channel = new VoiceChannelImpl(id, guild);
+            guild.getVoiceChannelsMap().put(id, channel);
+            api.getVoiceChannelMap().put(id, channel);
         }
 
-        JSONArray permission_overwrites = json.getJSONArray("permission_overwrites");
-        for (int i = 0; i < permission_overwrites.length(); i++)
+        JSONArray permissionOverwrites = json.getJSONArray("permission_overwrites");
+        for (int i = 0; i < permissionOverwrites.length(); i++)
         {
-            JSONObject override = permission_overwrites.getJSONObject(i);
-            String type = override.getString("type");
-            PermissionOverride permover = new PermissionOverride(override.getInt("allow"), override.getInt("deny"));
-            if (type.equals("role"))
-            {
-                vc.getRolePermissionOverrides().put(((GuildImpl) vc.getGuild()).getRolesMap().get(override.getString("id")), permover);
-            }
-            else
-            {
-                vc.getUserPermissionOverrides().put(api.getUserMap().get(override.getString("id")), permover);
-            }
+            createPermissionOverride(permissionOverwrites.getJSONObject(i), channel);
         }
 
-        return vc.setName(json.getString("name"))
+        return channel
+                .setName(json.getString("name"))
                 .setPosition(json.getInt("position"));
     }
 
@@ -380,5 +361,51 @@ public class EntityBuilder
                     videoJson.getInt("height")));
         }
         return embed;
+    }
+
+    public PermissionOverride createPermissionOverride(JSONObject override, Channel chan)
+    {
+        PermissionOverrideImpl permOverride = null;
+        String id = override.getString("id");
+        int allow = override.getInt("allow");
+        int deny = override.getInt("deny");
+
+        switch (override.getString("type"))
+        {
+            case "member":
+                User user = api.getUserById(id);
+                if (user == null)
+                    throw new IllegalArgumentException("Attempted to create a PermissionOverride for a non-existent user. JSON: " + override);
+
+                permOverride = (PermissionOverrideImpl) chan.getOverrideForUser(user);
+                if (permOverride == null)
+                {
+                    permOverride = new PermissionOverrideImpl(chan, user, null);
+                    if (chan instanceof TextChannel)
+                        ((TextChannelImpl) chan).getUserPermissionOverridesMap().put(user, permOverride);
+                    else
+                        ((VoiceChannelImpl) chan).getUserPermissionOverridesMap().put(user, permOverride);
+                }
+                break;
+            case "role":
+                Role role = ((GuildImpl) chan.getGuild()).getRolesMap().get(id);
+                if (role == null)
+                    throw new IllegalArgumentException("Attempted to create a PermissionOverride for a non-existent role! JSON: " + override);
+
+                permOverride = (PermissionOverrideImpl) chan.getOverrideForRole(role);
+                if (permOverride == null)
+                {
+                    permOverride = new PermissionOverrideImpl(chan, null, role);
+                    if (chan instanceof TextChannel)
+                        ((TextChannelImpl) chan).getRolePermissionOverridesMap().put(role, permOverride);
+                    else
+                        ((VoiceChannelImpl) chan).getRolePermissionOverridesMap().put(role, permOverride);
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Provided with an unknown PermissionOverride type! JSON: " + override);
+        }
+        return permOverride.setAllow(allow)
+                .setDeny(deny);
     }
 }

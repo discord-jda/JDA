@@ -17,10 +17,7 @@ package net.dv8tion.jda.entities.impl;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Permission;
-import net.dv8tion.jda.entities.Guild;
-import net.dv8tion.jda.entities.Role;
-import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.entities.VoiceChannel;
+import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.managers.ChannelManager;
 import net.dv8tion.jda.utils.PermissionUtil;
 
@@ -46,6 +43,39 @@ public class VoiceChannelImpl implements VoiceChannel
     public JDA getJDA()
     {
         return guild.getJDA();
+    }
+
+    @Override
+    public PermissionOverride getOverrideForUser(User user)
+    {
+        return userPermissionOverrides.get(user);
+    }
+
+    @Override
+    public PermissionOverride getOverrideForRole(Role role)
+    {
+        return rolePermissionOverrides.get(role);
+    }
+
+    @Override
+    public List<PermissionOverride> getPermissionOverrides()
+    {
+        List<PermissionOverride> overrides = new LinkedList<>();
+        overrides.addAll(userPermissionOverrides.values());
+        overrides.addAll(rolePermissionOverrides.values());
+        return Collections.unmodifiableList(overrides);
+    }
+
+    @Override
+    public List<PermissionOverride> getUserPermissionOverrides()
+    {
+        return Collections.unmodifiableList(new LinkedList<PermissionOverride>(userPermissionOverrides.values()));
+    }
+
+    @Override
+    public List<PermissionOverride> getRolePermissionOverrides()
+    {
+        return Collections.unmodifiableList(new LinkedList<PermissionOverride>(rolePermissionOverrides.values()));
     }
 
     @Override
@@ -81,7 +111,7 @@ public class VoiceChannelImpl implements VoiceChannel
     @Override
     public boolean checkPermission(User user, Permission perm)
     {
-        return PermissionUtil.checkPermission(this, user, perm);
+        return PermissionUtil.checkPermission(user, perm, this);
     }
 
     @Override
@@ -113,12 +143,12 @@ public class VoiceChannelImpl implements VoiceChannel
         return connectedUsers;
     }
 
-    public Map<User, PermissionOverride> getUserPermissionOverrides()
+    public Map<User, PermissionOverride> getUserPermissionOverridesMap()
     {
         return userPermissionOverrides;
     }
 
-    public Map<Role, PermissionOverride> getRolePermissionOverrides()
+    public Map<Role, PermissionOverride> getRolePermissionOverridesMap()
     {
         return rolePermissionOverrides;
     }

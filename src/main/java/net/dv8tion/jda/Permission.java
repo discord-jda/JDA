@@ -15,6 +15,9 @@
  */
 package net.dv8tion.jda;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public enum Permission
 {
     CREATE_INSTANT_INVITE(0),
@@ -53,5 +56,18 @@ public enum Permission
     public int getOffset()
     {
         return offset;
+    }
+
+    public static List<Permission> getPermissions(int permissions)
+    {
+        List<Permission> perms = new LinkedList<>();
+        for (Permission perm : Permission.values())
+        {
+            if (perm.equals(Permission.UNKNOWN))
+                continue;
+            if(((permissions >> perm.getOffset()) & 1) == 1)
+                perms.add(perm);
+        }
+        return perms;
     }
 }

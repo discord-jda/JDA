@@ -460,7 +460,7 @@ public class GuildManager
 
     private void checkPermission(Permission perm)
     {
-        if (!PermissionUtil.checkPermission(getGuild(), getGuild().getJDA().getSelfInfo(), perm))
+        if (!PermissionUtil.checkPermission(getGuild().getJDA().getSelfInfo(), perm, getGuild()))
             throw new PermissionException(perm);
 
     }
