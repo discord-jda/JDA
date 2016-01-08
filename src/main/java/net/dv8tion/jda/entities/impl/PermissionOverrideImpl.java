@@ -82,13 +82,13 @@ public class PermissionOverrideImpl implements PermissionOverride
     @Override
     public User getUser()
     {
-        return null;
+        return user;
     }
 
     @Override
     public Role getRole()
     {
-        return null;
+        return role;
     }
 
     @Override

@@ -21,6 +21,8 @@ import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.managers.RoleManager;
 
+import java.util.List;
+
 public class RoleImpl implements net.dv8tion.jda.entities.Role
 {
     private final String id;
@@ -53,6 +55,18 @@ public class RoleImpl implements net.dv8tion.jda.entities.Role
     public String getId()
     {
         return id;
+    }
+
+    @Override
+    public int getPermissionsRaw()
+    {
+        return permissions;
+    }
+
+    @Override
+    public List<Permission> getPermissions()
+    {
+        return Permission.getPermissions(permissions);
     }
 
     @Override
@@ -131,11 +145,6 @@ public class RoleImpl implements net.dv8tion.jda.entities.Role
     {
         this.grouped = grouped;
         return this;
-    }
-
-    public int getPermissions()
-    {
-        return permissions;
     }
 
     @Override

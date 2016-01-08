@@ -105,9 +105,59 @@ public interface Channel
      */
     JDA getJDA();
 
+    /**
+     * The {@link PermissionOverride} relating to the specified {@link net.dv8tion.jda.entities.User User}.
+     * If there is no {@link net.dv8tion.jda.entities.PermissionOverride PermissionOverride} for this {@link net.dv8tion.jda.entities.Channel Channel}
+     * relating to the provided {@link net.dv8tion.jda.entities.User User}, then this returns <code>null</code>.
+     *
+     * @param user
+     *          The {@link net.dv8tion.jda.entities.User User} whose {@link net.dv8tion.jda.entities.PermissionOverride PermissionOverride} is requested.
+     * @return
+     *      Possibly-null {@link net.dv8tion.jda.entities.PermissionOverride PermissionOverride} relating to the provided {@link net.dv8tion.jda.entities.User User}.
+     */
     PermissionOverride getOverrideForUser(User user);
+
+    /**
+     * The {@link PermissionOverride} relating to the specified {@link net.dv8tion.jda.entities.Role Role}.
+     * If there is no {@link net.dv8tion.jda.entities.PermissionOverride PermissionOverride} for this {@link net.dv8tion.jda.entities.Channel Channel}
+     * relating to the provided {@link net.dv8tion.jda.entities.Role Role}, then this returns <code>null</code>.
+     *
+     * @param role
+     *          The {@link net.dv8tion.jda.entities.User Role} whose {@link net.dv8tion.jda.entities.PermissionOverride PermissionOverride} is requested.
+     * @return
+     *      Possibly-null {@link net.dv8tion.jda.entities.PermissionOverride PermissionOverride} relating to the provided {@link net.dv8tion.jda.entities.Role Role}.
+     */
     PermissionOverride getOverrideForRole(Role role);
+
+    /**
+     * Gets all of the {@link net.dv8tion.jda.entities.PermissionOverride PermissionOverrides} that are part
+     * of this {@link net.dv8tion.jda.entities.Channel Channel}.<br>
+     * This combines {@link net.dv8tion.jda.entities.User User} and {@link net.dv8tion.jda.entities.Role Role} overrides.
+     * If you would like only {@link net.dv8tion.jda.entities.User} overrides or only {@link net.dv8tion.jda.entities.Role Role}
+     * overrides, use {@link #getUserPermissionOverrides()} or {@link #getRolePermissionOverrides()} respectively.
+     *
+     * @return
+     *      Possibly-empty list of all {@link net.dv8tion.jda.entities.PermissionOverride PermissionOverrides} for this {@link net.dv8tion.jda.entities.Channel Channel}.
+     */
     List<PermissionOverride> getPermissionOverrides();
+
+    /**
+     * Gets all of the {@link net.dv8tion.jda.entities.User User} {@link net.dv8tion.jda.entities.PermissionOverride PermissionOverrides}
+     * that are part of this {@link net.dv8tion.jda.entities.Channel Channel}.
+     *
+     * @return
+     *      Possibly-empty list of all {@link net.dv8tion.jda.entities.PermissionOverride PermissionOverrides} for {@link net.dv8tion.jda.entities.User Users}
+     *      for this {@link net.dv8tion.jda.entities.Channel Channel}.
+     */
     List<PermissionOverride> getUserPermissionOverrides();
+
+    /**
+     * Gets all of the {@link net.dv8tion.jda.entities.Role Role} {@link net.dv8tion.jda.entities.PermissionOverride PermissionOverrides}
+     * that are part of this {@link net.dv8tion.jda.entities.Channel Channel}.
+     *
+     * @return
+     *      Possibly-empty list of all {@link net.dv8tion.jda.entities.PermissionOverride PermissionOverrides} for {@link net.dv8tion.jda.entities.Role Roles}
+     *      for this {@link net.dv8tion.jda.entities.Channel Channel}.
+     */
     List<PermissionOverride> getRolePermissionOverrides();
 }

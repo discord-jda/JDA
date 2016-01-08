@@ -24,6 +24,25 @@ import java.util.Map;
 
 public class PermissionUtil
 {
+    /**
+     * Checks to see if the {@link net.dv8tion.jda.entities.User User} has the specified {@link net.dv8tion.jda.Permission Permission}
+     * in the specified {@link net.dv8tion.jda.entities.Channel Channel}. This method properly deals with
+     * {@link net.dv8tion.jda.entities.PermissionOverride PermissionOverrides} and Owner status.
+     * <p>
+     * <b>Note:</b> this is based on effective permissions, not literal permissions. If a user has permissions that would
+     * enable them to do something without the literal permission to do it, this will still return true.<br>
+     * Example: If a user has the {@link net.dv8tion.jda.Permission#MANAGE_ROLES} permission, they will be able to
+     * {@link net.dv8tion.jda.Permission#MESSAGE_WRITE} in every channel.
+     *
+     * @param user
+     *          The {@link net.dv8tion.jda.entities.User User} whose permissions are being checked.
+     * @param perm
+     *          The {@link net.dv8tion.jda.Permission Permission} being checked for.
+     * @param channel
+     *          The {@link net.dv8tion.jda.entities.Channel Channel} being checked.
+     * @return
+     *      True - if the {@link net.dv8tion.jda.entities.User User} effectively has the specified {@link net.dv8tion.jda.Permission Permission}.
+     */
     public static boolean checkPermission(User user, Permission perm, Channel channel)
     {
         if (channel instanceof TextChannel)
@@ -38,6 +57,24 @@ public class PermissionUtil
         }
     }
 
+    /**
+     * Checks to see if the {@link net.dv8tion.jda.entities.User User} has the specified {@link net.dv8tion.jda.Permission Permission}
+     * in the specified {@link net.dv8tion.jda.entities.Guild Guild}. This method properly deals with Owner status.
+     * <p>
+     * <b>Note:</b> this is based on effective permissions, not literal permissions. If a user has permissions that would
+     * enable them to do something without the literal permission to do it, this will still return true.<br>
+     * Example: If a user has the {@link net.dv8tion.jda.Permission#MANAGE_ROLES} permission, they will be able to
+     * {@link net.dv8tion.jda.Permission#MANAGE_SERVER} as well, even without the literal permission.
+     *
+     * @param user
+     *          The {@link net.dv8tion.jda.entities.User User} whose permissions are being checked.
+     * @param perm
+     *          The {@link net.dv8tion.jda.Permission Permission} being checked for.
+     * @param guild
+     *          The {@link net.dv8tion.jda.entities.Guild Guild} being checked.
+     * @return
+     *      True - if the {@link net.dv8tion.jda.entities.User User} effectively has the specified {@link net.dv8tion.jda.Permission Permission}.
+     */
     public static boolean checkPermission(User user, Permission perm, Guild guild)
     {
         return guild.getOwnerId().equals(user.getId())
@@ -47,6 +84,20 @@ public class PermissionUtil
                             || role.hasPermission(perm));
     }
 
+    /**
+     * Gets the <code>int</code> representation of the effective permissions allowed for this {@link net.dv8tion.jda.entities.User User}
+     * in this {@link net.dv8tion.jda.entities.Channel Channel}. This can be used in conjunction with
+     * {@link net.dv8tion.jda.Permission#getPermissions(int) Permission.getPermissions(int)} to easily get a list of all
+     * {@link net.dv8tion.jda.Permission Permissions} that this user can use in this {@link net.dv8tion.jda.entities.Channel Channel}.<br>
+     * This functions very similarly to how {@link net.dv8tion.jda.entities.Role#getPermissionsRaw() Role.getPermissionsRaw()}.
+     *
+     * @param user
+     *          The {@link net.dv8tion.jda.entities.User User} whose permissions are being checked.
+     * @param channel
+     *          The {@link net.dv8tion.jda.entities.Channel Channel} being checked.
+     * @return
+     *      The <code>int</code> representation of the literal permissions that this {@link net.dv8tion.jda.entities.User User} has in this {@link net.dv8tion.jda.entities.Channel Channel}.
+     */
     public static int getEffectivePermission(User user, Channel channel)
     {
         if (channel instanceof TextChannel)
@@ -75,11 +126,11 @@ public class PermissionUtil
     private static int getEffectivePermission(User user, GuildImpl guild, Map<Role, PermissionOverride> roleOverrides, Map<User, PermissionOverride> userOverrides)
     {
         //Default to binary OR of all global permissions in this guild
-        int permission = ((RoleImpl) guild.getPublicRole()).getPermissions();
+        int permission = ((RoleImpl) guild.getPublicRole()).getPermissionsRaw();
         List<Role> rolesOfUser = guild.getRolesForUser(user);
         for (Role role : rolesOfUser)
         {
-            permission = permission | ((RoleImpl) role).getPermissions();
+            permission = permission | ((RoleImpl) role).getPermissionsRaw();
         }
 
         //override with channel-specific overrides of @everyone
@@ -106,7 +157,7 @@ public class PermissionUtil
                 {
                     allow = po.getAllowedRaw() | allow;     //Give all the stuff allowed by this Role's allow
 
-                    deny = (po.getDeniedRaw() | deny) & (~po.getAllowedRaw());  //Deny everything that this role denies.
+                    deny = (po.getDeniedRaw() | deny) & (~allow);  //Deny everything that this role denies.
                     // This also rewrites the previous role's denies if this role allowed those permissions.
                 }
             }

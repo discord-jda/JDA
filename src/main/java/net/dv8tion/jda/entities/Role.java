@@ -19,6 +19,8 @@ import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.managers.RoleManager;
 
+import java.util.List;
+
 public interface Role
 {
     /**
@@ -64,6 +66,24 @@ public interface Role
      *      Never-null String containing the id of this {@link net.dv8tion.jda.entities.Role Role}.
      */
     String getId();
+
+    /**
+     * The <code>int</code> representation of the literal permissions that this {@link net.dv8tion.jda.entities.Role Role} has.<br>
+     * <b>NOTE:</b> these do not necessarily represent the permissions this role will have in a {@link net.dv8tion.jda.entities.Channel Channel}.
+     *
+     * @return
+     *      Never-negative int containing offset permissions of this role.
+     */
+    int getPermissionsRaw();
+
+    /**
+     * A list of the literal {@link net.dv8tion.jda.Permission Permissions} that this {@link net.dv8tion.jda.entities.Role Role} has.<br>
+     * <b>NOTE:</b> these do not necessarily represent the permissions this role will have in a {@link net.dv8tion.jda.entities.Channel Channel}.
+     *
+     * @return
+     *
+     */
+    List<Permission> getPermissions();
 
     /**
      * The color this {@link net.dv8tion.jda.entities.Role Role} is displayed in.

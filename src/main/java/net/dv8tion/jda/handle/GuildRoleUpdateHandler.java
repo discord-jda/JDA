@@ -43,7 +43,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
             role.setPosition(rolejson.getInt("position"));
             api.getEventManager().handle(new GuildRoleUpdatePositionEvent(api, responseNumber, role));
         }
-        if (role.getPermissions() != rolejson.getInt("permissions"))
+        if (role.getPermissionsRaw() != rolejson.getInt("permissions"))
         {
             role.setPermissions(rolejson.getInt("permissions"));
             api.getEventManager().handle(new GuildRoleUpdatePermissionEvent(api, responseNumber, role));

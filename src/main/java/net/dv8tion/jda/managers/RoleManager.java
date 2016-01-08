@@ -41,7 +41,7 @@ public class RoleManager
     public RoleManager(Role role)
     {
         this.role = role;
-        perms = ((RoleImpl) role).getPermissions();
+        perms = ((RoleImpl) role).getPermissionsRaw();
     }
 
     /**
