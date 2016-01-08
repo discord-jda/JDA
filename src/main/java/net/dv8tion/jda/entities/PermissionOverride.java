@@ -17,6 +17,7 @@ package net.dv8tion.jda.entities;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Permission;
+import net.dv8tion.jda.managers.PermissionOverrideManager;
 
 import java.util.List;
 
@@ -142,4 +143,13 @@ public interface PermissionOverride
      *      True if this override is a role override.
      */
     boolean isRoleOverride();
+
+    /**
+     * Returns the {@link net.dv8tion.jda.managers.PermissionOverrideManager PermissionOverrideManager} for this PermissionOverride.
+     * In the PermissionOverrideManager, you can modify its permissions.
+     *
+     * @return
+     *      The PermissionOverrideManager of this PermissionOverride
+     */
+    PermissionOverrideManager getManager();
 }

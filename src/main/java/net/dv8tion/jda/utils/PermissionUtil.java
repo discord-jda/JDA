@@ -24,6 +24,21 @@ import java.util.Map;
 
 public class PermissionUtil
 {
+
+    public static PermissionOverride getFullPermOverride()
+    {
+        PermissionOverrideImpl override = new PermissionOverrideImpl(null, null, null);
+        int allow = 0, deny=0;
+        for (Permission permission : Permission.values())
+        {
+            if(permission != Permission.UNKNOWN)
+            {
+                allow = allow | (1 << permission.getOffset());
+            }
+        }
+        return override.setAllow(allow).setDeny(deny);
+    }
+
     /**
      * Checks to see if the {@link net.dv8tion.jda.entities.User User} has the specified {@link net.dv8tion.jda.Permission Permission}
      * in the specified {@link net.dv8tion.jda.entities.Channel Channel}. This method properly deals with

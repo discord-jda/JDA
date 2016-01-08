@@ -18,7 +18,9 @@ package net.dv8tion.jda.entities.impl;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.*;
+import net.dv8tion.jda.exceptions.PermissionException;
 import net.dv8tion.jda.managers.ChannelManager;
+import net.dv8tion.jda.managers.PermissionOverrideManager;
 import net.dv8tion.jda.utils.PermissionUtil;
 
 import java.util.*;
@@ -118,6 +120,44 @@ public class VoiceChannelImpl implements VoiceChannel
     public ChannelManager getManager()
     {
         return new ChannelManager(this);
+    }
+
+    @Override
+    public PermissionOverrideManager createPermissionOverride(User user)
+    {
+        if (!checkPermission(getJDA().getSelfInfo(), Permission.MANAGE_PERMISSIONS))
+        {
+            throw new PermissionException(Permission.MANAGE_PERMISSIONS);
+        }
+        if (!getGuild().getUsers().contains(user))
+        {
+            throw new IllegalArgumentException("Given user is not member of this Guild");
+        }
+        PermissionOverrideImpl override = new PermissionOverrideImpl(this, user, null);
+        //hacky way of putting entity to server without using requester here
+        override.setAllow(1 << Permission.MANAGE_PERMISSIONS.getOffset()).setDeny(0);
+        PermissionOverrideManager manager = new PermissionOverrideManager(override);
+        manager.reset(Permission.MANAGE_PERMISSIONS).update();
+        return manager;
+    }
+
+    @Override
+    public PermissionOverrideManager createPermissionOverride(Role role)
+    {
+        if (!checkPermission(getJDA().getSelfInfo(), Permission.MANAGE_PERMISSIONS))
+        {
+            throw new PermissionException(Permission.MANAGE_PERMISSIONS);
+        }
+        if (!getGuild().getRoles().contains(role))
+        {
+            throw new IllegalArgumentException("Given role does not exist in this Guild");
+        }
+        PermissionOverrideImpl override = new PermissionOverrideImpl(this, null, role);
+        //hacky way of putting entity to server without using requester here
+        override.setAllow(1 << Permission.MANAGE_PERMISSIONS.getOffset()).setDeny(0);
+        PermissionOverrideManager manager = new PermissionOverrideManager(override);
+        manager.reset(Permission.MANAGE_PERMISSIONS).update();
+        return manager;
     }
 
     public VoiceChannelImpl setName(String name)

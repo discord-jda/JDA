@@ -18,6 +18,7 @@ package net.dv8tion.jda.entities.impl;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.*;
+import net.dv8tion.jda.managers.PermissionOverrideManager;
 
 import java.util.Collections;
 import java.util.List;
@@ -115,16 +116,6 @@ public class PermissionOverrideImpl implements PermissionOverride
         return getRole() != null;
     }
 
-    @Override
-    public boolean equals(Object o)
-    {
-        if (!(o instanceof PermissionOverrideImpl))
-            return false;
-
-        PermissionOverrideImpl oPermOver = (PermissionOverrideImpl) o;
-        return this.allow == oPermOver.allow && this.deny == oPermOver.deny;
-    }
-
     public PermissionOverrideImpl setAllow(int allow)
     {
         this.allow = allow;
@@ -135,5 +126,11 @@ public class PermissionOverrideImpl implements PermissionOverride
     {
         this.deny = deny;
         return this;
+    }
+
+    @Override
+    public PermissionOverrideManager getManager()
+    {
+        return new PermissionOverrideManager(this);
     }
 }

@@ -18,6 +18,7 @@ package net.dv8tion.jda.entities;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.managers.ChannelManager;
+import net.dv8tion.jda.managers.PermissionOverrideManager;
 
 import java.util.List;
 
@@ -160,4 +161,26 @@ public interface Channel
      *      for this {@link net.dv8tion.jda.entities.Channel Channel}.
      */
     List<PermissionOverride> getRolePermissionOverrides();
+
+    /**
+     * Creates a new {@link net.dv8tion.jda.entities.PermissionOverride PermissionOverride} for a given {@link net.dv8tion.jda.entities.User User}.
+     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS Permission}
+     *
+     * @param user
+     *      the User to create an Override for
+     * @return
+     *      the PermissionOverrideManager for the created PermissionOverride
+     */
+    PermissionOverrideManager createPermissionOverride(User user);
+
+    /**
+     * Creates a new {@link net.dv8tion.jda.entities.PermissionOverride PermissionOverride} for a given {@link net.dv8tion.jda.entities.Role Role}.
+     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS Permission}
+     *
+     * @param role
+     *      the Role to create an Override for
+     * @return
+     *      the PermissionOverrideManager for the created PermissionOverride
+     */
+    PermissionOverrideManager createPermissionOverride(Role role);
 }
