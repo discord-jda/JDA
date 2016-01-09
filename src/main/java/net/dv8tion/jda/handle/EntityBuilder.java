@@ -1,5 +1,5 @@
 /**
- *    Copyright 2015 Austin Keener & Michael Ritter
+ *    Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ public class EntityBuilder
         this.api = api;
     }
 
-    protected Guild createGuild(JSONObject guild)
+    public Guild createGuild(JSONObject guild)
     {
         String id = guild.getString("id");
         GuildImpl guildObj = ((GuildImpl) api.getGuildMap().get(id));
@@ -71,80 +71,79 @@ public class EntityBuilder
             }
         }
 
-        JSONArray members = guild.getJSONArray("members");
-        Map<String, Role> rolesMap = guildObj.getRolesMap();
-        Map<User, List<Role>> userRoles = guildObj.getUserRoles();
-        for (int i = 0; i < members.length(); i++)
+        if (guild.has("members"))
         {
-            JSONObject member = members.getJSONObject(i);
-            User user = createUser(member.getJSONObject("user"));
-            userRoles.put(user, new ArrayList<>());
-            JSONArray roleArr = member.getJSONArray("roles");
-            for (int j = 0; j < roleArr.length(); j++)
+            JSONArray members = guild.getJSONArray("members");
+            Map<String, Role> rolesMap = guildObj.getRolesMap();
+            Map<User, List<Role>> userRoles = guildObj.getUserRoles();
+            for (int i = 0; i < members.length(); i++)
             {
-                String roleId = roleArr.getString(j);
-                userRoles.get(user).add(rolesMap.get(roleId));
+                JSONObject member = members.getJSONObject(i);
+                User user = createUser(member.getJSONObject("user"));
+                userRoles.put(user, new ArrayList<>());
+                JSONArray roleArr = member.getJSONArray("roles");
+                for (int j = 0; j < roleArr.length(); j++)
+                {
+                    String roleId = roleArr.getString(j);
+                    userRoles.get(user).add(rolesMap.get(roleId));
+                }
             }
         }
 
-        JSONArray channels = guild.getJSONArray("channels");
-        for (int i = 0; i < channels.length(); i++)
+        if (guild.has("channels"))
         {
-            JSONObject channel = channels.getJSONObject(i);
-            String type = channel.getString("type");
-            if (type.equalsIgnoreCase("text"))
+            JSONArray channels = guild.getJSONArray("channels");
+            for (int i = 0; i < channels.length(); i++)
             {
-                createTextChannel(channel, guildObj.getId());
-            }
-            else if (type.equalsIgnoreCase("voice"))
-            {
-                createVoiceChannel(channel, guildObj.getId());
+                JSONObject channel = channels.getJSONObject(i);
+                String type = channel.getString("type");
+                if (type.equalsIgnoreCase("text"))
+                {
+                    createTextChannel(channel, guildObj.getId());
+                }
+                else if (type.equalsIgnoreCase("voice"))
+                {
+                    createVoiceChannel(channel, guildObj.getId());
+                }
             }
         }
 
-        JSONArray presences = guild.getJSONArray("presences");
-        for (int i = 0; i < presences.length(); i++)
+        if (guild.has("presences"))
         {
-            JSONObject presence = presences.getJSONObject(i);
-            UserImpl user = ((UserImpl) api.getUserMap().get(presence.getJSONObject("user").getString("id")));
-            if (user == null)
+            JSONArray presences = guild.getJSONArray("presences");
+            for (int i = 0; i < presences.length(); i++)
             {
-                //corresponding user to presence not found... ignoring
-                continue;
+                JSONObject presence = presences.getJSONObject(i);
+                UserImpl user = ((UserImpl) api.getUserMap().get(presence.getJSONObject("user").getString("id")));
+                if (user == null)
+                {
+                    //corresponding user to presence not found... ignoring
+                    continue;
+                }
+                user
+                        .setCurrentGame(presence.isNull("game") || presence.getJSONObject("game").isNull("name") ? null : presence.getJSONObject("game").get("name").toString())
+                        .setOnlineStatus(OnlineStatus.fromKey(presence.getString("status")));
             }
-            user
-                .setCurrentGame(presence.isNull("game") || presence.getJSONObject("game").isNull("name") ? null : presence.getJSONObject("game").get("name").toString())
-                .setOnlineStatus(OnlineStatus.fromKey(presence.getString("status")));
         }
         return guildObj;
     }
 
-    protected TextChannel createTextChannel(JSONObject json, String guildId)
+    public TextChannel createTextChannel(JSONObject json, String guildId)
     {
         String id = json.getString("id");
         TextChannelImpl channel = (TextChannelImpl) api.getChannelMap().get(id);
         if (channel == null)
         {
             GuildImpl guild = ((GuildImpl) api.getGuildMap().get(guildId));
-            channel = new TextChannelImpl(id, guild, api);
+            channel = new TextChannelImpl(id, guild);
             guild.getTextChannelsMap().put(id, channel);
             api.getChannelMap().put(id, channel);
         }
 
-        JSONArray permission_overwrites = json.getJSONArray("permission_overwrites");
-        for (int i = 0; i < permission_overwrites.length(); i++)
+        JSONArray permissionOverwrites = json.getJSONArray("permission_overwrites");
+        for (int i = 0; i < permissionOverwrites.length(); i++)
         {
-            JSONObject override = permission_overwrites.getJSONObject(i);
-            String type = override.getString("type");
-            PermissionOverride permover = new PermissionOverride(override.getInt("allow"), override.getInt("deny"));
-            if (type.equals("role"))
-            {
-                channel.getRolePermissionOverrides().put(((GuildImpl) channel.getGuild()).getRolesMap().get(override.getString("id")), permover);
-            }
-            else
-            {
-                channel.getUserPermissionOverrides().put(api.getUserMap().get(override.getString("id")), permover);
-            }
+            createPermissionOverride(permissionOverwrites.getJSONObject(i), channel);
         }
 
         return channel
@@ -153,35 +152,26 @@ public class EntityBuilder
                 .setPosition(json.getInt("position"));
     }
 
-    protected VoiceChannel createVoiceChannel(JSONObject json, String guildId)
+    public VoiceChannel createVoiceChannel(JSONObject json, String guildId)
     {
         String id = json.getString("id");
-        VoiceChannelImpl vc = ((VoiceChannelImpl) api.getVoiceChannelMap().get(id));
-        if (vc == null)
+        VoiceChannelImpl channel = ((VoiceChannelImpl) api.getVoiceChannelMap().get(id));
+        if (channel == null)
         {
             GuildImpl guild = (GuildImpl) api.getGuildMap().get(guildId);
-            vc = new VoiceChannelImpl(id, guild);
-            guild.getVoiceChannelsMap().put(id, vc);
-            api.getVoiceChannelMap().put(id, vc);
+            channel = new VoiceChannelImpl(id, guild);
+            guild.getVoiceChannelsMap().put(id, channel);
+            api.getVoiceChannelMap().put(id, channel);
         }
 
-        JSONArray permission_overwrites = json.getJSONArray("permission_overwrites");
-        for (int i = 0; i < permission_overwrites.length(); i++)
+        JSONArray permissionOverwrites = json.getJSONArray("permission_overwrites");
+        for (int i = 0; i < permissionOverwrites.length(); i++)
         {
-            JSONObject override = permission_overwrites.getJSONObject(i);
-            String type = override.getString("type");
-            PermissionOverride permover = new PermissionOverride(override.getInt("allow"), override.getInt("deny"));
-            if (type.equals("role"))
-            {
-                vc.getRolePermissionOverrides().put(((GuildImpl) vc.getGuild()).getRolesMap().get(override.getString("id")), permover);
-            }
-            else
-            {
-                vc.getUserPermissionOverrides().put(api.getUserMap().get(override.getString("id")), permover);
-            }
+            createPermissionOverride(permissionOverwrites.getJSONObject(i), channel);
         }
 
-        return vc.setName(json.getString("name"))
+        return channel
+                .setName(json.getString("name"))
                 .setPosition(json.getInt("position"));
     }
 
@@ -199,14 +189,15 @@ public class EntityBuilder
         return priv;
     }
 
-    protected Role createRole(JSONObject roleJson, String guildId)
+    public Role createRole(JSONObject roleJson, String guildId)
     {
         String id = roleJson.getString("id");
         GuildImpl guild = ((GuildImpl) api.getGuildMap().get(guildId));
         RoleImpl role = ((RoleImpl) guild.getRolesMap().get(id));
         if (role == null)
         {
-            role = new RoleImpl(id);
+            role = new RoleImpl(id, guild);
+            guild.getRolesMap().put(id, role);
         }
         role.setName(roleJson.getString("name"))
             .setPosition(roleJson.getInt("position"))
@@ -221,7 +212,6 @@ public class EntityBuilder
         {
             role.setColor(0);
         }
-        guild.getRolesMap().put(id, role);
         return role;
     }
 
@@ -269,6 +259,23 @@ public class EntityBuilder
                 .setMentionsEveryone(jsonObject.getBoolean("mention_everyone"))
                 .setTTS(jsonObject.getBoolean("tts"));
 
+        List<Message.Attachment> attachments = new LinkedList<>();
+        JSONArray jsonAttachments = jsonObject.getJSONArray("attachments");
+        for (int i = 0; i < jsonAttachments.length(); i++)
+        {
+            JSONObject jsonAttachment = jsonAttachments.getJSONObject(i);
+            attachments.add(new Message.Attachment(
+                    jsonAttachment.getString("id"),
+                    jsonAttachment.getString("url"),
+                    jsonAttachment.getString("proxy_url"),
+                    jsonAttachment.getString("filename"),
+                    jsonAttachment.getInt("size"),
+                    jsonAttachment.has("height") ? jsonAttachment.getInt("height") : 0,
+                    jsonAttachment.has("width") ? jsonAttachment.getInt("width") : 0
+            ));
+        }
+        message.setAttachments(attachments);
+
         if (!jsonObject.isNull("edited_timestamp"))
             message.setEditedTime(OffsetDateTime.parse(jsonObject.getString("edited_timestamp")));
 
@@ -282,7 +289,7 @@ public class EntityBuilder
             JSONArray mentions = jsonObject.getJSONArray("mentions");
             for (int i = 0; i < mentions.length(); i++)
             {
-                JSONObject mention = mentions.getJSONObject(0);
+                JSONObject mention = mentions.getJSONObject(i);
                 mentioned.add(api.getUserMap().get(mention.getString("id")));
             }
             message.setMentionedUsers(mentioned);
@@ -354,5 +361,51 @@ public class EntityBuilder
                     videoJson.getInt("height")));
         }
         return embed;
+    }
+
+    public PermissionOverride createPermissionOverride(JSONObject override, Channel chan)
+    {
+        PermissionOverrideImpl permOverride = null;
+        String id = override.getString("id");
+        int allow = override.getInt("allow");
+        int deny = override.getInt("deny");
+
+        switch (override.getString("type"))
+        {
+            case "member":
+                User user = api.getUserById(id);
+                if (user == null)
+                    throw new IllegalArgumentException("Attempted to create a PermissionOverride for a non-existent user. JSON: " + override);
+
+                permOverride = (PermissionOverrideImpl) chan.getOverrideForUser(user);
+                if (permOverride == null)
+                {
+                    permOverride = new PermissionOverrideImpl(chan, user, null);
+                    if (chan instanceof TextChannel)
+                        ((TextChannelImpl) chan).getUserPermissionOverridesMap().put(user, permOverride);
+                    else
+                        ((VoiceChannelImpl) chan).getUserPermissionOverridesMap().put(user, permOverride);
+                }
+                break;
+            case "role":
+                Role role = ((GuildImpl) chan.getGuild()).getRolesMap().get(id);
+                if (role == null)
+                    throw new IllegalArgumentException("Attempted to create a PermissionOverride for a non-existent role! JSON: " + override);
+
+                permOverride = (PermissionOverrideImpl) chan.getOverrideForRole(role);
+                if (permOverride == null)
+                {
+                    permOverride = new PermissionOverrideImpl(chan, null, role);
+                    if (chan instanceof TextChannel)
+                        ((TextChannelImpl) chan).getRolePermissionOverridesMap().put(role, permOverride);
+                    else
+                        ((VoiceChannelImpl) chan).getRolePermissionOverridesMap().put(role, permOverride);
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Provided with an unknown PermissionOverride type! JSON: " + override);
+        }
+        return permOverride.setAllow(allow)
+                .setDeny(deny);
     }
 }

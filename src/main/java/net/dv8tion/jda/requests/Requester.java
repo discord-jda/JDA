@@ -1,12 +1,12 @@
 /**
- * Copyright 2015 Austin Keener & Michael Ritter
- * <p>
+ *    Copyright 2015-2016 Austin Keener & Michael Ritter
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -55,6 +55,11 @@ public class Requester
         return toObject(addHeaders(Unirest.patch(url)).body(body.toString()));
     }
 
+    public JSONObject put(String url, JSONObject body)
+    {
+        return toObject(addHeaders(Unirest.put(url)).body(body.toString()));
+    }
+
     public JSONArray getA(String url)
     {
         return toArray(addHeaders(Unirest.get(url)));
@@ -71,6 +76,11 @@ public class Requester
     }
 
     public JSONArray patchA(String url, JSONObject body)
+    {
+        return toArray(addHeaders(Unirest.patch(url)).body(body.toString()));
+    }
+
+    public JSONArray patchA(String url, JSONArray body)
     {
         return toArray(addHeaders(Unirest.patch(url)).body(body.toString()));
     }
@@ -114,7 +124,7 @@ public class Requester
             request.header("Content-Type", "application/json");
         }
         request.header("user-agent", JDAInfo.GITHUB + " " + JDAInfo.VERSION);
-//        request.header("Accept-Encoding", "gzip");
+        request.header("Accept-Encoding", "gzip");
         return request;
     }
 }

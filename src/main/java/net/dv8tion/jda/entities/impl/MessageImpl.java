@@ -1,10 +1,25 @@
 /**
- * Created by Michael Ritter on 15.12.2015.
+ *    Copyright 2015-2016 Austin Keener & Michael Ritter
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package net.dv8tion.jda.entities.impl;
 
+import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.exceptions.PermissionException;
 import net.dv8tion.jda.handle.EntityBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,23 +31,30 @@ import java.util.List;
 
 public class MessageImpl implements Message
 {
-    private final String id;
     private final JDAImpl api;
-    private List<User> mentionedUsers = new LinkedList<>();
+    private final String id;
     private boolean mentionsEveryone = false;
     private boolean isTTS = false;
-    private OffsetDateTime time;
-    private OffsetDateTime editedTime = null;
-    private User author;
-    private String channelId;
     private boolean isPrivate;
+    private String channelId;
     private String content;
     private String subContent = null;
+    private User author;
+    private OffsetDateTime time;
+    private OffsetDateTime editedTime = null;
+    private List<User> mentionedUsers = new LinkedList<>();
+    private List<Attachment> attachments = new LinkedList<>();
 
     public MessageImpl(String id, JDAImpl api)
     {
         this.id = id;
         this.api = api;
+    }
+
+    @Override
+    public JDA getJDA()
+    {
+        return api;
     }
 
     @Override
@@ -105,6 +127,12 @@ public class MessageImpl implements Message
     }
 
     @Override
+    public List<Attachment> getAttachments()
+    {
+        return Collections.unmodifiableList(attachments);
+    }
+
+    @Override
     public boolean isPrivate()
     {
         return isPrivate;
@@ -119,6 +147,8 @@ public class MessageImpl implements Message
     @Override
     public Message updateMessage(String newContent)
     {
+        if (!api.getSelfInfo().getId().equals(getAuthor().getId()))
+            throw new UnsupportedOperationException("Attempted to update message that was not sent by this account. You cannot modify other User's messages!");
         try
         {
             JSONObject response = api.getRequester().patch("https://discordapp.com/api/channels/" + channelId + "/messages/" + getId(), new JSONObject().put("content", newContent));
@@ -134,6 +164,13 @@ public class MessageImpl implements Message
     @Override
     public void deleteMessage()
     {
+        if (!api.getSelfInfo().getId().equals(getAuthor().getId()))
+        {
+            if (isPrivate())
+                throw new PermissionException("Cannot delete another User's messages in a PrivateChannel.");
+            else if (!api.getTextChannelById(getChannelId()).checkPermission(api.getSelfInfo(), Permission.MESSAGE_MANAGE))
+                throw new PermissionException(Permission.MESSAGE_MANAGE);
+        }
         api.getRequester().delete("https://discordapp.com/api/channels/" + channelId + "/messages/" + getId());
     }
 
@@ -188,6 +225,12 @@ public class MessageImpl implements Message
     public MessageImpl setContent(String content)
     {
         this.content = content;
+        return this;
+    }
+
+    public MessageImpl setAttachments(List<Attachment> attachments)
+    {
+        this.attachments = attachments;
         return this;
     }
 }

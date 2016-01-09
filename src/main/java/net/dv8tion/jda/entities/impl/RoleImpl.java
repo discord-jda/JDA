@@ -1,5 +1,5 @@
 /**
- *    Copyright 2015 Austin Keener & Michael Ritter
+ *    Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,27 +15,58 @@
  */
 package net.dv8tion.jda.entities.impl;
 
+import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Permission;
+import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.Role;
+import net.dv8tion.jda.managers.RoleManager;
+
+import java.util.List;
 
 public class RoleImpl implements net.dv8tion.jda.entities.Role
 {
     private final String id;
+    private final Guild guild;
     private String name;
     private int color;
     private int position;
     private int permissions;
     private boolean managed, grouped;
 
-    public RoleImpl(String id)
+    public RoleImpl(String id, Guild guild)
     {
         this.id = id;
+        this.guild = guild;
+    }
+
+    @Override
+    public Guild getGuild()
+    {
+        return guild;
+    }
+
+    @Override
+    public JDA getJDA()
+    {
+        return guild.getJDA();
     }
 
     @Override
     public String getId()
     {
         return id;
+    }
+
+    @Override
+    public int getPermissionsRaw()
+    {
+        return permissions;
+    }
+
+    @Override
+    public List<Permission> getPermissions()
+    {
+        return Permission.getPermissions(permissions);
     }
 
     @Override
@@ -74,6 +105,12 @@ public class RoleImpl implements net.dv8tion.jda.entities.Role
         return grouped;
     }
 
+    @Override
+    public RoleManager getManager()
+    {
+        return new RoleManager(this);
+    }
+
     public RoleImpl setName(String name)
     {
         this.name = name;
@@ -108,11 +145,6 @@ public class RoleImpl implements net.dv8tion.jda.entities.Role
     {
         this.grouped = grouped;
         return this;
-    }
-
-    public int getPermissions()
-    {
-        return permissions;
     }
 
     @Override

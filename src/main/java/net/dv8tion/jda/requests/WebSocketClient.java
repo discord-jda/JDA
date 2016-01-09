@@ -1,5 +1,5 @@
 /**
- *    Copyright 2015 Austin Keener & Michael Ritter
+ *    Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ public class WebSocketClient extends WebSocketAdapter
         try
         {
             socket = factory.createSocket(url)
-//                    .addHeader("Accept-Encoding", "gzip")
+                    .addHeader("Accept-Encoding", "gzip")
                     .addListener(this)
                     .connect();
         }
@@ -81,8 +81,8 @@ public class WebSocketClient extends WebSocketAdapter
                         .put("$referring_domain", "t.co")
                         .put("$referrer", "")
                     )
-                    .put("v", 3));
-//                    .put("compress", true); //Should be used to make gzip READY, but isn't working..
+                    .put("v", 3)
+                    .put("compress", true)); //Used to make the READY event be given as compressed binary data when over a certain size. TY @ShadowLordAlpha
         send(connectObj.toString());
         connected = true;
     }
@@ -123,6 +123,9 @@ public class WebSocketClient extends WebSocketAdapter
                     break;
                 case "TYPING_START":
                     new UserTypingHandler(api, responseTotal).handle(content);
+                    break;
+                case "MESSAGE_ACK":
+                    new MessageAcknowledgedHandler(api, responseTotal).handle(content);
                     break;
                 case "MESSAGE_CREATE":
                     new MessageReceivedHandler(api, responseTotal).handle(content);
@@ -181,6 +184,9 @@ public class WebSocketClient extends WebSocketAdapter
                 case "GUILD_ROLE_DELETE":
                     new GuildRoleDeleteHandler(api, responseTotal).handle(content);
                     break;
+                case "USER_UPDATE":
+                    new UserUpdateHandler(api, responseTotal).handle(content);
+                    break;
                 default:
                     System.out.println("Unrecognized event:\n" + message);    //TODO: Replace with "we don't know this type"
             }
@@ -201,13 +207,11 @@ public class WebSocketClient extends WebSocketAdapter
         }
     }
 
-    //Currently unused because I (DV8FromTheWorld) am a scrub and couldn't get Discord to send a gzip READY response to test.
     @Override
     public void onBinaryMessage(WebSocket websocket, byte[] binary) throws UnsupportedEncodingException, DataFormatException
     {
-        System.out.println("Got gzip?!");
-        //Thanks to ShadowLordAlpha
-        // Get the compressed message and inflate it
+        //Thanks to ShadowLordAlpha for code and debugging.
+        //Get the compressed message and inflate it
         StringBuilder builder = new StringBuilder();
         Inflater decompresser = new Inflater();
         decompresser.setInput(binary, 0, binary.length);

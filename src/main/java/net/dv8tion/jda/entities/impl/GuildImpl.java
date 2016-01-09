@@ -1,5 +1,5 @@
 /**
- *    Copyright 2015 Austin Keener & Michael Ritter
+ *    Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,14 @@
  */
 package net.dv8tion.jda.entities.impl;
 
+import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Region;
 import net.dv8tion.jda.entities.*;
+import net.dv8tion.jda.handle.EntityBuilder;
+import net.dv8tion.jda.managers.ChannelManager;
+import net.dv8tion.jda.managers.GuildManager;
+import net.dv8tion.jda.managers.RoleManager;
+import org.json.JSONObject;
 
 import java.util.*;
 
@@ -43,6 +49,12 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    public JDA getJDA()
+    {
+        return api;
+    }
+
+    @Override
     public String getId()
     {
         return id;
@@ -63,7 +75,7 @@ public class GuildImpl implements Guild
     @Override
     public String getIconUrl()
     {
-        return "https://cdn.discordapp.com/icons/" + getId() + "/" + getIconId() + ".jpg";
+        return iconId == null ? null : "https://cdn.discordapp.com/icons/" + getId() + "/" + getIconId() + ".jpg";
     }
 
     @Override
@@ -107,6 +119,26 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    public ChannelManager createTextChannel(String name)
+    {
+        if (name == null)
+        {
+            throw new IllegalArgumentException("TextChannel name must not be null");
+        }
+        JSONObject response = api.getRequester().post("https://discordapp.com/api/guilds/" + getId() + "/channels", new JSONObject().put("name", name).put("type", "text"));
+        if (response == null || !response.has("id"))
+        {
+            //error creating textchannel
+            throw new RuntimeException("Creating a new TextChannel failed. Reason: " + (response == null ? "Unknown" : response.toString()));
+        }
+        else
+        {
+            TextChannel channel = new EntityBuilder(api).createTextChannel(response, getId());
+            return new ChannelManager(channel);
+        }
+    }
+
+    @Override
     public List<VoiceChannel> getVoiceChannels()
     {
         List<VoiceChannel> list = new ArrayList<>();
@@ -115,11 +147,47 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    public ChannelManager createVoiceChannel(String name)
+    {
+        if (name == null)
+        {
+            throw new IllegalArgumentException("VoiceChannel name must not be null");
+        }
+        JSONObject response = api.getRequester().post("https://discordapp.com/api/guilds/" + getId() + "/channels", new JSONObject().put("name", name).put("type", "voice"));
+        if (response == null || !response.has("id"))
+        {
+            //error creating voicechannel
+            throw new RuntimeException("Creating a new VoiceChannel failed. Reason: " + (response == null ? "Unknown" : response.toString()));
+        }
+        else
+        {
+            VoiceChannel channel = new EntityBuilder(api).createVoiceChannel(response, getId());
+            return new ChannelManager(channel);
+        }
+    }
+
+    @Override
     public List<Role> getRoles()
     {
         List<Role> list = new ArrayList<>();
         list.addAll(roles.values());
         return Collections.unmodifiableList(list);
+    }
+
+    @Override
+    public RoleManager createRole()
+    {
+        JSONObject response = api.getRequester().post("https://discordapp.com/api/guilds/" + getId() + "/roles", new JSONObject());
+        if (response == null || !response.has("id"))
+        {
+            //error creating role
+            throw new RuntimeException("Creating a new Role failed. Reason: " + (response == null ? "Unknown" : response.toString()));
+        }
+        else
+        {
+            Role role = new EntityBuilder(api).createRole(response, getId());
+            return new RoleManager(role);
+        }
     }
 
     @Override
@@ -132,6 +200,12 @@ public class GuildImpl implements Guild
     public Role getPublicRole()
     {
         return publicRole;
+    }
+
+    @Override
+    public GuildManager getManager()
+    {
+        return new GuildManager(this);
     }
 
     public Map<String, Role> getRolesMap()
@@ -209,11 +283,5 @@ public class GuildImpl implements Guild
     public int hashCode()
     {
         return getId().hashCode();
-    }
-
-    @Override
-    public void leave()
-    {
-        api.getRequester().delete("https://discordapp.com/api/guilds/"+id);
     }
 }

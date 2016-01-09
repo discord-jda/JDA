@@ -1,12 +1,12 @@
 /**
- * Copyright 2015 Austin Keener & Michael Ritter
- * <p>
+ *    Copyright 2015-2016 Austin Keener & Michael Ritter
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,7 +16,10 @@
 package net.dv8tion.jda.utils;
 
 import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.Permission;
+import net.dv8tion.jda.entities.Channel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
+import net.dv8tion.jda.exceptions.PermissionException;
 import org.json.JSONObject;
 
 public class InviteUtil
@@ -39,9 +42,12 @@ public class InviteUtil
         return null;
     }
 
-    public static Invite createInvite(String channelId, JDA jda)
+    public static Invite createInvite(Channel chan, JDA jda)
     {
-        JSONObject response = ((JDAImpl) jda).getRequester().post("https://discordapp.com/api/channels/" + channelId + "/invites", new JSONObject());
+        if (!chan.checkPermission(jda.getSelfInfo(), Permission.CREATE_INSTANT_INVITE))
+            throw new PermissionException(Permission.CREATE_INSTANT_INVITE);
+
+        JSONObject response = ((JDAImpl) jda).getRequester().post("https://discordapp.com/api/channels/" + chan.getId() + "/invites", new JSONObject());
         if (response.has("code"))
         {
             JSONObject guild = response.getJSONObject("guild");

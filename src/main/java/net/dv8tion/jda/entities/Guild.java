@@ -1,5 +1,5 @@
 /**
- *    Copyright 2015 Austin Keener & Michael Ritter
+ *    Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,11 @@
  */
 package net.dv8tion.jda.entities;
 
+import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Region;
+import net.dv8tion.jda.managers.ChannelManager;
+import net.dv8tion.jda.managers.GuildManager;
+import net.dv8tion.jda.managers.RoleManager;
 
 import java.util.List;
 
@@ -109,6 +113,17 @@ public interface Guild
     List<TextChannel> getTextChannels();
 
     /**
+     * Creates a new {@link net.dv8tion.jda.entities.TextChannel TextChannel} in this Guild.
+     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.Permission#MANAGE_CHANNEL MANAGE_CHANNEL Permission}
+     *
+     * @param name
+     *      the name of the TextChannel to create
+     * @return
+     *      the ChannelManager for the created TextChannel
+     */
+    ChannelManager createTextChannel(String name);
+
+    /**
      * The {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannels} available on the {@link net.dv8tion.jda.entities.Guild Guild}.
      *
      * @return
@@ -117,12 +132,32 @@ public interface Guild
     List<VoiceChannel> getVoiceChannels();
 
     /**
+     * Creates a new {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} in this Guild.
+     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.Permission#MANAGE_CHANNEL MANAGE_CHANNEL Permission}
+     *
+     * @param name
+     *      the name of the VoiceChannel to create
+     * @return
+     *      the ChannelManager for the created VoiceChannel
+     */
+    ChannelManager createVoiceChannel(String name);
+
+    /**
      * The {@link net.dv8tion.jda.entities.Role Roles} of this {@link net.dv8tion.jda.entities.Guild Guild}
      *
      * @return
      *      An Immutable List of {@link net.dv8tion.jda.entities.Role Roles}.
      */
     List<Role> getRoles();
+
+    /**
+     * Creates a new {@link net.dv8tion.jda.entities.Role Role} in this Guild.
+     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.Permission#MANAGE_ROLES MANAGE_ROLES Permission}
+     *
+     * @return
+     *  the RoleManager for the created Role
+     */
+    RoleManager createRole();
 
     /**
      * Provides all of the {@link net.dv8tion.jda.entities.Role Roles} that the provided {@link net.dv8tion.jda.entities.User User}
@@ -142,8 +177,18 @@ public interface Guild
     Role getPublicRole();
 
     /**
-     * Leave the guild.
-     * <b>This will delete the guild if the current account owns it!</b>
+     * Returns the {@link net.dv8tion.jda.managers.GuildManager GuildManager} for this Guild.
+     * In the GuildManager, you can modify most of its properties, and leave or delete it.
+     *
+     * @return
+     *      The GuildManager of this Guild
      */
-    void leave();
+    GuildManager getManager();
+
+    /**
+     * Returns the {@link net.dv8tion.jda.JDA JDA} instance of this Guild
+     * @return
+     *      the corresponding JDA instance
+     */
+    JDA getJDA();
 }

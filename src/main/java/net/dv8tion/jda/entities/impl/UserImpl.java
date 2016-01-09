@@ -1,5 +1,5 @@
 /**
- *    Copyright 2015 Austin Keener & Michael Ritter
+ *    Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.entities.impl;
 
+import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.OnlineStatus;
 import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.User;
@@ -40,6 +41,12 @@ public class UserImpl implements User
         this.id = id;
         this.api = api;
         this.voiceStatus = new VoiceStatusImpl(this);
+    }
+
+    @Override
+    public JDA getJDA()
+    {
+        return api;
     }
 
     @Override
@@ -69,7 +76,7 @@ public class UserImpl implements User
     @Override
     public String getAvatarUrl()
     {
-        return "https://cdn.discordapp.com/avatars/" + getId() + "/" + getAvatarId() + ".jpg";
+        return getAvatarId() == null ? null : "https://cdn.discordapp.com/avatars/" + getId() + "/" + getAvatarId() + ".jpg";
     }
 
     @Override

@@ -1,5 +1,5 @@
 /**
- *    Copyright 2015 Austin Keener & Michael Ritter
+ *    Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -164,7 +164,7 @@ public class JDABuilder
      * @param listener
      *          The listener to remove from the list.
      * @return
-     *      Returns the net.dv8tion.jda.JDABuilder instance. Useful for chaining.
+     *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
      */
     public JDABuilder removeListener(EventListener listener)
     {

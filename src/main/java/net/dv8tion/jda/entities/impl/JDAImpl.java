@@ -1,5 +1,5 @@
 /**
- *    Copyright 2015 Austin Keener & Michael Ritter
+ *    Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,13 @@ package net.dv8tion.jda.entities.impl;
 import com.mashape.unirest.http.Unirest;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.*;
+import net.dv8tion.jda.events.Event;
+import net.dv8tion.jda.events.guild.GuildJoinEvent;
+import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.hooks.EventListener;
 import net.dv8tion.jda.hooks.EventManager;
+import net.dv8tion.jda.managers.AccountManager;
+import net.dv8tion.jda.managers.GuildManager;
 import net.dv8tion.jda.requests.Requester;
 import net.dv8tion.jda.requests.WebSocketClient;
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +40,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 
@@ -46,17 +52,18 @@ public class JDAImpl implements JDA
     private final HttpHost proxy;
     private final Map<String, User> userMap = new HashMap<>();
     private final Map<String, Guild> guildMap = new HashMap<>();
-    private final Map<String, TextChannel> channelMap = new HashMap<>();
+    private final Map<String, TextChannel> textChannelMap = new HashMap<>();
     private final Map<String, VoiceChannel> voiceChannelMap = new HashMap<>();
     private final Map<String, PrivateChannel> pmChannelMap = new HashMap<>();
     private final Map<String, String> offline_pms = new HashMap<>();    //Userid -> channelid
     private final EventManager eventManager = new EventManager();
     private SelfInfo selfInfo = null;
-    private AccountManagerImpl accountManager;
+    private AccountManager accountManager;
     private String authToken = null;
     private WebSocketClient client;
     private final Requester requester = new Requester(this);
     private boolean debug;
+    private boolean enableAck;
     private int responseTotal;
 
     public JDAImpl()
@@ -90,7 +97,7 @@ public class JDAImpl implements JDA
         if (email == null || email.isEmpty() || password == null || password.isEmpty())
             throw new IllegalArgumentException("The provided email or password as empty / null.");
 
-        accountManager=new AccountManagerImpl(this, password);
+        accountManager=new AccountManager(this, password);
         
         Path tokenFile = Paths.get("tokens.json");
         JSONObject configs = null;
@@ -109,16 +116,16 @@ public class JDAImpl implements JDA
             try
             {
                 authToken = configs.getJSONObject("tokens").getString(email);
-                gateway = getRequester().get("https://discordapp.com/api/gateway").getString("url");
-                System.out.println("Using cached Token: " + authToken);
+                if (getRequester().get("https://discordapp.com/api/users/@me/guilds") == null)
+                {
+                    //token is valid (returns array, cant be returned as JSONObject)
+                    gateway = getRequester().get("https://discordapp.com/api/gateway").getString("url");
+                    System.out.println("Using cached Token: " + authToken);
+                }
             }
             catch (JSONException ex)
             {
                 System.out.println("Token-file misformatted. Please delete it for recreation");
-            }
-            catch (Exception ex)
-            {
-                ex.printStackTrace();
             }
         }
 
@@ -240,9 +247,7 @@ public class JDAImpl implements JDA
     @Override
     public List<User> getUsers()
     {
-        List<User> users = new LinkedList<>();
-        users.addAll(userMap.values());
-        return Collections.unmodifiableList(users);
+        return Collections.unmodifiableList(new LinkedList<>(userMap.values()));
     }
 
     @Override
@@ -254,7 +259,10 @@ public class JDAImpl implements JDA
     @Override
     public List<User> getUsersByName(String name)
     {
-        return userMap.values().stream().filter(u -> u.getUsername().equalsIgnoreCase(name)).collect(Collectors.toList());
+        return Collections.unmodifiableList(
+                userMap.values().stream().filter(
+                        u -> u.getUsername().equals(name))
+                        .collect(Collectors.toList()));
     }
 
     public Map<String, Guild> getGuildMap()
@@ -265,9 +273,80 @@ public class JDAImpl implements JDA
     @Override
     public List<Guild> getGuilds()
     {
-        List<Guild> guilds = new LinkedList<>();
-        guilds.addAll(guildMap.values());
-        return Collections.unmodifiableList(guilds);
+        return Collections.unmodifiableList(new LinkedList<>(guildMap.values()));
+    }
+
+    @Override
+    public List<Guild> getGuildsByName(String name)
+    {
+        return Collections.unmodifiableList(
+                guildMap.values().stream().filter(
+                        guild -> guild.getName().equals(name))
+                        .collect(Collectors.toList()));
+    }
+
+    @Override
+    public List<TextChannel> getTextChannelsByName(String name)
+    {
+        return Collections.unmodifiableList(
+                textChannelMap.values().stream().filter(
+                        channel -> channel.getName().equals(name))
+                        .collect(Collectors.toList()));
+    }
+
+    @Override
+    public List<VoiceChannel> getVoiceChannelByName(String name)
+    {
+        return Collections.unmodifiableList(
+                voiceChannelMap.values().stream().filter(
+                        channel -> channel.getName().equals(name))
+                        .collect(Collectors.toList()));
+    }
+
+    @Override
+    public List<PrivateChannel> getPrivateChannels()
+    {
+        return Collections.unmodifiableList(new LinkedList<>(pmChannelMap.values()));
+    }
+
+    @Override
+    public GuildManager createGuild(String name)
+    {
+        if (name == null)
+        {
+            throw new IllegalArgumentException("Guild name must not be null");
+        }
+        JSONObject response = getRequester().post("https://discordapp.com/api/guilds",
+                new JSONObject()).put("name", name);
+        if (response == null || !response.has("id"))
+        {
+            //error creating guild
+            throw new RuntimeException("Creating a new Guild failed. Reason: " + (response == null ? "Unknown" : response.toString()));
+        }
+        else
+        {
+            Guild g = new EntityBuilder(this).createGuild(response);
+            return new GuildManager(g);
+        }
+    }
+
+    @Override
+    public void createGuildAsync(String name, Consumer<GuildManager> callback)
+    {
+        if (name == null)
+            throw new IllegalArgumentException("Guild name must not be null");
+
+        JSONObject response = getRequester().post("https://discordapp.com/api/guilds",
+                new JSONObject().put("name", name));
+        if (response == null || !response.has("id"))
+        {
+            //error creating guild
+            throw new RuntimeException("Creating a new Guild failed. Reason: " + (response == null ? "Unknown" : response.toString()));
+        }
+        else
+        {
+            addEventListener(new AsyncCallback(callback, response.getString("id")));
+        }
     }
 
     @Override
@@ -278,21 +357,19 @@ public class JDAImpl implements JDA
 
     public Map<String, TextChannel> getChannelMap()
     {
-        return channelMap;
+        return textChannelMap;
     }
 
     @Override
     public List<TextChannel> getTextChannels()
     {
-        List<TextChannel> tcs = new LinkedList<>();
-        tcs.addAll(channelMap.values());
-        return Collections.unmodifiableList(tcs);
+        return Collections.unmodifiableList(new LinkedList<>(textChannelMap.values()));
     }
 
     @Override
     public TextChannel getTextChannelById(String id)
     {
-        return channelMap.get(id);
+        return textChannelMap.get(id);
     }
 
     public Map<String, VoiceChannel> getVoiceChannelMap()
@@ -303,9 +380,7 @@ public class JDAImpl implements JDA
     @Override
     public List<VoiceChannel> getVoiceChannels()
     {
-        List<VoiceChannel> vcs = new LinkedList<>();
-        vcs.addAll(voiceChannelMap.values());
-        return Collections.unmodifiableList(vcs);
+        return Collections.unmodifiableList(new LinkedList<>(voiceChannelMap.values()));
     }
 
     @Override
@@ -330,14 +405,6 @@ public class JDAImpl implements JDA
         return offline_pms;
     }
 
-    /**
-     * Returns the currently logged in account represented by {@link net.dv8tion.jda.entities.SelfInfo SelfInfo}.<br>
-     * Account settings <b>cannot</b> be modified using this object. If you wish to modify account settings please
-     *   use the AccountManager.
-     *
-     * @return
-     *      The currently logged in account.
-     */
     @Override
     public SelfInfo getSelfInfo()
     {
@@ -387,5 +454,63 @@ public class JDAImpl implements JDA
     public boolean isDebug()
     {
         return debug;
+    }
+
+    /**
+     * Enables or disables the ack functionality of JDA.<br>
+     * <b>Read the Javadocs of {@link #ack(Message)}</b> for guidelines on how and when to ack!
+     *
+     * @param enable
+     *      whether or not to enable ack functionality
+     */
+    public void setAllowAck(boolean enable)
+    {
+        this.enableAck = enable;
+    }
+
+    public boolean isAckAllowed()
+    {
+        return enableAck;
+    }
+
+    /**
+     * Acks a specific message. This feature is disabled by default.
+     * To enable them, call {@link #setAllowAck(boolean)}.<br>
+     * IMPORTANT: It is highly discouraged to ack every message and may lead to rate-limits and other bad stuff.
+     * Use this wisely (only if needed, or on a long enough interval).
+     * Acking a specific Message also acks every Message before (only ack last one if possible)
+     *
+     * @param msg
+     *      the message to ack
+     */
+    public void ack(Message msg)
+    {
+        if (!enableAck)
+        {
+            throw new RuntimeException("Acking is disabled by default. <b>READ THE JAVADOCS</b> for how to use them!");
+        }
+        getRequester().post("https://discordapp.com/api/channels/"+msg.getChannelId()+"/messages/"+msg.getId()+"/ack", new JSONObject());
+    }
+
+    private static class AsyncCallback implements EventListener
+    {
+        private final Consumer<GuildManager> cb;
+        private final String id;
+
+        public AsyncCallback(Consumer<GuildManager> cb, String guildId)
+        {
+            this.cb = cb;
+            this.id = guildId;
+        }
+
+        @Override
+        public void onEvent(Event event)
+        {
+            if (event instanceof GuildJoinEvent && ((GuildJoinEvent) event).getGuild().getId().equals(id))
+            {
+                event.getJDA().removeEventListener(this);
+                cb.accept(((GuildJoinEvent) event).getGuild().getManager());
+            }
+        }
     }
 }

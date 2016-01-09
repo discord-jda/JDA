@@ -1,5 +1,5 @@
 /**
- *    Copyright 2015 Austin Keener & Michael Ritter
+ *    Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,11 @@
  */
 package net.dv8tion.jda.entities;
 
+import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Permission;
+import net.dv8tion.jda.managers.RoleManager;
+
+import java.util.List;
 
 public interface Role
 {
@@ -64,6 +68,24 @@ public interface Role
     String getId();
 
     /**
+     * The <code>int</code> representation of the literal permissions that this {@link net.dv8tion.jda.entities.Role Role} has.<br>
+     * <b>NOTE:</b> these do not necessarily represent the permissions this role will have in a {@link net.dv8tion.jda.entities.Channel Channel}.
+     *
+     * @return
+     *      Never-negative int containing offset permissions of this role.
+     */
+    int getPermissionsRaw();
+
+    /**
+     * A list of the literal {@link net.dv8tion.jda.Permission Permissions} that this {@link net.dv8tion.jda.entities.Role Role} has.<br>
+     * <b>NOTE:</b> these do not necessarily represent the permissions this role will have in a {@link net.dv8tion.jda.entities.Channel Channel}.
+     *
+     * @return
+     *      Possibly-empty list containing the literal permissions of this role.
+     */
+    List<Permission> getPermissions();
+
+    /**
      * The color this {@link net.dv8tion.jda.entities.Role Role} is displayed in.
      *
      * @return
@@ -82,4 +104,27 @@ public interface Role
      *      If the given {@link net.dv8tion.jda.Permission Permission} is available to this {@link net.dv8tion.jda.entities.Role Role}
      */
     boolean hasPermission(Permission perm);
+
+    /**
+     * Returns the {@link net.dv8tion.jda.entities.Guild Guild} this Role exists in
+     * @return
+     *      the Guild containing this Role
+     */
+    Guild getGuild();
+
+    /**
+     * Returns the {@link net.dv8tion.jda.managers.RoleManager RoleManager} for this Role.
+     * In the RoleManager, you can modify all its values.
+     *
+     * @return
+     *      The RoleManager of this Role
+     */
+    RoleManager getManager();
+
+    /**
+     * Returns the {@link net.dv8tion.jda.JDA JDA} instance of this Role
+     * @return
+     *      the corresponding JDA instance
+     */
+    JDA getJDA();
 }
