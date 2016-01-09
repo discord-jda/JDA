@@ -1,5 +1,6 @@
 # JDA (Java Discord API)
-JDA strives to provide a clean and full wrapping of the Discord REST api and its Websocket-Events for Java.
+JDA strives to provide a clean and full wrapping of the Discord REST api and its Websocket-Events for Java.<br>
+Besides audio, this library is full featured, allowing every operation that the Discord Client can provide.
 
 ## Creating the JDA Object
 Creating the JDA Object is done via the JDABuilder class.
@@ -69,27 +70,24 @@ Current Promoted Version:
 
 ![JDA promoted verison](https://www.dropbox.com/s/4jddygn33340uf4/version.png?dl=1)
 
-You can get the latest promoted build here:
-[Promoted Build Downloads](http://home.dv8tion.net:8080/job/JDA/Promoted%20Build/)
+You can get the latest promoted builds here:
+[Promoted Downloads](https://github.com/DV8FromTheWorld/JDA/releases)
 
 
 If you want the most up-to-date builds, you can get them here: [Beta Build Downloads](http://home.dv8tion.net:8080/job/JDA/)<br>
 **Note:** It is quite possible that these are broken or bugged. Use with caution.
 
-Version 1.1.0 (Build 57) is also available via maven central
-
-Maven:
-```
-<dependency>
-    <groupId>net.dv8tion</groupId>
-    <artifactId>JDA</artifactId>
-    <version>1.1.0_57</version>
-</dependency>
-```
-Gradle:
-```
-compile 'net.dv8tion:JDA:1.1.0_57'
-```
+## Docs
+Javadocs are available in both jar format and web format.<br>
+The jar format is available on the [Promoted Downloads](https://github.com/DV8FromTheWorld/JDA/releases) page or on any of the
+build pages of the [Beta Downloads](http://home.dv8tion.net:8080/job/JDA/).<br>
+<br>
+The web format allows for viewing of the [Latest Promoted Docs](http://home.dv8tion.net:8080/job/JDA/Promoted%20Build/javadoc/)
+and also viewing of each individual build's javadoc. To view the javadoc for a specific build, you will need to go to that build's page
+on [the build server](http://home.dv8tion.net:8080/job/JDA/) and click the javadoc button on the left side of the build page.<br>
+A shortcut would be: http://home.dv8tion.net:8080/job/JDA/BUILD_NUMBER_GOES_HERE/javadoc/, you just need to replace the 
+"BUILD_NUMBER_GOES_HERE" with the build you want.<br>
+Example: Build 90's javadoc url would be http://home.dv8tion.net:8080/job/JDA/90/javadoc/
 
 ## Getting Help
 If you need help, or just want to talk with the JDA or other Discord Devs, you can join the [Unofficial Discord API](https://discord.gg/0SBTUU1wZTUydsWv) Guild.
@@ -103,6 +101,12 @@ and create your PR into that same branch. **We will be rejecting any PRs to mast
 It is also highly recommended to get in touch with the Devs via the Discord API Guild (see section above).
 
 ## TODO
+* Voice (The current focus and planned for v1.3.0) (gonna take some time)
+  * Sending audio
+  * Receiving audio
+    * Ability to access a single combined stream and individual user audio streams.
+  * Usage examples
+  * Extensive documentation
 * ~~Private Messages~~
   * ~~Sending Private Messages~~
   * ~~Figure out a good Event system that handles both, private and guild messages~~
@@ -111,12 +115,11 @@ It is also highly recommended to get in touch with the Devs via the Discord API 
 * ~~Changing Account details (username, email, avatar, password)~~
 * ~~Changing the own Presence~~
 * ~~Modifying the server~~
-* Permissions
-  * Implement Exceptions
+* ~~Permissions~~
+  * ~~Implement Exceptions~~
   * ~~Revisit the Permission calculation~~
 * Read-States (which Message was last read in which channel)
   * ~~Message-ACK~~
-* Voice (planned last, gonna take some while)
 
 ## Dependencies:
 This project requires **Java 8**.<br>
