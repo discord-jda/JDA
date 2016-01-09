@@ -32,10 +32,10 @@ public class GuildLeaveHandler extends SocketHandler
     public void handle(JSONObject content)
     {
         Guild guild = api.getGuildMap().get(content.getString("id"));
+        api.getGuildMap().remove(guild.getId());
         api.getEventManager().handle(
                 new GuildLeaveEvent(
                         api, responseNumber,
                         guild));
-        api.getGuildMap().remove(guild.getId());
     }
 }
