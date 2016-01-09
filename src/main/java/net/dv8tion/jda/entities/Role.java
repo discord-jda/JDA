@@ -81,7 +81,7 @@ public interface Role
      * <b>NOTE:</b> these do not necessarily represent the permissions this role will have in a {@link net.dv8tion.jda.entities.Channel Channel}.
      *
      * @return
-     *
+     *      Possibly-empty list containing the literal permissions of this role.
      */
     List<Permission> getPermissions();
 
