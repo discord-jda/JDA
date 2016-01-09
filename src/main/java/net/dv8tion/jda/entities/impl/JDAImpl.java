@@ -52,7 +52,7 @@ public class JDAImpl implements JDA
     private final HttpHost proxy;
     private final Map<String, User> userMap = new HashMap<>();
     private final Map<String, Guild> guildMap = new HashMap<>();
-    private final Map<String, TextChannel> channelMap = new HashMap<>();
+    private final Map<String, TextChannel> textChannelMap = new HashMap<>();
     private final Map<String, VoiceChannel> voiceChannelMap = new HashMap<>();
     private final Map<String, PrivateChannel> pmChannelMap = new HashMap<>();
     private final Map<String, String> offline_pms = new HashMap<>();    //Userid -> channelid
@@ -247,9 +247,7 @@ public class JDAImpl implements JDA
     @Override
     public List<User> getUsers()
     {
-        List<User> users = new LinkedList<>();
-        users.addAll(userMap.values());
-        return Collections.unmodifiableList(users);
+        return Collections.unmodifiableList(new LinkedList<>(userMap.values()));
     }
 
     @Override
@@ -261,7 +259,10 @@ public class JDAImpl implements JDA
     @Override
     public List<User> getUsersByName(String name)
     {
-        return userMap.values().stream().filter(u -> u.getUsername().equalsIgnoreCase(name)).collect(Collectors.toList());
+        return Collections.unmodifiableList(
+                userMap.values().stream().filter(
+                        u -> u.getUsername().equals(name))
+                        .collect(Collectors.toList()));
     }
 
     public Map<String, Guild> getGuildMap()
@@ -272,9 +273,40 @@ public class JDAImpl implements JDA
     @Override
     public List<Guild> getGuilds()
     {
-        List<Guild> guilds = new LinkedList<>();
-        guilds.addAll(guildMap.values());
-        return Collections.unmodifiableList(guilds);
+        return Collections.unmodifiableList(new LinkedList<>(guildMap.values()));
+    }
+
+    @Override
+    public List<Guild> getGuildsByName(String name)
+    {
+        return Collections.unmodifiableList(
+                guildMap.values().stream().filter(
+                        guild -> guild.getName().equals(name))
+                        .collect(Collectors.toList()));
+    }
+
+    @Override
+    public List<TextChannel> getTextChannelsByName(String name)
+    {
+        return Collections.unmodifiableList(
+                textChannelMap.values().stream().filter(
+                        channel -> channel.getName().equals(name))
+                        .collect(Collectors.toList()));
+    }
+
+    @Override
+    public List<VoiceChannel> getVoiceChannelByName(String name)
+    {
+        return Collections.unmodifiableList(
+                voiceChannelMap.values().stream().filter(
+                        channel -> channel.getName().equals(name))
+                        .collect(Collectors.toList()));
+    }
+
+    @Override
+    public List<PrivateChannel> getPrivateChannels()
+    {
+        return Collections.unmodifiableList(new LinkedList<>(pmChannelMap.values()));
     }
 
     @Override
@@ -325,21 +357,19 @@ public class JDAImpl implements JDA
 
     public Map<String, TextChannel> getChannelMap()
     {
-        return channelMap;
+        return textChannelMap;
     }
 
     @Override
     public List<TextChannel> getTextChannels()
     {
-        List<TextChannel> tcs = new LinkedList<>();
-        tcs.addAll(channelMap.values());
-        return Collections.unmodifiableList(tcs);
+        return Collections.unmodifiableList(new LinkedList<>(textChannelMap.values()));
     }
 
     @Override
     public TextChannel getTextChannelById(String id)
     {
-        return channelMap.get(id);
+        return textChannelMap.get(id);
     }
 
     public Map<String, VoiceChannel> getVoiceChannelMap()
@@ -350,9 +380,7 @@ public class JDAImpl implements JDA
     @Override
     public List<VoiceChannel> getVoiceChannels()
     {
-        List<VoiceChannel> vcs = new LinkedList<>();
-        vcs.addAll(voiceChannelMap.values());
-        return Collections.unmodifiableList(vcs);
+        return Collections.unmodifiableList(new LinkedList<>(voiceChannelMap.values()));
     }
 
     @Override
@@ -377,14 +405,6 @@ public class JDAImpl implements JDA
         return offline_pms;
     }
 
-    /**
-     * Returns the currently logged in account represented by {@link net.dv8tion.jda.entities.SelfInfo SelfInfo}.<br>
-     * Account settings <b>cannot</b> be modified using this object. If you wish to modify account settings please
-     *   use the AccountManager.
-     *
-     * @return
-     *      The currently logged in account.
-     */
     @Override
     public SelfInfo getSelfInfo()
     {
