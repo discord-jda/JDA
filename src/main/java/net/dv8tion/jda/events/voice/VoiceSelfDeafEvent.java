@@ -16,12 +16,12 @@
 package net.dv8tion.jda.events.voice;
 
 import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.entities.VoiceStatus;
 
 public class VoiceSelfDeafEvent extends VoiceDeafEvent
 {
-    public VoiceSelfDeafEvent(JDA api, int responseNumber, User user)
+    public VoiceSelfDeafEvent(JDA api, int responseNumber, VoiceStatus voiceStatus)
     {
-        super(api, responseNumber, user);
+        super(api, responseNumber, voiceStatus);
     }
 }

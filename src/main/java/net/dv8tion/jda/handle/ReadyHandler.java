@@ -41,7 +41,7 @@ public class ReadyHandler extends SocketHandler
     @Override
     public void handle(JSONObject content)
     {
-        //TODO: User-Setings; read_state; guild voice states; voice channels
+        //TODO: User-Setings; read_state; voice channels
         builder.createSelfInfo(content.getJSONObject("user"));
         JSONArray muted = content.getJSONObject("user_settings").getJSONArray("muted_channels");
         List<String> mutedChannelIds = new ArrayList<>();

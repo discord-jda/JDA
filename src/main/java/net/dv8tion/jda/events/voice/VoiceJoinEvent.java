@@ -16,21 +16,19 @@
 package net.dv8tion.jda.events.voice;
 
 import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.VoiceChannel;
+import net.dv8tion.jda.entities.VoiceStatus;
 
 public class VoiceJoinEvent extends GenericVoiceEvent
 {
-    protected final VoiceChannel channel;
 
-    public VoiceJoinEvent(JDA api, int responseNumber, User user)
+    public VoiceJoinEvent(JDA api, int responseNumber, VoiceStatus voiceStatus)
     {
-        super(api, responseNumber, user);
-        channel = user.getVoiceStatus().getChannel();
+        super(api, responseNumber, voiceStatus);
     }
 
     public VoiceChannel getChannel()
     {
-        return channel;
+        return voiceStatus.getChannel();
     }
 }

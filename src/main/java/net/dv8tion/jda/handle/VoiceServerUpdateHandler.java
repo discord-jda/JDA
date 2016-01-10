@@ -13,15 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.events.voice;
+package net.dv8tion.jda.handle;
 
-import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.entities.VoiceStatus;
+import net.dv8tion.jda.entities.impl.JDAImpl;
+import org.json.JSONObject;
 
-public class VoiceSelfMuteEvent extends VoiceMuteEvent
+public class VoiceServerUpdateHandler extends SocketHandler
 {
-    public VoiceSelfMuteEvent(JDA api, int responseNumber, VoiceStatus voiceStatus)
+    public VoiceServerUpdateHandler(JDAImpl api, int responseNumber)
     {
-        super(api, responseNumber, voiceStatus);
+        super(api, responseNumber);
+    }
+
+    @Override
+    public void handle(JSONObject content)
+    {
+//        System.out.println(content.toString(4));
     }
 }

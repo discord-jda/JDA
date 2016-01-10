@@ -16,13 +16,13 @@
 package net.dv8tion.jda.events.voice;
 
 import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.entities.VoiceStatus;
 
 public class VoiceDeafEvent extends GenericVoiceEvent
 {
-    public VoiceDeafEvent(JDA api, int responseNumber, User user)
+    public VoiceDeafEvent(JDA api, int responseNumber, VoiceStatus voiceStatus)
     {
-        super(api, responseNumber, user);
+        super(api, responseNumber, voiceStatus);
     }
 
     boolean isDeaf()
@@ -32,11 +32,11 @@ public class VoiceDeafEvent extends GenericVoiceEvent
 
     boolean isSelfDeaf()
     {
-        return user.getVoiceStatus().isDeaf();
+        return voiceStatus.isDeaf();
     }
 
     boolean isServerDeaf()
     {
-        return user.getVoiceStatus().isServerDeaf();
+        return voiceStatus.isServerDeaf();
     }
 }

@@ -87,6 +87,10 @@ public class EntityBuilder
                     String roleId = roleArr.getString(j);
                     userRoles.get(user).add(rolesMap.get(roleId));
                 }
+                VoiceStatusImpl voiceStatus = new VoiceStatusImpl(user, guildObj);
+                voiceStatus.setServerDeaf(member.getBoolean("deaf"));
+                voiceStatus.setServerMute(member.getBoolean("mute"));
+                guildObj.getVoiceStatusMap().put(user, voiceStatus);
             }
         }
 
@@ -125,6 +129,21 @@ public class EntityBuilder
                         .setOnlineStatus(OnlineStatus.fromKey(presence.getString("status")));
             }
         }
+
+        if (guild.has("voice_states"))
+        {
+            JSONArray voiceStates = guild.getJSONArray("voice_states");
+            for (int i = 0; i < voiceStates.length(); i++)
+            {
+                JSONObject voiceState = voiceStates.getJSONObject(i);
+                User user = api.getUserById(voiceState.getString("user_id"));
+                if (user == null)
+                    throw new IllegalArgumentException("When attempting to create a Guild, we were provided with a voice state pertaining to an unknown User. JSON: " + guild);
+
+                createVoiceStatus(voiceState, guildObj, user);
+            }
+        }
+
         return guildObj;
     }
 
@@ -407,5 +426,39 @@ public class EntityBuilder
         }
         return permOverride.setAllow(allow)
                 .setDeny(deny);
+    }
+
+    public VoiceStatus createVoiceStatus(JSONObject status, Guild guildObj, User user)
+    {
+        GuildImpl guild = (GuildImpl) guildObj;
+        VoiceStatusImpl voiceStatus = (VoiceStatusImpl) guild.getVoiceStatusMap().get(user);
+        if (voiceStatus == null)
+        {
+            voiceStatus = new VoiceStatusImpl(user, guild);
+            guild.getVoiceStatusMap().put(user, voiceStatus);
+        }
+
+        if (!status.isNull("channel_id"))
+        {
+            VoiceChannel channel = guild.getVoiceChannelsMap().get(status.getString("channel_id"));
+            if (channel == null)
+                throw new IllegalArgumentException("Attempted to create a VoiceStatus using a non-existant channel! JSON: " + status);
+
+            voiceStatus.setChannel(channel);
+        }
+        else
+            voiceStatus.setChannel(null);
+
+        if (!status.isNull("session_id"))
+            voiceStatus.setSessionId(status.getString("session_id"));
+        else
+            voiceStatus.setSessionId(null);
+
+        return voiceStatus
+                .setMute(status.getBoolean("self_mute"))
+                .setDeaf(status.getBoolean("self_deaf"))
+                .setServerMute(status.getBoolean("mute"))
+                .setServerDeaf(status.getBoolean("deaf"))
+                .setSuppressed(status.getBoolean("suppress"));
     }
 }

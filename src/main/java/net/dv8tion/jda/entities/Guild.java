@@ -191,4 +191,30 @@ public interface Guild
      *      the corresponding JDA instance
      */
     JDA getJDA();
+
+    /**
+     * Returns the current {@link net.dv8tion.jda.entities.VoiceStatus VoiceStatus} of the provide {@link net.dv8tion.jda.entities.User User}
+     * on this {@link net.dv8tion.jda.entities.Guild Guild}. Every {@link net.dv8tion.jda.entities.User User} in this guild
+     * will have a matching {@link net.dv8tion.jda.entities.VoiceStatus VoiceStatus}.<br>
+     * If a {@link net.dv8tion.jda.entities.User User}
+     * that is not in this {@link net.dv8tion.jda.entities.Guild Guild} is provided, this will return <code>null</code>.
+     *
+     * @param user
+     *          The {@link net.dv8tion.jda.entities.User User} whose {@link net.dv8tion.jda.entities.VoiceStatus VoiceStatus} is requested.
+     * @return
+     *      Possibly-null instance of the provided user's {@link net.dv8tion.jda.entities.VoiceStatus VoiceStatus}.
+     */
+    VoiceStatus getVoiceStatusOfUser(User user);
+
+    /**
+     * A list containing the {@link net.dv8tion.jda.entities.VoiceStatus VoiceStatus} of every {@link net.dv8tion.jda.entities.User User}
+     * in this {@link net.dv8tion.jda.entities.Guild Guild}.<br>
+     * This will never return an empty list because if it were empty, that would imply that there are no
+     * {@link net.dv8tion.jda.entities.User Users} in this {@link net.dv8tion.jda.entities.Guild Guild}, which is
+     * impossible.
+     *
+     * @return
+     *      Never-empty list containing all the {@link net.dv8tion.jda.entities.VoiceStatus VoiceStatuses} on this {@link net.dv8tion.jda.entities.Guild Guild}.
+     */
+    List<VoiceStatus> getVoiceStatuses();
 }

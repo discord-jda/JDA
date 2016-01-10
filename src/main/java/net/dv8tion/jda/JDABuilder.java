@@ -140,9 +140,10 @@ public class JDABuilder
      * @param debug
      *          True - enables debug printing.
      */
-    public void setDebug(boolean debug)
+    public JDABuilder setDebug(boolean debug)
     {
        this.debug = debug;
+        return this;
     }
     /**
      * Adds a listener to the list of listeners that will be used to populate the {@link net.dv8tion.jda.JDA} object.

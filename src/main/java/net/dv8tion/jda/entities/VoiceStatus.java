@@ -49,6 +49,16 @@ public interface VoiceStatus
     boolean isServerDeaf();
 
     /**
+     * Returns true if this {@link net.dv8tion.jda.entities.User User} is unable to speak because the
+     * channel is actively suppressing audio communication. This occurs only in AFK channels, where no one is
+     * allowed to send audio.
+     *
+     * @return
+     *      True if this {@link net.dv8tion.jda.entities.User User's} audio is being suppressed.
+     */
+    boolean isSuppressed();
+
+    /**
      * Returns the current {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} of the {@link net.dv8tion.jda.entities.User User}
      * If the {@link net.dv8tion.jda.entities.User User} is currently not in a {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel}, this returns null
      *
@@ -74,4 +84,17 @@ public interface VoiceStatus
      *      the User that holds this VoiceStatus
      */
     User getUser();
+
+    String getSessionId();
+
+    /**
+     * Used to determine if the {@link net.dv8tion.jda.entities.User User} is currently in a {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel}
+     * in the {@link net.dv8tion.jda.entities.Guild Guild} returned from {@link #getGuild() getGuild()}.<br>
+     * If this is <code>false</code>, {@link #getChannel() getChannel()} will return <code>null</code>.
+     *
+     * @return
+     *      True if the {@link net.dv8tion.jda.entities.User User} is currently in a {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel}
+     *      in this {@link net.dv8tion.jda.entities.Guild Guild}.
+     */
+    boolean inVoiceChannel();
 }

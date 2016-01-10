@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.requests;
 
+import com.mashape.unirest.http.Unirest;
 import com.neovisionaries.ws.client.*;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.handle.*;
@@ -142,6 +143,9 @@ public class WebSocketClient extends WebSocketAdapter
                 case "VOICE_STATE_UPDATE":
                     new VoiceChangeHandler(api, responseTotal).handle(content);
                     break;
+                case "VOICE_SERVER_UPDATE":
+                    new VoiceServerUpdateHandler(api, responseTotal).handle(content);
+                    break;
                 case "CHANNEL_CREATE":
                     new ChannelCreateHandler(api, responseTotal).handle(content);
                     break;
@@ -234,6 +238,15 @@ public class WebSocketClient extends WebSocketAdapter
         System.out.println("By remote? " + closedByServer);
         System.out.println("Reason: " + serverCloseFrame.getCloseReason());
         System.out.println("Close code: " + serverCloseFrame.getCloseCode());
+        try
+        {
+            Unirest.shutdown();
+        }
+        catch (IOException e)
+        {
+            System.err.print("JDA's REST requester was unable to properly shutdown! This application will have to be force-quit'd!. Sorry.");
+            e.printStackTrace();
+        }
         connected = false;
     }
 

@@ -37,9 +37,10 @@ public class GuildImpl implements Guild
     private Region region;
     private final Map<String, TextChannel> textChannels = new HashMap<>();
     private final Map<String, VoiceChannel> voiceChannels = new HashMap<>();
-    private final Map<String, Role> roles = new HashMap<>();
-    private Role publicRole;
     private final Map<User, List<Role>> userRoles = new HashMap<>();
+    private final Map<String, Role> roles = new HashMap<>();
+    private final Map<User, VoiceStatus> voiceStatusMap = new HashMap<>();
+    private Role publicRole;
     private final JDAImpl api;
 
     public GuildImpl(JDAImpl api, String id)
@@ -105,17 +106,13 @@ public class GuildImpl implements Guild
     @Override
     public List<User> getUsers()
     {
-        List<User> list = new ArrayList<>();
-        list.addAll(userRoles.keySet());
-        return Collections.unmodifiableList(list);
+        return Collections.unmodifiableList(new ArrayList<>(userRoles.keySet()));
     }
 
     @Override
     public List<TextChannel> getTextChannels()
     {
-        List<TextChannel> list = new ArrayList<>();
-        list.addAll(textChannels.values());
-        return Collections.unmodifiableList(list);
+        return Collections.unmodifiableList(new ArrayList<>(textChannels.values()));
     }
 
     @Override
@@ -208,6 +205,18 @@ public class GuildImpl implements Guild
         return new GuildManager(this);
     }
 
+    @Override
+    public VoiceStatus getVoiceStatusOfUser(User user)
+    {
+        return voiceStatusMap.get(user);
+    }
+
+    @Override
+    public List<VoiceStatus> getVoiceStatuses()
+    {
+        return Collections.unmodifiableList(new LinkedList<>(voiceStatusMap.values()));
+    }
+
     public Map<String, Role> getRolesMap()
     {
         return roles;
@@ -268,6 +277,11 @@ public class GuildImpl implements Guild
     public Map<String, VoiceChannel> getVoiceChannelsMap()
     {
         return voiceChannels;
+    }
+
+    public Map<User, VoiceStatus> getVoiceStatusMap()
+    {
+        return voiceStatusMap;
     }
 
     @Override

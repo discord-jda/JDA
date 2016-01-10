@@ -18,7 +18,6 @@ package net.dv8tion.jda.events.message.priv;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.PrivateChannel;
-import net.dv8tion.jda.entities.User;
 
 public class PrivateMessageReceivedEvent extends GenericPrivateMessageEvent
 {

@@ -16,7 +16,6 @@
 package net.dv8tion.jda.events.message.guild;
 
 import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.TextChannel;
 
 public class GuildMessageDeleteEvent extends GenericGuildMessageEvent

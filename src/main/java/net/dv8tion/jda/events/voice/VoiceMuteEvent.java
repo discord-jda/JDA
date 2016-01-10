@@ -16,13 +16,13 @@
 package net.dv8tion.jda.events.voice;
 
 import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.entities.VoiceStatus;
 
 public class VoiceMuteEvent extends GenericVoiceEvent
 {
-    public VoiceMuteEvent(JDA api, int responseNumber, User user)
+    public VoiceMuteEvent(JDA api, int responseNumber, VoiceStatus voiceStatus)
     {
-        super(api, responseNumber, user);
+        super(api, responseNumber, voiceStatus);
     }
 
     boolean isMuted()
@@ -32,11 +32,11 @@ public class VoiceMuteEvent extends GenericVoiceEvent
 
     boolean isSelfMuted()
     {
-        return user.getVoiceStatus().isMuted();
+        return voiceStatus.isMuted();
     }
 
     boolean isServerMuted()
     {
-        return user.getVoiceStatus().isServerMuted();
+        return voiceStatus.isServerMuted();
     }
 }
