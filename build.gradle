@@ -78,10 +78,10 @@ repositories {
 }
 
 dependencies {
-    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
-    compile group: 'org.json', name: 'json', version: '20150729'
+    compile 'org.apache.commons:commons-lang3:3.4'
+    compile 'org.json:json:20150729'
     compile 'com.neovisionaries:nv-websocket-client:1.16'
-    compile group: 'com.mashape.unirest', name: 'unirest-java', version: '1.4.7'
+    compile 'com.mashape.unirest:unirest-java:1.4.7'
 }
 
 class Version {

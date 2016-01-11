@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.handle;
 
+import net.dv8tion.jda.audio.AudioWebSocket;
+import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import org.json.JSONObject;
 
@@ -28,6 +30,18 @@ public class VoiceServerUpdateHandler extends SocketHandler
     @Override
     public void handle(JSONObject content)
     {
-//        System.out.println(content.toString(4));
+        String endpoint = content.getString("endpoint");
+        String token = content.getString("token");
+        Guild guild = api.getGuildMap().get(content.getString("guild_id"));
+        if (guild == null)
+            throw new IllegalArgumentException("Attempted to start audio connection with Guild that doesn't exist! JSON: " + content);
+        String sessionId = guild.getVoiceStatusOfUser(api.getSelfInfo()).getSessionId();
+        if (sessionId == null)
+            throw new IllegalArgumentException("Attempted to create audio connection without having a session ID. Did VOICE_STATE_UPDATED fail?");
+
+        //Strip the port from the endpoint.
+        endpoint = endpoint.replace(":80", "");
+
+        AudioWebSocket socket = new AudioWebSocket(endpoint, api, guild, sessionId, token);
     }
 }
