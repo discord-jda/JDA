@@ -81,6 +81,15 @@ public class VoiceChangeHandler extends SocketHandler
             }
         }
 
+        //TODO: Implement event for changing of session id? Might be important...
+        if (!content.isNull("session_id"))
+            status.setSessionId(content.getString("session_id"));
+        else
+            status.setSessionId(null);
+
+        //TODO: Implement event for changing of suppressed value? Only occurs when entering an AFK room. Maybe important...
+        status.setSuppressed(content.getBoolean("suppress"));
+
         boolean isSelfMute = !content.isNull("self_mute") && content.getBoolean("self_mute");
         if (isSelfMute != status.isMuted())
         {
