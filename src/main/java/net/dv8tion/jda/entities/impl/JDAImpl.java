@@ -157,7 +157,7 @@ public class JDAImpl implements JDA
         }
 
         writeJson(tokenFile, configs);
-        client = new WebSocketClient(gateway, this, proxy);
+        client = new WebSocketClient(gateway, this);
     }
 
     /**

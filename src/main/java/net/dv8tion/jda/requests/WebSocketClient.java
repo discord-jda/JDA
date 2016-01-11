@@ -39,10 +39,11 @@ public class WebSocketClient extends WebSocketAdapter
     private long keepAliveInterval;
     private final JDAImpl api;
 
-    public WebSocketClient(String url, JDAImpl api, HttpHost proxy)
+    public WebSocketClient(String url, JDAImpl api)
     {
         this.api = api;
         WebSocketFactory factory = new WebSocketFactory();
+        HttpHost proxy = api.getGlobalProxy();
         if (proxy != null)
         {
             ProxySettings settings = factory.getProxySettings();
