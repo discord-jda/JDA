@@ -23,7 +23,6 @@ import org.apache.http.HttpHost;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
@@ -31,7 +30,6 @@ import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.DataFormatException;
 
 public class AudioWebSocket extends WebSocketAdapter
 {
@@ -49,8 +47,15 @@ public class AudioWebSocket extends WebSocketAdapter
     private WebSocket socket;
     private String endpoint;
     private String wssEndpoint;
+
+    private int ssrc;
     private String sessionId;
     private String token;
+
+    private DatagramSocket udpSocket;
+    private InetSocketAddress address;
+    private Thread udpKeepAliveThread;
+
 
     public AudioWebSocket(String endpoint, JDAImpl api, Guild guild, String sessionId, String token)
     {
@@ -121,7 +126,7 @@ public class AudioWebSocket extends WebSocketAdapter
             case INITIAL_CONNECTION_RESPONSE:
             {
                 JSONObject content = contentAll.getJSONObject("d");
-                int ssrc = content.getInt("ssrc");
+                ssrc = content.getInt("ssrc");
                 int port = content.getInt("port");
                 int heartbeatInterval = content.getInt("heartbeat_interval");
 
@@ -183,23 +188,6 @@ public class AudioWebSocket extends WebSocketAdapter
     }
 
     @Override
-    public void onBinaryMessage(WebSocket websocket, byte[] binary) throws UnsupportedEncodingException, DataFormatException
-    {
-        System.err.println("Got an Audio binary message?");
-    }
-    @Override
-    public void onFrame(WebSocket websocket, WebSocketFrame frame) throws Exception
-    {
-//        System.out.println("Got a frame");
-    }
-
-    @Override
-    public void onBinaryFrame(WebSocket webSocket, WebSocketFrame frame)
-    {
-        System.out.println("got a binary frame");
-    }
-
-    @Override
     public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer)
     {
         System.out.println("The Audio connection was closed!");
@@ -237,6 +225,11 @@ public class AudioWebSocket extends WebSocketAdapter
             keepAliveThread.interrupt();
             keepAliveThread = null;
         }
+        if (udpKeepAliveThread != null)
+        {
+            udpKeepAliveThread.interrupt();
+            udpKeepAliveThread = null;
+        }
         socket.sendClose();
     }
 
@@ -251,8 +244,7 @@ public class AudioWebSocket extends WebSocketAdapter
         //This is called UDP hole punching.
         try
         {
-            DatagramSocket socket = new DatagramSocket();   //Use UDP, not TCP.
-            socket.setBroadcast(true);  //We plan to send a UDP Broadcast Discovery Packet.
+            udpSocket = new DatagramSocket();   //Use UDP, not TCP.
 
             //Create a byte array of length 70 containing our ssrc.
             ByteBuffer buffer = ByteBuffer.allocate(70);    //70 taken from https://github.com/Rapptz/discord.py/blob/async/discord/voice_client.py#L208
@@ -260,11 +252,11 @@ public class AudioWebSocket extends WebSocketAdapter
 
             //Construct our packet to be sent loaded with the byte buffer we store the ssrc in.
             DatagramPacket discoveryPacket = new DatagramPacket(buffer.array(), buffer.array().length, address);
-            socket.send(discoveryPacket);
+            udpSocket.send(discoveryPacket);
 
             //Discord responds to our packet, returning a packet containing our external ip and the port we connected through.
             DatagramPacket receivedPacket = new DatagramPacket(new byte[70], 70);   //Give a buffer the same size as the one we sent.
-            socket.receive(receivedPacket);
+            udpSocket.receive(receivedPacket);
 
             //The byte array returned by discord containing our external ip and the port that we used
             //to connect to discord with.
@@ -293,6 +285,10 @@ public class AudioWebSocket extends WebSocketAdapter
             int firstByte = (0x000000FF & ((int) portBytes[0]));    //Promotes to int and handles the fact that it was unsigned.
             int secondByte = (0x000000FF & ((int) portBytes[1]));   //
 
+            this.address = address;
+            setupUdpListenThread(address);
+            setupUdpKeepAliveThread(address);
+
             //Combines the 2 bytes back together.
             int ourPort = (firstByte << 8) | secondByte;
             return new InetSocketAddress(ourIP, ourPort);
@@ -306,6 +302,75 @@ public class AudioWebSocket extends WebSocketAdapter
             e.printStackTrace();
         }
         return null;
+    }
+
+    private void setupUdpListenThread(final InetSocketAddress address)
+    {
+        Thread udpLister = new Thread()
+        {
+            @Override
+            public void run()
+            {
+                while (!udpSocket.isClosed())
+                {
+                    DatagramPacket receivedPacket = new DatagramPacket(new byte[1920], 1920);
+                    try
+                    {
+                        udpSocket.receive(receivedPacket);
+                        System.out.println("Received an audio packet");
+
+                        //Used for echoing datapackets received back to VoiceChannel.
+//                        byte[] trimmedBuffer = Arrays.copyOfRange(receivedPacket.getData(), 0, receivedPacket.getLength());
+//                        ByteBuffer buffer = ByteBuffer.wrap(trimmedBuffer);
+//                        convertBuffer(buffer);
+//                        byte[] bytes = buffer.array();
+//                        receivedPacket = new DatagramPacket(bytes, bytes.length, address);
+//                        udpSocket.send(receivedPacket);
+                    }
+                    catch (IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        udpLister.setDaemon(true);
+        udpLister.start();
+    }
+
+    private void setupUdpKeepAliveThread(final InetSocketAddress address)
+    {
+        udpKeepAliveThread = new Thread()
+        {
+            @Override
+            public void run()
+            {
+                while (socket.isOpen() && !udpSocket.isClosed())
+                {
+                    long seq = 0;
+                    try
+                    {
+                        ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES + 1);
+                        buffer.put((byte)0xC9);
+                        buffer.putLong(seq);
+                        DatagramPacket keepAlivePacket = new DatagramPacket(buffer.array(), buffer.array().length, address);
+                        udpSocket.send(keepAlivePacket);
+
+                        Thread.sleep(5000); //Wait 5 seconds to send next keepAlivePacket.
+                    }
+                    catch (IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+                    catch (InterruptedException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        udpKeepAliveThread.setDaemon(true);
+        udpKeepAliveThread.start();
     }
 
     private void setupKeepAliveThread(int keepAliveInterval)
@@ -330,6 +395,20 @@ public class AudioWebSocket extends WebSocketAdapter
         });
         keepAliveThread.setDaemon(true);
         keepAliveThread.start();
+    }
+
+    char seq = 0;
+    public void convertBuffer(ByteBuffer buffer)
+    {
+        if (seq + 1 > 65535)
+            seq = 0;
+        else
+            seq++;
+        buffer.put(0, (byte)0x80);  //x80   10100000    Unsigned
+//        buffer.put(1, (byte)0x78);      //01111000    Unsigned
+        buffer.putChar(2, seq);
+        buffer.putInt(8, ssrc);
+
     }
 }
 
