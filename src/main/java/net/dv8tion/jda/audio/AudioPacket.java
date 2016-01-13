@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.audio;
 
+import java.net.DatagramPacket;
+import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
@@ -55,6 +57,11 @@ public class AudioPacket
     private final byte[] encodedAudio;
     private final byte[] rawPacket;
 
+    public AudioPacket(DatagramPacket packet)
+    {
+        this(Arrays.copyOf(packet.getData(), packet.getLength()));
+    }
+
     public AudioPacket(byte[] rawPacket)
     {
         this.rawPacket = rawPacket;
@@ -65,7 +72,7 @@ public class AudioPacket
         this.ssrc = buffer.getInt(SSRC_INDEX);
 
         byte[] audio = new byte[buffer.array().length - RTP_HEADER_BYTE_LENGTH];
-        System.arraycopy(buffer.array(), RTP_HEADER_BYTE_LENGTH, audio, 0, buffer.array().length);
+        System.arraycopy(buffer.array(), RTP_HEADER_BYTE_LENGTH, audio, 0, audio.length);
         this.encodedAudio = audio;
     }
 
@@ -109,5 +116,21 @@ public class AudioPacket
     public int getTimestamp()
     {
         return timestamp;
+    }
+
+    public DatagramPacket asUdpPacket(InetSocketAddress address)
+    {
+        //We use getRawPacket() instead of the rawPacket variable so that we get a copy of the array instead of the
+        //actual array. We want AudioPacket to be immutable.
+        return new DatagramPacket(getRawPacket(), rawPacket.length, address);
+    }
+
+    public static AudioPacket createEchoPacket(DatagramPacket packet, int ssrc)
+    {
+        ByteBuffer buffer = ByteBuffer.wrap(Arrays.copyOf(packet.getData(), packet.getLength()));
+        buffer.put(RTP_VERSION_PAD_EXTEND_INDEX, RTP_VERSION_PAD_EXTEND);
+        buffer.put(RTP_PAYLOAD_INDEX, RTP_PAYLOAD_TYPE);
+        buffer.putInt(SSRC_INDEX, ssrc);
+        return new AudioPacket(buffer.array());
     }
 }

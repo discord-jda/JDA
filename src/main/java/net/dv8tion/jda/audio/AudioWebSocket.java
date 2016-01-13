@@ -319,13 +319,8 @@ public class AudioWebSocket extends WebSocketAdapter
                         udpSocket.receive(receivedPacket);
                         System.out.println("Received an audio packet");
 
-                        //Used for echoing datapackets received back to VoiceChannel.
-//                        byte[] trimmedBuffer = Arrays.copyOfRange(receivedPacket.getData(), 0, receivedPacket.getLength());
-//                        ByteBuffer buffer = ByteBuffer.wrap(trimmedBuffer);
-//                        convertBuffer(buffer);
-//                        byte[] bytes = buffer.array();
-//                        receivedPacket = new DatagramPacket(bytes, bytes.length, address);
-//                        udpSocket.send(receivedPacket);
+//                        AudioPacket packet = AudioPacket.createEchoPacket(receivedPacket, ssrc);
+//                        udpSocket.send(packet.asUdpPacket(address));
                     }
                     catch (IOException e)
                     {
