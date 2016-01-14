@@ -33,6 +33,11 @@ public class GuildMemberRemoveHandler extends SocketHandler
     public void handle(JSONObject content)
     {
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("guild_id"));
+        if(guild == null)
+        {
+            //We probably just left the guild, therefore ignore
+            return;
+        }
         UserImpl user = ((UserImpl) api.getUserMap().get(content.getJSONObject("user").getString("id")));
         if (guild.getVoiceStatusMap().get(user).inVoiceChannel())   //If this user was in a VoiceChannel, fire VoiceLeaveEvent.
         {

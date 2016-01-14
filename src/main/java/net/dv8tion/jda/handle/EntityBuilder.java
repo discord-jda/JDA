@@ -376,8 +376,8 @@ public class EntityBuilder
             JSONObject videoJson = messageEmbed.getJSONObject("video");
             embed.setVideoInfo(new VideoInfo(
                     videoJson.getString("url"),
-                    videoJson.getInt("width"),
-                    videoJson.getInt("height")));
+                    videoJson.isNull("width") ? -1 : videoJson.getInt("width"),
+                    videoJson.isNull("height") ? -1 : videoJson.getInt("height")));
         }
         return embed;
     }
