@@ -16,7 +16,8 @@
 package net.dv8tion.jda;
 
 import net.dv8tion.jda.entities.*;
-import net.dv8tion.jda.hooks.EventListener;
+import net.dv8tion.jda.hooks.AnnotatedEventManager;
+import net.dv8tion.jda.hooks.IEventManager;
 import net.dv8tion.jda.managers.AccountManager;
 import net.dv8tion.jda.managers.GuildManager;
 import org.apache.http.HttpHost;
@@ -31,20 +32,35 @@ import java.util.function.Consumer;
 public interface JDA
 {
     /**
-     * Adds an {@link net.dv8tion.jda.hooks.EventListener EventListener} that will be used to handle events.
+     * Changes the internal EventManager.
+     * The default EventManager is {@link net.dv8tion.jda.hooks.InterfacedEventManager InterfacedEventListener}.
+     * There is also an {@link AnnotatedEventManager AnnotatedEventManager} available.
+     *
+     * @param manager
+     *          The new EventManager to use
+     */
+    void setEventManager(IEventManager manager);
+
+    /**
+     * Adds an Object to the event-listeners that will be used to handle events.
+     * This uses the {@link net.dv8tion.jda.hooks.InterfacedEventManager InterfacedEventListener} by default.
+     * To switch to the {@link AnnotatedEventManager AnnotatedEventManager}, use {@link #setEventManager(IEventManager)}.
+     *
+     * Note: when using the {@link net.dv8tion.jda.hooks.InterfacedEventManager InterfacedEventListener} (default),
+     * given listener <b>must</b> be instance of {@link net.dv8tion.jda.hooks.EventListener EventListener}!
      *
      * @param listener
      *          The listener
      */
-    void addEventListener(EventListener listener);
+    void addEventListener(Object listener);
 
     /**
-     * Removes the provided {@link net.dv8tion.jda.hooks.EventListener EventListener} and no longer uses it to handle events.
+     * Removes the provided Object from the event-listeners and no longer uses it to handle events.
      *
      * @param listener
      *          The listener to be removed.
      */
-    void removeEventListener(EventListener listener);
+    void removeEventListener(Object listener);
 
     /**
      * Creates a new {@link net.dv8tion.jda.entities.Guild Guild}.
@@ -299,4 +315,11 @@ public interface JDA
      *      True if JDA is currently in debug mode.
      */
     boolean isDebug();
+
+    /**
+     * Shuts down JDA, closing all its connections.
+     * After this command is issued the JDA Instance can not be used anymore.
+     * To reconnect, just create a new JDA instance.
+     */
+    void shutdown();
 }

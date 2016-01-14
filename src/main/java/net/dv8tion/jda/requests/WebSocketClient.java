@@ -104,10 +104,7 @@ public class WebSocketClient extends WebSocketAdapter
                     send(new JSONObject().put("op", 1).put("d", System.currentTimeMillis()).toString());
                     try {
                         Thread.sleep(keepAliveInterval);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                        System.exit(0);
-                    }
+                    } catch (InterruptedException ignored) {}
                 }
             });
             keepAliveThread.setDaemon(true);

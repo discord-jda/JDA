@@ -22,7 +22,8 @@ import net.dv8tion.jda.events.Event;
 import net.dv8tion.jda.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.hooks.EventListener;
-import net.dv8tion.jda.hooks.EventManager;
+import net.dv8tion.jda.hooks.IEventManager;
+import net.dv8tion.jda.hooks.InterfacedEventManager;
 import net.dv8tion.jda.managers.AccountManager;
 import net.dv8tion.jda.managers.GuildManager;
 import net.dv8tion.jda.requests.Requester;
@@ -56,7 +57,7 @@ public class JDAImpl implements JDA
     private final Map<String, VoiceChannel> voiceChannelMap = new HashMap<>();
     private final Map<String, PrivateChannel> pmChannelMap = new HashMap<>();
     private final Map<String, String> offline_pms = new HashMap<>();    //Userid -> channelid
-    private final EventManager eventManager = new EventManager();
+    private IEventManager eventManager = new InterfacedEventManager();
     private SelfInfo selfInfo = null;
     private AccountManager accountManager;
     private String authToken = null;
@@ -218,18 +219,24 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public void addEventListener(EventListener listener)
+    public void setEventManager(IEventManager manager)
+    {
+        this.eventManager = manager;
+    }
+
+    @Override
+    public void addEventListener(Object listener)
     {
         getEventManager().register(listener);
     }
 
     @Override
-    public void removeEventListener(EventListener listener)
+    public void removeEventListener(Object listener)
     {
         getEventManager().unregister(listener);
     }
 
-    public EventManager getEventManager()
+    public IEventManager getEventManager()
     {
         return eventManager;
     }
@@ -454,6 +461,18 @@ public class JDAImpl implements JDA
     public boolean isDebug()
     {
         return debug;
+    }
+
+    @Override
+    public void shutdown()
+    {
+        client.close();
+        authToken = null; //make further requests fail
+        try
+        {
+            Unirest.shutdown();
+        }
+        catch (IOException ignored) {}
     }
 
     /**
