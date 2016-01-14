@@ -28,6 +28,7 @@ import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -44,16 +45,16 @@ public class AudioWebSocket extends WebSocketAdapter
     private boolean connected;
     private long keepAliveInterval;
     private Thread keepAliveThread;
-    private WebSocket socket;
+    public static WebSocket socket;
     private String endpoint;
     private String wssEndpoint;
 
-    private int ssrc;
+    public static int ssrc;
     private String sessionId;
     private String token;
 
-    private DatagramSocket udpSocket;
-    private InetSocketAddress address;
+    public static DatagramSocket udpSocket;
+    public static InetSocketAddress address;
     private Thread udpKeepAliveThread;
 
 
@@ -306,6 +307,13 @@ public class AudioWebSocket extends WebSocketAdapter
 
     private void setupUdpListenThread(final InetSocketAddress address)
     {
+        JSONObject obj = new JSONObject()
+                .put("op", 5)
+                .put("d", new JSONObject()
+                        .put("speaking", true)
+                        .put("delay", 0)
+                );
+        socket.sendText(obj.toString());
         Thread udpLister = new Thread()
         {
             @Override
@@ -317,9 +325,16 @@ public class AudioWebSocket extends WebSocketAdapter
                     try
                     {
                         udpSocket.receive(receivedPacket);
-                        System.out.println("Received an audio packet");
+//                        System.out.println("Received an audio packet");
 
-//                        AudioPacket packet = AudioPacket.createEchoPacket(receivedPacket, ssrc);
+
+                        ByteBuffer buffer = ByteBuffer.wrap(Arrays.copyOf(receivedPacket.getData(), receivedPacket.getLength()));
+                        AudioPacket packet = new AudioPacket(buffer.array());
+                        for (byte part : packet.getRawPacket())
+                        {
+                            System.out.print(part + ",");
+                        }
+                        System.out.println();
 //                        udpSocket.send(packet.asUdpPacket(address));
                     }
                     catch (IOException e)
