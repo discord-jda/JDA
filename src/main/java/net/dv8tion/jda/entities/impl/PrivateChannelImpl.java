@@ -96,6 +96,20 @@ public class PrivateChannelImpl implements PrivateChannel
             return null;
         }
     }
+
+    @Override
+    public void sendMessageAsync(String text, Consumer<Message> callback)
+    {
+        sendMessageAsync(new MessageBuilder().appendString(text).build(), callback);
+    }
+
+    @Override
+    public void sendMessageAsync(Message msg, Consumer<Message> callback)
+    {
+        ((MessageImpl) msg).setChannelId(getId());
+        TextChannelImpl.AsyncMessageSender.getInstance(getJDA()).enqueue(msg, callback);
+    }
+
     @Override
     public Message sendFile(File file)
     {

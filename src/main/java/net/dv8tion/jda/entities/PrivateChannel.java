@@ -44,12 +44,14 @@ public interface PrivateChannel
     /**
      * Sents a plain text {@link net.dv8tion.jda.entities.Message Message} to this channel.
      * After the Message has been sent, the created {@link net.dv8tion.jda.entities.Message Message} object is returned
-     * This Object will be null, if the sending failed
+     * This Object will be null, if the sending failed.
+     * When the Rate-limit is reached (30 Messages in 30 secs), a {@link net.dv8tion.jda.exceptions.RateLimitedException RateLimitedException} is thrown
      *
      * @param text
      *          the text to send
      * @return
      *      the Message created by this function
+     * @throws net.dv8tion.jda.exceptions.RateLimitedException when rate-imit is reached
      */
     Message sendMessage(String text);
 
@@ -58,14 +60,42 @@ public interface PrivateChannel
      * This method only extracts the mentions and text out of the given Message-Object
      * Therefore this can also be used to resend already received Messages
      * To allow above behaviour, this method returns a new {@link net.dv8tion.jda.entities.Message Message} instance. The passed one is not modified!
-     * If the sending of the Message failed, this method returns null
+     * If the sending of the Message failed, this method returns null.
+     * When the Rate-limit is reached (30 Messages in 30 secs), a {@link net.dv8tion.jda.exceptions.RateLimitedException RateLimitedException} is thrown
      *
      * @param msg
      *          the {@link net.dv8tion.jda.entities.Message Message} to send
      * @return
      *      The created {@link net.dv8tion.jda.entities.Message Message} object or null if it failed
+     * @throws net.dv8tion.jda.exceptions.RateLimitedException when rate-imit is reached
      */
     Message sendMessage(Message msg);
+
+    /**
+     * Sents a plain text {@link net.dv8tion.jda.entities.Message Message} to this channel.
+     * After the message has been sent, the corresponding {@link net.dv8tion.jda.entities.Message Message} object is passed to the callback-function
+     * This method will wait, and send later, if a Rate-Limit occurs.
+     *
+     * @param msg
+     *          the text to send
+     * @param callback
+     *          the Callback-function that is called upon successful sending
+     */
+    void sendMessageAsync(String msg, Consumer<Message> callback);
+
+    /**
+     * Sends a given {@link net.dv8tion.jda.entities.Message Message} to this Channel
+     * This method only extracts the mentions, text and tts status out of the given Message-Object
+     * Therefore this can also be used to resend already received Messages.
+     * To allow above behaviour, this method calls the callback with a new {@link net.dv8tion.jda.entities.Message Message} instance. The passed one is not modified!
+     * This method will wait, and send later, if a Rate-Limit occurs.
+     *
+     * @param msg
+     *          the {@link net.dv8tion.jda.entities.Message Message} to send
+     * @param callback
+     *          the Callback-function that is called upon successful sending
+     */
+    void sendMessageAsync(Message msg, Consumer<Message> callback);
 
     /**
      * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.entities.TextChannel TextChannel}.

@@ -113,7 +113,7 @@ public class WebSocketClient extends WebSocketAdapter
 
         if (api.isDebug())
         {
-            System.out.printf("%s -> %s", type, content.toString());
+            System.out.printf("%s -> %s\n", type, content.toString());
         }
 
         try {
@@ -206,10 +206,7 @@ public class WebSocketClient extends WebSocketAdapter
         catch (IllegalArgumentException ex)
         {
             System.err.println("JDA encountered an internal error.");
-            if (api.isDebug())
-                ex.printStackTrace();
-            else
-                System.err.println(ex.getMessage());
+            ex.printStackTrace();
         }
     }
 
