@@ -43,12 +43,14 @@ public interface TextChannel extends Channel
      * This method only extracts the mentions, text and tts status out of the given Message-Object
      * Therefore this can also be used to resend already received Messages
      * To allow above behaviour, this method returns a new {@link net.dv8tion.jda.entities.Message Message} instance. The passed one is not modified!
-     * If the sending of the Message failed (probably Permissions), this method returns null
+     * If the sending of the Message failed (probably Permissions), this method returns null.
+     * When the Rate-limit is reached (30 Messages in 30 secs), a {@link net.dv8tion.jda.exceptions.RateLimitedException RateLimitedException} is thrown
      *
      * @param msg
      *          the {@link net.dv8tion.jda.entities.Message Message} to send
      * @return
      *      The created {@link net.dv8tion.jda.entities.Message Message} object or null if it failed
+     * @throws net.dv8tion.jda.exceptions.RateLimitedException when rate-imit is reached
      */
     Message sendMessage(Message msg);
 

@@ -66,6 +66,7 @@ public class JDAImpl implements JDA
     private boolean debug;
     private boolean enableAck;
     private int responseTotal;
+    private Long messageLimit = null;
 
     public JDAImpl()
     {
@@ -473,6 +474,20 @@ public class JDAImpl implements JDA
             Unirest.shutdown();
         }
         catch (IOException ignored) {}
+    }
+
+    public void setMessageTimeout(long timeout)
+    {
+        this.messageLimit = System.currentTimeMillis() + timeout;
+    }
+
+    public Long getMessageLimit()
+    {
+        if (this.messageLimit != null && this.messageLimit < System.currentTimeMillis())
+        {
+            this.messageLimit = null;
+        }
+        return this.messageLimit;
     }
 
     /**

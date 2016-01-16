@@ -25,6 +25,7 @@ import net.dv8tion.jda.MessageBuilder;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.exceptions.PermissionException;
+import net.dv8tion.jda.exceptions.RateLimitedException;
 import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.managers.ChannelManager;
 import net.dv8tion.jda.managers.PermissionOverrideManager;
@@ -144,10 +145,20 @@ public class TextChannelImpl implements TextChannel
         //TODO: PermissionException for Permission.MESSAGE_ATTACH_FILES maybe
 
         JDAImpl api = (JDAImpl) getJDA();
+        if (api.getMessageLimit() != null)
+        {
+            throw new RateLimitedException(api.getMessageLimit() - System.currentTimeMillis());
+        }
         try
         {
             JSONObject response = api.getRequester().post("https://discordapp.com/api/channels/" + getId() + "/messages",
                     new JSONObject().put("content", msg.getRawContent()).put("tts", msg.isTTS()));
+            if (response.has("retry_after"))
+            {
+                long retry_after = response.getLong("retry_after");
+                api.setMessageTimeout(retry_after);
+                throw new RateLimitedException(retry_after);
+            }
             return new EntityBuilder(api).createMessage(response);
         }
         catch (JSONException ex)

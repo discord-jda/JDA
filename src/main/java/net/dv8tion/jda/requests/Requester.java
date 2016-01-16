@@ -21,6 +21,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.BaseRequest;
 import com.mashape.unirest.request.GetRequest;
 import com.mashape.unirest.request.HttpRequest;
+import com.mashape.unirest.request.body.RequestBodyEntity;
 import net.dv8tion.jda.JDAInfo;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import org.json.JSONArray;
@@ -90,8 +91,17 @@ public class Requester
     {
         try
         {
+            if (api.isDebug())
+            {
+                System.out.printf("Requesting %s -> %s\n\tPayload: %s\n\tResponse: ", request.getHttpRequest().getHttpMethod().name(), request.getHttpRequest().getUrl(), ((request instanceof RequestBodyEntity)? ((RequestBodyEntity) request).getBody().toString():"None"));
+            }
             JsonNode body = request.asJson().getBody();
-            return body == null ? null : body.getObject();
+            JSONObject object = body == null ? null : body.getObject();
+            if (api.isDebug())
+            {
+                System.out.println(object);
+            }
+            return object;
         }
         catch (UnirestException e)
         {
@@ -104,8 +114,17 @@ public class Requester
     {
         try
         {
+            if (api.isDebug())
+            {
+                System.out.printf("Requesting %s -> %s\n\tPayload: %s\n\tResponse: ", request.getHttpRequest().getHttpMethod().name(), request.getHttpRequest().getUrl(), ((request instanceof RequestBodyEntity)? ((RequestBodyEntity) request).getBody().toString():"None"));
+            }
             JsonNode body = request.asJson().getBody();
-            return body == null ? null : body.getArray();
+            JSONArray arr = body == null ? null : body.getArray();
+            if (api.isDebug())
+            {
+                System.out.println(arr);
+            }
+            return arr;
         }
         catch (UnirestException e)
         {

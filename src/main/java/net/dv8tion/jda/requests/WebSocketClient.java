@@ -111,6 +111,11 @@ public class WebSocketClient extends WebSocketAdapter
             keepAliveThread.start();
         }
 
+        if (api.isDebug())
+        {
+            System.out.printf("%s -> %s", type, content.toString());
+        }
+
         try {
             switch (type) {
                 case "READY":
