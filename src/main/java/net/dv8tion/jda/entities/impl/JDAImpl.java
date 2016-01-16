@@ -113,22 +113,26 @@ public class JDAImpl implements JDA
             configs = new JSONObject().put("tokens", new JSONObject()).put("version", 1);
         }
 
-        if (configs.getJSONObject("tokens").has(email))
+
+        try
         {
-            try
+            if (configs.getJSONObject("tokens").has(email))
             {
                 authToken = configs.getJSONObject("tokens").getString(email);
-                if (getRequester().get("https://discordapp.com/api/users/@me/guilds") == null)
+                try
                 {
-                    //token is valid (returns array, cant be returned as JSONObject)
-                    gateway = getRequester().get("https://discordapp.com/api/gateway").getString("url");
-                    System.out.println("Using cached Token: " + authToken);
-                }
+                    if (getRequester().getA("https://discordapp.com/api/users/@me/guilds") != null)
+                    {
+                        //token is valid (returns array, cant be returned as JSONObject)
+                        gateway = getRequester().get("https://discordapp.com/api/gateway").getString("url");
+                        System.out.println("Using cached Token: " + authToken);
+                    }
+                } catch (JSONException ignored) {}//token invalid
             }
-            catch (JSONException ex)
-            {
-                System.out.println("Token-file misformatted. Please delete it for recreation");
-            }
+        }
+        catch (JSONException ex)
+        {
+            System.out.println("Token-file misformatted. Please delete it for recreation");
         }
 
         if (gateway == null)                                    //no token saved or invalid
@@ -140,11 +144,11 @@ public class JDAImpl implements JDA
 
                 if (response == null || !response.has("token"))
                     throw new LoginException("The provided email / password combination was incorrect. Please provide valid details.");
-                System.out.println("Login Successful!"); //TODO: Replace with Logger.INFO
 
                 authToken = response.getString("token");
                 configs.getJSONObject("tokens").put(email, authToken);
                 System.out.println("Created new Token: " + authToken);
+                System.out.println("Login Successful!"); //TODO: Replace with Logger.INFO
 
                 gateway = getRequester().get("https://discordapp.com/api/gateway").getString("url");
             }
