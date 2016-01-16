@@ -15,10 +15,7 @@ import net.dv8tion.jda.utils.AvatarUtil;
 import net.dv8tion.jda.utils.InviteUtil;
 import org.apache.http.HttpHost;
 import org.json.JSONObject;
-import voice.FileExample;
-import voice.OpusExample;
-import voice.OpusExample2;
-import voice.OpusExample3;
+import voice.*;
 
 import javax.security.auth.login.LoginException;
 import javax.sound.sampled.LineUnavailableException;
@@ -161,37 +158,19 @@ public class Tester extends ListenerAdapter
                         .put("delay", 0)
                     );
             AudioWebSocket.socket.sendText(obj.toString());
-            try
-            {
-                long time = System.currentTimeMillis();
-                System.out.println("starting test");
 
-                ///////////////////////////////////////////////
-                /////// THIS IS THE THING YOU CHANGE
-                ///////UNCOMMENT LINES TO SWITCH BETWEEN MIC AND FILE.
-                //////FILE TEST R NOT WORK GOOD. I B SOWIE.
+            long time = System.currentTimeMillis();
+            System.out.println("starting test");
+            new OpusRewrite();  //This is where the magic happens.
+            System.out.println("finished test. Time: " + (System.currentTimeMillis() - time) + "ms");
 
-                new OpusExample3().testCodec(); //5 second mic recording.
-//                new FileExample().testCodec();  //File thing that uses piano.wav
-                ////////////////////////////////////////////////////////////
-
-                System.out.println("finished test. Time: " + (System.currentTimeMillis() - time) + "ms");
-            }
-            catch (LineUnavailableException e)
-            {
-                e.printStackTrace();
-            }
-        }
-        if (event.getMessage().getContent().startsWith("notalk"))
-        {
-            System.out.println("stopping talkings");
-            JSONObject obj = new JSONObject()
+            JSONObject obj2 = new JSONObject()
                     .put("op", 5)
                     .put("d", new JSONObject()
                             .put("speaking", false)
                             .put("delay", 0)
                     );
-//            AudioWebSocket.INSTANCE.send(obj.toString());
+            AudioWebSocket.socket.sendText(obj2.toString());
         }
 //        if (event.getMessage().getContent().startsWith("guilds"))
 //        {

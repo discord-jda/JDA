@@ -21,11 +21,14 @@ sourceSets {
             srcDirs = [
                     filteredSourceDir,
                     "src/test/java",
+
                     "src/examples/java"
             ]
         }
     }
 }
+
+
 
 // copy the main sources and filter any '@buildVersion@' occurences. 
 task processVersion (type: Copy) {
@@ -75,17 +78,25 @@ signing {
 }
 repositories {
     mavenCentral()
+
+    //Used by the opus-wrapper.
     maven {
         url "http://tomp2p.net/dev/mvn/"
     }
 }
 
 dependencies {
+    //General Utility
     compile 'org.apache.commons:commons-lang3:3.4'
     compile 'org.json:json:20150729'
+
+    //Web Connection Support
     compile 'com.neovisionaries:nv-websocket-client:1.16'
     compile 'com.mashape.unirest:unirest-java:1.4.7'
+
+    //Audio Support
     compile 'net.tomp2p:opus-wrapper:1.3'
+    compile 'com.googlecode.soundlibs:mp3spi:1.9.5-1'
 }
 
 class Version {

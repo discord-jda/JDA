@@ -83,7 +83,7 @@ public class AudioPacket
         this.timestamp = timestamp;
         this.encodedAudio = encodedAudio;
 
-        ByteBuffer buffer = ByteBuffer.wrap(new byte[RTP_HEADER_BYTE_LENGTH + encodedAudio.length]);
+        ByteBuffer buffer = ByteBuffer.allocate(RTP_HEADER_BYTE_LENGTH + encodedAudio.length);
         buffer.put(RTP_VERSION_PAD_EXTEND_INDEX, RTP_VERSION_PAD_EXTEND);   //0
         buffer.put(RTP_PAYLOAD_INDEX, RTP_PAYLOAD_TYPE);                    //1
         buffer.putChar(SEQ_INDEX, seq);                                     //2 - 3
@@ -91,6 +91,7 @@ public class AudioPacket
         buffer.putInt(SSRC_INDEX, ssrc);                                    //8 - 11
         System.arraycopy(encodedAudio, 0, buffer.array(), RTP_HEADER_BYTE_LENGTH, encodedAudio.length);//12 - n
         this.rawPacket = buffer.array();
+
     }
 
     public byte[] getRawPacket()

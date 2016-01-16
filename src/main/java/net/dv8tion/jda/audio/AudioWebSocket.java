@@ -286,12 +286,13 @@ public class AudioWebSocket extends WebSocketAdapter
             int firstByte = (0x000000FF & ((int) portBytes[0]));    //Promotes to int and handles the fact that it was unsigned.
             int secondByte = (0x000000FF & ((int) portBytes[1]));   //
 
+            //Combines the 2 bytes back together.
+            int ourPort = (firstByte << 8) | secondByte;
+
             this.address = address;
             setupUdpListenThread(address);
             setupUdpKeepAliveThread(address);
 
-            //Combines the 2 bytes back together.
-            int ourPort = (firstByte << 8) | secondByte;
             return new InetSocketAddress(ourIP, ourPort);
         }
         catch (SocketException e)
@@ -327,15 +328,10 @@ public class AudioWebSocket extends WebSocketAdapter
                         udpSocket.receive(receivedPacket);
 //                        System.out.println("Received an audio packet");
 
-
-                        ByteBuffer buffer = ByteBuffer.wrap(Arrays.copyOf(receivedPacket.getData(), receivedPacket.getLength()));
-                        AudioPacket packet = new AudioPacket(buffer.array());
-                        for (byte part : packet.getRawPacket())
-                        {
-                            System.out.print(part + ",");
-                        }
-                        System.out.println();
-//                        udpSocket.send(packet.asUdpPacket(address));
+                        //Uncomment this if you want to echo audio back to a discord channel.
+//                        ByteBuffer buffer = ByteBuffer.wrap(Arrays.copyOf(receivedPacket.getData(), receivedPacket.getLength()));
+//                        AudioPacket packet = new AudioPacket(buffer.array());
+//                        udpSocket.send(AudioPacket.createEchoPacket(receivedPacket, ssrc).asUdpPacket(address));
                     }
                     catch (IOException e)
                     {
