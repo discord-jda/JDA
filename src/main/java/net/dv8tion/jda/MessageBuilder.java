@@ -16,6 +16,7 @@
 package net.dv8tion.jda;
 
 import net.dv8tion.jda.entities.Message;
+import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.impl.MessageImpl;
 
@@ -26,6 +27,7 @@ public class MessageBuilder
 {
     private final StringBuilder builder = new StringBuilder();
     private final List<User> mentioned = new LinkedList<>();
+    private boolean mentionEveryone = false;
     private boolean isTTS = false;
 
     /**
@@ -113,13 +115,38 @@ public class MessageBuilder
     }
 
     /**
+     * Appends a @everyone mention to the Message
+     *
+     * @return this instance
+     */
+    public MessageBuilder appendEveryoneMention()
+    {
+        builder.append("@everyone");
+        mentionEveryone = true;
+        return this;
+    }
+
+    /**
+     * Appends a channel mention to the Message.
+     * For this to work, the given TextChannel has to be from the Guild the mention is posted to.
+     *
+     * @param channel the TextChannel to mention
+     * @return this instance
+     */
+    public MessageBuilder appendMention(TextChannel channel)
+    {
+        builder.append("<#").append(channel.getId()).append('>');
+        return this;
+    }
+
+    /**
      * Creates a {@link net.dv8tion.jda.entities.Message Message} object from this Builder
      *
      * @return the created {@link net.dv8tion.jda.entities.Message Message}
      */
     public Message build()
     {
-        return new MessageImpl("", null).setContent(builder.toString()).setTTS(isTTS).setMentionedUsers(mentioned);
+        return new MessageImpl("", null).setContent(builder.toString()).setTTS(isTTS).setMentionedUsers(mentioned).setMentionsEveryone(mentionEveryone);
     }
 
     /**
