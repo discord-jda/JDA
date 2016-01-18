@@ -33,6 +33,7 @@ public class GuildUpdateHandler extends SocketHandler
     public void handle(JSONObject content)
     {
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("id"));
+        String ownerId = content.getString("owner_id");
         String name = content.getString("name");
         String iconId = content.isNull("icon") ? null : content.getString("icon");
         String afkChannelId = content.isNull("afk_channel_id") ? null : content.getString("afk_channel_id");
@@ -40,10 +41,11 @@ public class GuildUpdateHandler extends SocketHandler
         int afkTimeout = content.getInt("afk_timeout");
 
         guild.setName(name)
-            .setIconId(iconId)
-            .setAfkChannelId(afkChannelId)
-            .setRegion(region)
-            .setAfkTimeout(afkTimeout);
+                .setOwnerId(ownerId)
+                .setIconId(iconId)
+                .setAfkChannelId(afkChannelId)
+                .setRegion(region)
+                .setAfkTimeout(afkTimeout);
         api.getEventManager().handle(
                 new GuildUpdateEvent(
                         api, responseNumber,
