@@ -338,7 +338,7 @@ public class JDAImpl implements JDA
         else
         {
             Guild g = new EntityBuilder(this).createGuild(response);
-            return new GuildManager(g);
+            return g.isAvailable() ? new GuildManager(g) : null;
         }
     }
 

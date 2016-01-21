@@ -51,7 +51,13 @@ public class EntityBuilder
             guildObj = new GuildImpl(api, id);
             api.getGuildMap().put(id, guildObj);
         }
+        if (guild.has("unavailable") && guild.getBoolean("unavailable"))
+        {
+            guildObj.setAvailable(false);
+            return guildObj;
+        }
         guildObj
+            .setAvailable(true)
             .setIconId(guild.isNull("icon") ? null : guild.getString("icon"))
             .setRegion(Region.fromKey(guild.getString("region")))
             .setName(guild.getString("name"))

@@ -16,6 +16,7 @@
 package net.dv8tion.jda.handle;
 
 import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.entities.impl.GuildImpl;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.guild.GuildLeaveEvent;
 import org.json.JSONObject;
@@ -32,6 +33,12 @@ public class GuildLeaveHandler extends SocketHandler
     public void handle(JSONObject content)
     {
         Guild guild = api.getGuildMap().get(content.getString("id"));
+        if (content.has("unavailable") && content.getBoolean("unavailable"))
+        {
+            ((GuildImpl) guild).setAvailable(false);
+            //TODO: Unavailable-event
+            return;
+        }
         api.getGuildMap().remove(guild.getId());
         api.getEventManager().handle(
                 new GuildLeaveEvent(

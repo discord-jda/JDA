@@ -120,6 +120,8 @@ public interface Guild
      *      the name of the TextChannel to create
      * @return
      *      the ChannelManager for the created TextChannel
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
      */
     ChannelManager createTextChannel(String name);
 
@@ -139,6 +141,8 @@ public interface Guild
      *      the name of the VoiceChannel to create
      * @return
      *      the ChannelManager for the created VoiceChannel
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
      */
     ChannelManager createVoiceChannel(String name);
 
@@ -155,7 +159,9 @@ public interface Guild
      * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.Permission#MANAGE_ROLES MANAGE_ROLES Permission}
      *
      * @return
-     *  the RoleManager for the created Role
+     *      the RoleManager for the created Role
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
      */
     RoleManager createRole();
 
@@ -182,6 +188,8 @@ public interface Guild
      *
      * @return
      *      The GuildManager of this Guild
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
      */
     GuildManager getManager();
 
@@ -217,4 +225,13 @@ public interface Guild
      *      Never-empty list containing all the {@link net.dv8tion.jda.entities.VoiceStatus VoiceStatuses} on this {@link net.dv8tion.jda.entities.Guild Guild}.
      */
     List<VoiceStatus> getVoiceStatuses();
+
+    /**
+     * Returns whether or not this Guild is available. A Guild can be unavailable, if the Discord server has problems.
+     * If a Guild is unavailable, no actions on it can be performed (Messages, Manager,...)
+     *
+     * @return
+     *      If the Guild is available
+     */
+    boolean isAvailable();
 }

@@ -65,12 +65,15 @@ public interface JDA
     /**
      * Creates a new {@link net.dv8tion.jda.entities.Guild Guild}.
      * This will a return the Manager to the existing, but still empty Guild (no members, no channels).
-     * To create a Guild asynchronously (wait for generation of #general chat), use {@link #createGuildAsync(String, Consumer)} instead
+     * To create a Guild asynchronously (wait for generation of #general chat), use {@link #createGuildAsync(String, Consumer)} instead.
+     *
+     * In the very rare case, that the Discord-server has problems, The created guild can be unavailable until it is actually created.
+     * In that case, this will return null.
      *
      * @param name
      *      the name of the new {@link net.dv8tion.jda.entities.Guild Guild}
      * @return
-     *      the {@link net.dv8tion.jda.managers.GuildManager GuildManager} for the created Guild
+     *      the {@link net.dv8tion.jda.managers.GuildManager GuildManager} for the created Guild, or null, if the created Guild is temporarily unavailable
      */
     GuildManager createGuild(String name);
 

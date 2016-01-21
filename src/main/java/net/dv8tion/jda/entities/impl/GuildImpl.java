@@ -18,6 +18,7 @@ package net.dv8tion.jda.entities.impl;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Region;
 import net.dv8tion.jda.entities.*;
+import net.dv8tion.jda.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.managers.ChannelManager;
 import net.dv8tion.jda.managers.GuildManager;
@@ -28,6 +29,7 @@ import java.util.*;
 
 public class GuildImpl implements Guild
 {
+    //TODO: PermissionException for creators
     private final String id;
     private String name;
     private String iconId;
@@ -42,6 +44,7 @@ public class GuildImpl implements Guild
     private final Map<User, VoiceStatus> voiceStatusMap = new HashMap<>();
     private Role publicRole;
     private final JDAImpl api;
+    private boolean available;
 
     public GuildImpl(JDAImpl api, String id)
     {
@@ -122,6 +125,10 @@ public class GuildImpl implements Guild
         {
             throw new IllegalArgumentException("TextChannel name must not be null");
         }
+        if (!available)
+        {
+            throw new GuildUnavailableException();
+        }
         JSONObject response = api.getRequester().post("https://discordapp.com/api/guilds/" + getId() + "/channels", new JSONObject().put("name", name).put("type", "text"));
         if (response == null || !response.has("id"))
         {
@@ -150,6 +157,10 @@ public class GuildImpl implements Guild
         {
             throw new IllegalArgumentException("VoiceChannel name must not be null");
         }
+        if (!available)
+        {
+            throw new GuildUnavailableException();
+        }
         JSONObject response = api.getRequester().post("https://discordapp.com/api/guilds/" + getId() + "/channels", new JSONObject().put("name", name).put("type", "voice"));
         if (response == null || !response.has("id"))
         {
@@ -174,6 +185,10 @@ public class GuildImpl implements Guild
     @Override
     public RoleManager createRole()
     {
+        if (!available)
+        {
+            throw new GuildUnavailableException();
+        }
         JSONObject response = api.getRequester().post("https://discordapp.com/api/guilds/" + getId() + "/roles", new JSONObject());
         if (response == null || !response.has("id"))
         {
@@ -215,6 +230,12 @@ public class GuildImpl implements Guild
     public List<VoiceStatus> getVoiceStatuses()
     {
         return Collections.unmodifiableList(new LinkedList<>(voiceStatusMap.values()));
+    }
+
+    @Override
+    public boolean isAvailable()
+    {
+        return available;
     }
 
     public Map<String, Role> getRolesMap()
@@ -282,6 +303,12 @@ public class GuildImpl implements Guild
     public Map<User, VoiceStatus> getVoiceStatusMap()
     {
         return voiceStatusMap;
+    }
+
+    public GuildImpl setAvailable(boolean available)
+    {
+        this.available = available;
+        return this;
     }
 
     @Override

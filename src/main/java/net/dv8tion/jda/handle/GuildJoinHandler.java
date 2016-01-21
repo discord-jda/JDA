@@ -32,10 +32,17 @@ public class GuildJoinHandler extends SocketHandler
     public void handle(JSONObject content)
     {
         Guild guild = new EntityBuilder(api).createGuild(content);
-        api.getEventManager().handle(
-                new GuildJoinEvent(
-                        api, responseNumber,
-                        guild));
+        if (guild.isAvailable())
+        {
+            api.getEventManager().handle(
+                    new GuildJoinEvent(
+                            api, responseNumber,
+                            guild));
+        }
+        else
+        {
+            //TODO: Unavailable event
+        }
     }
 
 }
