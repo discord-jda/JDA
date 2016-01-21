@@ -282,8 +282,8 @@ public class WebSocketClient extends WebSocketAdapter
         {
             socket = factory.createSocket(url)
                     .addHeader("Accept-Encoding", "gzip")
-                    .addListener(this)
-                    .connect();
+                    .addListener(this);
+            socket.connect();
         }
         catch (IOException | WebSocketException e)
         {
