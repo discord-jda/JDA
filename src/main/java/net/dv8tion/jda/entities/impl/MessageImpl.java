@@ -18,6 +18,7 @@ package net.dv8tion.jda.entities.impl;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.Message;
+import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.exceptions.PermissionException;
 import net.dv8tion.jda.handle.EntityBuilder;
@@ -43,6 +44,7 @@ public class MessageImpl implements Message
     private OffsetDateTime time;
     private OffsetDateTime editedTime = null;
     private List<User> mentionedUsers = new LinkedList<>();
+    private List<TextChannel> mentionedChannels = new LinkedList<>();
     private List<Attachment> attachments = new LinkedList<>();
 
     public MessageImpl(String id, JDAImpl api)
@@ -67,6 +69,12 @@ public class MessageImpl implements Message
     public List<User> getMentionedUsers()
     {
         return Collections.unmodifiableList(mentionedUsers);
+    }
+
+    @Override
+    public List<TextChannel> getMentionedChannels()
+    {
+        return Collections.unmodifiableList(mentionedChannels);
     }
 
     @Override
@@ -107,7 +115,11 @@ public class MessageImpl implements Message
             String tmp = content;
             for (User user : mentionedUsers)
             {
-                tmp = tmp.replace("<@" + user.getId() + ">", "@" + user.getUsername());
+                tmp = tmp.replace("<@" + user.getId() + '>', '@' + user.getUsername());
+            }
+            for (TextChannel mentionedChannel : mentionedChannels)
+            {
+                tmp = tmp.replace("<#" + mentionedChannel.getId() + '>', '#' + mentionedChannel.getName());
             }
             subContent = tmp;
         }
@@ -177,6 +189,12 @@ public class MessageImpl implements Message
     public MessageImpl setMentionedUsers(List<User> mentionedUsers)
     {
         this.mentionedUsers = mentionedUsers;
+        return this;
+    }
+
+    public MessageImpl setMentionedChannels(List<TextChannel> mentionedChannels)
+    {
+        this.mentionedChannels = mentionedChannels;
         return this;
     }
 

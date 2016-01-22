@@ -27,6 +27,7 @@ public class MessageBuilder
 {
     private final StringBuilder builder = new StringBuilder();
     private final List<User> mentioned = new LinkedList<>();
+    private final List<TextChannel> mentionedTextChannels = new LinkedList<>();
     private boolean mentionEveryone = false;
     private boolean isTTS = false;
 
@@ -136,6 +137,7 @@ public class MessageBuilder
     public MessageBuilder appendMention(TextChannel channel)
     {
         builder.append("<#").append(channel.getId()).append('>');
+        mentionedTextChannels.add(channel);
         return this;
     }
 
@@ -146,7 +148,8 @@ public class MessageBuilder
      */
     public Message build()
     {
-        return new MessageImpl("", null).setContent(builder.toString()).setTTS(isTTS).setMentionedUsers(mentioned).setMentionsEveryone(mentionEveryone);
+        return new MessageImpl("", null).setContent(builder.toString()).setTTS(isTTS).setMentionedUsers(mentioned)
+                .setMentionedChannels(mentionedTextChannels).setMentionsEveryone(mentionEveryone);
     }
 
     /**

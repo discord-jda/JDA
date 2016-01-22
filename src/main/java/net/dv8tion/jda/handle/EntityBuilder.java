@@ -32,9 +32,12 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class EntityBuilder
 {
+    private static final Pattern channelMentionPattern = Pattern.compile("<#(\\d+)>");
     private final JDAImpl api;
 
     public EntityBuilder(JDAImpl api)
@@ -277,9 +280,10 @@ public class EntityBuilder
     public Message createMessage(JSONObject jsonObject)
     {
         String id = jsonObject.getString("id");
+        String content = jsonObject.getString("content");
         MessageImpl message = new MessageImpl(id, api)
                 .setAuthor(api.getUserMap().get(jsonObject.getJSONObject("author").getString("id")))
-                .setContent(jsonObject.getString("content"))
+                .setContent(content)
                 .setTime(OffsetDateTime.parse(jsonObject.getString("timestamp")))
                 .setMentionsEveryone(jsonObject.getBoolean("mention_everyone"))
                 .setTTS(jsonObject.getBoolean("tts"));
@@ -318,6 +322,19 @@ public class EntityBuilder
                 mentioned.add(api.getUserMap().get(mention.getString("id")));
             }
             message.setMentionedUsers(mentioned);
+
+            List<TextChannel> mentionedChannels = new LinkedList<>();
+            Map<String, TextChannel> chanMap = ((GuildImpl) textChannel.getGuild()).getTextChannelsMap();
+            Matcher matcher = channelMentionPattern.matcher(content);
+            while (matcher.find())
+            {
+                TextChannel channel = chanMap.get(matcher.group(1));
+                if(channel != null)
+                {
+                    mentionedChannels.add(channel);
+                }
+            }
+            message.setMentionedChannels(mentionedChannels);
         }
         else
         {
