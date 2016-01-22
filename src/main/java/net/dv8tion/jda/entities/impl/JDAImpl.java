@@ -471,13 +471,22 @@ public class JDAImpl implements JDA
     @Override
     public void shutdown()
     {
+        shutdown(true);
+    }
+
+    @Override
+    public void shutdown(boolean free)
+    {
         client.close();
         authToken = null; //make further requests fail
-        try
+        if (free)
         {
-            Unirest.shutdown();
+            try
+            {
+                Unirest.shutdown();
+            }
+            catch (IOException ignored) {}
         }
-        catch (IOException ignored) {}
     }
 
     public void setMessageTimeout(long timeout)

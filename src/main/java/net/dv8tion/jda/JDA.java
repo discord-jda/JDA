@@ -322,7 +322,18 @@ public interface JDA
     /**
      * Shuts down JDA, closing all its connections.
      * After this command is issued the JDA Instance can not be used anymore.
+     * This will also close the background-thread used for requests (which is required for further api calls of other JDA instances).
+     * If this is not desired, use {@link #shutdown(boolean)} instead.
      * To reconnect, just create a new JDA instance.
      */
     void shutdown();
+
+    /**
+     * Shuts down JDA, closing all its connections.
+     * After this command is issued the JDA Instance can not be used anymore.
+     * Depending on the free-parameter, this will also close the background-thread used for requests.
+     * If the background-thread is closed, the system can exit properly, but no further JDA requests are possible (includes other JDA instances).
+     * If you want to reconnect, and the request-thread was not freed, just create a new JDA instance.
+     */
+    void shutdown(boolean free);
 }
