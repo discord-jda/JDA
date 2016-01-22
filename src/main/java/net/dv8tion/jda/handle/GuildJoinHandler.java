@@ -34,6 +34,7 @@ public class GuildJoinHandler extends SocketHandler
         Guild guild = new EntityBuilder(api).createGuild(content);
         if (guild.isAvailable())
         {
+            //TODO: Available-event if previously unavailable
             api.getEventManager().handle(
                     new GuildJoinEvent(
                             api, responseNumber,

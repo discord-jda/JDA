@@ -16,20 +16,22 @@
 package net.dv8tion.jda.entities.impl;
 
 import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.Region;
 import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.exceptions.GuildUnavailableException;
+import net.dv8tion.jda.exceptions.PermissionException;
 import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.managers.ChannelManager;
 import net.dv8tion.jda.managers.GuildManager;
 import net.dv8tion.jda.managers.RoleManager;
+import net.dv8tion.jda.utils.PermissionUtil;
 import org.json.JSONObject;
 
 import java.util.*;
 
 public class GuildImpl implements Guild
 {
-    //TODO: PermissionException for creators
     private final String id;
     private String name;
     private String iconId;
@@ -121,6 +123,10 @@ public class GuildImpl implements Guild
     @Override
     public ChannelManager createTextChannel(String name)
     {
+        if (!PermissionUtil.checkPermission(getJDA().getSelfInfo(), Permission.MANAGE_CHANNEL, this))
+        {
+            throw new PermissionException(Permission.MANAGE_CHANNEL);
+        }
         if (name == null)
         {
             throw new IllegalArgumentException("TextChannel name must not be null");
@@ -153,6 +159,10 @@ public class GuildImpl implements Guild
     @Override
     public ChannelManager createVoiceChannel(String name)
     {
+        if (!PermissionUtil.checkPermission(getJDA().getSelfInfo(), Permission.MANAGE_CHANNEL, this))
+        {
+            throw new PermissionException(Permission.MANAGE_CHANNEL);
+        }
         if (name == null)
         {
             throw new IllegalArgumentException("VoiceChannel name must not be null");
@@ -185,6 +195,10 @@ public class GuildImpl implements Guild
     @Override
     public RoleManager createRole()
     {
+        if (!PermissionUtil.checkPermission(getJDA().getSelfInfo(), Permission.MANAGE_ROLES, this))
+        {
+            throw new PermissionException(Permission.MANAGE_ROLES);
+        }
         if (!available)
         {
             throw new GuildUnavailableException();
