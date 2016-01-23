@@ -15,12 +15,12 @@
  */
 package net.dv8tion.jda.requests;
 
-import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.BaseRequest;
 import com.mashape.unirest.request.GetRequest;
 import com.mashape.unirest.request.HttpRequest;
+import com.mashape.unirest.request.body.RequestBodyEntity;
 import net.dv8tion.jda.JDAInfo;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import org.json.JSONArray;
@@ -28,6 +28,7 @@ import org.json.JSONObject;
 
 public class Requester
 {
+    private static final String USERAGENT = "JDA DiscordBot (" + JDAInfo.GITHUB + ", " + JDAInfo.VERSION + ")";
     private final JDAImpl api;
 
     public Requester(JDAImpl api)
@@ -89,8 +90,16 @@ public class Requester
     {
         try
         {
-            JsonNode body = request.asJson().getBody();
-            return body == null ? null : body.getObject();
+            if (api.isDebug())
+            {
+                System.out.printf("Requesting %s -> %s\n\tPayload: %s\n\tResponse: ", request.getHttpRequest().getHttpMethod().name(), request.getHttpRequest().getUrl(), ((request instanceof RequestBodyEntity)? ((RequestBodyEntity) request).getBody().toString():"None"));
+            }
+            String body = request.asString().getBody();
+            if (api.isDebug())
+            {
+                System.out.println(body);
+            }
+            return body == null ? null : new JSONObject(body);
         }
         catch (UnirestException e)
         {
@@ -103,8 +112,16 @@ public class Requester
     {
         try
         {
-            JsonNode body = request.asJson().getBody();
-            return body == null ? null : body.getArray();
+            if (api.isDebug())
+            {
+                System.out.printf("Requesting %s -> %s\n\tPayload: %s\n\tResponse: ", request.getHttpRequest().getHttpMethod().name(), request.getHttpRequest().getUrl(), ((request instanceof RequestBodyEntity)? ((RequestBodyEntity) request).getBody().toString():"None"));
+            }
+            String body = request.asString().getBody();
+            if (api.isDebug())
+            {
+                System.out.println(body);
+            }
+            return body == null ? null : new JSONArray(body);
         }
         catch (UnirestException e)
         {
@@ -123,7 +140,7 @@ public class Requester
         {
             request.header("Content-Type", "application/json");
         }
-        request.header("user-agent", JDAInfo.GITHUB + " " + JDAInfo.VERSION);
+        request.header("user-agent", USERAGENT);
         request.header("Accept-Encoding", "gzip");
         return request;
     }

@@ -96,14 +96,6 @@ public interface User
     PrivateChannel getPrivateChannel();
 
     /**
-     * Gets the {@link net.dv8tion.jda.entities.VoiceStatus VoiceStatus} Object holding the current {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel}
-     * and mute/deaf status of the User
-     *
-     * @return The User's {@link net.dv8tion.jda.entities.VoiceStatus VoiceStatus}
-     */
-    VoiceStatus getVoiceStatus();
-
-    /**
      * Returns the {@link net.dv8tion.jda.JDA JDA} instance of this User
      * @return
      *      the corresponding JDA instance

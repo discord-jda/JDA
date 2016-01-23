@@ -16,16 +16,16 @@
 package net.dv8tion.jda.events.voice;
 
 import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.VoiceChannel;
+import net.dv8tion.jda.entities.VoiceStatus;
 
 public class VoiceLeaveEvent extends GenericVoiceEvent
 {
     protected final VoiceChannel channel;
 
-    public VoiceLeaveEvent(JDA api, int responseNumber, User user, VoiceChannel channel)
+    public VoiceLeaveEvent(JDA api, int responseNumber, VoiceStatus voiceStatus, VoiceChannel channel)
     {
-        super(api, responseNumber, user);
+        super(api, responseNumber, voiceStatus);
         this.channel = channel;
     }
 

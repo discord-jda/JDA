@@ -15,10 +15,10 @@
  */
 package net.dv8tion.jda.handle;
 
-import net.dv8tion.jda.entities.impl.GuildImpl;
-import net.dv8tion.jda.entities.impl.JDAImpl;
-import net.dv8tion.jda.entities.impl.UserImpl;
+import net.dv8tion.jda.entities.VoiceChannel;
+import net.dv8tion.jda.entities.impl.*;
 import net.dv8tion.jda.events.guild.member.GuildMemberLeaveEvent;
+import net.dv8tion.jda.events.voice.VoiceLeaveEvent;
 import org.json.JSONObject;
 
 public class GuildMemberRemoveHandler extends SocketHandler
@@ -33,7 +33,24 @@ public class GuildMemberRemoveHandler extends SocketHandler
     public void handle(JSONObject content)
     {
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("guild_id"));
+        if(guild == null)
+        {
+            //We probably just left the guild, therefore ignore
+            return;
+        }
         UserImpl user = ((UserImpl) api.getUserMap().get(content.getJSONObject("user").getString("id")));
+        if (guild.getVoiceStatusMap().get(user).inVoiceChannel())   //If this user was in a VoiceChannel, fire VoiceLeaveEvent.
+        {
+            VoiceStatusImpl status = (VoiceStatusImpl) guild.getVoiceStatusMap().get(user);
+            VoiceChannel channel = status.getChannel();
+            status.setChannel(null);
+            ((VoiceChannelImpl) channel).getUsersModifiable().remove(user);
+            api.getEventManager().handle(
+                    new VoiceLeaveEvent(
+                            api, responseNumber,
+                            status, channel));
+        }
+        guild.getVoiceStatusMap().remove(user);
         guild.getUserRoles().remove(user);
         if (!api.getGuildMap().values().stream().anyMatch(g -> ((GuildImpl) g).getUserRoles().containsKey(user)))
         {

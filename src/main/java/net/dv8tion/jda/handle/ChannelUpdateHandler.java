@@ -160,11 +160,13 @@ public class ChannelUpdateHandler extends SocketHandler
                 //Get the current overrides. (we copy them to a new list because the Set returned is backed by the Map, meaning our removes would remove from the Map. Not good.
                 //Loop through all of the json defined overrides. If we find a match, remove the User or Role from our lists.
                 //Any entries remaining in these lists after this for loop is over will be removed from the Channel's overrides.
-                channel.getRolePermissionOverridesMap().keySet().stream().filter(role -> !containedRoles.contains(role)).forEach(role -> {
+                List<Role> collect = channel.getRolePermissionOverridesMap().keySet().stream().filter(role -> !containedRoles.contains(role)).collect(Collectors.toList());
+                collect.forEach(role -> {
                     changedRoles.add(role);
                     channel.getRolePermissionOverridesMap().remove(role);
                 });
-                channel.getUserPermissionOverridesMap().keySet().stream().filter(user -> !containedUsers.contains(user)).forEach(user -> {
+                List<User> collect1 = channel.getUserPermissionOverridesMap().keySet().stream().filter(user -> !containedUsers.contains(user)).collect(Collectors.toList());
+                collect1.forEach(user -> {
                     changedUsers.add(user);
                     channel.getUserPermissionOverridesMap().remove(user);
                 });

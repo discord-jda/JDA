@@ -16,27 +16,33 @@
 package net.dv8tion.jda.events.voice;
 
 import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.VoiceStatus;
 import net.dv8tion.jda.events.Event;
 
 public abstract class GenericVoiceEvent extends Event
 {
-    protected final User user;
+    protected final VoiceStatus voiceStatus;
 
-    public GenericVoiceEvent(JDA api, int responseNumber, User user)
+    public GenericVoiceEvent(JDA api, int responseNumber, VoiceStatus voiceStatus)
     {
         super(api, responseNumber);
-        this.user = user;
+        this.voiceStatus = voiceStatus;
     }
 
     public User getUser()
     {
-        return user;
+        return voiceStatus.getUser();
+    }
+
+    public Guild getGuild()
+    {
+        return voiceStatus.getGuild();
     }
 
     public VoiceStatus getVoiceStatus()
     {
-        return user.getVoiceStatus();
+        return voiceStatus;
     }
 }

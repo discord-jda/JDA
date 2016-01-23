@@ -22,7 +22,8 @@ import net.dv8tion.jda.events.Event;
 import net.dv8tion.jda.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.hooks.EventListener;
-import net.dv8tion.jda.hooks.EventManager;
+import net.dv8tion.jda.hooks.IEventManager;
+import net.dv8tion.jda.hooks.InterfacedEventManager;
 import net.dv8tion.jda.managers.AccountManager;
 import net.dv8tion.jda.managers.GuildManager;
 import net.dv8tion.jda.requests.Requester;
@@ -56,7 +57,7 @@ public class JDAImpl implements JDA
     private final Map<String, VoiceChannel> voiceChannelMap = new HashMap<>();
     private final Map<String, PrivateChannel> pmChannelMap = new HashMap<>();
     private final Map<String, String> offline_pms = new HashMap<>();    //Userid -> channelid
-    private final EventManager eventManager = new EventManager();
+    private IEventManager eventManager = new InterfacedEventManager();
     private SelfInfo selfInfo = null;
     private AccountManager accountManager;
     private String authToken = null;
@@ -65,6 +66,7 @@ public class JDAImpl implements JDA
     private boolean debug;
     private boolean enableAck;
     private int responseTotal;
+    private Long messageLimit = null;
 
     public JDAImpl()
     {
@@ -111,22 +113,26 @@ public class JDAImpl implements JDA
             configs = new JSONObject().put("tokens", new JSONObject()).put("version", 1);
         }
 
-        if (configs.getJSONObject("tokens").has(email))
+
+        try
         {
-            try
+            if (configs.getJSONObject("tokens").has(email))
             {
                 authToken = configs.getJSONObject("tokens").getString(email);
-                if (getRequester().get("https://discordapp.com/api/users/@me/guilds") == null)
+                try
                 {
-                    //token is valid (returns array, cant be returned as JSONObject)
-                    gateway = getRequester().get("https://discordapp.com/api/gateway").getString("url");
-                    System.out.println("Using cached Token: " + authToken);
-                }
+                    if (getRequester().getA("https://discordapp.com/api/users/@me/guilds") != null)
+                    {
+                        //token is valid (returns array, cant be returned as JSONObject)
+                        gateway = getRequester().get("https://discordapp.com/api/gateway").getString("url");
+                        System.out.println("Using cached Token: " + authToken);
+                    }
+                } catch (JSONException ignored) {}//token invalid
             }
-            catch (JSONException ex)
-            {
-                System.out.println("Token-file misformatted. Please delete it for recreation");
-            }
+        }
+        catch (JSONException ex)
+        {
+            System.out.println("Token-file misformatted. Please delete it for recreation");
         }
 
         if (gateway == null)                                    //no token saved or invalid
@@ -138,11 +144,11 @@ public class JDAImpl implements JDA
 
                 if (response == null || !response.has("token"))
                     throw new LoginException("The provided email / password combination was incorrect. Please provide valid details.");
-                System.out.println("Login Successful!"); //TODO: Replace with Logger.INFO
 
                 authToken = response.getString("token");
                 configs.getJSONObject("tokens").put(email, authToken);
                 System.out.println("Created new Token: " + authToken);
+                System.out.println("Login Successful!"); //TODO: Replace with Logger.INFO
 
                 gateway = getRequester().get("https://discordapp.com/api/gateway").getString("url");
             }
@@ -218,18 +224,24 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public void addEventListener(EventListener listener)
+    public void setEventManager(IEventManager manager)
+    {
+        this.eventManager = manager;
+    }
+
+    @Override
+    public void addEventListener(Object listener)
     {
         getEventManager().register(listener);
     }
 
     @Override
-    public void removeEventListener(EventListener listener)
+    public void removeEventListener(Object listener)
     {
         getEventManager().unregister(listener);
     }
 
-    public EventManager getEventManager()
+    public IEventManager getEventManager()
     {
         return eventManager;
     }
@@ -326,7 +338,7 @@ public class JDAImpl implements JDA
         else
         {
             Guild g = new EntityBuilder(this).createGuild(response);
-            return new GuildManager(g);
+            return g.isAvailable() ? new GuildManager(g) : null;
         }
     }
 
@@ -454,6 +466,41 @@ public class JDAImpl implements JDA
     public boolean isDebug()
     {
         return debug;
+    }
+
+    @Override
+    public void shutdown()
+    {
+        shutdown(true);
+    }
+
+    @Override
+    public void shutdown(boolean free)
+    {
+        client.close();
+        authToken = null; //make further requests fail
+        if (free)
+        {
+            try
+            {
+                Unirest.shutdown();
+            }
+            catch (IOException ignored) {}
+        }
+    }
+
+    public void setMessageTimeout(long timeout)
+    {
+        this.messageLimit = System.currentTimeMillis() + timeout;
+    }
+
+    public Long getMessageLimit()
+    {
+        if (this.messageLimit != null && this.messageLimit < System.currentTimeMillis())
+        {
+            this.messageLimit = null;
+        }
+        return this.messageLimit;
     }
 
     /**

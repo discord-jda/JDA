@@ -23,6 +23,7 @@ import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.entities.impl.UserImpl;
+import net.dv8tion.jda.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.exceptions.PermissionException;
 import net.dv8tion.jda.utils.AvatarUtil;
 import net.dv8tion.jda.utils.PermissionUtil;
@@ -96,9 +97,15 @@ public class GuildManager
      *
      * @param guild
      *          The {@link net.dv8tion.jda.entities.Guild} which the manager deals with.
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
      */
     public GuildManager(Guild guild)
     {
+        if (!guild.isAvailable())
+        {
+            throw new GuildUnavailableException();
+        }
         this.guild = guild;
         this.afkChannelId = guild.getAfkChannelId();
     }
@@ -123,9 +130,15 @@ public class GuildManager
      *          the new name of the Guild, or null to keep current one
      * @return
      *      This {@link net.dv8tion.jda.managers.GuildManager GuildManager} instance. Useful for chaining.
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
      */
     public GuildManager setName(String name)
     {
+        if (!guild.isAvailable())
+        {
+            throw new GuildUnavailableException();
+        }
         checkPermission(Permission.MANAGE_SERVER);
 
         if (guild.getName().equals(name))
@@ -148,9 +161,15 @@ public class GuildManager
      *          the new {@link net.dv8tion.jda.Region Region}, or null to keep current one
      * @return
      *      This {@link net.dv8tion.jda.managers.GuildManager GuildManager} instance. Useful for chaining.
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
      */
     public GuildManager setRegion(Region region)
     {
+        if (!guild.isAvailable())
+        {
+            throw new GuildUnavailableException();
+        }
         checkPermission(Permission.MANAGE_SERVER);
 
         if (region == guild.getRegion() || region == Region.UNKNOWN)
@@ -177,9 +196,15 @@ public class GuildManager
      *          the new icon, null to keep current, or AvatarUtil.DELETE_AVATAR to delete
      * @return
      *      This {@link net.dv8tion.jda.managers.GuildManager GuildManager} instance. Useful for chaining.
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
      */
     public GuildManager setIcon(AvatarUtil.Avatar avatar)
     {
+        if (!guild.isAvailable())
+        {
+            throw new GuildUnavailableException();
+        }
         checkPermission(Permission.MANAGE_SERVER);
 
         this.icon = avatar;
@@ -197,9 +222,15 @@ public class GuildManager
      *          the new afk-channel
      * @return
      *      This {@link net.dv8tion.jda.managers.GuildManager GuildManager} instance. Useful for chaining.
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
      */
     public GuildManager setAfkChannel(VoiceChannel channel)
     {
+        if (!guild.isAvailable())
+        {
+            throw new GuildUnavailableException();
+        }
         checkPermission(Permission.MANAGE_SERVER);
 
         if (channel != null && channel.getGuild() != guild)
@@ -222,9 +253,15 @@ public class GuildManager
      *      the new afk timeout, or null to keep current one
      * @return
      *      This {@link net.dv8tion.jda.managers.GuildManager GuildManager} instance. Useful for chaining.
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
      */
     public GuildManager setAfkTimeout(Timeout timeout)
     {
+        if (!guild.isAvailable())
+        {
+            throw new GuildUnavailableException();
+        }
         checkPermission(Permission.MANAGE_SERVER);
 
         this.timeout = timeout;
@@ -233,9 +270,16 @@ public class GuildManager
 
     /**
      * This method will apply all accumulated changes received by setters
+     *
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
      */
     public void update()
     {
+        if (!guild.isAvailable())
+        {
+            throw new GuildUnavailableException();
+        }
         checkPermission(Permission.MANAGE_SERVER);
 
         JSONObject frame = getFrame();
@@ -253,13 +297,16 @@ public class GuildManager
     }
 
     /**
-     * Kicks a {@link net.dv8tion.jda.entities.User User} from the {@link net.dv8tion.jda.entities.Guild Guild}.<br>
+     * Kicks a {@link net.dv8tion.jda.entities.User User} from the {@link net.dv8tion.jda.entities.Guild Guild}.
+     * This change will be applied immediately.<br>
      * <p>
      * <b>Note:</b> {@link net.dv8tion.jda.entities.Guild#getUsers()} will still contain the {@link net.dv8tion.jda.entities.User User}
      * until Discord sends the {@link net.dv8tion.jda.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
      *
      * @param user
      *          The {@link net.dv8tion.jda.entities.User User} to kick from the from the {@link net.dv8tion.jda.entities.Guild Guild}.
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
      */
     public void kick(User user)
     {
@@ -268,16 +315,23 @@ public class GuildManager
 
     /**
      * Kicks the {@link net.dv8tion.jda.entities.User User} specified by the userId from the from the {@link net.dv8tion.jda.entities.Guild Guild}.
+     * This change will be applied immediately.
      * <p>
      * <b>Note:</b> {@link net.dv8tion.jda.entities.Guild#getUsers()} will still contain the {@link net.dv8tion.jda.entities.User User}
      * until Discord sends the {@link net.dv8tion.jda.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
      *
      * @param userId
      *          The id of the {@link net.dv8tion.jda.entities.User User} to kick from the from the {@link net.dv8tion.jda.entities.Guild Guild}.
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
      */
     public void kick(String userId)
     {
-        checkPermission(Permission.MANAGE_SERVER);
+        if (!guild.isAvailable())
+        {
+            throw new GuildUnavailableException();
+        }
+        checkPermission(Permission.KICK_MEMBERS);
 
         ((JDAImpl) guild.getJDA()).getRequester().delete("https://discordapp.com/api/guilds/"
                 + guild.getId() + "/members/" + userId);
@@ -287,6 +341,7 @@ public class GuildManager
      * Bans a {@link net.dv8tion.jda.entities.User User} and deletes messages sent by the user
      * based on the amount of delDays.<br>
      * If you wish to ban a user without deleting any messages, provide delDays with a value of 0.
+     * This change will be applied immediately.
      * <p>
      * <b>Note:</b> {@link net.dv8tion.jda.entities.Guild#getUsers()} will still contain the {@link net.dv8tion.jda.entities.User User}
      * until Discord sends the {@link net.dv8tion.jda.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
@@ -295,6 +350,8 @@ public class GuildManager
      *          The {@link net.dv8tion.jda.entities.User User} to ban.
      * @param delDays
      *          The history of messages, in days, that will be deleted.
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
      */
     public void ban(User user, int delDays)
     {
@@ -305,6 +362,7 @@ public class GuildManager
      * Bans the {@link net.dv8tion.jda.entities.User User} specified by the userId nd deletes messages sent by the user
      * based on the amount of delDays.<br>
      * If you wish to ban a user without deleting any messages, provide delDays with a value of 0.
+     * This change will be applied immediately.
      * <p>
      * <b>Note:</b> {@link net.dv8tion.jda.entities.Guild#getUsers()} will still contain the {@link net.dv8tion.jda.entities.User User}
      * until Discord sends the {@link net.dv8tion.jda.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
@@ -313,9 +371,15 @@ public class GuildManager
      *          The id of the {@link net.dv8tion.jda.entities.User User} to ban.
      * @param delDays
      *          The history of messages, in days, that will be deleted.
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
      */
     public void ban(String userId, int delDays)
     {
+        if (!guild.isAvailable())
+        {
+            throw new GuildUnavailableException();
+        }
         checkPermission(Permission.BAN_MEMBERS);
 
         ((JDAImpl) guild.getJDA()).getRequester().put("https://discordapp.com/api/guilds/"
@@ -328,9 +392,15 @@ public class GuildManager
      *
      * @return
      *      unmodifiable list of currently banned Users
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
      */
     public List<User> getBans()
     {
+        if (!guild.isAvailable())
+        {
+            throw new GuildUnavailableException();
+        }
         List<User> bans = new LinkedList<>();
         JSONArray bannedArr = ((JDAImpl) guild.getJDA()).getRequester().getA("https://discordapp.com/api/guilds/" + guild.getId() + "/bans");
         for (int i = 0; i < bannedArr.length(); i++)
@@ -355,9 +425,12 @@ public class GuildManager
 
     /**
      * Unbans the provided {@link net.dv8tion.jda.entities.User User} from the {@link net.dv8tion.jda.entities.Guild Guild}.
+     * This change will be applied immediately.
      *
      * @param user
      *          The {@link net.dv8tion.jda.entities.User User} to unban.
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
      */
     public void unBan(User user)
     {
@@ -366,12 +439,19 @@ public class GuildManager
 
     /**
      * Unbans the {@link net.dv8tion.jda.entities.User User} from the {@link net.dv8tion.jda.entities.Guild Guild} based on the provided userId.
+     * This change will be applied immediately.
      *
      * @param userId
      *          The id of the {@link net.dv8tion.jda.entities.User User} to unban.
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
      */
     public void unBan(String userId)
     {
+        if (!guild.isAvailable())
+        {
+            throw new GuildUnavailableException();
+        }
         checkPermission(Permission.BAN_MEMBERS);
 
         ((JDAImpl) guild.getJDA()).getRequester().delete("https://discordapp.com/api/guilds/"
@@ -382,14 +462,21 @@ public class GuildManager
      * Gives the {@link net.dv8tion.jda.entities.User User} the specified {@link net.dv8tion.jda.entities.Role Role}.<br>
      * If the {@link net.dv8tion.jda.entities.User User} already has the provided {@link net.dv8tion.jda.entities.Role Role}
      * this method will do nothing.
+     * This change will be applied immediately.
      *
      * @param user
      *          The {@link net.dv8tion.jda.entities.User User} that is gaining a new {@link net.dv8tion.jda.entities.Role Role}.
      * @param role
      *          The {@link net.dv8tion.jda.entities.Role Role} that is being assigned to the {@link net.dv8tion.jda.entities.User User}.
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
      */
     public void addRoleToUser(User user, Role role)
     {
+        if (!guild.isAvailable())
+        {
+            throw new GuildUnavailableException();
+        }
         checkPermission(Permission.MANAGE_ROLES);
 
         List<Role> roles = guild.getRolesForUser(user);
@@ -408,6 +495,7 @@ public class GuildManager
      * Removes the specified {@link net.dv8tion.jda.entities.Role Role} from the {@link net.dv8tion.jda.entities.User User}.<br>
      * If the {@link net.dv8tion.jda.entities.User User} does not have the specified {@link net.dv8tion.jda.entities.Role Role}
      * this method will do nothing.
+     * This change will be applied immediately.
      * <p>
      * <b>NOTE:</b> you cannot remove the {@link net.dv8tion.jda.entities.Guild Guild} public role from a {@link net.dv8tion.jda.entities.User User}.
      * Attempting to do so will result in nothing happening.
@@ -416,9 +504,15 @@ public class GuildManager
      *          The {@link net.dv8tion.jda.entities.User User} that is having a {@link net.dv8tion.jda.entities.Role Role} removed.
      * @param role
      *           The {@link net.dv8tion.jda.entities.Role Role} that is being removed from the {@link net.dv8tion.jda.entities.User User}.
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
      */
     public void removeRoleFromUser(User user, Role role)
     {
+        if (!guild.isAvailable())
+        {
+            throw new GuildUnavailableException();
+        }
         checkPermission(Permission.MANAGE_ROLES);
 
         List<Role> roles = guild.getRolesForUser(user);
@@ -437,14 +531,48 @@ public class GuildManager
     }
 
     /**
+     * Transfers the ownership of this Guild to another user.
+     * This will only work, if the current owner of the Guild is the JDA-user.
+     * This change will be applied immediately.
+     *
+     * @param newOwner
+     *      the desired new Owner
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
+     */
+    public void transferOwnership(User newOwner)
+    {
+        if (!guild.isAvailable())
+        {
+            throw new GuildUnavailableException();
+        }
+        if (!guild.getJDA().getSelfInfo().getId().equals(guild.getOwnerId()))
+        {
+            throw new PermissionException("Moving guild-ownership is only available for guild-owners!");
+        }
+        if (!guild.getUsers().contains(newOwner))
+        {
+            throw new IllegalArgumentException("The new owner is not member of the Guild!");
+        }
+        update(getFrame().put("owner_id", newOwner.getId()));
+    }
+
+    /**
      * Leaves or Deletes this {@link net.dv8tion.jda.entities.Guild Guild}.
      * If the logged in {@link net.dv8tion.jda.entities.User User} is the owner of
      * this {@link net.dv8tion.jda.entities.Guild Guild}, the {@link net.dv8tion.jda.entities.Guild Guild} is deleted.
      * Otherwise, this guild will be left.
-     * This change will be applied immediately
+     * This change will be applied immediately.
+     *
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
      */
     public void leaveOrDelete()
     {
+        if (!guild.isAvailable())
+        {
+            throw new GuildUnavailableException();
+        }
         ((JDAImpl) guild.getJDA()).getRequester().delete("https://discordapp.com/api/guilds/" + guild.getId());
     }
 

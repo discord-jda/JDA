@@ -20,25 +20,32 @@ import net.dv8tion.jda.events.Event;
 import java.util.LinkedList;
 import java.util.List;
 
-public class EventManager
+public class InterfacedEventManager implements IEventManager
 {
     private final List<EventListener> listeners = new LinkedList<>();
 
-    public EventManager()
+    public InterfacedEventManager()
     {
 
     }
 
-    public void register(EventListener listener)
+    @Override
+    public void register(Object listener)
     {
-        listeners.add(listener);
+        if (!(listener instanceof EventListener))
+        {
+            throw new IllegalArgumentException("Listener must implement EventListener");
+        }
+        listeners.add(((EventListener) listener));
     }
 
-    public void unregister(EventListener listener)
+    @Override
+    public void unregister(Object listener)
     {
         listeners.remove(listener);
     }
 
+    @Override
     public void handle(Event event)
     {
         List<EventListener> listenerCopy = new LinkedList<>(listeners);

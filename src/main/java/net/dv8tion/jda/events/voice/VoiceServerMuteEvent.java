@@ -16,12 +16,12 @@
 package net.dv8tion.jda.events.voice;
 
 import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.entities.VoiceStatus;
 
 public class VoiceServerMuteEvent extends VoiceMuteEvent
 {
-    public VoiceServerMuteEvent(JDA api, int responseNumber, User user)
+    public VoiceServerMuteEvent(JDA api, int responseNumber, VoiceStatus voiceStatus)
     {
-        super(api, responseNumber, user);
+        super(api, responseNumber, voiceStatus);
     }
 }

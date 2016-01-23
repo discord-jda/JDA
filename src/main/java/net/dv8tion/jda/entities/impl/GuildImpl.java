@@ -16,12 +16,16 @@
 package net.dv8tion.jda.entities.impl;
 
 import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.Region;
 import net.dv8tion.jda.entities.*;
+import net.dv8tion.jda.exceptions.GuildUnavailableException;
+import net.dv8tion.jda.exceptions.PermissionException;
 import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.managers.ChannelManager;
 import net.dv8tion.jda.managers.GuildManager;
 import net.dv8tion.jda.managers.RoleManager;
+import net.dv8tion.jda.utils.PermissionUtil;
 import org.json.JSONObject;
 
 import java.util.*;
@@ -37,10 +41,12 @@ public class GuildImpl implements Guild
     private Region region;
     private final Map<String, TextChannel> textChannels = new HashMap<>();
     private final Map<String, VoiceChannel> voiceChannels = new HashMap<>();
-    private final Map<String, Role> roles = new HashMap<>();
-    private Role publicRole;
     private final Map<User, List<Role>> userRoles = new HashMap<>();
+    private final Map<String, Role> roles = new HashMap<>();
+    private final Map<User, VoiceStatus> voiceStatusMap = new HashMap<>();
+    private Role publicRole;
     private final JDAImpl api;
+    private boolean available;
 
     public GuildImpl(JDAImpl api, String id)
     {
@@ -105,25 +111,29 @@ public class GuildImpl implements Guild
     @Override
     public List<User> getUsers()
     {
-        List<User> list = new ArrayList<>();
-        list.addAll(userRoles.keySet());
-        return Collections.unmodifiableList(list);
+        return Collections.unmodifiableList(new ArrayList<>(userRoles.keySet()));
     }
 
     @Override
     public List<TextChannel> getTextChannels()
     {
-        List<TextChannel> list = new ArrayList<>();
-        list.addAll(textChannels.values());
-        return Collections.unmodifiableList(list);
+        return Collections.unmodifiableList(new ArrayList<>(textChannels.values()));
     }
 
     @Override
     public ChannelManager createTextChannel(String name)
     {
+        if (!PermissionUtil.checkPermission(getJDA().getSelfInfo(), Permission.MANAGE_CHANNEL, this))
+        {
+            throw new PermissionException(Permission.MANAGE_CHANNEL);
+        }
         if (name == null)
         {
             throw new IllegalArgumentException("TextChannel name must not be null");
+        }
+        if (!available)
+        {
+            throw new GuildUnavailableException();
         }
         JSONObject response = api.getRequester().post("https://discordapp.com/api/guilds/" + getId() + "/channels", new JSONObject().put("name", name).put("type", "text"));
         if (response == null || !response.has("id"))
@@ -149,9 +159,17 @@ public class GuildImpl implements Guild
     @Override
     public ChannelManager createVoiceChannel(String name)
     {
+        if (!PermissionUtil.checkPermission(getJDA().getSelfInfo(), Permission.MANAGE_CHANNEL, this))
+        {
+            throw new PermissionException(Permission.MANAGE_CHANNEL);
+        }
         if (name == null)
         {
             throw new IllegalArgumentException("VoiceChannel name must not be null");
+        }
+        if (!available)
+        {
+            throw new GuildUnavailableException();
         }
         JSONObject response = api.getRequester().post("https://discordapp.com/api/guilds/" + getId() + "/channels", new JSONObject().put("name", name).put("type", "voice"));
         if (response == null || !response.has("id"))
@@ -177,6 +195,14 @@ public class GuildImpl implements Guild
     @Override
     public RoleManager createRole()
     {
+        if (!PermissionUtil.checkPermission(getJDA().getSelfInfo(), Permission.MANAGE_ROLES, this))
+        {
+            throw new PermissionException(Permission.MANAGE_ROLES);
+        }
+        if (!available)
+        {
+            throw new GuildUnavailableException();
+        }
         JSONObject response = api.getRequester().post("https://discordapp.com/api/guilds/" + getId() + "/roles", new JSONObject());
         if (response == null || !response.has("id"))
         {
@@ -206,6 +232,24 @@ public class GuildImpl implements Guild
     public GuildManager getManager()
     {
         return new GuildManager(this);
+    }
+
+    @Override
+    public VoiceStatus getVoiceStatusOfUser(User user)
+    {
+        return voiceStatusMap.get(user);
+    }
+
+    @Override
+    public List<VoiceStatus> getVoiceStatuses()
+    {
+        return Collections.unmodifiableList(new LinkedList<>(voiceStatusMap.values()));
+    }
+
+    @Override
+    public boolean isAvailable()
+    {
+        return available;
     }
 
     public Map<String, Role> getRolesMap()
@@ -268,6 +312,17 @@ public class GuildImpl implements Guild
     public Map<String, VoiceChannel> getVoiceChannelsMap()
     {
         return voiceChannels;
+    }
+
+    public Map<User, VoiceStatus> getVoiceStatusMap()
+    {
+        return voiceStatusMap;
+    }
+
+    public GuildImpl setAvailable(boolean available)
+    {
+        this.available = available;
+        return this;
     }
 
     @Override

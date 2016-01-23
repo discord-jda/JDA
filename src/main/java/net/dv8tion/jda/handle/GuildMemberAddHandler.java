@@ -17,10 +17,7 @@ package net.dv8tion.jda.handle;
 
 import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.entities.impl.GuildImpl;
-import net.dv8tion.jda.entities.impl.JDAImpl;
-import net.dv8tion.jda.entities.impl.PrivateChannelImpl;
-import net.dv8tion.jda.entities.impl.UserImpl;
+import net.dv8tion.jda.entities.impl.*;
 import net.dv8tion.jda.events.guild.member.GuildMemberJoinEvent;
 import org.json.JSONObject;
 
@@ -46,6 +43,8 @@ public class GuildMemberAddHandler extends SocketHandler
             api.getOffline_pms().remove(user.getId());
         }
         guild.getUserRoles().put(user, new LinkedList<>());
+        VoiceStatusImpl voiceStatus = new VoiceStatusImpl(user, guild);
+        ((GuildImpl) guild).getVoiceStatusMap().put(user, voiceStatus);
         api.getEventManager().handle(
                 new GuildMemberJoinEvent(
                         api, responseNumber,

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import java.io.PrintStream;
-
 import net.dv8tion.jda.entities.TextChannel;
+
+import java.io.PrintStream;
 
 /**
  * Completed as a request for a possible implementation that would redirect all

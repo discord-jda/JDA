@@ -37,29 +37,15 @@ public class WebSocketClient extends WebSocketAdapter
     private boolean connected;
     private long keepAliveInterval;
     private final JDAImpl api;
+    private final HttpHost proxy;
+    private String sessionId;
+    private String reconnectUrl = null;
 
     public WebSocketClient(String url, JDAImpl api, HttpHost proxy)
     {
         this.api = api;
-        WebSocketFactory factory = new WebSocketFactory();
-        if (proxy != null)
-        {
-            ProxySettings settings = factory.getProxySettings();
-            settings.setHost(proxy.getHostName());
-            settings.setPort(proxy.getPort());
-        }
-        try
-        {
-            socket = factory.createSocket(url)
-                    .addHeader("Accept-Encoding", "gzip")
-                    .addListener(this)
-                    .connect();
-        }
-        catch (IOException | WebSocketException e)
-        {
-            //Completely fail here. We couldn't make the connection.
-            throw new RuntimeException(e);
-        }
+        this.proxy = proxy;
+        connect(url);
     }
 
     public void send(String message)
@@ -70,20 +56,33 @@ public class WebSocketClient extends WebSocketAdapter
     @Override
     public void onConnected(WebSocket websocket, Map<String, List<String>> headers)
     {
-        JSONObject connectObj = new JSONObject()
-                .put("op", 2)
-                .put("d", new JSONObject()
-                    .put("token", api.getAuthToken())
-                    .put("properties", new JSONObject()
-                        .put("$os", System.getProperty("os.name"))
-                        .put("$browser", "Java Discord API")
-                        .put("$device", "")
-                        .put("$referring_domain", "t.co")
-                        .put("$referrer", "")
-                    )
-                    .put("v", 3)
-                    .put("compress", true)); //Used to make the READY event be given as compressed binary data when over a certain size. TY @ShadowLordAlpha
+        JSONObject connectObj;
+        if(reconnectUrl == null)
+        {
+            connectObj = new JSONObject()
+                    .put("op", 2)
+                    .put("d", new JSONObject()
+                            .put("token", api.getAuthToken())
+                            .put("properties", new JSONObject()
+                                    .put("$os", System.getProperty("os.name"))
+                                    .put("$browser", "Java Discord API")
+                                    .put("$device", "")
+                                    .put("$referring_domain", "t.co")
+                                    .put("$referrer", "")
+                            )
+                            .put("v", 3)
+                            .put("compress", true)); //Used to make the READY event be given as compressed binary data when over a certain size. TY @ShadowLordAlpha
+        }
+        else
+        {
+            connectObj = new JSONObject()
+                    .put("op", 6)
+                    .put("d", new JSONObject()
+                            .put("session_id", sessionId)
+                            .put("seq", api.getResponseTotal()));
+        }
         send(connectObj.toString());
+        reconnectUrl = null;
         connected = true;
     }
 
@@ -91,11 +90,19 @@ public class WebSocketClient extends WebSocketAdapter
     public void onTextMessage(WebSocket websocket, String message)
     {
         JSONObject content = new JSONObject(message);
+
+        if (content.getInt("op") == 7)
+        {
+            reconnectUrl = content.getJSONObject("d").getString("url");
+            close();
+            return;
+        }
+
         String type = content.getString("t");
         int responseTotal = content.getInt("s");
         api.setResponseTotal(responseTotal);
         content = content.getJSONObject("d");
-        if (type.equals("READY"))
+        if (type.equals("READY") || type.equals("RESUMED"))
         {
             keepAliveInterval = content.getLong("heartbeat_interval");
             keepAliveThread = new Thread(() -> {
@@ -103,19 +110,22 @@ public class WebSocketClient extends WebSocketAdapter
                     send(new JSONObject().put("op", 1).put("d", System.currentTimeMillis()).toString());
                     try {
                         Thread.sleep(keepAliveInterval);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                        System.exit(0);
-                    }
+                    } catch (InterruptedException ignored) {}
                 }
             });
             keepAliveThread.setDaemon(true);
             keepAliveThread.start();
         }
 
+        if (api.isDebug())
+        {
+            System.out.printf("%s -> %s\n", type, content.toString());
+        }
+
         try {
             switch (type) {
                 case "READY":
+                    sessionId = content.getString("session_id");
                     new ReadyHandler(api, responseTotal).handle(content);
                     break;
                 case "PRESENCE_UPDATE":
@@ -141,6 +151,9 @@ public class WebSocketClient extends WebSocketAdapter
                     break;
                 case "VOICE_STATE_UPDATE":
                     new VoiceChangeHandler(api, responseTotal).handle(content);
+                    break;
+                case "VOICE_SERVER_UPDATE":
+                    new VoiceServerUpdateHandler(api, responseTotal).handle(content);
                     break;
                 case "CHANNEL_CREATE":
                     new ChannelCreateHandler(api, responseTotal).handle(content);
@@ -200,10 +213,7 @@ public class WebSocketClient extends WebSocketAdapter
         catch (IllegalArgumentException ex)
         {
             System.err.println("JDA encountered an internal error.");
-            if (api.isDebug())
-                ex.printStackTrace();
-            else
-                System.err.println(ex.getMessage());
+            ex.printStackTrace();
         }
     }
 
@@ -230,11 +240,21 @@ public class WebSocketClient extends WebSocketAdapter
     @Override
     public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer)
     {
-        System.out.println("The connection was closed!");
-        System.out.println("By remote? " + closedByServer);
-        System.out.println("Reason: " + serverCloseFrame.getCloseReason());
-        System.out.println("Close code: " + serverCloseFrame.getCloseCode());
         connected = false;
+        if (reconnectUrl == null)
+        {
+            System.out.println("The connection was closed!");
+            System.out.println("By remote? " + closedByServer);
+            if (serverCloseFrame != null)
+            {
+                System.out.println("Reason: " + serverCloseFrame.getCloseReason());
+                System.out.println("Close code: " + serverCloseFrame.getCloseCode());
+            }
+        }
+        else
+        {
+            connect(reconnectUrl);
+        }
     }
 
     @Override
@@ -247,6 +267,29 @@ public class WebSocketClient extends WebSocketAdapter
     public void handleCallbackError(WebSocket websocket, Throwable cause)
     {
         cause.printStackTrace();
+    }
+
+    private void connect(String url)
+    {
+        WebSocketFactory factory = new WebSocketFactory();
+        if (proxy != null)
+        {
+            ProxySettings settings = factory.getProxySettings();
+            settings.setHost(proxy.getHostName());
+            settings.setPort(proxy.getPort());
+        }
+        try
+        {
+            socket = factory.createSocket(url)
+                    .addHeader("Accept-Encoding", "gzip")
+                    .addListener(this);
+            socket.connect();
+        }
+        catch (IOException | WebSocketException e)
+        {
+            //Completely fail here. We couldn't make the connection.
+            throw new RuntimeException(e);
+        }
     }
 
     public void close()

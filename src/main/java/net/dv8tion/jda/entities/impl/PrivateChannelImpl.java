@@ -25,6 +25,7 @@ import net.dv8tion.jda.MessageBuilder;
 import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.exceptions.RateLimitedException;
 import net.dv8tion.jda.handle.EntityBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -72,11 +73,20 @@ public class PrivateChannelImpl implements PrivateChannel
     @Override
     public Message sendMessage(Message msg)
     {
+        if (api.getMessageLimit() != null)
+        {
+            throw new RateLimitedException(api.getMessageLimit() - System.currentTimeMillis());
+        }
         try
         {
             JSONObject response = api.getRequester().post("https://discordapp.com/api/channels/" + getId() + "/messages",
                     new JSONObject().put("content", msg.getRawContent()));
-
+            if (response.has("retry_after"))
+            {
+                long retry_after = response.getLong("retry_after");
+                api.setMessageTimeout(retry_after);
+                throw new RateLimitedException(retry_after);
+            }
             return new EntityBuilder(api).createMessage(response);
         }
         catch (JSONException ex)
@@ -86,6 +96,20 @@ public class PrivateChannelImpl implements PrivateChannel
             return null;
         }
     }
+
+    @Override
+    public void sendMessageAsync(String text, Consumer<Message> callback)
+    {
+        sendMessageAsync(new MessageBuilder().appendString(text).build(), callback);
+    }
+
+    @Override
+    public void sendMessageAsync(Message msg, Consumer<Message> callback)
+    {
+        ((MessageImpl) msg).setChannelId(getId());
+        TextChannelImpl.AsyncMessageSender.getInstance(getJDA()).enqueue(msg, callback);
+    }
+
     @Override
     public Message sendFile(File file)
     {

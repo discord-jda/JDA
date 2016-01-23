@@ -38,9 +38,17 @@ public interface Message
      * A immutable list of all mentioned users. if noone was mentioned, this list is empty
      * In {@link net.dv8tion.jda.entities.PrivateChannel PrivateChannel's}, this always returns an empty List
      *
-     * @return list of mentioned users
+     * @return immutable list of mentioned users
      */
     List<User> getMentionedUsers();
+
+    /**
+     * A immutable list of all mentioned {@link net.dv8tion.jda.entities.TextChannel TextChannels}. if none was mentioned, this list is empty
+     * In {@link net.dv8tion.jda.entities.PrivateChannel PrivateChannel's}, this always returns an empty List
+     *
+     * @return immutable list of mentioned TextChannels
+     */
+    List<TextChannel> getMentionedChannels();
 
     /**
      * Is this Message mentioning everyone using @everyone?

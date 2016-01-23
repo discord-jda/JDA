@@ -19,7 +19,6 @@ import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.OnlineStatus;
 import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.entities.VoiceStatus;
 import net.dv8tion.jda.handle.EntityBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,13 +33,11 @@ public class UserImpl implements User
     private String gameName = null;
     private OnlineStatus onlineStatus = OnlineStatus.OFFLINE;
     private PrivateChannel privateChannel = null;
-    private final VoiceStatus voiceStatus;
 
     public UserImpl(String id, JDAImpl api)
     {
         this.id = id;
         this.api = api;
-        this.voiceStatus = new VoiceStatusImpl(this);
     }
 
     @Override
@@ -108,12 +105,6 @@ public class UserImpl implements User
             }
         }
         return privateChannel;
-    }
-
-    @Override
-    public VoiceStatus getVoiceStatus()
-    {
-        return voiceStatus;
     }
 
     public UserImpl setUserName(String username)

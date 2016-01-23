@@ -22,14 +22,18 @@ import net.dv8tion.jda.entities.VoiceStatus;
 
 public class VoiceStatusImpl implements VoiceStatus
 {
+    private final User user;
+    private final Guild guild;
+    private VoiceChannel channel = null;
     private boolean mute = false, serverMute = false;
     private boolean deaf = false, serverDeaf = false;
-    private final User user;
-    private VoiceChannel channel;
+    private boolean suppressed = false;
+    private String sessionId = null;
 
-    public VoiceStatusImpl(User user)
+    public VoiceStatusImpl(User user, Guild guild)
     {
         this.user = user;
+        this.guild = guild;
     }
 
     @Override
@@ -57,6 +61,12 @@ public class VoiceStatusImpl implements VoiceStatus
     }
 
     @Override
+    public boolean isSuppressed()
+    {
+        return suppressed;
+    }
+
+    @Override
     public VoiceChannel getChannel()
     {
         return channel;
@@ -65,7 +75,7 @@ public class VoiceStatusImpl implements VoiceStatus
     @Override
     public Guild getGuild()
     {
-        return (channel == null) ? null : channel.getGuild();
+        return guild;
     }
 
     @Override
@@ -74,28 +84,57 @@ public class VoiceStatusImpl implements VoiceStatus
         return user;
     }
 
-    public void setMute(boolean mute)
+    @Override
+    public String getSessionId()
+    {
+        return sessionId;
+    }
+
+    @Override
+    public boolean inVoiceChannel()
+    {
+        return getChannel() != null;
+    }
+
+    public VoiceStatusImpl setMute(boolean mute)
     {
         this.mute = mute;
+        return this;
     }
 
-    public void setServerMute(boolean serverMute)
+    public VoiceStatusImpl setServerMute(boolean serverMute)
     {
         this.serverMute = serverMute;
+        return this;
     }
 
-    public void setDeaf(boolean deaf)
+    public VoiceStatusImpl setDeaf(boolean deaf)
     {
         this.deaf = deaf;
+        return this;
     }
 
-    public void setServerDeaf(boolean serverDeaf)
+    public VoiceStatusImpl setServerDeaf(boolean serverDeaf)
     {
         this.serverDeaf = serverDeaf;
+        return this;
     }
 
-    public void setChannel(VoiceChannel channel)
+    public VoiceStatusImpl setChannel(VoiceChannel channel)
     {
         this.channel = channel;
+        return this;
+    }
+
+    public VoiceStatusImpl setSessionId(String sessionId)
+    {
+        this.sessionId = sessionId;
+        return this;
+    }
+
+    public VoiceStatusImpl setSuppressed(boolean suppressed)
+    {
+        this.suppressed = suppressed;
+        return this;
     }
 }
