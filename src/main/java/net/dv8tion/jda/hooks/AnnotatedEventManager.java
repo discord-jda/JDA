@@ -58,6 +58,7 @@ public class AnnotatedEventManager implements IEventManager
         listeners.entrySet().forEach(e -> {
             try
             {
+                e.getValue().setAccessible(true);
                 e.getValue().invoke(e.getKey(), event);
             }
             catch (IllegalAccessException | InvocationTargetException e1)

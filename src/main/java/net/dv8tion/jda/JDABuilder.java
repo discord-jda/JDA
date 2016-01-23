@@ -19,6 +19,7 @@ import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.ReadyEvent;
 import net.dv8tion.jda.hooks.AnnotatedEventManager;
 import net.dv8tion.jda.hooks.ListenerAdapter;
+import net.dv8tion.jda.hooks.SubscribeEvent;
 
 import javax.security.auth.login.LoginException;
 import java.util.LinkedList;
@@ -253,6 +254,7 @@ public class JDABuilder
         AtomicBoolean ready = new AtomicBoolean(false);
         ListenerAdapter readyListener = new ListenerAdapter()
         {
+            @SubscribeEvent
             @Override
             public void onReady(ReadyEvent event)
             {
