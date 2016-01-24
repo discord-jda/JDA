@@ -80,7 +80,7 @@ public class FilePlayer extends Player
         {
             File oldFile = audioFile;
             reset();
-            setAudioFile(audioFile);
+            setAudioFile(oldFile);
             play();
         }
         catch (IOException e)
