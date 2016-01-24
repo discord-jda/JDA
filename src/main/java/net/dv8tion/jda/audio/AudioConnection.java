@@ -22,10 +22,8 @@ import net.dv8tion.jda.entities.VoiceChannel;
 import net.tomp2p.opuswrapper.Opus;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
