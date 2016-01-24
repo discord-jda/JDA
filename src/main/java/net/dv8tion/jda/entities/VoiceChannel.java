@@ -15,6 +15,10 @@
  */
 package net.dv8tion.jda.entities;
 
+import net.dv8tion.jda.audio.AudioConnection;
+
+import java.util.function.Consumer;
+
 /**
  * Represents a Discord Voice Channel.
  *

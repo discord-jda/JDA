@@ -28,6 +28,7 @@ import org.json.JSONObject;
 
 public class Requester
 {
+    public static final String USER_AGENT = JDAInfo.GITHUB + " " + JDAInfo.VERSION;
     private final JDAImpl api;
 
     public Requester(JDAImpl api)
@@ -123,7 +124,7 @@ public class Requester
         {
             request.header("Content-Type", "application/json");
         }
-        request.header("user-agent", JDAInfo.GITHUB + " " + JDAInfo.VERSION);
+        request.header("user-agent", USER_AGENT);
         request.header("Accept-Encoding", "gzip");
         return request;
     }
