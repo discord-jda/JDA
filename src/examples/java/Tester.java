@@ -2,23 +2,21 @@ import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.JDABuilder;
 import net.dv8tion.jda.MessageBuilder;
 import net.dv8tion.jda.Region;
-import net.dv8tion.jda.audio.AudioWebSocket;
+import net.dv8tion.jda.audio.player.Player;
+import net.dv8tion.jda.audio.player.URLPlayer;
 import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.entities.VoiceStatus;
-import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.events.voice.VoiceJoinEvent;
 import net.dv8tion.jda.events.voice.VoiceLeaveEvent;
 import net.dv8tion.jda.hooks.ListenerAdapter;
-import net.dv8tion.jda.requests.WebSocketClient;
 import net.dv8tion.jda.utils.AvatarUtil;
 import net.dv8tion.jda.utils.InviteUtil;
 import org.apache.http.HttpHost;
 import org.json.JSONObject;
-import voice.*;
 
 import javax.security.auth.login.LoginException;
-import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -36,6 +34,8 @@ import java.util.stream.Collectors;
  */
 public class Tester extends ListenerAdapter
 {
+    Player player;
+
     public static void main(String[] args) throws LoginException, InterruptedException
     {
         JSONObject config = ExampleUtils.getConfig();
@@ -45,8 +45,8 @@ public class Tester extends ListenerAdapter
                 .addListener(new Tester())
                 .setDebug(true);
 
-        if (!config.getString("proxyHost").isEmpty())
-            builder.setProxy(config.getString("proxyHost"), config.getInt("proxyPort"));
+//        if (!config.getString("proxyHost").isEmpty())
+//            builder.setProxy(config.getString("proxyHost"), config.getInt("proxyPort"));
 
         JDA api = builder.buildBlocking();
 
@@ -124,54 +124,43 @@ public class Tester extends ListenerAdapter
         }
         if (event.getMessage().getContent().startsWith("join"))
         {
-            JSONObject obj = new JSONObject()
-                    .put("op", 4)
-                    .put("d", new JSONObject()
-                            .put("guild_id", event.getGuild().getId())
-                            .put("channel_id", voiceChannel.getId())
-                            .put("self_mute", false)
-                            .put("self_deaf", false)
-                    );
-            WebSocketClient client = ((JDAImpl) event.getJDA()).getClient();
-            client.send(obj.toString());
+            event.getJDA().getAudioManager().openAudioConnection(voiceChannel);
         }
         if (event.getMessage().getContent().startsWith("leave"))
         {
-            JSONObject obj = new JSONObject()
-                    .put("op", 4)
-                    .put("d", new JSONObject()
-                            .put("guild_id", JSONObject.NULL)
-                            .put("channel_id", JSONObject.NULL)
-                            .put("self_mute", true)
-                            .put("self_deaf", false)
-                    );
-            WebSocketClient client = ((JDAImpl) event.getJDA()).getClient();
-            client.send(obj.toString());
+            event.getJDA().getAudioManager().closeAudioConnection();
         }
-        if (event.getMessage().getContent().startsWith("talk"))
+        if (event.getMessage().getContent().startsWith("play"))
         {
-            System.out.println("starting talkings");
-            JSONObject obj = new JSONObject()
-                    .put("op", 5)
-                    .put("d", new JSONObject()
-                        .put("speaking", true)
-                        .put("delay", 0)
-                    );
-            AudioWebSocket.socket.sendText(obj.toString());
+            try
+            {
+                System.out.println("starting talkings");
+                if (player == null)
+                {
+//                    player = new FilePlayer();
+//                    player.setAudioFile(new File("anime-48000.mp3"));
+                    URL url = new URL("https://dl.dropboxusercontent.com/u/41124983/anime-48000.mp3?dl=1");
+                    player = new URLPlayer(event.getJDA(), url);
+                    event.getJDA().getAudioManager().setSendingHandler(player);
+                }
 
-            long time = System.currentTimeMillis();
-            System.out.println("starting test");
-            new OpusRewrite();  //This is where the magic happens.
-            System.out.println("finished test. Time: " + (System.currentTimeMillis() - time) + "ms");
-
-            JSONObject obj2 = new JSONObject()
-                    .put("op", 5)
-                    .put("d", new JSONObject()
-                            .put("speaking", false)
-                            .put("delay", 0)
-                    );
-            AudioWebSocket.socket.sendText(obj2.toString());
+                player.play();
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+            catch (UnsupportedAudioFileException e)
+            {
+                e.printStackTrace();
+            }
         }
+        if (event.getMessage().getContent().startsWith("pause"))
+            player.pause();
+        if (event.getMessage().getContent().startsWith("restart"))
+            player.restart();
+        if (event.getMessage().getContent().startsWith("stop"))
+            player.stop();
 //        if (event.getMessage().getContent().startsWith("guilds"))
 //        {
 //            MessageBuilder builder = new MessageBuilder();
