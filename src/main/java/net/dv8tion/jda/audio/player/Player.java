@@ -45,7 +45,9 @@ public abstract class Player implements AudioSendHandler
             throw new IllegalArgumentException("Cannot create an audio player from a null AudioInputStream!");
 
         AudioFormat baseFormat = inSource.getFormat();
-        audioFormat = new AudioFormat(
+
+        //Converts first to PCM data. If the data is already PCM data, this will not change anything.
+        AudioFormat toPCM = new AudioFormat(
                 AudioFormat.Encoding.PCM_SIGNED,
                 baseFormat.getSampleRate(),//AudioConnection.OPUS_SAMPLE_RATE,
                 baseFormat.getSampleSizeInBits() != -1 ? baseFormat.getSampleSizeInBits() : 16,
@@ -53,8 +55,19 @@ public abstract class Player implements AudioSendHandler
                 //If we are given a frame size, use it. Otherwise, assume 16 bits (2 8bit shorts) per channel.
                 baseFormat.getFrameSize() != -1 ? baseFormat.getFrameSize() : 2 * baseFormat.getChannels(),
                 baseFormat.getFrameRate(),
+                baseFormat.isBigEndian());
+        AudioInputStream pcmStream = AudioSystem.getAudioInputStream(toPCM ,inSource);
+
+        //Then resamples to a sample rate of 48000hz and ensures that data is Big Endian.
+        audioFormat = new AudioFormat(
+                toPCM.getEncoding(),
+                AudioConnection.OPUS_SAMPLE_RATE,
+                toPCM.getSampleSizeInBits(),
+                toPCM.getChannels(),
+                toPCM.getFrameSize(),
+                toPCM.getFrameRate(),
                 true);
-        audioSource = AudioSystem.getAudioInputStream(audioFormat, inSource);
+        audioSource = AudioSystem.getAudioInputStream(audioFormat, pcmStream);
     }
 
     @Override

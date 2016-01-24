@@ -79,9 +79,8 @@ signing {
 repositories {
     mavenCentral()
 
-    //Used by the opus-wrapper.
     maven {
-        url "http://tomp2p.net/dev/mvn/"
+        url "http://lius4compass.googlecode.com/svn-history/r65/maven2/"
     }
 }
 
@@ -90,13 +89,17 @@ dependencies {
     compile 'org.apache.commons:commons-lang3:3.4'
     compile 'org.json:json:20150729'
 
+    //Native Library Support
+    compile 'net.java.dev.jna:jna:4.1.0'
+
     //Web Connection Support
     compile 'com.neovisionaries:nv-websocket-client:1.16'
     compile 'com.mashape.unirest:unirest-java:1.4.7'
 
     //Audio Support
-    compile 'net.tomp2p:opus-wrapper:1.3'
     compile 'com.googlecode.soundlibs:mp3spi:1.9.5-1'
+    compile 'com.googlecode.soundlibs:tritonus-share:0.3.7-2'
+    compile 'org.tritonus:tritonus-remaining:0.3.6'
 }
 
 class Version {
