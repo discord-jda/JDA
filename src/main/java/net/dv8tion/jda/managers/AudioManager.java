@@ -22,12 +22,16 @@ import net.dv8tion.jda.audio.AudioReceiveHandler;
 import net.dv8tion.jda.audio.AudioSendHandler;
 import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
+import net.dv8tion.jda.utils.NativeUtils;
 import org.json.JSONObject;
+
+import java.io.IOException;
 
 public class AudioManager
 {
     //This value is set at the bottom of this file.
     private static boolean AUDIO_SUPPORTED;
+    public static String OPUS_LIB_NAME;
 
     private final JDAImpl api;
     private AudioConnection audioConnection = null;
@@ -62,15 +66,8 @@ public class AudioManager
 
     public void closeAudioConnection()
     {
-        JSONObject obj = new JSONObject()
-                .put("op", 4)
-                .put("d", new JSONObject()
-                        .put("guild_id", JSONObject.NULL)
-                        .put("channel_id", JSONObject.NULL)
-                        .put("self_mute", false)
-                        .put("self_deaf", false)
-                );
-        api.getClient().send(obj.toString());
+        if (audioConnection == null)
+            return;
         this.audioConnection.close();
         this.audioConnection = null;
     }
@@ -125,34 +122,28 @@ public class AudioManager
     //Load the Opus library.
     static
     {
+        String lib = "/opus/" + Platform.RESOURCE_PREFIX;
+        if (lib.contains("win"))
+            lib += "/opus.dll";
+        else if (lib.contains("darwin"))
+            lib += "/libopus.dylib";
+        else if (lib.contains("linux"))
+            lib += "/libopus.so";
+        else
+            throw new RuntimeException("We don't support audio for this operating system. Sorry!");
+
         try
         {
-            System.loadLibrary("opus");
+            NativeUtils.loadLibraryFromJar(lib);
+            OPUS_LIB_NAME = lib;
+            AUDIO_SUPPORTED = true;
         }
-        catch (UnsatisfiedLinkError e1)
+        catch (IOException e)
         {
-            try
-            {
-                String lib = "opus/" + Platform.RESOURCE_PREFIX;
-                if (lib.contains("win"))
-                    lib += "/opus.dll";
-                else if (lib.contains("darwin"))
-                    lib += "/libopus.dylib";
-                else if (lib.contains("linux"))
-                    lib += "/libopus.so";
-                else
-                    throw new RuntimeException("We don't support audio for this operating system. Sorry!");
-
-                System.load(AudioManager.class.getClassLoader().getResource(lib).getFile());
-                AUDIO_SUPPORTED = true;
-            }
-            catch (Exception e2)
-            {
-                AUDIO_SUPPORTED = false;
-                System.err.println("Audio functionality is not supported on this platform!");
-                e1.printStackTrace();
-                e2.printStackTrace();
-            }
+            OPUS_LIB_NAME = null;
+            AUDIO_SUPPORTED = false;
+            System.err.println("There was an IO Exception when setting up the temp files for audio.");
+            e.printStackTrace();
         }
     }
 }

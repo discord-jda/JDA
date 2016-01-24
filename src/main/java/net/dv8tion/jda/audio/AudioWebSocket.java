@@ -23,10 +23,7 @@ import org.apache.http.HttpHost;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetSocketAddress;
-import java.net.SocketException;
+import java.net.*;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
@@ -222,6 +219,15 @@ public class AudioWebSocket extends WebSocketAdapter
 
     public void close()
     {
+        JSONObject obj = new JSONObject()
+                .put("op", 4)
+                .put("d", new JSONObject()
+                        .put("guild_id", JSONObject.NULL)
+                        .put("channel_id", JSONObject.NULL)
+                        .put("self_mute", false)
+                        .put("self_deaf", false)
+                );
+        api.getClient().send(obj.toString());
         if (keepAliveThread != null)
         {
             keepAliveThread.interrupt();
@@ -310,7 +316,6 @@ public class AudioWebSocket extends WebSocketAdapter
             int ourPort = (firstByte << 8) | secondByte;
 
             this.address = address;
-            setupUdpListenThread(address);
             setupUdpKeepAliveThread(address);
 
             return new InetSocketAddress(ourIP, ourPort);
@@ -324,11 +329,6 @@ public class AudioWebSocket extends WebSocketAdapter
             e.printStackTrace();
         }
         return null;
-    }
-
-    private void setupUdpListenThread(final InetSocketAddress address)
-    {
-
     }
 
     private void setupUdpKeepAliveThread(final InetSocketAddress address)
@@ -350,6 +350,14 @@ public class AudioWebSocket extends WebSocketAdapter
                         udpSocket.send(keepAlivePacket);
 
                         Thread.sleep(5000); //Wait 5 seconds to send next keepAlivePacket.
+                    }
+                    catch (NoRouteToHostException e)
+                    {
+                        System.err.println("Closing AudioConnection due to inability to ping audio packets.");
+                        System.err.println("Cannot send audio packet because JDA navigate the route to Discord.\n" +
+                                "Are you sure you have internet connection? It is likely that you've lost connection.");
+                        AudioWebSocket.this.close();
+                        break;
                     }
                     catch (IOException e)
                     {

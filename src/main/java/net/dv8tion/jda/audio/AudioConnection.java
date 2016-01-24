@@ -19,11 +19,12 @@ import com.sun.jna.ptr.PointerByReference;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.VoiceChannel;
-import net.tomp2p.opuswrapper.Opus;
+import tomp2p.opuswrapper.Opus;
 import org.json.JSONObject;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.NoRouteToHostException;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -119,6 +120,7 @@ public class AudioConnection
 
     public void close()
     {
+        setSpeaking(false);
         webSocket.close();
     }
 
@@ -168,6 +170,13 @@ public class AudioConnection
                         }
                         else if (speaking && (System.currentTimeMillis() - lastFrameSent) > OPUS_FRAME_TIME_AMOUNT)
                             setSpeaking(false);
+                    }
+                    catch (NoRouteToHostException e)
+                    {
+                        System.err.println("Closing AudioConnection due to inability to send audio packets.");
+                        System.err.println("Cannot send audio packet because JDA navigate the route to Discord.\n" +
+                                "Are you sure you have internet connection? It is likely that you've lost connection.");
+                        webSocket.close();
                     }
                     catch (Exception e)
                     {
