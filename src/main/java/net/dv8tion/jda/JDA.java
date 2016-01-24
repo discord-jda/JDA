@@ -18,6 +18,7 @@ package net.dv8tion.jda;
 import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.hooks.EventListener;
 import net.dv8tion.jda.managers.AccountManager;
+import net.dv8tion.jda.managers.AudioManager;
 import net.dv8tion.jda.managers.GuildManager;
 import org.apache.http.HttpHost;
 
@@ -299,4 +300,6 @@ public interface JDA
      *      True if JDA is currently in debug mode.
      */
     boolean isDebug();
+
+    AudioManager getAudioManager();
 }

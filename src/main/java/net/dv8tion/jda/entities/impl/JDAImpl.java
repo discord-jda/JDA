@@ -24,6 +24,7 @@ import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.hooks.EventListener;
 import net.dv8tion.jda.hooks.EventManager;
 import net.dv8tion.jda.managers.AccountManager;
+import net.dv8tion.jda.managers.AudioManager;
 import net.dv8tion.jda.managers.GuildManager;
 import net.dv8tion.jda.requests.Requester;
 import net.dv8tion.jda.requests.WebSocketClient;
@@ -57,6 +58,7 @@ public class JDAImpl implements JDA
     private final Map<String, PrivateChannel> pmChannelMap = new HashMap<>();
     private final Map<String, String> offline_pms = new HashMap<>();    //Userid -> channelid
     private final EventManager eventManager = new EventManager();
+    private final AudioManager audioManager = new AudioManager(this);
     private SelfInfo selfInfo = null;
     private AccountManager accountManager;
     private String authToken = null;
@@ -490,6 +492,12 @@ public class JDAImpl implements JDA
             throw new RuntimeException("Acking is disabled by default. <b>READ THE JAVADOCS</b> for how to use them!");
         }
         getRequester().post("https://discordapp.com/api/channels/"+msg.getChannelId()+"/messages/"+msg.getId()+"/ack", new JSONObject());
+    }
+
+    @Override
+    public AudioManager getAudioManager()
+    {
+        return audioManager;
     }
 
     private static class AsyncCallback implements EventListener

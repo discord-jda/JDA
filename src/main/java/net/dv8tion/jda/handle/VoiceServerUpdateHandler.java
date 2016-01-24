@@ -15,9 +15,11 @@
  */
 package net.dv8tion.jda.handle;
 
+import net.dv8tion.jda.audio.AudioConnection;
 import net.dv8tion.jda.audio.AudioWebSocket;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.impl.JDAImpl;
+import net.dv8tion.jda.managers.AudioManager;
 import org.json.JSONObject;
 
 public class VoiceServerUpdateHandler extends SocketHandler
@@ -42,6 +44,16 @@ public class VoiceServerUpdateHandler extends SocketHandler
         //Strip the port from the endpoint.
         endpoint = endpoint.replace(":80", "");
 
+        AudioManager audioManager = api.getAudioManager();
+        if (audioManager.connected())
+            throw new IllegalStateException("Received VOICE_SERVER_UPDATE event while already connected to a VoiceChannel.\n" +
+                    "Did Discord allow multi-guild / multi-channel audio while we weren't looking? O.o");
+        if (!audioManager.attemptingToConnect())
+            throw new IllegalStateException("Attempted to create an AudioConnection when we weren't expecting to create one.\n" +
+                    "Did you attempt to start an audio connection...?");
+
         AudioWebSocket socket = new AudioWebSocket(endpoint, api, guild, sessionId, token);
+        AudioConnection connection = new AudioConnection(socket, audioManager.getQueuedAudioConnection());
+        audioManager.setAudioConnection(connection);
     }
 }
