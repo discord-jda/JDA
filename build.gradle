@@ -17,7 +17,7 @@ targetCompatibility = 1.8
 def filteredSourceDir = file("${buildDir}/filtered")
 
 sourceSets {
-    // This source set will contain all sources that we filter 
+    // This source set will contain all sources that we filter
     filtered {
         java {
             srcDirs = [
@@ -118,7 +118,7 @@ dependencies {
     compile 'org.json:json:20150729'
 
     //Native Library Support
-    compile 'net.java.dev.jna:jna:4.1.0'
+    compile 'net.java.dev.jna:jna:4.2.1'
 
     //Web Connection Support
     compile 'com.neovisionaries:nv-websocket-client:1.16'
