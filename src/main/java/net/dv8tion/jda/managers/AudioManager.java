@@ -23,6 +23,7 @@ import net.dv8tion.jda.audio.AudioSendHandler;
 import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.utils.NativeUtils;
+import net.dv8tion.jda.utils.ServiceUtil;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -122,6 +123,8 @@ public class AudioManager
     //Load the Opus library.
     static
     {
+        ServiceUtil.loadServices();
+
         String lib = "/opus/" + Platform.RESOURCE_PREFIX;
         if (lib.contains("win"))
             lib += "/opus.dll";

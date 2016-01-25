@@ -1,5 +1,7 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
+import java.nio.file.Files
+
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'signing'
@@ -61,11 +63,37 @@ task sourcesJar(type: Jar) {
 
 //create a single Jar with all dependencies
 task fatJar(type: Jar) {
+
     manifest {
         attributes 'Implementation-Version': version
+
     }
     baseName = project.name + '-withDependencies'
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    from { configurations.compile.collect {
+        dependency ->
+        if (configurations.filteredRuntime.contains(dependency))//If we defined it as a special lib, just add it directly
+        {
+//            System.out.println("Not unzipping: " + dependency.getName() + ", contains service related code. See ServiceUtil.");
+            return dependency
+        }
+        if (dependency.isDirectory()) { //If it is a folder, just include the folder in its entirety
+            return dependency
+        } else {    //If it isn't a folder, put it in a zipTree. if it is a zip or jar, we will be able to preform actions on it
+            def unZippped = zipTree(dependency)
+            if (unZippped.any {
+                file ->
+                String filePath = file.getAbsolutePath()
+                return filePath.contains("META-INF") && filePath.contains("services")
+                })
+            {
+                throw new GradleException("Found a jar dependency containing services but not dealt with in filteredRuntime!");
+            }
+            else
+            {
+                return unZippped;
+            }
+        }
+    }}
     with jar
 }
 
@@ -100,6 +128,12 @@ dependencies {
     compile 'com.googlecode.soundlibs:mp3spi:1.9.5-1'
     compile 'com.googlecode.soundlibs:tritonus-share:0.3.7-2'
     compile 'org.tritonus:tritonus-remaining:0.3.6'
+
+    //Used to define what libraries should be included as JARs, not have their internals extracted into FatJar.
+    //Needed for properly dealing with services.
+    filteredRuntime 'com.googlecode.soundlibs:tritonus-share:0.3.7-2'
+    filteredRuntime 'com.googlecode.soundlibs:mp3spi:1.9.5-1'
+    filteredRuntime 'org.tritonus:tritonus-remaining:0.3.6'
 }
 
 class Version {
@@ -118,7 +152,7 @@ class Version {
     }
 
     String getBuild() {
-        System.getenv("BUILD_NUMBER") ? System.getenv("BUILD_NUMBER") : "TEST"
+        System.getenv("BUILD_NUMBER") ? System.getenv("BUILD_NUMBER") : "DEV"
     }
 
     String toString() {
