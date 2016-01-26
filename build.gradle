@@ -71,27 +71,10 @@ task fatJar(type: Jar) {
     baseName = project.name + '-withDependencies'
     from { configurations.compile.collect {
         dependency ->
-        if (configurations.filteredRuntime.contains(dependency))//If we defined it as a special lib, just add it directly
-        {
-//            System.out.println("Not unzipping: " + dependency.getName() + ", contains service related code. See ServiceUtil.");
-            return dependency
-        }
         if (dependency.isDirectory()) { //If it is a folder, just include the folder in its entirety
             return dependency
-        } else {    //If it isn't a folder, put it in a zipTree. if it is a zip or jar, we will be able to preform actions on it
-            def unZippped = zipTree(dependency)
-            if (unZippped.any {
-                file ->
-                String filePath = file.getAbsolutePath()
-                return filePath.contains("META-INF") && filePath.contains("services")
-                })
-            {
-                throw new GradleException("Found a jar dependency containing services but not dealt with in filteredRuntime!");
-            }
-            else
-            {
-                return unZippped;
-            }
+        } else {    //If it isn't a folder, put it in a zipTree. if it is a zip or jar the contents will be extracted.
+            return zipTree(dependency)
         }
     }}
     with jar
