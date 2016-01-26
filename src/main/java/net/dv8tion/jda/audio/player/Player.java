@@ -21,12 +21,18 @@ import net.dv8tion.jda.audio.AudioSendHandler;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
+
+import org.tritonus.dsp.ais.AmplitudeAudioInputStream;
+
 import java.io.IOException;
 
 public abstract class Player implements AudioSendHandler
 {
     protected AudioInputStream audioSource = null;
     protected AudioFormat audioFormat = null;
+    protected AmplitudeAudioInputStream amplitudeAudioStream = null;
+
+    protected float amplitude = 1.0F;
 
     public abstract void play();
     public abstract void pause();
@@ -58,6 +64,9 @@ public abstract class Player implements AudioSendHandler
                 baseFormat.isBigEndian());
         AudioInputStream pcmStream = AudioSystem.getAudioInputStream(toPCM ,inSource);
 
+        amplitudeAudioStream=new AmplitudeAudioInputStream(pcmStream);
+        amplitudeAudioStream.setAmplitudeLinear(amplitude);
+        
         //Then resamples to a sample rate of 48000hz and ensures that data is Big Endian.
         audioFormat = new AudioFormat(
                 toPCM.getEncoding(),
@@ -67,7 +76,14 @@ public abstract class Player implements AudioSendHandler
                 toPCM.getFrameSize(),
                 toPCM.getFrameRate(),
                 true);
-        audioSource = AudioSystem.getAudioInputStream(audioFormat, pcmStream);
+        audioSource = AudioSystem.getAudioInputStream(audioFormat, amplitudeAudioStream);
+    }
+
+    public void setVolume(float volume) {
+        this.amplitude=volume;
+        if (amplitudeAudioStream!=null) {
+            amplitudeAudioStream.setAmplitudeLinear(amplitude);
+        }
     }
 
     @Override
