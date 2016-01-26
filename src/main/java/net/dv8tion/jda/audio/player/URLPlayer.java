@@ -21,6 +21,8 @@ import org.apache.http.HttpHost;
 
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
+
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
@@ -37,6 +39,7 @@ public class URLPlayer extends Player
     protected String userAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.80 Safari/537.36 " + Requester.USER_AGENT;
     protected URL urlOfResource = null;
     protected InputStream resourceStream = null;
+    protected BufferedInputStream bufferedResourceStream = null;
     protected boolean started = false;
     protected boolean playing = false;
     protected boolean paused = false;
@@ -75,7 +78,8 @@ public class URLPlayer extends Player
 
         conn.setRequestProperty("user-agent", userAgent);
         this.resourceStream = conn.getInputStream();
-        setAudioSource(AudioSystem.getAudioInputStream(resourceStream));
+        bufferedResourceStream=new BufferedInputStream(resourceStream);
+        setAudioSource(AudioSystem.getAudioInputStream(bufferedResourceStream));
     }
 
     @Override
