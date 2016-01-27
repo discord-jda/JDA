@@ -15,6 +15,8 @@ version = "${versionObj.toString()}"
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+tasks.eclipse.dependsOn(cleanEclipse)
+
 def filteredSourceDir = file("${buildDir}/filtered")
 
 eclipse {
@@ -106,6 +108,11 @@ repositories {
     maven {
         url "http://lius4compass.googlecode.com/svn-history/r65/maven2/"
     }
+    
+    maven {
+        url "http://lutece.paris.fr/nexus/content/repositories/lutece_third_party/"
+    }
+    
 }
 
 dependencies {
@@ -124,15 +131,13 @@ dependencies {
     compile 'com.googlecode.soundlibs:mp3spi:1.9.5-1'
     compile 'com.googlecode.soundlibs:tritonus-share:0.3.7-2'
     compile 'org.tritonus:tritonus-remaining:0.3.6'
+    compile 'tritonus:tritonus-dsp:0.3.6'
 
     //Used to define what libraries should be included as JARs, not have their internals extracted into FatJar.
     //Needed for properly dealing with services.
     filteredRuntime 'com.googlecode.soundlibs:tritonus-share:0.3.7-2'
     filteredRuntime 'com.googlecode.soundlibs:mp3spi:1.9.5-1'
     filteredRuntime 'org.tritonus:tritonus-remaining:0.3.6'
-
-    //Local tritonus dsp file (needed for volume), cause there is no maven repository hosting it :[
-    compile files('./lib/tritonus-dsp-0.3.6.jar')
 }
 
 class Version {

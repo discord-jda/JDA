@@ -109,8 +109,8 @@ public class URLPlayer extends Player
         stopped = true;
         try
         {
-            resourceStream.close();//FIXME
             bufferedResourceStream.close();
+            resourceStream.close();
         }
         catch (IOException e)
         {
@@ -125,8 +125,8 @@ public class URLPlayer extends Player
         URL oldUrl = urlOfResource;
         try
         {
-            resourceStream.close();//FIXME
             bufferedResourceStream.close();
+            resourceStream.close();
             reset();
             setAudioUrl(oldUrl);
             play();
