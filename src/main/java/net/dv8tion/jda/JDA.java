@@ -345,6 +345,9 @@ public interface JDA
      * Depending on the free-parameter, this will also close the background-thread used for requests.
      * If the background-thread is closed, the system can exit properly, but no further JDA requests are possible (includes other JDA instances).
      * If you want to reconnect, and the request-thread was not freed, just create a new JDA instance.
+     *
+     * @param free
+     *          If true, shuts down JDA's rest system permanently.
      */
     void shutdown(boolean free);
 }

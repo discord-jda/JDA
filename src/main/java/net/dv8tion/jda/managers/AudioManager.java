@@ -134,7 +134,10 @@ public class AudioManager
      * null.<br>
      * Also, if JDA is already connected, this will return null. To determine if JDA is already has an audio connection
      * with a {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} use {@link #isConnected()}
+     *
      * @return
+     *      The {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} that JDA is attempting to create an
+     *      audio connection with, or null if JDA isn't attempting to create a connection.
      */
     public VoiceChannel getQueuedAudioConnection()
     {
