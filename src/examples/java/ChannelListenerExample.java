@@ -33,7 +33,7 @@ public class ChannelListenerExample extends ListenerAdapter
                     .setEmail(config.getString("email"))
                     .setPassword(config.getString("password"))
                     .addListener(new ChannelListenerExample())
-                    .build();
+                    .buildAsync();
         }
         catch (IllegalArgumentException e)
         {

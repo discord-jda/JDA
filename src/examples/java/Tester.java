@@ -45,8 +45,8 @@ public class Tester extends ListenerAdapter
                 .addListener(new Tester())
                 .setDebug(true);
 
-//        if (!config.getString("proxyHost").isEmpty())
-//            builder.setProxy(config.getString("proxyHost"), config.getInt("proxyPort"));
+        if (!config.getString("proxyHost").isEmpty())
+            builder.setProxy(config.getString("proxyHost"), config.getInt("proxyPort"));
 
         JDA api = builder.buildBlocking();
 

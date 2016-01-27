@@ -46,7 +46,7 @@ public class GuildListenerExample extends ListenerAdapter
                     .setEmail(config.getString("email"))
                     .setPassword(config.getString("password"))
                     .addListener(new GuildListenerExample())
-                    .build();
+                    .buildAsync();
         }
         catch (IllegalArgumentException e)
         {

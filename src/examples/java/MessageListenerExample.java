@@ -55,7 +55,7 @@ public class MessageListenerExample extends ListenerAdapter
                 builder.setProxy(proxyHost, config.getInt("proxyPort"));
             }
 
-            JDA jda = builder.build();
+            JDA jda = builder.buildAsync();
         }
         catch (IllegalArgumentException e)
         {

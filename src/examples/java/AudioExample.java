@@ -43,7 +43,7 @@ public class AudioExample extends ListenerAdapter
                     .setEmail(config.getString("email"))
                     .setPassword(config.getString("password"))
                     .addListener(new AudioExample())
-                    .build();
+                    .buildAsync();
         }
         catch (IllegalArgumentException e)
         {
