@@ -19,6 +19,7 @@ import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.hooks.AnnotatedEventManager;
 import net.dv8tion.jda.hooks.IEventManager;
 import net.dv8tion.jda.managers.AccountManager;
+import net.dv8tion.jda.managers.AudioManager;
 import net.dv8tion.jda.managers.GuildManager;
 import org.apache.http.HttpHost;
 
@@ -336,4 +337,6 @@ public interface JDA
      * If you want to reconnect, and the request-thread was not freed, just create a new JDA instance.
      */
     void shutdown(boolean free);
+
+    AudioManager getAudioManager();
 }

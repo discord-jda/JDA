@@ -1,5 +1,7 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
+import java.nio.file.Files
+
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'signing'
@@ -15,17 +17,20 @@ targetCompatibility = 1.8
 def filteredSourceDir = file("${buildDir}/filtered")
 
 sourceSets {
-    // This source set will contain all sources that we filter 
+    // This source set will contain all sources that we filter
     filtered {
         java {
             srcDirs = [
                     filteredSourceDir,
                     "src/test/java",
+
                     "src/examples/java"
             ]
         }
     }
 }
+
+
 
 // copy the main sources and filter any '@buildVersion@' occurences. 
 task processVersion (type: Copy) {
@@ -58,11 +63,20 @@ task sourcesJar(type: Jar) {
 
 //create a single Jar with all dependencies
 task fatJar(type: Jar) {
+
     manifest {
         attributes 'Implementation-Version': version
+
     }
     baseName = project.name + '-withDependencies'
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    from { configurations.compile.collect {
+        dependency ->
+        if (dependency.isDirectory()) { //If it is a folder, just include the folder in its entirety
+            return dependency
+        } else {    //If it isn't a folder, put it in a zipTree. if it is a zip or jar the contents will be extracted.
+            return zipTree(dependency)
+        }
+    }}
     with jar
 }
 
@@ -75,13 +89,34 @@ signing {
 }
 repositories {
     mavenCentral()
+
+    maven {
+        url "http://lius4compass.googlecode.com/svn-history/r65/maven2/"
+    }
 }
 
 dependencies {
-    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
-    compile group: 'org.json', name: 'json', version: '20150729'
+    //General Utility
+    compile 'org.apache.commons:commons-lang3:3.4'
+    compile 'org.json:json:20150729'
+
+    //Native Library Support
+    compile 'net.java.dev.jna:jna:4.2.1'
+
+    //Web Connection Support
     compile 'com.neovisionaries:nv-websocket-client:1.16'
-    compile group: 'com.mashape.unirest', name: 'unirest-java', version: '1.4.7'
+    compile 'com.mashape.unirest:unirest-java:1.4.7'
+
+    //Audio Support
+    compile 'com.googlecode.soundlibs:mp3spi:1.9.5-1'
+    compile 'com.googlecode.soundlibs:tritonus-share:0.3.7-2'
+    compile 'org.tritonus:tritonus-remaining:0.3.6'
+
+    //Used to define what libraries should be included as JARs, not have their internals extracted into FatJar.
+    //Needed for properly dealing with services.
+    filteredRuntime 'com.googlecode.soundlibs:tritonus-share:0.3.7-2'
+    filteredRuntime 'com.googlecode.soundlibs:mp3spi:1.9.5-1'
+    filteredRuntime 'org.tritonus:tritonus-remaining:0.3.6'
 }
 
 class Version {
@@ -100,7 +135,7 @@ class Version {
     }
 
     String getBuild() {
-        System.getenv("BUILD_NUMBER") ? System.getenv("BUILD_NUMBER") : "TEST"
+        System.getenv("BUILD_NUMBER") ? System.getenv("BUILD_NUMBER") : "DEV"
     }
 
     String toString() {

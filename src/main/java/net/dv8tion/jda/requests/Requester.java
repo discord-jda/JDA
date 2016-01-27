@@ -28,7 +28,8 @@ import org.json.JSONObject;
 
 public class Requester
 {
-    private static final String USERAGENT = "JDA DiscordBot (" + JDAInfo.GITHUB + ", " + JDAInfo.VERSION + ")";
+    public  static final String USER_AGENT = "JDA DiscordBot (" + JDAInfo.GITHUB + ", " + JDAInfo.VERSION + ")";
+
     private final JDAImpl api;
 
     public Requester(JDAImpl api)
@@ -140,7 +141,7 @@ public class Requester
         {
             request.header("Content-Type", "application/json");
         }
-        request.header("user-agent", USERAGENT);
+        request.header("user-agent", USER_AGENT);
         request.header("Accept-Encoding", "gzip");
         return request;
     }
