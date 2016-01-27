@@ -45,10 +45,10 @@ public class VoiceServerUpdateHandler extends SocketHandler
         endpoint = endpoint.replace(":80", "");
 
         AudioManager audioManager = api.getAudioManager();
-        if (audioManager.connected())
+        if (audioManager.isConnected())
             throw new IllegalStateException("Received VOICE_SERVER_UPDATE event while already connected to a VoiceChannel.\n" +
                     "Did Discord allow multi-guild / multi-channel audio while we weren't looking? O.o");
-        if (!audioManager.attemptingToConnect())
+        if (!audioManager.isAttemptingToConnect())
             throw new IllegalStateException("Attempted to create an AudioConnection when we weren't expecting to create one.\n" +
                     "Did you attempt to start an audio connection...?");
 

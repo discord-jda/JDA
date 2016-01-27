@@ -53,7 +53,6 @@ public class AudioWebSocket extends WebSocketAdapter
     private InetSocketAddress address;
     private Thread udpKeepAliveThread;
 
-
     public AudioWebSocket(String endpoint, JDAImpl api, Guild guild, String sessionId, String token)
     {
         this.endpoint = endpoint;
@@ -192,17 +191,7 @@ public class AudioWebSocket extends WebSocketAdapter
         System.out.println("By remote? " + closedByServer);
         System.out.println("Reason: " + serverCloseFrame.getCloseReason());
         System.out.println("Close code: " + serverCloseFrame.getCloseCode());
-        api.getClient().send(new JSONObject()
-                .put("op", 4)
-                .put("d", new JSONObject()
-                        .put("guild_id", JSONObject.NULL)
-                        .put("channel_id", JSONObject.NULL)
-                        .put("self_mute", true)
-                        .put("self_deaf", false)
-                )
-                .toString());
-        connected = false;
-        ready = false;
+        this.close();
     }
 
     @Override
@@ -219,6 +208,8 @@ public class AudioWebSocket extends WebSocketAdapter
 
     public void close()
     {
+        connected = false;
+        ready = false;
         JSONObject obj = new JSONObject()
                 .put("op", 4)
                 .put("d", new JSONObject()
@@ -240,6 +231,7 @@ public class AudioWebSocket extends WebSocketAdapter
         }
         udpSocket.close();
         socket.sendClose();
+        api.getAudioManager().setAudioConnection(null);
     }
 
     public DatagramSocket getUdpSocket()

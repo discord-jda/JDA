@@ -288,6 +288,16 @@ public interface JDA
     AccountManager getAccountManager();
 
     /**
+     * Returns the {@link net.dv8tion.jda.managers.AccountManager AudioManager} for this {@link net.dv8tion.jda.JDA JDA}
+     * instance. AudioManager deals with creating, managing and severing audio connections to
+     * {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannels}.
+     *
+     * @return
+     *      The AudioManager for this JDA instance.
+     */
+    AudioManager getAudioManager();
+
+    /**
      * This value is the total amount of JSON responses that discord has sent.<br>
      * This value resets every time the websocket has to reconnect.
      *
@@ -337,6 +347,4 @@ public interface JDA
      * If you want to reconnect, and the request-thread was not freed, just create a new JDA instance.
      */
     void shutdown(boolean free);
-
-    AudioManager getAudioManager();
 }
