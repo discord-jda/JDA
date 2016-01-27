@@ -27,7 +27,6 @@ import org.json.JSONObject;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 public class GuildMemberRoleHandler extends SocketHandler
 {
@@ -43,7 +42,7 @@ public class GuildMemberRoleHandler extends SocketHandler
         JSONObject userJson = content.getJSONObject("user");
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("guild_id"));
         User user = api.getUserMap().get(userJson.getString("id"));
-        List<String> rolesNew = toStringList(content.getJSONArray("roles"));
+        List<Role> rolesNew = toRolesList(guild, content.getJSONArray("roles"));
         List<Role> rolesOld = guild.getUserRoles().get(user);
 
         //Find the roles removed.
@@ -51,26 +50,20 @@ public class GuildMemberRoleHandler extends SocketHandler
         for (Role role : rolesOld)
         {
             boolean roleFound = false;
-            for (Iterator<String> i = rolesNew.iterator(); i.hasNext();)
+            for (Iterator<Role> added = rolesNew.iterator(); added.hasNext();)
             {
-                String roleId = i.next();
-                if (role.getId().equals(roleId))
+                Role r = added.next();
+                if (role.equals(r))
                 {
-                    i.remove();
+                    added.remove();
                     roleFound = true;
+                    break;
                 }
             }
             if (!roleFound)
                 removedRoles.add(role);
         }
 
-        //Make sure we either added or removed some number of roles.
-        if ((removedRoles.size() != 0) && (rolesNew.size() != 0))
-            throw new IllegalArgumentException("Provided a GUILD_MEMBER_UPDATE that attempted to add and remove roles at the same time. JSON: " + content);
-        if ((removedRoles.size() == 0) && (rolesNew.size() == 0))
-            throw new IllegalArgumentException("Provided a GUILD_MEMBER_UPDATE that did not change the role settings! JSON: " + content);
-
-        //Remove the roles from the Guild's User-Roles map.
         if (removedRoles.size() > 0)
         {
             rolesOld.removeAll(removedRoles);
@@ -79,32 +72,27 @@ public class GuildMemberRoleHandler extends SocketHandler
                             api, responseNumber,
                             guild, user, removedRoles));
         }
-        else //If we didn't remove any roles, then we added roles. Add them to the Guild's User-Roles map.
+        if (rolesNew.size() > 0)
         {
-            Map<String, Role> guildRoles = guild.getRolesMap();
-            LinkedList<Role> addedRoles = new LinkedList<>();
-            for (String roleId : rolesNew)
-            {
-                Role r = guildRoles.get(roleId);
-                if (r == null)
-                    throw new IllegalArgumentException("GUILD_MEMBER_UPDATE attempted to give a User a role that doesn't exist on a Guild! JSON: " + content);
-                rolesOld.add(r);
-                addedRoles.add(r);
-            }
+            rolesOld.addAll(rolesNew);
             api.getEventManager().handle(
                     new GuildMemberRoleAddEvent(
                             api, responseNumber,
-                            guild, user, addedRoles));
+                            guild, user, rolesNew));
         }
     }
 
-    private List<String> toStringList(JSONArray array)
+    private List<Role> toRolesList(GuildImpl guild, JSONArray array)
     {
-        LinkedList<String> strings = new LinkedList<>();
+        LinkedList<Role> roles = new LinkedList<>();
         for(int i = 0; i < array.length(); i++)
         {
-            strings.add(array.getString(i));
+            Role r = guild.getRolesMap().get(array.getString(i));
+            if (r != null)
+            {
+                roles.add(r);
+            }
         }
-        return strings;
+        return roles;
     }
 }

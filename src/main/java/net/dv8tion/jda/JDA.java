@@ -16,7 +16,8 @@
 package net.dv8tion.jda;
 
 import net.dv8tion.jda.entities.*;
-import net.dv8tion.jda.hooks.EventListener;
+import net.dv8tion.jda.hooks.AnnotatedEventManager;
+import net.dv8tion.jda.hooks.IEventManager;
 import net.dv8tion.jda.managers.AccountManager;
 import net.dv8tion.jda.managers.AudioManager;
 import net.dv8tion.jda.managers.GuildManager;
@@ -32,30 +33,48 @@ import java.util.function.Consumer;
 public interface JDA
 {
     /**
-     * Adds an {@link net.dv8tion.jda.hooks.EventListener EventListener} that will be used to handle events.
+     * Changes the internal EventManager.
+     * The default EventManager is {@link net.dv8tion.jda.hooks.InterfacedEventManager InterfacedEventListener}.
+     * There is also an {@link AnnotatedEventManager AnnotatedEventManager} available.
+     *
+     * @param manager
+     *          The new EventManager to use
+     */
+    void setEventManager(IEventManager manager);
+
+    /**
+     * Adds an Object to the event-listeners that will be used to handle events.
+     * This uses the {@link net.dv8tion.jda.hooks.InterfacedEventManager InterfacedEventListener} by default.
+     * To switch to the {@link AnnotatedEventManager AnnotatedEventManager}, use {@link #setEventManager(IEventManager)}.
+     *
+     * Note: when using the {@link net.dv8tion.jda.hooks.InterfacedEventManager InterfacedEventListener} (default),
+     * given listener <b>must</b> be instance of {@link net.dv8tion.jda.hooks.EventListener EventListener}!
      *
      * @param listener
      *          The listener
      */
-    void addEventListener(EventListener listener);
+    void addEventListener(Object listener);
 
     /**
-     * Removes the provided {@link net.dv8tion.jda.hooks.EventListener EventListener} and no longer uses it to handle events.
+     * Removes the provided Object from the event-listeners and no longer uses it to handle events.
      *
      * @param listener
      *          The listener to be removed.
      */
-    void removeEventListener(EventListener listener);
+    void removeEventListener(Object listener);
 
     /**
      * Creates a new {@link net.dv8tion.jda.entities.Guild Guild}.
      * This will a return the Manager to the existing, but still empty Guild (no members, no channels).
-     * To create a Guild asynchronously (wait for generation of #general chat), use {@link #createGuildAsync(String, Consumer)} instead
+     * To create a Guild asynchronously (wait for generation of #general chat), use {@link #createGuildAsync(String, Consumer)} instead.
+     *
+     * In the very rare case, that the Discord-server has problems, The created guild can be unavailable until it is actually created.
+     * In that case, this will return null.
      *
      * @param name
      *      the name of the new {@link net.dv8tion.jda.entities.Guild Guild}
      * @return
-     *      the {@link net.dv8tion.jda.managers.GuildManager GuildManager} for the created Guild
+     *      the {@link net.dv8tion.jda.managers.GuildManager GuildManager} for the created Guild, or null, if the created Guild is temporarily unavailable
      */
     GuildManager createGuild(String name);
 
@@ -300,6 +319,24 @@ public interface JDA
      *      True if JDA is currently in debug mode.
      */
     boolean isDebug();
+
+    /**
+     * Shuts down JDA, closing all its connections.
+     * After this command is issued the JDA Instance can not be used anymore.
+     * This will also close the background-thread used for requests (which is required for further api calls of other JDA instances).
+     * If this is not desired, use {@link #shutdown(boolean)} instead.
+     * To reconnect, just create a new JDA instance.
+     */
+    void shutdown();
+
+    /**
+     * Shuts down JDA, closing all its connections.
+     * After this command is issued the JDA Instance can not be used anymore.
+     * Depending on the free-parameter, this will also close the background-thread used for requests.
+     * If the background-thread is closed, the system can exit properly, but no further JDA requests are possible (includes other JDA instances).
+     * If you want to reconnect, and the request-thread was not freed, just create a new JDA instance.
+     */
+    void shutdown(boolean free);
 
     AudioManager getAudioManager();
 }

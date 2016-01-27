@@ -19,12 +19,14 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import javafx.util.Pair;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.JDAInfo;
 import net.dv8tion.jda.MessageBuilder;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.exceptions.PermissionException;
+import net.dv8tion.jda.exceptions.RateLimitedException;
 import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.managers.ChannelManager;
 import net.dv8tion.jda.managers.PermissionOverrideManager;
@@ -144,10 +146,20 @@ public class TextChannelImpl implements TextChannel
         //TODO: PermissionException for Permission.MESSAGE_ATTACH_FILES maybe
 
         JDAImpl api = (JDAImpl) getJDA();
+        if (api.getMessageLimit() != null)
+        {
+            throw new RateLimitedException(api.getMessageLimit() - System.currentTimeMillis());
+        }
         try
         {
             JSONObject response = api.getRequester().post("https://discordapp.com/api/channels/" + getId() + "/messages",
                     new JSONObject().put("content", msg.getRawContent()).put("tts", msg.isTTS()));
+            if (response.has("retry_after"))
+            {
+                long retry_after = response.getLong("retry_after");
+                api.setMessageTimeout(retry_after);
+                throw new RateLimitedException(retry_after);
+            }
             return new EntityBuilder(api).createMessage(response);
         }
         catch (JSONException ex)
@@ -156,6 +168,23 @@ public class TextChannelImpl implements TextChannel
             //sending failed
             return null;
         }
+    }
+
+    @Override
+    public void sendMessageAsync(String text, Consumer<Message> callback)
+    {
+        sendMessageAsync(new MessageBuilder().appendString(text).build(), callback);
+    }
+
+    @Override
+    public void sendMessageAsync(Message msg, Consumer<Message> callback)
+    {
+        SelfInfo self = getJDA().getSelfInfo();
+        if (!checkPermission(self, Permission.MESSAGE_WRITE))
+            throw new PermissionException(Permission.MESSAGE_WRITE);
+
+        ((MessageImpl) msg).setChannelId(getId());
+        AsyncMessageSender.getInstance(getJDA()).enqueue(msg, callback);
     }
 
     @Override
@@ -290,5 +319,96 @@ public class TextChannelImpl implements TextChannel
     public int hashCode()
     {
         return getId().hashCode();
+    }
+
+    public static class AsyncMessageSender
+    {
+        private static final Map<JDA, AsyncMessageSender> instances = new HashMap<>();
+        private final JDAImpl api;
+        private Runner runner = null;
+
+        private AsyncMessageSender(JDAImpl api)
+        {
+            this.api = api;
+        }
+
+        public static AsyncMessageSender getInstance(JDA api)
+        {
+            if (!instances.containsKey(api))
+            {
+                instances.put(api, new AsyncMessageSender(((JDAImpl) api)));
+            }
+            return instances.get(api);
+        }
+
+        private final Queue<Pair<Message, Consumer<Message>>> queue = new LinkedList<>();
+
+        public synchronized void enqueue(Message msg, Consumer<Message> callback)
+        {
+            queue.add(new Pair<>(msg, callback));
+            if (runner == null || !runner.isAlive())
+            {
+                runner = new Runner(this);
+                runner.start();
+            }
+        }
+
+        private synchronized Queue<Pair<Message, Consumer<Message>>> getQueue()
+        {
+            LinkedList<Pair<Message, Consumer<Message>>> copy = new LinkedList<>(queue);
+            queue.clear();
+            return copy;
+        }
+
+        private static class Runner extends Thread
+        {
+            private final AsyncMessageSender sender;
+
+            public Runner(AsyncMessageSender sender)
+            {
+                this.sender = sender;
+            }
+
+            @Override
+            public void run()
+            {
+                Queue<Pair<Message, Consumer<Message>>> queue = sender.getQueue();
+                while (!queue.isEmpty())
+                {
+                    Long messageLimit = sender.api.getMessageLimit();
+                    if (messageLimit != null)
+                    {
+                        try
+                        {
+                            Thread.sleep(messageLimit - System.currentTimeMillis());
+                        }
+                        catch (InterruptedException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                    Pair<Message, Consumer<Message>> peek = queue.peek();
+                    JSONObject response = sender.api.getRequester().post("https://discordapp.com/api/channels/" + peek.getKey().getChannelId() + "/messages",
+                            new JSONObject().put("content", peek.getKey().getRawContent()).put("tts", peek.getKey().isTTS()));
+                    if (!response.has("retry_after"))   //success
+                    {
+                        queue.poll();//remove from queue
+                        if (peek.getValue() != null)
+                        {
+                            peek.getValue().accept(new EntityBuilder(sender.api).createMessage(response));
+                        }
+                    }
+                    else
+                    {
+                        sender.api.setMessageTimeout(response.getLong("retry_after"));
+                    }
+                    if (queue.isEmpty())
+                    {
+                        queue = sender.getQueue();
+                    }
+                }
+            }
+
+        }
     }
 }

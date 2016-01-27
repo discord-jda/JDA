@@ -32,9 +32,12 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class EntityBuilder
 {
+    private static final Pattern channelMentionPattern = Pattern.compile("<#(\\d+)>");
     private final JDAImpl api;
 
     public EntityBuilder(JDAImpl api)
@@ -51,7 +54,13 @@ public class EntityBuilder
             guildObj = new GuildImpl(api, id);
             api.getGuildMap().put(id, guildObj);
         }
+        if (guild.has("unavailable") && guild.getBoolean("unavailable"))
+        {
+            guildObj.setAvailable(false);
+            return guildObj;
+        }
         guildObj
+            .setAvailable(true)
             .setIconId(guild.isNull("icon") ? null : guild.getString("icon"))
             .setRegion(Region.fromKey(guild.getString("region")))
             .setName(guild.getString("name"))
@@ -271,9 +280,10 @@ public class EntityBuilder
     public Message createMessage(JSONObject jsonObject)
     {
         String id = jsonObject.getString("id");
+        String content = jsonObject.getString("content");
         MessageImpl message = new MessageImpl(id, api)
                 .setAuthor(api.getUserMap().get(jsonObject.getJSONObject("author").getString("id")))
-                .setContent(jsonObject.getString("content"))
+                .setContent(content)
                 .setTime(OffsetDateTime.parse(jsonObject.getString("timestamp")))
                 .setMentionsEveryone(jsonObject.getBoolean("mention_everyone"))
                 .setTTS(jsonObject.getBoolean("tts"));
@@ -312,6 +322,19 @@ public class EntityBuilder
                 mentioned.add(api.getUserMap().get(mention.getString("id")));
             }
             message.setMentionedUsers(mentioned);
+
+            List<TextChannel> mentionedChannels = new LinkedList<>();
+            Map<String, TextChannel> chanMap = ((GuildImpl) textChannel.getGuild()).getTextChannelsMap();
+            Matcher matcher = channelMentionPattern.matcher(content);
+            while (matcher.find())
+            {
+                TextChannel channel = chanMap.get(matcher.group(1));
+                if(channel != null)
+                {
+                    mentionedChannels.add(channel);
+                }
+            }
+            message.setMentionedChannels(mentionedChannels);
         }
         else
         {
@@ -376,8 +399,8 @@ public class EntityBuilder
             JSONObject videoJson = messageEmbed.getJSONObject("video");
             embed.setVideoInfo(new VideoInfo(
                     videoJson.getString("url"),
-                    videoJson.getInt("width"),
-                    videoJson.getInt("height")));
+                    videoJson.isNull("width") ? -1 : videoJson.getInt("width"),
+                    videoJson.isNull("height") ? -1 : videoJson.getInt("height")));
         }
         return embed;
     }

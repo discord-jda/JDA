@@ -17,8 +17,9 @@ package net.dv8tion.jda;
 
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.ReadyEvent;
-import net.dv8tion.jda.hooks.EventListener;
+import net.dv8tion.jda.hooks.AnnotatedEventManager;
 import net.dv8tion.jda.hooks.ListenerAdapter;
+import net.dv8tion.jda.hooks.SubscribeEvent;
 
 import javax.security.auth.login.LoginException;
 import java.util.LinkedList;
@@ -42,10 +43,11 @@ public class JDABuilder
     protected static boolean jdaCreated = false;
     protected static String proxyUrl = null;
     protected static int proxyPort = -1;
-    final List<EventListener> listeners;
+    final List<Object> listeners;
     String email = null;
     String pass = null;
     boolean debug = false;
+    boolean useAnnotatedManager = false;
 
     /**
      * Creates a completely empty JDABuilder.<br>
@@ -139,21 +141,45 @@ public class JDABuilder
      *
      * @param debug
      *          True - enables debug printing.
+     * @return
+     *          Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
      */
     public JDABuilder setDebug(boolean debug)
     {
        this.debug = debug;
         return this;
     }
+
+    /**
+     * Changes the internal EventManager.
+     * The default EventManager is {@link net.dv8tion.jda.hooks.InterfacedEventManager InterfacedEventListener}.
+     * There is also an {@link AnnotatedEventManager AnnotatedEventManager} available.
+     *
+     * @param useAnnotated
+     *          Whether or not to use the {@link net.dv8tion.jda.hooks.AnnotatedEventManager AnnotatedEventManager}
+     * @return
+     *          Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public JDABuilder useAnnotatedEventManager(boolean useAnnotated)
+    {
+        this.useAnnotatedManager = useAnnotated;
+        return this;
+    }
+
     /**
      * Adds a listener to the list of listeners that will be used to populate the {@link net.dv8tion.jda.JDA} object.
+     * This uses the {@link net.dv8tion.jda.hooks.InterfacedEventManager InterfacedEventListener} by default.
+     * To switch to the {@link net.dv8tion.jda.hooks.AnnotatedEventManager AnnotatedEventManager}, use {@link #useAnnotatedEventManager(boolean)}.
+     *
+     * Note: when using the {@link net.dv8tion.jda.hooks.InterfacedEventManager InterfacedEventListener} (default),
+     * given listener <b>must</b> be instance of {@link net.dv8tion.jda.hooks.EventListener EventListener}!
      *
      * @param listener
      *          The listener to add to the list.
      * @return
      *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
      */
-    public JDABuilder addListener(EventListener listener)
+    public JDABuilder addListener(Object listener)
     {
         listeners.add(listener);
         return this;
@@ -167,7 +193,7 @@ public class JDABuilder
      * @return
      *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
      */
-    public JDABuilder removeListener(EventListener listener)
+    public JDABuilder removeListener(Object listener)
     {
         listeners.remove(listener);
         return this;
@@ -198,6 +224,10 @@ public class JDABuilder
         else
             jda = new JDAImpl();
         jda.setDebug(debug);
+        if (useAnnotatedManager)
+        {
+            jda.setEventManager(new AnnotatedEventManager());
+        }
         listeners.forEach(jda::addEventListener);
         jda.login(email, pass);
         return jda;
@@ -224,6 +254,7 @@ public class JDABuilder
         AtomicBoolean ready = new AtomicBoolean(false);
         ListenerAdapter readyListener = new ListenerAdapter()
         {
+            @SubscribeEvent
             @Override
             public void onReady(ReadyEvent event)
             {
