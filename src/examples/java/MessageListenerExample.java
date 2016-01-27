@@ -65,12 +65,6 @@ public class MessageListenerExample extends ListenerAdapter
         {
             System.out.println("The provided email / password combination was incorrect. Please provide valid details.");
         }
-        catch (JSONException e)
-        {
-            e.printStackTrace();
-            //TODO: Do NOT let this make it to main.  When someone auto generates the Catch list JSONException should not
-            //       auto generate with IllegalArgumentException and LoginException.
-        }
     }
 
     @Override
@@ -92,13 +86,21 @@ public class MessageListenerExample extends ListenerAdapter
         }
     }
 
+    //Note: onMessageReceived combines both the PrivateMessageReceivedEvent and GuildMessageReceivedEvent.
+    //If you do not want to capture both in one method, consider using
+    // onPrivateMessageReceived(PrivateMessageReceivedEvent event)
+    //    or
+    // onGuildMessageReceived(GuildMessageReceivedEvent event)
     @Override
     public void onMessageReceived(MessageReceivedEvent event)
     {
-        if (event.isPrivate())
-            event.getPrivateChannel().sendTyping();
-        else
-            event.getTextChannel().sendTyping();
+        //It is annoying when people just spam the typing event for every message received, so only use it
+        // if you plan to actually send a message.
+//        if (event.isPrivate())
+//            event.getPrivateChannel().sendTyping();
+//        else
+//            event.getTextChannel().sendTyping();
+
         User author = event.getAuthor();
         boolean isPrivate = event.isPrivate();
         StringBuilder builder = new StringBuilder();
