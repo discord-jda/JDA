@@ -132,12 +132,6 @@ dependencies {
     compile 'com.googlecode.soundlibs:tritonus-share:0.3.7-2'
     compile 'org.tritonus:tritonus-remaining:0.3.6'
     compile 'tritonus:tritonus-dsp:0.3.6'
-
-    //Used to define what libraries should be included as JARs, not have their internals extracted into FatJar.
-    //Needed for properly dealing with services.
-    filteredRuntime 'com.googlecode.soundlibs:tritonus-share:0.3.7-2'
-    filteredRuntime 'com.googlecode.soundlibs:mp3spi:1.9.5-1'
-    filteredRuntime 'org.tritonus:tritonus-remaining:0.3.6'
 }
 
 class Version {
