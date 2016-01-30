@@ -111,6 +111,13 @@ repositories {
     maven {
         url "http://lutece.paris.fr/nexus/content/repositories/lutece_third_party/"
     }
+
+    //Used for
+    // 'net.sourceforge.jaadec:jaad:0.8.4'
+    //
+    maven {
+        url "https://github.com/DV8FromTheWorld/Maven-Repository/raw/master/repo"
+    }
 }
 
 dependencies {
@@ -126,9 +133,10 @@ dependencies {
     compile 'com.mashape.unirest:unirest-java:1.4.7'
 
     //Audio Support
-    compile 'com.googlecode.soundlibs:mp3spi:1.9.5-1'
-    compile 'com.googlecode.soundlibs:tritonus-share:0.3.7-2'
-    compile 'tritonus:tritonus-dsp:0.3.6'
+    compile 'com.googlecode.soundlibs:tritonus-share:0.3.7-2'   //Shared code
+    compile 'com.googlecode.soundlibs:mp3spi:1.9.5-1'           //MP3 support
+    compile 'tritonus:tritonus-dsp:0.3.6'                       //Volume control
+    compile 'net.sourceforge.jaadec:jaad:0.8.4'                 //AAC support
 }
 
 class Version {

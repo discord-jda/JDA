@@ -174,7 +174,8 @@ public class ServiceUtil
                     "javazoom.spi.mpeg.sampled.file.MpegAudioFileReader",               //MP3-SPI
                     "org.tritonus.sampled.file.AuAudioFileReader",                      //Tritonus_Remaining
                     "org.tritonus.sampled.file.WaveAudioFileReader",                    //Tritonus_Remaining
-                    "org.tritonus.sampled.file.AiffAudioFileReader"                     //Tritonus_Remaining
+                    "org.tritonus.sampled.file.AiffAudioFileReader",                    //Tritonus_Remaining
+                    "net.sourceforge.jaad.spi.javasound.AACAudioFileReader"             //JAAD
                 )
             )
         );
