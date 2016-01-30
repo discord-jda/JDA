@@ -339,4 +339,10 @@ public class GuildImpl implements Guild
     {
         return getId().hashCode();
     }
+
+    @Override
+    public String toString()
+    {
+        return "G:" + getName() + '(' + getId() + ')';
+    }
 }

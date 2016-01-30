@@ -74,19 +74,4 @@ public class SelfInfoImpl extends UserImpl implements SelfInfo
     {
         return mutedChannels;
     }
-
-    @Override
-    public boolean equals(Object o)
-    {
-        if (!(o instanceof SelfInfo))
-            return false;
-        SelfInfo oSelfInfo = (SelfInfo) o;
-        return this == oSelfInfo || this.getId().equals(oSelfInfo.getId());
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return getId().hashCode();
-    }
 }

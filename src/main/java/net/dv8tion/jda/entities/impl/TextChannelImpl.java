@@ -321,6 +321,12 @@ public class TextChannelImpl implements TextChannel
         return getId().hashCode();
     }
 
+    @Override
+    public String toString()
+    {
+        return "TC:" + getName() + '(' + getId() + ')';
+    }
+
     public static class AsyncMessageSender
     {
         private static final Map<JDA, AsyncMessageSender> instances = new HashMap<>();

@@ -213,4 +213,10 @@ public class VoiceChannelImpl implements VoiceChannel
     {
         return getId().hashCode();
     }
+
+    @Override
+    public String toString()
+    {
+        return "VC:" + getName() + '(' + getId() + ')';
+    }
 }

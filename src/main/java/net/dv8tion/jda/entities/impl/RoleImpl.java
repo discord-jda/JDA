@@ -162,4 +162,9 @@ public class RoleImpl implements net.dv8tion.jda.entities.Role
         return getId().hashCode();
     }
 
+    @Override
+    public String toString()
+    {
+        return "R:" + getName() + '(' + getId() + ')';
+    }
 }

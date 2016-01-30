@@ -137,4 +137,27 @@ public class VoiceStatusImpl implements VoiceStatus
         this.suppressed = suppressed;
         return this;
     }
+
+    @Override
+    public int hashCode()
+    {
+        return guild.getId().hashCode() | user.getId().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (!(obj instanceof VoiceStatus))
+        {
+            return false;
+        }
+        VoiceStatus oStatus = (VoiceStatus) obj;
+        return this == oStatus || (this.user.equals(oStatus.getUser()) && this.guild.equals(oStatus.getGuild()));
+    }
+
+    @Override
+    public String toString()
+    {
+        return "VS:" + guild.getName() + ':' + user.getUsername();
+    }
 }

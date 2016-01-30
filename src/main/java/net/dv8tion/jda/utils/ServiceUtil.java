@@ -23,7 +23,6 @@ import javax.sound.sampled.spi.AudioFileReader;
 import javax.sound.sampled.spi.AudioFileWriter;
 import javax.sound.sampled.spi.FormatConversionProvider;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -42,9 +41,10 @@ public class ServiceUtil
     public static final Map<Class, List<String>> SERVICES;  //Populated at the bottom of this file.
     public static final String SERVICES_DIRECTORY = "META-INF/services/";
 
+    @SuppressWarnings("unchecked")
     public static void loadServices()
     {
-        File servicesJar = null;
+        File servicesJar;
         FileOutputStream fos = null;
         JarOutputStream zos = null;
 
@@ -118,23 +118,7 @@ public class ServiceUtil
                 //loader.forEach(provider -> System.out.println("  - " + provider.getClass().getName()));
             }
         }
-        catch (FileNotFoundException e)
-        {
-            e.printStackTrace();
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-        catch (NoSuchMethodException e)
-        {
-            e.printStackTrace();
-        }
-        catch (InvocationTargetException e)
-        {
-            e.printStackTrace();
-        }
-        catch (IllegalAccessException e)
+        catch (IOException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e)
         {
             e.printStackTrace();
         }
@@ -192,16 +176,16 @@ public class ServiceUtil
         );
         services.put(MidiFileWriter.class,
             Collections.unmodifiableList(
-                Arrays.asList(
-                    "org.tritonus.midi.file.StandardMidiFileWriter"                     //Tritonus_Remaining
-                )
+                    Collections.singletonList(
+                            "org.tritonus.midi.file.StandardMidiFileWriter"                     //Tritonus_Remaining
+                    )
             )
         );
         services.put(MidiFileReader.class,
             Collections.unmodifiableList(
-                Arrays.asList(
-                    "org.tritonus.midi.file.StandardMidiFileReader"                     //Tritonus_Remaining
-                )
+                    Collections.singletonList(
+                            "org.tritonus.midi.file.StandardMidiFileReader"                     //Tritonus_Remaining
+                    )
             )
         );
 

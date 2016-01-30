@@ -164,4 +164,10 @@ public class PrivateChannelImpl implements PrivateChannel
     {
         return getId().hashCode();
     }
+
+    @Override
+    public String toString()
+    {
+        return "PC:" + getUser().getUsername() + '(' + getId() + ')';
+    }
 }

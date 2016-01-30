@@ -133,4 +133,26 @@ public class PermissionOverrideImpl implements PermissionOverride
     {
         return new PermissionOverrideManager(this);
     }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof PermissionOverride))
+            return false;
+        PermissionOverride oPerm = (PermissionOverride) o;
+        return this == oPerm || ((this.user == null ? oPerm.getUser() == null : this.user.equals(oPerm.getUser()))
+                && this.channel.equals(oPerm.getChannel()) && (this.role == null ? oPerm.getRole() == null : this.role.equals(oPerm.getRole())));
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return user == null ? channel.getId().hashCode() | role.getId().hashCode() : channel.getId().hashCode() | user.getId().hashCode();
+    }
+
+    @Override
+    public String toString()
+    {
+        return "PermOverwrite";
+    }
 }

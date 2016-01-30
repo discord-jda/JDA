@@ -163,4 +163,10 @@ public class UserImpl implements User
     {
         return getId().hashCode();
     }
+
+    @Override
+    public String toString()
+    {
+        return "U:" + getUsername() + '(' + getId() + ')';
+    }
 }

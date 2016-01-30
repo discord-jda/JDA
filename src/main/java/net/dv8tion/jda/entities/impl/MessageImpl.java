@@ -251,4 +251,30 @@ public class MessageImpl implements Message
         this.attachments = attachments;
         return this;
     }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof Message))
+            return false;
+        Message oMsg = (Message) o;
+        return this == oMsg || this.getId().equals(oMsg.getId());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return getId().hashCode();
+    }
+
+    @Override
+    public String toString()
+    {
+        String content = getContent();
+        if (content.length() > 20)
+        {
+            content = content.substring(0, 17) + "...";
+        }
+        return "M:" + author.getUsername() + ':' + content + '(' + getId() + ')';
+    }
 }
