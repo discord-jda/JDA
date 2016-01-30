@@ -160,8 +160,8 @@ public class ServiceUtil
             Collections.unmodifiableList(
                 Arrays.asList(
                     "javazoom.spi.mpeg.sampled.convert.MpegFormatConversionProvider",   //MP3-SPI
-                    "org.tritonus.sampled.convert.UlawFormatConversionProvider",        //Tritonus_Remaining
-                    "org.tritonus.sampled.convert.AlawFormatConversionProvider",        //Tritonus_Remaining
+                    "org.tritonus.sampled.convert.LawEncoder",                          //Tritonus_Remaining
+                    "org.tritonus.sampled.convert.LawDecoder",                          //Tritonus_Remaining
                     "org.tritonus.sampled.convert.PCM2PCMConversionProvider",           //Tritonus_Remaining
                     "org.tritonus.sampled.convert.SampleRateConversionProvider",        //Tritonus_Remaining
                     "org.tritonus.sampled.convert.ImaAdpcmFormatConversionProvider"     //Tritonus_Remaining

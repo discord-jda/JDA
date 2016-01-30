@@ -101,8 +101,9 @@ public class AudioExample extends ListenerAdapter
                     // AudioManager. Handlers persist between audio connections. Furthermore, handler playback is also
                     // paused when a connection is severed (closeAudioConnection), however it would probably be better
                     // to pause the play back yourself before severing the connection (If you are using a player class
-                    // you could just call the pause() method.) Once again, you don't HAVE to pause before severing an
-                    // audio connection, but it probably would be good to do.
+                    // you could just call the pause() method. Otherwise, make canProvide() return false).
+                    // Once again, you don't HAVE to pause before severing an audio connection,
+                    // but it probably would be good to do.
                     event.getJDA().getAudioManager().setSendingHandler(player);
 
                     //Start playback. This will only start after the AudioConnection has completely connected.
@@ -148,6 +149,5 @@ public class AudioExample extends ListenerAdapter
             player.stop();
         if (message.equals("restart"))
             player.restart();
-
     }
 }

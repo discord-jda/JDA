@@ -19,6 +19,8 @@ tasks.eclipse.dependsOn(cleanEclipse)
 
 def filteredSourceDir = file("${buildDir}/filtered")
 
+//This is to fix eclipse's stupidity when first setting up the project.
+// It thinks that "filtered" should be a development source folder and cries when it doesn't exist (gradlew clean)
 eclipse {
     classpath {
         file {
@@ -105,14 +107,10 @@ signing {
 repositories {
     mavenCentral()
 
-    maven {
-        url "http://lius4compass.googlecode.com/svn-history/r65/maven2/"
-    }
-    
+    //Used for tritonus:tritonus-dsp:0.3.6
     maven {
         url "http://lutece.paris.fr/nexus/content/repositories/lutece_third_party/"
     }
-    
 }
 
 dependencies {
@@ -130,7 +128,6 @@ dependencies {
     //Audio Support
     compile 'com.googlecode.soundlibs:mp3spi:1.9.5-1'
     compile 'com.googlecode.soundlibs:tritonus-share:0.3.7-2'
-    compile 'org.tritonus:tritonus-remaining:0.3.6'
     compile 'tritonus:tritonus-dsp:0.3.6'
 }
 
