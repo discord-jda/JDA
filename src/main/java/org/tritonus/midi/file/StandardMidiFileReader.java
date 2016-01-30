@@ -65,10 +65,6 @@ extends MidiFileReader
 	private static final int	STATUS_SYSEX = 3;
 	private static final int	STATUS_META = 4;
 
-
-
-	/**	TODO:
-	 */
 	public MidiFileFormat getMidiFileFormat(InputStream inputStream)
 		throws InvalidMidiDataException, IOException
 	{
@@ -149,9 +145,6 @@ extends MidiFileReader
 	}
 
 
-
-	/**	TODO:
-	 */
 	public MidiFileFormat getMidiFileFormat(URL url)
 		throws InvalidMidiDataException, IOException
 	{
@@ -166,10 +159,6 @@ extends MidiFileReader
 		}
 	}
 
-
-
-	/**	TODO:
-	 */
 	public MidiFileFormat getMidiFileFormat(File file)
 		throws InvalidMidiDataException, IOException
 	{
@@ -185,10 +174,6 @@ extends MidiFileReader
 		}
 	}
 
-
-
-	/**	TODO:
-	 */
 	public Sequence getSequence(URL url)
 		throws InvalidMidiDataException, IOException
 	{
@@ -217,10 +202,6 @@ extends MidiFileReader
 		}
 	}
 
-
-
-	/**	TODO:
-	 */
 	public Sequence getSequence(File file)
 		throws InvalidMidiDataException, IOException
 	{
@@ -250,10 +231,6 @@ extends MidiFileReader
 		}
 	}
 
-
-
-	/**	TODO:
-	 */
 	public Sequence getSequence(InputStream inputStream)
 		throws InvalidMidiDataException, IOException
 	{
@@ -271,10 +248,6 @@ extends MidiFileReader
 		return sequence;
 	}
 
-
-
-	/**	TODO:
-	 */
 	private void readTrack(DataInputStream dataInputStream, Track track)
 		throws InvalidMidiDataException, IOException
 	{
@@ -310,10 +283,6 @@ extends MidiFileReader
 		}
 	}
 
-
-
-	/**	TODO:
-	 */
 	private static MidiEvent readEvent(DataInputStream dataInputStream, long[] alRemainingBytes, int[] anRunningStatusByte, long lTicks)
 		throws InvalidMidiDataException, IOException
 	{
@@ -410,11 +379,6 @@ extends MidiFileReader
 		return event;
 	}
 
-
-
-	// TODO: use table
-	/**	TODO:
-	 */
 	private static int getType(int nStatusByte)
 	{
 		if (nStatusByte < 0xf0)	// channel voice or mode command
@@ -451,10 +415,6 @@ extends MidiFileReader
 		}
 	}
 
-
-
-	/**	TODO:
-	 */
 	public static long readVariableLengthQuantity(DataInputStream dataInputStream, long[] alRemainingBytes)
 		throws InvalidMidiDataException, IOException
 	{
@@ -475,10 +435,6 @@ extends MidiFileReader
 
 	}
 
-
-
-	/**	TODO:
-	 */
 	public static int readUnsignedByte(DataInputStream dataInputStream, long[] alRemainingBytes)
 		throws IOException
 	{

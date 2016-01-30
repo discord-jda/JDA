@@ -225,10 +225,6 @@ extends TEncodingFormatConversionProvider
 	{
 		private ImaAdpcmState		m_state;
 
-
-		/**
-		 * Constructor.
-		 */
 		public DecodedImaAdpcmAudioInputStream(AudioInputStream encodedStream, AudioFormat outputFormat)
 		{
 			super(encodedStream, outputFormat);
@@ -331,26 +327,15 @@ extends TEncodingFormatConversionProvider
 			return inFrameCount;
 		}
 
-
-
-		/**
-		 */
 		protected int getSampleSizeInBytes()
 		{
 			return getFormat().getFrameSize() / getFormat().getChannels();
 		}
 
-
-
-		/** .
-		    @return .
-		*/
 		protected int getFrameSize()
 		{
 			return getFormat().getFrameSize();
 		}
-
-
 
 		/** Returns if this stream (the decoded one) is big endian.
 		    @return true if this stream is big endian.
@@ -360,9 +345,6 @@ extends TEncodingFormatConversionProvider
 			return getFormat().isBigEndian();
 		}
 	}
-
-
-
 	/**	AudioInputStream returned on encoding to IMA ADPCM.
 		An instance of this class is returned if you call
 		AudioSystem.getAudioInputStream(AudioFormat, AudioInputStream)
@@ -375,10 +357,6 @@ extends TEncodingFormatConversionProvider
 	{
 		private ImaAdpcmState		m_state;
 
-
-		/**
-		 * Constructor.
-		 */
 		public EncodedImaAdpcmAudioInputStream(AudioInputStream decodedStream, AudioFormat outputFormat)
 		{
 			super(decodedStream, outputFormat);
@@ -503,27 +481,15 @@ extends TEncodingFormatConversionProvider
 			if (TDebug.TraceAudioConverter) { TDebug.out("EncodedImaAdpcmAudioInputStream.convert(): end"); }
 			return inFrameCount;
 		}
-
-
-
-		/**
-		 */
 		protected int getSampleSizeInBytes()
 		{
 			return getFormat().getFrameSize() / getFormat().getChannels();
 		}
 
-
-
-		/** .
-		    @return .
-		*/
 		protected int getFrameSize()
 		{
 			return getFormat().getFrameSize();
 		}
-
-
 
 		/** Returns if this stream (the decoded one) is big endian.
 		    @return true if this stream is big endian.
@@ -533,8 +499,6 @@ extends TEncodingFormatConversionProvider
 			return getFormat().isBigEndian();
 		}
 	}
-
-
 
 	/** persistent state of a IMA ADPCM decoder.
 	    This state class contains the information that

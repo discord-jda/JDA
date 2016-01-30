@@ -43,12 +43,12 @@ import org.tritonus.share.sampled.convert.TSynchronousFilteredAudioInputStream;
 /**
  * This provider supports these conversions:
  * <ul>
- * <li>PCM 8 Signed -> ulaw or alaw
- * <li>PCM 8 Unsigned -> ulaw or alaw
- * <li>PCM 16 signed big endian -> ulaw or alaw
- * <li>PCM 16 signed little endian -> ulaw or alaw
- * <li>alaw -> ulaw
- * <li>ulaw -> alaw
+ * <li>PCM 8 Signed to ulaw or alaw
+ * <li>PCM 8 Unsigned to ulaw or alaw
+ * <li>PCM 16 signed big endian to ulaw or alaw
+ * <li>PCM 16 signed little endian to ulaw or alaw
+ * <li>alaw to ulaw
+ * <li>ulaw to alaw
  * </ul>
  * <p>
  * FrameRate, SampleRate, Channels CANNOT be converted.

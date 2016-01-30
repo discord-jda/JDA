@@ -52,6 +52,8 @@ public class AuAudioOutputStream extends TAudioOutputStream {
 	/**
 	* Writes a null-terminated ascii string s to f.
 	* The total number of bytes written is aligned on a 2byte boundary.
+	* @param dos data output stream
+	* @param s string to write
 	* @exception IOException Write error.
 	*/
 	protected static void writeText(TDataOutputStream dos, String s) throws IOException {
@@ -67,6 +69,8 @@ public class AuAudioOutputStream extends TAudioOutputStream {
 
 	/**
 	* Returns number of bytes that have to written for string s (with alignment)
+	* @param s string to find the length of with alignment
+	* @return number of bytes for string with alignment
 	*/
 	protected static int getTextLength(String s) {
 		if (s.length()==0) {

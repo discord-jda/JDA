@@ -45,38 +45,38 @@ import org.tritonus.share.sampled.convert.TSynchronousFilteredAudioInputStream;
 import org.tritonus.share.ArraySet;
 
 /**
- * This provider supports these PCM conversions (<--> meaning both directions):
+ * This provider supports these PCM conversions, most in both directions.
  * <ul>
- * <li>8 Signed <-> 8 unsigned
- * <li>16/24/32 Signed little endian <-> 16/24/32 Signed big endian
+ * <li>8 Signed to and from 8 unsigned
+ * <li>16/24/32 Signed little endian to and from 16/24/32 Signed big endian
  * <li>arbitrary conversion between 8/16/24/32 bit sample width<BR>
  * (up-conversion is done by adding low-byte zero(s)).
- * <li>1 channel <-> x channels
+ * <li>1 channel to and from x channels
  * </ul>
  * The class uses 2 different approaches for conversion:
  * <ol>
  * <li>Simple, often used conversions with performance-optimized methods.<br>
  * These are the following conversions:<br>
  * <ul>
- * <li>8 Signed <-> 8 unsigned
- * <li>16 signed little endian <--> 16 signed big endian
- * <li>24 signed little endian <--> 24 signed big endian
- * <li>32 signed little endian <--> 32 signed big endian
- * <li>16 signed little endian <--> 8 signed
- * <li>16 signed big endian <--> 8 signed
- * <li>16 signed little endian <--> 8 unsigned
- * <li>16 signed big endian <--> 8 unsigned
+ * <li>8 Signed to and from 8 unsigned
+ * <li>16 signed little endian to and from 16 signed big endian
+ * <li>24 signed little endian to and from 24 signed big endian
+ * <li>32 signed little endian to and from 32 signed big endian
+ * <li>16 signed little endian to and from 8 signed
+ * <li>16 signed big endian to and from 8 signed
+ * <li>16 signed little endian to and from 8 unsigned
+ * <li>16 signed big endian to and from 8 unsigned
  * </ul>
  * <br>
  * Downsampling from 16bit to 8bit is currently done using the float conversion
  * (see next point), in order to profit of dithering.
  * <li>All other conversions are done using the FloatSampleBuffer.<br>
- * Mixdown of channels (x channels -> 1 channel) is done by plainly adding all
+ * Mixdown of channels (x channels to 1 channel) is done by plainly adding all
  * channels together. Thus, up mixing and down mixing will not result in the
  * same audio, as downmixing does NOT lower the volume and clippings are very
  * probable. To avoid that, the volume of the channels should be lowered before
  * using this converter for down mixing.
- * <li>All conversions support upmixing of channels: 1 channel -> x channels.
+ * <li>All conversions support upmixing of channels: 1 channel to x channels.
  * This is done by copying the channel to the other channels <b>after</b>
  * conversion of the format (if necessary).
  * </ol>
@@ -113,10 +113,6 @@ public class PCM2PCMConversionProvider extends TSimpleFormatConversionProvider {
 			new AudioFormat(PCM_SIGNED, ALL, 32, ALL, ALL, ALL, false),
 			new AudioFormat(PCM_SIGNED, ALL, 32, ALL, ALL, ALL, true),
 	};
-
-	/**
-	 * Constructor.
-	 */
 	public PCM2PCMConversionProvider() {
 		super(Arrays.asList(OUTPUT_FORMATS), Arrays.asList(OUTPUT_FORMATS));
 	}
@@ -221,6 +217,8 @@ public class PCM2PCMConversionProvider extends TSimpleFormatConversionProvider {
 	/**
 	 * method overidden due to the difficult situation with the channel count
 	 * and the possible conversions possible.
+	 * @param targetFormat convert TO
+	 * @param sourceFormat converting FROM
 	 */
 	public boolean isConversionSupported(AudioFormat targetFormat,
 			AudioFormat sourceFormat) {
@@ -313,7 +311,7 @@ public class PCM2PCMConversionProvider extends TSimpleFormatConversionProvider {
 					|| (sourceType == LITTLE_ENDIAN32 && targetType == BIG_ENDIAN32)) {
 				return CONVERT_BYTE_ORDER32;
 				/*
-				 * downsampling is better handled with Float conversion ->
+				 * downsampling is better handled with Float conversion to
 				 * dithering } else if (sourceType==LITTLE_ENDIAN16 &&
 				 * targetType==SIGNED8) { return CONVERT_16LTO8S; } else if
 				 * (sourceType==LITTLE_ENDIAN16 && targetType==UNSIGNED8) {
@@ -335,9 +333,6 @@ public class PCM2PCMConversionProvider extends TSimpleFormatConversionProvider {
 		return CONVERT_FLOAT;
 	}
 
-	/**
-	 * Debugging function
-	 */
 	private static String formatType2Str(int formatType) {
 		switch (formatType) {
 		case 0:
@@ -362,9 +357,6 @@ public class PCM2PCMConversionProvider extends TSimpleFormatConversionProvider {
 		return "unknown";
 	}
 
-	/**
-	 * Debugging function
-	 */
 	protected static String conversionType2Str(int conversionType) {
 		switch (conversionType) {
 		case CONVERT_NOT_POSSIBLE:
@@ -715,7 +707,7 @@ public class PCM2PCMConversionProvider extends TSimpleFormatConversionProvider {
 			}
 		}
 
-		/**
+		/*
 		 * Convert this buffer. Since float buffers do not need to be PCM
 		 * converted, offset and count are ignored.
 		 */
