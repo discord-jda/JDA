@@ -84,7 +84,7 @@ public abstract class Player implements AudioSendHandler
     public void setVolume(float volume)
     {
         this.amplitude = volume;
-        if (amplitudeAudioStream!=null)
+        if (amplitudeAudioStream != null)
         {
             amplitudeAudioStream.setAmplitudeLinear(amplitude);
         }

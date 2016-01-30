@@ -176,7 +176,7 @@ public class ServiceUtil
                     "org.tritonus.sampled.file.AuAudioFileReader",                      //Tritonus_Remaining
                     "org.tritonus.sampled.file.WaveAudioFileReader",                    //Tritonus_Remaining
                     "org.tritonus.sampled.file.AiffAudioFileReader",                    //Tritonus_Remaining
-                    "net.sourceforge.jaad.spi.javasound.AACAudioFileReader",            //JAAD
+//                    "net.sourceforge.jaad.spi.javasound.AACAudioFileReader",            //JAAD
                     "org.kc7bfi.jflac.sound.spi.FlacAudioFileReader"                    //jFLAC
                 )
             )
