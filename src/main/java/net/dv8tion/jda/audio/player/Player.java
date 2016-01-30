@@ -64,9 +64,6 @@ public abstract class Player implements AudioSendHandler
                 baseFormat.isBigEndian());
         AudioInputStream pcmStream = AudioSystem.getAudioInputStream(toPCM ,inSource);
 
-        amplitudeAudioStream=new AmplitudeAudioInputStream(pcmStream);
-        amplitudeAudioStream.setAmplitudeLinear(amplitude);
-        
         //Then resamples to a sample rate of 48000hz and ensures that data is Big Endian.
         audioFormat = new AudioFormat(
                 toPCM.getEncoding(),
@@ -74,14 +71,21 @@ public abstract class Player implements AudioSendHandler
                 toPCM.getSampleSizeInBits(),
                 toPCM.getChannels(),
                 toPCM.getFrameSize(),
-                toPCM.getFrameRate(),
+                AudioConnection.OPUS_SAMPLE_RATE,
                 true);
+
+        //Used to control volume
+        amplitudeAudioStream = new AmplitudeAudioInputStream(pcmStream);
+        amplitudeAudioStream.setAmplitudeLinear(amplitude);
+
         audioSource = AudioSystem.getAudioInputStream(audioFormat, amplitudeAudioStream);
     }
 
-    public void setVolume(float volume) {
-        this.amplitude=volume;
-        if (amplitudeAudioStream!=null) {
+    public void setVolume(float volume)
+    {
+        this.amplitude = volume;
+        if (amplitudeAudioStream!=null)
+        {
             amplitudeAudioStream.setAmplitudeLinear(amplitude);
         }
     }
