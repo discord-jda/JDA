@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import net.dv8tion.jda.JDA;
+
 import net.dv8tion.jda.JDABuilder;
 import net.dv8tion.jda.events.channel.text.*;
 import net.dv8tion.jda.events.channel.voice.*;
 import net.dv8tion.jda.hooks.ListenerAdapter;
-import org.json.JSONObject;
 
 import javax.security.auth.login.LoginException;
 
@@ -26,12 +25,11 @@ public class ChannelListenerExample extends ListenerAdapter
 {
     public static void main(String[] args)
     {
-        JSONObject config = ExampleUtils.getConfig();
         try
         {
-            JDA api = new JDABuilder()
-                    .setEmail(config.getString("email"))
-                    .setPassword(config.getString("password"))
+            new JDABuilder()
+                    .setEmail("EMAIL")
+                    .setPassword("PASSWORD")
                     .addListener(new ChannelListenerExample())
                     .buildAsync();
         }

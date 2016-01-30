@@ -21,7 +21,6 @@ import net.dv8tion.jda.audio.player.Player;
 import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.hooks.ListenerAdapter;
-import org.json.JSONObject;
 
 import javax.security.auth.login.LoginException;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -36,12 +35,11 @@ public class AudioExample extends ListenerAdapter
 
     public static void main(String[] args)
     {
-        JSONObject config = ExampleUtils.getConfig();
         try
         {
             JDA api = new JDABuilder()
-                    .setEmail(config.getString("email"))
-                    .setPassword(config.getString("password"))
+                    .setEmail("EMAIL")
+                    .setPassword("PASSWORD")
                     .addListener(new AudioExample())
                     .buildAsync();
         }
@@ -63,7 +61,7 @@ public class AudioExample extends ListenerAdapter
         if (message.startsWith("join "))
         {
             //Separates the name of the channel so that we can search for it
-            String chanName = message.replace("join " , "");
+            String chanName = message.substring(5);
 
             //Scans through the VoiceChannels in this Guild, looking for one with a case-insensitive matching name.
             VoiceChannel channel = event.getGuild().getVoiceChannels().stream().filter(
@@ -91,7 +89,7 @@ public class AudioExample extends ListenerAdapter
                 try
                 {
                     audioFile = new File("aac-41100.m4a");
-                    audioUrl = new URL("https://dl.dropboxusercontent.com/u/41124983/anime-48000.mp3?dl=1");
+//                    audioUrl = new URL("https://dl.dropboxusercontent.com/u/41124983/anime-48000.mp3?dl=1");
 
                     player = new FilePlayer(audioFile);
 //                    player = new URLPlayer(event.getJDA(), audioUrl);
@@ -143,11 +141,14 @@ public class AudioExample extends ListenerAdapter
             return;
         }
 
-        if (message.equals("pause"))
-            player.pause();
-        if (message.equals("stop"))
-            player.stop();
-        if (message.equals("restart"))
-            player.restart();
+        if (player != null)
+        {
+            if (message.equals("pause"))
+                player.pause();
+            if (message.equals("stop"))
+                player.stop();
+            if (message.equals("restart"))
+                player.restart();
+        }
     }
 }
