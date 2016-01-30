@@ -245,7 +245,12 @@ public class AudioManager
             //Of course, when JDA is compiled that just becomes /opus/
             lib = "/opus/" + Platform.RESOURCE_PREFIX;
             if (lib.contains("win"))
+            {
+                //windows server doesn't return -32 or -64
+                if (lib.endsWith("x86"))
+                    lib += "-32";
                 lib += "/opus.dll";
+            }
             else if (lib.contains("darwin"))
                 lib += "/libopus.dylib";
             else if (lib.contains("linux"))
