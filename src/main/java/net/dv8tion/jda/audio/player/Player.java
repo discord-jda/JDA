@@ -60,7 +60,7 @@ public abstract class Player implements AudioSendHandler
                 baseFormat.getChannels(),
                 //If we are given a frame size, use it. Otherwise, assume 16 bits (2 8bit shorts) per channel.
                 baseFormat.getFrameSize() != -1 ? baseFormat.getFrameSize() : 2 * baseFormat.getChannels(),
-                baseFormat.getFrameRate(),
+                baseFormat.getFrameRate() != -1 ? baseFormat.getFrameRate() : baseFormat.getSampleRate(),
                 baseFormat.isBigEndian());
         AudioInputStream pcmStream = AudioSystem.getAudioInputStream(toPCM ,inSource);
 

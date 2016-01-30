@@ -164,7 +164,8 @@ public class ServiceUtil
                     "org.tritonus.sampled.convert.LawDecoder",                          //Tritonus_Remaining
                     "org.tritonus.sampled.convert.PCM2PCMConversionProvider",           //Tritonus_Remaining
                     "org.tritonus.sampled.convert.SampleRateConversionProvider",        //Tritonus_Remaining
-                    "org.tritonus.sampled.convert.ImaAdpcmFormatConversionProvider"     //Tritonus_Remaining
+                    "org.tritonus.sampled.convert.ImaAdpcmFormatConversionProvider",     //Tritonus_Remaining
+                    "org.kc7bfi.jflac.sound.spi.FlacFormatConversionProvider"            //jFLAC
                 )
             )
         );
@@ -175,7 +176,8 @@ public class ServiceUtil
                     "org.tritonus.sampled.file.AuAudioFileReader",                      //Tritonus_Remaining
                     "org.tritonus.sampled.file.WaveAudioFileReader",                    //Tritonus_Remaining
                     "org.tritonus.sampled.file.AiffAudioFileReader",                    //Tritonus_Remaining
-                    "net.sourceforge.jaad.spi.javasound.AACAudioFileReader"             //JAAD
+                    "net.sourceforge.jaad.spi.javasound.AACAudioFileReader",            //JAAD
+                    "org.kc7bfi.jflac.sound.spi.FlacAudioFileReader"                    //jFLAC
                 )
             )
         );
