@@ -223,3 +223,8 @@ compileJava.dependsOn processVersion
 
 //Creates the w/ dependencies jar.
 uploadArchives.dependsOn fatJar
+
+//If we don't have the username and password for uploading, we probably also
+// cant sign the archives, so skip these tasks.
+signArchives.onlyIf { !ossrhUsername.isEmpty() && !ossrhPassword.isEmpty() }
+uploadArchives.onlyIf {!ossrhUsername.isEmpty() && !ossrhPassword.isEmpty() }
