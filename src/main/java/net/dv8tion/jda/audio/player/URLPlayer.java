@@ -35,6 +35,11 @@ import java.net.URLConnection;
  */
 public class URLPlayer extends Player
 {
+    /**
+     * The default buffer size. Currently {@value #DEFAULT_BUFFER_SIZE}.
+     */
+    public static final int DEFAULT_BUFFER_SIZE = 8192;
+
     protected final JDA api;
     protected String userAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.80 Safari/537.36 " + Requester.USER_AGENT;
     protected URL urlOfResource = null;
@@ -45,17 +50,54 @@ public class URLPlayer extends Player
     protected boolean paused = false;
     protected boolean stopped = true;
 
+    /**
+     * Creates a new {@link URLPlayer}.
+     * 
+     * @param api
+     *        The JDA instance
+     */
     public URLPlayer(JDA api)
     {
         this.api = api;
     }
+
+    /**
+     * Creates a new {@link net.dv8tion.jda.audio.player.URLPlayer URLPlayer} with the given {@link java.net.URL URL} as resource. <br>
+     * Same as {@link URLPlayer#URLPlayer(JDA, URL, int)} using the {@link #DEFAULT_BUFFER_SIZE} of {@value #DEFAULT_BUFFER_SIZE}.
+     * 
+     * @param api
+     *        The JDA instance
+     * @param urlOfResource
+     *        The URL of the resource
+     */
     public URLPlayer(JDA api, URL urlOfResource) throws IOException, UnsupportedAudioFileException
     {
         this.api = api;
         setAudioUrl(urlOfResource);
     }
 
+    /**
+     * Creates a new {@link net.dv8tion.jda.audio.player.URLPlayer URLPlayer} with the given {@link java.net.URL URL} as resource and a buffer with the given size.
+     * 
+     * @param api
+     *        The JDA instance
+     * @param urlOfResource
+     *        The URL of the resource
+     * @param bufferSize
+     *        The buffer size in bytes
+     */
+    public URLPlayer(JDA api, URL urlOfResource, int bufferSize) throws IOException, UnsupportedAudioFileException
+    {
+        this.api = api;
+        setAudioUrl(urlOfResource, bufferSize);
+    }
+
     public void setAudioUrl(URL urlOfResource) throws IOException, UnsupportedAudioFileException
+    {
+        setAudioUrl(urlOfResource, DEFAULT_BUFFER_SIZE);
+    }
+
+    public void setAudioUrl(URL urlOfResource, int bufferSize) throws IOException, UnsupportedAudioFileException
     {
         if (urlOfResource == null)
             throw new IllegalArgumentException("A null URL was provided to the Player! Cannot find resource to play from a null URL!");
@@ -78,7 +120,7 @@ public class URLPlayer extends Player
 
         conn.setRequestProperty("user-agent", userAgent);
         this.resourceStream = conn.getInputStream();
-        bufferedResourceStream=new BufferedInputStream(resourceStream);
+        bufferedResourceStream = new BufferedInputStream(resourceStream, bufferSize);
         setAudioSource(AudioSystem.getAudioInputStream(bufferedResourceStream));
     }
 
