@@ -17,13 +17,11 @@ package net.dv8tion.jda.audio.player;
 
 import net.dv8tion.jda.audio.AudioConnection;
 import net.dv8tion.jda.audio.AudioSendHandler;
+import org.tritonus.dsp.ais.AmplitudeAudioInputStream;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
-
-import org.tritonus.dsp.ais.AmplitudeAudioInputStream;
-
 import java.io.IOException;
 
 public abstract class Player implements AudioSendHandler
@@ -49,6 +47,13 @@ public abstract class Player implements AudioSendHandler
     {
         if (inSource == null)
             throw new IllegalArgumentException("Cannot create an audio player from a null AudioInputStream!");
+
+        if (audioSource != null)
+        {
+            try{
+                audioSource.close();
+            } catch(Exception ignored) {}
+        }
 
         AudioFormat baseFormat = inSource.getFormat();
 
@@ -114,6 +119,7 @@ public abstract class Player implements AudioSendHandler
             else
             {
                 stop();
+                audioSource.close();
                 return null;
             }
         }
