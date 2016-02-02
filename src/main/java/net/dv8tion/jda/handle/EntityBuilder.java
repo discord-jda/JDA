@@ -300,7 +300,8 @@ public class EntityBuilder
                     jsonAttachment.getString("filename"),
                     jsonAttachment.getInt("size"),
                     jsonAttachment.has("height") ? jsonAttachment.getInt("height") : 0,
-                    jsonAttachment.has("width") ? jsonAttachment.getInt("width") : 0
+                    jsonAttachment.has("width") ? jsonAttachment.getInt("width") : 0,
+                    api
             ));
         }
         message.setAttachments(attachments);
