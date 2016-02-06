@@ -85,6 +85,8 @@ public class EntityBuilder
             JSONArray members = guild.getJSONArray("members");
             Map<String, Role> rolesMap = guildObj.getRolesMap();
             Map<User, List<Role>> userRoles = guildObj.getUserRoles();
+            Map<User, VoiceStatus> voiceStatusMap = guildObj.getVoiceStatusMap();
+            Map<User, OffsetDateTime> joinedAtMap = guildObj.getJoinedAtMap();
             for (int i = 0; i < members.length(); i++)
             {
                 JSONObject member = members.getJSONObject(i);
@@ -99,7 +101,8 @@ public class EntityBuilder
                 VoiceStatusImpl voiceStatus = new VoiceStatusImpl(user, guildObj);
                 voiceStatus.setServerDeaf(member.getBoolean("deaf"));
                 voiceStatus.setServerMute(member.getBoolean("mute"));
-                guildObj.getVoiceStatusMap().put(user, voiceStatus);
+                voiceStatusMap.put(user, voiceStatus);
+                joinedAtMap.put(user, OffsetDateTime.parse(member.getString("joined_at")));
             }
         }
 

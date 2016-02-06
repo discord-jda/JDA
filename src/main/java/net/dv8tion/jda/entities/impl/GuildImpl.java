@@ -28,6 +28,7 @@ import net.dv8tion.jda.managers.RoleManager;
 import net.dv8tion.jda.utils.PermissionUtil;
 import org.json.JSONObject;
 
+import java.time.OffsetDateTime;
 import java.util.*;
 
 public class GuildImpl implements Guild
@@ -44,6 +45,7 @@ public class GuildImpl implements Guild
     private final Map<User, List<Role>> userRoles = new HashMap<>();
     private final Map<String, Role> roles = new HashMap<>();
     private final Map<User, VoiceStatus> voiceStatusMap = new HashMap<>();
+    private final Map<User, OffsetDateTime> joinedAtMap = new HashMap<>();
     private Role publicRole;
     private final JDAImpl api;
     private boolean available;
@@ -229,6 +231,12 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    public OffsetDateTime getJoinDateForUser(User user)
+    {
+        return joinedAtMap.get(user);
+    }
+
+    @Override
     public GuildManager getManager()
     {
         return new GuildManager(this);
@@ -317,6 +325,11 @@ public class GuildImpl implements Guild
     public Map<User, VoiceStatus> getVoiceStatusMap()
     {
         return voiceStatusMap;
+    }
+
+    public Map<User, OffsetDateTime> getJoinedAtMap()
+    {
+        return joinedAtMap;
     }
 
     public GuildImpl setAvailable(boolean available)

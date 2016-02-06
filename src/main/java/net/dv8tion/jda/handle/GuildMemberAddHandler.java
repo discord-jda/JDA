@@ -21,6 +21,7 @@ import net.dv8tion.jda.entities.impl.*;
 import net.dv8tion.jda.events.guild.member.GuildMemberJoinEvent;
 import org.json.JSONObject;
 
+import java.time.OffsetDateTime;
 import java.util.LinkedList;
 
 public class GuildMemberAddHandler extends SocketHandler
@@ -44,7 +45,8 @@ public class GuildMemberAddHandler extends SocketHandler
         }
         guild.getUserRoles().put(user, new LinkedList<>());
         VoiceStatusImpl voiceStatus = new VoiceStatusImpl(user, guild);
-        ((GuildImpl) guild).getVoiceStatusMap().put(user, voiceStatus);
+        guild.getVoiceStatusMap().put(user, voiceStatus);
+        guild.getJoinedAtMap().put(user, OffsetDateTime.parse(content.getString("joined_at")));
         api.getEventManager().handle(
                 new GuildMemberJoinEvent(
                         api, responseNumber,
