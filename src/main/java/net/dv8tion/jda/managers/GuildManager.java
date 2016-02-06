@@ -31,9 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Manager used to modify aspects of a {@link net.dv8tion.jda.entities.Guild Guild}.
@@ -90,6 +88,9 @@ public class GuildManager
     private Region region = null;
     private AvatarUtil.Avatar icon = null;
     private String afkChannelId;
+
+    private final Map<User, Set<Role>> addedRoles = new HashMap<>();
+    private final Map<User, Set<Role>> removedRoles = new HashMap<>();
 
     /**
      * Creates a {@link net.dv8tion.jda.managers.GuildManager} that can be used to manage
@@ -269,6 +270,103 @@ public class GuildManager
     }
 
     /**
+     * Gives the {@link net.dv8tion.jda.entities.User User} the specified {@link net.dv8tion.jda.entities.Role Role}.<br>
+     * If the {@link net.dv8tion.jda.entities.User User} already has the provided {@link net.dv8tion.jda.entities.Role Role}
+     * this method will do nothing.
+     *
+     * This change will only be applied, if {@link #update()} is called.
+     * So multiple changes can be made at once.
+     *
+     * @param user
+     *          The {@link net.dv8tion.jda.entities.User User} that is gaining a new {@link net.dv8tion.jda.entities.Role Role}.
+     * @param roles
+     *          The {@link net.dv8tion.jda.entities.Role Roles} that are being assigned to the {@link net.dv8tion.jda.entities.User User}.
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
+     */
+    public void addRoleToUser(User user, Role... roles)
+    {
+        if (!guild.isAvailable())
+        {
+            throw new GuildUnavailableException();
+        }
+        checkPermission(Permission.MANAGE_ROLES);
+
+        Set<Role> addRoles = addedRoles.get(user);
+        if (addRoles == null)
+        {
+            addRoles = new HashSet<>();
+            addedRoles.put(user, addRoles);
+        }
+        Set<Role> removeRoles = removedRoles.get(user);
+        if (removeRoles == null)
+        {
+            removeRoles = new HashSet<>();
+            removedRoles.put(user, removeRoles);
+        }
+        for (Role role : roles)
+        {
+            if(guild.getPublicRole().equals(role))
+                return;
+
+            if (removeRoles.contains(role))
+                removeRoles.remove(role);
+
+            addRoles.add(role);
+        }
+    }
+
+    /**
+     * Removes the specified {@link net.dv8tion.jda.entities.Role Role} from the {@link net.dv8tion.jda.entities.User User}.<br>
+     * If the {@link net.dv8tion.jda.entities.User User} does not have the specified {@link net.dv8tion.jda.entities.Role Role}
+     * this method will do nothing.
+     *
+     * This change will only be applied, if {@link #update()} is called.
+     * So multiple changes can be made at once.
+     *
+     * <b>NOTE:</b> you cannot remove the {@link net.dv8tion.jda.entities.Guild Guild} public role from a {@link net.dv8tion.jda.entities.User User}.
+     * Attempting to do so will result in nothing happening.
+     *
+     * @param user
+     *          The {@link net.dv8tion.jda.entities.User User} that is having a {@link net.dv8tion.jda.entities.Role Role} removed.
+     * @param roles
+     *           The {@link net.dv8tion.jda.entities.Role Roles} that are being removed from the {@link net.dv8tion.jda.entities.User User}.
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
+     */
+    public void removeRoleFromUser(User user, Role... roles)
+    {
+        if (!guild.isAvailable())
+        {
+            throw new GuildUnavailableException();
+        }
+        checkPermission(Permission.MANAGE_ROLES);
+
+        Set<Role> addRoles = addedRoles.get(user);
+        if (addRoles == null)
+        {
+            addRoles = new HashSet<>();
+            addedRoles.put(user, addRoles);
+        }
+        Set<Role> removeRoles = removedRoles.get(user);
+        if (removeRoles == null)
+        {
+            removeRoles = new HashSet<>();
+            removedRoles.put(user, removeRoles);
+        }
+        for (Role role : roles)
+        {
+            if(guild.getPublicRole().equals(role))
+                return;
+
+            if (addRoles.contains(role))
+                addRoles.remove(role);
+
+            removeRoles.add(role);
+        }
+    }
+
+    /**
      * This method will apply all accumulated changes received by setters
      *
      * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
@@ -280,20 +378,46 @@ public class GuildManager
         {
             throw new GuildUnavailableException();
         }
-        checkPermission(Permission.MANAGE_SERVER);
 
-        JSONObject frame = getFrame();
-        if(name != null)
-            frame.put("name", name);
-        if(region != null)
-            frame.put("region", region.getKey());
-        if(timeout != null)
-            frame.put("afk_timeout", timeout.getSeconds());
-        if(icon != null)
-            frame.put("icon", icon == AvatarUtil.DELETE_AVATAR ? JSONObject.NULL : icon.getEncoded());
-        if(!StringUtils.equals(afkChannelId, guild.getAfkChannelId()))
-            frame.put("afk_channel_id", afkChannelId == null ? JSONObject.NULL : afkChannelId);
-        update(frame);
+        if (name != null || region != null || timeout != null || icon != null || !StringUtils.equals(afkChannelId, guild.getAfkChannelId()))
+        {
+            checkPermission(Permission.MANAGE_SERVER);
+
+            JSONObject frame = getFrame();
+            if(name != null)
+                frame.put("name", name);
+            if(region != null)
+                frame.put("region", region.getKey());
+            if(timeout != null)
+                frame.put("afk_timeout", timeout.getSeconds());
+            if(icon != null)
+                frame.put("icon", icon == AvatarUtil.DELETE_AVATAR ? JSONObject.NULL : icon.getEncoded());
+            if(!StringUtils.equals(afkChannelId, guild.getAfkChannelId()))
+                frame.put("afk_channel_id", afkChannelId == null ? JSONObject.NULL : afkChannelId);
+            update(frame);
+        }
+
+        if (addedRoles.size() > 0)
+        {
+            checkPermission(Permission.MANAGE_ROLES);
+
+            for (User user : addedRoles.keySet())
+            {
+                List<Role> roles = guild.getRolesForUser(user);
+                List<String> roleIds = new LinkedList<>();
+                roles.forEach(r -> roleIds.add(r.getId()));
+
+                addedRoles.get(user).stream().filter(role -> !roleIds.contains(role.getId())).forEach(role -> roleIds.add(role.getId()));
+                removedRoles.get(user).stream().filter(role -> roleIds.contains(role.getId())).forEach(role -> roleIds.remove(role.getId()));
+
+                ((JDAImpl) guild.getJDA()).getRequester().patch(
+                        "https://discordapp.com/api/guilds/" + guild.getId() + "/members/" + user.getId(),
+                        new JSONObject().put("roles", roleIds));
+
+            }
+            addedRoles.clear();
+            removedRoles.clear();
+        }
     }
 
     /**
@@ -456,78 +580,6 @@ public class GuildManager
 
         ((JDAImpl) guild.getJDA()).getRequester().delete("https://discordapp.com/api/guilds/"
                 + guild.getId() + "/bans/" + userId);
-    }
-
-    /**
-     * Gives the {@link net.dv8tion.jda.entities.User User} the specified {@link net.dv8tion.jda.entities.Role Role}.<br>
-     * If the {@link net.dv8tion.jda.entities.User User} already has the provided {@link net.dv8tion.jda.entities.Role Role}
-     * this method will do nothing.
-     * This change will be applied immediately.
-     *
-     * @param user
-     *          The {@link net.dv8tion.jda.entities.User User} that is gaining a new {@link net.dv8tion.jda.entities.Role Role}.
-     * @param role
-     *          The {@link net.dv8tion.jda.entities.Role Role} that is being assigned to the {@link net.dv8tion.jda.entities.User User}.
-     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
-     *      if the guild is temporarily unavailable
-     */
-    public void addRoleToUser(User user, Role role)
-    {
-        if (!guild.isAvailable())
-        {
-            throw new GuildUnavailableException();
-        }
-        checkPermission(Permission.MANAGE_ROLES);
-
-        List<Role> roles = guild.getRolesForUser(user);
-        if(guild.getPublicRole().equals(role) || roles.contains(role))
-            return;
-
-        List<String> roleIds = new LinkedList<>();
-        roles.forEach(r -> roleIds.add(r.getId()));
-        roleIds.add(role.getId());
-        ((JDAImpl) guild.getJDA()).getRequester().patch(
-                "https://discordapp.com/api/guilds/" + guild.getId() + "/members/" + user.getId(),
-                new JSONObject().put("roles", roleIds));
-    }
-
-    /**
-     * Removes the specified {@link net.dv8tion.jda.entities.Role Role} from the {@link net.dv8tion.jda.entities.User User}.<br>
-     * If the {@link net.dv8tion.jda.entities.User User} does not have the specified {@link net.dv8tion.jda.entities.Role Role}
-     * this method will do nothing.
-     * This change will be applied immediately.
-     * <p>
-     * <b>NOTE:</b> you cannot remove the {@link net.dv8tion.jda.entities.Guild Guild} public role from a {@link net.dv8tion.jda.entities.User User}.
-     * Attempting to do so will result in nothing happening.
-     *
-     * @param user
-     *          The {@link net.dv8tion.jda.entities.User User} that is having a {@link net.dv8tion.jda.entities.Role Role} removed.
-     * @param role
-     *           The {@link net.dv8tion.jda.entities.Role Role} that is being removed from the {@link net.dv8tion.jda.entities.User User}.
-     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
-     *      if the guild is temporarily unavailable
-     */
-    public void removeRoleFromUser(User user, Role role)
-    {
-        if (!guild.isAvailable())
-        {
-            throw new GuildUnavailableException();
-        }
-        checkPermission(Permission.MANAGE_ROLES);
-
-        List<Role> roles = guild.getRolesForUser(user);
-        if(guild.getPublicRole().getId().equals(role.getId()) || !roles.contains(role))
-            return;
-
-        List<String> roleIds = new LinkedList<>();
-        roles.forEach(r ->
-        {
-            if (!r.getId().equals(role.getId()))
-                roleIds.add(r.getId());
-        });
-        ((JDAImpl) guild.getJDA()).getRequester().patch(
-                "https://discordapp.com/api/guilds/" + guild.getId() + "/members/" + user.getId(),
-                new JSONObject().put("roles", roleIds));
     }
 
     /**
