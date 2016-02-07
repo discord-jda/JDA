@@ -17,6 +17,7 @@ package net.dv8tion.jda.events.message;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.entities.MessageChannel;
 import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.events.Event;
@@ -38,6 +39,11 @@ public class MessageDeleteEvent extends Event
     public String getMessageId()
     {
         return messageId;
+    }
+
+    public MessageChannel getChannel()
+    {
+        return isPrivate ? getPrivateChannel() : getTextChannel();
     }
 
     public TextChannel getTextChannel()

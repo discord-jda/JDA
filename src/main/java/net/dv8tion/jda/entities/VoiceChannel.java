@@ -22,4 +22,9 @@ package net.dv8tion.jda.entities;
  */
 public interface VoiceChannel extends Channel
 {
+    /**
+     * Internal implementation of this class is available at
+     * {@link net.dv8tion.jda.entities.impl.VoiceChannelImpl TextChannelImpl}.<br>
+     * Note: Internal implementation should not be used directly.
+     */
 }

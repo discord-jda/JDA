@@ -16,10 +16,7 @@
 package net.dv8tion.jda.events.message;
 
 import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.entities.Guild;
-import net.dv8tion.jda.entities.MessageEmbed;
-import net.dv8tion.jda.entities.PrivateChannel;
-import net.dv8tion.jda.entities.TextChannel;
+import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.events.Event;
 
 import java.util.List;
@@ -53,6 +50,11 @@ public class MessageEmbedEvent extends Event
     public PrivateChannel getPrivateChannel()
     {
         return getJDA().getPrivateChannelById(channelId);
+    }
+
+    public MessageChannel getChannel()
+    {
+        return isPrivate ? getPrivateChannel() : getTextChannel();
     }
 
     public Guild getGuild()

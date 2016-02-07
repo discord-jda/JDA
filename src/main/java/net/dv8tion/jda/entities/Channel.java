@@ -22,6 +22,9 @@ import net.dv8tion.jda.managers.PermissionOverrideManager;
 
 import java.util.List;
 
+/**
+ * Represents a {@link net.dv8tion.jda.entities.Guild Guild} channel.
+ */
 public interface Channel
 {
     /**
