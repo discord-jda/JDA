@@ -15,9 +15,6 @@
  */
 package net.dv8tion.jda.entities;
 
-import java.io.File;
-import java.util.function.Consumer;
-
 /**
  * Represents a Discord Text Channel. See {@link net.dv8tion.jda.entities.Channel Channel} and
  * {@link net.dv8tion.jda.entities.MessageChannel MessageChannel} for more information.

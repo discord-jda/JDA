@@ -148,14 +148,20 @@ public class AudioWebSocket extends WebSocketAdapter
             }
             case HEARTBEAT_PING_RETURN:
             {
-                long timePingSent  = contentAll.getLong("d");
-                long ping = System.currentTimeMillis() - timePingSent;
-                System.out.println("ping: " + ping + "ms");
+                if (api.isDebug())
+                {
+                    long timePingSent  = contentAll.getLong("d");
+                    long ping = System.currentTimeMillis() - timePingSent;
+                    System.out.println("ping: " + ping + "ms");
+                }
                 break;
             }
             case CONNECTING_COMPLETED:
             {
-                System.out.println("Audio connection has finished connecting!");
+                if (api.isDebug())
+                {
+                    System.out.println("Audio connection has finished connecting!");
+                }
                 ready = true;
                 break;
             }
@@ -173,10 +179,13 @@ public class AudioWebSocket extends WebSocketAdapter
                     return;
                 }
 
-                if (speaking)
-                    System.out.println(user.getUsername() + " started transmitting audio.");    //Replace with event.
-                else
-                    System.out.println(user.getUsername() + " stopped transmitting audio.");    //Replace with event.
+                if (api.isDebug())
+                {
+                    if (speaking)
+                        System.out.println(user.getUsername() + " started transmitting audio.");    //Replace with event.
+                    else
+                        System.out.println(user.getUsername() + " stopped transmitting audio.");    //Replace with event.
+                }
                 break;
             }
             default:
@@ -187,10 +196,13 @@ public class AudioWebSocket extends WebSocketAdapter
     @Override
     public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer)
     {
-        System.out.println("The Audio connection was closed!");
-        System.out.println("By remote? " + closedByServer);
-        System.out.println("Reason: " + serverCloseFrame.getCloseReason());
-        System.out.println("Close code: " + serverCloseFrame.getCloseCode());
+        if (api.isDebug())
+        {
+            System.out.println("The Audio connection was closed!");
+            System.out.println("By remote? " + closedByServer);
+            System.out.println("Reason: " + serverCloseFrame.getCloseReason());
+            System.out.println("Close code: " + serverCloseFrame.getCloseCode());
+        }
         this.close();
     }
 
