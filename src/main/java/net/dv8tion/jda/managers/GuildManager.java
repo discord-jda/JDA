@@ -281,10 +281,12 @@ public class GuildManager
      *          The {@link net.dv8tion.jda.entities.User User} that is gaining a new {@link net.dv8tion.jda.entities.Role Role}.
      * @param roles
      *          The {@link net.dv8tion.jda.entities.Role Roles} that are being assigned to the {@link net.dv8tion.jda.entities.User User}.
+     * @return
+     *          This {@link net.dv8tion.jda.managers.GuildManager GuildManager} instance. Useful for chaining.
      * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
      *      if the guild is temporarily unavailable
      */
-    public void addRoleToUser(User user, Role... roles)
+    public GuildManager addRoleToUser(User user, Role... roles)
     {
         if (!guild.isAvailable())
         {
@@ -307,13 +309,14 @@ public class GuildManager
         for (Role role : roles)
         {
             if(guild.getPublicRole().equals(role))
-                return;
+                return this;
 
             if (removeRoles.contains(role))
                 removeRoles.remove(role);
 
             addRoles.add(role);
         }
+        return this;
     }
 
     /**
@@ -330,11 +333,13 @@ public class GuildManager
      * @param user
      *          The {@link net.dv8tion.jda.entities.User User} that is having a {@link net.dv8tion.jda.entities.Role Role} removed.
      * @param roles
-     *           The {@link net.dv8tion.jda.entities.Role Roles} that are being removed from the {@link net.dv8tion.jda.entities.User User}.
+     *          The {@link net.dv8tion.jda.entities.Role Roles} that are being removed from the {@link net.dv8tion.jda.entities.User User}.
+     * @return
+     *          This {@link net.dv8tion.jda.managers.GuildManager GuildManager} instance. Useful for chaining.
      * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
      *      if the guild is temporarily unavailable
      */
-    public void removeRoleFromUser(User user, Role... roles)
+    public GuildManager removeRoleFromUser(User user, Role... roles)
     {
         if (!guild.isAvailable())
         {
@@ -357,13 +362,14 @@ public class GuildManager
         for (Role role : roles)
         {
             if(guild.getPublicRole().equals(role))
-                return;
+                return this;
 
             if (addRoles.contains(role))
                 addRoles.remove(role);
 
             removeRoles.add(role);
         }
+        return this;
     }
 
     /**
