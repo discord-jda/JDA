@@ -114,6 +114,16 @@ public interface Message
     String getRawContent();
 
     /**
+     * The content, with all its formatting characters stripped.
+     * All remaining characters used in formatting (the ones that did not have a matching partner) are getting escaped.
+     *
+     * Mentioned users will get returned as @Username
+     *
+     * @return message-text with stripped formatting
+     */
+    String getStrippedContent();
+
+    /**
      * Checks, whether this Message was sent in a {@link net.dv8tion.jda.entities.PrivateChannel PrivateChannel} (Private Message),
      * or in a {@link net.dv8tion.jda.entities.TextChannel TextChannel} (sent in Guild channel)
      *
