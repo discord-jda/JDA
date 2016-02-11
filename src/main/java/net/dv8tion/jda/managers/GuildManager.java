@@ -17,10 +17,7 @@ package net.dv8tion.jda.managers;
 
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.Region;
-import net.dv8tion.jda.entities.Guild;
-import net.dv8tion.jda.entities.Role;
-import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.entities.VoiceChannel;
+import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.entities.impl.UserImpl;
 import net.dv8tion.jda.exceptions.GuildUnavailableException;
@@ -424,6 +421,61 @@ public class GuildManager
             addedRoles.clear();
             removedRoles.clear();
         }
+    }
+
+    /**
+     * Used to move a {@link net.dv8tion.jda.entities.User User} from one {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel}
+     * to another {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel}.<br>
+     * As a note, you cannot move a User that isn't already in a VoiceChannel. Also they must be in a VoiceChannel
+     * in the same Guild as the one that you are moving them to.
+     *
+     * @param user
+     *          The {@link net.dv8tion.jda.entities.User User} that you are moving.
+     * @param voiceChannel
+     *          The destination {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} to which the user is being
+     *          moved to.
+     * @throws java.lang.IllegalStateException
+     *          If the User isn't currently in a VoiceChannel in this Guild.
+     * @throws java.lang.IllegalArgumentException
+     *          <ul>
+     *              <li>If the provided User is null.</li>
+     *              <li>If the provided VoiceChannel is null.</li>
+     *              <li>If the provided VoiceChannel isn't part of this {@link net.dv8tion.jda.entities.Guild Guild}</li>
+     *          </ul>
+     * @throws net.dv8tion.jda.exceptions.PermissionException
+     *          <ul>
+     *              <li>If this account doesn't have {@link Permission#VOICE_MOVE_OTHERS} in the VoiceChannel that
+     *                  the User is currently in.</li>
+     *              <li>If this account <b>AND</b> the User being moved don't have
+     *                  {@link Permission#VOICE_CONNECT} for the destination VoiceChannel.</li>
+     *          </ul>
+     */
+    public void moveVoiceUser(User user, VoiceChannel voiceChannel)
+    {
+        if (user == null)
+            throw new IllegalArgumentException("Provided User was null. Cannot determine which User to move when User is null!");
+        if (voiceChannel == null)
+            throw new IllegalArgumentException("Provided VoiceChannel was null. " +
+                    "Cannot determine which channel to move the User to because VoiceChannel is null!");
+        if (!voiceChannel.getGuild().getId().equals(guild.getId()))
+            throw new IllegalArgumentException("Cannot move a User to a VoiceChannel that isn't part of this Guild!");
+
+        VoiceStatus status  = guild.getVoiceStatusOfUser(user);
+        if (!status.inVoiceChannel())
+            throw new IllegalStateException("You cannot move a User who isn't in a VoiceChannel!");
+
+        if (!PermissionUtil.checkPermission(guild.getJDA().getSelfInfo(), Permission.VOICE_MOVE_OTHERS, status.getChannel()))
+            throw new PermissionException(Permission.VOICE_MOVE_OTHERS, "This account does not have Permission to MOVE_OTHERS from the currently VoiceChannel");
+
+        if (!PermissionUtil.checkPermission(guild.getJDA().getSelfInfo(), Permission.VOICE_CONNECT, voiceChannel)
+                && !PermissionUtil.checkPermission(user, Permission.VOICE_CONNECT, voiceChannel))
+            throw new PermissionException(Permission.VOICE_CONNECT,
+                    "Neither this account nor the User that is attempting to be moved have the VOICE_CONNECT permission " +
+                            "for the destination VoiceChannel, so the move cannot be done.");
+
+        ((JDAImpl) guild.getJDA()).getRequester().patch(
+                "https://discordapp.com/api/guilds/" + guild.getId() + "/members/" + user.getId(),
+                new JSONObject().put("channel_id", voiceChannel.getId()));
     }
 
     /**
