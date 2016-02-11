@@ -22,10 +22,7 @@ import net.dv8tion.jda.entities.VoiceChannel;
 import tomp2p.opuswrapper.Opus;
 import org.json.JSONObject;
 
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.NoRouteToHostException;
-import java.net.SocketException;
+import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
@@ -106,6 +103,11 @@ public class AudioConnection
     public VoiceChannel getChannel()
     {
         return channel;
+    }
+
+    public void setChannel(VoiceChannel channel)
+    {
+        this.channel = channel;
     }
 
     public JDA getJDA()
