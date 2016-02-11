@@ -93,6 +93,56 @@ public class AudioManager
     }
 
     /**
+     * Moves the audio connection from one {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} to a different
+     * {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel}. The destination channel MUST be in the same
+     * {@link net.dv8tion.jda.entities.Guild Guild} as {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} that
+     * the audio connection is currently connected to.<br>
+     * Note: if the VoiceChannel provided is the same as the channel that the audio connection is currently connected
+     * to, there will be no change.
+     *
+     * @param channel
+     *          The destination {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} to which the audio connection
+     *          will move to.
+     * @throws java.lang.IllegalStateException
+     *          If there is no open audio connection.
+     * @throws java.lang.IllegalArgumentException
+     *          <ul>
+     *              <li>If the provided channel was <code>null</code>.</li>
+     *              <li>If the provided channel is not part of the Guild that the current audio connection is connected to.</li>
+     *          </ul>
+     */
+    public void moveAudioConnection(VoiceChannel channel)
+    {
+        if (!isConnected())
+            throw new IllegalStateException("Cannot change to a different VoiceChannel when not currently connected. " +
+                    "Please use openAudioConnection(VoiceChannel) to start an audio connection.");
+
+        if (channel == null)
+            throw new IllegalArgumentException("The provided VoiceChannel was null! Cannot determine which VoiceChannel " +
+                    "to move to from a null VoiceChannel!");
+
+        if (!audioConnection.getChannel().getGuild().getId().equals(channel.getGuild().getId()))
+            throw new IllegalArgumentException("Cannot move to a VoiceChannel that isn't in the same Guild as the " +
+                    "active VoiceChannel audio connection. If you wish to open an audio connection with a VoiceChannel " +
+                    "on a different Guild, please close the active connection and start a new one.");
+
+        //If we are already connected to this VoiceChannel, then do nothing.
+        if (channel.getId().equals(audioConnection.getChannel().getId()))
+            return;
+
+        JSONObject obj = new JSONObject()
+                .put("op", 4)
+                .put("d", new JSONObject()
+                        .put("guild_id", channel.getGuild().getId())
+                        .put("channel_id", channel.getId())
+                        .put("self_mute", false)
+                        .put("self_deaf", false)
+                );
+        api.getClient().send(obj.toString());
+        audioConnection.setChannel(channel);
+    }
+
+    /**
      * Used to close down the audio connection and disconnect from the {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel}.<br>
      * As a note, if this is called when JDA doesn't have an audio connection, nothing happens.
      */
