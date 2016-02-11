@@ -152,7 +152,8 @@ public class EntityBuilder
                 if (user == null)
                     throw new IllegalArgumentException("When attempting to create a Guild, we were provided with a voice state pertaining to an unknown User. JSON: " + guild);
 
-                createVoiceStatus(voiceState, guildObj, user);
+                VoiceStatus voiceStatus = createVoiceStatus(voiceState, guildObj, user);
+                ((VoiceChannelImpl) voiceStatus.getChannel()).getUsersModifiable().add(user);
             }
         }
 
