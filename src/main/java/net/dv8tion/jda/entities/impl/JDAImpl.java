@@ -17,6 +17,7 @@ package net.dv8tion.jda.entities.impl;
 
 import com.mashape.unirest.http.Unirest;
 import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.Region;
 import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.events.Event;
 import net.dv8tion.jda.events.guild.GuildJoinEvent;
@@ -324,14 +325,21 @@ public class JDAImpl implements JDA
     }
 
     @Override
+    @Deprecated
     public GuildManager createGuild(String name)
+    {
+        return createGuild(name, Region.US_EAST);
+    }
+
+    @Override
+    public GuildManager createGuild(String name, Region region)
     {
         if (name == null)
         {
             throw new IllegalArgumentException("Guild name must not be null");
         }
         JSONObject response = getRequester().post("https://discordapp.com/api/guilds",
-                new JSONObject()).put("name", name);
+                new JSONObject()).put("name", name).put("region", region.getKey());
         if (response == null || !response.has("id"))
         {
             //error creating guild
@@ -345,13 +353,20 @@ public class JDAImpl implements JDA
     }
 
     @Override
+    @Deprecated
     public void createGuildAsync(String name, Consumer<GuildManager> callback)
+    {
+        createGuildAsync(name, Region.US_EAST, callback);
+    }
+
+    @Override
+    public void createGuildAsync(String name, Region region, Consumer<GuildManager> callback)
     {
         if (name == null)
             throw new IllegalArgumentException("Guild name must not be null");
 
         JSONObject response = getRequester().post("https://discordapp.com/api/guilds",
-                new JSONObject().put("name", name));
+                new JSONObject().put("name", name).put("region", region.getKey()));
         if (response == null || !response.has("id"))
         {
             //error creating guild
