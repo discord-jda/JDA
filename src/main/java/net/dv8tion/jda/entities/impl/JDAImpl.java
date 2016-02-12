@@ -66,6 +66,7 @@ public class JDAImpl implements JDA
     private WebSocketClient client;
     private final Requester requester = new Requester(this);
     private boolean debug;
+    private boolean reconnect;
     private boolean enableAck;
     private int responseTotal;
     private Long messageLimit = null;
@@ -105,7 +106,7 @@ public class JDAImpl implements JDA
         
         Path tokenFile = Paths.get("tokens.json");
         JSONObject configs = null;
-        String gateway = null;
+        boolean valid = false;
         if (Files.exists(tokenFile))
         {
             configs = readJson(tokenFile);
@@ -126,7 +127,7 @@ public class JDAImpl implements JDA
                     if (getRequester().getA("https://discordapp.com/api/users/@me/guilds") != null)
                     {
                         //token is valid (returns array, cant be returned as JSONObject)
-                        gateway = getRequester().get("https://discordapp.com/api/gateway").getString("url");
+                        valid = true;
                         System.out.println("Using cached Token: " + authToken);
                     }
                 } catch (JSONException ignored) {}//token invalid
@@ -137,7 +138,7 @@ public class JDAImpl implements JDA
             System.out.println("Token-file misformatted. Please delete it for recreation");
         }
 
-        if (gateway == null)                                    //no token saved or invalid
+        if (!valid)               //no token saved or invalid
         {
             try
             {
@@ -150,22 +151,23 @@ public class JDAImpl implements JDA
                 authToken = response.getString("token");
                 configs.getJSONObject("tokens").put(email, authToken);
                 System.out.println("Created new Token: " + authToken);
-                System.out.println("Login Successful!"); //TODO: Replace with Logger.INFO
 
-                gateway = getRequester().get("https://discordapp.com/api/gateway").getString("url");
+                valid = true;
             }
             catch (JSONException ex)
             {
                 ex.printStackTrace();
             }
         }
-        else
+
+        if (valid)
         {
             System.out.println("Login Successful!"); //TODO: Replace with Logger.INFO
+            client = new WebSocketClient(this, proxy);
+            client.setAutoReconnect(reconnect);
         }
 
         writeJson(tokenFile, configs);
-        client = new WebSocketClient(gateway, this, proxy);
     }
 
     /**
@@ -459,6 +461,22 @@ public class JDAImpl implements JDA
     }
 
     @Override
+    public void setAutoReconnect(boolean reconnect)
+    {
+        this.reconnect = reconnect;
+        if (client != null)
+        {
+            client.setAutoReconnect(reconnect);
+        }
+    }
+
+    @Override
+    public boolean isAutoReconnect()
+    {
+        return this.reconnect;
+    }
+
+    @Override
     public void setDebug(boolean enableDebug)
     {
         this.debug = enableDebug;
@@ -480,6 +498,7 @@ public class JDAImpl implements JDA
     public void shutdown(boolean free)
     {
         getAudioManager().closeAudioConnection();
+        client.setAutoReconnect(false);
         client.close();
         authToken = null; //make further requests fail
         if (free)

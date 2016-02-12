@@ -315,6 +315,25 @@ public interface JDA
     HttpHost getGlobalProxy();
 
     /**
+     * Sets whether or not JDA should try to reconnect, if a connection-error occured.
+     * This will use and incremental reconnect (timeouts are increased each time an attempt fails).
+     *
+     * Default is true.
+     *
+     * @param reconnect
+     *      If true - enables autoReconnect
+     */
+    void setAutoReconnect(boolean reconnect);
+
+    /**
+     * Returns whether or not autoReconnect is enabled for JDA
+     *
+     * @return
+     *      True if JDA attempts to autoReconnect
+     */
+    boolean isAutoReconnect();
+
+    /**
      * Used to enable JDA debug output.
      *
      * @param enableDebug
