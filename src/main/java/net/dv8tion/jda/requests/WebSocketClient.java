@@ -129,6 +129,9 @@ public class WebSocketClient extends WebSocketAdapter
                     sessionId = content.getString("session_id");
                     new ReadyHandler(api, responseTotal).handle(content);
                     break;
+                case "GUILD_MEMBERS_CHUNK":
+                    new GuildMembersChunkHandler(api, responseTotal).handle(content);
+                    break;
                 case "PRESENCE_UPDATE":
                     new PresenceUpdateHandler(api, responseTotal).handle(content);
                     break;

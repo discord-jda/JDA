@@ -26,6 +26,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 public class ReadyHandler extends SocketHandler
@@ -39,34 +40,47 @@ public class ReadyHandler extends SocketHandler
     }
 
     @Override
-    public void handle(JSONObject content)
+    public void handle(final JSONObject content)
     {
         //TODO: User-Setings; read_state
         builder.createSelfInfo(content.getJSONObject("user"));
-        JSONArray muted = content.getJSONObject("user_settings").getJSONArray("muted_channels");
-        List<String> mutedChannelIds = new ArrayList<>();
-        List<TextChannel> mutedChannels = new ArrayList<>();
-        for (int i = 0; i < muted.length(); i++)
-        {
-            mutedChannelIds.add(muted.getString(i));
-        }
+//        JSONArray muted = content.getJSONObject("user_settings").getJSONArray("muted_channels");
+//        List<String> mutedChannelIds = new ArrayList<>();
+//        List<TextChannel> mutedChannels = new ArrayList<>();
+//        for (int i = 0; i < muted.length(); i++)
+//        {
+//            mutedChannelIds.add(muted.getString(i));
+//        }
         JSONArray guilds = content.getJSONArray("guilds");
+        final List<String> guildIds = new LinkedList<>();
         for (int i = 0; i < guilds.length(); i++)
         {
-            Guild guild = builder.createGuild(guilds.getJSONObject(i));
-            Iterator<String> iterator = mutedChannelIds.iterator();
-            while (iterator.hasNext())
+            guildIds.add(guilds.getJSONObject(i).getString("id"));
+            builder.createGuildFirstPass(guilds.getJSONObject(i), guild ->
             {
-                String id = iterator.next();
-                TextChannel chan = ((GuildImpl) guild).getTextChannelsMap().get(id);
-                if (chan != null)
+                guildIds.remove(guild.getId());
+                if (guildIds.isEmpty())
                 {
-                    mutedChannels.add(chan);
-                    iterator.remove();
+                    finishReady(content);
                 }
-            }
+            });
+//            Iterator<String> iterator = mutedChannelIds.iterator();
+//            while (iterator.hasNext())
+//            {
+//                String id = iterator.next();
+//                TextChannel chan = ((GuildImpl) guild).getTextChannelsMap().get(id);
+//                if (chan != null)
+//                {
+//                    mutedChannels.add(chan);
+//                    iterator.remove();
+//                }
+//            }
         }
-        ((SelfInfoImpl) api.getSelfInfo()).setMutedChannels(mutedChannels);
+//        ((SelfInfoImpl) api.getSelfInfo()).setMutedChannels(mutedChannels);
+    }
+
+    public void finishReady(JSONObject content)
+    {
         JSONArray priv_chats = content.getJSONArray("private_channels");
         for (int i = 0; i < priv_chats.length(); i++)
         {
