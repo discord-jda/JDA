@@ -29,6 +29,8 @@ public enum Region
     SYDNEY("sydney", "Sydney"),
     US_EAST("us-east", "US East"),
     US_WEST("us-west", "US West"),
+    US_CENTRAL("us-central", "US Central"),
+    US_SOUTH("us-south", "US South"),
     UNKNOWN("", "Unknown Region");
 
     private final String key;
