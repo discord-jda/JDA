@@ -264,6 +264,19 @@ public class AudioManager
         if (audioConnection != null)
             audioConnection.setSendingHandler(handler);
     }
+
+    /**
+     * Returns the currently set {@link net.dv8tion.jda.audio.AudioSendHandler AudioSendHandler}. If there is
+     * no sender currently set, this method will return null.
+     *
+     * @return
+     *      The currently active {@link net.dv8tion.jda.audio.AudioSendHandler AudioSendHandler} or <code>null</code>.
+     */
+    public AudioSendHandler getSendingHandler()
+    {
+        return sendHandler;
+    }
+
     /**
      * Sets the {@link net.dv8tion.jda.audio.AudioReceiveHandler AudioReceiveHandler}
      * that the manager will use to process audio data received from an audio connection.
@@ -282,6 +295,18 @@ public class AudioManager
         receiveHandler = handler;
         if (audioConnection != null)
             audioConnection.setReceivingHandler(handler);
+    }
+
+    /**
+     * Returns the currently set {@link net.dv8tion.jda.audio.AudioReceiveHandler AudioReceiveHandler}. If there is
+     * no receiver currently set, this method will return null.
+     *
+     * @return
+     *      The currently active {@link net.dv8tion.jda.audio.AudioReceiveHandler AudioReceiveHandler} or <code>null</code>.
+     */
+    public AudioReceiveHandler getReceiveHandler()
+    {
+        return receiveHandler;
     }
 
     //Load the Opus library.
