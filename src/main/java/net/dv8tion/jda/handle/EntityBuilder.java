@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
 public class EntityBuilder
 {
     private static final HashMap<String, JSONObject> cachedGuildJson = new HashMap<>();
-    private static final HashMap<String, Consumer> cachedGuildCallback = new HashMap<>();
+    private static final HashMap<String, Consumer<Guild>> cachedGuildCallback = new HashMap<>();
     private static final Pattern channelMentionPattern = Pattern.compile("<#(\\d+)>");
     private final JDAImpl api;
 
@@ -177,14 +177,7 @@ public class EntityBuilder
         for (int i = 0; i < members.length(); i++)
         {
             JSONObject member = members.getJSONObject(i);
-            JSONObject userJson = member.getJSONObject("user");
-
-            boolean setOffline = !api.getUsers().parallelStream().anyMatch(u -> u.getId().equals(userJson.getString("id")));
-            UserImpl user = (UserImpl) createUser(userJson);
-
-            if (setOffline)
-                user.setCurrentGame(null).setOnlineStatus(OnlineStatus.OFFLINE);
-
+            User user = createUser(member.getJSONObject("user"));
             userRoles.put(user, new ArrayList<>());
             JSONArray roleArr = member.getJSONArray("roles");
             for (int j = 0; j < roleArr.length(); j++)

@@ -15,17 +15,11 @@
  */
 package net.dv8tion.jda.handle;
 
-import net.dv8tion.jda.entities.Guild;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.entities.impl.GuildImpl;
 import net.dv8tion.jda.entities.impl.JDAImpl;
-import net.dv8tion.jda.entities.impl.SelfInfoImpl;
 import net.dv8tion.jda.events.ReadyEvent;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -55,15 +49,23 @@ public class ReadyHandler extends SocketHandler
         final List<String> guildIds = new LinkedList<>();
         for (int i = 0; i < guilds.length(); i++)
         {
-            guildIds.add(guilds.getJSONObject(i).getString("id"));
-            builder.createGuildFirstPass(guilds.getJSONObject(i), guild ->
+            JSONObject guildJson = guilds.getJSONObject(i);
+            if(guildJson.has("large") && guildJson.getBoolean("large"))
             {
-                guildIds.remove(guild.getId());
-                if (guildIds.isEmpty())
+                guildIds.add(guildJson.getString("id"));
+                builder.createGuildFirstPass(guildJson, guild ->
                 {
-                    finishReady(content);
-                }
-            });
+                    guildIds.remove(guild.getId());
+                    if (guildIds.isEmpty())
+                    {
+                        finishReady(content);
+                    }
+                });
+            }
+            else
+            {
+                builder.createGuildFirstPass(guildJson, null);
+            }
 //            Iterator<String> iterator = mutedChannelIds.iterator();
 //            while (iterator.hasNext())
 //            {
@@ -75,6 +77,10 @@ public class ReadyHandler extends SocketHandler
 //                    iterator.remove();
 //                }
 //            }
+        }
+        if (guildIds.isEmpty())
+        {
+            finishReady(content);
         }
 //        ((SelfInfoImpl) api.getSelfInfo()).setMutedChannels(mutedChannels);
     }
