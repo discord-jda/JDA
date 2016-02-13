@@ -101,11 +101,11 @@ and create your PR into that same branch. **We will be rejecting any PRs to mast
 It is also highly recommended to get in touch with the Devs via the Discord API Guild (see section above).
 
 ## TODO
-* Voice (The current focus and planned for v1.3.0) (gonna take some time)
-  * Sending audio
+* Voice
+  * ~~Sending audio~~ (Completed)
   * Receiving audio
     * Ability to access a single combined stream and individual user audio streams.
-  * Usage examples
+  * ~~Usage examples~~
   * Extensive documentation
 * ~~Private Messages~~
   * ~~Sending Private Messages~~
