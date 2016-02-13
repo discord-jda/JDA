@@ -95,5 +95,6 @@ public class ReadyHandler extends SocketHandler
 
         System.out.println("Finished Loading!");    //TODO: Replace with Logger.INFO
         api.getEventManager().handle(new ReadyEvent(api, responseNumber));
+        api.getClient().ready();
     }
 }
