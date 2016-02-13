@@ -422,7 +422,8 @@ public class EntityBuilder
             case "member":
                 User user = api.getUserById(id);
                 if (user == null)
-                    throw new IllegalArgumentException("Attempted to create a PermissionOverride for a non-existent user. JSON: " + override);
+                    return null;    //due to a breaking bug, we need to ignore this for now... working on a fix
+                    //throw new IllegalArgumentException("Attempted to create a PermissionOverride for a non-existent user. Guild: " + chan.getGuild() + ", Channel: " + chan + ", JSON: " + override);
 
                 permOverride = (PermissionOverrideImpl) chan.getOverrideForUser(user);
                 if (permOverride == null)
