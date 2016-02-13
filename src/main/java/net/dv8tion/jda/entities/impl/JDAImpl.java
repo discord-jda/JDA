@@ -347,7 +347,7 @@ public class JDAImpl implements JDA
         }
         else
         {
-            Guild g = new EntityBuilder(this).createGuild(response);
+            Guild g = new EntityBuilder(this).createGuildFirstPass(response, null);
             return g.isAvailable() ? new GuildManager(g) : null;
         }
     }

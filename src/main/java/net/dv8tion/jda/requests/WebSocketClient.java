@@ -24,6 +24,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.DataFormatException;
@@ -40,6 +41,8 @@ public class WebSocketClient extends WebSocketAdapter
     private final HttpHost proxy;
     private String sessionId;
     private String reconnectUrl = null;
+    private boolean ready = false;
+    private final List<String> cachedEvents = new LinkedList<>();
 
     public WebSocketClient(String url, JDAImpl api, HttpHost proxy)
     {
@@ -122,12 +125,20 @@ public class WebSocketClient extends WebSocketAdapter
         {
             System.out.printf("%s -> %s\n", type, content.toString());
         }
+        if (!ready && !(type.equals("READY") || type.equals("GUILD_MEMBERS_CHUNK")))
+        {
+            cachedEvents.add(message);
+            return;
+        }
 
         try {
             switch (type) {
                 case "READY":
                     sessionId = content.getString("session_id");
                     new ReadyHandler(api, responseTotal).handle(content);
+                    break;
+                case "GUILD_MEMBERS_CHUNK":
+                    new GuildMembersChunkHandler(api, responseTotal).handle(content);
                     break;
                 case "PRESENCE_UPDATE":
                     new PresenceUpdateHandler(api, responseTotal).handle(content);
@@ -306,5 +317,17 @@ public class WebSocketClient extends WebSocketAdapter
     public boolean isConnected()
     {
         return connected;
+    }
+
+    public void ready()
+    {
+        ready = true;
+        for (String event : cachedEvents)
+        {
+            if (api.isDebug())
+                System.out.print("Resending Cached event:  ");
+            onTextMessage(socket, event);
+        }
+        cachedEvents.clear();
     }
 }

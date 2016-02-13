@@ -28,15 +28,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class EntityBuilder
 {
+    private static final HashMap<String, JSONObject> cachedGuildJson = new HashMap<>();
+    private static final HashMap<String, Consumer<Guild>> cachedGuildCallback = new HashMap<>();
     private static final Pattern channelMentionPattern = Pattern.compile("<#(\\d+)>");
     private final JDAImpl api;
 
@@ -45,7 +45,7 @@ public class EntityBuilder
         this.api = api;
     }
 
-    public Guild createGuild(JSONObject guild)
+    public Guild createGuildFirstPass(JSONObject guild, Consumer<Guild> secondPassCallback)
     {
         String id = guild.getString("id");
         GuildImpl guildObj = ((GuildImpl) api.getGuildMap().get(id));
@@ -83,45 +83,8 @@ public class EntityBuilder
         if (guild.has("members"))
         {
             JSONArray members = guild.getJSONArray("members");
-            Map<String, Role> rolesMap = guildObj.getRolesMap();
-            Map<User, List<Role>> userRoles = guildObj.getUserRoles();
-            Map<User, VoiceStatus> voiceStatusMap = guildObj.getVoiceStatusMap();
-            Map<User, OffsetDateTime> joinedAtMap = guildObj.getJoinedAtMap();
-            for (int i = 0; i < members.length(); i++)
-            {
-                JSONObject member = members.getJSONObject(i);
-                User user = createUser(member.getJSONObject("user"));
-                userRoles.put(user, new ArrayList<>());
-                JSONArray roleArr = member.getJSONArray("roles");
-                for (int j = 0; j < roleArr.length(); j++)
-                {
-                    String roleId = roleArr.getString(j);
-                    userRoles.get(user).add(rolesMap.get(roleId));
-                }
-                VoiceStatusImpl voiceStatus = new VoiceStatusImpl(user, guildObj);
-                voiceStatus.setServerDeaf(member.getBoolean("deaf"));
-                voiceStatus.setServerMute(member.getBoolean("mute"));
-                voiceStatusMap.put(user, voiceStatus);
-                joinedAtMap.put(user, OffsetDateTime.parse(member.getString("joined_at")));
-            }
-        }
+            createGuildMemberPass(guildObj, members);
 
-        if (guild.has("channels"))
-        {
-            JSONArray channels = guild.getJSONArray("channels");
-            for (int i = 0; i < channels.length(); i++)
-            {
-                JSONObject channel = channels.getJSONObject(i);
-                String type = channel.getString("type");
-                if (type.equalsIgnoreCase("text"))
-                {
-                    createTextChannel(channel, guildObj.getId());
-                }
-                else if (type.equalsIgnoreCase("voice"))
-                {
-                    createVoiceChannel(channel, guildObj.getId());
-                }
-            }
         }
 
         if (guild.has("presences"))
@@ -142,22 +105,123 @@ public class EntityBuilder
             }
         }
 
+        //We allow Guild creation without second pass for when JDA itself creates a NEW Guild. We won't need
+        // to worry about there being a lack of offline Users because there wont be -any users or, at the very
+        // most, the only User will be the JDA user that just created the new Guild.
+        //This fall through is used by JDAImpl.createGuild(String, Region).
+        if (secondPassCallback != null)
+        {
+            cachedGuildJson.put(id, guild);
+            cachedGuildCallback.put(id, secondPassCallback);
+            JSONObject obj = new JSONObject()
+                    .put("op", 8)
+                    .put("d", new JSONObject()
+                            .put("guild_id", id)
+                            .put("query","")
+                            .put("limit", 0)
+                    );
+            api.getClient().send(obj.toString());
+            return null;//Nothing should be using the return of this method besides JDAImpl.createGuild(String, Region)
+        }
+
+        if (guild.has("channels"))
+        {
+            JSONArray channels = guild.getJSONArray("channels");
+            createGuildChannelPass(guildObj, channels);
+        }
+
         if (guild.has("voice_states"))
         {
             JSONArray voiceStates = guild.getJSONArray("voice_states");
-            for (int i = 0; i < voiceStates.length(); i++)
-            {
-                JSONObject voiceState = voiceStates.getJSONObject(i);
-                User user = api.getUserById(voiceState.getString("user_id"));
-                if (user == null)
-                    throw new IllegalArgumentException("When attempting to create a Guild, we were provided with a voice state pertaining to an unknown User. JSON: " + guild);
-
-                VoiceStatus voiceStatus = createVoiceStatus(voiceState, guildObj, user);
-                ((VoiceChannelImpl) voiceStatus.getChannel()).getUsersModifiable().add(user);
-            }
+            createGuildVoicePass(guildObj, voiceStates);
         }
 
         return guildObj;
+    }
+
+    public void createGuildSecondPass(String guildId, List<JSONArray> memberChunks)
+    {
+        JSONObject guildJson = cachedGuildJson.remove(guildId);
+        Consumer<Guild> secondPassCallback = cachedGuildCallback.remove(guildId);
+        GuildImpl guildObj = (GuildImpl) api.getGuildMap().get(guildId);
+
+        if (guildObj == null)
+            throw new IllegalStateException("Attempted to preform a second pass on an unknown Guild. Guild not in JDA " +
+                    "mapping. GuildId: " + guildId);
+        if (guildJson == null)
+            throw new IllegalStateException("Attempted to preform a second pass on an unknown Guild. No cached Guild " +
+                    "for second pass. GuildId: " + guildId);
+        if (secondPassCallback == null)
+            throw new IllegalArgumentException("No callback provided for the second pass on the Guild!");
+
+        for (JSONArray chunk : memberChunks)
+        {
+            createGuildMemberPass(guildObj, chunk);
+        }
+
+        JSONArray channels = guildJson.getJSONArray("channels");
+        createGuildChannelPass(guildObj, channels);
+
+        JSONArray voiceStates = guildJson.getJSONArray("voice_states");
+        createGuildVoicePass(guildObj, voiceStates);
+
+        secondPassCallback.accept(guildObj);
+    }
+
+    private void createGuildMemberPass(GuildImpl guildObj, JSONArray members)
+    {
+        Map<String, Role> rolesMap = guildObj.getRolesMap();
+        Map<User, List<Role>> userRoles = guildObj.getUserRoles();
+        Map<User, VoiceStatus> voiceStatusMap = guildObj.getVoiceStatusMap();
+        Map<User, OffsetDateTime> joinedAtMap = guildObj.getJoinedAtMap();
+        for (int i = 0; i < members.length(); i++)
+        {
+            JSONObject member = members.getJSONObject(i);
+            User user = createUser(member.getJSONObject("user"));
+            userRoles.put(user, new ArrayList<>());
+            JSONArray roleArr = member.getJSONArray("roles");
+            for (int j = 0; j < roleArr.length(); j++)
+            {
+                String roleId = roleArr.getString(j);
+                userRoles.get(user).add(rolesMap.get(roleId));
+            }
+            VoiceStatusImpl voiceStatus = new VoiceStatusImpl(user, guildObj);
+            voiceStatus.setServerDeaf(member.getBoolean("deaf"));
+            voiceStatus.setServerMute(member.getBoolean("mute"));
+            voiceStatusMap.put(user, voiceStatus);
+            joinedAtMap.put(user, OffsetDateTime.parse(member.getString("joined_at")));
+        }
+    }
+
+    private void createGuildChannelPass(GuildImpl guildObj, JSONArray channels)
+    {
+        for (int i = 0; i < channels.length(); i++)
+        {
+            JSONObject channel = channels.getJSONObject(i);
+            String type = channel.getString("type");
+            if (type.equalsIgnoreCase("text"))
+            {
+                createTextChannel(channel, guildObj.getId());
+            }
+            else if (type.equalsIgnoreCase("voice"))
+            {
+                createVoiceChannel(channel, guildObj.getId());
+            }
+        }
+    }
+
+    private void createGuildVoicePass(GuildImpl guildObj, JSONArray voiceStates)
+    {
+        for (int i = 0; i < voiceStates.length(); i++)
+        {
+            JSONObject voiceState = voiceStates.getJSONObject(i);
+            User user = api.getUserById(voiceState.getString("user_id"));
+            if (user == null)
+                throw new IllegalArgumentException("When attempting to create a Guild, we were provided with a voice state pertaining to an unknown User. JSON: " + voiceStates);
+
+            VoiceStatus voiceStatus = createVoiceStatus(voiceState, guildObj, user);
+            ((VoiceChannelImpl) voiceStatus.getChannel()).getUsersModifiable().add(user);
+        }
     }
 
     public TextChannel createTextChannel(JSONObject json, String guildId)
@@ -422,8 +486,7 @@ public class EntityBuilder
             case "member":
                 User user = api.getUserById(id);
                 if (user == null)
-                    return null;    //due to a breaking bug, we need to ignore this for now... working on a fix
-                    //throw new IllegalArgumentException("Attempted to create a PermissionOverride for a non-existent user. Guild: " + chan.getGuild() + ", Channel: " + chan + ", JSON: " + override);
+                    throw new IllegalArgumentException("Attempted to create a PermissionOverride for a non-existent user. Guild: " + chan.getGuild() + ", Channel: " + chan + ", JSON: " + override);
 
                 permOverride = (PermissionOverrideImpl) chan.getOverrideForUser(user);
                 if (permOverride == null)
