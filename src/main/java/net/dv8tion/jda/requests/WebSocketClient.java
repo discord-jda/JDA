@@ -71,6 +71,7 @@ public class WebSocketClient extends WebSocketAdapter
                                     .put("$referrer", "")
                             )
                             .put("v", 3)
+                            .put("large_threshold", 250)
                             .put("compress", true)); //Used to make the READY event be given as compressed binary data when over a certain size. TY @ShadowLordAlpha
         }
         else
