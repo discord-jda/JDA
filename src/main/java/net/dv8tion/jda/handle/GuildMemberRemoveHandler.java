@@ -52,6 +52,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
         }
         guild.getVoiceStatusMap().remove(user);
         guild.getUserRoles().remove(user);
+        guild.getJoinedAtMap().remove(user);
         if (!api.getGuildMap().values().stream().anyMatch(g -> ((GuildImpl) g).getUserRoles().containsKey(user)))
         {
             if (user.hasPrivateChannel())

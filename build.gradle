@@ -1,10 +1,13 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
+import java.nio.file.Files
+
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'signing'
+apply plugin: 'eclipse'
 
-def versionObj = new Version(major: 1, minor: 2, revision: 1)
+def versionObj = new Version(major: 1, minor: 2, revision: 2)
 group = "net.dv8tion"
 archivesBaseName = "JDA"
 version = "${versionObj.toString()}"
@@ -12,20 +15,39 @@ version = "${versionObj.toString()}"
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+tasks.eclipse.dependsOn(cleanEclipse)
+
 def filteredSourceDir = file("${buildDir}/filtered")
 
+//This is to fix eclipse's stupidity when first setting up the project.
+// It thinks that "filtered" should be a development source folder and cries when it doesn't exist (gradlew clean)
+eclipse {
+    classpath {
+        file {
+            withXml {
+                def sb = it.asString()
+                sb.replace(0, sb.length(), sb.toString().replace("\n\t<classpathentry kind=\"src\" path=\"build/filtered\"/>", ""));
+            }
+        }
+    }
+}
+
+
 sourceSets {
-    // This source set will contain all sources that we filter 
+    // This source set will contain all sources that we filter
     filtered {
         java {
             srcDirs = [
                     filteredSourceDir,
                     "src/test/java",
+
                     "src/examples/java"
             ]
         }
     }
 }
+
+
 
 // copy the main sources and filter any '@buildVersion@' occurences. 
 task processVersion (type: Copy) {
@@ -58,11 +80,20 @@ task sourcesJar(type: Jar) {
 
 //create a single Jar with all dependencies
 task fatJar(type: Jar) {
+
     manifest {
         attributes 'Implementation-Version': version
+
     }
     baseName = project.name + '-withDependencies'
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    from { configurations.compile.collect {
+        dependency ->
+        if (dependency.isDirectory()) { //If it is a folder, just include the folder in its entirety
+            return dependency
+        } else {    //If it isn't a folder, put it in a zipTree. if it is a zip or jar the contents will be extracted.
+            return zipTree(dependency)
+        }
+    }}
     with jar
 }
 
@@ -75,13 +106,38 @@ signing {
 }
 repositories {
     mavenCentral()
+
+    //Used for tritonus:tritonus-dsp:0.3.6
+    maven {
+        url "http://lutece.paris.fr/nexus/content/repositories/lutece_third_party/"
+    }
+
+    //Used for
+    // 'net.sourceforge.jaadec:jaad:0.8.4'
+    // 'jflac:jflac:1.3'
+    maven {
+        url "https://github.com/DV8FromTheWorld/Maven-Repository/raw/master/repo"
+    }
 }
 
 dependencies {
-    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
-    compile group: 'org.json', name: 'json', version: '20150729'
+    //General Utility
+    compile 'org.apache.commons:commons-lang3:3.4'
+    compile 'org.json:json:20150729'
+
+    //Native Library Support
+    compile 'net.java.dev.jna:jna:4.2.1'
+
+    //Web Connection Support
     compile 'com.neovisionaries:nv-websocket-client:1.16'
-    compile group: 'com.mashape.unirest', name: 'unirest-java', version: '1.4.7'
+    compile 'com.mashape.unirest:unirest-java:1.4.7'
+
+    //Audio Support
+    compile 'com.googlecode.soundlibs:tritonus-share:0.3.7-2'   //Shared audio code
+    compile 'tritonus:tritonus-dsp:0.3.6'                       //Volume control
+    compile 'com.googlecode.soundlibs:mp3spi:1.9.5-1'           //MP3 support
+//    compile 'net.sourceforge.jaadec:jaad:0.8.4'                 //AAC support
+    compile 'jflac:jflac:1.3'                                   //FLAC support
 }
 
 class Version {
@@ -100,7 +156,7 @@ class Version {
     }
 
     String getBuild() {
-        System.getenv("BUILD_NUMBER") ? System.getenv("BUILD_NUMBER") : "TEST"
+        System.getenv("BUILD_NUMBER") ? System.getenv("BUILD_NUMBER") : "DEV"
     }
 
     String toString() {
@@ -167,3 +223,8 @@ compileJava.dependsOn processVersion
 
 //Creates the w/ dependencies jar.
 uploadArchives.dependsOn fatJar
+
+//If we don't have the username and password for uploading, we probably also
+// cant sign the archives, so skip these tasks.
+signArchives.onlyIf { !ossrhUsername.isEmpty() && !ossrhPassword.isEmpty() }
+uploadArchives.onlyIf {!ossrhUsername.isEmpty() && !ossrhPassword.isEmpty() }

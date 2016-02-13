@@ -54,6 +54,11 @@ public class MessageReceivedEvent extends Event
         return getJDA().getPrivateChannelById(message.getChannelId());
     }
 
+    public MessageChannel getChannel()
+    {
+        return isPrivate() ? getPrivateChannel() : getTextChannel();
+    }
+
     public Guild getGuild()
     {
         return isPrivate() ? null : getTextChannel().getGuild();

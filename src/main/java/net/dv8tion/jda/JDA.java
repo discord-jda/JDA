@@ -19,6 +19,7 @@ import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.hooks.AnnotatedEventManager;
 import net.dv8tion.jda.hooks.IEventManager;
 import net.dv8tion.jda.managers.AccountManager;
+import net.dv8tion.jda.managers.AudioManager;
 import net.dv8tion.jda.managers.GuildManager;
 import org.apache.http.HttpHost;
 
@@ -63,6 +64,8 @@ public interface JDA
     void removeEventListener(Object listener);
 
     /**
+     * <b>This method is deprecated! please switch to {@link net.dv8tion.jda.JDA#createGuild(String, Region)}.</b>
+     *
      * Creates a new {@link net.dv8tion.jda.entities.Guild Guild}.
      * This will a return the Manager to the existing, but still empty Guild (no members, no channels).
      * To create a Guild asynchronously (wait for generation of #general chat), use {@link #createGuildAsync(String, Consumer)} instead.
@@ -75,9 +78,29 @@ public interface JDA
      * @return
      *      the {@link net.dv8tion.jda.managers.GuildManager GuildManager} for the created Guild, or null, if the created Guild is temporarily unavailable
      */
+    @Deprecated
     GuildManager createGuild(String name);
 
     /**
+     * Creates a new {@link net.dv8tion.jda.entities.Guild Guild}.
+     * This will a return the Manager to the existing, but still empty Guild (no members, no channels).
+     * To create a Guild asynchronously (wait for generation of #general chat), use {@link #createGuildAsync(String, Consumer)} instead.
+     *
+     * In the very rare case, that the Discord-server has problems, The created guild can be unavailable until it is actually created.
+     * In that case, this will return null.
+     *
+     * @param name
+     *      the name of the new {@link net.dv8tion.jda.entities.Guild Guild}
+     * @param region
+     *      the region of the new {@link net.dv8tion.jda.entities.Guild Guild}
+     * @return
+     *      the {@link net.dv8tion.jda.managers.GuildManager GuildManager} for the created Guild, or null, if the created Guild is temporarily unavailable
+     */
+    GuildManager createGuild(String name, Region region);
+
+    /**
+     * <b>This method is deprecated! please switch to {@link net.dv8tion.jda.JDA#createGuildAsync(String, Region, Consumer)}.</b>
+     *
      * Creates a new {@link net.dv8tion.jda.entities.Guild Guild}.
      * This function will wait until the Guild was fully created by the Discord-Server (default channels,...),
      * and then call the provided callback-function with the GuildManager-object
@@ -88,7 +111,23 @@ public interface JDA
      * @param callback
      *      the callback-function that gets called once the guild was fully initialized
      */
+    @Deprecated
     void createGuildAsync(String name, Consumer<GuildManager> callback);
+
+    /**
+     * Creates a new {@link net.dv8tion.jda.entities.Guild Guild}.
+     * This function will wait until the Guild was fully created by the Discord-Server (default channels,...),
+     * and then call the provided callback-function with the GuildManager-object
+     * To create a Guild synchronously, use {@link #createGuild(String)} instead
+     *
+     * @param name
+     *      the name of the new {@link net.dv8tion.jda.entities.Guild Guild}
+     * @param region
+     *      the region of the new {@link net.dv8tion.jda.entities.Guild Guild}
+     * @param callback
+     *      the callback-function that gets called once the guild was fully initialized
+     */
+    void createGuildAsync(String name, Region region, Consumer<GuildManager> callback);
 
     /**
      * The login token that is currently being used for Discord authentication.
@@ -287,6 +326,16 @@ public interface JDA
     AccountManager getAccountManager();
 
     /**
+     * Returns the {@link net.dv8tion.jda.managers.AccountManager AudioManager} for this {@link net.dv8tion.jda.JDA JDA}
+     * instance. AudioManager deals with creating, managing and severing audio connections to
+     * {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannels}.
+     *
+     * @return
+     *      The AudioManager for this JDA instance.
+     */
+    AudioManager getAudioManager();
+
+    /**
      * This value is the total amount of JSON responses that discord has sent.<br>
      * This value resets every time the websocket has to reconnect.
      *
@@ -334,6 +383,9 @@ public interface JDA
      * Depending on the free-parameter, this will also close the background-thread used for requests.
      * If the background-thread is closed, the system can exit properly, but no further JDA requests are possible (includes other JDA instances).
      * If you want to reconnect, and the request-thread was not freed, just create a new JDA instance.
+     *
+     * @param free
+     *          If true, shuts down JDA's rest system permanently.
      */
     void shutdown(boolean free);
 }

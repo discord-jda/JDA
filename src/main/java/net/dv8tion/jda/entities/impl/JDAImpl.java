@@ -17,6 +17,7 @@ package net.dv8tion.jda.entities.impl;
 
 import com.mashape.unirest.http.Unirest;
 import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.Region;
 import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.events.Event;
 import net.dv8tion.jda.events.guild.GuildJoinEvent;
@@ -25,6 +26,7 @@ import net.dv8tion.jda.hooks.EventListener;
 import net.dv8tion.jda.hooks.IEventManager;
 import net.dv8tion.jda.hooks.InterfacedEventManager;
 import net.dv8tion.jda.managers.AccountManager;
+import net.dv8tion.jda.managers.AudioManager;
 import net.dv8tion.jda.managers.GuildManager;
 import net.dv8tion.jda.requests.Requester;
 import net.dv8tion.jda.requests.WebSocketClient;
@@ -57,6 +59,7 @@ public class JDAImpl implements JDA
     private final Map<String, VoiceChannel> voiceChannelMap = new HashMap<>();
     private final Map<String, PrivateChannel> pmChannelMap = new HashMap<>();
     private final Map<String, String> offline_pms = new HashMap<>();    //Userid -> channelid
+    private final AudioManager audioManager = new AudioManager(this);
     private IEventManager eventManager = new InterfacedEventManager();
     private SelfInfo selfInfo = null;
     private AccountManager accountManager;
@@ -322,14 +325,21 @@ public class JDAImpl implements JDA
     }
 
     @Override
+    @Deprecated
     public GuildManager createGuild(String name)
+    {
+        return createGuild(name, Region.US_EAST);
+    }
+
+    @Override
+    public GuildManager createGuild(String name, Region region)
     {
         if (name == null)
         {
             throw new IllegalArgumentException("Guild name must not be null");
         }
         JSONObject response = getRequester().post("https://discordapp.com/api/guilds",
-                new JSONObject()).put("name", name);
+                new JSONObject()).put("name", name).put("region", region.getKey());
         if (response == null || !response.has("id"))
         {
             //error creating guild
@@ -337,19 +347,26 @@ public class JDAImpl implements JDA
         }
         else
         {
-            Guild g = new EntityBuilder(this).createGuild(response);
+            Guild g = new EntityBuilder(this).createGuildFirstPass(response, null);
             return g.isAvailable() ? new GuildManager(g) : null;
         }
     }
 
     @Override
+    @Deprecated
     public void createGuildAsync(String name, Consumer<GuildManager> callback)
+    {
+        createGuildAsync(name, Region.US_EAST, callback);
+    }
+
+    @Override
+    public void createGuildAsync(String name, Region region, Consumer<GuildManager> callback)
     {
         if (name == null)
             throw new IllegalArgumentException("Guild name must not be null");
 
         JSONObject response = getRequester().post("https://discordapp.com/api/guilds",
-                new JSONObject().put("name", name));
+                new JSONObject().put("name", name).put("region", region.getKey()));
         if (response == null || !response.has("id"))
         {
             //error creating guild
@@ -477,6 +494,7 @@ public class JDAImpl implements JDA
     @Override
     public void shutdown(boolean free)
     {
+        getAudioManager().closeAudioConnection();
         client.close();
         authToken = null; //make further requests fail
         if (free)
@@ -537,6 +555,12 @@ public class JDAImpl implements JDA
             throw new RuntimeException("Acking is disabled by default. <b>READ THE JAVADOCS</b> for how to use them!");
         }
         getRequester().post("https://discordapp.com/api/channels/"+msg.getChannelId()+"/messages/"+msg.getId()+"/ack", new JSONObject());
+    }
+
+    @Override
+    public AudioManager getAudioManager()
+    {
+        return audioManager;
     }
 
     private static class AsyncCallback implements EventListener

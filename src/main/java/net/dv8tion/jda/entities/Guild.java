@@ -21,6 +21,7 @@ import net.dv8tion.jda.managers.ChannelManager;
 import net.dv8tion.jda.managers.GuildManager;
 import net.dv8tion.jda.managers.RoleManager;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 /**
@@ -181,6 +182,16 @@ public interface Guild
      * @return The @everyone {@link net.dv8tion.jda.entities.Role Role}
      */
     Role getPublicRole();
+
+    /**
+     * Provides the join-date for a given {@link net.dv8tion.jda.entities.User User}.
+     *
+     * @param user
+     *          The {@link net.dv8tion.jda.entities.User User} that we wish to get the join-date for.
+     * @return
+     *      The Join-date.
+     */
+    OffsetDateTime getJoinDateForUser(User user);
 
     /**
      * Returns the {@link net.dv8tion.jda.managers.GuildManager GuildManager} for this Guild.

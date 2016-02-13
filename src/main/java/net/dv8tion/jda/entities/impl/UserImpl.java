@@ -140,7 +140,10 @@ public class UserImpl implements User
     public UserImpl setPrivateChannel(PrivateChannel channel)
     {
         this.privateChannel = channel;
-        api.getPmChannelMap().put(channel.getId(), channel);
+        if (channel != null)
+        {
+            api.getPmChannelMap().put(channel.getId(), channel);
+        }
         return this;
     }
 
@@ -162,5 +165,11 @@ public class UserImpl implements User
     public int hashCode()
     {
         return getId().hashCode();
+    }
+
+    @Override
+    public String toString()
+    {
+        return "U:" + getUsername() + '(' + getId() + ')';
     }
 }

@@ -20,6 +20,7 @@ import net.dv8tion.jda.entities.MessageEmbed;
 
 public class MessageEmbedImpl implements MessageEmbed
 {
+    //TODO: Id?!
     private String url;
     private String title;
     private String description;
@@ -123,5 +124,26 @@ public class MessageEmbedImpl implements MessageEmbed
     {
         this.videoInfo = videoInfo;
         return this;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof MessageEmbed))
+            return false;
+        MessageEmbed oMsg = (MessageEmbed) o;
+        return this == oMsg;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return getUrl().hashCode();
+    }
+
+    @Override
+    public String toString()
+    {
+        return "EmbedMessage";
     }
 }

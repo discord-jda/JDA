@@ -74,14 +74,14 @@ public class MessageHistory
     }
 
     /**
-     * Queues the next set of 50 Messages and returns them
+     * Queues the next set of 100 Messages and returns them
      * If the end of the chat was already reached, this function returns null
      *
-     * @return a list of the next 50 Messages (max), or null if at end of chat
+     * @return a list of the next 100 Messages (max), or null if at end of chat
      */
     public List<Message> retrieve()
     {
-        return retrieve(50);
+        return retrieve(100);
     }
 
     /**

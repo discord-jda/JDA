@@ -19,6 +19,7 @@ import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.ReadyEvent;
 import net.dv8tion.jda.hooks.AnnotatedEventManager;
 import net.dv8tion.jda.hooks.ListenerAdapter;
+import net.dv8tion.jda.hooks.SubscribeEvent;
 
 import javax.security.auth.login.LoginException;
 import java.util.LinkedList;
@@ -31,7 +32,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * before {@link net.dv8tion.jda.JDA} attempts to log in.
  * <p>
  * A single JDABuilder can be reused multiple times. Each call to
- * {@link net.dv8tion.jda.JDABuilder#build() build()} or
+ * {@link net.dv8tion.jda.JDABuilder#buildAsync() buildAsync()} or
  * {@link net.dv8tion.jda.JDABuilder#buildBlocking() buildBlocking()}
  * creates a new {@link net.dv8tion.jda.JDA} instance using the same information.
  * This means that you can have listeners easily registered to multiple {@link net.dv8tion.jda.JDA} instances.
@@ -53,7 +54,7 @@ public class JDABuilder
      * If you use this, you need to set the email and password using
      * {@link net.dv8tion.jda.JDABuilder#setEmail(String) setEmail(String)}
      * and {@link net.dv8tion.jda.JDABuilder#setPassword(String) setPassword(String)}
-     * before calling {@link net.dv8tion.jda.JDABuilder#build() build()}
+     * before calling {@link net.dv8tion.jda.JDABuilder#buildAsync() buildAsync()}
      * or {@link net.dv8tion.jda.JDABuilder#buildBlocking() buildBlocking()}
      */
     public JDABuilder()
@@ -78,7 +79,7 @@ public class JDABuilder
 
     /**
      * Sets the email that will be used by the {@link net.dv8tion.jda.JDA} instance to log in when
-     * {@link net.dv8tion.jda.JDABuilder#build() build()}
+     * {@link net.dv8tion.jda.JDABuilder#buildAsync() buildAsync()}
      * or {@link net.dv8tion.jda.JDABuilder#buildBlocking() buildBlocking()}
      * is called.
      *
@@ -95,7 +96,7 @@ public class JDABuilder
 
     /**
      * Sets the password that will be used by the {@link net.dv8tion.jda.JDA} instance to log in when
-     * {@link net.dv8tion.jda.JDABuilder#build() build()}
+     * {@link net.dv8tion.jda.JDABuilder#buildAsync() buildAsync()}
      * or {@link net.dv8tion.jda.JDABuilder#buildBlocking() buildBlocking()}
      * is called.
      *
@@ -199,6 +200,16 @@ public class JDABuilder
     }
 
     /**
+     * This method has been deprecated due to a name change to clarify what happens.<br>
+     * Please use {@link #buildAsync() buildAsync()} instead to achieve the same functionality.
+     */
+    @Deprecated
+    public JDA build() throws LoginException, IllegalArgumentException
+    {
+        return buildAsync();
+    }
+
+    /**
      * Builds a new {@link net.dv8tion.jda.JDA} instance and uses the provided email and password to start the login process.<br>
      * The login process runs in a different thread, so while this will return immediately, {@link net.dv8tion.jda.JDA} has not
      * finished loading, thus many {@link net.dv8tion.jda.JDA} methods have the chance to return incorrect information.
@@ -214,7 +225,7 @@ public class JDABuilder
      * @throws IllegalArgumentException
      *          If either the provided email or password is empty or null.
      */
-    public JDA build() throws LoginException, IllegalArgumentException
+    public JDA buildAsync() throws LoginException, IllegalArgumentException
     {
         jdaCreated = true;
         JDAImpl jda;
@@ -253,6 +264,7 @@ public class JDABuilder
         AtomicBoolean ready = new AtomicBoolean(false);
         ListenerAdapter readyListener = new ListenerAdapter()
         {
+            @SubscribeEvent
             @Override
             public void onReady(ReadyEvent event)
             {
@@ -262,7 +274,7 @@ public class JDABuilder
 
         //Add it to our list of listeners, start the login process, wait for the ReadyEvent.
         listeners.add(readyListener);
-        JDA jda = build();
+        JDA jda = buildAsync();
         while(!ready.get())
         {
             Thread.sleep(50);

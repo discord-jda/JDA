@@ -48,23 +48,30 @@ public class AnnotatedEventManager implements IEventManager
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void handle(Event event)
     {
-        Map<Object, Method> listeners = methods.get(event.getClass());
-        if (listeners == null)
+        Class<? extends Event> eventClass = event.getClass();
+        do
         {
-            return;
+            Map<Object, Method> listeners = methods.get(eventClass);
+            if (listeners != null)
+            {
+                listeners.entrySet().forEach(e -> {
+                    try
+                    {
+                        e.getValue().setAccessible(true);
+                        e.getValue().invoke(e.getKey(), event);
+                    }
+                    catch (IllegalAccessException | InvocationTargetException e1)
+                    {
+                        e1.printStackTrace();
+                    }
+                });
+            }
+            eventClass = eventClass == Event.class ? null : (Class<? extends Event>) eventClass.getSuperclass();
         }
-        listeners.entrySet().forEach(e -> {
-            try
-            {
-                e.getValue().invoke(e.getKey(), event);
-            }
-            catch (IllegalAccessException | InvocationTargetException e1)
-            {
-                e1.printStackTrace();
-            }
-        });
+        while (eventClass != null);
     }
 
     private void updateMethods()

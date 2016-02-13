@@ -16,7 +16,16 @@
 package net.dv8tion.jda.entities;
 
 import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.requests.Requester;
 
+import java.io.File;
+import java.io.InputStream;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -105,6 +114,16 @@ public interface Message
     String getRawContent();
 
     /**
+     * The content, with all its formatting characters stripped.
+     * All remaining characters used in formatting (the ones that did not have a matching partner) are getting escaped.
+     *
+     * Mentioned users will get returned as @Username
+     *
+     * @return message-text with stripped formatting
+     */
+    String getStrippedContent();
+
+    /**
      * Checks, whether this Message was sent in a {@link net.dv8tion.jda.entities.PrivateChannel PrivateChannel} (Private Message),
      * or in a {@link net.dv8tion.jda.entities.TextChannel TextChannel} (sent in Guild channel)
      *
@@ -176,8 +195,9 @@ public interface Message
         private final int size;
         private final int height;
         private final int width;
+        private final JDA jda;
 
-        public Attachment(String id, String url, String proxyUrl, String fileName, int size, int height, int width)
+        public Attachment(String id, String url, String proxyUrl, String fileName, int size, int height, int width, JDA jda)
         {
             this.id = id;
             this.url = url;
@@ -186,6 +206,7 @@ public interface Message
             this.size = size;
             this.height = height;
             this.width = width;
+            this.jda = jda;
         }
 
         /**
@@ -230,6 +251,49 @@ public interface Message
         public String getFileName()
         {
             return fileName;
+        }
+
+        /**
+         * Downloads this attachment to given File
+         *
+         * @param file
+         *      The file, where the attachment will get downloaded to
+         * @return
+         *      boolean true, if successful, otherwise false
+         */
+        public boolean download(File file)
+        {
+            InputStream in = null;
+            try
+            {
+                URL url = new URL(getUrl());
+                URLConnection con;
+                if (jda.getGlobalProxy() == null)
+                {
+                    con = url.openConnection();
+                }
+                else
+                {
+                    con = url.openConnection(new Proxy(Proxy.Type.HTTP,
+                            new InetSocketAddress(jda.getGlobalProxy().getAddress(), jda.getGlobalProxy().getPort())));
+                }
+                con.addRequestProperty("user-agent", Requester.USER_AGENT);
+                in = con.getInputStream();
+                Files.copy(in, Paths.get(file.getAbsolutePath()));
+                return true;
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+            finally
+            {
+                if (in != null)
+                {
+                    try {in.close();} catch(Exception ignored) {}
+                }
+            }
+            return false;
         }
 
         /**
