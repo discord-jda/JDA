@@ -42,6 +42,8 @@ public class GuildLeaveHandler extends SocketHandler
         if (api.getAudioManager().getConnectedChannel().getGuild().getId().equals(guild.getId()))
             api.getAudioManager().closeAudioConnection();
 
+        //TODO: clean up user db for those we don't see anymore (and handle pm channels)
+
         api.getGuildMap().remove(guild.getId());
         api.getEventManager().handle(
                 new GuildLeaveEvent(
