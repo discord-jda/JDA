@@ -216,11 +216,20 @@ uploadArchives {
           //If we use a repository that isn't just MavenCentral
           if (project.getRepositories().size() > 1)
           {
+              int i = 0
               def reposNode = asNode().appendNode("repositories")
               project.getRepositories().stream().forEach {
-                  repo ->                  //Ignore the MavenCentral repository. Don't need to add it.
-                      if (!repo.getProperties().get("url").toString().equals("https://repo1.maven.org/maven2/"))
-                          reposNode.appendNode("repository").appendNode("url", repo.getProperties().get("url"));
+                  repo ->
+
+                  //Ignore the MavenCentral repository. Don't need to add it.
+                  if (!repo.getProperties().get("url").toString().equals("https://repo1.maven.org/maven2/"))
+                  {
+                      def repoNode = reposNode.appendNode("repository")
+                      repoNode.appendNode("id", "JDA-repo-" + i)
+                      repoNode.appendNode("name", "JDA Repo " + i)
+                      repoNode.appendNode("url", repo.getProperties().get("url"));
+                      i++
+                  }
               }
           }
       }
