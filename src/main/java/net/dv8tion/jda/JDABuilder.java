@@ -47,6 +47,7 @@ public class JDABuilder
     String email = null;
     String pass = null;
     boolean debug = false;
+    boolean enableVoice = true;
     boolean useAnnotatedManager = false;
 
     /**
@@ -151,6 +152,23 @@ public class JDABuilder
     }
 
     /**
+     * Enables/Disables Voice functionality.<br>
+     * This is useful, if your current system doesn't support Voice and you do not need it.
+     *
+     * Default: true
+     *
+     * @param voice
+     *          True - enables voice support.
+     * @return
+     *          Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public JDABuilder enableVoice(boolean voice)
+    {
+        this.enableVoice = voice;
+        return this;
+    }
+
+    /**
      * Changes the internal EventManager.
      * The default EventManager is {@link net.dv8tion.jda.hooks.InterfacedEventManager InterfacedEventListener}.
      * There is also an {@link AnnotatedEventManager AnnotatedEventManager} available.
@@ -230,9 +248,9 @@ public class JDABuilder
         jdaCreated = true;
         JDAImpl jda;
         if (proxySet)
-            jda = new JDAImpl(proxyUrl, proxyPort);
+            jda = new JDAImpl(proxyUrl, proxyPort, enableVoice);
         else
-            jda = new JDAImpl();
+            jda = new JDAImpl(enableVoice);
         jda.setDebug(debug);
         if (useAnnotatedManager)
         {

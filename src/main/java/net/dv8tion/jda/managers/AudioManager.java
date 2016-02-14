@@ -35,8 +35,10 @@ import java.io.IOException;
 public class AudioManager
 {
     //These values are set at the bottom of this file.
-    public final static boolean AUDIO_SUPPORTED;
-    public final static String OPUS_LIB_NAME;
+    public static boolean AUDIO_SUPPORTED;
+    public static String OPUS_LIB_NAME;
+
+    private static boolean initialized = false;
 
     private final JDAImpl api;
     private AudioConnection audioConnection = null;
@@ -48,6 +50,7 @@ public class AudioManager
     public AudioManager(JDAImpl api)
     {
         this.api = api;
+        init();
     }
 
     /**
@@ -310,8 +313,11 @@ public class AudioManager
     }
 
     //Load the Opus library.
-    static
+    private static synchronized void init()
     {
+        if(initialized)
+            return;
+        initialized = true;
         ServiceUtil.loadServices();
         String lib = null;
         try

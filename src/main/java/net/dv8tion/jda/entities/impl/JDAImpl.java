@@ -59,7 +59,7 @@ public class JDAImpl implements JDA
     private final Map<String, VoiceChannel> voiceChannelMap = new HashMap<>();
     private final Map<String, PrivateChannel> pmChannelMap = new HashMap<>();
     private final Map<String, String> offline_pms = new HashMap<>();    //Userid -> channelid
-    private final AudioManager audioManager = new AudioManager(this);
+    private final AudioManager audioManager;
     private IEventManager eventManager = new InterfacedEventManager();
     private SelfInfo selfInfo = null;
     private AccountManager accountManager;
@@ -71,17 +71,19 @@ public class JDAImpl implements JDA
     private int responseTotal;
     private Long messageLimit = null;
 
-    public JDAImpl()
+    public JDAImpl(boolean useVoice)
     {
         proxy = null;
+        audioManager = useVoice ? new AudioManager(this) : null;
     }
 
-    public JDAImpl(String proxyUrl, int proxyPort)
+    public JDAImpl(String proxyUrl, int proxyPort, boolean useVoice)
     {
         if (proxyUrl == null || proxyUrl.isEmpty() || proxyPort == -1)
             throw new IllegalArgumentException("The provided proxy settings cannot be used to make a proxy. Settings: URL: '" + proxyUrl + "'  Port: " + proxyPort);
         proxy = new HttpHost(proxyUrl, proxyPort);
         Unirest.setProxy(proxy);
+        audioManager = useVoice ? new AudioManager(this) : null;
     }
 
     /**

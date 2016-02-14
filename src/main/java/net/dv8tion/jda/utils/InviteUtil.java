@@ -31,7 +31,7 @@ public class InviteUtil
             String[] split = code.split("/");
             code = split[split.length - 1];
         }
-        JSONObject response = new JDAImpl().getRequester().get("https://discordapp.com/api/invite/" + code);
+        JSONObject response = new JDAImpl(false).getRequester().get("https://discordapp.com/api/invite/" + code);
         if (response.has("code"))
         {
             JSONObject guild = response.getJSONObject("guild");
