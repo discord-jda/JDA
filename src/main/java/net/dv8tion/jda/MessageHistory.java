@@ -116,6 +116,10 @@ public class MessageHistory
                     atEnd = true;
                     break;
                 }
+                else
+                {
+                    lastId = out.getLast().getId();
+                }
             }
             catch (Exception ex)
             {
@@ -124,11 +128,7 @@ public class MessageHistory
             }
             amount -= toQueue;
         }
-        if (out.size() > 0)
-        {
-            lastId = out.getLast().getId();
-        }
-        else
+        if(out.size() == 0)
         {
             return null;
         }
