@@ -1,6 +1,8 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
-import java.nio.file.Files
+plugins {
+    id "com.jfrog.bintray" version "1.6"
+}
 
 apply plugin: 'java'
 apply plugin: 'maven'
@@ -237,14 +239,39 @@ uploadArchives {
   }
 }
 
+bintray {
+    user = bintrayUsername
+    key = bintrayApiKey
+    pkg {
+        repo = 'maven'
+        name = 'JDA'
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://github.com/DV8FromTheWorld/JDA.git'
+        configurations = ['archives']
+        publish = true;
+        version {
+            name = project.version
+            released  = new Date()
+        }
+    }
+}
+
+bintrayUpload {
+    onlyIf {
+        System.getenv("BUILD_NUMBER")
+    }
+}
+
 // tell the compileJava task to compile the filtered source 
 compileJava.source = sourceSets.filtered.java
 compileJava.dependsOn processVersion
 
 //Creates the w/ dependencies jar.
 uploadArchives.dependsOn fatJar
+bintrayUpload.dependsOn uploadArchives
 
 //If we don't have the username and password for uploading, we probably also
 // cant sign the archives, so skip these tasks.
 signArchives.onlyIf { !ossrhUsername.isEmpty() && !ossrhPassword.isEmpty() }
 uploadArchives.onlyIf {!ossrhUsername.isEmpty() && !ossrhPassword.isEmpty() }
+bintrayUpload.onlyIf {!bintrayUsername.isEmpty() && !bintrayApiKey.isEmpty() }
