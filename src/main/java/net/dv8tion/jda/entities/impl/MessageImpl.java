@@ -87,7 +87,7 @@ public class MessageImpl implements Message
     @Override
     public OffsetDateTime getTime()
     {
-        return time.plusSeconds(0L);
+        return time;
     }
 
     @Override
@@ -99,7 +99,7 @@ public class MessageImpl implements Message
     @Override
     public OffsetDateTime getEditedTimestamp()
     {
-        return editedTime.plusSeconds(0L);
+        return editedTime;
     }
 
     @Override
