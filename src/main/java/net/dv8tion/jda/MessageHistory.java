@@ -88,7 +88,7 @@ public class MessageHistory
      * Queues the next set of Messages and returns them
      * If the end of the chat was already reached, this function returns null
      *
-     * @param amount the amount to Messages to queue (limited to 100)
+     * @param amount the amount to Messages to queue
      * @return a list of the next [amount] Messages (max), or null if at end of chat
      */
     public List<Message> retrieve(int amount)
@@ -97,27 +97,32 @@ public class MessageHistory
         {
             return null;
         }
-        amount = Math.min(amount, 100);
+        int toQueue;
         LinkedList<Message> out = new LinkedList<>();
-        try
+        EntityBuilder builder = new EntityBuilder(api);
+        while(amount > 0)
         {
-            JSONArray array = api.getRequester().getA("https://discordapp.com/api/channels/" + channelId
-                    + "/messages?limit=" + amount + (lastId != null ? "&before=" + lastId : ""));
-
-            EntityBuilder builder = new EntityBuilder(api);
-            for (int i = 0; i < array.length(); i++)
+            toQueue = Math.min(amount, 100);
+            try
             {
-                out.add(builder.createMessage(array.getJSONObject(i)));
-            }
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
+                JSONArray array = api.getRequester().getA("https://discordapp.com/api/channels/" + channelId
+                        + "/messages?limit=" + toQueue + (lastId != null ? "&before=" + lastId : ""));
 
-        if (out.size() < amount)
-        {
-            atEnd = true;
+                for (int i = 0; i < array.length(); i++)
+                {
+                    out.add(builder.createMessage(array.getJSONObject(i)));
+                }
+                if(array.length() < toQueue) {
+                    atEnd = true;
+                    break;
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.printStackTrace();
+                break;
+            }
+            amount -= toQueue;
         }
         if (out.size() > 0)
         {
