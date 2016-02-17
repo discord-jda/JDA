@@ -109,7 +109,7 @@ public class EntityBuilder
         // to worry about there being a lack of offline Users because there wont be -any users or, at the very
         // most, the only User will be the JDA user that just created the new Guild.
         //This fall through is used by JDAImpl.createGuild(String, Region).
-        if (secondPassCallback != null)
+        if (secondPassCallback != null && guild.has("large") && guild.getBoolean("large"))
         {
             cachedGuildJson.put(id, guild);
             cachedGuildCallback.put(id, secondPassCallback);
@@ -134,6 +134,12 @@ public class EntityBuilder
         {
             JSONArray voiceStates = guild.getJSONArray("voice_states");
             createGuildVoicePass(guildObj, voiceStates);
+        }
+
+        if (secondPassCallback != null)
+        {
+            secondPassCallback.accept(guildObj);
+            return null;//Nothing should be using the return of this method besides JDAImpl.createGuild(String, Region)
         }
 
         return guildObj;

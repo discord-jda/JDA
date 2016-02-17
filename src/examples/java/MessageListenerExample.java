@@ -67,7 +67,7 @@ public class MessageListenerExample extends ListenerAdapter
         System.out.println("Got invite " + event.getInvite().getUrl());
         if (event.getMessage().getAuthor().getUsername().equalsIgnoreCase("kantenkugel"))
         {
-            InviteUtil.join(event.getInvite(), event.getJDA());
+            InviteUtil.join(event.getInvite(), event.getJDA(), null);
         }
     }
 

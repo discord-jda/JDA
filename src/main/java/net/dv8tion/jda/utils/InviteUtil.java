@@ -86,7 +86,7 @@ public class InviteUtil
 
     public static void join(String code, JDA jda, Consumer<Guild> callback)
     {
-        join(resolve(code), jda, null);
+        join(resolve(code), jda, callback);
     }
 
     public static void delete(Invite invite, JDA jda)
