@@ -34,4 +34,9 @@ public class InviteReceivedEvent extends GenericMessageEvent
     {
         return invite;
     }
+
+    public boolean isPrivate()
+    {
+        return message.isPrivate();
+    }
 }
