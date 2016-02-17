@@ -25,6 +25,7 @@ import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.hooks.EventListener;
 import net.dv8tion.jda.hooks.IEventManager;
 import net.dv8tion.jda.hooks.InterfacedEventManager;
+import net.dv8tion.jda.hooks.SubscribeEvent;
 import net.dv8tion.jda.managers.AccountManager;
 import net.dv8tion.jda.managers.AudioManager;
 import net.dv8tion.jda.managers.GuildManager;
@@ -367,6 +368,8 @@ public class JDAImpl implements JDA
     {
         if (name == null)
             throw new IllegalArgumentException("Guild name must not be null");
+        if (region == Region.UNKNOWN)
+            throw new IllegalArgumentException("Guild region must not be UNKNOWN");
 
         JSONObject response = getRequester().post("https://discordapp.com/api/guilds",
                 new JSONObject().put("name", name).put("region", region.getKey()));
@@ -377,7 +380,8 @@ public class JDAImpl implements JDA
         }
         else
         {
-            addEventListener(new AsyncCallback(callback, response.getString("id")));
+            if(callback != null)
+                addEventListener(new AsyncCallback(callback, response.getString("id")));
         }
     }
 
@@ -578,13 +582,13 @@ public class JDAImpl implements JDA
         }
 
         @Override
+        @SubscribeEvent
         public void onEvent(Event event)
         {
             if (event instanceof GuildJoinEvent && ((GuildJoinEvent) event).getGuild().getId().equals(id))
             {
                 event.getJDA().removeEventListener(this);
-                if (cb != null)
-                    cb.accept(((GuildJoinEvent) event).getGuild().getManager());
+                cb.accept(((GuildJoinEvent) event).getGuild().getManager());
             }
         }
     }
