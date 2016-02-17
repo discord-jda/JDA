@@ -334,6 +334,7 @@ public class JDAImpl implements JDA
     }
 
     @Override
+    @Deprecated
     public GuildManager createGuild(String name, Region region)
     {
         if (name == null)
@@ -582,7 +583,8 @@ public class JDAImpl implements JDA
             if (event instanceof GuildJoinEvent && ((GuildJoinEvent) event).getGuild().getId().equals(id))
             {
                 event.getJDA().removeEventListener(this);
-                cb.accept(((GuildJoinEvent) event).getGuild().getManager());
+                if (cb != null)
+                    cb.accept(((GuildJoinEvent) event).getGuild().getManager());
             }
         }
     }
