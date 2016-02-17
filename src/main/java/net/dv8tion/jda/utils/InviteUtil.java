@@ -18,9 +18,16 @@ package net.dv8tion.jda.utils;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.Channel;
+import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.impl.JDAImpl;
+import net.dv8tion.jda.events.Event;
+import net.dv8tion.jda.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.exceptions.PermissionException;
+import net.dv8tion.jda.hooks.EventListener;
+import net.dv8tion.jda.hooks.SubscribeEvent;
 import org.json.JSONObject;
+
+import java.util.function.Consumer;
 
 public class InviteUtil
 {
@@ -58,14 +65,28 @@ public class InviteUtil
         return null;
     }
 
+    @Deprecated
     public static void join(Invite invite, JDA jda)
     {
-        join(invite.getCode(), jda);
+        join(invite, jda, null);
     }
 
+    public static void join(Invite invite, JDA jda, Consumer<Guild> callback)
+    {
+        ((JDAImpl) jda).getRequester().post("https://discordapp.com/api/invite/" + invite.getCode(), new JSONObject());
+        if(callback != null)
+            jda.addEventListener(new AsyncCallback(invite.getGuildId(), callback));
+    }
+
+    @Deprecated
     public static void join(String code, JDA jda)
     {
-        ((JDAImpl) jda).getRequester().post("https://discordapp.com/api/invite/" + code, new JSONObject());
+        join(code, jda, null);
+    }
+
+    public static void join(String code, JDA jda, Consumer<Guild> callback)
+    {
+        join(resolve(code), jda, null);
     }
 
     public static void delete(Invite invite, JDA jda)
@@ -128,6 +149,29 @@ public class InviteUtil
         public boolean isTextChannel()
         {
             return isTextChannel;
+        }
+    }
+
+    private static class AsyncCallback implements EventListener
+    {
+        private final String id;
+        private final Consumer<Guild> cb;
+
+        public AsyncCallback(String id, Consumer<Guild> cb)
+        {
+            this.id = id;
+            this.cb = cb;
+        }
+
+        @Override
+        @SubscribeEvent
+        public void onEvent(Event event)
+        {
+            if (event instanceof GuildJoinEvent && ((GuildJoinEvent) event).getGuild().getId().equals(id))
+            {
+                event.getJDA().removeEventListener(this);
+                cb.accept(((GuildJoinEvent) event).getGuild());
+            }
         }
     }
 }
