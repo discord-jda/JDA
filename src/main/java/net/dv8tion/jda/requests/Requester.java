@@ -24,6 +24,7 @@ import com.mashape.unirest.request.body.RequestBodyEntity;
 import net.dv8tion.jda.JDAInfo;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Requester
@@ -89,16 +90,18 @@ public class Requester
 
     private JSONObject toObject(BaseRequest request)
     {
+        String body = null;
         try
         {
+            String dbg = null;
             if (api.isDebug())
             {
-                System.out.printf("Requesting %s -> %s\n\tPayload: %s\n\tResponse: ", request.getHttpRequest().getHttpMethod().name(), request.getHttpRequest().getUrl(), ((request instanceof RequestBodyEntity)? ((RequestBodyEntity) request).getBody().toString():"None"));
+                dbg = String.format("Requesting %s -> %s\n\tPayload: %s\n\tResponse: ", request.getHttpRequest().getHttpMethod().name(), request.getHttpRequest().getUrl(), ((request instanceof RequestBodyEntity) ? ((RequestBodyEntity) request).getBody().toString() : "None"));
             }
-            String body = request.asString().getBody();
+            body = request.asString().getBody();
             if (api.isDebug())
             {
-                System.out.println(body);
+                System.out.println(dbg + body);
             }
             return body == null ? null : new JSONObject(body);
         }
@@ -106,26 +109,38 @@ public class Requester
         {
             e.printStackTrace();
         }
+        catch (JSONException e)
+        {
+            System.err.println("Following json caused an exception: " + body);
+            e.printStackTrace();
+        }
         return null;
     }
 
     private JSONArray toArray(BaseRequest request)
     {
+        String body = null;
         try
         {
+            String dbg = null;
             if (api.isDebug())
             {
-                System.out.printf("Requesting %s -> %s\n\tPayload: %s\n\tResponse: ", request.getHttpRequest().getHttpMethod().name(), request.getHttpRequest().getUrl(), ((request instanceof RequestBodyEntity)? ((RequestBodyEntity) request).getBody().toString():"None"));
+                dbg = String.format("Requesting %s -> %s\n\tPayload: %s\n\tResponse: ", request.getHttpRequest().getHttpMethod().name(), request.getHttpRequest().getUrl(), ((request instanceof RequestBodyEntity)? ((RequestBodyEntity) request).getBody().toString():"None"));
             }
-            String body = request.asString().getBody();
+            body = request.asString().getBody();
             if (api.isDebug())
             {
-                System.out.println(body);
+                System.out.println(dbg + body);
             }
             return body == null ? null : new JSONArray(body);
         }
         catch (UnirestException e)
         {
+            e.printStackTrace();
+        }
+        catch (JSONException e)
+        {
+            System.err.println("Following json caused an exception: " + body);
             e.printStackTrace();
         }
         return null;
