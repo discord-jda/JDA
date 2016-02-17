@@ -341,7 +341,7 @@ public class JDAImpl implements JDA
             throw new IllegalArgumentException("Guild name must not be null");
         }
         JSONObject response = getRequester().post("https://discordapp.com/api/guilds",
-                new JSONObject()).put("name", name).put("region", region.getKey());
+                new JSONObject().put("name", name).put("region", region.getKey()));
         if (response == null || !response.has("id"))
         {
             //error creating guild
