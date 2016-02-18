@@ -212,6 +212,9 @@ public class WebSocketClient extends WebSocketAdapter
                 case "USER_UPDATE":
                     new UserUpdateHandler(api, responseTotal).handle(content);
                     break;
+                case "USER_GUILD_SETTINGS_UPDATE":
+                    //TODO: handle notification updates...
+                    break;
                 default:
                     System.out.println("Unrecognized event:\n" + message);    //TODO: Replace with "we don't know this type"
             }
