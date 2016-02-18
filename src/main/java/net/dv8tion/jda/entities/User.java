@@ -51,6 +51,14 @@ public interface User
     String getDiscriminator();
 
     /**
+     * Returns the String needed to mention this User in a {@link net.dv8tion.jda.entities.Message Message}.
+     *
+     * @return
+     *      The String needed to mention this User
+     */
+    String getAsMention();
+
+    /**
      * The Discord Id for this user's avatar image.
      * If the user has not set an image, this will return null.
      *
