@@ -127,12 +127,36 @@ All dependencies are managed automatically by Gradle.
  * NV Websocket Client
    * Version: **1.16**
    * [Github](https://github.com/TakahikoKawasaki/nv-websocket-client)
-   * [Central Repository](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.neovisionaries%22%20AND%20a%3A%22nv-websocket-client%22)
+   * [JCenter Repository](https://bintray.com/bintray/jcenter/com.neovisionaries%3Anv-websocket-client/view)
+ * Unirest
+   * Version: **1.4.7**
+   * [Github](https://github.com/Mashape/unirest-java)
+   * [JCenter Repository](https://bintray.com/bintray/jcenter/com.mashape.unirest%3Aunirest-java/view)
  * Apache Commons Lang3
    * Version: **3.4**
    * [Website](https://commons.apache.org/proper/commons-lang/)
-   * [Central Repository](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.apache.commons%22%20AND%20a%3A%22commons-lang3%22)
+   * [JCenter Repository](https://bintray.com/bintray/jcenter/org.apache.commons%3Acommons-lang3/view)
  * json.org
    * Version: **20150729**
    * [Github](https://github.com/douglascrockford/JSON-java)
-   * [Central Repository](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.json%22%20AND%20a%3A%22json%22)
+   * [JCenter Repository](https://bintray.com/bintray/jcenter/org.json%3Ajson/view)
+ * JNA
+   * Version: **4.2.1**
+   * [Github](https://github.com/java-native-access/jna)
+   * [JCenter Repository](https://bintray.com/bintray/jcenter/net.java.dev.jna%3Ajna/view)
+ * Tritonus-Share
+   * Version: **0.3.7-2**
+   * [Sourceforge](https://sourceforge.net/projects/tritonus/)
+   * [JCenter Repository](https://bintray.com/bintray/jcenter/com.googlecode.soundlibs%3Atritonus-share/view)
+ * Tritonus-DSP
+   * Version: **0.3.6**
+   * [Sourceforge](https://sourceforge.net/projects/tritonus/)
+   * [JCenter Repository](https://bintray.com/dv8fromtheworld/maven/Tritonus-DSP/view)
+ * MP3-SPI
+   * Version: **1.9.5-1**
+   * [Website](http://www.javazoom.net/mp3spi/mp3spi.html)
+   * [JCenter Repository](https://bintray.com/bintray/jcenter/com.googlecode.soundlibs%3Amp3spi/view)
+ * jFLAC
+   * Version: **1.3**
+   * [Sourceforge](https://sourceforge.net/projects/jflac/)
+   * [JCenter Repository](https://bintray.com/dv8fromtheworld/maven/jFLAC/view)
