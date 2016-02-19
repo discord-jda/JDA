@@ -126,7 +126,7 @@ dependencies {
     compile 'com.googlecode.soundlibs:tritonus-share:0.3.7-2'   //Shared audio code
     compile 'org.tritonus:tritonus-dsp:0.3.6'                   //Volume control
     compile 'com.googlecode.soundlibs:mp3spi:1.9.5-1'           //MP3 support
-//    compile 'net.sourceforge.jaadec:jaad:0.8.4'                 //AAC support
+    compile 'net.sourceforge.jaadec:jaad:0.8.5'                 //AAC supports
     compile 'jflac:jflac:1.3'                                   //FLAC support
 }
 
