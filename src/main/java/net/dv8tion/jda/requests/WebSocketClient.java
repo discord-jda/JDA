@@ -17,6 +17,8 @@ package net.dv8tion.jda.requests;
 
 import com.neovisionaries.ws.client.*;
 import net.dv8tion.jda.entities.impl.JDAImpl;
+import net.dv8tion.jda.events.DisconnectEvent;
+import net.dv8tion.jda.events.ShutdownEvent;
 import net.dv8tion.jda.handle.*;
 import org.apache.http.HttpHost;
 import org.json.JSONException;
@@ -24,6 +26,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.time.OffsetDateTime;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -35,13 +38,14 @@ public class WebSocketClient extends WebSocketAdapter
 {
     private Thread keepAliveThread;
     private WebSocket socket;
-    private boolean connected;
     private long keepAliveInterval;
     private final JDAImpl api;
     private final HttpHost proxy;
     private String sessionId;
     private String reconnectUrl = null;
     private boolean ready = false;
+    private boolean connected;
+    private boolean expectingClose = false;
     private final List<String> cachedEvents = new LinkedList<>();
 
     public WebSocketClient(String url, JDAImpl api, HttpHost proxy)
@@ -265,9 +269,15 @@ public class WebSocketClient extends WebSocketAdapter
                 System.out.println("Reason: " + serverCloseFrame.getCloseReason());
                 System.out.println("Close code: " + serverCloseFrame.getCloseCode());
             }
+            if (!expectingClose)
+                api.getEventManager().handle(new DisconnectEvent(api, serverCloseFrame, clientCloseFrame, closedByServer, OffsetDateTime.now()));
+            else
+                api.getEventManager().handle(new ShutdownEvent(api,OffsetDateTime.now()));
+
         }
         else
         {
+            expectingClose = false;
             connect(reconnectUrl);
         }
     }
@@ -314,6 +324,7 @@ public class WebSocketClient extends WebSocketAdapter
             keepAliveThread.interrupt();
             keepAliveThread = null;
         }
+        expectingClose = true;
         socket.sendClose();
     }
 

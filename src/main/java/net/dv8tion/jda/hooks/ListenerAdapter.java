@@ -15,9 +15,7 @@
  */
 package net.dv8tion.jda.hooks;
 
-import net.dv8tion.jda.events.Event;
-import net.dv8tion.jda.events.InviteReceivedEvent;
-import net.dv8tion.jda.events.ReadyEvent;
+import net.dv8tion.jda.events.*;
 import net.dv8tion.jda.events.channel.priv.PrivateChannelCreateEvent;
 import net.dv8tion.jda.events.channel.text.*;
 import net.dv8tion.jda.events.channel.voice.*;
@@ -34,6 +32,8 @@ public abstract class ListenerAdapter implements EventListener
 {
     //JDA Events
     public void onReady(ReadyEvent event) {}
+    public void onDisconnect(DisconnectEvent event) {}
+    public void onShutdown(ShutdownEvent event) {}
 
     //User Events
     public void onUserNameUpdate(UserNameUpdateEvent event) {}
@@ -133,6 +133,10 @@ public abstract class ListenerAdapter implements EventListener
         //JDA Events
         if (event instanceof ReadyEvent)
             onReady((ReadyEvent) event);
+        else if (event instanceof DisconnectEvent)
+            onDisconnect((DisconnectEvent) event);
+        else if (event instanceof ShutdownEvent)
+            onShutdown((ShutdownEvent) event);
 
         //Message Events
         //Guild (TextChannel) Message Events
