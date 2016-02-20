@@ -37,6 +37,7 @@ public class AudioManager
     //These values are set at the bottom of this file.
     public static boolean AUDIO_SUPPORTED;
     public static String OPUS_LIB_NAME;
+    public static final long DEFAULT_CONNECTION_TIMEOUT = 10000;
 
     private static boolean initialized = false;
 
@@ -46,6 +47,8 @@ public class AudioManager
 
     private AudioSendHandler sendHandler;
     private AudioReceiveHandler receiveHandler;
+
+    private long timeout = DEFAULT_CONNECTION_TIMEOUT;
 
     public AudioManager(JDAImpl api)
     {
@@ -243,7 +246,33 @@ public class AudioManager
 
         audioConnection.setSendingHandler(sendHandler);
         audioConnection.setReceivingHandler(receiveHandler);
-        audioConnection.ready();
+        audioConnection.ready(timeout);
+    }
+
+    /**
+     * Sets the amount of time, in milliseconds, that will be used as the timeout when waiting for the audio connection
+     * to successfully connect. The default value is 10 second (10,000 milliseconds).<br>
+     * NOTE: If you set this value to 0, you can remove timeout functionality and JDA will wait FOREVER for the connection
+     * to be established. This is no advised as it is possible that the connection may never be established.
+     *
+     * @param timeout
+     *          The amount of time, in milliseconds, that should be waited when waiting for the audio connection
+     *          to be established.
+     */
+    public void setConnectTimeout(long timeout)
+    {
+        this.timeout = timeout;
+    }
+
+    /**
+     * Returns the currently set timeout value, in milliseconds, used when waiting for an audio connection to be established.
+     *
+     * @return
+     *      The currently set timeout.
+     */
+    public long getConnectTimeout()
+    {
+        return timeout;
     }
 
     /**

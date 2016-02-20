@@ -18,7 +18,9 @@ package net.dv8tion.jda.audio;
 import com.neovisionaries.ws.client.*;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
+import net.dv8tion.jda.events.audio.AudioDisconnectEvent;
 import org.apache.http.HttpHost;
 import org.json.JSONObject;
 
@@ -245,7 +247,9 @@ public class AudioWebSocket extends WebSocketAdapter
             udpSocket.close();
         if (socket != null)
             socket.sendClose();
+        VoiceChannel disconnectedChannel = api.getAudioManager().getConnectedChannel();
         api.getAudioManager().setAudioConnection(null);
+        api.getEventManager().handle(new AudioDisconnectEvent(api, disconnectedChannel));
     }
 
     public DatagramSocket getUdpSocket()

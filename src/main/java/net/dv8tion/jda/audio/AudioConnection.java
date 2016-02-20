@@ -19,6 +19,9 @@ import com.sun.jna.ptr.PointerByReference;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.VoiceChannel;
+import net.dv8tion.jda.entities.impl.JDAImpl;
+import net.dv8tion.jda.events.audio.AudioConnectEvent;
+import net.dv8tion.jda.events.audio.AudioTimeoutEvent;
 import tomp2p.opuswrapper.Opus;
 import org.json.JSONObject;
 
@@ -29,7 +32,6 @@ import java.nio.ShortBuffer;
 
 public class AudioConnection
 {
-    public static final long CONNECTION_TIMEOUT = 10000;
     public static final int OPUS_SAMPLE_RATE = 48000;   //(Hz) We want to use the highest of qualities! All the bandwidth!
     public static final int OPUS_FRAME_SIZE = 960;      //An opus frame size of 960 at 48000hz represents 20 milliseconds of audio.
     public static final int OPUS_FRAME_TIME_AMOUNT = 20;//This is 20 milliseconds. We are only dealing with 20ms opus packets.
@@ -59,18 +61,23 @@ public class AudioConnection
                 Opus.INSTANCE.opus_encoder_create(OPUS_SAMPLE_RATE, OPUS_CHANNEL_COUNT, Opus.OPUS_APPLICATION_AUDIO, error);
     }
 
-    public void ready()
+    public void ready(long timeout)
     {
         Thread readyThread = new Thread()
         {
             @Override
             public void run()
             {
+                JDAImpl api = (JDAImpl) getJDA();
                 long started = System.currentTimeMillis();
-                while (!webSocket.isReady())
+                boolean connectionTimeout = false;
+                while (!webSocket.isReady() && !connectionTimeout)
                 {
-                    if (System.currentTimeMillis() - started > CONNECTION_TIMEOUT)
-                        throw new RuntimeException("Failed to establist an audio connection to the VoiceChannel due to Connection Timeout");
+                    if (timeout > 0 && System.currentTimeMillis() - started > timeout)
+                    {
+                        api.getEventManager().handle(new AudioTimeoutEvent(api, channel, timeout));
+                        connectionTimeout = true;
+                    }
 
                     try
                     {
@@ -84,6 +91,7 @@ public class AudioConnection
                 AudioConnection.this.udpSocket = webSocket.getUdpSocket();
                 setupSendThread();
                 setupReceiveThread();
+                api.getEventManager().handle(new AudioConnectEvent(api, AudioConnection.this.channel));
             }
         };
         readyThread.setDaemon(true);
