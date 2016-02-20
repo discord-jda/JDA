@@ -241,8 +241,10 @@ public class AudioWebSocket extends WebSocketAdapter
             udpKeepAliveThread.interrupt();
             udpKeepAliveThread = null;
         }
-        udpSocket.close();
-        socket.sendClose();
+        if (udpSocket != null)
+            udpSocket.close();
+        if (socket != null)
+            socket.sendClose();
         api.getAudioManager().setAudioConnection(null);
     }
 

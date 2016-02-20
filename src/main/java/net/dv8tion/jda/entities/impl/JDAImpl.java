@@ -501,7 +501,8 @@ public class JDAImpl implements JDA
     @Override
     public void shutdown(boolean free)
     {
-        getAudioManager().closeAudioConnection();
+        if (getAudioManager() != null)
+            getAudioManager().closeAudioConnection();
         client.close();
         authToken = null; //make further requests fail
         if (free)
