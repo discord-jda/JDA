@@ -142,13 +142,39 @@ public class MessageBuilder
     }
 
     /**
+     * Returns the current length of the content that will be built into a {@link net.dv8tion.jda.entities.Message Message}
+     * when {@link #build()} is called.<br>
+     * If this value is <code>0</code> or greater than <code>2000</code> when {@link #build()} is called, an exception
+     * will be raised.
+     *
+     * @return
+     *      The currently length of the content that will be built into a Message.
+     */
+    public int getLength()
+    {
+        return builder.length();
+    }
+
+    /**
      * Creates a {@link net.dv8tion.jda.entities.Message Message} object from this Builder
      *
      * @return the created {@link net.dv8tion.jda.entities.Message Message}
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *      <ul>
+     *          <li>If you attempt to build() an empty Message (no content added to the Message)</li>
+     *          <li>If you attempt to build() a Message with more than 2000 characters of content.</li>
+     *      </ul>
      */
     public Message build()
     {
-        return new MessageImpl("", null).setContent(builder.toString()).setTTS(isTTS).setMentionedUsers(mentioned)
+        String message = builder.toString();
+        if (message.isEmpty())
+            throw new UnsupportedOperationException("Cannot build a Message with no content. (You never added any content to the message)");
+        if (message.length() > 2000)
+            throw new UnsupportedOperationException("Cannot build a Message with more than 2000 characters. Please limit your input.");
+
+        return new MessageImpl("", null).setContent(message).setTTS(isTTS).setMentionedUsers(mentioned)
                 .setMentionedChannels(mentionedTextChannels).setMentionsEveryone(mentionEveryone);
     }
 
