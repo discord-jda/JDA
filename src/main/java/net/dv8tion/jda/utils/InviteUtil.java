@@ -26,9 +26,15 @@ import net.dv8tion.jda.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.exceptions.PermissionException;
 import net.dv8tion.jda.hooks.EventListener;
 import net.dv8tion.jda.hooks.SubscribeEvent;
+import net.dv8tion.jda.utils.InviteUtil.AdvancedInvite;
+
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class InviteUtil
@@ -108,7 +114,7 @@ public class InviteUtil
         private final String channelName, channelId;
         private final boolean isTextChannel;
 
-        protected Invite(String code, String guildName, String guildId, String channelName, String channelId, boolean isTextChannel)
+        private Invite(String code, String guildName, String guildId, String channelName, String channelId, boolean isTextChannel)
         {
             this.code = code;
             this.guildName = guildName;
@@ -155,15 +161,6 @@ public class InviteUtil
     }
 
     public static class AdvancedInvite extends Invite {
-        @Override
-        public String toString()
-        {
-            return "AdvancedInvite [getMaxAge()=" + getMaxAge() + ", getGuildSplashHash()=" + getGuildSplashHash() + ", isTemporary()=" + isTemporary()
-                    + ", getMaxUses()=" + getMaxUses() + ", getCreatedAt()=" + getCreatedAt() + ", getUses()=" + getUses() + ", getInviter()=" + getInviter()
-                    + ", isRevoked()=" + isRevoked() + ", getCode()=" + getCode() + ", getUrl()=" + getUrl() + ", getGuildName()=" + getGuildName()
-                    + ", getGuildId()=" + getGuildId() + ", getChannelName()=" + getChannelName() + ", getChannelId()=" + getChannelId() + ", isTextChannel()="
-                    + isTextChannel() + ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + ", toString()=" + super.toString() + "]";
-        }
 
         private final int max_age;
         private final String guildSplashHash;
@@ -175,7 +172,7 @@ public class InviteUtil
         private final User inviter;
         private final boolean revoked;
 
-        public AdvancedInvite(String code, String guildName, String guildId, String channelName, String channelId, boolean isTextChannel, int max_age, String guildSplashHash, boolean temporary,
+        private AdvancedInvite(String code, String guildName, String guildId, String channelName, String channelId, boolean isTextChannel, int max_age, String guildSplashHash, boolean temporary,
                 int maxUses, OffsetDateTime createdAt, int uses, User inviter, boolean revoked) {
             super(code, guildName, guildId, channelName, channelId, isTextChannel);
             this.max_age = max_age;
@@ -250,5 +247,42 @@ public class InviteUtil
                 cb.accept(((GuildJoinEvent) event).getGuild());
             }
         }
+    }
+
+    /**
+     * Provides a list of all {@link net.dv8tion.jda.utils.InviteUtil.AdvancedInvite Invites} for the given {@link net.dv8tion.jda.entities.Guild Guild}.
+     * @return
+     *      An Immutable List of {@link net.dv8tion.jda.utils.InviteUtil.AdvancedInvite Invites}.
+     */
+    public static List<AdvancedInvite> getInvites(Guild guild)
+    {
+        if (!PermissionUtil.checkPermission(guild.getJDA().getSelfInfo(), Permission.MANAGE_SERVER, guild))
+        {
+            throw new PermissionException(Permission.MANAGE_SERVER);
+        }
+
+        List<AdvancedInvite> invites = new ArrayList<>();
+
+        JSONArray array = ((JDAImpl)guild.getJDA()).getRequester().getA("https://discordapp.com/api/guilds/" + guild.getId() + "/invites");
+
+        for (int i = 0; i < array.length(); i++)
+        {
+            JSONObject invite = array.getJSONObject(i);
+
+            if (invite.has("code"))
+            {
+                JSONObject jsonGuild = invite.getJSONObject("guild");
+                JSONObject channel = invite.getJSONObject("channel");
+                JSONObject inviter = invite.getJSONObject("inviter");
+
+                invites.add(new AdvancedInvite(invite.getString("code"), jsonGuild.getString("name"), jsonGuild.getString("id"),
+                        channel.getString("name"), channel.getString("id"), channel.getString("type").equals("text"),
+                        invite.getInt("max_age"), jsonGuild.isNull("splash_hash") ? null : jsonGuild.getString("splash_hash"), invite.getBoolean("temporary"),
+                        invite.getInt("max_uses"), OffsetDateTime.parse(invite.getString("created_at")), invite.getInt("uses"),
+                        guild.getJDA().getUserById(inviter.getString("id")), invite.getBoolean("revoked")));
+            }
+        }
+
+        return Collections.unmodifiableList(invites);
     }
 }

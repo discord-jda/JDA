@@ -25,6 +25,7 @@ import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.managers.ChannelManager;
 import net.dv8tion.jda.managers.GuildManager;
 import net.dv8tion.jda.managers.RoleManager;
+import net.dv8tion.jda.utils.InviteUtil;
 import net.dv8tion.jda.utils.InviteUtil.AdvancedInvite;
 import net.dv8tion.jda.utils.InviteUtil.Invite;
 import net.dv8tion.jda.utils.PermissionUtil;
@@ -366,33 +367,6 @@ public class GuildImpl implements Guild
 	@Override
 	public List<AdvancedInvite> getInvites()
 	{
-		if (!PermissionUtil.checkPermission(api.getSelfInfo(), Permission.MANAGE_SERVER, this))
-		{
-			throw new PermissionException(Permission.MANAGE_SERVER);
-		}
-
-		List<AdvancedInvite> invites = new ArrayList<>();
-
-		JSONArray array = api.getRequester().getA("https://discordapp.com/api/guilds/" + id + "/invites");
-
-		for (int i = 0; i < array.length(); i++)
-        {
-            JSONObject invite = array.getJSONObject(i);
-
-            if (invite.has("code"))
-            {
-                JSONObject guild = invite.getJSONObject("guild");
-                JSONObject channel = invite.getJSONObject("channel");
-                JSONObject inviter = invite.getJSONObject("inviter");
-
-                invites.add(new AdvancedInvite(invite.getString("code"), guild.getString("name"), guild.getString("id"),
-                        channel.getString("name"), channel.getString("id"), channel.getString("type").equals("text"),
-                        invite.getInt("max_age"), guild.isNull("splash_hash") ? null : guild.getString("splash_hash"), invite.getBoolean("temporary"),
-                        invite.getInt("max_uses"), OffsetDateTime.parse(invite.getString("created_at")), invite.getInt("uses"),
-                        api.getUserById(inviter.getString("id")), invite.getBoolean("revoked")));
-            }
-        }
-
-		return Collections.unmodifiableList(invites);
+		return InviteUtil.getInvites(this);
 	}
 }
