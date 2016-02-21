@@ -74,10 +74,8 @@ public class EntityBuilder
         {
             Role role = createRole(roles.getJSONObject(i), guildObj.getId());
             guildObj.getRolesMap().put(role.getId(), role);
-            if (role.getName().equals("@everyone"))
-            {
+            if (role.getId().equals(guildObj.getId()))
                 guildObj.setPublicRole(role);
-            }
         }
 
         if (guild.has("members"))
@@ -207,7 +205,9 @@ public class EntityBuilder
             String type = channel.getString("type");
             if (type.equalsIgnoreCase("text"))
             {
-                createTextChannel(channel, guildObj.getId());
+                TextChannel newChannel = createTextChannel(channel, guildObj.getId());
+                if (newChannel.getId().equals(guildObj.getId()))
+                    guildObj.setPublicChannel(newChannel);
             }
             else if (type.equalsIgnoreCase("voice"))
             {

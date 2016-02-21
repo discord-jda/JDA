@@ -185,6 +185,16 @@ public interface Guild
     Role getPublicRole();
 
     /**
+     * The default {@link net.dv8tion.jda.entities.TextChannel TextChannel} for a {@link net.dv8tion.jda.entities.Guild Guild}.
+     * This channel cannot be deleted and the {@link #getPublicRole() Public Role} always has the ability to
+     * {@link net.dv8tion.jda.Permission#MESSAGE_READ Permission.MESSAGE_READ} this channel.
+     *
+     * @return
+     *      The {@link net.dv8tion.jda.entities.TextChannel TextChannel} representing the public channel for this guild.
+     */
+    TextChannel getPublicChannel();
+
+    /**
      * Provides the join-date for a given {@link net.dv8tion.jda.entities.User User}.
      *
      * @param user

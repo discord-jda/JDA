@@ -52,6 +52,7 @@ public class GuildImpl implements Guild
     private final Map<User, VoiceStatus> voiceStatusMap = new HashMap<>();
     private final Map<User, OffsetDateTime> joinedAtMap = new HashMap<>();
     private Role publicRole;
+    private TextChannel publicChannel;
     private final JDAImpl api;
     private boolean available;
 
@@ -236,6 +237,12 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    public TextChannel getPublicChannel()
+    {
+        return publicChannel;
+    }
+
+    @Override
     public OffsetDateTime getJoinDateForUser(User user)
     {
         return joinedAtMap.get(user);
@@ -314,6 +321,12 @@ public class GuildImpl implements Guild
     public GuildImpl setPublicRole(Role role)
     {
         this.publicRole = role;
+        return this;
+    }
+
+    public GuildImpl setPublicChannel(TextChannel channel)
+    {
+        this.publicChannel = channel;
         return this;
     }
 
