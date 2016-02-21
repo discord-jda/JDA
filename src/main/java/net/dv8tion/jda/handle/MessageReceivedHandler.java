@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 
 public class MessageReceivedHandler extends SocketHandler
 {
-    private static final Pattern invitePattern = Pattern.compile("\\bhttps://discord.gg/([a-zA-Z0-9]+)\\b");
+    private static final Pattern invitePattern = Pattern.compile("\\bhttps://discord.gg/([a-zA-Z0-9-]+)\\b");
 
     public MessageReceivedHandler(JDAImpl api, int responseNumber)
     {

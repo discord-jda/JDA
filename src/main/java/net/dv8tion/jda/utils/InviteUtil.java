@@ -26,8 +26,6 @@ import net.dv8tion.jda.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.exceptions.PermissionException;
 import net.dv8tion.jda.hooks.EventListener;
 import net.dv8tion.jda.hooks.SubscribeEvent;
-import net.dv8tion.jda.utils.InviteUtil.AdvancedInvite;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -51,24 +49,61 @@ public class InviteUtil
         {
             JSONObject guild = response.getJSONObject("guild");
             JSONObject channel = response.getJSONObject("channel");
-            return new Invite(response.getString("code"), guild.getString("name"), guild.getString("id"),
+            return new Invite(response.getString("code"), response.isNull("xkcdpass") ? null : response.getString("xkcdpass"), guild.getString("name"), guild.getString("id"),
                     channel.getString("name"), channel.getString("id"), channel.getString("type").equals("text"));
         }
         return null;
     }
 
-    public static Invite createInvite(Channel chan, JDA jda)
+    /**
+     * Creates a standard-invite (valid for 24hrs, infinite usages, permanent access and not human-readable).
+     * To create a customized Invite, use {@link #createInvite(Channel, InviteDuration, int, boolean, boolean, JDA)} instead.
+     *
+     * @param chan
+     *      The channel to create the invite for.
+     * @param jda
+     *      The JDA-instance from who the invite should be created from.
+     * @return
+     *      The created AdvancedInvite object.
+     */
+    public static AdvancedInvite createInvite(Channel chan, JDA jda)
+    {
+        return createInvite(chan, InviteDuration.ONE_DAY, 0, false, false, jda);
+    }
+
+    /**
+     * Creates an advanced invite.
+     *
+     * @param chan
+     *      The channel to create the invite for.
+     * @param duration
+     *      The duration the invide should be valid for.
+     * @param maxUses
+     *      The maximum amount of usages of this invite. 0 means infinite usages.
+     * @param temporary
+     *      Whether or not the invite should only grant temporary access to the Guild (members will get removed after they log out, unless they get a role assigned).
+     * @param humanReadable
+     *      Wheter or not the invite should be in human-readable form.
+     * @param jda
+     *      The JDA-instance from who the invite should be created from.
+     * @return
+     *      The created AdvancedInvite object.
+     */
+    public static AdvancedInvite createInvite(Channel chan, InviteDuration duration, int maxUses, boolean temporary, boolean humanReadable, JDA jda)
     {
         if (!chan.checkPermission(jda.getSelfInfo(), Permission.CREATE_INSTANT_INVITE))
             throw new PermissionException(Permission.CREATE_INSTANT_INVITE);
 
-        JSONObject response = ((JDAImpl) jda).getRequester().post("https://discordapp.com/api/channels/" + chan.getId() + "/invites", new JSONObject());
+        maxUses = Math.max(0, maxUses);
+        JSONObject response = ((JDAImpl) jda).getRequester().post("https://discordapp.com/api/channels/" + chan.getId() + "/invites",
+                new JSONObject()
+                        .put("max_age", duration.getDuration())
+                        .put("temporary", temporary)
+                        .put("max_uses", maxUses)
+                        .put("xkcdpass", humanReadable));
         if (response.has("code"))
         {
-            JSONObject guild = response.getJSONObject("guild");
-            JSONObject channel = response.getJSONObject("channel");
-            return new Invite(response.getString("code"), guild.getString("name"), guild.getString("id"),
-                    channel.getString("name"), channel.getString("id"), channel.getString("type").equals("text"));
+            return AdvancedInvite.fromJson(response, jda);
         }
         return null;
     }
@@ -128,25 +163,7 @@ public class InviteUtil
 
             if (invite.has("code"))
             {
-                JSONObject guild = invite.getJSONObject("guild");
-                JSONObject channel = invite.getJSONObject("channel");
-                JSONObject inviter = invite.getJSONObject("inviter");
-
-                invites.add(new AdvancedInvite(
-                        invite.getString("code"),
-                        guild.getString("name"),
-                        guild.getString("id"),
-                        channel.getString("name"),
-                        channel.getString("id"),
-                        channel.getString("type").equals("text"),
-                        invite.getInt("max_age"),
-                        guild.isNull("splash_hash") ? null : guild.getString("splash_hash"),
-                        invite.getBoolean("temporary"),
-                        invite.getInt("max_uses"),
-                        OffsetDateTime.parse(invite.getString("created_at")),
-                        invite.getInt("uses"),
-                        guildObj.getJDA().getUserById(inviter.getString("id")),
-                        invite.getBoolean("revoked")));
+                invites.add(AdvancedInvite.fromJson(invite, guildObj.getJDA()));
             }
         }
 
@@ -168,25 +185,7 @@ public class InviteUtil
 
             if (invite.has("code"))
             {
-                JSONObject guild = invite.getJSONObject("guild");
-                JSONObject channel = invite.getJSONObject("channel");
-                JSONObject inviter = invite.getJSONObject("inviter");
-
-                invites.add(new AdvancedInvite(
-                        invite.getString("code"),
-                        guild.getString("name"),
-                        guild.getString("id"),
-                        channel.getString("name"),
-                        channel.getString("id"),
-                        channel.getString("type").equals("text"),
-                        invite.getInt("max_age"),
-                        guild.isNull("splash_hash") ? null : guild.getString("splash_hash"),
-                        invite.getBoolean("temporary"),
-                        invite.getInt("max_uses"),
-                        OffsetDateTime.parse(invite.getString("created_at")),
-                        invite.getInt("uses"),
-                        channelObj.getJDA().getUserById(inviter.getString("id")),
-                        invite.getBoolean("revoked")));
+                invites.add(AdvancedInvite.fromJson(invite, channelObj.getJDA()));
             }
         }
 
@@ -196,13 +195,15 @@ public class InviteUtil
     public static class Invite
     {
         private final String code;
+        private final String humanCode;
         private final String guildName, guildId;
         private final String channelName, channelId;
         private final boolean isTextChannel;
 
-        private Invite(String code, String guildName, String guildId, String channelName, String channelId, boolean isTextChannel)
+        private Invite(String code, String humanCode, String guildName, String guildId, String channelName, String channelId, boolean isTextChannel)
         {
             this.code = code;
+            this.humanCode = humanCode;
             this.guildName = guildName;
             this.guildId = guildId;
             this.channelName = channelName;
@@ -215,9 +216,14 @@ public class InviteUtil
             return code;
         }
 
+        public String getHumanCode()
+        {
+            return humanCode;
+        }
+
         public String getUrl()
         {
-            return "https://discord.gg/" + code;
+            return "https://discord.gg/" + (humanCode == null ? code : humanCode);
         }
 
         public String getGuildName()
@@ -248,7 +254,7 @@ public class InviteUtil
 
     public static class AdvancedInvite extends Invite {
 
-        private final int maxAge;
+        private final InviteDuration duration;
         private final String guildSplashHash;
         private final boolean temporary;
         private final int maxUses;
@@ -258,10 +264,10 @@ public class InviteUtil
         private final User inviter;
         private final boolean revoked;
 
-        private AdvancedInvite(String code, String guildName, String guildId, String channelName, String channelId, boolean isTextChannel, int maxAge, String guildSplashHash, boolean temporary,
+        private AdvancedInvite(String code, String humanCode, String guildName, String guildId, String channelName, String channelId, boolean isTextChannel, InviteDuration duration, String guildSplashHash, boolean temporary,
                 int maxUses, OffsetDateTime createdAt, int uses, User inviter, boolean revoked) {
-            super(code, guildName, guildId, channelName, channelId, isTextChannel);
-            this.maxAge = maxAge;
+            super(code, humanCode, guildName, guildId, channelName, channelId, isTextChannel);
+            this.duration = duration;
             this.guildSplashHash = guildSplashHash;
             this.temporary = temporary;
             this.maxUses = maxUses;
@@ -271,44 +277,98 @@ public class InviteUtil
             this.revoked = revoked;
         }
 
-        public final int getMaxAge()
+        public InviteDuration getDuration()
         {
-            return maxAge;
+            return duration;
         }
 
-        public final String getGuildSplashHash()
+        public String getGuildSplashHash()
         {
             return guildSplashHash;
         }
 
-        public final boolean isTemporary()
+        public boolean isTemporary()
         {
             return temporary;
         }
 
-        public final int getMaxUses()
+        public int getMaxUses()
         {
             return maxUses;
         }
 
-        public final OffsetDateTime getCreatedAt()
+        public OffsetDateTime getCreatedAt()
         {
             return createdAt;
         }
 
-        public final int getUses()
+        public int getUses()
         {
             return uses;
         }
 
-        public final User getInviter()
+        public User getInviter()
         {
             return inviter;
         }
 
-        public final boolean isRevoked()
+        public boolean isRevoked()
         {
             return revoked;
+        }
+
+        private static AdvancedInvite fromJson(JSONObject object, JDA jda)
+        {
+            JSONObject guild = object.getJSONObject("guild");
+            JSONObject channel = object.getJSONObject("channel");
+            JSONObject inviter = object.getJSONObject("inviter");
+
+            return new AdvancedInvite(
+                    object.getString("code"),
+                    object.isNull("xkcdpass") ? null : object.getString("xkcdpass"),
+                    guild.getString("name"),
+                    guild.getString("id"),
+                    channel.getString("name"),
+                    channel.getString("id"),
+                    channel.getString("type").equals("text"),
+                    InviteDuration.getFromDuration(object.getInt("max_age")),
+                    guild.isNull("splash_hash") ? null : guild.getString("splash_hash"),
+                    object.getBoolean("temporary"),
+                    object.getInt("max_uses"),
+                    OffsetDateTime.parse(object.getString("created_at")),
+                    object.getInt("uses"),
+                    jda.getUserById(inviter.getString("id")),
+                    object.getBoolean("revoked"));
+        }
+    }
+
+    enum InviteDuration {
+        INFINITE(0), THIRTY_MINUTES(1800),
+        ONE_HOUR(3600), SIX_HOURS(6*3600), TWELVE_HOURS(12*3600),
+        ONE_DAY(24*3600);
+
+        private final int duration;
+
+        InviteDuration(int duration)
+        {
+            this.duration = duration;
+        }
+
+        private int getDuration()
+        {
+            return duration;
+        }
+
+        private static InviteDuration getFromDuration(int duration)
+        {
+            for (InviteDuration dur : InviteDuration.values())
+            {
+                if (dur.getDuration() == duration)
+                {
+                    return dur;
+                }
+            }
+            return INFINITE;
         }
     }
 
