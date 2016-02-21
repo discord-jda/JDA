@@ -43,7 +43,7 @@ public class GuildListenerExample extends ListenerAdapter
                     .setEmail("EMAIL")
                     .setPassword("PASSWORD")
                     .addListener(new GuildListenerExample())
-                    .buildAsync();
+                    .buildBlocking();
         }
         catch (IllegalArgumentException e)
         {
@@ -52,6 +52,10 @@ public class GuildListenerExample extends ListenerAdapter
         catch (LoginException e)
         {
             System.out.println("The provided email / password combination was incorrect. Please provide valid details.");
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
         }
     }
 
