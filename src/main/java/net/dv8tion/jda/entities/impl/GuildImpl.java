@@ -25,7 +25,12 @@ import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.managers.ChannelManager;
 import net.dv8tion.jda.managers.GuildManager;
 import net.dv8tion.jda.managers.RoleManager;
+import net.dv8tion.jda.utils.InviteUtil;
+import net.dv8tion.jda.utils.InviteUtil.AdvancedInvite;
+import net.dv8tion.jda.utils.InviteUtil.Invite;
 import net.dv8tion.jda.utils.PermissionUtil;
+
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
@@ -358,4 +363,10 @@ public class GuildImpl implements Guild
     {
         return "G:" + getName() + '(' + getId() + ')';
     }
+
+	@Override
+	public List<AdvancedInvite> getInvites()
+	{
+		return InviteUtil.getInvites(this);
+	}
 }
