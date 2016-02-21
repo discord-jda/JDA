@@ -249,6 +249,7 @@ public interface Guild
 
     /**
      * Provides a list of all {@link net.dv8tion.jda.utils.InviteUtil.AdvancedInvite Invites} for this Guild.
+     *
      * @return
      *      An Immutable List of {@link net.dv8tion.jda.utils.InviteUtil.AdvancedInvite Invites} for this guild.
      */
