@@ -113,14 +113,14 @@ public class InviteUtil
      * @return
      *      An Immutable List of {@link net.dv8tion.jda.utils.InviteUtil.AdvancedInvite Invites}.
      */
-    public static List<AdvancedInvite> getInvites(Guild guild)
+    public static List<AdvancedInvite> getInvites(Guild guildObj)
     {
-        if (!PermissionUtil.checkPermission(guild.getJDA().getSelfInfo(), Permission.MANAGE_SERVER, guild))
+        if (!PermissionUtil.checkPermission(guildObj.getJDA().getSelfInfo(), Permission.MANAGE_SERVER, guildObj))
             throw new PermissionException(Permission.MANAGE_SERVER);
 
         List<AdvancedInvite> invites = new ArrayList<>();
 
-        JSONArray array = ((JDAImpl)guild.getJDA()).getRequester().getA("https://discordapp.com/api/guilds/" + guild.getId() + "/invites");
+        JSONArray array = ((JDAImpl)guildObj.getJDA()).getRequester().getA("https://discordapp.com/api/guilds/" + guildObj.getId() + "/invites");
 
         for (int i = 0; i < array.length(); i++)
         {
@@ -128,24 +128,64 @@ public class InviteUtil
 
             if (invite.has("code"))
             {
-                JSONObject jsonGuild = invite.getJSONObject("guild");
+                JSONObject guild = invite.getJSONObject("guild");
                 JSONObject channel = invite.getJSONObject("channel");
                 JSONObject inviter = invite.getJSONObject("inviter");
 
                 invites.add(new AdvancedInvite(
                         invite.getString("code"),
-                        jsonGuild.getString("name"),
-                        jsonGuild.getString("id"),
+                        guild.getString("name"),
+                        guild.getString("id"),
                         channel.getString("name"),
                         channel.getString("id"),
                         channel.getString("type").equals("text"),
                         invite.getInt("max_age"),
-                        jsonGuild.isNull("splash_hash") ? null : jsonGuild.getString("splash_hash"),
+                        guild.isNull("splash_hash") ? null : guild.getString("splash_hash"),
                         invite.getBoolean("temporary"),
                         invite.getInt("max_uses"),
                         OffsetDateTime.parse(invite.getString("created_at")),
                         invite.getInt("uses"),
-                        guild.getJDA().getUserById(inviter.getString("id")),
+                        guildObj.getJDA().getUserById(inviter.getString("id")),
+                        invite.getBoolean("revoked")));
+            }
+        }
+
+        return Collections.unmodifiableList(invites);
+    }
+
+    public static List<AdvancedInvite> getInvites(Channel channelObj)
+    {
+        if (!PermissionUtil.checkPermission(channelObj.getJDA().getSelfInfo(), Permission.MANAGE_CHANNEL, channelObj))
+            throw new PermissionException(Permission.MANAGE_CHANNEL);
+
+        List<AdvancedInvite> invites = new ArrayList<>();
+
+        JSONArray array = ((JDAImpl)channelObj.getJDA()).getRequester().getA("https://discordapp.com/api/channels/" + channelObj.getId() + "/invites");
+
+        for (int i = 0; i < array.length(); i++)
+        {
+            JSONObject invite = array.getJSONObject(i);
+
+            if (invite.has("code"))
+            {
+                JSONObject guild = invite.getJSONObject("guild");
+                JSONObject channel = invite.getJSONObject("channel");
+                JSONObject inviter = invite.getJSONObject("inviter");
+
+                invites.add(new AdvancedInvite(
+                        invite.getString("code"),
+                        guild.getString("name"),
+                        guild.getString("id"),
+                        channel.getString("name"),
+                        channel.getString("id"),
+                        channel.getString("type").equals("text"),
+                        invite.getInt("max_age"),
+                        guild.isNull("splash_hash") ? null : guild.getString("splash_hash"),
+                        invite.getBoolean("temporary"),
+                        invite.getInt("max_uses"),
+                        OffsetDateTime.parse(invite.getString("created_at")),
+                        invite.getInt("uses"),
+                        channelObj.getJDA().getUserById(inviter.getString("id")),
                         invite.getBoolean("revoked")));
             }
         }

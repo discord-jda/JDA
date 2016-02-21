@@ -30,6 +30,7 @@ import net.dv8tion.jda.exceptions.RateLimitedException;
 import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.managers.ChannelManager;
 import net.dv8tion.jda.managers.PermissionOverrideManager;
+import net.dv8tion.jda.utils.InviteUtil;
 import net.dv8tion.jda.utils.PermissionUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -275,6 +276,12 @@ public class TextChannelImpl extends TextChannel
         PermissionOverrideManager manager = new PermissionOverrideManager(override);
         manager.reset(Permission.MANAGE_PERMISSIONS).update();
         return manager;
+    }
+
+    @Override
+    public List<InviteUtil.AdvancedInvite> getInvites()
+    {
+        return InviteUtil.getInvites(this);
     }
 
 

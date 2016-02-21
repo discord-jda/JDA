@@ -19,6 +19,7 @@ import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.managers.ChannelManager;
 import net.dv8tion.jda.managers.PermissionOverrideManager;
+import net.dv8tion.jda.utils.InviteUtil;
 
 import java.util.List;
 
@@ -186,4 +187,12 @@ public interface Channel
      *      the PermissionOverrideManager for the created PermissionOverride
      */
     PermissionOverrideManager createPermissionOverride(Role role);
+
+    /**
+     * Provides a list of all {@link net.dv8tion.jda.utils.InviteUtil.AdvancedInvite Invites} for this Channel.
+     *
+     * @return
+     *      An Immutable List of {@link net.dv8tion.jda.utils.InviteUtil.AdvancedInvite Invites} for this channel.
+     */
+    List<InviteUtil.AdvancedInvite> getInvites();
 }
