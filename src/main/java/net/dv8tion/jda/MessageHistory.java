@@ -16,6 +16,7 @@
 package net.dv8tion.jda;
 
 import net.dv8tion.jda.entities.Message;
+import net.dv8tion.jda.entities.MessageChannel;
 import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
@@ -34,19 +35,13 @@ public class MessageHistory
     private boolean atEnd = false;
     private final List<Message> queued = new LinkedList<>();
 
-    public MessageHistory(JDA api, TextChannel channel)
+    public MessageHistory(JDA api, MessageChannel channel)
     {
-        if (!channel.checkPermission(api.getSelfInfo(), Permission.MESSAGE_HISTORY))
+        if (channel instanceof TextChannel && !((TextChannel) channel).checkPermission(api.getSelfInfo(), Permission.MESSAGE_HISTORY))
             throw new PermissionException(Permission.MESSAGE_HISTORY);
 
         this.api = ((JDAImpl) api);
-        this.channelId = channel.getId();
-    }
-
-    public MessageHistory(JDA api, PrivateChannel channel)
-    {
-        this.api = ((JDAImpl) api);
-        this.channelId = channel.getId();
+        this.channelId = (channel instanceof TextChannel) ? ((TextChannel) channel).getId() : ((PrivateChannel) channel).getId();
     }
 
     /**
