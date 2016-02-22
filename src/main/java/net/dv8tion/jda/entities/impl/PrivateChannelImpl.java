@@ -19,6 +19,7 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import com.mashape.unirest.request.body.MultipartBody;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.JDAInfo;
 import net.dv8tion.jda.MessageBuilder;
@@ -111,16 +112,33 @@ public class PrivateChannelImpl implements PrivateChannel
     }
 
     @Override
+    @Deprecated
     public Message sendFile(File file)
+    {
+        return sendFile(file, null);
+    }
+
+    @Override
+    @Deprecated
+    public void sendFileAsync(File file, Consumer<Message> callback)
+    {
+        sendFileAsync(file, null, callback);
+    }
+
+    @Override
+    public Message sendFile(File file, Message message)
     {
         JDAImpl api = (JDAImpl) getJDA();
         try
         {
-            HttpResponse<JsonNode> response = Unirest.post("https://discordapp.com/api/channels/" + getId() + "/messages")
+            MultipartBody body = Unirest.post("https://discordapp.com/api/channels/" + getId() + "/messages")
                     .header("authorization", getJDA().getAuthToken())
                     .header("user-agent", JDAInfo.GITHUB + " " + JDAInfo.VERSION)
-                    .field("file", file)
-                    .asJson();
+                    .field("file", file);
+            if (message != null)
+                body.field("content", message.getRawContent()).field("tts", message.isTTS());
+
+            HttpResponse<JsonNode> response = body.asJson();
 
             JSONObject messageJson = new JSONObject(response.getBody().toString());
             return new EntityBuilder(api).createMessage(messageJson);
@@ -133,11 +151,11 @@ public class PrivateChannelImpl implements PrivateChannel
     }
 
     @Override
-    public void sendFileAsync(File file, Consumer<Message> callback)
+    public void sendFileAsync(File file, Message message, Consumer<Message> callback)
     {
         Thread thread = new Thread(() ->
         {
-            Message message = sendFile(file);
+            Message messageReturn = sendFile(file, message);
             if (callback != null)
                 callback.accept(message);
         });
