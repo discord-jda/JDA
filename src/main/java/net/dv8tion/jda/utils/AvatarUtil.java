@@ -20,10 +20,7 @@ import org.apache.commons.codec.binary.StringUtils;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.util.Base64;
 
 public class AvatarUtil
@@ -41,14 +38,7 @@ public class AvatarUtil
             {
                 //reading
                 BufferedImage img = ImageIO.read(avatarFile);
-                //resizing
-                img = resize(img);
-                //writing + converting to jpg if necessary
-                ByteArrayOutputStream bout = new ByteArrayOutputStream();
-                ImageIO.write(img, "jpg", bout);
-                bout.close();
-
-                return new Avatar("data:image/jpeg;base64," + StringUtils.newStringUtf8(Base64.getEncoder().encode(bout.toByteArray())));
+                return getAvatar(img);
             }
             catch (IOException e)
             {
@@ -58,6 +48,41 @@ public class AvatarUtil
         else
         {
             throw new UnsupportedEncodingException("Image type " + type + " is not supported!");
+        }
+        return null;
+    }
+
+    public static Avatar getAvatar(InputStream inputStream)
+    {
+        try
+        {
+            //reading
+            BufferedImage img = ImageIO.read(inputStream);
+            return getAvatar(img);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static Avatar getAvatar(BufferedImage img)
+    {
+        try
+        {
+            //resizing
+            img = resize(img);
+            //writing + converting to jpg if necessary
+            ByteArrayOutputStream bout = new ByteArrayOutputStream();
+            ImageIO.write(img, "jpg", bout);
+            bout.close();
+
+            return new Avatar("data:image/jpeg;base64," + StringUtils.newStringUtf8(Base64.getEncoder().encode(bout.toByteArray())));
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
         }
         return null;
     }
