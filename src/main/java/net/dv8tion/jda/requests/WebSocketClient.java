@@ -47,7 +47,7 @@ public class WebSocketClient extends WebSocketAdapter
     private final List<String> cachedEvents = new LinkedList<>();
     private String url = null;
     private int reconnectTimeout = 2;
-    private boolean reconnecting = false;           //for internal information
+    private boolean reconnecting = false;           //for internal information (op7)
     private boolean shouldReconnect = false;        //for configuration (connection loss)
 
     public WebSocketClient(JDAImpl api, HttpHost proxy)
@@ -118,7 +118,7 @@ public class WebSocketClient extends WebSocketAdapter
         {
             keepAliveInterval = content.getLong("heartbeat_interval");
             keepAliveThread = new Thread(() -> {
-                while (socket.isOpen()) {
+                while (connected) {
                     try {
                         send(new JSONObject().put("op", 1).put("d", System.currentTimeMillis()).toString());
                         Thread.sleep(keepAliveInterval);
@@ -288,9 +288,11 @@ public class WebSocketClient extends WebSocketAdapter
                 System.out.println("Reason: " + serverCloseFrame.getCloseReason());
                 System.out.println("Close code: " + serverCloseFrame.getCloseCode());
             }
+            api.getEventManager().handle(new ShutdownEvent(api, OffsetDateTime.now()));
         }
         else
         {
+            api.getEventManager().handle(new DisconnectEvent(api, serverCloseFrame, clientCloseFrame, closedByServer, OffsetDateTime.now()));
             reconnect();
         }
     }
