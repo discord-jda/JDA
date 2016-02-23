@@ -49,6 +49,7 @@ public class JDABuilder
     boolean debug = false;
     boolean enableVoice = true;
     boolean useAnnotatedManager = false;
+    boolean reconnect = true;
 
     /**
      * Creates a completely empty JDABuilder.<br>
@@ -169,6 +170,23 @@ public class JDABuilder
     }
 
     /**
+     * Sets whether or not JDA should try to reconnect, if a connection-error occured.
+     * This will use and incremental reconnect (timeouts are increased each time an attempt fails).
+     *
+     * Default is true.
+     *
+     * @param reconnect
+     *      If true - enables autoReconnect
+     * @return
+     *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public JDABuilder setAutoReconnect(boolean reconnect)
+    {
+        this.reconnect = reconnect;
+        return this;
+    }
+
+    /**
      * Changes the internal EventManager.
      * The default EventManager is {@link net.dv8tion.jda.hooks.InterfacedEventManager InterfacedEventListener}.
      * There is also an {@link AnnotatedEventManager AnnotatedEventManager} available.
@@ -252,6 +270,7 @@ public class JDABuilder
         else
             jda = new JDAImpl(enableVoice);
         jda.setDebug(debug);
+        jda.setAutoReconnect(reconnect);
         if (useAnnotatedManager)
         {
             jda.setEventManager(new AnnotatedEventManager());

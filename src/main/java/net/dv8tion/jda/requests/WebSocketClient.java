@@ -42,17 +42,19 @@ public class WebSocketClient extends WebSocketAdapter
     private final JDAImpl api;
     private final HttpHost proxy;
     private String sessionId;
-    private String reconnectUrl = null;
     private boolean ready = false;
     private boolean connected;
-    private boolean expectingClose = false;
     private final List<String> cachedEvents = new LinkedList<>();
+    private String url = null;
+    private int reconnectTimeout = 2;
+    private boolean reconnecting = false;           //for internal information
+    private boolean shouldReconnect = false;        //for configuration (connection loss)
 
-    public WebSocketClient(String url, JDAImpl api, HttpHost proxy)
+    public WebSocketClient(JDAImpl api, HttpHost proxy)
     {
         this.api = api;
         this.proxy = proxy;
-        connect(url);
+        connect();
     }
 
     public void send(String message)
@@ -64,7 +66,8 @@ public class WebSocketClient extends WebSocketAdapter
     public void onConnected(WebSocket websocket, Map<String, List<String>> headers)
     {
         JSONObject connectObj;
-        if(reconnectUrl == null)
+        System.out.println("Connected to WebSocket");
+        if(!reconnecting)
         {
             connectObj = new JSONObject()
                     .put("op", 2)
@@ -90,7 +93,7 @@ public class WebSocketClient extends WebSocketAdapter
                             .put("seq", api.getResponseTotal()));
         }
         send(connectObj.toString());
-        reconnectUrl = null;
+        reconnecting = false;
         connected = true;
     }
 
@@ -101,7 +104,8 @@ public class WebSocketClient extends WebSocketAdapter
 
         if (content.getInt("op") == 7)
         {
-            reconnectUrl = content.getJSONObject("d").getString("url");
+            url = content.getJSONObject("d").getString("url");
+            reconnecting = true;
             close();
             return;
         }
@@ -115,10 +119,14 @@ public class WebSocketClient extends WebSocketAdapter
             keepAliveInterval = content.getLong("heartbeat_interval");
             keepAliveThread = new Thread(() -> {
                 while (socket.isOpen()) {
-                    send(new JSONObject().put("op", 1).put("d", System.currentTimeMillis()).toString());
                     try {
+                        send(new JSONObject().put("op", 1).put("d", System.currentTimeMillis()).toString());
                         Thread.sleep(keepAliveInterval);
                     } catch (InterruptedException ignored) {}
+                    catch (Exception ex) {
+                        //connection got cut... terminating keepAliveThread
+                        break;
+                    }
                 }
             });
             keepAliveThread.setDaemon(true);
@@ -140,6 +148,8 @@ public class WebSocketClient extends WebSocketAdapter
                 case "READY":
                     sessionId = content.getString("session_id");
                     new ReadyHandler(api, responseTotal).handle(content);
+                case "RESUMED":
+                    reconnectTimeout = 2;
                     break;
                 case "GUILD_MEMBERS_CHUNK":
                     new GuildMembersChunkHandler(api, responseTotal).handle(content);
@@ -260,7 +270,16 @@ public class WebSocketClient extends WebSocketAdapter
     public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer)
     {
         connected = false;
-        if (reconnectUrl == null)
+        if (keepAliveThread != null)
+        {
+            keepAliveThread.interrupt();
+            keepAliveThread = null;
+        }
+        if (reconnecting)           //we issued a reconnect (got op 7)
+        {
+            connect();
+        }
+        else if (!shouldReconnect)        //we should not reconnect
         {
             System.out.println("The connection was closed!");
             System.out.println("By remote? " + closedByServer);
@@ -269,16 +288,10 @@ public class WebSocketClient extends WebSocketAdapter
                 System.out.println("Reason: " + serverCloseFrame.getCloseReason());
                 System.out.println("Close code: " + serverCloseFrame.getCloseCode());
             }
-            if (!expectingClose)
-                api.getEventManager().handle(new DisconnectEvent(api, serverCloseFrame, clientCloseFrame, closedByServer, OffsetDateTime.now()));
-            else
-                api.getEventManager().handle(new ShutdownEvent(api,OffsetDateTime.now()));
-
         }
         else
         {
-            expectingClose = false;
-            connect(reconnectUrl);
+            reconnect();
         }
     }
 
@@ -294,7 +307,7 @@ public class WebSocketClient extends WebSocketAdapter
         cause.printStackTrace();
     }
 
-    private void connect(String url)
+    private void connect()
     {
         WebSocketFactory factory = new WebSocketFactory();
         if (proxy != null)
@@ -305,6 +318,14 @@ public class WebSocketClient extends WebSocketAdapter
         }
         try
         {
+            if (url == null)
+            {
+                url = getGateway();
+                if (url == null)
+                {
+                    throw new RuntimeException();
+                }
+            }
             socket = factory.createSocket(url)
                     .addHeader("Accept-Encoding", "gzip")
                     .addListener(this);
@@ -317,15 +338,52 @@ public class WebSocketClient extends WebSocketAdapter
         }
     }
 
+    private void reconnect()
+    {
+//        reconnecting = true;      //we don't want to send resume headers
+        System.out.println("Got disconnected from WebSocket (Internet?!)... Attempting to reconnect in " + reconnectTimeout + "s");
+        url = null;         //force refetch of gateway
+        while(shouldReconnect)
+        {
+            try
+            {
+                Thread.sleep(reconnectTimeout * 1000);
+            }
+            catch(InterruptedException ignored) {}
+            System.out.println("Attempting to reconnect!");
+            try
+            {
+                connect();
+                break;
+            }
+            catch (RuntimeException ex)
+            {
+                reconnectTimeout <<= 1;         //*2 each time
+                System.out.println("Reconnect failed! Next attempt in " + reconnectTimeout + "s");
+            }
+        }
+    }
+
+    private String getGateway()
+    {
+        try
+        {
+            return api.getRequester().get("https://discordapp.com/api/gateway").getString("url");
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
+    }
+
     public void close()
     {
-        if (keepAliveThread != null)
-        {
-            keepAliveThread.interrupt();
-            keepAliveThread = null;
-        }
-        expectingClose = true;
         socket.sendClose();
+    }
+
+    public void setAutoReconnect(boolean reconnect)
+    {
+        this.shouldReconnect = reconnect;
     }
 
     public boolean isConnected()
