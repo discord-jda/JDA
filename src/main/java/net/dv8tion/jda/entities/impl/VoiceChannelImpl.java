@@ -1,12 +1,12 @@
 /**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
- *
+ * Copyright 2015-2016 Austin Keener & Michael Ritter
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,43 +26,37 @@ import net.dv8tion.jda.utils.PermissionUtil;
 
 import java.util.*;
 
-public class VoiceChannelImpl implements VoiceChannel
-{
+public class VoiceChannelImpl implements VoiceChannel {
     private final String id;
     private final Guild guild;
+    private final Map<User, PermissionOverride> userPermissionOverrides = new HashMap<>();
+    private final Map<Role, PermissionOverride> rolePermissionOverrides = new HashMap<>();
     private String name;
     private int position;
     private List<User> connectedUsers = new ArrayList<>();
-    private final Map<User, PermissionOverride> userPermissionOverrides = new HashMap<>();
-    private final Map<Role, PermissionOverride> rolePermissionOverrides = new HashMap<>();
 
-    public VoiceChannelImpl(String id, Guild guild)
-    {
+    public VoiceChannelImpl(String id, Guild guild) {
         this.id = id;
         this.guild = guild;
     }
 
     @Override
-    public JDA getJDA()
-    {
+    public JDA getJDA() {
         return guild.getJDA();
     }
 
     @Override
-    public PermissionOverride getOverrideForUser(User user)
-    {
+    public PermissionOverride getOverrideForUser(User user) {
         return userPermissionOverrides.get(user);
     }
 
     @Override
-    public PermissionOverride getOverrideForRole(Role role)
-    {
+    public PermissionOverride getOverrideForRole(Role role) {
         return rolePermissionOverrides.get(role);
     }
 
     @Override
-    public List<PermissionOverride> getPermissionOverrides()
-    {
+    public List<PermissionOverride> getPermissionOverrides() {
         List<PermissionOverride> overrides = new LinkedList<>();
         overrides.addAll(userPermissionOverrides.values());
         overrides.addAll(rolePermissionOverrides.values());
@@ -70,68 +64,71 @@ public class VoiceChannelImpl implements VoiceChannel
     }
 
     @Override
-    public List<PermissionOverride> getUserPermissionOverrides()
-    {
+    public List<PermissionOverride> getUserPermissionOverrides() {
         return Collections.unmodifiableList(new LinkedList<PermissionOverride>(userPermissionOverrides.values()));
     }
 
     @Override
-    public List<PermissionOverride> getRolePermissionOverrides()
-    {
+    public List<PermissionOverride> getRolePermissionOverrides() {
         return Collections.unmodifiableList(new LinkedList<PermissionOverride>(rolePermissionOverrides.values()));
     }
 
     @Override
-    public String getId()
-    {
+    public String getId() {
         return id;
     }
 
     @Override
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
+    public VoiceChannelImpl setName(String name) {
+        this.name = name;
+        return this;
+    }
+
     @Override
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         return guild;
     }
 
     @Override
-    public int getPosition()
-    {
+    public int getPosition() {
         return position;
     }
 
-    @Override
-    public List<User> getUsers()
-    {
-        return Collections.unmodifiableList(connectedUsers);
+    public VoiceChannelImpl setPosition(int position) {
+        this.position = position;
+        return this;
     }
 
     @Override
-    public boolean checkPermission(User user, Permission perm)
-    {
+    public List<User> getUsers() {
+        return Collections.unmodifiableList(connectedUsers);
+    }
+
+    public VoiceChannelImpl setUsers(List<User> connectedUsers) {
+        this.connectedUsers = connectedUsers;
+        return this;
+    }
+
+    @Override
+    public boolean checkPermission(User user, Permission perm) {
         return PermissionUtil.checkPermission(user, perm, this);
     }
 
     @Override
-    public ChannelManager getManager()
-    {
+    public ChannelManager getManager() {
         return new ChannelManager(this);
     }
 
     @Override
-    public PermissionOverrideManager createPermissionOverride(User user)
-    {
-        if (!checkPermission(getJDA().getSelfInfo(), Permission.MANAGE_PERMISSIONS))
-        {
+    public PermissionOverrideManager createPermissionOverride(User user) {
+        if (!checkPermission(getJDA().getSelfInfo(), Permission.MANAGE_PERMISSIONS)) {
             throw new PermissionException(Permission.MANAGE_PERMISSIONS);
         }
-        if (!getGuild().getUsers().contains(user))
-        {
+        if (!getGuild().getUsers().contains(user)) {
             throw new IllegalArgumentException("Given user is not member of this Guild");
         }
         PermissionOverrideImpl override = new PermissionOverrideImpl(this, user, null);
@@ -143,14 +140,11 @@ public class VoiceChannelImpl implements VoiceChannel
     }
 
     @Override
-    public PermissionOverrideManager createPermissionOverride(Role role)
-    {
-        if (!checkPermission(getJDA().getSelfInfo(), Permission.MANAGE_PERMISSIONS))
-        {
+    public PermissionOverrideManager createPermissionOverride(Role role) {
+        if (!checkPermission(getJDA().getSelfInfo(), Permission.MANAGE_PERMISSIONS)) {
             throw new PermissionException(Permission.MANAGE_PERMISSIONS);
         }
-        if (!getGuild().getRoles().contains(role))
-        {
+        if (!getGuild().getRoles().contains(role)) {
             throw new IllegalArgumentException("Given role does not exist in this Guild");
         }
         PermissionOverrideImpl override = new PermissionOverrideImpl(this, null, role);
@@ -162,53 +156,29 @@ public class VoiceChannelImpl implements VoiceChannel
     }
 
     @Override
-    public List<InviteUtil.AdvancedInvite> getInvites()
-    {
+    public List<InviteUtil.AdvancedInvite> getInvites() {
         return InviteUtil.getInvites(this);
     }
 
-    public VoiceChannelImpl setName(String name)
-    {
-        this.name = name;
-        return this;
-    }
-
-    public VoiceChannelImpl setPosition(int position)
-    {
-        this.position = position;
-        return this;
-    }
-
-    public VoiceChannelImpl setUsers(List<User> connectedUsers)
-    {
-        this.connectedUsers = connectedUsers;
-        return this;
-    }
-
-    public List<User> getUsersModifiable()
-    {
+    public List<User> getUsersModifiable() {
         return connectedUsers;
     }
 
-    public Map<User, PermissionOverride> getUserPermissionOverridesMap()
-    {
+    public Map<User, PermissionOverride> getUserPermissionOverridesMap() {
         return userPermissionOverrides;
     }
 
-    public Map<Role, PermissionOverride> getRolePermissionOverridesMap()
-    {
+    public Map<Role, PermissionOverride> getRolePermissionOverridesMap() {
         return rolePermissionOverrides;
     }
 
     @Override
-    public String getTopic()
-    {
+    public String getTopic() {
         return null;
     }
 
     @Override
-    public boolean equals(Object o)
-    {
+    public boolean equals(Object o) {
         if (!(o instanceof VoiceChannel))
             return false;
         VoiceChannel oVChannel = (VoiceChannel) o;
@@ -216,14 +186,12 @@ public class VoiceChannelImpl implements VoiceChannel
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return getId().hashCode();
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "VC:" + getName() + '(' + getId() + ')';
     }
 }

@@ -1,12 +1,12 @@
 /**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
- *
+ * Copyright 2015-2016 Austin Keener & Michael Ritter
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,17 +28,14 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-public class GuildMemberRoleHandler extends SocketHandler
-{
+public class GuildMemberRoleHandler extends SocketHandler {
 
-    public GuildMemberRoleHandler(JDAImpl api, int responseNumber)
-    {
+    public GuildMemberRoleHandler(JDAImpl api, int responseNumber) {
         super(api, responseNumber);
     }
 
     @Override
-    public void handle(JSONObject content)
-    {
+    public void handle(JSONObject content) {
         JSONObject userJson = content.getJSONObject("user");
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("guild_id"));
         User user = api.getUserMap().get(userJson.getString("id"));
@@ -47,14 +44,11 @@ public class GuildMemberRoleHandler extends SocketHandler
 
         //Find the roles removed.
         List<Role> removedRoles = new LinkedList<>();
-        for (Role role : rolesOld)
-        {
+        for (Role role : rolesOld) {
             boolean roleFound = false;
-            for (Iterator<Role> added = rolesNew.iterator(); added.hasNext();)
-            {
+            for (Iterator<Role> added = rolesNew.iterator(); added.hasNext(); ) {
                 Role r = added.next();
-                if (role.equals(r))
-                {
+                if (role.equals(r)) {
                     added.remove();
                     roleFound = true;
                     break;
@@ -64,16 +58,14 @@ public class GuildMemberRoleHandler extends SocketHandler
                 removedRoles.add(role);
         }
 
-        if (removedRoles.size() > 0)
-        {
+        if (removedRoles.size() > 0) {
             rolesOld.removeAll(removedRoles);
             api.getEventManager().handle(
                     new GuildMemberRoleRemoveEvent(
                             api, responseNumber,
                             guild, user, removedRoles));
         }
-        if (rolesNew.size() > 0)
-        {
+        if (rolesNew.size() > 0) {
             rolesOld.addAll(rolesNew);
             api.getEventManager().handle(
                     new GuildMemberRoleAddEvent(
@@ -82,14 +74,11 @@ public class GuildMemberRoleHandler extends SocketHandler
         }
     }
 
-    private List<Role> toRolesList(GuildImpl guild, JSONArray array)
-    {
+    private List<Role> toRolesList(GuildImpl guild, JSONArray array) {
         LinkedList<Role> roles = new LinkedList<>();
-        for(int i = 0; i < array.length(); i++)
-        {
+        for (int i = 0; i < array.length(); i++) {
             Role r = guild.getRolesMap().get(array.getString(i));
-            if (r != null)
-            {
+            if (r != null) {
                 roles.add(r);
             }
         }

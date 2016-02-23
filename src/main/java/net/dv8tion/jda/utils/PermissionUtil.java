@@ -1,12 +1,12 @@
 /**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
- *
+ * Copyright 2015-2016 Austin Keener & Michael Ritter
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,17 +22,13 @@ import net.dv8tion.jda.entities.impl.*;
 import java.util.List;
 import java.util.Map;
 
-public class PermissionUtil
-{
+public class PermissionUtil {
 
-    public static PermissionOverride getFullPermOverride()
-    {
+    public static PermissionOverride getFullPermOverride() {
         PermissionOverrideImpl override = new PermissionOverrideImpl(null, null, null);
-        int allow = 0, deny=0;
-        for (Permission permission : Permission.values())
-        {
-            if(permission != Permission.UNKNOWN)
-            {
+        int allow = 0, deny = 0;
+        for (Permission permission : Permission.values()) {
+            if (permission != Permission.UNKNOWN) {
                 allow = allow | (1 << permission.getOffset());
             }
         }
@@ -58,15 +54,12 @@ public class PermissionUtil
      * @return
      *      True - if the {@link net.dv8tion.jda.entities.User User} effectively has the specified {@link net.dv8tion.jda.Permission Permission}.
      */
-    public static boolean checkPermission(User user, Permission perm, Channel channel)
-    {
-        if (channel instanceof TextChannel)
-        {
+    public static boolean checkPermission(User user, Permission perm, Channel channel) {
+        if (channel instanceof TextChannel) {
             return checkPermission(user, perm, ((GuildImpl) channel.getGuild()),
                     ((TextChannelImpl) channel).getRolePermissionOverridesMap(), ((TextChannelImpl) channel).getUserPermissionOverridesMap());
         }
-        else
-        {
+        else {
             return checkPermission(user, perm, ((GuildImpl) channel.getGuild()),
                     ((VoiceChannelImpl) channel).getRolePermissionOverridesMap(), ((VoiceChannelImpl) channel).getUserPermissionOverridesMap());
         }
@@ -90,13 +83,12 @@ public class PermissionUtil
      * @return
      *      True - if the {@link net.dv8tion.jda.entities.User User} effectively has the specified {@link net.dv8tion.jda.Permission Permission}.
      */
-    public static boolean checkPermission(User user, Permission perm, Guild guild)
-    {
+    public static boolean checkPermission(User user, Permission perm, Guild guild) {
         return guild.getOwnerId().equals(user.getId())
                 || guild.getPublicRole().hasPermission(Permission.MANAGE_ROLES)
                 || guild.getRolesForUser(user).stream().anyMatch(role ->
-                            role.hasPermission(Permission.MANAGE_ROLES)
-                            || role.hasPermission(perm));
+                role.hasPermission(Permission.MANAGE_ROLES)
+                        || role.hasPermission(perm));
     }
 
     /**
@@ -113,22 +105,18 @@ public class PermissionUtil
      * @return
      *      The <code>int</code> representation of the literal permissions that this {@link net.dv8tion.jda.entities.User User} has in this {@link net.dv8tion.jda.entities.Channel Channel}.
      */
-    public static int getEffectivePermission(User user, Channel channel)
-    {
-        if (channel instanceof TextChannel)
-        {
+    public static int getEffectivePermission(User user, Channel channel) {
+        if (channel instanceof TextChannel) {
             return getEffectivePermission(user, ((GuildImpl) channel.getGuild()),
                     ((TextChannelImpl) channel).getRolePermissionOverridesMap(), ((TextChannelImpl) channel).getUserPermissionOverridesMap());
         }
-        else
-        {
+        else {
             return getEffectivePermission(user, ((GuildImpl) channel.getGuild()),
                     ((VoiceChannelImpl) channel).getRolePermissionOverridesMap(), ((VoiceChannelImpl) channel).getUserPermissionOverridesMap());
         }
     }
 
-    private static boolean checkPermission(User user, Permission perm, GuildImpl guild, Map<Role, PermissionOverride> roleOverrides, Map<User, PermissionOverride> userOverrides)
-    {
+    private static boolean checkPermission(User user, Permission perm, GuildImpl guild, Map<Role, PermissionOverride> roleOverrides, Map<User, PermissionOverride> userOverrides) {
         //Do we have all permissions possible? (Owner or user has MANAGE_ROLES permission)
         //If we have all permissions possible, then we will be able to see this room.
         if (checkPermission(user, Permission.MANAGE_ROLES, guild))
@@ -138,28 +126,24 @@ public class PermissionUtil
         return (effectivePerms & (1 << perm.getOffset())) > 0;
     }
 
-    private static int getEffectivePermission(User user, GuildImpl guild, Map<Role, PermissionOverride> roleOverrides, Map<User, PermissionOverride> userOverrides)
-    {
+    private static int getEffectivePermission(User user, GuildImpl guild, Map<Role, PermissionOverride> roleOverrides, Map<User, PermissionOverride> userOverrides) {
         //Default to binary OR of all global permissions in this guild
         int permission = ((RoleImpl) guild.getPublicRole()).getPermissionsRaw();
         List<Role> rolesOfUser = guild.getRolesForUser(user);
-        for (Role role : rolesOfUser)
-        {
+        for (Role role : rolesOfUser) {
             permission = permission | ((RoleImpl) role).getPermissionsRaw();
         }
 
         //override with channel-specific overrides of @everyone
         PermissionOverride override = roleOverrides.get(guild.getPublicRole());
-        if (override != null)
-        {
+        if (override != null) {
             permission = apply(permission, override.getAllowedRaw(), override.getDeniedRaw());
         }
 
         //handle role-overrides of this user in this channel (allow > disallow)
         int allow = -1;
         int deny = -1;
-        for (Role role : rolesOfUser)
-        {
+        for (Role role : rolesOfUser) {
             PermissionOverride po = roleOverrides.get(role);
             if (po != null) //If an override exists for this role
             {
@@ -168,8 +152,7 @@ public class PermissionUtil
                     allow = po.getAllowedRaw(); //First role, take values from this role as the base for permission
                     deny = po.getDeniedRaw();   //
                 }
-                else
-                {
+                else {
                     allow = po.getAllowedRaw() | allow;     //Give all the stuff allowed by this Role's allow
 
                     deny = (po.getDeniedRaw() | deny) & (~allow);  //Deny everything that this role denies.
@@ -184,15 +167,13 @@ public class PermissionUtil
 
         //handle user-specific overrides
         PermissionOverride userOverride = userOverrides.get(user);
-        if (userOverride != null)
-        {
+        if (userOverride != null) {
             permission = apply(permission, userOverride.getAllowedRaw(), userOverride.getDeniedRaw());
         }
         return permission;
     }
 
-    private static int apply(int permission, int allow, int deny)
-    {
+    private static int apply(int permission, int allow, int deny) {
         permission = permission | allow;    //Allow all the things that the cascade of roles allowed
         permission = permission & (~deny);  //Deny everything that the cascade of roles denied.
         return permission;

@@ -1,12 +1,12 @@
 /**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
- *
+ * Copyright 2015-2016 Austin Keener & Michael Ritter
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,8 +23,7 @@ import net.dv8tion.jda.entities.impl.MessageImpl;
 import java.util.LinkedList;
 import java.util.List;
 
-public class MessageBuilder
-{
+public class MessageBuilder {
     private final StringBuilder builder = new StringBuilder();
     private final List<User> mentioned = new LinkedList<>();
     private final List<TextChannel> mentionedTextChannels = new LinkedList<>();
@@ -37,8 +36,7 @@ public class MessageBuilder
      * @param tts whether the created Message should be a tts message
      * @return this instance
      */
-    public MessageBuilder setTTS(boolean tts)
-    {
+    public MessageBuilder setTTS(boolean tts) {
         this.isTTS = tts;
         return this;
     }
@@ -49,8 +47,7 @@ public class MessageBuilder
      * @param text the text to append
      * @return this instance
      */
-    public MessageBuilder appendString(String text)
-    {
+    public MessageBuilder appendString(String text) {
         builder.append(text);
         return this;
     }
@@ -62,13 +59,10 @@ public class MessageBuilder
      * @param format the format(s) to apply to the text
      * @return this instance
      */
-    public MessageBuilder appendString(String text, Formatting... format)
-    {
+    public MessageBuilder appendString(String text, Formatting... format) {
         boolean blockPresent = false;
-        for (Formatting formatting : format)
-        {
-            if (formatting == Formatting.BLOCK)
-            {
+        for (Formatting formatting : format) {
+            if (formatting == Formatting.BLOCK) {
                 blockPresent = true;
                 continue;
             }
@@ -81,8 +75,7 @@ public class MessageBuilder
 
         if (blockPresent)
             builder.append(Formatting.BLOCK.getTag());
-        for (int i = format.length - 1; i >= 0; i--)
-        {
+        for (int i = format.length - 1; i >= 0; i--) {
             if (format[i] == Formatting.BLOCK) continue;
             builder.append(format[i].getTag());
         }
@@ -96,8 +89,7 @@ public class MessageBuilder
      * @param language the language of the code. If unknown use an empty string
      * @return this instance
      */
-    public MessageBuilder appendCodeBlock(String text, String language)
-    {
+    public MessageBuilder appendCodeBlock(String text, String language) {
         builder.append("```").append(language).append('\n').append(text).append("\n```");
         return this;
     }
@@ -108,8 +100,7 @@ public class MessageBuilder
      * @param user the user to mention
      * @return this instance
      */
-    public MessageBuilder appendMention(User user)
-    {
+    public MessageBuilder appendMention(User user) {
         builder.append("<@").append(user.getId()).append('>');
         mentioned.add(user);
         return this;
@@ -120,8 +111,7 @@ public class MessageBuilder
      *
      * @return this instance
      */
-    public MessageBuilder appendEveryoneMention()
-    {
+    public MessageBuilder appendEveryoneMention() {
         builder.append("@everyone");
         mentionEveryone = true;
         return this;
@@ -134,8 +124,7 @@ public class MessageBuilder
      * @param channel the TextChannel to mention
      * @return this instance
      */
-    public MessageBuilder appendMention(TextChannel channel)
-    {
+    public MessageBuilder appendMention(TextChannel channel) {
         builder.append("<#").append(channel.getId()).append('>');
         mentionedTextChannels.add(channel);
         return this;
@@ -150,8 +139,7 @@ public class MessageBuilder
      * @return
      *      The currently length of the content that will be built into a Message.
      */
-    public int getLength()
-    {
+    public int getLength() {
         return builder.length();
     }
 
@@ -166,8 +154,7 @@ public class MessageBuilder
      *          <li>If you attempt to build() a Message with more than 2000 characters of content.</li>
      *      </ul>
      */
-    public Message build()
-    {
+    public Message build() {
         String message = builder.toString();
         if (message.isEmpty())
             throw new UnsupportedOperationException("Cannot build a Message with no content. (You never added any content to the message)");
@@ -181,8 +168,7 @@ public class MessageBuilder
     /**
      * Holds the Available formatting used in {@link #appendString(String, Formatting...)}
      */
-    public enum Formatting
-    {
+    public enum Formatting {
         ITALICS("*"),
         BOLD("**"),
         STRIKETHROUGH("~~"),
@@ -191,13 +177,11 @@ public class MessageBuilder
 
         private final String tag;
 
-        Formatting(String tag)
-        {
+        Formatting(String tag) {
             this.tag = tag;
         }
 
-        private String getTag()
-        {
+        private String getTag() {
             return tag;
         }
 

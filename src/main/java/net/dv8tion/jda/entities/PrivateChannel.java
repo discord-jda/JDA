@@ -1,12 +1,12 @@
 /**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
- *
+ * Copyright 2015-2016 Austin Keener & Michael Ritter
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,14 +17,10 @@ package net.dv8tion.jda.entities;
 
 import net.dv8tion.jda.JDA;
 
-import java.io.File;
-import java.util.function.Consumer;
-
 /**
  * Represents the connection used for direct messaging.
  */
-public interface PrivateChannel extends MessageChannel
-{
+public interface PrivateChannel extends MessageChannel {
     /**
      * The Id of the {@link net.dv8tion.jda.entities.PrivateChannel PrivateChannel}. This is typically 18 characters long.
      *

@@ -1,12 +1,12 @@
 /**
- *      Copyright 2015-2016 Austin Keener & Michael Ritter
- *
+ * Copyright 2015-2016 Austin Keener & Michael Ritter
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,11 +15,10 @@
  */
 package net.dv8tion.jda.exceptions;
 
-public class RateLimitedException extends RuntimeException
-{
+public class RateLimitedException extends RuntimeException {
     private final long timeout, availTime;
-    public RateLimitedException(long timeout)
-    {
+
+    public RateLimitedException(long timeout) {
         super("The message got Rate-Limited. You are able to send messages again in " + timeout + " ms");
         this.timeout = timeout;
         this.availTime = System.currentTimeMillis() + timeout;
@@ -30,8 +29,7 @@ public class RateLimitedException extends RuntimeException
      * @return
      *      the ms after which messages can be sent again
      */
-    public long getTimeout()
-    {
+    public long getTimeout() {
         return timeout;
     }
 
@@ -40,8 +38,7 @@ public class RateLimitedException extends RuntimeException
      * @return
      *      the system-time, after which messages can be sent again
      */
-    public long getAvailTime()
-    {
+    public long getAvailTime() {
         return availTime;
     }
 }

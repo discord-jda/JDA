@@ -28,15 +28,14 @@
 
 package org.tritonus.sampled.file;
 
-import java.io.IOException;
-import java.util.Arrays;
-
-import javax.sound.sampled.AudioFileFormat;
-import javax.sound.sampled.AudioFormat;
-
 import org.tritonus.share.sampled.file.AudioOutputStream;
 import org.tritonus.share.sampled.file.TAudioFileWriter;
 import org.tritonus.share.sampled.file.TDataOutputStream;
+
+import javax.sound.sampled.AudioFileFormat;
+import javax.sound.sampled.AudioFormat;
+import java.io.IOException;
+import java.util.Arrays;
 
 
 /**
@@ -45,53 +44,55 @@ import org.tritonus.share.sampled.file.TDataOutputStream;
  * @author Florian Bomers
  */
 public class WaveAudioFileWriter
-extends TAudioFileWriter {
+        extends TAudioFileWriter {
 
-	private static final AudioFileFormat.Type[]	FILE_TYPES =
-	    {
-	        AudioFileFormat.Type.WAVE
-	    };
-
-
-	// IMPORTANT: this array depends on the AudioFormat.match() algorithm which takes
-	//            AudioSystem.NOT_SPECIFIED into account !
-	private static final AudioFormat[]	AUDIO_FORMATS =
-	    {
-	        // Encoding, SampleRate, sampleSizeInBits, channels, frameSize, frameRate, bigEndian
-	        new AudioFormat(AudioFormat.Encoding.PCM_UNSIGNED, ALL, 8, ALL, ALL, ALL, true),
-	        new AudioFormat(AudioFormat.Encoding.PCM_UNSIGNED, ALL, 8, ALL, ALL, ALL, false),
-	        new AudioFormat(AudioFormat.Encoding.ULAW, ALL, 8, ALL, ALL, ALL, false),
-	        new AudioFormat(AudioFormat.Encoding.ULAW, ALL, 8, ALL, ALL, ALL, true),
-	        new AudioFormat(AudioFormat.Encoding.ALAW, ALL, 8, ALL, ALL, ALL, false),
-	        new AudioFormat(AudioFormat.Encoding.ALAW, ALL, 8, ALL, ALL, ALL, true),
-	        new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, ALL, 16, ALL, ALL, ALL, false),
-	        new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, ALL, 24, ALL, ALL, ALL, false),
-	        new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, ALL, 32, ALL, ALL, ALL, false),
-	        new AudioFormat(WaveTool.GSM0610, ALL, ALL, ALL, ALL, ALL, false),
-	        new AudioFormat(WaveTool.GSM0610, ALL, ALL, ALL, ALL, ALL, true),
-	    };
-
-	public WaveAudioFileWriter() {
-		super(Arrays.asList(FILE_TYPES),
-		      Arrays.asList(AUDIO_FORMATS));
-	}
-
-	// overwritten for quicker and more accurate check
-	protected boolean isAudioFormatSupportedImpl(AudioFormat format,
-	        AudioFileFormat.Type fileType) {
-		return WaveTool.getFormatCode(format) != WaveTool.WAVE_FORMAT_UNSPECIFIED;
-	}
+    private static final AudioFileFormat.Type[] FILE_TYPES =
+            {
+                    AudioFileFormat.Type.WAVE
+            };
 
 
-	protected AudioOutputStream getAudioOutputStream(AudioFormat audioFormat,
-	        long lLengthInBytes,
-	        AudioFileFormat.Type fileType,
-	        TDataOutputStream dataOutputStream)	throws IOException {
-	            return new WaveAudioOutputStream(audioFormat,
-	                                             lLengthInBytes,
-	                                             dataOutputStream);
-	        }
+    // IMPORTANT: this array depends on the AudioFormat.match() algorithm which takes
+    //            AudioSystem.NOT_SPECIFIED into account !
+    private static final AudioFormat[] AUDIO_FORMATS =
+            {
+                    // Encoding, SampleRate, sampleSizeInBits, channels, frameSize, frameRate, bigEndian
+                    new AudioFormat(AudioFormat.Encoding.PCM_UNSIGNED, ALL, 8, ALL, ALL, ALL, true),
+                    new AudioFormat(AudioFormat.Encoding.PCM_UNSIGNED, ALL, 8, ALL, ALL, ALL, false),
+                    new AudioFormat(AudioFormat.Encoding.ULAW, ALL, 8, ALL, ALL, ALL, false),
+                    new AudioFormat(AudioFormat.Encoding.ULAW, ALL, 8, ALL, ALL, ALL, true),
+                    new AudioFormat(AudioFormat.Encoding.ALAW, ALL, 8, ALL, ALL, ALL, false),
+                    new AudioFormat(AudioFormat.Encoding.ALAW, ALL, 8, ALL, ALL, ALL, true),
+                    new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, ALL, 16, ALL, ALL, ALL, false),
+                    new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, ALL, 24, ALL, ALL, ALL, false),
+                    new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, ALL, 32, ALL, ALL, ALL, false),
+                    new AudioFormat(WaveTool.GSM0610, ALL, ALL, ALL, ALL, ALL, false),
+                    new AudioFormat(WaveTool.GSM0610, ALL, ALL, ALL, ALL, ALL, true),
+            };
+
+    public WaveAudioFileWriter() {
+        super(Arrays.asList(FILE_TYPES),
+                Arrays.asList(AUDIO_FORMATS));
+    }
+
+    // overwritten for quicker and more accurate check
+    protected boolean isAudioFormatSupportedImpl(AudioFormat format,
+                                                 AudioFileFormat.Type fileType) {
+        return WaveTool.getFormatCode(format) != WaveTool.WAVE_FORMAT_UNSPECIFIED;
+    }
+
+
+    protected AudioOutputStream getAudioOutputStream(AudioFormat audioFormat,
+                                                     long lLengthInBytes,
+                                                     AudioFileFormat.Type fileType,
+                                                     TDataOutputStream dataOutputStream) throws IOException {
+        return new WaveAudioOutputStream(audioFormat,
+                lLengthInBytes,
+                dataOutputStream);
+    }
 
 }
 
-/*** WaveAudioFileWriter.java ***/
+/***
+ * WaveAudioFileWriter.java
+ ***/

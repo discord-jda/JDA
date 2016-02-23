@@ -1,12 +1,12 @@
 /**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
- *
+ * Copyright 2015-2016 Austin Keener & Michael Ritter
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,8 +20,7 @@ package net.dv8tion.jda;
  * This is used by {@link net.dv8tion.jda.entities.Guild Guild} to where the server that hosts the
  * {@link net.dv8tion.jda.entities.Guild Guild} is located.
  */
-public enum Region
-{
+public enum Region {
     AMSTERDAM("amsterdam", "Amsterdam"),
     FRANKFURT("frankfurt", "Frankfurt"),
     LONDON("london", "London"),
@@ -36,30 +35,9 @@ public enum Region
     private final String key;
     private final String name;
 
-    Region(String key, String name)
-    {
+    Region(String key, String name) {
         this.key = key;
         this.name = name;
-    }
-
-    /**
-     * The human readable region name.
-     * @return
-     *      The name of this region
-     */
-    public String getName()
-    {
-        return name;
-    }
-
-    /**
-     * The Region key as defined by Discord.
-     * @return
-     *      The key (internal name) of this region
-     */
-    public String getKey()
-    {
-        return key;
     }
 
     /**
@@ -70,21 +48,35 @@ public enum Region
      * @return
      *          The {@link net.dv8tion.jda.Region Region} matching the key. If there is no match, returns {@link net.dv8tion.jda.Region#UNKNOWN UNKNOWN}.
      */
-    public static Region fromKey(String key)
-    {
-        for (Region region : values())
-        {
-            if (region.getKey().equals(key))
-            {
+    public static Region fromKey(String key) {
+        for (Region region : values()) {
+            if (region.getKey().equals(key)) {
                 return region;
             }
         }
         return UNKNOWN;
     }
 
+    /**
+     * The human readable region name.
+     * @return
+     *      The name of this region
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * The Region key as defined by Discord.
+     * @return
+     *      The key (internal name) of this region
+     */
+    public String getKey() {
+        return key;
+    }
+
     @Override
-    public String toString()
-    {
+    public String toString() {
         return getName();
     }
 }

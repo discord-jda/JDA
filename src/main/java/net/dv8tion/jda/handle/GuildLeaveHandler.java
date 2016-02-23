@@ -1,12 +1,12 @@
 /**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
- *
+ * Copyright 2015-2016 Austin Keener & Michael Ritter
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,20 +21,16 @@ import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.guild.GuildLeaveEvent;
 import org.json.JSONObject;
 
-public class GuildLeaveHandler extends SocketHandler
-{
+public class GuildLeaveHandler extends SocketHandler {
 
-    public GuildLeaveHandler(JDAImpl api, int responseNumber)
-    {
+    public GuildLeaveHandler(JDAImpl api, int responseNumber) {
         super(api, responseNumber);
     }
 
     @Override
-    public void handle(JSONObject content)
-    {
+    public void handle(JSONObject content) {
         Guild guild = api.getGuildMap().get(content.getString("id"));
-        if (content.has("unavailable") && content.getBoolean("unavailable"))
-        {
+        if (content.has("unavailable") && content.getBoolean("unavailable")) {
             ((GuildImpl) guild).setAvailable(false);
             //TODO: Unavailable-event. Sever audio connection when guild becomes unavailable.
             return;

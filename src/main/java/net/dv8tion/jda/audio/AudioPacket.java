@@ -1,12 +1,12 @@
 /**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
- *
+ * Copyright 2015-2016 Austin Keener & Michael Ritter
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,8 +24,7 @@ import java.util.Arrays;
  * Represents the contents of a audio packet that was either received from Discord or
  * will be sent to discord.
  */
-public class AudioPacket
-{
+public class AudioPacket {
     public static final int RTP_HEADER_BYTE_LENGTH = 12;
 
     /**
@@ -45,11 +44,11 @@ public class AudioPacket
      */
     public static final byte RTP_PAYLOAD_TYPE = (byte) 0x78;        //Binary: 0100 1000
 
-    public static final int RTP_VERSION_PAD_EXTEND_INDEX =  0;
-    public static final int RTP_PAYLOAD_INDEX =             1;
-    public static final int SEQ_INDEX =                     2;
-    public static final int TIMESTAMP_INDEX =               4;
-    public static final int SSRC_INDEX =                    8;
+    public static final int RTP_VERSION_PAD_EXTEND_INDEX = 0;
+    public static final int RTP_PAYLOAD_INDEX = 1;
+    public static final int SEQ_INDEX = 2;
+    public static final int TIMESTAMP_INDEX = 4;
+    public static final int SSRC_INDEX = 8;
 
     private final char seq;
     private final int timestamp;
@@ -57,13 +56,11 @@ public class AudioPacket
     private final byte[] encodedAudio;
     private final byte[] rawPacket;
 
-    public AudioPacket(DatagramPacket packet)
-    {
+    public AudioPacket(DatagramPacket packet) {
         this(Arrays.copyOf(packet.getData(), packet.getLength()));
     }
 
-    public AudioPacket(byte[] rawPacket)
-    {
+    public AudioPacket(byte[] rawPacket) {
         this.rawPacket = rawPacket;
 
         ByteBuffer buffer = ByteBuffer.wrap(rawPacket);
@@ -76,8 +73,7 @@ public class AudioPacket
         this.encodedAudio = audio;
     }
 
-    public AudioPacket(char seq, int timestamp, int ssrc, byte[] encodedAudio)
-    {
+    public AudioPacket(char seq, int timestamp, int ssrc, byte[] encodedAudio) {
         this.seq = seq;
         this.ssrc = ssrc;
         this.timestamp = timestamp;
@@ -94,44 +90,37 @@ public class AudioPacket
 
     }
 
-    public byte[] getRawPacket()
-    {
-        return Arrays.copyOf(rawPacket, rawPacket.length);
-    }
-
-    public byte[] getEncodedAudio()
-    {
-        return Arrays.copyOf(encodedAudio, encodedAudio.length);
-    }
-
-    public char getSequence()
-    {
-        return seq;
-    }
-
-    public int getSSRC()
-    {
-        return ssrc;
-    }
-
-    public int getTimestamp()
-    {
-        return timestamp;
-    }
-
-    public DatagramPacket asUdpPacket(InetSocketAddress address)
-    {
-        //We use getRawPacket() instead of the rawPacket variable so that we get a copy of the array instead of the
-        //actual array. We want AudioPacket to be immutable.
-        return new DatagramPacket(getRawPacket(), rawPacket.length, address);
-    }
-
-    public static AudioPacket createEchoPacket(DatagramPacket packet, int ssrc)
-    {
+    public static AudioPacket createEchoPacket(DatagramPacket packet, int ssrc) {
         ByteBuffer buffer = ByteBuffer.wrap(Arrays.copyOf(packet.getData(), packet.getLength()));
         buffer.put(RTP_VERSION_PAD_EXTEND_INDEX, RTP_VERSION_PAD_EXTEND);
         buffer.put(RTP_PAYLOAD_INDEX, RTP_PAYLOAD_TYPE);
         buffer.putInt(SSRC_INDEX, ssrc);
         return new AudioPacket(buffer.array());
+    }
+
+    public byte[] getRawPacket() {
+        return Arrays.copyOf(rawPacket, rawPacket.length);
+    }
+
+    public byte[] getEncodedAudio() {
+        return Arrays.copyOf(encodedAudio, encodedAudio.length);
+    }
+
+    public char getSequence() {
+        return seq;
+    }
+
+    public int getSSRC() {
+        return ssrc;
+    }
+
+    public int getTimestamp() {
+        return timestamp;
+    }
+
+    public DatagramPacket asUdpPacket(InetSocketAddress address) {
+        //We use getRawPacket() instead of the rawPacket variable so that we get a copy of the array instead of the
+        //actual array. We want AudioPacket to be immutable.
+        return new DatagramPacket(getRawPacket(), rawPacket.length, address);
     }
 }

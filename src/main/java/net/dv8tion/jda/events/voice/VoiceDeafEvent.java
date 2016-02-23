@@ -1,12 +1,12 @@
 /**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
- *
+ * Copyright 2015-2016 Austin Keener & Michael Ritter
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,25 +18,20 @@ package net.dv8tion.jda.events.voice;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.VoiceStatus;
 
-public class VoiceDeafEvent extends GenericVoiceEvent
-{
-    public VoiceDeafEvent(JDA api, int responseNumber, VoiceStatus voiceStatus)
-    {
+public class VoiceDeafEvent extends GenericVoiceEvent {
+    public VoiceDeafEvent(JDA api, int responseNumber, VoiceStatus voiceStatus) {
         super(api, responseNumber, voiceStatus);
     }
 
-    boolean isDeaf()
-    {
+    boolean isDeaf() {
         return isSelfDeaf() || isServerDeaf();
     }
 
-    boolean isSelfDeaf()
-    {
+    boolean isSelfDeaf() {
         return voiceStatus.isDeaf();
     }
 
-    boolean isServerDeaf()
-    {
+    boolean isServerDeaf() {
         return voiceStatus.isServerDeaf();
     }
 }

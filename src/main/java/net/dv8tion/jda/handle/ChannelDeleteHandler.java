@@ -1,12 +1,12 @@
 /**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
- *
+ * Copyright 2015-2016 Austin Keener & Michael Ritter
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,27 +25,21 @@ import net.dv8tion.jda.events.channel.text.TextChannelDeleteEvent;
 import net.dv8tion.jda.events.channel.voice.VoiceChannelDeleteEvent;
 import org.json.JSONObject;
 
-public class ChannelDeleteHandler extends SocketHandler
-{
+public class ChannelDeleteHandler extends SocketHandler {
 
-    public ChannelDeleteHandler(JDAImpl api, int responseNumber)
-    {
+    public ChannelDeleteHandler(JDAImpl api, int responseNumber) {
         super(api, responseNumber);
     }
 
     @Override
-    public void handle(JSONObject content)
-    {
-        if (content.has("is_private") && content.getBoolean("is_private"))
-        {
+    public void handle(JSONObject content) {
+        if (content.has("is_private") && content.getBoolean("is_private")) {
             String userid = content.getJSONObject("recipient").getString("id");
-            if (api.getOffline_pms().containsKey(userid))
-            {
+            if (api.getOffline_pms().containsKey(userid)) {
                 api.getOffline_pms().remove(userid);
             }
             User user = api.getUserById(userid);
-            if (user != null)
-            {
+            if (user != null) {
                 ((UserImpl) user).setPrivateChannel(null);
             }
             api.getPmChannelMap().remove(content.getString("id"));
@@ -53,10 +47,8 @@ public class ChannelDeleteHandler extends SocketHandler
             return;
         }
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("guild_id"));
-        switch (content.getString("type"))
-        {
-            case "text":
-            {
+        switch (content.getString("type")) {
+            case "text": {
                 TextChannel channel = api.getChannelMap().remove(content.getString("id"));
                 if (channel == null)
                     throw new IllegalArgumentException("CHANNEL_DELETE attempted to delete a channel that doesn't exist! JSON: " + content);
@@ -68,8 +60,7 @@ public class ChannelDeleteHandler extends SocketHandler
                                 channel));
                 break;
             }
-            case "voice":
-            {
+            case "voice": {
                 VoiceChannel channel = guild.getVoiceChannelsMap().remove(content.getString("id"));
                 if (channel == null)
                     throw new IllegalArgumentException("CHANNEL_DELETE attempted to delete a channel that doesn't exist! JSON: " + content);

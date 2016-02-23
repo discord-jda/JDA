@@ -1,12 +1,12 @@
 /**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
- *
+ * Copyright 2015-2016 Austin Keener & Michael Ritter
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,8 +37,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * creates a new {@link net.dv8tion.jda.JDA} instance using the same information.
  * This means that you can have listeners easily registered to multiple {@link net.dv8tion.jda.JDA} instances.
  */
-public class JDABuilder
-{
+public class JDABuilder {
     protected static boolean proxySet = false;
     protected static boolean jdaCreated = false;
     protected static String proxyUrl = null;
@@ -58,8 +57,7 @@ public class JDABuilder
      * before calling {@link net.dv8tion.jda.JDABuilder#buildAsync() buildAsync()}
      * or {@link net.dv8tion.jda.JDABuilder#buildBlocking() buildBlocking()}
      */
-    public JDABuilder()
-    {
+    public JDABuilder() {
         this(null, null);
     }
 
@@ -71,8 +69,7 @@ public class JDABuilder
      * @param password
      *          The password of the account that will be used to log into Discord.
      */
-    public JDABuilder(String email, String password)
-    {
+    public JDABuilder(String email, String password) {
         this.email = email;
         this.pass = password;
         listeners = new LinkedList<>();
@@ -89,8 +86,7 @@ public class JDABuilder
      * @return
      *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
      */
-    public JDABuilder setEmail(String email)
-    {
+    public JDABuilder setEmail(String email) {
         this.email = email;
         return this;
     }
@@ -126,8 +122,7 @@ public class JDABuilder
      * @throws UnsupportedOperationException
      *          If this method is called after proxy settings have already been set or after at least 1 JDA object has been created.
      */
-    public JDABuilder setProxy(String proxyUrl, int proxyPort)
-    {
+    public JDABuilder setProxy(String proxyUrl, int proxyPort) {
         if (proxySet || jdaCreated)
             throw new UnsupportedOperationException("You cannot change the proxy after a proxy has been set or a JDA object has been created. Proxy settings are global among all instances!");
         proxySet = true;
@@ -145,9 +140,8 @@ public class JDABuilder
      * @return
      *          Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
      */
-    public JDABuilder setDebug(boolean debug)
-    {
-       this.debug = debug;
+    public JDABuilder setDebug(boolean debug) {
+        this.debug = debug;
         return this;
     }
 
@@ -162,8 +156,7 @@ public class JDABuilder
      * @return
      *          Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
      */
-    public JDABuilder setAudioEnabled(boolean enabled)
-    {
+    public JDABuilder setAudioEnabled(boolean enabled) {
         this.enableVoice = enabled;
         return this;
     }
@@ -178,8 +171,7 @@ public class JDABuilder
      * @return
      *          Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
      */
-    public JDABuilder useAnnotatedEventManager(boolean useAnnotated)
-    {
+    public JDABuilder useAnnotatedEventManager(boolean useAnnotated) {
         this.useAnnotatedManager = useAnnotated;
         return this;
     }
@@ -197,8 +189,7 @@ public class JDABuilder
      * @return
      *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
      */
-    public JDABuilder addListener(Object listener)
-    {
+    public JDABuilder addListener(Object listener) {
         listeners.add(listener);
         return this;
     }
@@ -211,8 +202,7 @@ public class JDABuilder
      * @return
      *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
      */
-    public JDABuilder removeListener(Object listener)
-    {
+    public JDABuilder removeListener(Object listener) {
         listeners.remove(listener);
         return this;
     }
@@ -222,8 +212,7 @@ public class JDABuilder
      * Please use {@link #buildAsync() buildAsync()} instead to achieve the same functionality.
      */
     @Deprecated
-    public JDA build() throws LoginException, IllegalArgumentException
-    {
+    public JDA build() throws LoginException, IllegalArgumentException {
         return buildAsync();
     }
 
@@ -243,8 +232,7 @@ public class JDABuilder
      * @throws IllegalArgumentException
      *          If either the provided email or password is empty or null.
      */
-    public JDA buildAsync() throws LoginException, IllegalArgumentException
-    {
+    public JDA buildAsync() throws LoginException, IllegalArgumentException {
         jdaCreated = true;
         JDAImpl jda;
         if (proxySet)
@@ -252,8 +240,7 @@ public class JDABuilder
         else
             jda = new JDAImpl(enableVoice);
         jda.setDebug(debug);
-        if (useAnnotatedManager)
-        {
+        if (useAnnotatedManager) {
             jda.setEventManager(new AnnotatedEventManager());
         }
         listeners.forEach(jda::addEventListener);
@@ -276,16 +263,13 @@ public class JDABuilder
      *          If an interrupt request is received while waiting for {@link net.dv8tion.jda.JDA} to finish logging in.
      *          This would most likely be caused by a JVM shutdown request.
      */
-    public JDA buildBlocking() throws LoginException, IllegalArgumentException, InterruptedException
-    {
+    public JDA buildBlocking() throws LoginException, IllegalArgumentException, InterruptedException {
         //Create our ReadyListener and a thread safe Boolean.
         AtomicBoolean ready = new AtomicBoolean(false);
-        ListenerAdapter readyListener = new ListenerAdapter()
-        {
+        ListenerAdapter readyListener = new ListenerAdapter() {
             @SubscribeEvent
             @Override
-            public void onReady(ReadyEvent event)
-            {
+            public void onReady(ReadyEvent event) {
                 ready.set(true);
             }
         };
@@ -293,8 +277,7 @@ public class JDABuilder
         //Add it to our list of listeners, start the login process, wait for the ReadyEvent.
         listeners.add(readyListener);
         JDA jda = buildAsync();
-        while(!ready.get())
-        {
+        while (!ready.get()) {
             Thread.sleep(50);
         }
 

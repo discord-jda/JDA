@@ -1,12 +1,12 @@
 /**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
- *
+ * Copyright 2015-2016 Austin Keener & Michael Ritter
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,8 +18,7 @@ package net.dv8tion.jda;
 import java.util.LinkedList;
 import java.util.List;
 
-public enum Permission
-{
+public enum Permission {
     CREATE_INSTANT_INVITE(0),
     KICK_MEMBERS(1),
     BAN_MEMBERS(2),
@@ -48,22 +47,8 @@ public enum Permission
 
     private final int offset;
 
-    Permission(int offset)
-    {
+    Permission(int offset) {
         this.offset = offset;
-    }
-
-    /**
-     * The binary offset of the permission.<br>
-     * For more information about Discord's offset system refer to
-     * <a href="https://discordapi.readthedocs.org/en/latest/reference/channels/permissions.html#permissions-number">Discord Permission Numbers</a>.
-     *
-     * @return
-     *      The offset that represents this {@link net.dv8tion.jda.Permission Permission}.
-     */
-    public int getOffset()
-    {
-        return offset;
     }
 
     /**
@@ -76,15 +61,14 @@ public enum Permission
      * @return
      *      {@link net.dv8tion.jda.Permission Permission} relating to the provided offset.
      */
-    public static Permission getFromOffset(int offset)
-    {
-        for (Permission perm : values())
-        {
+    public static Permission getFromOffset(int offset) {
+        for (Permission perm : values()) {
             if (perm.offset == offset)
                 return perm;
         }
         return UNKNOWN;
     }
+
     /**
      * A list of all {@link net.dv8tion.jda.Permission Permissions} that are specified by this raw int representation of
      * permissions. The is best used with the getRaw methods in {@link net.dv8tion.jda.entities.Role Role},
@@ -100,16 +84,26 @@ public enum Permission
      * @return
      *      Possibly-empty list of {@link net.dv8tion.jda.Permission Permissions}.
      */
-    public static List<Permission> getPermissions(int permissions)
-    {
+    public static List<Permission> getPermissions(int permissions) {
         List<Permission> perms = new LinkedList<>();
-        for (Permission perm : Permission.values())
-        {
+        for (Permission perm : Permission.values()) {
             if (perm.equals(Permission.UNKNOWN))
                 continue;
-            if(((permissions >> perm.getOffset()) & 1) == 1)
+            if (((permissions >> perm.getOffset()) & 1) == 1)
                 perms.add(perm);
         }
         return perms;
+    }
+
+    /**
+     * The binary offset of the permission.<br>
+     * For more information about Discord's offset system refer to
+     * <a href="https://discordapi.readthedocs.org/en/latest/reference/channels/permissions.html#permissions-number">Discord Permission Numbers</a>.
+     *
+     * @return
+     *      The offset that represents this {@link net.dv8tion.jda.Permission Permission}.
+     */
+    public int getOffset() {
+        return offset;
     }
 }

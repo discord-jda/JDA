@@ -1,12 +1,12 @@
 /**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
- *
+ * Copyright 2015-2016 Austin Keener & Michael Ritter
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,18 +19,15 @@ import net.dv8tion.jda.JDA;
 
 import java.time.OffsetDateTime;
 
-public class ShutdownEvent extends Event
-{
+public class ShutdownEvent extends Event {
     protected final OffsetDateTime shutdownTime;
 
-    public ShutdownEvent(JDA api, OffsetDateTime shutdownTime)
-    {
+    public ShutdownEvent(JDA api, OffsetDateTime shutdownTime) {
         super(api, -1);
         this.shutdownTime = shutdownTime;
     }
 
-    public OffsetDateTime getShutdownTime()
-    {
+    public OffsetDateTime getShutdownTime() {
         return shutdownTime;
     }
 }

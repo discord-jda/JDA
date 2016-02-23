@@ -1,12 +1,12 @@
 /**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
- *
+ * Copyright 2015-2016 Austin Keener & Michael Ritter
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,8 +34,7 @@ import java.util.List;
  * This repsents message received from both {@link net.dv8tion.jda.entities.TextChannel TextChannels}
  * and from {@link net.dv8tion.jda.entities.PrivateChannel PrivateChannels}.
  */
-public interface Message
-{
+public interface Message {
     /**
      * The Id of this Message
      *
@@ -186,8 +185,7 @@ public interface Message
     /**
      * Represents a {@link net.dv8tion.jda.entities.Message Message} file attachment.
      */
-    class Attachment
-    {
+    class Attachment {
         private final String id;
         private final String url;
         private final String proxyUrl;
@@ -197,8 +195,7 @@ public interface Message
         private final int width;
         private final JDA jda;
 
-        public Attachment(String id, String url, String proxyUrl, String fileName, int size, int height, int width, JDA jda)
-        {
+        public Attachment(String id, String url, String proxyUrl, String fileName, int size, int height, int width, JDA jda) {
             this.id = id;
             this.url = url;
             this.proxyUrl = proxyUrl;
@@ -215,8 +212,7 @@ public interface Message
          * @return
          *      Non-null String containing the Attachment ID.
          */
-        public String getId()
-        {
+        public String getId() {
             return id;
         }
 
@@ -226,8 +222,7 @@ public interface Message
          * @return
          *      Non-null String containing the Attachment URL.
          */
-        public String getUrl()
-        {
+        public String getUrl() {
             return url;
         }
 
@@ -237,8 +232,7 @@ public interface Message
          * @return
          *      Non-null String containing the proxied Attachment url.
          */
-        public String getProxyUrl()
-        {
+        public String getProxyUrl() {
             return proxyUrl;
         }
 
@@ -248,8 +242,7 @@ public interface Message
          * @return
          *      Non-null String containing the Attachment file name.
          */
-        public String getFileName()
-        {
+        public String getFileName() {
             return fileName;
         }
 
@@ -261,19 +254,15 @@ public interface Message
          * @return
          *      boolean true, if successful, otherwise false
          */
-        public boolean download(File file)
-        {
+        public boolean download(File file) {
             InputStream in = null;
-            try
-            {
+            try {
                 URL url = new URL(getUrl());
                 URLConnection con;
-                if (jda.getGlobalProxy() == null)
-                {
+                if (jda.getGlobalProxy() == null) {
                     con = url.openConnection();
                 }
-                else
-                {
+                else {
                     con = url.openConnection(new Proxy(Proxy.Type.HTTP,
                             new InetSocketAddress(jda.getGlobalProxy().getAddress(), jda.getGlobalProxy().getPort())));
                 }
@@ -282,15 +271,16 @@ public interface Message
                 Files.copy(in, Paths.get(file.getAbsolutePath()));
                 return true;
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 e.printStackTrace();
             }
-            finally
-            {
-                if (in != null)
-                {
-                    try {in.close();} catch(Exception ignored) {}
+            finally {
+                if (in != null) {
+                    try {
+                        in.close();
+                    }
+                    catch (Exception ignored) {
+                    }
                 }
             }
             return false;
@@ -303,8 +293,7 @@ public interface Message
          * @return
          *      Positive int containing the size of the Attachment.
          */
-        public int getSize()
-        {
+        public int getSize() {
             return size;
         }
 
@@ -315,8 +304,7 @@ public interface Message
          * @return
          *      Never-negative int containing image Attachment height.
          */
-        public int getHeight()
-        {
+        public int getHeight() {
             return height;
         }
 
@@ -327,8 +315,7 @@ public interface Message
          * @return
          *      Never-negative int containing image Attachment width.
          */
-        public int getWidth()
-        {
+        public int getWidth() {
             return width;
         }
 
@@ -338,8 +325,7 @@ public interface Message
          * @return
          *      True if width and height are greater than zero.
          */
-        public boolean isImage()
-        {
+        public boolean isImage() {
             return height > 0 && width > 0;
         }
     }

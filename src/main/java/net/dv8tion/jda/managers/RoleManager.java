@@ -1,12 +1,12 @@
 /**
- *      Copyright 2015-2016 Austin Keener & Michael Ritter
- *
+ * Copyright 2015-2016 Austin Keener & Michael Ritter
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,8 +29,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RoleManager
-{
+public class RoleManager {
     private final Role role;
 
     private String name = null;
@@ -38,8 +37,7 @@ public class RoleManager
     private Boolean grouped = null;
     private int perms;
 
-    public RoleManager(Role role)
-    {
+    public RoleManager(Role role) {
         this.role = role;
         perms = ((RoleImpl) role).getPermissionsRaw();
     }
@@ -49,8 +47,7 @@ public class RoleManager
      * @return
      *      the Role of this Manager
      */
-    public Role getRole()
-    {
+    public Role getRole() {
         return role;
     }
 
@@ -64,16 +61,13 @@ public class RoleManager
      * @return
      *      this
      */
-    public RoleManager setName(String name)
-    {
+    public RoleManager setName(String name) {
         checkPermission(Permission.MANAGE_ROLES);
 
-        if (role.getName().equals(name))
-        {
+        if (role.getName().equals(name)) {
             this.name = null;
         }
-        else
-        {
+        else {
             this.name = name;
         }
         return this;
@@ -89,16 +83,13 @@ public class RoleManager
      * @return
      *      this
      */
-    public RoleManager setColor(int color)
-    {
+    public RoleManager setColor(int color) {
         checkPermission(Permission.MANAGE_ROLES);
 
-        if (color == role.getColor() || color < 0)
-        {
+        if (color == role.getColor() || color < 0) {
             this.color = -1;
         }
-        else
-        {
+        else {
             this.color = Math.min(0xFFFFFF, color);
         }
         return this;
@@ -114,8 +105,7 @@ public class RoleManager
      * @return
      *      this
      */
-    public RoleManager setColor(Color color)
-    {
+    public RoleManager setColor(Color color) {
         return setColor(color == null ? -1 : color.getRGB() & 0xFFFFFF);
     }
 
@@ -129,16 +119,13 @@ public class RoleManager
      * @return
      *      this
      */
-    public RoleManager setGrouped(Boolean group)
-    {
+    public RoleManager setGrouped(Boolean group) {
         checkPermission(Permission.MANAGE_ROLES);
 
-        if (group == null || group == role.isGrouped())
-        {
+        if (group == null || group == role.isGrouped()) {
             this.grouped = null;
         }
-        else
-        {
+        else {
             this.grouped = group;
         }
         return this;
@@ -153,8 +140,7 @@ public class RoleManager
      * @return
      *      this
      */
-    public RoleManager move(int offset)
-    {
+    public RoleManager move(int offset) {
         checkPermission(Permission.MANAGE_ROLES);
 
         List<Role> newOrder = new ArrayList<>();
@@ -163,8 +149,7 @@ public class RoleManager
         int pos = Math.min(0, Math.max(newOrder.size(), role.getPosition() + offset));
         newOrder.add(pos, role);
         JSONArray arr = new JSONArray();
-        for (int i = 0; i < newOrder.size(); i++)
-        {
+        for (int i = 0; i < newOrder.size(); i++) {
             arr.put(new JSONObject().put("position", i + 1).put("id", newOrder.get(i).getId()));
         }
         ((JDAImpl) role.getJDA()).getRequester().patchA("https://discordapp.com/api/guilds/" + role.getGuild().getId() + "/roles", arr);
@@ -181,12 +166,10 @@ public class RoleManager
      * @return
      *      this
      */
-    public RoleManager give(Permission... perms)
-    {
+    public RoleManager give(Permission... perms) {
         checkPermission(Permission.MANAGE_ROLES);
 
-        for (Permission perm : perms)
-        {
+        for (Permission perm : perms) {
             this.perms = this.perms | (1 << perm.getOffset());
         }
         return this;
@@ -202,27 +185,24 @@ public class RoleManager
      * @return
      *      this
      */
-    public RoleManager revoke(Permission... perms)
-    {
+    public RoleManager revoke(Permission... perms) {
         checkPermission(Permission.MANAGE_ROLES);
 
-        for (Permission perm : perms)
-        {
+        for (Permission perm : perms) {
             this.perms = this.perms & (~(1 << perm.getOffset()));
         }
         return this;
     }
 
-    public void update()
-    {
+    public void update() {
         checkPermission(Permission.MANAGE_ROLES);
 
         JSONObject frame = getFrame();
-        if(name != null)
+        if (name != null)
             frame.put("name", name);
-        if(color >= 0)
+        if (color >= 0)
             frame.put("color", color);
-        if(grouped != null)
+        if (grouped != null)
             frame.put("hoist", grouped.booleanValue());
         update(frame);
     }
@@ -231,15 +211,13 @@ public class RoleManager
      * Deletes this Role
      * This change takes effect immediately!
      */
-    public void delete()
-    {
+    public void delete() {
         checkPermission(Permission.MANAGE_ROLES);
 
         ((JDAImpl) role.getJDA()).getRequester().delete("https://discordapp.com/api/guilds/" + role.getGuild().getId() + "/roles/" + role.getId());
     }
 
-    private JSONObject getFrame()
-    {
+    private JSONObject getFrame() {
         return new JSONObject()
                 .put("name", role.getName())
                 .put("color", role.getColor())
@@ -247,19 +225,16 @@ public class RoleManager
                 .put("permissions", perms);
     }
 
-    private void update(JSONObject object)
-    {
+    private void update(JSONObject object) {
         JSONObject response = ((JDAImpl) role.getJDA()).getRequester().patch("https://discordapp.com/api/guilds/" + role.getGuild().getId() + "/roles/" + role.getId(), object);
-        if (response == null || !response.has("id"))
-        {
+        if (response == null || !response.has("id")) {
             throw new RuntimeException("Setting values of Role " + role.getName() + " with ID " + role.getId()
                     + " failed... Reason: " + (response == null ? "Unknown" : response.toString()));
         }
         new EntityBuilder(((JDAImpl) role.getJDA())).createRole(response, role.getGuild().getId());
     }
 
-    private void checkPermission(Permission perm)
-    {
+    private void checkPermission(Permission perm) {
         if (!PermissionUtil.checkPermission(role.getJDA().getSelfInfo(), perm, role.getGuild()))
             throw new PermissionException(perm);
     }

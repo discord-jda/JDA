@@ -1,12 +1,12 @@
 /**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
- *
+ * Copyright 2015-2016 Austin Keener & Michael Ritter
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,37 +32,31 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ChannelUpdateHandler extends SocketHandler
-{
+public class ChannelUpdateHandler extends SocketHandler {
     private List<Role> changedRoles = new ArrayList<>();
     private List<User> changedUsers = new ArrayList<>();
     private List<Role> containedRoles = new ArrayList<>();
     private List<User> containedUsers = new ArrayList<>();
 
-    public ChannelUpdateHandler(JDAImpl api, int responseNumber)
-    {
+    public ChannelUpdateHandler(JDAImpl api, int responseNumber) {
         super(api, responseNumber);
     }
 
     @Override
-    public void handle(JSONObject content)
-    {
+    public void handle(JSONObject content) {
 
         String name = content.getString("name");
         int position = content.getInt("position");
         JSONArray permOverwrites = content.getJSONArray("permission_overwrites");
-        switch (content.getString("type"))
-        {
-            case "text":
-            {
+        switch (content.getString("type")) {
+            case "text": {
                 String topic = content.isNull("topic") ? null : content.getString("topic");
                 TextChannelImpl channel = (TextChannelImpl) api.getChannelMap().get(content.getString("id"));
                 if (channel == null)
                     throw new IllegalArgumentException("CHANNEL_UPDATE attemped to update a TextChannel that does not exist. JSON: " + content);
 
                 //If any properties changed, update the values and fire the proper events.
-                if (!StringUtils.equals(channel.getName(), name))
-                {
+                if (!StringUtils.equals(channel.getName(), name)) {
                     String oldName = channel.getName();
                     channel.setName(name);
                     api.getEventManager().handle(
@@ -70,8 +64,7 @@ public class ChannelUpdateHandler extends SocketHandler
                                     api, responseNumber,
                                     channel, oldName));
                 }
-                if (!StringUtils.equals(channel.getTopic(), topic))
-                {
+                if (!StringUtils.equals(channel.getTopic(), topic)) {
                     String oldTopic = channel.getTopic();
                     channel.setTopic(topic);
                     api.getEventManager().handle(
@@ -79,8 +72,7 @@ public class ChannelUpdateHandler extends SocketHandler
                                     api, responseNumber,
                                     channel, oldTopic));
                 }
-                if (channel.getPosition() != position)
-                {
+                if (channel.getPosition() != position) {
                     int oldPosition = channel.getPosition();
                     channel.setPosition(position);
                     api.getEventManager().handle(
@@ -91,8 +83,7 @@ public class ChannelUpdateHandler extends SocketHandler
 
                 //Determines if a new PermissionOverride was created or updated.
                 //If a PermissionOverride was created or updated it stores it in the proper Map to be reported by the Event.
-                for (int i = 0; i < permOverwrites.length(); i++)
-                {
+                for (int i = 0; i < permOverwrites.length(); i++) {
                     handlePermissionOverride(permOverwrites.getJSONObject(i), channel, content);
                 }
 
@@ -113,8 +104,7 @@ public class ChannelUpdateHandler extends SocketHandler
 
                 //If this update modified permissions in any way.
                 if (!changedRoles.isEmpty()
-                        || !changedUsers.isEmpty())
-                {
+                        || !changedUsers.isEmpty()) {
                     api.getEventManager().handle(
                             new TextChannelUpdatePermissionsEvent(
                                     api, responseNumber,
@@ -123,15 +113,13 @@ public class ChannelUpdateHandler extends SocketHandler
                 }
                 break;  //Finish the TextChannelUpdate case
             }
-            case "voice":
-            {
+            case "voice": {
                 VoiceChannelImpl channel = (VoiceChannelImpl) api.getVoiceChannelMap().get(content.getString("id"));
                 if (channel == null)
                     throw new IllegalArgumentException("CHANNEL_UPDATE attemped to update a VoiceChannel that does not exist. JSON: " + content);
 
                 //If any properties changed, update the values and fire the proper events.
-                if (!StringUtils.equals(channel.getName(), name))
-                {
+                if (!StringUtils.equals(channel.getName(), name)) {
                     String oldName = channel.getName();
                     channel.setName(name);
                     api.getEventManager().handle(
@@ -139,8 +127,7 @@ public class ChannelUpdateHandler extends SocketHandler
                                     api, responseNumber,
                                     channel, oldName));
                 }
-                if (channel.getPosition() != position)
-                {
+                if (channel.getPosition() != position) {
                     int oldPosition = channel.getPosition();
                     channel.setPosition(position);
                     api.getEventManager().handle(
@@ -151,8 +138,7 @@ public class ChannelUpdateHandler extends SocketHandler
 
                 //Determines if a new PermissionOverride was created or updated.
                 //If a PermissionOverride was created or updated it stores it in the proper Map to be reported by the Event.
-                for (int i = 0; i < permOverwrites.length(); i++)
-                {
+                for (int i = 0; i < permOverwrites.length(); i++) {
                     handlePermissionOverride(permOverwrites.getJSONObject(i), channel, content);
                 }
 
@@ -173,8 +159,7 @@ public class ChannelUpdateHandler extends SocketHandler
 
                 //If this update modified permissions in any way.
                 if (!changedRoles.isEmpty()
-                        || !changedUsers.isEmpty())
-                {
+                        || !changedUsers.isEmpty()) {
                     api.getEventManager().handle(
                             new VoiceChannelUpdatePermissionsEvent(
                                     api, responseNumber,
@@ -188,16 +173,13 @@ public class ChannelUpdateHandler extends SocketHandler
         }
     }
 
-    private void handlePermissionOverride(JSONObject override, Channel channel, JSONObject content)
-    {
+    private void handlePermissionOverride(JSONObject override, Channel channel, JSONObject content) {
         String id = override.getString("id");
         int allow = override.getInt("allow");
         int deny = override.getInt("deny");
 
-        switch (override.getString("type"))
-        {
-            case "role":
-            {
+        switch (override.getString("type")) {
+            case "role": {
                 Role role = ((GuildImpl) channel.getGuild()).getRolesMap().get(id);
                 if (role == null)
                     throw new IllegalArgumentException("CHANNEL_UPDATE attempted to create or update a PermissionOverride for a Role that doesn't exist! JSON: " + content);
@@ -221,8 +203,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 containedRoles.add(role);
                 break;
             }
-            case "member":
-            {
+            case "member": {
                 User user = api.getUserMap().get(override.getString("id"));
                 if (user == null)
                     throw new IllegalArgumentException("CHANNEL_UPDATE attempted to create or update a PermissionOverride for User that doesn't exist! JSON: " + content);

@@ -1,12 +1,12 @@
 /**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
- *
+ * Copyright 2015-2016 Austin Keener & Michael Ritter
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,120 +23,101 @@ import net.dv8tion.jda.managers.PermissionOverrideManager;
 import java.util.Collections;
 import java.util.List;
 
-public class PermissionOverrideImpl implements PermissionOverride
-{
+public class PermissionOverrideImpl implements PermissionOverride {
     private final User user;
     private final Role role;
     private final Channel channel;
     private int allow;
     private int deny;
 
-    public PermissionOverrideImpl(Channel channel, User user, Role role)
-    {
+    public PermissionOverrideImpl(Channel channel, User user, Role role) {
         this.channel = channel;
         this.user = user;
         this.role = role;
     }
 
     @Override
-    public int getAllowedRaw()
-    {
+    public int getAllowedRaw() {
         return allow;
     }
 
     @Override
-    public int getInheritRaw()
-    {
+    public int getInheritRaw() {
         return ~(allow | deny);
     }
 
     @Override
-    public int getDeniedRaw()
-    {
+    public int getDeniedRaw() {
         return deny;
     }
 
     @Override
-    public List<Permission> getAllowed()
-    {
+    public List<Permission> getAllowed() {
         return Collections.unmodifiableList(Permission.getPermissions(allow));
     }
 
     @Override
-    public List<Permission> getInherit()
-    {
+    public List<Permission> getInherit() {
         return Collections.unmodifiableList(Permission.getPermissions(getInheritRaw()));
     }
 
     @Override
-    public List<Permission> getDenied()
-    {
+    public List<Permission> getDenied() {
         return Collections.unmodifiableList(Permission.getPermissions(deny));
     }
 
     @Override
-    public JDA getJDA()
-    {
+    public JDA getJDA() {
         return channel.getJDA();
     }
 
     @Override
-    public User getUser()
-    {
+    public User getUser() {
         return user;
     }
 
     @Override
-    public Role getRole()
-    {
+    public Role getRole() {
         return role;
     }
 
     @Override
-    public Channel getChannel()
-    {
+    public Channel getChannel() {
         return channel;
     }
 
     @Override
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         return channel.getGuild();
     }
 
     @Override
-    public boolean isUserOverride()
-    {
+    public boolean isUserOverride() {
         return getUser() != null;
     }
 
     @Override
-    public boolean isRoleOverride()
-    {
+    public boolean isRoleOverride() {
         return getRole() != null;
     }
 
-    public PermissionOverrideImpl setAllow(int allow)
-    {
+    public PermissionOverrideImpl setAllow(int allow) {
         this.allow = allow;
         return this;
     }
 
-    public PermissionOverrideImpl setDeny(int deny)
-    {
+    public PermissionOverrideImpl setDeny(int deny) {
         this.deny = deny;
         return this;
     }
 
     @Override
-    public PermissionOverrideManager getManager()
-    {
+    public PermissionOverrideManager getManager() {
         return new PermissionOverrideManager(this);
     }
 
     @Override
-    public boolean equals(Object o)
-    {
+    public boolean equals(Object o) {
         if (!(o instanceof PermissionOverride))
             return false;
         PermissionOverride oPerm = (PermissionOverride) o;
@@ -145,14 +126,12 @@ public class PermissionOverrideImpl implements PermissionOverride
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return user == null ? channel.getId().hashCode() | role.getId().hashCode() : channel.getId().hashCode() | user.getId().hashCode();
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "PermOverwrite";
     }
 }

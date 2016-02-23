@@ -1,12 +1,12 @@
 /**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
- *
+ * Copyright 2015-2016 Austin Keener & Michael Ritter
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,16 +27,14 @@ import org.json.JSONArray;
 import java.util.LinkedList;
 import java.util.List;
 
-public class MessageHistory
-{
+public class MessageHistory {
     private final JDAImpl api;
     private final String channelId;
+    private final List<Message> queued = new LinkedList<>();
     private String lastId = null;
     private boolean atEnd = false;
-    private final List<Message> queued = new LinkedList<>();
 
-    public MessageHistory(JDA api, MessageChannel channel)
-    {
+    public MessageHistory(JDA api, MessageChannel channel) {
         if (channel instanceof TextChannel && !((TextChannel) channel).checkPermission(api.getSelfInfo(), Permission.MESSAGE_HISTORY))
             throw new PermissionException(Permission.MESSAGE_HISTORY);
 
@@ -49,10 +47,8 @@ public class MessageHistory
      *
      * @return all available Messages
      */
-    public List<Message> retrieveAll()
-    {
-        while (!atEnd && retrieve() != null)
-        {
+    public List<Message> retrieveAll() {
+        while (!atEnd && retrieve() != null) {
             //Nothing needed here
         }
         return queued;
@@ -63,8 +59,7 @@ public class MessageHistory
      *
      * @return the list of already pulled messages
      */
-    public List<Message> getRecent()
-    {
+    public List<Message> getRecent() {
         return queued;
     }
 
@@ -74,8 +69,7 @@ public class MessageHistory
      *
      * @return a list of the next 100 Messages (max), or null if at end of chat
      */
-    public List<Message> retrieve()
-    {
+    public List<Message> retrieve() {
         return retrieve(100);
     }
 
@@ -86,45 +80,37 @@ public class MessageHistory
      * @param amount the amount to Messages to queue
      * @return a list of the next [amount] Messages (max), or null if at end of chat
      */
-    public List<Message> retrieve(int amount)
-    {
-        if (atEnd)
-        {
+    public List<Message> retrieve(int amount) {
+        if (atEnd) {
             return null;
         }
         int toQueue;
         LinkedList<Message> out = new LinkedList<>();
         EntityBuilder builder = new EntityBuilder(api);
-        while(amount > 0)
-        {
+        while (amount > 0) {
             toQueue = Math.min(amount, 100);
-            try
-            {
+            try {
                 JSONArray array = api.getRequester().getA("https://discordapp.com/api/channels/" + channelId
                         + "/messages?limit=" + toQueue + (lastId != null ? "&before=" + lastId : ""));
 
-                for (int i = 0; i < array.length(); i++)
-                {
+                for (int i = 0; i < array.length(); i++) {
                     out.add(builder.createMessage(array.getJSONObject(i)));
                 }
-                if(array.length() < toQueue) {
+                if (array.length() < toQueue) {
                     atEnd = true;
                     break;
                 }
-                else
-                {
+                else {
                     lastId = out.getLast().getId();
                 }
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 ex.printStackTrace();
                 break;
             }
             amount -= toQueue;
         }
-        if(out.size() == 0)
-        {
+        if (out.size() == 0) {
             return null;
         }
         queued.addAll(out);

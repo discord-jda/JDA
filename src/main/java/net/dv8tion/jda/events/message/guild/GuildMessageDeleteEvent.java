@@ -1,12 +1,12 @@
 /**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
- *
+ * Copyright 2015-2016 Austin Keener & Michael Ritter
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,18 +18,15 @@ package net.dv8tion.jda.events.message.guild;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.TextChannel;
 
-public class GuildMessageDeleteEvent extends GenericGuildMessageEvent
-{
+public class GuildMessageDeleteEvent extends GenericGuildMessageEvent {
     private final String messageId;
 
-    public GuildMessageDeleteEvent(JDA api, int responseNumber, String messageId, TextChannel channel)
-    {
+    public GuildMessageDeleteEvent(JDA api, int responseNumber, String messageId, TextChannel channel) {
         super(api, responseNumber, null, channel);
         this.messageId = messageId;
     }
 
-    public String getMessageId()
-    {
+    public String getMessageId() {
         return messageId;
     }
 }

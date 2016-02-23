@@ -1,12 +1,12 @@
 /**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
- *
+ * Copyright 2015-2016 Austin Keener & Michael Ritter
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,8 +30,7 @@ import java.util.function.Consumer;
 /**
  * Represents the core of the Discord API. All functionality is connected through this.
  */
-public interface JDA
-{
+public interface JDA {
     /**
      * Changes the internal EventManager.
      * The default EventManager is {@link net.dv8tion.jda.hooks.InterfacedEventManager InterfacedEventListener}.
@@ -357,20 +356,20 @@ public interface JDA
     HttpHost getGlobalProxy();
 
     /**
-     * Used to enable JDA debug output.
-     *
-     * @param enableDebug
-     *          If true - enables debug output.
-     */
-    void setDebug(boolean enableDebug);
-
-    /**
      * Used to determine if JDA is currently in debug mode.
      *
      * @return
      *      True if JDA is currently in debug mode.
      */
     boolean isDebug();
+
+    /**
+     * Used to enable JDA debug output.
+     *
+     * @param enableDebug
+     *          If true - enables debug output.
+     */
+    void setDebug(boolean enableDebug);
 
     /**
      * Shuts down JDA, closing all its connections.

@@ -1,12 +1,12 @@
 /**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
- *
+ * Copyright 2015-2016 Austin Keener & Michael Ritter
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,8 +30,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class MessageImpl implements Message
-{
+public class MessageImpl implements Message {
     private final JDAImpl api;
     private final String id;
     private boolean mentionsEveryone = false;
@@ -48,78 +47,84 @@ public class MessageImpl implements Message
     private List<TextChannel> mentionedChannels = new LinkedList<>();
     private List<Attachment> attachments = new LinkedList<>();
 
-    public MessageImpl(String id, JDAImpl api)
-    {
+    public MessageImpl(String id, JDAImpl api) {
         this.id = id;
         this.api = api;
     }
 
     @Override
-    public JDA getJDA()
-    {
+    public JDA getJDA() {
         return api;
     }
 
     @Override
-    public String getId()
-    {
+    public String getId() {
         return id;
     }
 
     @Override
-    public List<User> getMentionedUsers()
-    {
+    public List<User> getMentionedUsers() {
         return Collections.unmodifiableList(mentionedUsers);
     }
 
-    @Override
-    public List<TextChannel> getMentionedChannels()
-    {
-        return Collections.unmodifiableList(mentionedChannels);
+    public MessageImpl setMentionedUsers(List<User> mentionedUsers) {
+        this.mentionedUsers = mentionedUsers;
+        return this;
     }
 
     @Override
-    public boolean mentionsEveryone()
-    {
+    public List<TextChannel> getMentionedChannels() {
+        return Collections.unmodifiableList(mentionedChannels);
+    }
+
+    public MessageImpl setMentionedChannels(List<TextChannel> mentionedChannels) {
+        this.mentionedChannels = mentionedChannels;
+        return this;
+    }
+
+    @Override
+    public boolean mentionsEveryone() {
         return mentionsEveryone;
     }
 
     @Override
-    public OffsetDateTime getTime()
-    {
+    public OffsetDateTime getTime() {
         return time;
     }
 
+    public MessageImpl setTime(OffsetDateTime time) {
+        this.time = time;
+        return this;
+    }
+
     @Override
-    public boolean isEdited()
-    {
+    public boolean isEdited() {
         return editedTime != null;
     }
 
     @Override
-    public OffsetDateTime getEditedTimestamp()
-    {
+    public OffsetDateTime getEditedTimestamp() {
         return editedTime;
     }
 
     @Override
-    public User getAuthor()
-    {
+    public User getAuthor() {
         return author;
     }
 
+    public MessageImpl setAuthor(User author) {
+        this.author = author;
+        return this;
+    }
+
     @Override
-    public String getContent()
-    {
-        if (subContent == null)
-        {
+    public String getContent() {
+        if (subContent == null) {
             String tmp = content;
-            for (User user : mentionedUsers)
-            {
+            for (User user : mentionedUsers) {
                 tmp = tmp.replace("<@" + user.getId() + '>', '@' + user.getUsername());
             }
-            for (TextChannel mentionedChannel : mentionedChannels)
-            {
+            for (TextChannel mentionedChannel : mentionedChannels) {
                 tmp = tmp.replace("<#" + mentionedChannel.getId() + '>', '#' + mentionedChannel.getName());
             }
             subContent = tmp;
@@ -127,58 +132,68 @@ public class MessageImpl implements Message
         return subContent;
     }
 
+    public MessageImpl setContent(String content) {
+        this.content = content;
+        return this;
+    }
+
     @Override
-    public String getRawContent()
-    {
+    public String getRawContent() {
         return content;
     }
 
     @Override
-    public String getChannelId()
-    {
+    public String getChannelId() {
         return channelId;
     }
 
-    @Override
-    public List<Attachment> getAttachments()
-    {
-        return Collections.unmodifiableList(attachments);
+    public MessageImpl setChannelId(String channelId) {
+        this.channelId = channelId;
+        return this;
     }
 
     @Override
-    public boolean isPrivate()
-    {
+    public List<Attachment> getAttachments() {
+        return Collections.unmodifiableList(attachments);
+    }
+
+    public MessageImpl setAttachments(List<Attachment> attachments) {
+        this.attachments = attachments;
+        return this;
+    }
+
+    @Override
+    public boolean isPrivate() {
         return isPrivate;
     }
 
     @Override
-    public boolean isTTS()
-    {
+    public boolean isTTS() {
         return isTTS;
     }
 
+    public MessageImpl setTTS(boolean TTS) {
+        isTTS = TTS;
+        return this;
+    }
+
     @Override
-    public Message updateMessage(String newContent)
-    {
+    public Message updateMessage(String newContent) {
         if (!api.getSelfInfo().getId().equals(getAuthor().getId()))
             throw new UnsupportedOperationException("Attempted to update message that was not sent by this account. You cannot modify other User's messages!");
-        try
-        {
+        try {
             JSONObject response = api.getRequester().patch("https://discordapp.com/api/channels/" + channelId + "/messages/" + getId(), new JSONObject().put("content", newContent));
             return new EntityBuilder(api).createMessage(response);
         }
-        catch (JSONException ex)
-        {
+        catch (JSONException ex) {
             ex.printStackTrace();
             return null;
         }
     }
 
     @Override
-    public void deleteMessage()
-    {
-        if (!api.getSelfInfo().getId().equals(getAuthor().getId()))
-        {
+    public void deleteMessage() {
+        if (!api.getSelfInfo().getId().equals(getAuthor().getId())) {
             if (isPrivate())
                 throw new PermissionException("Cannot delete another User's messages in a PrivateChannel.");
             else if (!api.getTextChannelById(getChannelId()).checkPermission(api.getSelfInfo(), Permission.MESSAGE_MANAGE))
@@ -187,75 +202,23 @@ public class MessageImpl implements Message
         api.getRequester().delete("https://discordapp.com/api/channels/" + channelId + "/messages/" + getId());
     }
 
-    public MessageImpl setMentionedUsers(List<User> mentionedUsers)
-    {
-        this.mentionedUsers = mentionedUsers;
-        return this;
-    }
-
-    public MessageImpl setMentionedChannels(List<TextChannel> mentionedChannels)
-    {
-        this.mentionedChannels = mentionedChannels;
-        return this;
-    }
-
-    public MessageImpl setMentionsEveryone(boolean mentionsEveryone)
-    {
+    public MessageImpl setMentionsEveryone(boolean mentionsEveryone) {
         this.mentionsEveryone = mentionsEveryone;
         return this;
     }
 
-    public MessageImpl setTTS(boolean TTS)
-    {
-        isTTS = TTS;
-        return this;
-    }
-
-    public MessageImpl setTime(OffsetDateTime time)
-    {
-        this.time = time;
-        return this;
-    }
-
-    public MessageImpl setEditedTime(OffsetDateTime editedTime)
-    {
+    public MessageImpl setEditedTime(OffsetDateTime editedTime) {
         this.editedTime = editedTime;
         return this;
     }
 
-    public MessageImpl setAuthor(User author)
-    {
-        this.author = author;
-        return this;
-    }
-
-    public MessageImpl setIsPrivate(boolean isPrivate)
-    {
+    public MessageImpl setIsPrivate(boolean isPrivate) {
         this.isPrivate = isPrivate;
         return this;
     }
 
-    public MessageImpl setChannelId(String channelId)
-    {
-        this.channelId = channelId;
-        return this;
-    }
-
-    public MessageImpl setContent(String content)
-    {
-        this.content = content;
-        return this;
-    }
-
-    public MessageImpl setAttachments(List<Attachment> attachments)
-    {
-        this.attachments = attachments;
-        return this;
-    }
-
     @Override
-    public boolean equals(Object o)
-    {
+    public boolean equals(Object o) {
         if (!(o instanceof Message))
             return false;
         Message oMsg = (Message) o;
@@ -263,38 +226,31 @@ public class MessageImpl implements Message
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return getId().hashCode();
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         String content = getContent();
-        if (content.length() > 20)
-        {
+        if (content.length() > 20) {
             content = content.substring(0, 17) + "...";
         }
         return "M:" + author.getUsername() + ':' + content + '(' + getId() + ')';
     }
 
     @Override
-    public String getStrippedContent()
-    {
-        if (strippedContent == null)
-        {
+    public String getStrippedContent() {
+        if (strippedContent == null) {
             String tmp = getContent();
             //all the formatting keys to keep track of
-            String[] keys = new String[] {"*", "_", "`", "~~"};
+            String[] keys = new String[]{"*", "_", "`", "~~"};
 
             //find all tokens (formatting strings described above)
             TreeSet<FormatToken> tokens = new TreeSet<>((t1, t2) -> Integer.compare(t1.start, t2.start));
-            for (String key : keys)
-            {
+            for (String key : keys) {
                 Matcher matcher = Pattern.compile(Pattern.quote(key)).matcher(tmp);
-                while (matcher.find())
-                {
+                while (matcher.find()) {
                     tokens.add(new FormatToken(key, matcher.start()));
                 }
             }
@@ -303,35 +259,28 @@ public class MessageImpl implements Message
             Stack<FormatToken> stack = new Stack<>();
             List<FormatToken> toRemove = new ArrayList<>();
             boolean inBlock = false;
-            for (FormatToken token : tokens)
-            {
-                if (stack.empty() || !stack.peek().format.equals(token.format) || stack.peek().start + token.format.length() == token.start)
-                {
+            for (FormatToken token : tokens) {
+                if (stack.empty() || !stack.peek().format.equals(token.format) || stack.peek().start + token.format.length() == token.start) {
                     //we are at opening tag
-                    if (!inBlock)
-                    {
+                    if (!inBlock) {
                         //we are outside of block -> handle normally
-                        if (token.format.equals("`"))
-                        {
+                        if (token.format.equals("`")) {
                             //block start... invalidate all previous tags
                             stack.clear();
                             inBlock = true;
                         }
                         stack.push(token);
                     }
-                    else if (token.format.equals("`"))
-                    {
+                    else if (token.format.equals("`")) {
                         //we are inside of a block -> handle only block tag
                         stack.push(token);
                     }
                 }
-                else if (!stack.empty())
-                {
+                else if (!stack.empty()) {
                     //we found a matching close-tag
                     toRemove.add(stack.pop());
                     toRemove.add(token);
-                    if (token.format.equals("`") && stack.empty())
-                    {
+                    if (token.format.equals("`") && stack.empty()) {
                         //close tag closed the block
                         inBlock = false;
                     }
@@ -342,16 +291,13 @@ public class MessageImpl implements Message
             Collections.sort(toRemove, (t1, t2) -> Integer.compare(t1.start, t2.start));
             StringBuilder out = new StringBuilder();
             int currIndex = 0;
-            for (FormatToken formatToken : toRemove)
-            {
-                if (currIndex < formatToken.start)
-                {
+            for (FormatToken formatToken : toRemove) {
+                if (currIndex < formatToken.start) {
                     out.append(tmp.substring(currIndex, formatToken.start));
                 }
                 currIndex = formatToken.start + formatToken.format.length();
             }
-            if (currIndex < tmp.length())
-            {
+            if (currIndex < tmp.length()) {
                 out.append(tmp.substring(currIndex));
             }
             //return the stripped text, escape all remaining formatting characters (did not have matching open/close before or were left/right of block

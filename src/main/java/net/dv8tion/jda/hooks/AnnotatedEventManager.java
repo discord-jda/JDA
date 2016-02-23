@@ -1,12 +1,12 @@
 /**
- *      Copyright 2015-2016 Austin Keener & Michael Ritter
- *
+ * Copyright 2015-2016 Austin Keener & Michael Ritter
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,47 +24,37 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class AnnotatedEventManager implements IEventManager
-{
+public class AnnotatedEventManager implements IEventManager {
     private final Set<Object> listeners = new HashSet<>();
     private final Map<Class<? extends Event>, Map<Object, Method>> methods = new HashMap<>();
 
     @Override
-    public void register(Object listener)
-    {
-        if (listeners.add(listener))
-        {
+    public void register(Object listener) {
+        if (listeners.add(listener)) {
             updateMethods();
         }
     }
 
     @Override
-    public void unregister(Object listener)
-    {
-        if (listeners.remove(listener))
-        {
+    public void unregister(Object listener) {
+        if (listeners.remove(listener)) {
             updateMethods();
         }
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public void handle(Event event)
-    {
+    public void handle(Event event) {
         Class<? extends Event> eventClass = event.getClass();
-        do
-        {
+        do {
             Map<Object, Method> listeners = methods.get(eventClass);
-            if (listeners != null)
-            {
+            if (listeners != null) {
                 listeners.entrySet().forEach(e -> {
-                    try
-                    {
+                    try {
                         e.getValue().setAccessible(true);
                         e.getValue().invoke(e.getKey(), event);
                     }
-                    catch (IllegalAccessException | InvocationTargetException e1)
-                    {
+                    catch (IllegalAccessException | InvocationTargetException e1) {
                         e1.printStackTrace();
                     }
                 });
@@ -74,25 +64,20 @@ public class AnnotatedEventManager implements IEventManager
         while (eventClass != null);
     }
 
-    private void updateMethods()
-    {
+    private void updateMethods() {
         methods.clear();
-        for (Object listener : listeners)
-        {
+        for (Object listener : listeners) {
             Class<?> c = listener.getClass();
             Method[] allMethods = c.getDeclaredMethods();
             for (Method m : allMethods) {
-                if (!m.isAnnotationPresent(SubscribeEvent.class))
-                {
+                if (!m.isAnnotationPresent(SubscribeEvent.class)) {
                     continue;
                 }
-                Class<?>[] pType  = m.getParameterTypes();
-                if (pType.length == 1 && Event.class.isAssignableFrom(pType[0]))
-                {
+                Class<?>[] pType = m.getParameterTypes();
+                if (pType.length == 1 && Event.class.isAssignableFrom(pType[0])) {
                     @SuppressWarnings("unchecked")
                     Class<? extends Event> eventClass = (Class<? extends Event>) pType[0];
-                    if (!methods.containsKey(eventClass))
-                    {
+                    if (!methods.containsKey(eventClass)) {
                         methods.put(eventClass, new HashMap<>());
                     }
                     methods.get(eventClass).put(listener, m);

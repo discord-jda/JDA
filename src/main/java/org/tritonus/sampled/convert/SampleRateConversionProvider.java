@@ -28,22 +28,21 @@
 
 package org.tritonus.sampled.convert;
 
+import org.tritonus.share.ArraySet;
+import org.tritonus.share.TDebug;
+import org.tritonus.share.sampled.AudioFormats;
+import org.tritonus.share.sampled.AudioUtils;
+import org.tritonus.share.sampled.FloatSampleBuffer;
+import org.tritonus.share.sampled.FloatSampleInput;
+import org.tritonus.share.sampled.convert.TSimpleFormatConversionProvider;
+
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Iterator;
-
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-
-import org.tritonus.share.TDebug;
-import org.tritonus.share.sampled.AudioFormats;
-import org.tritonus.share.sampled.FloatSampleBuffer;
-import org.tritonus.share.sampled.FloatSampleInput;
-import org.tritonus.share.sampled.AudioUtils;
-import org.tritonus.share.sampled.convert.TSimpleFormatConversionProvider;
-import org.tritonus.share.ArraySet;
 
 /**
  * This provider converts sample rate of 2 PCM streams. <br>
@@ -67,14 +66,16 @@ import org.tritonus.share.ArraySet;
 public class SampleRateConversionProvider extends
         TSimpleFormatConversionProvider {
 
+    private static final boolean DEBUG_STREAM = false;
+    private static final boolean DEBUG_STREAM_PROBLEMS = false;
+    private static final int ALL = AudioSystem.NOT_SPECIFIED;
+    private static final float[] commonSampleRates = {
+            8000, 11025, 12000, 16000, 22050, 24000, 32000, 44100, 48000,
+            56000, 64000, 88200, 96000, 192000
+    };
     // only used as abbreviation
     public static AudioFormat.Encoding PCM_SIGNED = AudioFormat.Encoding.PCM_SIGNED;
     public static AudioFormat.Encoding PCM_UNSIGNED = AudioFormat.Encoding.PCM_UNSIGNED;
-
-    private static final boolean DEBUG_STREAM = false;
-    private static final boolean DEBUG_STREAM_PROBLEMS = false;
-
-    private static final int ALL = AudioSystem.NOT_SPECIFIED;
     private static final AudioFormat[] OUTPUT_FORMATS = {
             // Encoding, SampleRate, sampleSizeInBits, channels, frameSize,
             // frameRate, bigEndian
@@ -95,6 +96,35 @@ public class SampleRateConversionProvider extends
      */
     public SampleRateConversionProvider() {
         super(Arrays.asList(OUTPUT_FORMATS), Arrays.asList(OUTPUT_FORMATS));
+    }
+
+    // replaces the sample rate and frame rate.
+    // Should only be used with PCM_SIGNED or PCM_UNSIGNED
+    private static AudioFormat replaceSampleRate(AudioFormat format,
+                                                 float newSampleRate) {
+        if (format.getSampleRate() == newSampleRate) {
+            return format;
+        }
+        return new AudioFormat(format.getEncoding(), newSampleRate,
+                format.getSampleSizeInBits(), format.getChannels(),
+                format.getFrameSize(), newSampleRate, format.isBigEndian());
+    }
+
+    protected static long convertLength(AudioFormat sourceFormat,
+                                        AudioFormat targetFormat, long sourceLength) {
+        if (sourceLength == AudioSystem.NOT_SPECIFIED) {
+            return sourceLength;
+        }
+        return (long) (targetFormat.getSampleRate()
+                / sourceFormat.getSampleRate() * sourceLength);
+    }
+
+    protected static long convertLength(float sourceSR, float targetSR,
+                                        long sourceLength) {
+        if (sourceLength == AudioSystem.NOT_SPECIFIED) {
+            return sourceLength;
+        }
+        return (long) (targetSR / sourceSR * sourceLength);
     }
 
     @Override
@@ -120,23 +150,6 @@ public class SampleRateConversionProvider extends
         }
         throw new IllegalArgumentException("format conversion not supported");
     }
-
-    // replaces the sample rate and frame rate.
-    // Should only be used with PCM_SIGNED or PCM_UNSIGNED
-    private static AudioFormat replaceSampleRate(AudioFormat format,
-                                                 float newSampleRate) {
-        if (format.getSampleRate() == newSampleRate) {
-            return format;
-        }
-        return new AudioFormat(format.getEncoding(), newSampleRate,
-                format.getSampleSizeInBits(), format.getChannels(),
-                format.getFrameSize(), newSampleRate, format.isBigEndian());
-    }
-
-    private static final float[] commonSampleRates = {
-            8000, 11025, 12000, 16000, 22050, 24000, 32000, 44100, 48000,
-            56000, 64000, 88200, 96000, 192000
-    };
 
     @Override
     public AudioFormat[] getTargetFormats(AudioFormat.Encoding targetEncoding,
@@ -182,7 +195,8 @@ public class SampleRateConversionProvider extends
                 TDebug.out("<found " + result.size() + " matching formats.");
             }
             return result.toArray(EMPTY_FORMAT_ARRAY);
-        } else {
+        }
+        else {
             if (TDebug.TraceAudioConverter) {
                 TDebug.out("<returning empty array.");
             }
@@ -214,23 +228,6 @@ public class SampleRateConversionProvider extends
         return result;
     }
 
-    protected static long convertLength(AudioFormat sourceFormat,
-                                        AudioFormat targetFormat, long sourceLength) {
-        if (sourceLength == AudioSystem.NOT_SPECIFIED) {
-            return sourceLength;
-        }
-        return (long) (targetFormat.getSampleRate()
-                / sourceFormat.getSampleRate() * sourceLength);
-    }
-
-    protected static long convertLength(float sourceSR, float targetSR,
-                                        long sourceLength) {
-        if (sourceLength == AudioSystem.NOT_SPECIFIED) {
-            return sourceLength;
-        }
-        return (long) (targetSR / sourceSR * sourceLength);
-    }
-
     /**
      * SampleRateConverterStream
      */
@@ -253,9 +250,25 @@ public class SampleRateConversionProvider extends
     public static class SampleRateConverterStream extends AudioInputStream
             implements FloatSampleInput {
 
-        /** the current working buffer with samples of the sourceStream */
+        /**
+         * Conversion algorithm
+         */
+        public static final int SAMPLE_AND_HOLD = 1;
+        /**
+         * Conversion algorithm
+         */
+        public static final int LINEAR_INTERPOLATION = 2;
+        /**
+         * Conversion algorithm
+         */
+        public static final int RESAMPLE = 3;
+        /**
+         * the current working buffer with samples of the sourceStream
+         */
         private FloatSampleBuffer thisBuffer = null;
-        /** used when read(byte[],int,int) is called */
+        /**
+         * used when read(byte[],int,int) is called
+         */
         private FloatSampleBuffer writeBuffer = null;
         private byte[] byteBuffer; // used for reading samples of sourceStream
         private AudioInputStream sourceStream;
@@ -263,29 +276,32 @@ public class SampleRateConversionProvider extends
         private float sourceSampleRate;
         private float targetSampleRate;
         private long sourceFrameLength;
-        /** index in thisBuffer */
+        /**
+         * index in thisBuffer
+         */
         private double dPos;
-        /** Conversion algorithm */
-        public static final int SAMPLE_AND_HOLD = 1;
-        /** Conversion algorithm */
-        public static final int LINEAR_INTERPOLATION = 2;
-        /** Conversion algorithm */
-        public static final int RESAMPLE = 3;
-
         private boolean eofReached = false;
 
-        /** source stream is read in buffers of this size - in milliseconds */
+        /**
+         * source stream is read in buffers of this size - in milliseconds
+         */
         private int sourceBufferTime;
 
-        /** source stream is read in buffers of this size - in samples */
+        /**
+         * source stream is read in buffers of this size - in samples
+         */
         private int sourceBufferSizeSamples;
 
-        /** the current conversion algorithm */
+        /**
+         * the current conversion algorithm
+         */
         private int conversionAlgorithm = LINEAR_INTERPOLATION;
         // private int conversionAlgorithm=SAMPLE_AND_HOLD;
 
         // History support
-        /** the buffer with history samples */
+        /**
+         * the buffer with history samples
+         */
         private FloatSampleBuffer historyBuffer = null;
         /**
          * the minimum number of samples that must be present in the history
@@ -293,8 +309,12 @@ public class SampleRateConversionProvider extends
          */
         private int minimumSamplesInHistory = 1;
 
-        /** force to discard current contents in thisBuffer if true */
+        /**
+         * force to discard current contents in thisBuffer if true
+         */
         private boolean thisBufferValid = false;
+        private long testInFramesRead = 0;
+        private long testOutFramesReturned = 0;
 
         public SampleRateConverterStream(AudioInputStream sourceStream,
                                          AudioFormat targetFormat) {
@@ -310,7 +330,8 @@ public class SampleRateConversionProvider extends
             this.sourceStream = sourceStream;
             if (sourceStream instanceof FloatSampleInput) {
                 sourceInput = (FloatSampleInput) sourceStream;
-            } else {
+            }
+            else {
                 this.sourceInput = null;
             }
             sourceSampleRate = sourceStream.getFormat().getSampleRate();
@@ -424,18 +445,21 @@ public class SampleRateConversionProvider extends
                 try {
                     thisRead = sourceStream.read(byteBuffer, bytesRead,
                             byteCount - bytesRead);
-                } catch (IOException ioe) {
+                }
+                catch (IOException ioe) {
                     thisRead = -1;
                 }
                 if (thisRead > 0) {
                     bytesRead += thisRead;
                 }
-            } while (bytesRead < byteCount && thisRead > 0);
+            }
+            while (bytesRead < byteCount && thisRead > 0);
             if (bytesRead == 0) {
                 // sourceStream is closed. We don't accept 0 bytes read from
                 // source stream
                 close();
-            } else {
+            }
+            else {
                 thisBuffer.initFromByteArray(byteBuffer, 0, bytesRead,
                         sourceStream.getFormat());
                 if (TDebug.TraceAudioConverter && DEBUG_STREAM) {
@@ -445,17 +469,17 @@ public class SampleRateConversionProvider extends
             }
         }
 
-        /** pre-condition: sourceInput != null, thisBuffer.getSampleCount()>0 */
+        /**
+         * pre-condition: sourceInput != null, thisBuffer.getSampleCount()>0
+         */
         private void readFromSourceInput() {
             if (sourceInput.isDone()) {
                 close();
-            } else {
+            }
+            else {
                 sourceInput.read(thisBuffer);
             }
         }
-
-        private long testInFramesRead = 0;
-        private long testOutFramesReturned = 0;
 
         /**
          * fills thisBuffer with new samples. It sets the history buffer to the
@@ -500,7 +524,8 @@ public class SampleRateConversionProvider extends
 
             if (sourceInput != null) {
                 readFromSourceInput();
-            } else {
+            }
+            else {
                 readFromByteSourceStream();
             }
 
@@ -519,7 +544,8 @@ public class SampleRateConversionProvider extends
             if (!thisBufferValid) {
                 thisBufferValid = true;
                 dPos = 0.0;
-            } else {
+            }
+            else {
                 double temp = dPos;
                 dPos -= oldSampleCount;
                 if (DEBUG_STREAM) {
@@ -562,7 +588,8 @@ public class SampleRateConversionProvider extends
                                 + (iInIndex + historyLength)
                                 + " because inIndex=" + iInIndex);
                     }
-                } else if (iInIndex >= inSampleCount) {
+                }
+                else if (iInIndex >= inSampleCount) {
                     if (DEBUG_STREAM_PROBLEMS) {
                         TDebug.out("convertSampleAndHold: INDEX OUT OF BOUNDS outSamples["
                                 + i
@@ -570,7 +597,8 @@ public class SampleRateConversionProvider extends
                                 + inSampleOffset
                                 + ")=" + iInIndex + "];");
                     }
-                } else {
+                }
+                else {
                     outSamples[i + outSampleOffset] = inSamples[iInIndex];
                     // outSamples[i]=inSamples[roundDown(inSampleOffset)];
                 }
@@ -658,7 +686,8 @@ public class SampleRateConversionProvider extends
                                         + " inSampleCount="
                                         + inSampleCount);
                             }
-                        } else if (iInIndex < 0) {
+                        }
+                        else if (iInIndex < 0) {
                             int histIndex = iInIndex + historyLength;
                             if (histIndex >= 0) {
                                 value += history[histIndex] * factor;
@@ -666,14 +695,16 @@ public class SampleRateConversionProvider extends
                                     TDebug.out("linear interpolation: using history["
                                             + iInIndex + "]");
                                 }
-                            } else if (DEBUG_STREAM_PROBLEMS) {
+                            }
+                            else if (DEBUG_STREAM_PROBLEMS) {
                                 TDebug.out("linear interpolation: history INDEX OUT OF BOUNDS iInIndex="
                                         + iInIndex
                                         + " histIndex="
                                         + histIndex
                                         + " history length=" + historyLength);
                             }
-                        } else {
+                        }
+                        else {
                             value += inSamples[iInIndex] * factor;
                         }
                         factor = 1 - factor;
@@ -681,7 +712,8 @@ public class SampleRateConversionProvider extends
                     }
                     outSamples[i + outSampleOffset] = value;
                     // outSamples[i]=inSamples[roundDown(inSampleOffset)];
-                } catch (ArrayIndexOutOfBoundsException aioobe) {
+                }
+                catch (ArrayIndexOutOfBoundsException aioobe) {
                     if (DEBUG_STREAM_PROBLEMS) {
                         TDebug.out("**** REAL INDEX OUT OF BOUNDS ****** outSamples["
                                 + i
@@ -771,7 +803,8 @@ public class SampleRateConversionProvider extends
                     outSampleOffset++;
                 }
 
-            } catch (ArrayIndexOutOfBoundsException aioobe) {
+            }
+            catch (ArrayIndexOutOfBoundsException aioobe) {
                 if (DEBUG_STREAM_PROBLEMS || TDebug.TraceAllExceptions) {
                     TDebug.out("**** INDEX OUT OF BOUNDS ****** inSampleOffset="
                             + inSampleOffset
@@ -839,11 +872,11 @@ public class SampleRateConversionProvider extends
          * outBuffer.getSampleCount()) is less after processing this function,
          * then it is an indicator that it was the last block to be processed.
          *
-         * @see #setConversionAlgorithm(int)
          * @param outBuffer the buffer that the converted samples will be
-         *            written to.
+         *                  written to.
          * @throws IllegalArgumentException when outBuffer's channel count does
-         *             not match
+         *                                  not match
+         * @see #setConversionAlgorithm(int)
          */
         @SuppressWarnings("cast")
         public void read(FloatSampleBuffer outBuffer, int offset, int count) {
@@ -940,7 +973,8 @@ public class SampleRateConversionProvider extends
                 writtenSamples += writeCount;
                 // adjust new position
                 dPos += outSamples2inSamples((double) writeCount);
-            } while (!isClosed() && writtenSamples < outBuffer.getSampleCount());
+            }
+            while (!isClosed() && writtenSamples < outBuffer.getSampleCount());
 
             if (writtenSamples < count) {
                 outBuffer.changeSampleCount(writtenSamples + offset, true);
@@ -1026,7 +1060,8 @@ public class SampleRateConversionProvider extends
             if (writeBuffer == null) {
                 writeBuffer = new FloatSampleBuffer(getFormat().getChannels(),
                         frameCount, getFormat().getSampleRate());
-            } else {
+            }
+            else {
                 writeBuffer.changeSampleCount(frameCount, false);
             }
             read(writeBuffer);
@@ -1089,7 +1124,8 @@ public class SampleRateConversionProvider extends
             if (sourceStream != null) {
                 try {
                     sourceStream.close();
-                } catch (IOException ioe) {
+                }
+                catch (IOException ioe) {
                 }
             }
             eofReached = true;
@@ -1120,6 +1156,10 @@ public class SampleRateConversionProvider extends
         // ///////////////////////// Properties
         // ///////////////////////////////////////
 
+        public synchronized float getTargetSampleRate() {
+            return targetSampleRate;
+        }
+
         public synchronized void setTargetSampleRate(float sr) {
             if (sr > 0) {
                 targetSampleRate = sr;
@@ -1128,20 +1168,16 @@ public class SampleRateConversionProvider extends
             }
         }
 
+        public synchronized int getConversionAlgorithm() {
+            return conversionAlgorithm;
+        }
+
         public synchronized void setConversionAlgorithm(int algo) {
             if ((algo == SAMPLE_AND_HOLD || algo == LINEAR_INTERPOLATION)
                     && (algo != conversionAlgorithm)) {
                 conversionAlgorithm = algo;
                 resizeBuffers();
             }
-        }
-
-        public synchronized float getTargetSampleRate() {
-            return targetSampleRate;
-        }
-
-        public synchronized int getConversionAlgorithm() {
-            return conversionAlgorithm;
         }
 
     }
@@ -1165,15 +1201,15 @@ public class SampleRateConversionProvider extends
             this.sampleRate = targetFormat.getSampleRate();
         }
 
+        @Override
+        public float getSampleRate() {
+            return this.sampleRate;
+        }
+
         public void setSampleRate(float sr) {
             if (sr > 0) {
                 this.sampleRate = sr;
             }
-        }
-
-        @Override
-        public float getSampleRate() {
-            return this.sampleRate;
         }
 
         @Override
@@ -1183,4 +1219,6 @@ public class SampleRateConversionProvider extends
     }
 }
 
-/** * SampleRateConversionProvider.java ** */
+/**
+ * SampleRateConversionProvider.java **
+ */

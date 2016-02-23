@@ -1,12 +1,12 @@
 /**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
- *
+ * Copyright 2015-2016 Austin Keener & Michael Ritter
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,20 +30,18 @@ import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
 
-public class AudioWebSocket extends WebSocketAdapter
-{
+public class AudioWebSocket extends WebSocketAdapter {
     public static final int INITIAL_CONNECTION_RESPONSE = 2;
     public static final int HEARTBEAT_PING_RETURN = 3;
     public static final int CONNECTING_COMPLETED = 4;
     public static final int USER_SPEAKING_UPDATE = 5;
-
+    public static WebSocket socket;
     private final JDAImpl api;
     private final Guild guild;
     private final HttpHost proxy;
     private boolean connected = false;
     private boolean ready = false;
     private Thread keepAliveThread;
-    public static WebSocket socket;
     private String endpoint;
     private String wssEndpoint;
 
@@ -55,8 +53,7 @@ public class AudioWebSocket extends WebSocketAdapter
     private InetSocketAddress address;
     private Thread udpKeepAliveThread;
 
-    public AudioWebSocket(String endpoint, JDAImpl api, Guild guild, String sessionId, String token)
-    {
+    public AudioWebSocket(String endpoint, JDAImpl api, Guild guild, String sessionId, String token) {
         this.endpoint = endpoint;
         this.api = api;
         this.guild = guild;
@@ -74,33 +71,28 @@ public class AudioWebSocket extends WebSocketAdapter
 
         proxy = api.getGlobalProxy();
         WebSocketFactory factory = new WebSocketFactory();
-        if (proxy != null)
-        {
+        if (proxy != null) {
             ProxySettings settings = factory.getProxySettings();
             settings.setHost(proxy.getHostName());
             settings.setPort(proxy.getPort());
         }
-        try
-        {
+        try {
             socket = factory.createSocket(wssEndpoint)
                     .addListener(this)
                     .connect();
         }
-        catch (IOException | WebSocketException e)
-        {
+        catch (IOException | WebSocketException e) {
             //Completely fail here. We couldn't make the connection.
             throw new RuntimeException(e);
         }
     }
 
-    public void send(String message)
-    {
+    public void send(String message) {
         socket.sendText(message);
     }
 
     @Override
-    public void onConnected(WebSocket websocket, Map<String, List<String>> headers)
-    {
+    public void onConnected(WebSocket websocket, Map<String, List<String>> headers) {
         JSONObject connectObj = new JSONObject()
                 .put("op", 0)
                 .put("d", new JSONObject()
@@ -114,15 +106,12 @@ public class AudioWebSocket extends WebSocketAdapter
     }
 
     @Override
-    public void onTextMessage(WebSocket websocket, String message)
-    {
+    public void onTextMessage(WebSocket websocket, String message) {
         JSONObject contentAll = new JSONObject(message);
         int opCode = contentAll.getInt("op");
 
-        switch(opCode)
-        {
-            case INITIAL_CONNECTION_RESPONSE:
-            {
+        switch (opCode) {
+            case INITIAL_CONNECTION_RESPONSE: {
                 JSONObject content = contentAll.getJSONObject("d");
                 ssrc = content.getInt("ssrc");
                 int port = content.getInt("port");
@@ -136,53 +125,46 @@ public class AudioWebSocket extends WebSocketAdapter
                 send(new JSONObject()
                         .put("op", 1)
                         .put("d", new JSONObject()
-                            .put("protocol", "udp")
-                            .put("data", new JSONObject()
-                                .put("address", externalIpAndPort.getHostString())
-                                .put("port", externalIpAndPort.getPort())
-                                .put("mode", "plain")
-                            )
+                                .put("protocol", "udp")
+                                .put("data", new JSONObject()
+                                        .put("address", externalIpAndPort.getHostString())
+                                        .put("port", externalIpAndPort.getPort())
+                                        .put("mode", "plain")
+                                )
                         )
                         .toString());
                 setupKeepAliveThread(heartbeatInterval);
 
                 break;
             }
-            case HEARTBEAT_PING_RETURN:
-            {
-                if (api.isDebug())
-                {
-                    long timePingSent  = contentAll.getLong("d");
+            case HEARTBEAT_PING_RETURN: {
+                if (api.isDebug()) {
+                    long timePingSent = contentAll.getLong("d");
                     long ping = System.currentTimeMillis() - timePingSent;
                     System.out.println("ping: " + ping + "ms");
                 }
                 break;
             }
-            case CONNECTING_COMPLETED:
-            {
-                if (api.isDebug())
-                {
+            case CONNECTING_COMPLETED: {
+                if (api.isDebug()) {
                     System.out.println("Audio connection has finished connecting!");
                 }
                 ready = true;
                 break;
             }
-            case USER_SPEAKING_UPDATE:
-            {
+            case USER_SPEAKING_UPDATE: {
                 JSONObject content = contentAll.getJSONObject("d");
                 boolean speaking = content.getBoolean("speaking");
                 int ssrc = content.getInt("ssrc");
                 String userId = content.getString("user_id");
 
                 User user = api.getUserById(userId);
-                if (user == null)
-                {
+                if (user == null) {
                     System.err.println("Got an Audio USER_SPEAKING_UPDATE for a non-existent User. JSON: " + contentAll);
                     return;
                 }
 
-                if (api.isDebug())
-                {
+                if (api.isDebug()) {
                     if (speaking)
                         System.out.println(user.getUsername() + " started transmitting audio.");    //Replace with event.
                     else
@@ -196,10 +178,8 @@ public class AudioWebSocket extends WebSocketAdapter
     }
 
     @Override
-    public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer)
-    {
-        if (api.isDebug())
-        {
+    public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer) {
+        if (api.isDebug()) {
             System.out.println("The Audio connection was closed!");
             System.out.println("By remote? " + closedByServer);
             System.out.println("Reason: " + serverCloseFrame.getCloseReason());
@@ -209,19 +189,16 @@ public class AudioWebSocket extends WebSocketAdapter
     }
 
     @Override
-    public void onUnexpectedError(WebSocket websocket, WebSocketException cause)
-    {
+    public void onUnexpectedError(WebSocket websocket, WebSocketException cause) {
         handleCallbackError(websocket, cause);
     }
 
     @Override
-    public void handleCallbackError(WebSocket websocket, Throwable cause)
-    {
+    public void handleCallbackError(WebSocket websocket, Throwable cause) {
         cause.printStackTrace();
     }
 
-    public void close()
-    {
+    public void close() {
         connected = false;
         ready = false;
         JSONObject obj = new JSONObject()
@@ -233,13 +210,11 @@ public class AudioWebSocket extends WebSocketAdapter
                         .put("self_deaf", false)
                 );
         api.getClient().send(obj.toString());
-        if (keepAliveThread != null)
-        {
+        if (keepAliveThread != null) {
             keepAliveThread.interrupt();
             keepAliveThread = null;
         }
-        if (udpKeepAliveThread != null)
-        {
+        if (udpKeepAliveThread != null) {
             udpKeepAliveThread.interrupt();
             udpKeepAliveThread = null;
         }
@@ -252,35 +227,30 @@ public class AudioWebSocket extends WebSocketAdapter
         api.getEventManager().handle(new AudioDisconnectEvent(api, disconnectedChannel));
     }
 
-    public DatagramSocket getUdpSocket()
-    {
+    public DatagramSocket getUdpSocket() {
         return udpSocket;
     }
 
-    public InetSocketAddress getAddress()
-    {
+    public InetSocketAddress getAddress() {
         return address;
     }
 
-    public int getSSRC()
-    {
+    public int getSSRC() {
         return ssrc;
     }
-    public boolean isConnected()
-    {
+
+    public boolean isConnected() {
         return connected;
     }
-    public boolean isReady()
-    {
+
+    public boolean isReady() {
         return ready;
     }
 
-    private InetSocketAddress handleUdpDiscovery(InetSocketAddress address, int ssrc)
-    {
+    private InetSocketAddress handleUdpDiscovery(InetSocketAddress address, int ssrc) {
         //We will now send a packet to discord to punch a port hole in the NAT wall.
         //This is called UDP hole punching.
-        try
-        {
+        try {
             udpSocket = new DatagramSocket();   //Use UDP, not TCP.
 
             //Create a byte array of length 70 containing our ssrc.
@@ -330,51 +300,41 @@ public class AudioWebSocket extends WebSocketAdapter
 
             return new InetSocketAddress(ourIP, ourPort);
         }
-        catch (SocketException e)
-        {
+        catch (SocketException e) {
             e.printStackTrace();
         }
-        catch (IOException e)
-        {
+        catch (IOException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    private void setupUdpKeepAliveThread(final InetSocketAddress address)
-    {
-        udpKeepAliveThread = new Thread()
-        {
+    private void setupUdpKeepAliveThread(final InetSocketAddress address) {
+        udpKeepAliveThread = new Thread() {
             @Override
-            public void run()
-            {
-                while (socket.isOpen() && !udpSocket.isClosed() && !this.isInterrupted())
-                {
+            public void run() {
+                while (socket.isOpen() && !udpSocket.isClosed() && !this.isInterrupted()) {
                     long seq = 0;
-                    try
-                    {
+                    try {
                         ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES + 1);
-                        buffer.put((byte)0xC9);
+                        buffer.put((byte) 0xC9);
                         buffer.putLong(seq);
                         DatagramPacket keepAlivePacket = new DatagramPacket(buffer.array(), buffer.array().length, address);
                         udpSocket.send(keepAlivePacket);
 
                         Thread.sleep(5000); //Wait 5 seconds to send next keepAlivePacket.
                     }
-                    catch (NoRouteToHostException e)
-                    {
+                    catch (NoRouteToHostException e) {
                         System.err.println("Closing AudioConnection due to inability to ping audio packets.");
                         System.err.println("Cannot send audio packet because JDA navigate the route to Discord.\n" +
                                 "Are you sure you have internet connection? It is likely that you've lost connection.");
                         AudioWebSocket.this.close();
                         break;
                     }
-                    catch (IOException e)
-                    {
+                    catch (IOException e) {
                         e.printStackTrace();
                     }
-                    catch (InterruptedException e)
-                    {
+                    catch (InterruptedException e) {
                         //We were asked to close.
 //                        e.printStackTrace();
                     }
@@ -385,25 +345,19 @@ public class AudioWebSocket extends WebSocketAdapter
         udpKeepAliveThread.start();
     }
 
-    private void setupKeepAliveThread(int keepAliveInterval)
-    {
-        keepAliveThread = new Thread()
-        {
+    private void setupKeepAliveThread(int keepAliveInterval) {
+        keepAliveThread = new Thread() {
             @Override
-            public void run()
-            {
-                while (socket.isOpen() && !this.isInterrupted())
-                {
+            public void run() {
+                while (socket.isOpen() && !this.isInterrupted()) {
                     send(new JSONObject()
                             .put("op", 3)
                             .put("d", System.currentTimeMillis())
                             .toString());
-                    try
-                    {
+                    try {
                         Thread.sleep(keepAliveInterval);
                     }
-                    catch (InterruptedException e)
-                    {
+                    catch (InterruptedException e) {
                         //We were asked to close.
 //                        e.printStackTrace();
                     }

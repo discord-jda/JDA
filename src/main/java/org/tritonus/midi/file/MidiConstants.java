@@ -27,24 +27,25 @@
 package org.tritonus.midi.file;
 
 
-
-
-/**	Constants for Standard Midi Files reading and writing.
+/**
+ * Constants for Standard Midi Files reading and writing.
  */
-public interface MidiConstants
-{
-	/**	Header magic constant.
-		Has the value "MThd".
-	 */
-	public static final int	HEADER_MAGIC = 0x4d546864;
+public interface MidiConstants {
+    /**
+     * Header magic constant.
+     * Has the value "MThd".
+     */
+    public static final int HEADER_MAGIC = 0x4d546864;
 
-	/**	Track magic constant.
-		Has the value "MTrk".
-	*/
-	public static final int	TRACK_MAGIC = 0x4d54726b;
+    /**
+     * Track magic constant.
+     * Has the value "MTrk".
+     */
+    public static final int TRACK_MAGIC = 0x4d54726b;
 }
 
 
-
-/*** MidiConstants.java ***/
+/***
+ * MidiConstants.java
+ ***/
 

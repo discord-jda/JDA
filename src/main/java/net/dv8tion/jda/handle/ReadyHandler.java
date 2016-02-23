@@ -1,12 +1,12 @@
 /**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
- *
+ * Copyright 2015-2016 Austin Keener & Michael Ritter
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,19 +23,16 @@ import org.json.JSONObject;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ReadyHandler extends SocketHandler
-{
+public class ReadyHandler extends SocketHandler {
     private final EntityBuilder builder;
 
-    public ReadyHandler(JDAImpl api, int responseNumber)
-    {
+    public ReadyHandler(JDAImpl api, int responseNumber) {
         super(api, responseNumber);
         this.builder = new EntityBuilder(api);
     }
 
     @Override
-    public void handle(final JSONObject content)
-    {
+    public void handle(final JSONObject content) {
         //TODO: User-Setings; read_state
         builder.createSelfInfo(content.getJSONObject("user"));
 //        JSONArray muted = content.getJSONObject("user_settings").getJSONArray("muted_channels");
@@ -47,23 +44,19 @@ public class ReadyHandler extends SocketHandler
 //        }
         JSONArray guilds = content.getJSONArray("guilds");
         final List<String> guildIds = new LinkedList<>();
-        for (int i = 0; i < guilds.length(); i++)
-        {
+        for (int i = 0; i < guilds.length(); i++) {
             JSONObject guildJson = guilds.getJSONObject(i);
-            if(guildJson.has("large") && guildJson.getBoolean("large"))
-            {
+            if (guildJson.has("large") && guildJson.getBoolean("large")) {
                 guildIds.add(guildJson.getString("id"));
                 builder.createGuildFirstPass(guildJson, guild ->
                 {
                     guildIds.remove(guild.getId());
-                    if (guildIds.isEmpty())
-                    {
+                    if (guildIds.isEmpty()) {
                         finishReady(content);
                     }
                 });
             }
-            else
-            {
+            else {
                 builder.createGuildFirstPass(guildJson, null);
             }
 //            Iterator<String> iterator = mutedChannelIds.iterator();
@@ -78,18 +71,15 @@ public class ReadyHandler extends SocketHandler
 //                }
 //            }
         }
-        if (guildIds.isEmpty())
-        {
+        if (guildIds.isEmpty()) {
             finishReady(content);
         }
 //        ((SelfInfoImpl) api.getSelfInfo()).setMutedChannels(mutedChannels);
     }
 
-    public void finishReady(JSONObject content)
-    {
+    public void finishReady(JSONObject content) {
         JSONArray priv_chats = content.getJSONArray("private_channels");
-        for (int i = 0; i < priv_chats.length(); i++)
-        {
+        for (int i = 0; i < priv_chats.length(); i++) {
             builder.createPrivateChannel(priv_chats.getJSONObject(i));
         }
 

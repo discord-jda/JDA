@@ -1,12 +1,12 @@
 /**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
- *
+ * Copyright 2015-2016 Austin Keener & Michael Ritter
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,8 +21,7 @@ import net.dv8tion.jda.EmbedType;
  * Represents an embed displayed by Discord.<br>
  * This class has many possibilities for null values, so be careful!
  */
-public interface MessageEmbed
-{
+public interface MessageEmbed {
     /**
      * The that was originally placed into chat that spawned this embed.
      *
@@ -101,15 +100,13 @@ public interface MessageEmbed
      * Represents the information Discord provided about a thumbnail image that should be
      *   displayed with an embed message.
      */
-    class Thumbnail
-    {
+    class Thumbnail {
         protected final String url;
         protected final String proxyUrl;
         protected final int width;
         protected final int height;
 
-        public Thumbnail(String url, String proxyUrl, int width, int height)
-        {
+        public Thumbnail(String url, String proxyUrl, int width, int height) {
             this.url = url;
             this.proxyUrl = proxyUrl;
             this.width = width;
@@ -122,8 +119,7 @@ public interface MessageEmbed
          * @return
          *      Never-null String containing the url of the displayed image.
          */
-        public String getUrl()
-        {
+        public String getUrl() {
             return url;
         }
 
@@ -134,8 +130,7 @@ public interface MessageEmbed
          * @return
          *      Never-null String containing the proxied url of this image.
          */
-        public String getProxyUrl()
-        {
+        public String getProxyUrl() {
             return proxyUrl;
         }
 
@@ -145,8 +140,7 @@ public interface MessageEmbed
          * @return
          *      Never-negative, Never-zero int containing the width of the image.
          */
-        public int getWidth()
-        {
+        public int getWidth() {
             return width;
         }
 
@@ -156,8 +150,7 @@ public interface MessageEmbed
          * @return
          *      Never-negative, Never-zero int containing the height of the image.
          */
-        public int getHeight()
-        {
+        public int getHeight() {
             return height;
         }
     }
@@ -166,13 +159,11 @@ public interface MessageEmbed
      * Multipurpose class that represents a provider of content,
      * whether directly through creation or indirectly through hosting.
      */
-    class Provider
-    {
+    class Provider {
         protected final String name;
         protected final String url;
 
-        public Provider(String name, String url)
-        {
+        public Provider(String name, String url) {
             this.name = name;
             this.url = url;
         }
@@ -185,8 +176,7 @@ public interface MessageEmbed
          * @return
          *      Never-null String containing the name of the provider.
          */
-        public String getName()
-        {
+        public String getName() {
             return name;
         }
 
@@ -196,8 +186,7 @@ public interface MessageEmbed
          * @return
          *      Possibly-null String containing the url of the provider.
          */
-        public String getUrl()
-        {
+        public String getUrl() {
             return url;
         }
     }
@@ -207,14 +196,12 @@ public interface MessageEmbed
      * The videos represented are expected to be played using an HTML5 player from the
      * site which the url belongs to.
      */
-    class VideoInfo
-    {
+    class VideoInfo {
         protected final String url;
         protected final int width;
         protected final int height;
 
-        public VideoInfo(String url, int width, int height)
-        {
+        public VideoInfo(String url, int width, int height) {
             this.url = url;
             this.width = width;
             this.height = height;
@@ -226,8 +213,7 @@ public interface MessageEmbed
          * @return
          *      Never-null String containing the video url.
          */
-        public String getUrl()
-        {
+        public String getUrl() {
             return url;
         }
 
@@ -239,8 +225,7 @@ public interface MessageEmbed
          * @return
          *      Non-negative, Non-zero int containing the width of the embedded video.
          */
-        public int getWidth()
-        {
+        public int getWidth() {
             return width;
         }
 
@@ -252,8 +237,7 @@ public interface MessageEmbed
          * @return
          *      Non-negative, Non-zero int containing the height of the embedded video.
          */
-        public int getHeight()
-        {
+        public int getHeight() {
             return height;
         }
     }

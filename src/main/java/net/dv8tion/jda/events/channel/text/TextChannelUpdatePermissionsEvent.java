@@ -1,12 +1,12 @@
 /**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
- *
+ * Copyright 2015-2016 Austin Keener & Michael Ritter
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,24 +22,21 @@ import net.dv8tion.jda.entities.User;
 
 import java.util.List;
 
-public class TextChannelUpdatePermissionsEvent extends GenericTextChannelUpdateEvent
-{
+public class TextChannelUpdatePermissionsEvent extends GenericTextChannelUpdateEvent {
     private final List<Role> changedRoles;
     private final List<User> changedUserRoles;
-    public TextChannelUpdatePermissionsEvent(JDA api, int responseNumber, TextChannel channel, List<Role> changedRoles, List<User> changedUserRoles)
-    {
+
+    public TextChannelUpdatePermissionsEvent(JDA api, int responseNumber, TextChannel channel, List<Role> changedRoles, List<User> changedUserRoles) {
         super(api, responseNumber, channel);
         this.changedRoles = changedRoles;
         this.changedUserRoles = changedUserRoles;
     }
 
-    public List<Role> getChangedRoles()
-    {
+    public List<Role> getChangedRoles() {
         return changedRoles;
     }
 
-    public List<User> getUsersWithPermissionChanges()
-    {
+    public List<User> getUsersWithPermissionChanges() {
         return changedUserRoles;
     }
 }

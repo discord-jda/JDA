@@ -1,12 +1,12 @@
 /**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
- *
+ * Copyright 2015-2016 Austin Keener & Michael Ritter
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,17 +27,14 @@ import org.json.JSONObject;
 
 import java.util.LinkedList;
 
-public class MessageEmbedHandler extends SocketHandler
-{
+public class MessageEmbedHandler extends SocketHandler {
 
-    public MessageEmbedHandler(JDAImpl api, int responseNumber)
-    {
+    public MessageEmbedHandler(JDAImpl api, int responseNumber) {
         super(api, responseNumber);
     }
 
     @Override
-    public void handle(JSONObject content)
-    {
+    public void handle(JSONObject content) {
         EntityBuilder builder = new EntityBuilder(api);
         String messageId = content.getString("id");
         String channelId = content.getString("channel_id");
@@ -45,19 +42,16 @@ public class MessageEmbedHandler extends SocketHandler
         LinkedList<MessageEmbed> embeds = new LinkedList<>();
 
         JSONArray embedsJson = content.getJSONArray("embeds");
-        for (int i = 0; i < embedsJson.length(); i++)
-        {
+        for (int i = 0; i < embedsJson.length(); i++) {
             embeds.add(builder.createMessageEmbed(embedsJson.getJSONObject(i)));
         }
-        if (channel != null)
-        {
+        if (channel != null) {
             api.getEventManager().handle(
                     new GuildMessageEmbedEvent(
                             api, responseNumber,
                             messageId, channel, embeds));
         }
-        else
-        {
+        else {
             PrivateChannel privChannel = api.getPmChannelMap().get(channelId);
             if (privChannel == null)
                 throw new IllegalArgumentException("Unrecognized Channel Id! JSON: " + content);

@@ -1,12 +1,12 @@
 /**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
- *
+ * Copyright 2015-2016 Austin Keener & Michael Ritter
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,18 +18,15 @@ package net.dv8tion.jda.events.user;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.User;
 
-public class UserNameUpdateEvent extends GenericUserEvent
-{
+public class UserNameUpdateEvent extends GenericUserEvent {
     private final String previousUsername;
 
-    public UserNameUpdateEvent(JDA api, int responseNumber, User user, String previousUsername)
-    {
+    public UserNameUpdateEvent(JDA api, int responseNumber, User user, String previousUsername) {
         super(api, responseNumber, user);
         this.previousUsername = previousUsername;
     }
 
-    public String getPreviousUsername()
-    {
+    public String getPreviousUsername() {
         return previousUsername;
     }
 }

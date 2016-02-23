@@ -1,12 +1,12 @@
 /**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
- *
+ * Copyright 2015-2016 Austin Keener & Michael Ritter
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,64 +34,53 @@ import org.json.JSONObject;
 import java.io.File;
 import java.util.function.Consumer;
 
-public class PrivateChannelImpl implements PrivateChannel
-{
+public class PrivateChannelImpl implements PrivateChannel {
     private final String id;
     private final User user;
     private final JDAImpl api;
 
-    public PrivateChannelImpl(String id, User user, JDAImpl api)
-    {
+    public PrivateChannelImpl(String id, User user, JDAImpl api) {
         this.id = id;
         this.user = user;
         this.api = api;
     }
 
     @Override
-    public JDA getJDA()
-    {
+    public JDA getJDA() {
         return api;
     }
 
     @Override
-    public String getId()
-    {
+    public String getId() {
         return id;
     }
 
     @Override
-    public User getUser()
-    {
+    public User getUser() {
         return user;
     }
 
     @Override
-    public Message sendMessage(String text)
-    {
+    public Message sendMessage(String text) {
         return sendMessage(new MessageBuilder().appendString(text).build());
     }
 
     @Override
-    public Message sendMessage(Message msg)
-    {
-        if (api.getMessageLimit() != null)
-        {
+    public Message sendMessage(Message msg) {
+        if (api.getMessageLimit() != null) {
             throw new RateLimitedException(api.getMessageLimit() - System.currentTimeMillis());
         }
-        try
-        {
+        try {
             JSONObject response = api.getRequester().post("https://discordapp.com/api/channels/" + getId() + "/messages",
                     new JSONObject().put("content", msg.getRawContent()));
-            if (response.has("retry_after"))
-            {
+            if (response.has("retry_after")) {
                 long retry_after = response.getLong("retry_after");
                 api.setMessageTimeout(retry_after);
                 throw new RateLimitedException(retry_after);
             }
             return new EntityBuilder(api).createMessage(response);
         }
-        catch (JSONException ex)
-        {
+        catch (JSONException ex) {
             ex.printStackTrace();
             //sending failed
             return null;
@@ -99,38 +88,32 @@ public class PrivateChannelImpl implements PrivateChannel
     }
 
     @Override
-    public void sendMessageAsync(String text, Consumer<Message> callback)
-    {
+    public void sendMessageAsync(String text, Consumer<Message> callback) {
         sendMessageAsync(new MessageBuilder().appendString(text).build(), callback);
     }
 
     @Override
-    public void sendMessageAsync(Message msg, Consumer<Message> callback)
-    {
+    public void sendMessageAsync(Message msg, Consumer<Message> callback) {
         ((MessageImpl) msg).setChannelId(getId());
         TextChannelImpl.AsyncMessageSender.getInstance(getJDA()).enqueue(msg, callback);
     }
 
     @Override
     @Deprecated
-    public Message sendFile(File file)
-    {
+    public Message sendFile(File file) {
         return sendFile(file, null);
     }
 
     @Override
     @Deprecated
-    public void sendFileAsync(File file, Consumer<Message> callback)
-    {
+    public void sendFileAsync(File file, Consumer<Message> callback) {
         sendFileAsync(file, null, callback);
     }
 
     @Override
-    public Message sendFile(File file, Message message)
-    {
+    public Message sendFile(File file, Message message) {
         JDAImpl api = (JDAImpl) getJDA();
-        try
-        {
+        try {
             MultipartBody body = Unirest.post("https://discordapp.com/api/channels/" + getId() + "/messages")
                     .header("authorization", getJDA().getAuthToken())
                     .header("user-agent", JDAInfo.GITHUB + " " + JDAInfo.VERSION)
@@ -143,16 +126,14 @@ public class PrivateChannelImpl implements PrivateChannel
             JSONObject messageJson = new JSONObject(response.getBody().toString());
             return new EntityBuilder(api).createMessage(messageJson);
         }
-        catch (UnirestException e)
-        {
+        catch (UnirestException e) {
             e.printStackTrace();
             return null;
         }
     }
 
     @Override
-    public void sendFileAsync(File file, Message message, Consumer<Message> callback)
-    {
+    public void sendFileAsync(File file, Message message, Consumer<Message> callback) {
         Thread thread = new Thread(() ->
         {
             Message messageReturn = sendFile(file, message);
@@ -163,14 +144,12 @@ public class PrivateChannelImpl implements PrivateChannel
         thread.start();
     }
 
-    public void sendTyping()
-    {
+    public void sendTyping() {
         api.getRequester().post("https://discordapp.com/api/channels/" + getId() + "/typing", new JSONObject());
     }
 
     @Override
-    public boolean equals(Object o)
-    {
+    public boolean equals(Object o) {
         if (!(o instanceof PrivateChannel))
             return false;
         PrivateChannel oPChannel = (PrivateChannel) o;
@@ -178,14 +157,12 @@ public class PrivateChannelImpl implements PrivateChannel
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return getId().hashCode();
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "PC:" + getUser().getUsername() + '(' + getId() + ')';
     }
 }

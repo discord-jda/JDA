@@ -1,12 +1,12 @@
 /**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
- *
+ * Copyright 2015-2016 Austin Keener & Michael Ritter
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,20 +36,72 @@ import java.util.zip.ZipEntry;
 /**
  * Internal class used to load the Java Service Provider Interfaces used by JDA.
  */
-public class ServiceUtil
-{
+public class ServiceUtil {
     public static final Map<Class, List<String>> SERVICES;  //Populated at the bottom of this file.
     public static final String SERVICES_DIRECTORY = "META-INF/services/";
 
+    static {
+        HashMap<Class, List<String>> services = new HashMap<>();
+
+        services.put(FormatConversionProvider.class,
+                Collections.unmodifiableList(
+                        Arrays.asList(
+                                "javazoom.spi.mpeg.sampled.convert.MpegFormatConversionProvider",   //MP3-SPI
+                                "org.tritonus.sampled.convert.LawEncoder",                          //Tritonus_Remaining
+                                "org.tritonus.sampled.convert.LawDecoder",                          //Tritonus_Remaining
+                                "org.tritonus.sampled.convert.PCM2PCMConversionProvider",           //Tritonus_Remaining
+                                "org.tritonus.sampled.convert.SampleRateConversionProvider",        //Tritonus_Remaining
+                                "org.tritonus.sampled.convert.ImaAdpcmFormatConversionProvider",     //Tritonus_Remaining
+                                "org.kc7bfi.jflac.sound.spi.FlacFormatConversionProvider"            //jFLAC
+                        )
+                )
+        );
+        services.put(AudioFileReader.class,
+                Collections.unmodifiableList(
+                        Arrays.asList(
+                                "javazoom.spi.mpeg.sampled.file.MpegAudioFileReader",               //MP3-SPI
+                                "org.tritonus.sampled.file.AuAudioFileReader",                      //Tritonus_Remaining
+                                "org.tritonus.sampled.file.WaveAudioFileReader",                    //Tritonus_Remaining
+                                "org.tritonus.sampled.file.AiffAudioFileReader",                    //Tritonus_Remaining
+                                "net.sourceforge.jaad.spi.javasound.AACAudioFileReader",            //JAAD
+                                "org.kc7bfi.jflac.sound.spi.FlacAudioFileReader"                    //jFLAC
+                        )
+                )
+        );
+        services.put(AudioFileWriter.class,
+                Collections.unmodifiableList(
+                        Arrays.asList(
+                                "org.tritonus.sampled.file.AuAudioFileWriter",                      //Tritonus_Remaining
+                                "org.tritonus.sampled.file.WaveAudioFileWriter",                    //Tritonus_Remaining
+                                "org.tritonus.sampled.file.AiffAudioFileWriter"                     //Tritonus_Remaining
+                        )
+                )
+        );
+        services.put(MidiFileWriter.class,
+                Collections.unmodifiableList(
+                        Collections.singletonList(
+                                "org.tritonus.midi.file.StandardMidiFileWriter"                     //Tritonus_Remaining
+                        )
+                )
+        );
+        services.put(MidiFileReader.class,
+                Collections.unmodifiableList(
+                        Collections.singletonList(
+                                "org.tritonus.midi.file.StandardMidiFileReader"                     //Tritonus_Remaining
+                        )
+                )
+        );
+
+        SERVICES = Collections.unmodifiableMap(services);
+    }
+
     @SuppressWarnings("unchecked")
-    public static void loadServices()
-    {
+    public static void loadServices() {
         File servicesJar;
         FileOutputStream fos = null;
         JarOutputStream zos = null;
 
-        try
-        {
+        try {
             //Creates a new temp file to act as a dummy jar containing only our META-INF/services/ folder.
             servicesJar = Files.createTempFile("jda-services", "jar").toFile();
             servicesJar.deleteOnExit();     //Sets to delete when the JVM closes, but it wont because it is loaded into the JVM. :/
@@ -59,8 +111,7 @@ public class ServiceUtil
             //Loops through all of our services, creating files in our Jar's META-INF/services/ folder
             // using the service class's canonical name (package.package.package.classname)
             //Then writes each provider's canonical name to the created file, 1 per line.
-            for (Map.Entry<Class, List<String>> service : SERVICES.entrySet())
-            {
+            for (Map.Entry<Class, List<String>> service : SERVICES.entrySet()) {
                 String fileName = SERVICES_DIRECTORY + service.getKey().getCanonicalName();
 
                 //Creates a new file in the META-INFO/services/ folder in our dummy jar.
@@ -70,8 +121,7 @@ public class ServiceUtil
                 zos.putNextEntry(zipEntry);
 
                 //Writes each provider's canonical name to this file, 1 per line.
-                for (String provider : service.getValue())
-                {
+                for (String provider : service.getValue()) {
                     zos.write((provider + "\n").getBytes());
                 }
 
@@ -110,85 +160,24 @@ public class ServiceUtil
 
             //Go through each Service SPI and force it to reload them.
             //This makes the JVM rescan it's known Extensions, finding ours and loading them.
-            for (Class service : SERVICES.keySet())
-            {
+            for (Class service : SERVICES.keySet()) {
                 ServiceLoader loader = ServiceLoader.load(service);
                 loader.reload();
                 //System.out.println(service.getCanonicalName());
                 //loader.forEach(provider -> System.out.println("  - " + provider.getClass().getName()));
             }
         }
-        catch (IOException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e)
-        {
+        catch (IOException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             e.printStackTrace();
         }
-        finally
-        {
-            try
-            {
+        finally {
+            try {
                 if (zos != null) zos.close();
                 if (fos != null) fos.close();
             }
-            catch (IOException e)
-            {
+            catch (IOException e) {
                 e.printStackTrace();
             }
         }
-    }
-
-    static
-    {
-        HashMap<Class, List<String>> services = new HashMap<>();
-
-        services.put(FormatConversionProvider.class,
-            Collections.unmodifiableList(
-                Arrays.asList(
-                    "javazoom.spi.mpeg.sampled.convert.MpegFormatConversionProvider",   //MP3-SPI
-                    "org.tritonus.sampled.convert.LawEncoder",                          //Tritonus_Remaining
-                    "org.tritonus.sampled.convert.LawDecoder",                          //Tritonus_Remaining
-                    "org.tritonus.sampled.convert.PCM2PCMConversionProvider",           //Tritonus_Remaining
-                    "org.tritonus.sampled.convert.SampleRateConversionProvider",        //Tritonus_Remaining
-                    "org.tritonus.sampled.convert.ImaAdpcmFormatConversionProvider",     //Tritonus_Remaining
-                    "org.kc7bfi.jflac.sound.spi.FlacFormatConversionProvider"            //jFLAC
-                )
-            )
-        );
-        services.put(AudioFileReader.class,
-            Collections.unmodifiableList(
-                Arrays.asList(
-                    "javazoom.spi.mpeg.sampled.file.MpegAudioFileReader",               //MP3-SPI
-                    "org.tritonus.sampled.file.AuAudioFileReader",                      //Tritonus_Remaining
-                    "org.tritonus.sampled.file.WaveAudioFileReader",                    //Tritonus_Remaining
-                    "org.tritonus.sampled.file.AiffAudioFileReader",                    //Tritonus_Remaining
-                    "net.sourceforge.jaad.spi.javasound.AACAudioFileReader",            //JAAD
-                    "org.kc7bfi.jflac.sound.spi.FlacAudioFileReader"                    //jFLAC
-                )
-            )
-        );
-        services.put(AudioFileWriter.class,
-            Collections.unmodifiableList(
-                Arrays.asList(
-                    "org.tritonus.sampled.file.AuAudioFileWriter",                      //Tritonus_Remaining
-                    "org.tritonus.sampled.file.WaveAudioFileWriter",                    //Tritonus_Remaining
-                    "org.tritonus.sampled.file.AiffAudioFileWriter"                     //Tritonus_Remaining
-                )
-            )
-        );
-        services.put(MidiFileWriter.class,
-            Collections.unmodifiableList(
-                    Collections.singletonList(
-                            "org.tritonus.midi.file.StandardMidiFileWriter"                     //Tritonus_Remaining
-                    )
-            )
-        );
-        services.put(MidiFileReader.class,
-            Collections.unmodifiableList(
-                    Collections.singletonList(
-                            "org.tritonus.midi.file.StandardMidiFileReader"                     //Tritonus_Remaining
-                    )
-            )
-        );
-
-        SERVICES = Collections.unmodifiableMap(services);
     }
 }

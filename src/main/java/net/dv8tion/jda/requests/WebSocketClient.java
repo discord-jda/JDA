@@ -1,12 +1,12 @@
 /**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
- *
+ * Copyright 2015-2016 Austin Keener & Michael Ritter
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,38 +34,33 @@ import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
 
-public class WebSocketClient extends WebSocketAdapter
-{
+public class WebSocketClient extends WebSocketAdapter {
+    private final JDAImpl api;
+    private final HttpHost proxy;
+    private final List<String> cachedEvents = new LinkedList<>();
     private Thread keepAliveThread;
     private WebSocket socket;
     private long keepAliveInterval;
-    private final JDAImpl api;
-    private final HttpHost proxy;
     private String sessionId;
     private String reconnectUrl = null;
     private boolean ready = false;
     private boolean connected;
     private boolean expectingClose = false;
-    private final List<String> cachedEvents = new LinkedList<>();
 
-    public WebSocketClient(String url, JDAImpl api, HttpHost proxy)
-    {
+    public WebSocketClient(String url, JDAImpl api, HttpHost proxy) {
         this.api = api;
         this.proxy = proxy;
         connect(url);
     }
 
-    public void send(String message)
-    {
+    public void send(String message) {
         socket.sendText(message);
     }
 
     @Override
-    public void onConnected(WebSocket websocket, Map<String, List<String>> headers)
-    {
+    public void onConnected(WebSocket websocket, Map<String, List<String>> headers) {
         JSONObject connectObj;
-        if(reconnectUrl == null)
-        {
+        if (reconnectUrl == null) {
             connectObj = new JSONObject()
                     .put("op", 2)
                     .put("d", new JSONObject()
@@ -81,8 +76,7 @@ public class WebSocketClient extends WebSocketAdapter
                             .put("large_threshold", 250)
                             .put("compress", true)); //Used to make the READY event be given as compressed binary data when over a certain size. TY @ShadowLordAlpha
         }
-        else
-        {
+        else {
             connectObj = new JSONObject()
                     .put("op", 6)
                     .put("d", new JSONObject()
@@ -95,12 +89,10 @@ public class WebSocketClient extends WebSocketAdapter
     }
 
     @Override
-    public void onTextMessage(WebSocket websocket, String message)
-    {
+    public void onTextMessage(WebSocket websocket, String message) {
         JSONObject content = new JSONObject(message);
 
-        if (content.getInt("op") == 7)
-        {
+        if (content.getInt("op") == 7) {
             reconnectUrl = content.getJSONObject("d").getString("url");
             close();
             return;
@@ -110,27 +102,26 @@ public class WebSocketClient extends WebSocketAdapter
         int responseTotal = content.getInt("s");
         api.setResponseTotal(responseTotal);
         content = content.getJSONObject("d");
-        if (type.equals("READY") || type.equals("RESUMED"))
-        {
+        if (type.equals("READY") || type.equals("RESUMED")) {
             keepAliveInterval = content.getLong("heartbeat_interval");
             keepAliveThread = new Thread(() -> {
                 while (socket.isOpen()) {
                     send(new JSONObject().put("op", 1).put("d", System.currentTimeMillis()).toString());
                     try {
                         Thread.sleep(keepAliveInterval);
-                    } catch (InterruptedException ignored) {}
+                    }
+                    catch (InterruptedException ignored) {
+                    }
                 }
             });
             keepAliveThread.setDaemon(true);
             keepAliveThread.start();
         }
 
-        if (api.isDebug())
-        {
+        if (api.isDebug()) {
             System.out.printf("%s -> %s\n", type, content.toString());
         }
-        if (!ready && !(type.equals("READY") || type.equals("GUILD_MEMBERS_CHUNK")))
-        {
+        if (!ready && !(type.equals("READY") || type.equals("GUILD_MEMBERS_CHUNK"))) {
             cachedEvents.add(message);
             return;
         }
@@ -223,30 +214,26 @@ public class WebSocketClient extends WebSocketAdapter
                     System.out.println("Unrecognized event:\n" + message);    //TODO: Replace with "we don't know this type"
             }
         }
-        catch (JSONException ex)
-        {
+        catch (JSONException ex) {
             System.err.println("Got an unexpected Json-parse error. Please redirect following message to the devs:");
             System.err.println('\t' + ex.getMessage());
             System.err.println('\t' + type + " -> " + content);
         }
-        catch (IllegalArgumentException ex)
-        {
+        catch (IllegalArgumentException ex) {
             System.err.println("JDA encountered an internal error.");
             ex.printStackTrace();
         }
     }
 
     @Override
-    public void onBinaryMessage(WebSocket websocket, byte[] binary) throws UnsupportedEncodingException, DataFormatException
-    {
+    public void onBinaryMessage(WebSocket websocket, byte[] binary) throws UnsupportedEncodingException, DataFormatException {
         //Thanks to ShadowLordAlpha for code and debugging.
         //Get the compressed message and inflate it
         StringBuilder builder = new StringBuilder();
         Inflater decompresser = new Inflater();
         decompresser.setInput(binary, 0, binary.length);
         byte[] result = new byte[100];
-        while(!decompresser.finished())
-        {
+        while (!decompresser.finished()) {
             int resultLength = decompresser.inflate(result);
             builder.append(new String(result, 0, resultLength, "UTF-8"));
         }
@@ -257,70 +244,58 @@ public class WebSocketClient extends WebSocketAdapter
     }
 
     @Override
-    public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer)
-    {
+    public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer) {
         connected = false;
-        if (reconnectUrl == null)
-        {
+        if (reconnectUrl == null) {
             System.out.println("The connection was closed!");
             System.out.println("By remote? " + closedByServer);
-            if (serverCloseFrame != null)
-            {
+            if (serverCloseFrame != null) {
                 System.out.println("Reason: " + serverCloseFrame.getCloseReason());
                 System.out.println("Close code: " + serverCloseFrame.getCloseCode());
             }
             if (!expectingClose)
                 api.getEventManager().handle(new DisconnectEvent(api, serverCloseFrame, clientCloseFrame, closedByServer, OffsetDateTime.now()));
             else
-                api.getEventManager().handle(new ShutdownEvent(api,OffsetDateTime.now()));
+                api.getEventManager().handle(new ShutdownEvent(api, OffsetDateTime.now()));
 
         }
-        else
-        {
+        else {
             expectingClose = false;
             connect(reconnectUrl);
         }
     }
 
     @Override
-    public void onUnexpectedError(WebSocket websocket, WebSocketException cause)
-    {
+    public void onUnexpectedError(WebSocket websocket, WebSocketException cause) {
         handleCallbackError(websocket, cause);
     }
 
     @Override
-    public void handleCallbackError(WebSocket websocket, Throwable cause)
-    {
+    public void handleCallbackError(WebSocket websocket, Throwable cause) {
         cause.printStackTrace();
     }
 
-    private void connect(String url)
-    {
+    private void connect(String url) {
         WebSocketFactory factory = new WebSocketFactory();
-        if (proxy != null)
-        {
+        if (proxy != null) {
             ProxySettings settings = factory.getProxySettings();
             settings.setHost(proxy.getHostName());
             settings.setPort(proxy.getPort());
         }
-        try
-        {
+        try {
             socket = factory.createSocket(url)
                     .addHeader("Accept-Encoding", "gzip")
                     .addListener(this);
             socket.connect();
         }
-        catch (IOException | WebSocketException e)
-        {
+        catch (IOException | WebSocketException e) {
             //Completely fail here. We couldn't make the connection.
             throw new RuntimeException(e);
         }
     }
 
-    public void close()
-    {
-        if (keepAliveThread != null)
-        {
+    public void close() {
+        if (keepAliveThread != null) {
             keepAliveThread.interrupt();
             keepAliveThread = null;
         }
@@ -328,16 +303,13 @@ public class WebSocketClient extends WebSocketAdapter
         socket.sendClose();
     }
 
-    public boolean isConnected()
-    {
+    public boolean isConnected() {
         return connected;
     }
 
-    public void ready()
-    {
+    public void ready() {
         ready = true;
-        for (String event : cachedEvents)
-        {
+        for (String event : cachedEvents) {
             if (api.isDebug())
                 System.out.print("Resending Cached event:  ");
             onTextMessage(socket, event);

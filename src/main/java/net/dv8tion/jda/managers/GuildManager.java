@@ -1,12 +1,12 @@
 /**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
- *
+ * Copyright 2015-2016 Austin Keener & Michael Ritter
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,62 +33,15 @@ import java.util.*;
 /**
  * Manager used to modify aspects of a {@link net.dv8tion.jda.entities.Guild Guild}.
  */
-public class GuildManager
-{
-    /**
-     * Represents the idle time allowed until a user is moved to the
-     * AFK {@link net.dv8tion.jda.entities.VoiceChannel} if one is set.
-     */
-    enum Timeout
-    {
-        SECONDS_60(60),
-        SECONDS_300(300),
-        SECONDS_900(900),
-        SECONDS_1800(1800),
-        SECONDS_3600(3600);
-
-        private final int seconds;
-        Timeout(int seconds)
-        {
-            this.seconds = seconds;
-        }
-
-        /**
-         * The amount of seconds represented by this {@link net.dv8tion.jda.managers.GuildManager.Timeout}.
-         *
-         * @return
-         *      An positive non-zero int representing the timeout amount in seconds.
-         */
-        public int getSeconds()
-        {
-            return seconds;
-        }
-
-        /**
-         * The timeout as a string.<br>
-         * Examples:    "60"  "300"   etc
-         *
-         * @return
-         *      Seconds as a string.
-         */
-        @Override
-        public String toString()
-        {
-            return "" + seconds;
-        }
-    }
-
+public class GuildManager {
     private final Guild guild;
-
+    private final Map<User, Set<Role>> addedRoles = new HashMap<>();
+    private final Map<User, Set<Role>> removedRoles = new HashMap<>();
     private Timeout timeout = null;
     private String name = null;
     private Region region = null;
     private AvatarUtil.Avatar icon = null;
     private String afkChannelId;
-
-    private final Map<User, Set<Role>> addedRoles = new HashMap<>();
-    private final Map<User, Set<Role>> removedRoles = new HashMap<>();
-
     /**
      * Creates a {@link net.dv8tion.jda.managers.GuildManager} that can be used to manage
      * different aspects of the provided {@link net.dv8tion.jda.entities.Guild}.
@@ -98,10 +51,8 @@ public class GuildManager
      * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
      *      if the guild is temporarily unavailable
      */
-    public GuildManager(Guild guild)
-    {
-        if (!guild.isAvailable())
-        {
+    public GuildManager(Guild guild) {
+        if (!guild.isAvailable()) {
             throw new GuildUnavailableException();
         }
         this.guild = guild;
@@ -114,8 +65,7 @@ public class GuildManager
      * @return
      *      the {@link net.dv8tion.jda.entities.Guild Guild} of this Manager
      */
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         return guild;
     }
 
@@ -131,20 +81,16 @@ public class GuildManager
      * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
      *      if the guild is temporarily unavailable
      */
-    public GuildManager setName(String name)
-    {
-        if (!guild.isAvailable())
-        {
+    public GuildManager setName(String name) {
+        if (!guild.isAvailable()) {
             throw new GuildUnavailableException();
         }
         checkPermission(Permission.MANAGE_SERVER);
 
-        if (guild.getName().equals(name))
-        {
+        if (guild.getName().equals(name)) {
             this.name = null;
         }
-        else
-        {
+        else {
             this.name = name;
         }
         return this;
@@ -162,20 +108,16 @@ public class GuildManager
      * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
      *      if the guild is temporarily unavailable
      */
-    public GuildManager setRegion(Region region)
-    {
-        if (!guild.isAvailable())
-        {
+    public GuildManager setRegion(Region region) {
+        if (!guild.isAvailable()) {
             throw new GuildUnavailableException();
         }
         checkPermission(Permission.MANAGE_SERVER);
 
-        if (region == guild.getRegion() || region == Region.UNKNOWN)
-        {
+        if (region == guild.getRegion() || region == Region.UNKNOWN) {
             this.region = null;
         }
-        else
-        {
+        else {
             this.region = region;
         }
         return this;
@@ -197,10 +139,8 @@ public class GuildManager
      * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
      *      if the guild is temporarily unavailable
      */
-    public GuildManager setIcon(AvatarUtil.Avatar avatar)
-    {
-        if (!guild.isAvailable())
-        {
+    public GuildManager setIcon(AvatarUtil.Avatar avatar) {
+        if (!guild.isAvailable()) {
             throw new GuildUnavailableException();
         }
         checkPermission(Permission.MANAGE_SERVER);
@@ -223,16 +163,13 @@ public class GuildManager
      * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
      *      if the guild is temporarily unavailable
      */
-    public GuildManager setAfkChannel(VoiceChannel channel)
-    {
-        if (!guild.isAvailable())
-        {
+    public GuildManager setAfkChannel(VoiceChannel channel) {
+        if (!guild.isAvailable()) {
             throw new GuildUnavailableException();
         }
         checkPermission(Permission.MANAGE_SERVER);
 
-        if (channel != null && channel.getGuild() != guild)
-        {
+        if (channel != null && channel.getGuild() != guild) {
             throw new IllegalArgumentException("Given VoiceChannel is not member of modifying Guild");
         }
         this.afkChannelId = channel == null ? null : channel.getId();
@@ -254,10 +191,8 @@ public class GuildManager
      * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
      *      if the guild is temporarily unavailable
      */
-    public GuildManager setAfkTimeout(Timeout timeout)
-    {
-        if (!guild.isAvailable())
-        {
+    public GuildManager setAfkTimeout(Timeout timeout) {
+        if (!guild.isAvailable()) {
             throw new GuildUnavailableException();
         }
         checkPermission(Permission.MANAGE_SERVER);
@@ -283,29 +218,24 @@ public class GuildManager
      * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
      *      if the guild is temporarily unavailable
      */
-    public GuildManager addRoleToUser(User user, Role... roles)
-    {
-        if (!guild.isAvailable())
-        {
+    public GuildManager addRoleToUser(User user, Role... roles) {
+        if (!guild.isAvailable()) {
             throw new GuildUnavailableException();
         }
         checkPermission(Permission.MANAGE_ROLES);
 
         Set<Role> addRoles = addedRoles.get(user);
-        if (addRoles == null)
-        {
+        if (addRoles == null) {
             addRoles = new HashSet<>();
             addedRoles.put(user, addRoles);
         }
         Set<Role> removeRoles = removedRoles.get(user);
-        if (removeRoles == null)
-        {
+        if (removeRoles == null) {
             removeRoles = new HashSet<>();
             removedRoles.put(user, removeRoles);
         }
-        for (Role role : roles)
-        {
-            if(guild.getPublicRole().equals(role))
+        for (Role role : roles) {
+            if (guild.getPublicRole().equals(role))
                 return this;
 
             if (removeRoles.contains(role))
@@ -336,29 +266,24 @@ public class GuildManager
      * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
      *      if the guild is temporarily unavailable
      */
-    public GuildManager removeRoleFromUser(User user, Role... roles)
-    {
-        if (!guild.isAvailable())
-        {
+    public GuildManager removeRoleFromUser(User user, Role... roles) {
+        if (!guild.isAvailable()) {
             throw new GuildUnavailableException();
         }
         checkPermission(Permission.MANAGE_ROLES);
 
         Set<Role> addRoles = addedRoles.get(user);
-        if (addRoles == null)
-        {
+        if (addRoles == null) {
             addRoles = new HashSet<>();
             addedRoles.put(user, addRoles);
         }
         Set<Role> removeRoles = removedRoles.get(user);
-        if (removeRoles == null)
-        {
+        if (removeRoles == null) {
             removeRoles = new HashSet<>();
             removedRoles.put(user, removeRoles);
         }
-        for (Role role : roles)
-        {
-            if(guild.getPublicRole().equals(role))
+        for (Role role : roles) {
+            if (guild.getPublicRole().equals(role))
                 return this;
 
             if (addRoles.contains(role))
@@ -375,37 +300,32 @@ public class GuildManager
      * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
      *      if the guild is temporarily unavailable
      */
-    public void update()
-    {
-        if (!guild.isAvailable())
-        {
+    public void update() {
+        if (!guild.isAvailable()) {
             throw new GuildUnavailableException();
         }
 
-        if (name != null || region != null || timeout != null || icon != null || !StringUtils.equals(afkChannelId, guild.getAfkChannelId()))
-        {
+        if (name != null || region != null || timeout != null || icon != null || !StringUtils.equals(afkChannelId, guild.getAfkChannelId())) {
             checkPermission(Permission.MANAGE_SERVER);
 
             JSONObject frame = getFrame();
-            if(name != null)
+            if (name != null)
                 frame.put("name", name);
-            if(region != null)
+            if (region != null)
                 frame.put("region", region.getKey());
-            if(timeout != null)
+            if (timeout != null)
                 frame.put("afk_timeout", timeout.getSeconds());
-            if(icon != null)
+            if (icon != null)
                 frame.put("icon", icon == AvatarUtil.DELETE_AVATAR ? JSONObject.NULL : icon.getEncoded());
-            if(!StringUtils.equals(afkChannelId, guild.getAfkChannelId()))
+            if (!StringUtils.equals(afkChannelId, guild.getAfkChannelId()))
                 frame.put("afk_channel_id", afkChannelId == null ? JSONObject.NULL : afkChannelId);
             update(frame);
         }
 
-        if (addedRoles.size() > 0)
-        {
+        if (addedRoles.size() > 0) {
             checkPermission(Permission.MANAGE_ROLES);
 
-            for (User user : addedRoles.keySet())
-            {
+            for (User user : addedRoles.keySet()) {
                 List<Role> roles = guild.getRolesForUser(user);
                 List<String> roleIds = new LinkedList<>();
                 roles.forEach(r -> roleIds.add(r.getId()));
@@ -450,8 +370,7 @@ public class GuildManager
      *                  {@link Permission#VOICE_CONNECT} for the destination VoiceChannel.</li>
      *          </ul>
      */
-    public void moveVoiceUser(User user, VoiceChannel voiceChannel)
-    {
+    public void moveVoiceUser(User user, VoiceChannel voiceChannel) {
         if (user == null)
             throw new IllegalArgumentException("Provided User was null. Cannot determine which User to move when User is null!");
         if (voiceChannel == null)
@@ -460,7 +379,7 @@ public class GuildManager
         if (!voiceChannel.getGuild().getId().equals(guild.getId()))
             throw new IllegalArgumentException("Cannot move a User to a VoiceChannel that isn't part of this Guild!");
 
-        VoiceStatus status  = guild.getVoiceStatusOfUser(user);
+        VoiceStatus status = guild.getVoiceStatusOfUser(user);
         if (!status.inVoiceChannel())
             throw new IllegalStateException("You cannot move a User who isn't in a VoiceChannel!");
 
@@ -490,8 +409,7 @@ public class GuildManager
      * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
      *      if the guild is temporarily unavailable
      */
-    public void kick(User user)
-    {
+    public void kick(User user) {
         kick(user.getId());
     }
 
@@ -507,10 +425,8 @@ public class GuildManager
      * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
      *      if the guild is temporarily unavailable
      */
-    public void kick(String userId)
-    {
-        if (!guild.isAvailable())
-        {
+    public void kick(String userId) {
+        if (!guild.isAvailable()) {
             throw new GuildUnavailableException();
         }
         checkPermission(Permission.KICK_MEMBERS);
@@ -535,8 +451,7 @@ public class GuildManager
      * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
      *      if the guild is temporarily unavailable
      */
-    public void ban(User user, int delDays)
-    {
+    public void ban(User user, int delDays) {
         ban(user.getId(), delDays);
     }
 
@@ -556,10 +471,8 @@ public class GuildManager
      * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
      *      if the guild is temporarily unavailable
      */
-    public void ban(String userId, int delDays)
-    {
-        if (!guild.isAvailable())
-        {
+    public void ban(String userId, int delDays) {
+        if (!guild.isAvailable()) {
             throw new GuildUnavailableException();
         }
         checkPermission(Permission.BAN_MEMBERS);
@@ -577,24 +490,19 @@ public class GuildManager
      * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
      *      if the guild is temporarily unavailable
      */
-    public List<User> getBans()
-    {
-        if (!guild.isAvailable())
-        {
+    public List<User> getBans() {
+        if (!guild.isAvailable()) {
             throw new GuildUnavailableException();
         }
         List<User> bans = new LinkedList<>();
         JSONArray bannedArr = ((JDAImpl) guild.getJDA()).getRequester().getA("https://discordapp.com/api/guilds/" + guild.getId() + "/bans");
-        for (int i = 0; i < bannedArr.length(); i++)
-        {
+        for (int i = 0; i < bannedArr.length(); i++) {
             JSONObject userObj = bannedArr.getJSONObject(i).getJSONObject("user");
             User u = guild.getJDA().getUserById(userObj.getString("id"));
-            if (u != null)
-            {
+            if (u != null) {
                 bans.add(u);
             }
-            else
-            {
+            else {
                 //Create user here, instead of using the EntityBuilder (don't want to add users to registry)
                 bans.add(new UserImpl(userObj.getString("id"), ((JDAImpl) guild.getJDA()))
                         .setUserName(userObj.getString("username"))
@@ -614,8 +522,7 @@ public class GuildManager
      * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
      *      if the guild is temporarily unavailable
      */
-    public void unBan(User user)
-    {
+    public void unBan(User user) {
         unBan(user.getId());
     }
 
@@ -628,10 +535,8 @@ public class GuildManager
      * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
      *      if the guild is temporarily unavailable
      */
-    public void unBan(String userId)
-    {
-        if (!guild.isAvailable())
-        {
+    public void unBan(String userId) {
+        if (!guild.isAvailable()) {
             throw new GuildUnavailableException();
         }
         checkPermission(Permission.BAN_MEMBERS);
@@ -650,18 +555,14 @@ public class GuildManager
      * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
      *      if the guild is temporarily unavailable
      */
-    public void transferOwnership(User newOwner)
-    {
-        if (!guild.isAvailable())
-        {
+    public void transferOwnership(User newOwner) {
+        if (!guild.isAvailable()) {
             throw new GuildUnavailableException();
         }
-        if (!guild.getJDA().getSelfInfo().getId().equals(guild.getOwnerId()))
-        {
+        if (!guild.getJDA().getSelfInfo().getId().equals(guild.getOwnerId())) {
             throw new PermissionException("Moving guild-ownership is only available for guild-owners!");
         }
-        if (!guild.getUsers().contains(newOwner))
-        {
+        if (!guild.getUsers().contains(newOwner)) {
             throw new IllegalArgumentException("The new owner is not member of the Guild!");
         }
         update(getFrame().put("owner_id", newOwner.getId()));
@@ -679,14 +580,11 @@ public class GuildManager
      * @throws net.dv8tion.jda.exceptions.PermissionException
      *      if the account JDA is using is the owner of the Guild
      */
-    public void leave()
-    {
-        if (guild.getJDA().getSelfInfo().getId().equals(guild.getOwnerId()))
-        {
+    public void leave() {
+        if (guild.getJDA().getSelfInfo().getId().equals(guild.getOwnerId())) {
             throw new PermissionException("You can not leave a guild as the Guild-Owner. Use GuildManager#transferOwnership first, or use GuildManager#delete()");
         }
-        if (!guild.isAvailable())
-        {
+        if (!guild.isAvailable()) {
             throw new GuildUnavailableException();
         }
         ((JDAImpl) guild.getJDA()).getRequester().delete("https://discordapp.com/api/users/@me/guilds/" + guild.getId());
@@ -704,14 +602,11 @@ public class GuildManager
      * @throws net.dv8tion.jda.exceptions.PermissionException
      *      if the account JDA is using is not the owner of the Guild
      */
-    public void delete()
-    {
-        if (!guild.getJDA().getSelfInfo().getId().equals(guild.getOwnerId()))
-        {
+    public void delete() {
+        if (!guild.getJDA().getSelfInfo().getId().equals(guild.getOwnerId())) {
             throw new PermissionException("You need to be the Guild-owner to delete a Guild");
         }
-        if (!guild.isAvailable())
-        {
+        if (!guild.isAvailable()) {
             throw new GuildUnavailableException();
         }
         ((JDAImpl) guild.getJDA()).getRequester().delete("https://discordapp.com/api/guilds/" + guild.getId());
@@ -730,32 +625,66 @@ public class GuildManager
      *      if the guild is temporarily unavailable
      */
     @Deprecated
-    public void leaveOrDelete()
-    {
-        if (guild.getJDA().getSelfInfo().getId().equals(guild.getOwnerId()))
-        {
+    public void leaveOrDelete() {
+        if (guild.getJDA().getSelfInfo().getId().equals(guild.getOwnerId())) {
             delete();
         }
-        else
-        {
+        else {
             leave();
         }
     }
 
-    private JSONObject getFrame()
-    {
+    private JSONObject getFrame() {
         return new JSONObject().put("name", guild.getName());
     }
 
-    private void update(JSONObject object)
-    {
+    private void update(JSONObject object) {
         ((JDAImpl) guild.getJDA()).getRequester().patch("https://discordapp.com/api/guilds/" + guild.getId(), object);
     }
 
-    private void checkPermission(Permission perm)
-    {
+    private void checkPermission(Permission perm) {
         if (!PermissionUtil.checkPermission(getGuild().getJDA().getSelfInfo(), perm, getGuild()))
             throw new PermissionException(perm);
 
+    }
+
+    /**
+     * Represents the idle time allowed until a user is moved to the
+     * AFK {@link net.dv8tion.jda.entities.VoiceChannel} if one is set.
+     */
+    enum Timeout {
+        SECONDS_60(60),
+        SECONDS_300(300),
+        SECONDS_900(900),
+        SECONDS_1800(1800),
+        SECONDS_3600(3600);
+
+        private final int seconds;
+
+        Timeout(int seconds) {
+            this.seconds = seconds;
+        }
+
+        /**
+         * The amount of seconds represented by this {@link net.dv8tion.jda.managers.GuildManager.Timeout}.
+         *
+         * @return
+         *      An positive non-zero int representing the timeout amount in seconds.
+         */
+        public int getSeconds() {
+            return seconds;
+        }
+
+        /**
+         * The timeout as a string.<br>
+         * Examples:    "60"  "300"   etc
+         *
+         * @return
+         *      Seconds as a string.
+         */
+        @Override
+        public String toString() {
+            return "" + seconds;
+        }
     }
 }

@@ -1,12 +1,12 @@
 /**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
- *
+ * Copyright 2015-2016 Austin Keener & Michael Ritter
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,20 +25,16 @@ import org.json.JSONObject;
 /**
  * Manager used to modify aspects of the logged in account's information.
  */
-public class AccountManager
-{
+public class AccountManager {
 
+    private final JDAImpl api;
     private AvatarUtil.Avatar avatar = null;
     private String email = null;
     private String newPassword = null;
     private String username = null;
-
     private String password;
 
-    private final JDAImpl api;
-
-    public AccountManager(JDAImpl api, String password)
-    {
+    public AccountManager(JDAImpl api, String password) {
         this.api = api;
         this.password = password;
     }
@@ -53,8 +49,7 @@ public class AccountManager
      * @return
      * 	  this
      */
-    public AccountManager setAvatar(AvatarUtil.Avatar avatar)
-    {
+    public AccountManager setAvatar(AvatarUtil.Avatar avatar) {
         this.avatar = avatar;
         return this;
     }
@@ -68,8 +63,7 @@ public class AccountManager
      * @return
      * 	  this
      */
-    public AccountManager setEmail(String email)
-    {
+    public AccountManager setEmail(String email) {
         this.email = email;
         return this;
     }
@@ -83,8 +77,7 @@ public class AccountManager
      * @return
      * 	  this
      */
-    public AccountManager setPassword(String password)
-    {
+    public AccountManager setPassword(String password) {
         this.newPassword = password;
         return this;
     }
@@ -98,8 +91,7 @@ public class AccountManager
      * @return
      * 	  this
      */
-    public AccountManager setUsername(String username)
-    {
+    public AccountManager setUsername(String username) {
         this.username = username;
         return this;
     }
@@ -113,8 +105,7 @@ public class AccountManager
      * @return
      * 	  this
      */
-    public AccountManager setGame(String game)
-    {
+    public AccountManager setGame(String game) {
         ((SelfInfoImpl) api.getSelfInfo()).setCurrentGame(game);
         updateStatusAndGame();
         return this;
@@ -129,8 +120,7 @@ public class AccountManager
      * @return
      * 	  this
      */
-    public AccountManager setIdle(boolean idle)
-    {
+    public AccountManager setIdle(boolean idle) {
         ((SelfInfoImpl) api.getSelfInfo()).setOnlineStatus(idle ? OnlineStatus.AWAY : OnlineStatus.ONLINE);
         updateStatusAndGame();
         return this;
@@ -149,8 +139,7 @@ public class AccountManager
      * @return
      *      This {@link net.dv8tion.jda.managers.AccountManager} instance.
      */
-    public AccountManager updatePassword(String password)
-    {
+    public AccountManager updatePassword(String password) {
         if (password == null)
             throw new IllegalArgumentException("Provided password cannot be null!");
         this.password = password;
@@ -163,15 +152,12 @@ public class AccountManager
      * @return
      *      this
      */
-    public AccountManager update()
-    {
-        try
-        {
+    public AccountManager update() {
+        try {
             JSONObject object = new JSONObject();
             object.put("avatar", avatar == null ? api.getSelfInfo().getAvatarId() : (avatar == AvatarUtil.DELETE_AVATAR ? JSONObject.NULL : avatar.getEncoded()));
             object.put("email", email == null ? api.getSelfInfo().getEmail() : email);
-            if (newPassword != null)
-            {
+            if (newPassword != null) {
                 object.put("new_password", newPassword);
             }
             object.put("password", password);
@@ -179,14 +165,12 @@ public class AccountManager
 
             JSONObject result = api.getRequester().patch("https://discordapp.com/api/users/@me", object);
 
-            if (result == null || !result.has("token"))
-            {
+            if (result == null || !result.has("token")) {
                 throw new Exception("Something went wrong while changing the account settings.");
             }
 
             api.setAuthToken(result.getString("token"));
-            if (newPassword != null)
-            {
+            if (newPassword != null) {
                 this.password = newPassword;
             }
 
@@ -194,15 +178,14 @@ public class AccountManager
             this.email = null;
             this.newPassword = null;
             this.username = null;
-        } catch (Exception e)
-        {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
         return this;
     }
 
-    private void updateStatusAndGame()
-    {
+    private void updateStatusAndGame() {
         SelfInfo selfInfo = api.getSelfInfo();
         JSONObject content = new JSONObject()
                 .put("game", selfInfo.getCurrentGame() == null ? JSONObject.NULL : new JSONObject().put("name", selfInfo.getCurrentGame()))

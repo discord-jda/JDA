@@ -1,12 +1,12 @@
 /**
- *      Copyright 2015-2016 Austin Keener & Michael Ritter
- *
+ * Copyright 2015-2016 Austin Keener & Michael Ritter
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,8 +21,7 @@ import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.exceptions.PermissionException;
 import org.json.JSONObject;
 
-public class PermissionOverrideManager
-{
+public class PermissionOverrideManager {
     private final PermissionOverride override;
     private int allow, deny;
 
@@ -33,10 +32,8 @@ public class PermissionOverrideManager
      * @param override
      *          The {@link net.dv8tion.jda.entities.PermissionOverride} which the manager deals with.
      */
-    public PermissionOverrideManager(PermissionOverride override)
-    {
-        if (!override.getChannel().checkPermission(override.getJDA().getSelfInfo(), Permission.MANAGE_PERMISSIONS))
-        {
+    public PermissionOverrideManager(PermissionOverride override) {
+        if (!override.getChannel().checkPermission(override.getJDA().getSelfInfo(), Permission.MANAGE_PERMISSIONS)) {
             throw new PermissionException(Permission.MANAGE_PERMISSIONS);
         }
         this.override = override;
@@ -55,8 +52,7 @@ public class PermissionOverrideManager
      * @return
      *      this
      */
-    public PermissionOverrideManager overwrite(PermissionOverride overwrite)
-    {
+    public PermissionOverrideManager overwrite(PermissionOverride overwrite) {
         this.allow = overwrite.getAllowedRaw();
         this.deny = overwrite.getDeniedRaw();
         return this;
@@ -73,11 +69,9 @@ public class PermissionOverrideManager
      * @return
      *      this
      */
-    public PermissionOverrideManager grant(Permission... perms)
-    {
-        for (Permission perm : perms)
-        {
-            allow = allow | (1<<perm.getOffset());
+    public PermissionOverrideManager grant(Permission... perms) {
+        for (Permission perm : perms) {
+            allow = allow | (1 << perm.getOffset());
         }
         deny = deny & (~allow);
         return this;
@@ -94,11 +88,9 @@ public class PermissionOverrideManager
      * @return
      *      this
      */
-    public PermissionOverrideManager deny(Permission... perms)
-    {
-        for (Permission perm : perms)
-        {
-            deny = deny | (1<<perm.getOffset());
+    public PermissionOverrideManager deny(Permission... perms) {
+        for (Permission perm : perms) {
+            deny = deny | (1 << perm.getOffset());
         }
         allow = allow & (~deny);
         return this;
@@ -116,10 +108,8 @@ public class PermissionOverrideManager
      * @return
      *      this
      */
-    public PermissionOverrideManager reset(Permission... perms)
-    {
-        for (Permission perm : perms)
-        {
+    public PermissionOverrideManager reset(Permission... perms) {
+        for (Permission perm : perms) {
             allow = allow & (~(1 << perm.getOffset()));
             deny = deny & (~(1 << perm.getOffset()));
         }
@@ -130,8 +120,7 @@ public class PermissionOverrideManager
      * Deletes this PermissionOverride
      * This method takes immediate effect
      */
-    public void delete()
-    {
+    public void delete() {
         String targetId = override.isRoleOverride() ? override.getRole().getId() : override.getUser().getId();
         ((JDAImpl) override.getJDA()).getRequester()
                 .delete("https://discordapp.com/api/channels/" + override.getChannel().getId() + "/permissions/" + targetId);
@@ -140,10 +129,8 @@ public class PermissionOverrideManager
     /**
      * This method will apply all accumulated changes received by setters
      */
-    public void update()
-    {
-        if (this.allow == override.getAllowedRaw() && this.deny == override.getDeniedRaw())
-        {
+    public void update() {
+        if (this.allow == override.getAllowedRaw() && this.deny == override.getDeniedRaw()) {
             return;
         }
         String targetId = override.isRoleOverride() ? override.getRole().getId() : override.getUser().getId();
