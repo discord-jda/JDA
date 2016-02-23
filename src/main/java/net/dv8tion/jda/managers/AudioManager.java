@@ -364,7 +364,12 @@ public class AudioManager
                 lib += "/opus.dll";
             }
             else if (lib.contains("linux"))
+            {
+                //Some 32bit distros don't provide -32
+                if (lib.endsWith("x86"))
+                    lib += "-32";
                 lib += "/libopus.so";
+            }
             else
                 throw new UnsupportedOperationException();
 
