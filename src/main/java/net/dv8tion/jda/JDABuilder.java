@@ -154,17 +154,17 @@ public class JDABuilder
     /**
      * Enables/Disables Voice functionality.<br>
      * This is useful, if your current system doesn't support Voice and you do not need it.
-     *
+     * <p>
      * Default: true
      *
-     * @param voice
+     * @param enabled
      *          True - enables voice support.
      * @return
      *          Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
      */
-    public JDABuilder enableVoice(boolean voice)
+    public JDABuilder setAudioEnabled(boolean enabled)
     {
-        this.enableVoice = voice;
+        this.enableVoice = enabled;
         return this;
     }
 

@@ -145,6 +145,8 @@ public class InviteUtil
     /**
      * Provides a list of all {@link net.dv8tion.jda.utils.InviteUtil.AdvancedInvite Invites} for the given {@link net.dv8tion.jda.entities.Guild Guild}.
      *
+     * @param guildObj
+     *          The Guild whose invites are being retrieved.
      * @return
      *      An Immutable List of {@link net.dv8tion.jda.utils.InviteUtil.AdvancedInvite Invites}.
      */
@@ -170,6 +172,14 @@ public class InviteUtil
         return Collections.unmodifiableList(invites);
     }
 
+    /**
+     * Provides a list of all {@link net.dv8tion.jda.utils.InviteUtil.AdvancedInvite Invites} for the given {@link net.dv8tion.jda.entities.Channel Channel}.
+     *
+     * @param channelObj
+     *          The Guild whose invites are being retrieved.
+     * @return
+     *      An Immutable List of {@link net.dv8tion.jda.utils.InviteUtil.AdvancedInvite Invites}.
+     */
     public static List<AdvancedInvite> getInvites(Channel channelObj)
     {
         if (!PermissionUtil.checkPermission(channelObj.getJDA().getSelfInfo(), Permission.MANAGE_CHANNEL, channelObj))
