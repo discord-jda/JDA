@@ -5,12 +5,12 @@ Besides audio, this library is full featured, allowing every operation that the 
 ## Creating the JDA Object
 Creating the JDA Object is done via the JDABuilder class.
 After setting email and password either via Constructor, or via setters,
-the JDA Object is then created by calling the `.build()` (non-blocking login) or the `.buildBlocking()` method.
+the JDA Object is then created by calling the `.buildBlocking()` or the `.buildAsync()` (non-blocking login) method.
 <p>
 Examples:
 
 ```java
-JDA jda = new JDABuilder("email", "password").build();
+JDA jda = new JDABuilder("email", "password").buildBlocking();
 ```
 
 ```java
@@ -31,7 +31,7 @@ public class ReadyListener implements EventListener
 {
     public static void main(String[] args)
     {
-        JDA jda = new JDABuilder(args[0], args[1]).addListener(new ReadyListener()).build();
+        JDA jda = new JDABuilder(args[0], args[1]).addListener(new ReadyListener()).buildBlocking();
     }
 
     @Override
@@ -48,7 +48,7 @@ public class MessageListener extends ListenerAdapter
 {
     public static void main(String[] args)
     {
-        JDA jda = new JDABuilder(args[0], args[1]).build();
+        JDA jda = new JDABuilder(args[0], args[1]).buildBlocking();
         jda.addListener(new MessageListener());
     }
 
