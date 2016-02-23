@@ -10,7 +10,7 @@ the JDA Object is then created by calling the `.build()` (non-blocking login) or
 Examples:
 
 ```java
-JDA jda = new JDABuilder("email", "password").build();
+JDA jda = new JDABuilder("email", "password").buildBlocking();
 ```
 
 ```java
