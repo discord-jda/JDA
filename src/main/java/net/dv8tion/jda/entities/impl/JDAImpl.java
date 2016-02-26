@@ -31,6 +31,7 @@ import net.dv8tion.jda.managers.AudioManager;
 import net.dv8tion.jda.managers.GuildManager;
 import net.dv8tion.jda.requests.Requester;
 import net.dv8tion.jda.requests.WebSocketClient;
+import net.dv8tion.jda.utils.SimpleLog;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.json.JSONException;
@@ -53,6 +54,7 @@ import java.util.stream.Collectors;
  */
 public class JDAImpl implements JDA
 {
+    public static final SimpleLog LOG = SimpleLog.getLog("JDA");
     private final HttpHost proxy;
     private final Map<String, User> userMap = new HashMap<>();
     private final Map<String, Guild> guildMap = new HashMap<>();
@@ -67,7 +69,6 @@ public class JDAImpl implements JDA
     private String authToken = null;
     private WebSocketClient client;
     private final Requester requester = new Requester(this);
-    private boolean debug;
     private boolean reconnect;
     private boolean enableAck;
     private int responseTotal;
@@ -103,6 +104,7 @@ public class JDAImpl implements JDA
      */
     public void login(String email, String password) throws IllegalArgumentException, LoginException
     {
+        LOG.info("JDA starting...");
         if (email == null || email.isEmpty() || password == null || password.isEmpty())
             throw new IllegalArgumentException("The provided email or password as empty / null.");
 
@@ -132,14 +134,14 @@ public class JDAImpl implements JDA
                     {
                         //token is valid (returns array, cant be returned as JSONObject)
                         valid = true;
-                        System.out.println("Using cached Token: " + authToken);
+                        LOG.debug("Using cached Token: " + authToken);
                     }
                 } catch (JSONException ignored) {}//token invalid
             }
         }
         catch (JSONException ex)
         {
-            System.out.println("Token-file misformatted. Please delete it for recreation");
+            LOG.warn("Token-file misformatted. Please delete it for recreation");
         }
 
         if (!valid)               //no token saved or invalid
@@ -154,19 +156,19 @@ public class JDAImpl implements JDA
 
                 authToken = response.getString("token");
                 configs.getJSONObject("tokens").put(email, authToken);
-                System.out.println("Created new Token: " + authToken);
+                LOG.debug("Created new Token: " + authToken);
 
                 valid = true;
             }
             catch (JSONException ex)
             {
-                ex.printStackTrace();
+                LOG.log(ex);
             }
         }
 
         if (valid)
         {
-            System.out.println("Login Successful!"); //TODO: Replace with Logger.INFO
+            LOG.info("Login Successful!"); //TODO: Replace with Logger.INFO
             client = new WebSocketClient(this, proxy);
             client.setAutoReconnect(reconnect);
         }
@@ -190,12 +192,12 @@ public class JDAImpl implements JDA
         }
         catch (IOException e)
         {
-            System.out.println("Error reading token-file. Defaulting to standard");
-            e.printStackTrace();
+            LOG.fatal("Error reading token-file. Defaulting to standard");
+            LOG.log(e);
         }
         catch (JSONException e)
         {
-            System.out.println("Token-file misformatted. Creating default one");
+            LOG.warn("Token-file misformatted. Creating default one");
         }
         return null;
     }
@@ -216,7 +218,7 @@ public class JDAImpl implements JDA
         }
         catch (IOException e)
         {
-            System.out.println("Error creating token-file");
+            LOG.warn("Error creating token-file");
         }
     }
 
@@ -499,15 +501,17 @@ public class JDAImpl implements JDA
     }
 
     @Override
+    @Deprecated
     public void setDebug(boolean enableDebug)
     {
-        this.debug = enableDebug;
+        SimpleLog.LEVEL = enableDebug ? SimpleLog.Level.TRACE : SimpleLog.Level.INFO;
     }
 
     @Override
+    @Deprecated
     public boolean isDebug()
     {
-        return debug;
+        return SimpleLog.LEVEL == SimpleLog.Level.TRACE;
     }
 
     @Override

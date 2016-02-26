@@ -376,19 +376,25 @@ public interface JDA
     boolean isAutoReconnect();
 
     /**
+     * <b>This method is deprecated! please switch to using the {@link net.dv8tion.jda.utils.SimpleLog SimpleLog} class.</b>
+     * <p>
      * Used to enable JDA debug output.
      *
      * @param enableDebug
      *          If true - enables debug output.
      */
+    @Deprecated
     void setDebug(boolean enableDebug);
 
     /**
+     * <b>This method is deprecated! please switch to using the {@link net.dv8tion.jda.utils.SimpleLog SimpleLog} class.</b>
+     * <p>
      * Used to determine if JDA is currently in debug mode.
      *
      * @return
      *      True if JDA is currently in debug mode.
      */
+    @Deprecated
     boolean isDebug();
 
     /**

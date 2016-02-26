@@ -20,6 +20,7 @@ import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.DisconnectEvent;
 import net.dv8tion.jda.events.ShutdownEvent;
 import net.dv8tion.jda.handle.*;
+import net.dv8tion.jda.utils.SimpleLog;
 import org.apache.http.HttpHost;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,6 +37,7 @@ import java.util.zip.Inflater;
 
 public class WebSocketClient extends WebSocketAdapter
 {
+    public static final SimpleLog LOG = SimpleLog.getLog("JDASocket");
     private Thread keepAliveThread;
     private WebSocket socket;
     private long keepAliveInterval;
@@ -66,7 +68,7 @@ public class WebSocketClient extends WebSocketAdapter
     public void onConnected(WebSocket websocket, Map<String, List<String>> headers)
     {
         JSONObject connectObj;
-        System.out.println("Connected to WebSocket");
+        LOG.info("Connected to WebSocket");
         if(!reconnecting)
         {
             connectObj = new JSONObject()
@@ -133,10 +135,7 @@ public class WebSocketClient extends WebSocketAdapter
             keepAliveThread.start();
         }
 
-        if (api.isDebug())
-        {
-            System.out.printf("%s -> %s\n", type, content.toString());
-        }
+        LOG.trace(String.format("%s -> %s\n", type, content.toString()));
         if (!ready && !(type.equals("READY") || type.equals("GUILD_MEMBERS_CHUNK")))
         {
             cachedEvents.add(message);
@@ -230,19 +229,18 @@ public class WebSocketClient extends WebSocketAdapter
                     //TODO: handle notification updates...
                     break;
                 default:
-                    System.out.println("Unrecognized event:\n" + message);    //TODO: Replace with "we don't know this type"
+                    LOG.debug("Unrecognized event:\n" + message);    //TODO: Replace with "we don't know this type"
             }
         }
         catch (JSONException ex)
         {
-            System.err.println("Got an unexpected Json-parse error. Please redirect following message to the devs:");
-            System.err.println('\t' + ex.getMessage());
-            System.err.println('\t' + type + " -> " + content);
+            LOG.warn("Got an unexpected Json-parse error. Please redirect following message to the devs:\n\t"
+                    + ex.getMessage() + "\n\t" + type + " -> " + content);
         }
         catch (IllegalArgumentException ex)
         {
-            System.err.println("JDA encountered an internal error.");
-            ex.printStackTrace();
+            LOG.fatal("JDA encountered an internal error.");
+            LOG.log(ex);
         }
     }
 
@@ -281,12 +279,12 @@ public class WebSocketClient extends WebSocketAdapter
         }
         else if (!shouldReconnect)        //we should not reconnect
         {
-            System.out.println("The connection was closed!");
-            System.out.println("By remote? " + closedByServer);
+            LOG.info("The connection was closed!");
+            LOG.info("By remote? " + closedByServer);
             if (serverCloseFrame != null)
             {
-                System.out.println("Reason: " + serverCloseFrame.getCloseReason());
-                System.out.println("Close code: " + serverCloseFrame.getCloseCode());
+                LOG.info("Reason: " + serverCloseFrame.getCloseReason());
+                LOG.info("Close code: " + serverCloseFrame.getCloseCode());
             }
             api.getEventManager().handle(new ShutdownEvent(api, OffsetDateTime.now()));
         }
@@ -306,7 +304,7 @@ public class WebSocketClient extends WebSocketAdapter
     @Override
     public void handleCallbackError(WebSocket websocket, Throwable cause)
     {
-        cause.printStackTrace();
+        LOG.log(cause);
     }
 
     private void connect()
@@ -343,7 +341,7 @@ public class WebSocketClient extends WebSocketAdapter
     private void reconnect()
     {
 //        reconnecting = true;      //we don't want to send resume headers
-        System.out.println("Got disconnected from WebSocket (Internet?!)... Attempting to reconnect in " + reconnectTimeout + "s");
+        LOG.info("Got disconnected from WebSocket (Internet?!)... Attempting to reconnect in " + reconnectTimeout + "s");
         url = null;         //force refetch of gateway
         while(shouldReconnect)
         {
@@ -352,7 +350,7 @@ public class WebSocketClient extends WebSocketAdapter
                 Thread.sleep(reconnectTimeout * 1000);
             }
             catch(InterruptedException ignored) {}
-            System.out.println("Attempting to reconnect!");
+            LOG.info("Attempting to reconnect!");
             try
             {
                 connect();
@@ -361,7 +359,7 @@ public class WebSocketClient extends WebSocketAdapter
             catch (RuntimeException ex)
             {
                 reconnectTimeout <<= 1;         //*2 each time
-                System.out.println("Reconnect failed! Next attempt in " + reconnectTimeout + "s");
+                LOG.info("Reconnect failed! Next attempt in " + reconnectTimeout + "s");
             }
         }
     }
@@ -396,12 +394,12 @@ public class WebSocketClient extends WebSocketAdapter
     public void ready()
     {
         ready = true;
+        LOG.debug("Resending Cached events...");
         for (String event : cachedEvents)
         {
-            if (api.isDebug())
-                System.out.print("Resending Cached event:  ");
             onTextMessage(socket, event);
         }
         cachedEvents.clear();
+        LOG.debug("Sending of cached events finished.");
     }
 }

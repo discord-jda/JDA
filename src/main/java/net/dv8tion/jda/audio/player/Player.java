@@ -17,6 +17,7 @@ package net.dv8tion.jda.audio.player;
 
 import net.dv8tion.jda.audio.AudioConnection;
 import net.dv8tion.jda.audio.AudioSendHandler;
+import net.dv8tion.jda.utils.SimpleLog;
 import org.tritonus.dsp.ais.AmplitudeAudioInputStream;
 
 import javax.sound.sampled.AudioFormat;
@@ -125,7 +126,7 @@ public abstract class Player implements AudioSendHandler
         }
         catch (IOException e)
         {
-            e.printStackTrace();
+            SimpleLog.getLog("JDAPlayer").log(e);
         }
         return new byte[0];
     }

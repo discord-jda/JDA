@@ -92,7 +92,7 @@ public class PrivateChannelImpl implements PrivateChannel
         }
         catch (JSONException ex)
         {
-            ex.printStackTrace();
+            JDAImpl.LOG.log(ex);
             //sending failed
             return null;
         }
@@ -145,7 +145,7 @@ public class PrivateChannelImpl implements PrivateChannel
         }
         catch (UnirestException e)
         {
-            e.printStackTrace();
+            JDAImpl.LOG.log(e);
             return null;
         }
     }

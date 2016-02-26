@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.utils;
 
+import net.dv8tion.jda.entities.impl.JDAImpl;
 import org.apache.commons.codec.binary.StringUtils;
 
 import javax.imageio.ImageIO;
@@ -42,7 +43,7 @@ public class AvatarUtil
             }
             catch (IOException e)
             {
-                e.printStackTrace();
+                JDAImpl.LOG.log(e);
             }
         }
         else
@@ -62,7 +63,7 @@ public class AvatarUtil
         }
         catch (IOException e)
         {
-            e.printStackTrace();
+            JDAImpl.LOG.log(e);
         }
         return null;
     }
@@ -82,7 +83,7 @@ public class AvatarUtil
         }
         catch (IOException e)
         {
-            e.printStackTrace();
+            JDAImpl.LOG.log(e);
         }
         return null;
     }

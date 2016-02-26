@@ -107,7 +107,7 @@ public class UserImpl implements User
             }
             catch (JSONException ex)
             {
-                ex.printStackTrace();
+                JDAImpl.LOG.log(ex);
             }
         }
         return privateChannel;

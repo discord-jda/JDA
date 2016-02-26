@@ -166,7 +166,7 @@ public class TextChannelImpl implements TextChannel
         }
         catch (JSONException ex)
         {
-            ex.printStackTrace();
+            JDAImpl.LOG.log(ex);
             //sending failed
             return null;
         }
@@ -223,7 +223,7 @@ public class TextChannelImpl implements TextChannel
         }
         catch (UnirestException e)
         {
-            e.printStackTrace();
+            JDAImpl.LOG.log(e);
             return null;
         }
     }
@@ -415,7 +415,7 @@ public class TextChannelImpl implements TextChannel
                         }
                         catch (InterruptedException e)
                         {
-                            e.printStackTrace();
+                            JDAImpl.LOG.log(e);
                         }
                     }
                     Pair<Message, Consumer<Message>> peek = queue.peek();

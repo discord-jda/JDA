@@ -21,17 +21,22 @@ import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.audio.AudioDisconnectEvent;
+import net.dv8tion.jda.utils.SimpleLog;
 import org.apache.http.HttpHost;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
+import java.net.NoRouteToHostException;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
 
 public class AudioWebSocket extends WebSocketAdapter
 {
+    public static final SimpleLog LOG = SimpleLog.getLog("JDAVoice");
     public static final int INITIAL_CONNECTION_RESPONSE = 2;
     public static final int HEARTBEAT_PING_RETURN = 3;
     public static final int CONNECTING_COMPLETED = 4;
@@ -150,20 +155,17 @@ public class AudioWebSocket extends WebSocketAdapter
             }
             case HEARTBEAT_PING_RETURN:
             {
-                if (api.isDebug())
+                if (LOG.getEffectiveLevel().getPriority() <= SimpleLog.Level.TRACE.getPriority())
                 {
                     long timePingSent  = contentAll.getLong("d");
                     long ping = System.currentTimeMillis() - timePingSent;
-                    System.out.println("ping: " + ping + "ms");
+                    LOG.trace("ping: " + ping + "ms");
                 }
                 break;
             }
             case CONNECTING_COMPLETED:
             {
-                if (api.isDebug())
-                {
-                    System.out.println("Audio connection has finished connecting!");
-                }
+                LOG.trace("Audio connection has finished connecting!");
                 ready = true;
                 break;
             }
@@ -177,33 +179,33 @@ public class AudioWebSocket extends WebSocketAdapter
                 User user = api.getUserById(userId);
                 if (user == null)
                 {
-                    System.err.println("Got an Audio USER_SPEAKING_UPDATE for a non-existent User. JSON: " + contentAll);
+                    LOG.warn("Got an Audio USER_SPEAKING_UPDATE for a non-existent User. JSON: " + contentAll);
                     return;
                 }
 
                 if (api.isDebug())
                 {
                     if (speaking)
-                        System.out.println(user.getUsername() + " started transmitting audio.");    //Replace with event.
+                        LOG.trace(user.getUsername() + " started transmitting audio.");    //Replace with event.
                     else
-                        System.out.println(user.getUsername() + " stopped transmitting audio.");    //Replace with event.
+                        LOG.trace(user.getUsername() + " stopped transmitting audio.");    //Replace with event.
                 }
                 break;
             }
             default:
-                System.out.println("Unknown Audio OP code.\n" + contentAll.toString(4));
+                LOG.debug("Unknown Audio OP code.\n" + contentAll.toString(4));
         }
     }
 
     @Override
     public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer)
     {
-        if (api.isDebug())
+        LOG.debug("The Audio connection was closed!");
+        LOG.debug("By remote? " + closedByServer);
+        if (serverCloseFrame != null)
         {
-            System.out.println("The Audio connection was closed!");
-            System.out.println("By remote? " + closedByServer);
-            System.out.println("Reason: " + serverCloseFrame.getCloseReason());
-            System.out.println("Close code: " + serverCloseFrame.getCloseCode());
+            LOG.debug("Reason: " + serverCloseFrame.getCloseReason());
+            LOG.debug("Close code: " + serverCloseFrame.getCloseCode());
         }
         this.close();
     }
@@ -217,7 +219,7 @@ public class AudioWebSocket extends WebSocketAdapter
     @Override
     public void handleCallbackError(WebSocket websocket, Throwable cause)
     {
-        cause.printStackTrace();
+        LOG.log(cause);
     }
 
     public void close()
@@ -330,13 +332,9 @@ public class AudioWebSocket extends WebSocketAdapter
 
             return new InetSocketAddress(ourIP, ourPort);
         }
-        catch (SocketException e)
-        {
-            e.printStackTrace();
-        }
         catch (IOException e)
         {
-            e.printStackTrace();
+            LOG.log(e);
         }
         return null;
     }
@@ -363,15 +361,15 @@ public class AudioWebSocket extends WebSocketAdapter
                     }
                     catch (NoRouteToHostException e)
                     {
-                        System.err.println("Closing AudioConnection due to inability to ping audio packets.");
-                        System.err.println("Cannot send audio packet because JDA navigate the route to Discord.\n" +
+                        LOG.warn("Closing AudioConnection due to inability to ping audio packets.");
+                        LOG.warn("Cannot send audio packet because JDA navigate the route to Discord.\n" +
                                 "Are you sure you have internet connection? It is likely that you've lost connection.");
                         AudioWebSocket.this.close();
                         break;
                     }
                     catch (IOException e)
                     {
-                        e.printStackTrace();
+                        LOG.log(e);
                     }
                     catch (InterruptedException e)
                     {

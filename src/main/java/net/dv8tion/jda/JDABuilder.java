@@ -138,6 +138,8 @@ public class JDABuilder
     }
 
     /**
+     * <b>This method is deprecated! please switch to using the {@link net.dv8tion.jda.utils.SimpleLog SimpleLog} class.</b>
+     * <p>
      * Enables developer debug of JDA.<br>
      * Enabling this will print stack traces instead of java logger message when exceptions are encountered.
      *
@@ -146,6 +148,7 @@ public class JDABuilder
      * @return
      *          Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
      */
+    @Deprecated
     public JDABuilder setDebug(boolean debug)
     {
        this.debug = debug;

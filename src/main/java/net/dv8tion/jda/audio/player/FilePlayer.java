@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.audio.player;
 
+import net.dv8tion.jda.utils.SimpleLog;
+
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
@@ -86,12 +88,12 @@ public class FilePlayer extends Player
         catch (IOException e)
         {
             if (!audioFile.exists())
-                System.err.println("Attempted to restart the FilePlayer playback, but the provided file no longer exists!");
-            e.printStackTrace();
+                SimpleLog.getLog("JDAPlayer").fatal("Attempted to restart the FilePlayer playback, but the provided file no longer exists!");
+            SimpleLog.getLog("JDAPlayer").log(e);
         }
         catch (UnsupportedAudioFileException e)
         {
-            e.printStackTrace();
+            SimpleLog.getLog("JDAPlayer").log(e);
         }
     }
 

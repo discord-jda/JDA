@@ -22,16 +22,21 @@ import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.audio.AudioConnectEvent;
 import net.dv8tion.jda.events.audio.AudioTimeoutEvent;
-import tomp2p.opuswrapper.Opus;
+import net.dv8tion.jda.utils.SimpleLog;
 import org.json.JSONObject;
+import tomp2p.opuswrapper.Opus;
 
-import java.net.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.NoRouteToHostException;
+import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
 public class AudioConnection
 {
+    public static final SimpleLog LOG = SimpleLog.getLog("JDAAudio");
     public static final int OPUS_SAMPLE_RATE = 48000;   //(Hz) We want to use the highest of qualities! All the bandwidth!
     public static final int OPUS_FRAME_SIZE = 960;      //An opus frame size of 960 at 48000hz represents 20 milliseconds of audio.
     public static final int OPUS_FRAME_TIME_AMOUNT = 20;//This is 20 milliseconds. We are only dealing with 20ms opus packets.
@@ -85,7 +90,7 @@ public class AudioConnection
                     }
                     catch (InterruptedException e)
                     {
-                        e.printStackTrace();
+                        LOG.log(e);
                     }
                 }
                 AudioConnection.this.udpSocket = webSocket.getUdpSocket();
@@ -183,14 +188,14 @@ public class AudioConnection
                     }
                     catch (NoRouteToHostException e)
                     {
-                        System.err.println("Closing AudioConnection due to inability to send audio packets.");
-                        System.err.println("Cannot send audio packet because JDA navigate the route to Discord.\n" +
+                        LOG.warn("Closing AudioConnection due to inability to send audio packets.");
+                        LOG.warn("Cannot send audio packet because JDA navigate the route to Discord.\n" +
                                 "Are you sure you have internet connection? It is likely that you've lost connection.");
                         webSocket.close();
                     }
                     catch (Exception e)
                     {
-                        e.printStackTrace();
+                        LOG.log(e);
                     }
                 }
             }
@@ -231,7 +236,7 @@ public class AudioConnection
                     }
                     catch (Exception e)
                     {
-                        e.printStackTrace();
+                        LOG.log(e);
                     }
                 }
             }

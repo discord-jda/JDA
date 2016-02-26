@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.hooks;
 
+import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.Event;
 
 import java.lang.reflect.InvocationTargetException;
@@ -65,7 +66,7 @@ public class AnnotatedEventManager implements IEventManager
                     }
                     catch (IllegalAccessException | InvocationTargetException e1)
                     {
-                        e1.printStackTrace();
+                        JDAImpl.LOG.log(e1);
                     }
                 });
             }

@@ -177,7 +177,7 @@ public class MessageImpl implements Message
         }
         catch (JSONException ex)
         {
-            ex.printStackTrace();
+            JDAImpl.LOG.log(ex);
             return null;
         }
     }

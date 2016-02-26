@@ -16,6 +16,7 @@
 package net.dv8tion.jda.entities;
 
 import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.requests.Requester;
 
 import java.io.File;
@@ -292,7 +293,7 @@ public interface Message
             }
             catch (Exception e)
             {
-                e.printStackTrace();
+                JDAImpl.LOG.log(e);
             }
             finally
             {

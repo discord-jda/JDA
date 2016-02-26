@@ -118,7 +118,7 @@ public class MessageHistory
             }
             catch (Exception ex)
             {
-                ex.printStackTrace();
+                JDAImpl.LOG.log(ex);
                 break;
             }
             amount -= toQueue;
