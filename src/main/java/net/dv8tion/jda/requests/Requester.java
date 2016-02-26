@@ -105,9 +105,9 @@ public class Requester
             }
             return body == null ? null : new JSONObject(body);
         }
-        catch (UnirestException e)
+        catch (UnirestException ignored)
         {
-            e.printStackTrace();
+            //most likely there is no connection... ignoring to not spam console
         }
         catch (JSONException e)
         {
@@ -134,9 +134,9 @@ public class Requester
             }
             return body == null ? null : new JSONArray(body);
         }
-        catch (UnirestException e)
+        catch (UnirestException ignored)
         {
-            e.printStackTrace();
+            //most likely there is no connection... ignoring to not spam console
         }
         catch (JSONException e)
         {
