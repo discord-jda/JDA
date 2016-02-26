@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.audio;
 
+import com.iwebpp.crypto.TweetNaclFast;
+
 import java.net.DatagramPacket;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -27,6 +29,7 @@ import java.util.Arrays;
 public class AudioPacket
 {
     public static final int RTP_HEADER_BYTE_LENGTH = 12;
+    public static final int XSALSA20_NONCE_LENGTH = 24;
 
     /**
      * Bit index 0 and 1 represent the RTP Protocol version used. Discord uses the latest RTP protocol version, 2.<br>
@@ -94,6 +97,12 @@ public class AudioPacket
 
     }
 
+    public byte[] getNonce()
+    {
+        //The first 12 bytes are the rawPacket are the RTP Discord Nonce.
+        return Arrays.copyOf(rawPacket, RTP_HEADER_BYTE_LENGTH);
+    }
+
     public byte[] getRawPacket()
     {
         return Arrays.copyOf(rawPacket, rawPacket.length);
@@ -124,6 +133,27 @@ public class AudioPacket
         //We use getRawPacket() instead of the rawPacket variable so that we get a copy of the array instead of the
         //actual array. We want AudioPacket to be immutable.
         return new DatagramPacket(getRawPacket(), rawPacket.length, address);
+    }
+
+    public DatagramPacket asEncryptedUdpPacket(InetSocketAddress address, byte[] secretKey)
+    {
+        //Xsalsa20's Nonce is 24 bytes long, however RTP (and consequently Discord)'s nonce is
+        // only 12 bytes long, so we need to create a 24 byte array, and copy the 12 byte nonce into it.
+        // we will leave the extra bytes as nulls. (Java sets non-populated bytes as 0).
+        byte[] extendedNonce = new byte[XSALSA20_NONCE_LENGTH];
+
+        //Copy the RTP nonce into our Xsalsa20 nonce array.
+        // Note, it doesn't fill the Xsalsa20 nonce array completely.
+        System.arraycopy(getNonce(), 0, extendedNonce, 0, RTP_HEADER_BYTE_LENGTH);
+
+        //Create our SecretBox encoder with the secretKey provided by Discord.
+        TweetNaclFast.SecretBox boxer = new TweetNaclFast.SecretBox(secretKey);
+        byte[] encryptedAudio = boxer.box(encodedAudio, extendedNonce);
+
+        //Create a new temp audio packet using the encrypted audio so that we don't
+        // need to write extra code to create the rawPacket with the encryptedAudio.
+        //Use the temp packet to create a UdpPacket.
+        return new AudioPacket(seq, timestamp, ssrc, encryptedAudio).asUdpPacket(address);
     }
 
     public static AudioPacket createEchoPacket(DatagramPacket packet, int ssrc)

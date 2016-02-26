@@ -168,7 +168,7 @@ public class AudioConnection
                             AudioPacket packet = new AudioPacket(seq, timestamp, webSocket.getSSRC(), encodedAudio);
                             if (!speaking)
                                 setSpeaking(true);
-                            udpSocket.send(packet.asUdpPacket(webSocket.getAddress()));
+                            udpSocket.send(packet.asEncryptedUdpPacket(webSocket.getAddress(), webSocket.getSecretKey()));
 
                             if (seq + 1 > Character.MAX_VALUE)
                                 seq = 0;

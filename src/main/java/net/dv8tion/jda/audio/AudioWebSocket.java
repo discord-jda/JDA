@@ -23,6 +23,7 @@ import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.audio.AudioDisconnectEvent;
 import net.dv8tion.jda.utils.SimpleLog;
 import org.apache.http.HttpHost;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -31,12 +32,14 @@ import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.NoRouteToHostException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 public class AudioWebSocket extends WebSocketAdapter
 {
     public static final SimpleLog LOG = SimpleLog.getLog("JDAVoice");
+    public static final int DISCORD_SECRET_KEY_LENGTH = 32;
     public static final int INITIAL_CONNECTION_RESPONSE = 2;
     public static final int HEARTBEAT_PING_RETURN = 3;
     public static final int CONNECTING_COMPLETED = 4;
@@ -55,6 +58,7 @@ public class AudioWebSocket extends WebSocketAdapter
     private int ssrc;
     private String sessionId;
     private String token;
+    private byte[] secretKey;
 
     private DatagramSocket udpSocket;
     private InetSocketAddress address;
@@ -145,7 +149,7 @@ public class AudioWebSocket extends WebSocketAdapter
                             .put("data", new JSONObject()
                                 .put("address", externalIpAndPort.getHostString())
                                 .put("port", externalIpAndPort.getPort())
-                                .put("mode", "plain")
+                                .put("mode", "xsalsa20_poly1305")   //Discord requires encryption
                             )
                         )
                         .toString());
@@ -165,6 +169,13 @@ public class AudioWebSocket extends WebSocketAdapter
             }
             case CONNECTING_COMPLETED:
             {
+                //secret_key is an array of 32 ints that are less than 256, so they are bytes.
+                JSONArray keyArray = contentAll.getJSONObject("d").getJSONArray("secret_key");
+
+                secretKey = new byte[DISCORD_SECRET_KEY_LENGTH];
+                for (int i = 0; i < keyArray.length(); i++)
+                    secretKey[i] = (byte) keyArray.getInt(i);
+
                 LOG.trace("Audio connection has finished connecting!");
                 ready = true;
                 break;
@@ -262,6 +273,11 @@ public class AudioWebSocket extends WebSocketAdapter
     public InetSocketAddress getAddress()
     {
         return address;
+    }
+
+    public byte[] getSecretKey()
+    {
+        return Arrays.copyOf(secretKey, secretKey.length);
     }
 
     public int getSSRC()
