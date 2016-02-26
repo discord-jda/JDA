@@ -147,7 +147,7 @@ public class WebSocketClient extends WebSocketAdapter
             switch (type) {
                 case "READY":
                     sessionId = content.getString("session_id");
-                    new ReadyHandler(api, responseTotal).handle(content);
+                    new ReadyHandler(api, ready, responseTotal).handle(content);
                 case "RESUMED":
                     reconnectTimeout = 2;
                     break;

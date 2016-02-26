@@ -36,6 +36,7 @@ public abstract class ListenerAdapter implements EventListener
 {
     //JDA Events
     public void onReady(ReadyEvent event) {}
+    public void onReconnect(ReconnectedEvent event) {}
     public void onDisconnect(DisconnectEvent event) {}
     public void onShutdown(ShutdownEvent event) {}
 
@@ -143,6 +144,8 @@ public abstract class ListenerAdapter implements EventListener
         //JDA Events
         if (event instanceof ReadyEvent)
             onReady((ReadyEvent) event);
+        else if (event instanceof ReconnectedEvent)
+            onReconnect((ReconnectedEvent) event);
         else if (event instanceof DisconnectEvent)
             onDisconnect((DisconnectEvent) event);
         else if (event instanceof ShutdownEvent)
