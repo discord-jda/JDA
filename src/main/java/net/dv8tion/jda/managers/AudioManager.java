@@ -54,6 +54,10 @@ public class AudioManager
     {
         this.api = api;
         init();
+        if (AUDIO_SUPPORTED)
+            System.out.println("Audio System successfully setup!");
+        else
+            System.out.println("Audio System encountered problems while loading, thus, is disabled.");
     }
 
     /**
@@ -348,34 +352,24 @@ public class AudioManager
             return;
         initialized = true;
         ServiceUtil.loadServices();
-        String lib = null;
+        String nativesRoot  = null;
         try
         {
             //The libraries that this is referencing are available in the src/main/resources/opus/ folder.
             //Of course, when JDA is compiled that just becomes /opus/
-            lib = "/opus/" + Platform.RESOURCE_PREFIX;
-            if (lib.contains("darwin")) //Mac
-                lib += "/libopus.dylib";
-            else if (lib.contains("win"))
-            {
-                //windows server doesn't return -32 or -64
-                if (lib.endsWith("x86"))
-                    lib += "-32";
-                lib += "/opus.dll";
-            }
-            else if (lib.contains("linux"))
-            {
-                //Some 32bit distros don't provide -32
-                if (lib.endsWith("x86"))
-                    lib += "-32";
-                lib += "/libopus.so";
-            }
+            nativesRoot = "/natives/" + Platform.RESOURCE_PREFIX + "/%s";
+            if (nativesRoot.contains("darwin")) //Mac
+                nativesRoot += ".dylib";
+            else if (nativesRoot.contains("win"))
+                nativesRoot += ".dll";
+            else if (nativesRoot.contains("linux"))
+                nativesRoot += ".so";
             else
                 throw new UnsupportedOperationException();
 
-            NativeUtils.loadLibraryFromJar(lib);
+            NativeUtils.loadLibraryFromJar(String.format(nativesRoot, "libopus"));
         }
-        catch (Exception e)
+        catch (Throwable e)
         {
             if (e instanceof UnsupportedOperationException)
                 System.err.println("Sorry, JDA's audio system doesn't support this system.\n" +
@@ -386,19 +380,23 @@ public class AudioManager
                 System.err.println("There was an IO Exception when setting up the temp files for audio.");
                 e.printStackTrace();
             }
+            else if (e instanceof UnsatisfiedLinkError)
+            {
+                System.err.println("JDA encountered a problem when attempting to load the Native libraries. Contact a DEV.");
+                e.printStackTrace();
+            }
             else
             {
                 System.err.println("An unknown error occurred while attempting to setup JDA's audio system!");
                 e.printStackTrace();
             }
 
-            lib = null;
+            nativesRoot = null;
         }
-
         finally
         {
-            OPUS_LIB_NAME = lib;
-            AUDIO_SUPPORTED = lib != null;
+            OPUS_LIB_NAME = nativesRoot != null ? String.format(nativesRoot, "libopus") : null;
+            AUDIO_SUPPORTED = nativesRoot != null;
         }
 
     }
