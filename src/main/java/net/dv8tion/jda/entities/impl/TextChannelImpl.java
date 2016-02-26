@@ -41,7 +41,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class TextChannelImpl extends TextChannel
+public class TextChannelImpl implements TextChannel
 {
     private final String id;
     private final Guild guild;

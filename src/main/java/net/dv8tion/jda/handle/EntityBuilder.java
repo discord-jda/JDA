@@ -380,6 +380,14 @@ public class EntityBuilder
         }
         message.setAttachments(attachments);
 
+        List<MessageEmbed> embeds = new LinkedList<>();
+        JSONArray jsonEmbeds = jsonObject.getJSONArray("embeds");
+        for (int i = 0; i < jsonEmbeds.length(); i++)
+        {
+            embeds.add(createMessageEmbed(jsonEmbeds.getJSONObject(i)));
+        }
+        message.setEmbeds(embeds);
+
         if (!jsonObject.isNull("edited_timestamp"))
             message.setEditedTime(OffsetDateTime.parse(jsonObject.getString("edited_timestamp")));
 
