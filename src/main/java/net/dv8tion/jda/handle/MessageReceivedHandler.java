@@ -64,13 +64,14 @@ public class MessageReceivedHandler extends SocketHandler
         Matcher matcher = invitePattern.matcher(message.getContent());
         while (matcher.find())
         {
-            api.getEventManager().handle(
-                    new InviteReceivedEvent(
-                            api, responseNumber,
-                            message,
-                            InviteUtil.resolve(matcher.group(1))
-                    )
-            );
+            InviteUtil.Invite invite = InviteUtil.resolve(matcher.group(1));
+            if (invite != null)
+            {
+                api.getEventManager().handle(
+                        new InviteReceivedEvent(
+                                api, responseNumber,
+                                message,invite));
+            }
         }
     }
 }
