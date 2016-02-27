@@ -25,7 +25,12 @@ import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.managers.ChannelManager;
 import net.dv8tion.jda.managers.GuildManager;
 import net.dv8tion.jda.managers.RoleManager;
+import net.dv8tion.jda.utils.InviteUtil;
+import net.dv8tion.jda.utils.InviteUtil.AdvancedInvite;
+import net.dv8tion.jda.utils.InviteUtil.Invite;
 import net.dv8tion.jda.utils.PermissionUtil;
+
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
@@ -47,6 +52,7 @@ public class GuildImpl implements Guild
     private final Map<User, VoiceStatus> voiceStatusMap = new HashMap<>();
     private final Map<User, OffsetDateTime> joinedAtMap = new HashMap<>();
     private Role publicRole;
+    private TextChannel publicChannel;
     private final JDAImpl api;
     private boolean available;
 
@@ -231,6 +237,12 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    public TextChannel getPublicChannel()
+    {
+        return publicChannel;
+    }
+
+    @Override
     public OffsetDateTime getJoinDateForUser(User user)
     {
         return joinedAtMap.get(user);
@@ -312,6 +324,12 @@ public class GuildImpl implements Guild
         return this;
     }
 
+    public GuildImpl setPublicChannel(TextChannel channel)
+    {
+        this.publicChannel = channel;
+        return this;
+    }
+
     public Map<String, TextChannel> getTextChannelsMap()
     {
         return textChannels;
@@ -358,4 +376,10 @@ public class GuildImpl implements Guild
     {
         return "G:" + getName() + '(' + getId() + ')';
     }
+
+	@Override
+	public List<AdvancedInvite> getInvites()
+	{
+		return InviteUtil.getInvites(this);
+	}
 }

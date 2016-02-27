@@ -19,7 +19,7 @@ package net.dv8tion.jda.entities;
  * Represents a Discord Text Channel. See {@link net.dv8tion.jda.entities.Channel Channel} and
  * {@link net.dv8tion.jda.entities.MessageChannel MessageChannel} for more information.
  */
-public abstract class TextChannel implements Channel, MessageChannel
+public interface TextChannel extends Channel, MessageChannel
 {
     /**
      * Internal implementation of this class is available at

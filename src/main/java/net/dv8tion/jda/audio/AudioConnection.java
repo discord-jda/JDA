@@ -15,21 +15,30 @@
  */
 package net.dv8tion.jda.audio;
 
+import com.iwebpp.crypto.TweetNaclFast;
 import com.sun.jna.ptr.PointerByReference;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.VoiceChannel;
-import tomp2p.opuswrapper.Opus;
+import net.dv8tion.jda.entities.impl.JDAImpl;
+import net.dv8tion.jda.events.audio.AudioConnectEvent;
+import net.dv8tion.jda.events.audio.AudioTimeoutEvent;
+import net.dv8tion.jda.utils.SimpleLog;
 import org.json.JSONObject;
+import tomp2p.opuswrapper.Opus;
 
-import java.net.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.NoRouteToHostException;
+import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
+import java.util.Arrays;
 
 public class AudioConnection
 {
-    public static final long CONNECTION_TIMEOUT = 10000;
+    public static final SimpleLog LOG = SimpleLog.getLog("JDAAudioConn");
     public static final int OPUS_SAMPLE_RATE = 48000;   //(Hz) We want to use the highest of qualities! All the bandwidth!
     public static final int OPUS_FRAME_SIZE = 960;      //An opus frame size of 960 at 48000hz represents 20 milliseconds of audio.
     public static final int OPUS_FRAME_TIME_AMOUNT = 20;//This is 20 milliseconds. We are only dealing with 20ms opus packets.
@@ -59,18 +68,23 @@ public class AudioConnection
                 Opus.INSTANCE.opus_encoder_create(OPUS_SAMPLE_RATE, OPUS_CHANNEL_COUNT, Opus.OPUS_APPLICATION_AUDIO, error);
     }
 
-    public void ready()
+    public void ready(long timeout)
     {
         Thread readyThread = new Thread()
         {
             @Override
             public void run()
             {
+                JDAImpl api = (JDAImpl) getJDA();
                 long started = System.currentTimeMillis();
-                while (!webSocket.isReady())
+                boolean connectionTimeout = false;
+                while (!webSocket.isReady() && !connectionTimeout)
                 {
-                    if (System.currentTimeMillis() - started > CONNECTION_TIMEOUT)
-                        throw new RuntimeException("Failed to establist an audio connection to the VoiceChannel due to Connection Timeout");
+                    if (timeout > 0 && System.currentTimeMillis() - started > timeout)
+                    {
+                        api.getEventManager().handle(new AudioTimeoutEvent(api, channel, timeout));
+                        connectionTimeout = true;
+                    }
 
                     try
                     {
@@ -78,12 +92,13 @@ public class AudioConnection
                     }
                     catch (InterruptedException e)
                     {
-                        e.printStackTrace();
+                        LOG.log(e);
                     }
                 }
                 AudioConnection.this.udpSocket = webSocket.getUdpSocket();
                 setupSendThread();
                 setupReceiveThread();
+                api.getEventManager().handle(new AudioConnectEvent(api, AudioConnection.this.channel));
             }
         };
         readyThread.setDaemon(true);
@@ -155,7 +170,7 @@ public class AudioConnection
                             AudioPacket packet = new AudioPacket(seq, timestamp, webSocket.getSSRC(), encodedAudio);
                             if (!speaking)
                                 setSpeaking(true);
-                            udpSocket.send(packet.asUdpPacket(webSocket.getAddress()));
+                            udpSocket.send(packet.asEncryptedUdpPacket(webSocket.getAddress(), webSocket.getSecretKey()));
 
                             if (seq + 1 > Character.MAX_VALUE)
                                 seq = 0;
@@ -175,14 +190,14 @@ public class AudioConnection
                     }
                     catch (NoRouteToHostException e)
                     {
-                        System.err.println("Closing AudioConnection due to inability to send audio packets.");
-                        System.err.println("Cannot send audio packet because JDA navigate the route to Discord.\n" +
+                        LOG.warn("Closing AudioConnection due to inability to send audio packets.");
+                        LOG.warn("Cannot send audio packet because JDA navigate the route to Discord.\n" +
                                 "Are you sure you have internet connection? It is likely that you've lost connection.");
                         webSocket.close();
                     }
                     catch (Exception e)
                     {
-                        e.printStackTrace();
+                        LOG.log(e);
                     }
                 }
             }
@@ -205,14 +220,15 @@ public class AudioConnection
                     {
                         udpSocket.receive(receivedPacket);
 
-                        if (receiveHandler != null && receiveHandler.canReceive())
+                        if (receiveHandler != null && receiveHandler.canReceive() && webSocket.getSecretKey() != null)
                         {
                             //Currently just gives the raw packet with STILL ENCODED DATA
                             //This needs to be changed to ->
                                 //1) possibly buffer by 40-60ms (configurable)
                                 //2) decode from Opus -> raw PCM or another format as defined by the receiveHandler.
-                            AudioPacket packet = new AudioPacket(receivedPacket);
-                            receiveHandler.handleReceivedAudio(packet);
+                            AudioPacket decryptedPacket = AudioPacket.decryptAudioPacket(receivedPacket, webSocket.getSecretKey());
+
+                            receiveHandler.handleReceivedAudio(decryptedPacket);
                         }
                     }
                     catch (SocketException e)
@@ -223,7 +239,7 @@ public class AudioConnection
                     }
                     catch (Exception e)
                     {
-                        e.printStackTrace();
+                        LOG.log(e);
                     }
                 }
             }

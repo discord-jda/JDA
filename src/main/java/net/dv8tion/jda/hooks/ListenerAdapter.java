@@ -15,9 +15,11 @@
  */
 package net.dv8tion.jda.hooks;
 
-import net.dv8tion.jda.events.Event;
-import net.dv8tion.jda.events.InviteReceivedEvent;
-import net.dv8tion.jda.events.ReadyEvent;
+import net.dv8tion.jda.events.*;
+import net.dv8tion.jda.events.audio.AudioConnectEvent;
+import net.dv8tion.jda.events.audio.AudioDisconnectEvent;
+import net.dv8tion.jda.events.audio.AudioTimeoutEvent;
+import net.dv8tion.jda.events.audio.GenericAudioEvent;
 import net.dv8tion.jda.events.channel.priv.PrivateChannelCreateEvent;
 import net.dv8tion.jda.events.channel.text.*;
 import net.dv8tion.jda.events.channel.voice.*;
@@ -34,6 +36,9 @@ public abstract class ListenerAdapter implements EventListener
 {
     //JDA Events
     public void onReady(ReadyEvent event) {}
+    public void onReconnect(ReconnectedEvent event) {}
+    public void onDisconnect(DisconnectEvent event) {}
+    public void onShutdown(ShutdownEvent event) {}
 
     //User Events
     public void onUserNameUpdate(UserNameUpdateEvent event) {}
@@ -103,7 +108,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildRoleUpdatePermission(GuildRoleUpdatePermissionEvent event) {}
     public void onGuildRoleUpdateGrouped(GuildRoleUpdateGroupedEvent event) {}
 
-    //Voice Events
+    //VoiceStatus Events
     public void onVoiceSelfMute(VoiceSelfMuteEvent event) {}
     public void onVoiceSelfDeaf(VoiceSelfDeafEvent event) {}
     public void onVoiceServerMute(VoiceServerMuteEvent event) {}
@@ -112,6 +117,11 @@ public abstract class ListenerAdapter implements EventListener
     public void onVoiceDeaf(VoiceDeafEvent event) {}
     public void onVoiceJoin(VoiceJoinEvent event) {}
     public void onVoiceLeave(VoiceLeaveEvent event) {}
+
+    //Audio System Events
+    public void onAudioConnect(AudioConnectEvent event) {}
+    public void onAudioDisconnect(AudioDisconnectEvent event) {}
+    public void onAudioTimeout(AudioTimeoutEvent event) {}
 
     //Generic Events
     public void onGenericUserEvent(GenericUserEvent event) {}
@@ -125,6 +135,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericGuildMember(GenericGuildMemberEvent event) {}
     public void onGenericGuild(GenericGuildEvent event) {}
     public void onGenericVoice(GenericVoiceEvent event) {}
+    public void onGenericAudio(GenericAudioEvent event) {}
     public void onGenericGuildRoleUpdate(GenericGuildRoleUpdateEvent event) {}
 
     @Override
@@ -133,6 +144,12 @@ public abstract class ListenerAdapter implements EventListener
         //JDA Events
         if (event instanceof ReadyEvent)
             onReady((ReadyEvent) event);
+        else if (event instanceof ReconnectedEvent)
+            onReconnect((ReconnectedEvent) event);
+        else if (event instanceof DisconnectEvent)
+            onDisconnect((DisconnectEvent) event);
+        else if (event instanceof ShutdownEvent)
+            onShutdown((ShutdownEvent) event);
 
         //Message Events
         //Guild (TextChannel) Message Events
@@ -264,6 +281,14 @@ public abstract class ListenerAdapter implements EventListener
         else if (event instanceof VoiceLeaveEvent)
             onVoiceLeave((VoiceLeaveEvent) event);
 
+        //Audio System Events
+        else if (event instanceof AudioConnectEvent)
+            onAudioConnect((AudioConnectEvent) event);
+        else if (event instanceof AudioDisconnectEvent)
+            onAudioDisconnect((AudioDisconnectEvent) event);
+        else if (event instanceof AudioTimeoutEvent)
+            onAudioTimeout((AudioTimeoutEvent) event);
+
         //Leave needs to be checked in a separate if-statement so that the Ban and Kick events will also fire this.
         if (event instanceof GuildMemberLeaveEvent)
             onGuildMemberLeave((GuildMemberLeaveEvent) event);
@@ -294,6 +319,8 @@ public abstract class ListenerAdapter implements EventListener
             onGenericVoice((GenericVoiceEvent) event);
         else if (event instanceof GenericGuildRoleUpdateEvent)
             onGenericGuildRoleUpdate(((GenericGuildRoleUpdateEvent) event));
+        else if (event instanceof GenericAudioEvent)
+            onGenericAudio((GenericAudioEvent) event);
 
         //Generic events that have generic subclasses (the subclasses as above).
         if (event instanceof GenericGuildEvent)

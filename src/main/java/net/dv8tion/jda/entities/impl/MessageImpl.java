@@ -18,6 +18,7 @@ package net.dv8tion.jda.entities.impl;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.Message;
+import net.dv8tion.jda.entities.MessageEmbed;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.exceptions.PermissionException;
@@ -47,6 +48,7 @@ public class MessageImpl implements Message
     private List<User> mentionedUsers = new LinkedList<>();
     private List<TextChannel> mentionedChannels = new LinkedList<>();
     private List<Attachment> attachments = new LinkedList<>();
+    private List<MessageEmbed> embeds = new LinkedList<>();
 
     public MessageImpl(String id, JDAImpl api)
     {
@@ -87,7 +89,7 @@ public class MessageImpl implements Message
     @Override
     public OffsetDateTime getTime()
     {
-        return time.plusSeconds(0L);
+        return time;
     }
 
     @Override
@@ -99,7 +101,7 @@ public class MessageImpl implements Message
     @Override
     public OffsetDateTime getEditedTimestamp()
     {
-        return editedTime.plusSeconds(0L);
+        return editedTime;
     }
 
     @Override
@@ -146,6 +148,12 @@ public class MessageImpl implements Message
     }
 
     @Override
+    public List<MessageEmbed> getEmbeds()
+    {
+        return Collections.unmodifiableList(embeds);
+    }
+
+    @Override
     public boolean isPrivate()
     {
         return isPrivate;
@@ -169,7 +177,7 @@ public class MessageImpl implements Message
         }
         catch (JSONException ex)
         {
-            ex.printStackTrace();
+            JDAImpl.LOG.log(ex);
             return null;
         }
     }
@@ -250,6 +258,12 @@ public class MessageImpl implements Message
     public MessageImpl setAttachments(List<Attachment> attachments)
     {
         this.attachments = attachments;
+        return this;
+    }
+
+    public MessageImpl setEmbeds(List<MessageEmbed> embeds)
+    {
+        this.embeds = embeds;
         return this;
     }
 

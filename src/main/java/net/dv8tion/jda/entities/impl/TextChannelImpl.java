@@ -19,6 +19,7 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import com.mashape.unirest.request.body.MultipartBody;
 import javafx.util.Pair;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.JDAInfo;
@@ -30,6 +31,7 @@ import net.dv8tion.jda.exceptions.RateLimitedException;
 import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.managers.ChannelManager;
 import net.dv8tion.jda.managers.PermissionOverrideManager;
+import net.dv8tion.jda.utils.InviteUtil;
 import net.dv8tion.jda.utils.PermissionUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,7 +41,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class TextChannelImpl extends TextChannel
+public class TextChannelImpl implements TextChannel
 {
     private final String id;
     private final Guild guild;
@@ -164,7 +166,7 @@ public class TextChannelImpl extends TextChannel
         }
         catch (JSONException ex)
         {
-            ex.printStackTrace();
+            JDAImpl.LOG.log(ex);
             //sending failed
             return null;
         }
@@ -188,33 +190,50 @@ public class TextChannelImpl extends TextChannel
     }
 
     @Override
+    @Deprecated
     public Message sendFile(File file)
+    {
+        return sendFile(file, null);
+    }
+
+    @Override
+    @Deprecated
+    public void sendFileAsync(File file, Consumer<Message> callback)
+    {
+        sendFileAsync(file, null, callback);
+    }
+
+    @Override
+    public Message sendFile(File file, Message message)
     {
         JDAImpl api = (JDAImpl) getJDA();
         try
         {
-            HttpResponse<JsonNode> response = Unirest.post("https://discordapp.com/api/channels/" + getId() + "/messages")
+            MultipartBody body = Unirest.post("https://discordapp.com/api/channels/" + getId() + "/messages")
                     .header("authorization", getJDA().getAuthToken())
                     .header("user-agent", JDAInfo.GITHUB + " " + JDAInfo.VERSION)
-                    .field("file", file)
-                    .asJson();
+                    .field("file", file);
+            if (message != null)
+                body.field("content", message.getRawContent()).field("tts", message.isTTS());
+
+            HttpResponse<JsonNode> response = body.asJson();
 
             JSONObject messageJson = new JSONObject(response.getBody().toString());
             return new EntityBuilder(api).createMessage(messageJson);
         }
         catch (UnirestException e)
         {
-            e.printStackTrace();
+            JDAImpl.LOG.log(e);
             return null;
         }
     }
 
     @Override
-    public void sendFileAsync(File file, Consumer<Message> callback)
+    public void sendFileAsync(File file, Message message, Consumer<Message> callback)
     {
         Thread thread = new Thread(() ->
         {
-            Message message = sendFile(file);
+            Message messageReturn = sendFile(file, message);
             if (callback != null)
                 callback.accept(message);
         });
@@ -275,6 +294,12 @@ public class TextChannelImpl extends TextChannel
         PermissionOverrideManager manager = new PermissionOverrideManager(override);
         manager.reset(Permission.MANAGE_PERMISSIONS).update();
         return manager;
+    }
+
+    @Override
+    public List<InviteUtil.AdvancedInvite> getInvites()
+    {
+        return InviteUtil.getInvites(this);
     }
 
 
@@ -390,7 +415,7 @@ public class TextChannelImpl extends TextChannel
                         }
                         catch (InterruptedException e)
                         {
-                            e.printStackTrace();
+                            JDAImpl.LOG.log(e);
                         }
                     }
                     Pair<Message, Consumer<Message>> peek = queue.peek();

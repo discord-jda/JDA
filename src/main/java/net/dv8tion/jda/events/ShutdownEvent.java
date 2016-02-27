@@ -16,27 +16,21 @@
 package net.dv8tion.jda.events;
 
 import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.events.message.GenericMessageEvent;
-import net.dv8tion.jda.utils.InviteUtil;
 
-public class InviteReceivedEvent extends GenericMessageEvent
+import java.time.OffsetDateTime;
+
+public class ShutdownEvent extends Event
 {
-    private final InviteUtil.Invite invite;
+    protected final OffsetDateTime shutdownTime;
 
-    public InviteReceivedEvent(JDA api, int responseNumber, Message message, InviteUtil.Invite invite)
+    public ShutdownEvent(JDA api, OffsetDateTime shutdownTime)
     {
-        super(api, responseNumber, message);
-        this.invite = invite;
+        super(api, -1);
+        this.shutdownTime = shutdownTime;
     }
 
-    public InviteUtil.Invite getInvite()
+    public OffsetDateTime getShutdownTime()
     {
-        return invite;
-    }
-
-    public boolean isPrivate()
-    {
-        return message.isPrivate();
+        return shutdownTime;
     }
 }

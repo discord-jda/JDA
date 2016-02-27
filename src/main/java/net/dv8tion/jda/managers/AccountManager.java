@@ -196,7 +196,7 @@ public class AccountManager
             this.username = null;
         } catch (Exception e)
         {
-            e.printStackTrace();
+            JDAImpl.LOG.log(e);
         }
         return this;
     }

@@ -74,10 +74,8 @@ public class EntityBuilder
         {
             Role role = createRole(roles.getJSONObject(i), guildObj.getId());
             guildObj.getRolesMap().put(role.getId(), role);
-            if (role.getName().equals("@everyone"))
-            {
+            if (role.getId().equals(guildObj.getId()))
                 guildObj.setPublicRole(role);
-            }
         }
 
         if (guild.has("members"))
@@ -109,7 +107,7 @@ public class EntityBuilder
         // to worry about there being a lack of offline Users because there wont be -any users or, at the very
         // most, the only User will be the JDA user that just created the new Guild.
         //This fall through is used by JDAImpl.createGuild(String, Region).
-        if (secondPassCallback != null)
+        if (secondPassCallback != null && guild.has("large") && guild.getBoolean("large"))
         {
             cachedGuildJson.put(id, guild);
             cachedGuildCallback.put(id, secondPassCallback);
@@ -134,6 +132,12 @@ public class EntityBuilder
         {
             JSONArray voiceStates = guild.getJSONArray("voice_states");
             createGuildVoicePass(guildObj, voiceStates);
+        }
+
+        if (secondPassCallback != null)
+        {
+            secondPassCallback.accept(guildObj);
+            return null;//Nothing should be using the return of this method besides JDAImpl.createGuild(String, Region)
         }
 
         return guildObj;
@@ -201,7 +205,9 @@ public class EntityBuilder
             String type = channel.getString("type");
             if (type.equalsIgnoreCase("text"))
             {
-                createTextChannel(channel, guildObj.getId());
+                TextChannel newChannel = createTextChannel(channel, guildObj.getId());
+                if (newChannel.getId().equals(guildObj.getId()))
+                    guildObj.setPublicChannel(newChannel);
             }
             else if (type.equalsIgnoreCase("voice"))
             {
@@ -374,6 +380,14 @@ public class EntityBuilder
         }
         message.setAttachments(attachments);
 
+        List<MessageEmbed> embeds = new LinkedList<>();
+        JSONArray jsonEmbeds = jsonObject.getJSONArray("embeds");
+        for (int i = 0; i < jsonEmbeds.length(); i++)
+        {
+            embeds.add(createMessageEmbed(jsonEmbeds.getJSONObject(i)));
+        }
+        message.setEmbeds(embeds);
+
         if (!jsonObject.isNull("edited_timestamp"))
             message.setEditedTime(OffsetDateTime.parse(jsonObject.getString("edited_timestamp")));
 
@@ -388,7 +402,9 @@ public class EntityBuilder
             for (int i = 0; i < mentions.length(); i++)
             {
                 JSONObject mention = mentions.getJSONObject(i);
-                mentioned.add(api.getUserMap().get(mention.getString("id")));
+                User u = api.getUserMap().get(mention.getString("id"));
+                if (u != null)
+                    mentioned.add(u);
             }
             message.setMentionedUsers(mentioned);
 

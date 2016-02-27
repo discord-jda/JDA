@@ -40,7 +40,7 @@ public class MessageListenerExample extends ListenerAdapter
                     .setEmail("EMAIL")
                     .setPassword("PASSWORD")
                     .addListener(new MessageListenerExample())
-                    .buildAsync();
+                    .buildBlocking();
         }
         catch (IllegalArgumentException e)
         {
@@ -49,6 +49,10 @@ public class MessageListenerExample extends ListenerAdapter
         catch (LoginException e)
         {
             System.out.println("The provided email / password combination was incorrect. Please provide valid details.");
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
         }
     }
 
@@ -67,7 +71,7 @@ public class MessageListenerExample extends ListenerAdapter
         System.out.println("Got invite " + event.getInvite().getUrl());
         if (event.getMessage().getAuthor().getUsername().equalsIgnoreCase("kantenkugel"))
         {
-            InviteUtil.join(event.getInvite(), event.getJDA());
+            InviteUtil.join(event.getInvite(), event.getJDA(), null);
         }
     }
 

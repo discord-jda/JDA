@@ -22,7 +22,7 @@ import net.dv8tion.jda.events.Event;
 
 public abstract class GenericMessageEvent extends Event
 {
-    private final Message message;
+    protected final Message message;
 
     public GenericMessageEvent(JDA api, int responseNumber, Message message)
     {

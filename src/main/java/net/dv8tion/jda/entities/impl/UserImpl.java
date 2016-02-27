@@ -65,6 +65,12 @@ public class UserImpl implements User
     }
 
     @Override
+    public String getAsMention()
+    {
+        return "<@" + getId() + '>';
+    }
+
+    @Override
     public String getAvatarId()
     {
         return avatarId;
@@ -101,7 +107,7 @@ public class UserImpl implements User
             }
             catch (JSONException ex)
             {
-                ex.printStackTrace();
+                JDAImpl.LOG.log(ex);
             }
         }
         return privateChannel;

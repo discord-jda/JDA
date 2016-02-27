@@ -74,7 +74,8 @@ public class ChannelDeleteHandler extends SocketHandler
                 if (channel == null)
                     throw new IllegalArgumentException("CHANNEL_DELETE attempted to delete a channel that doesn't exist! JSON: " + content);
 
-                if (api.getAudioManager().getConnectedChannel().getId().equals(channel.getId()))
+                if (api.getAudioManager() != null && api.getAudioManager().isConnected()
+                        && api.getAudioManager().getConnectedChannel().getId().equals(channel.getId()))
                     api.getAudioManager().closeAudioConnection();
                 guild.getVoiceChannelsMap().remove(channel.getId());
                 api.getEventManager().handle(

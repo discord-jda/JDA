@@ -25,11 +25,13 @@ import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.hooks.EventListener;
 import net.dv8tion.jda.hooks.IEventManager;
 import net.dv8tion.jda.hooks.InterfacedEventManager;
+import net.dv8tion.jda.hooks.SubscribeEvent;
 import net.dv8tion.jda.managers.AccountManager;
 import net.dv8tion.jda.managers.AudioManager;
 import net.dv8tion.jda.managers.GuildManager;
 import net.dv8tion.jda.requests.Requester;
 import net.dv8tion.jda.requests.WebSocketClient;
+import net.dv8tion.jda.utils.SimpleLog;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.json.JSONException;
@@ -52,6 +54,7 @@ import java.util.stream.Collectors;
  */
 public class JDAImpl implements JDA
 {
+    public static final SimpleLog LOG = SimpleLog.getLog("JDA");
     private final HttpHost proxy;
     private final Map<String, User> userMap = new HashMap<>();
     private final Map<String, Guild> guildMap = new HashMap<>();
@@ -59,29 +62,31 @@ public class JDAImpl implements JDA
     private final Map<String, VoiceChannel> voiceChannelMap = new HashMap<>();
     private final Map<String, PrivateChannel> pmChannelMap = new HashMap<>();
     private final Map<String, String> offline_pms = new HashMap<>();    //Userid -> channelid
-    private final AudioManager audioManager = new AudioManager(this);
+    private final AudioManager audioManager;
     private IEventManager eventManager = new InterfacedEventManager();
     private SelfInfo selfInfo = null;
     private AccountManager accountManager;
     private String authToken = null;
     private WebSocketClient client;
     private final Requester requester = new Requester(this);
-    private boolean debug;
+    private boolean reconnect;
     private boolean enableAck;
     private int responseTotal;
     private Long messageLimit = null;
 
-    public JDAImpl()
+    public JDAImpl(boolean useVoice)
     {
         proxy = null;
+        audioManager = useVoice ? new AudioManager(this) : null;
     }
 
-    public JDAImpl(String proxyUrl, int proxyPort)
+    public JDAImpl(String proxyUrl, int proxyPort, boolean useVoice)
     {
         if (proxyUrl == null || proxyUrl.isEmpty() || proxyPort == -1)
             throw new IllegalArgumentException("The provided proxy settings cannot be used to make a proxy. Settings: URL: '" + proxyUrl + "'  Port: " + proxyPort);
         proxy = new HttpHost(proxyUrl, proxyPort);
         Unirest.setProxy(proxy);
+        audioManager = useVoice ? new AudioManager(this) : null;
     }
 
     /**
@@ -99,6 +104,7 @@ public class JDAImpl implements JDA
      */
     public void login(String email, String password) throws IllegalArgumentException, LoginException
     {
+        LOG.info("JDA starting...");
         if (email == null || email.isEmpty() || password == null || password.isEmpty())
             throw new IllegalArgumentException("The provided email or password as empty / null.");
 
@@ -106,7 +112,7 @@ public class JDAImpl implements JDA
         
         Path tokenFile = Paths.get("tokens.json");
         JSONObject configs = null;
-        String gateway = null;
+        boolean valid = false;
         if (Files.exists(tokenFile))
         {
             configs = readJson(tokenFile);
@@ -127,18 +133,18 @@ public class JDAImpl implements JDA
                     if (getRequester().getA("https://discordapp.com/api/users/@me/guilds") != null)
                     {
                         //token is valid (returns array, cant be returned as JSONObject)
-                        gateway = getRequester().get("https://discordapp.com/api/gateway").getString("url");
-                        System.out.println("Using cached Token: " + authToken);
+                        valid = true;
+                        LOG.debug("Using cached Token: " + authToken);
                     }
                 } catch (JSONException ignored) {}//token invalid
             }
         }
         catch (JSONException ex)
         {
-            System.out.println("Token-file misformatted. Please delete it for recreation");
+            LOG.warn("Token-file misformatted. Please delete it for recreation");
         }
 
-        if (gateway == null)                                    //no token saved or invalid
+        if (!valid)               //no token saved or invalid
         {
             try
             {
@@ -150,23 +156,24 @@ public class JDAImpl implements JDA
 
                 authToken = response.getString("token");
                 configs.getJSONObject("tokens").put(email, authToken);
-                System.out.println("Created new Token: " + authToken);
-                System.out.println("Login Successful!"); //TODO: Replace with Logger.INFO
+                LOG.debug("Created new Token: " + authToken);
 
-                gateway = getRequester().get("https://discordapp.com/api/gateway").getString("url");
+                valid = true;
             }
             catch (JSONException ex)
             {
-                ex.printStackTrace();
+                LOG.log(ex);
             }
         }
-        else
+
+        if (valid)
         {
-            System.out.println("Login Successful!"); //TODO: Replace with Logger.INFO
+            LOG.info("Login Successful!"); //TODO: Replace with Logger.INFO
+            client = new WebSocketClient(this, proxy);
+            client.setAutoReconnect(reconnect);
         }
 
         writeJson(tokenFile, configs);
-        client = new WebSocketClient(gateway, this, proxy);
     }
 
     /**
@@ -185,12 +192,12 @@ public class JDAImpl implements JDA
         }
         catch (IOException e)
         {
-            System.out.println("Error reading token-file. Defaulting to standard");
-            e.printStackTrace();
+            LOG.fatal("Error reading token-file. Defaulting to standard");
+            LOG.log(e);
         }
         catch (JSONException e)
         {
-            System.out.println("Token-file misformatted. Creating default one");
+            LOG.warn("Token-file misformatted. Creating default one");
         }
         return null;
     }
@@ -211,7 +218,7 @@ public class JDAImpl implements JDA
         }
         catch (IOException e)
         {
-            System.out.println("Error creating token-file");
+            LOG.warn("Error creating token-file");
         }
     }
 
@@ -325,45 +332,12 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    @Deprecated
-    public GuildManager createGuild(String name)
-    {
-        return createGuild(name, Region.US_EAST);
-    }
-
-    @Override
-    public GuildManager createGuild(String name, Region region)
-    {
-        if (name == null)
-        {
-            throw new IllegalArgumentException("Guild name must not be null");
-        }
-        JSONObject response = getRequester().post("https://discordapp.com/api/guilds",
-                new JSONObject()).put("name", name).put("region", region.getKey());
-        if (response == null || !response.has("id"))
-        {
-            //error creating guild
-            throw new RuntimeException("Creating a new Guild failed. Reason: " + (response == null ? "Unknown" : response.toString()));
-        }
-        else
-        {
-            Guild g = new EntityBuilder(this).createGuildFirstPass(response, null);
-            return g.isAvailable() ? new GuildManager(g) : null;
-        }
-    }
-
-    @Override
-    @Deprecated
-    public void createGuildAsync(String name, Consumer<GuildManager> callback)
-    {
-        createGuildAsync(name, Region.US_EAST, callback);
-    }
-
-    @Override
     public void createGuildAsync(String name, Region region, Consumer<GuildManager> callback)
     {
         if (name == null)
             throw new IllegalArgumentException("Guild name must not be null");
+        if (region == Region.UNKNOWN)
+            throw new IllegalArgumentException("Guild region must not be UNKNOWN");
 
         JSONObject response = getRequester().post("https://discordapp.com/api/guilds",
                 new JSONObject().put("name", name).put("region", region.getKey()));
@@ -374,7 +348,8 @@ public class JDAImpl implements JDA
         }
         else
         {
-            addEventListener(new AsyncCallback(callback, response.getString("id")));
+            if(callback != null)
+                addEventListener(new AsyncCallback(callback, response.getString("id")));
         }
     }
 
@@ -474,15 +449,33 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public void setDebug(boolean enableDebug)
+    public void setAutoReconnect(boolean reconnect)
     {
-        this.debug = enableDebug;
+        this.reconnect = reconnect;
+        if (client != null)
+        {
+            client.setAutoReconnect(reconnect);
+        }
     }
 
     @Override
+    public boolean isAutoReconnect()
+    {
+        return this.reconnect;
+    }
+
+    @Override
+    @Deprecated
+    public void setDebug(boolean enableDebug)
+    {
+        SimpleLog.LEVEL = enableDebug ? SimpleLog.Level.TRACE : SimpleLog.Level.INFO;
+    }
+
+    @Override
+    @Deprecated
     public boolean isDebug()
     {
-        return debug;
+        return SimpleLog.LEVEL == SimpleLog.Level.TRACE;
     }
 
     @Override
@@ -494,7 +487,9 @@ public class JDAImpl implements JDA
     @Override
     public void shutdown(boolean free)
     {
-        getAudioManager().closeAudioConnection();
+        if (getAudioManager() != null)
+            getAudioManager().closeAudioConnection();
+        client.setAutoReconnect(false);
         client.close();
         authToken = null; //make further requests fail
         if (free)
@@ -575,6 +570,7 @@ public class JDAImpl implements JDA
         }
 
         @Override
+        @SubscribeEvent
         public void onEvent(Event event)
         {
             if (event instanceof GuildJoinEvent && ((GuildJoinEvent) event).getGuild().getId().equals(id))

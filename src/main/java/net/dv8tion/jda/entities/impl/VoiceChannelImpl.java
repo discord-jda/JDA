@@ -21,6 +21,7 @@ import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.exceptions.PermissionException;
 import net.dv8tion.jda.managers.ChannelManager;
 import net.dv8tion.jda.managers.PermissionOverrideManager;
+import net.dv8tion.jda.utils.InviteUtil;
 import net.dv8tion.jda.utils.PermissionUtil;
 
 import java.util.*;
@@ -158,6 +159,12 @@ public class VoiceChannelImpl implements VoiceChannel
         PermissionOverrideManager manager = new PermissionOverrideManager(override);
         manager.reset(Permission.MANAGE_PERMISSIONS).update();
         return manager;
+    }
+
+    @Override
+    public List<InviteUtil.AdvancedInvite> getInvites()
+    {
+        return InviteUtil.getInvites(this);
     }
 
     public VoiceChannelImpl setName(String name)

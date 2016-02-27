@@ -20,6 +20,7 @@ import net.dv8tion.jda.Region;
 import net.dv8tion.jda.managers.ChannelManager;
 import net.dv8tion.jda.managers.GuildManager;
 import net.dv8tion.jda.managers.RoleManager;
+import net.dv8tion.jda.utils.InviteUtil.AdvancedInvite;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -184,6 +185,16 @@ public interface Guild
     Role getPublicRole();
 
     /**
+     * The default {@link net.dv8tion.jda.entities.TextChannel TextChannel} for a {@link net.dv8tion.jda.entities.Guild Guild}.
+     * This channel cannot be deleted and the {@link #getPublicRole() Public Role} always has the ability to
+     * {@link net.dv8tion.jda.Permission#MESSAGE_READ Permission.MESSAGE_READ} this channel.
+     *
+     * @return
+     *      The {@link net.dv8tion.jda.entities.TextChannel TextChannel} representing the public channel for this guild.
+     */
+    TextChannel getPublicChannel();
+
+    /**
      * Provides the join-date for a given {@link net.dv8tion.jda.entities.User User}.
      *
      * @param user
@@ -245,4 +256,12 @@ public interface Guild
      *      If the Guild is available
      */
     boolean isAvailable();
+
+    /**
+     * Provides a list of all {@link net.dv8tion.jda.utils.InviteUtil.AdvancedInvite Invites} for this Guild.
+     *
+     * @return
+     *      An Immutable List of {@link net.dv8tion.jda.utils.InviteUtil.AdvancedInvite Invites} for this guild.
+     */
+    List<AdvancedInvite> getInvites();
 }

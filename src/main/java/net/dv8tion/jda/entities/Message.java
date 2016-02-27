@@ -16,6 +16,7 @@
 package net.dv8tion.jda.entities;
 
 import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.requests.Requester;
 
 import java.io.File;
@@ -153,6 +154,14 @@ public interface Message
     List<Attachment> getAttachments();
 
     /**
+     * An unmodifiable list of {@link net.dv8tion.jda.entities.MessageEmbed MessageEmbeds} that are available to this message.
+     *
+     * @return
+     *      Unmodifiable list of all given embeds
+     */
+    List<MessageEmbed> getEmbeds();
+
+    /**
      * Is this Message supposed to be TTS (Text-to-speach)
      *
      * @return if message is tts
@@ -284,7 +293,7 @@ public interface Message
             }
             catch (Exception e)
             {
-                e.printStackTrace();
+                JDAImpl.LOG.log(e);
             }
             finally
             {

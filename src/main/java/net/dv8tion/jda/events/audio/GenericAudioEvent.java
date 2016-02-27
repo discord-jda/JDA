@@ -13,30 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.events;
+package net.dv8tion.jda.events.audio;
 
 import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.events.message.GenericMessageEvent;
-import net.dv8tion.jda.utils.InviteUtil;
+import net.dv8tion.jda.events.Event;
 
-public class InviteReceivedEvent extends GenericMessageEvent
+public class GenericAudioEvent extends Event
 {
-    private final InviteUtil.Invite invite;
-
-    public InviteReceivedEvent(JDA api, int responseNumber, Message message, InviteUtil.Invite invite)
+    protected GenericAudioEvent(JDA api, int responseNumber)
     {
-        super(api, responseNumber, message);
-        this.invite = invite;
-    }
-
-    public InviteUtil.Invite getInvite()
-    {
-        return invite;
-    }
-
-    public boolean isPrivate()
-    {
-        return message.isPrivate();
+        super(api, responseNumber);
     }
 }

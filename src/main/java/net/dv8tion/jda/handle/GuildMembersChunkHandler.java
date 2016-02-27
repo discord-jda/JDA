@@ -49,7 +49,7 @@ public class GuildMembersChunkHandler extends SocketHandler
         }
 
         JSONArray members = content.getJSONArray("members");
-        if (api.isDebug()) System.out.println("GUILD_MEMBER_CHUNK for: " + guildId + "\tMembers: " + members.length());
+        JDAImpl.LOG.debug("GUILD_MEMBER_CHUNK for: " + guildId + "\tMembers: " + members.length());
         memberChunks.add(members);
         if (members.length() != 1000)
         {

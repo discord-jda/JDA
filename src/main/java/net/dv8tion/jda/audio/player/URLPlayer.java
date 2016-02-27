@@ -17,11 +17,11 @@ package net.dv8tion.jda.audio.player;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.requests.Requester;
+import net.dv8tion.jda.utils.SimpleLog;
 import org.apache.http.HttpHost;
 
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
-
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -156,8 +156,8 @@ public class URLPlayer extends Player
         }
         catch (IOException e)
         {
-            System.err.println("Attempted to close the URLPlayer resource stream during stop() cleanup, but hit an IOException");
-            e.printStackTrace();
+            SimpleLog.getLog("JDAPlayer").fatal("Attempted to close the URLPlayer resource stream during stop() cleanup, but hit an IOException");
+            SimpleLog.getLog("JDAPlayer").log(e);
         }
     }
 
@@ -175,12 +175,12 @@ public class URLPlayer extends Player
         }
         catch (IOException e)
         {
-            System.err.println("Attempted to restart the URLStream playback, but something went wrong!");
-            e.printStackTrace();
+            SimpleLog.getLog("JDAPlayer").fatal("Attempted to restart the URLStream playback, but something went wrong!");
+            SimpleLog.getLog("JDAPlayer").log(e);
         }
         catch (UnsupportedAudioFileException e)
         {
-            e.printStackTrace();
+            SimpleLog.getLog("JDAPlayer").log(e);
         }
     }
 

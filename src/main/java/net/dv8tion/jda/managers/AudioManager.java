@@ -24,6 +24,7 @@ import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.utils.NativeUtils;
 import net.dv8tion.jda.utils.ServiceUtil;
+import net.dv8tion.jda.utils.SimpleLog;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -35,8 +36,12 @@ import java.io.IOException;
 public class AudioManager
 {
     //These values are set at the bottom of this file.
-    public final static boolean AUDIO_SUPPORTED;
-    public final static String OPUS_LIB_NAME;
+    public static boolean AUDIO_SUPPORTED;
+    public static String OPUS_LIB_NAME;
+    public static final long DEFAULT_CONNECTION_TIMEOUT = 10000;
+    public static final SimpleLog LOG = SimpleLog.getLog("JDAAudioManager");
+
+    private static boolean initialized = false;
 
     private final JDAImpl api;
     private AudioConnection audioConnection = null;
@@ -45,9 +50,16 @@ public class AudioManager
     private AudioSendHandler sendHandler;
     private AudioReceiveHandler receiveHandler;
 
+    private long timeout = DEFAULT_CONNECTION_TIMEOUT;
+
     public AudioManager(JDAImpl api)
     {
         this.api = api;
+        init();
+        if (AUDIO_SUPPORTED)
+            LOG.info("Audio System successfully setup!");
+        else
+            LOG.info("Audio System encountered problems while loading, thus, is disabled.");
     }
 
     /**
@@ -240,7 +252,33 @@ public class AudioManager
 
         audioConnection.setSendingHandler(sendHandler);
         audioConnection.setReceivingHandler(receiveHandler);
-        audioConnection.ready();
+        audioConnection.ready(timeout);
+    }
+
+    /**
+     * Sets the amount of time, in milliseconds, that will be used as the timeout when waiting for the audio connection
+     * to successfully connect. The default value is 10 second (10,000 milliseconds).<br>
+     * NOTE: If you set this value to 0, you can remove timeout functionality and JDA will wait FOREVER for the connection
+     * to be established. This is no advised as it is possible that the connection may never be established.
+     *
+     * @param timeout
+     *          The amount of time, in milliseconds, that should be waited when waiting for the audio connection
+     *          to be established.
+     */
+    public void setConnectTimeout(long timeout)
+    {
+        this.timeout = timeout;
+    }
+
+    /**
+     * Returns the currently set timeout value, in milliseconds, used when waiting for an audio connection to be established.
+     *
+     * @return
+     *      The currently set timeout.
+     */
+    public long getConnectTimeout()
+    {
+        return timeout;
     }
 
     /**
@@ -264,6 +302,19 @@ public class AudioManager
         if (audioConnection != null)
             audioConnection.setSendingHandler(handler);
     }
+
+    /**
+     * Returns the currently set {@link net.dv8tion.jda.audio.AudioSendHandler AudioSendHandler}. If there is
+     * no sender currently set, this method will return null.
+     *
+     * @return
+     *      The currently active {@link net.dv8tion.jda.audio.AudioSendHandler AudioSendHandler} or <code>null</code>.
+     */
+    public AudioSendHandler getSendingHandler()
+    {
+        return sendHandler;
+    }
+
     /**
      * Sets the {@link net.dv8tion.jda.audio.AudioReceiveHandler AudioReceiveHandler}
      * that the manager will use to process audio data received from an audio connection.
@@ -284,56 +335,70 @@ public class AudioManager
             audioConnection.setReceivingHandler(handler);
     }
 
-    //Load the Opus library.
-    static
+    /**
+     * Returns the currently set {@link net.dv8tion.jda.audio.AudioReceiveHandler AudioReceiveHandler}. If there is
+     * no receiver currently set, this method will return null.
+     *
+     * @return
+     *      The currently active {@link net.dv8tion.jda.audio.AudioReceiveHandler AudioReceiveHandler} or <code>null</code>.
+     */
+    public AudioReceiveHandler getReceiveHandler()
     {
+        return receiveHandler;
+    }
+
+    //Load the Opus library.
+    private static synchronized void init()
+    {
+        if(initialized)
+            return;
+        initialized = true;
         ServiceUtil.loadServices();
-        String lib = null;
+        String nativesRoot  = null;
         try
         {
             //The libraries that this is referencing are available in the src/main/resources/opus/ folder.
             //Of course, when JDA is compiled that just becomes /opus/
-            lib = "/opus/" + Platform.RESOURCE_PREFIX;
-            if (lib.contains("win"))
-            {
-                //windows server doesn't return -32 or -64
-                if (lib.endsWith("x86"))
-                    lib += "-32";
-                lib += "/opus.dll";
-            }
-            else if (lib.contains("darwin"))
-                lib += "/libopus.dylib";
-            else if (lib.contains("linux"))
-                lib += "/libopus.so";
+            nativesRoot = "/natives/" + Platform.RESOURCE_PREFIX + "/%s";
+            if (nativesRoot.contains("darwin")) //Mac
+                nativesRoot += ".dylib";
+            else if (nativesRoot.contains("win"))
+                nativesRoot += ".dll";
+            else if (nativesRoot.contains("linux"))
+                nativesRoot += ".so";
             else
                 throw new UnsupportedOperationException();
 
-            NativeUtils.loadLibraryFromJar(lib);
+            NativeUtils.loadLibraryFromJar(String.format(nativesRoot, "libopus"));
         }
-        catch (Exception e)
+        catch (Throwable e)
         {
             if (e instanceof UnsupportedOperationException)
-                System.err.println("Sorry, JDA's audio system doesn't support this system.\n" +
+                LOG.fatal("Sorry, JDA's audio system doesn't support this system.\n" +
                         "Supported Systems: Windows(x86, x64), Mac(x86, x64) and Linux(x86, x64)\n" +
                         "Operating system: " + Platform.RESOURCE_PREFIX);
             else if (e instanceof  IOException)
             {
-                System.err.println("There was an IO Exception when setting up the temp files for audio.");
-                e.printStackTrace();
+                LOG.fatal("There was an IO Exception when setting up the temp files for audio.");
+                LOG.log(e);
+            }
+            else if (e instanceof UnsatisfiedLinkError)
+            {
+                LOG.fatal("JDA encountered a problem when attempting to load the Native libraries. Contact a DEV.");
+                LOG.log(e);
             }
             else
             {
-                System.err.println("An unknown error occurred while attempting to setup JDA's audio system!");
-                e.printStackTrace();
+                LOG.fatal("An unknown error occurred while attempting to setup JDA's audio system!");
+                LOG.log(e);
             }
 
-            lib = null;
+            nativesRoot = null;
         }
-
         finally
         {
-            OPUS_LIB_NAME = lib;
-            AUDIO_SUPPORTED = lib != null;
+            OPUS_LIB_NAME = nativesRoot != null ? String.format(nativesRoot, "libopus") : null;
+            AUDIO_SUPPORTED = nativesRoot != null;
         }
 
     }

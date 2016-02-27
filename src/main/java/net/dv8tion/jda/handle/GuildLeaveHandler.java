@@ -39,7 +39,8 @@ public class GuildLeaveHandler extends SocketHandler
             //TODO: Unavailable-event. Sever audio connection when guild becomes unavailable.
             return;
         }
-        if (api.getAudioManager().getConnectedChannel().getGuild().getId().equals(guild.getId()))
+        if (api.getAudioManager() != null && api.getAudioManager().isConnected()
+                && api.getAudioManager().getConnectedChannel().getGuild().getId().equals(guild.getId()))
             api.getAudioManager().closeAudioConnection();
 
         //TODO: clean up user db for those we don't see anymore (and handle pm channels)

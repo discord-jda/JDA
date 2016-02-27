@@ -13,30 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.events;
+package net.dv8tion.jda.events.audio;
 
 import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.events.message.GenericMessageEvent;
-import net.dv8tion.jda.utils.InviteUtil;
+import net.dv8tion.jda.entities.VoiceChannel;
 
-public class InviteReceivedEvent extends GenericMessageEvent
+public class AudioTimeoutEvent extends GenericAudioEvent
 {
-    private final InviteUtil.Invite invite;
+    protected final VoiceChannel attemptedConnectChannel;
+    protected final long timeout;
 
-    public InviteReceivedEvent(JDA api, int responseNumber, Message message, InviteUtil.Invite invite)
+    public AudioTimeoutEvent(JDA api, VoiceChannel attemptedConnectChannel, long timeout)
     {
-        super(api, responseNumber, message);
-        this.invite = invite;
+        super(api, -1);
+        this.attemptedConnectChannel = attemptedConnectChannel;
+        this.timeout = timeout;
     }
 
-    public InviteUtil.Invite getInvite()
+    public VoiceChannel getAttemptedConnectChannel()
     {
-        return invite;
+        return attemptedConnectChannel;
     }
 
-    public boolean isPrivate()
+    public long getTimeout()
     {
-        return message.isPrivate();
+        return timeout;
     }
 }

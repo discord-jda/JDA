@@ -47,7 +47,9 @@ public class JDABuilder
     String email = null;
     String pass = null;
     boolean debug = false;
+    boolean enableVoice = true;
     boolean useAnnotatedManager = false;
+    boolean reconnect = true;
 
     /**
      * Creates a completely empty JDABuilder.<br>
@@ -136,6 +138,8 @@ public class JDABuilder
     }
 
     /**
+     * <b>This method is deprecated! please switch to using the {@link net.dv8tion.jda.utils.SimpleLog SimpleLog} class.</b>
+     * <p>
      * Enables developer debug of JDA.<br>
      * Enabling this will print stack traces instead of java logger message when exceptions are encountered.
      *
@@ -144,9 +148,44 @@ public class JDABuilder
      * @return
      *          Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
      */
+    @Deprecated
     public JDABuilder setDebug(boolean debug)
     {
        this.debug = debug;
+        return this;
+    }
+
+    /**
+     * Enables/Disables Voice functionality.<br>
+     * This is useful, if your current system doesn't support Voice and you do not need it.
+     * <p>
+     * Default: true
+     *
+     * @param enabled
+     *          True - enables voice support.
+     * @return
+     *          Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public JDABuilder setAudioEnabled(boolean enabled)
+    {
+        this.enableVoice = enabled;
+        return this;
+    }
+
+    /**
+     * Sets whether or not JDA should try to reconnect, if a connection-error occured.
+     * This will use and incremental reconnect (timeouts are increased each time an attempt fails).
+     *
+     * Default is true.
+     *
+     * @param reconnect
+     *      If true - enables autoReconnect
+     * @return
+     *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public JDABuilder setAutoReconnect(boolean reconnect)
+    {
+        this.reconnect = reconnect;
         return this;
     }
 
@@ -200,16 +239,6 @@ public class JDABuilder
     }
 
     /**
-     * This method has been deprecated due to a name change to clarify what happens.<br>
-     * Please use {@link #buildAsync() buildAsync()} instead to achieve the same functionality.
-     */
-    @Deprecated
-    public JDA build() throws LoginException, IllegalArgumentException
-    {
-        return buildAsync();
-    }
-
-    /**
      * Builds a new {@link net.dv8tion.jda.JDA} instance and uses the provided email and password to start the login process.<br>
      * The login process runs in a different thread, so while this will return immediately, {@link net.dv8tion.jda.JDA} has not
      * finished loading, thus many {@link net.dv8tion.jda.JDA} methods have the chance to return incorrect information.
@@ -230,10 +259,11 @@ public class JDABuilder
         jdaCreated = true;
         JDAImpl jda;
         if (proxySet)
-            jda = new JDAImpl(proxyUrl, proxyPort);
+            jda = new JDAImpl(proxyUrl, proxyPort, enableVoice);
         else
-            jda = new JDAImpl();
+            jda = new JDAImpl(enableVoice);
         jda.setDebug(debug);
+        jda.setAutoReconnect(reconnect);
         if (useAnnotatedManager)
         {
             jda.setEventManager(new AnnotatedEventManager());

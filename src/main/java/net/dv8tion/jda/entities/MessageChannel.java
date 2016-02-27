@@ -82,6 +82,8 @@ public interface MessageChannel
     void sendMessageAsync(Message msg, Consumer<Message> callback);
 
     /**
+     * <b>This method has been deprecated. Please use {@link #sendFile(java.io.File, Message)}</b>
+     * <p>
      * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.entities.TextChannel TextChannel}.
      * <p>
      * <b>Note:</b> This method is blocking, which can cause problems when uploading large files.<br>
@@ -92,9 +94,12 @@ public interface MessageChannel
      * @return
      *      The {@link net.dv8tion.jda.entities.Message Message} created from this upload.
      */
+    @Deprecated
     Message sendFile(File file);
 
     /**
+     * <b>This method has been deprecated. Please use {@link #sendFileAsync(java.io.File, Message, java.util.function.Consumer)}</b>
+     * <p>
      * Asynchronously uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.entities.TextChannel TextChannel}.
      *
      * @param file
@@ -102,7 +107,41 @@ public interface MessageChannel
      * @param callback
      *          Function to deal with the returned {@link net.dv8tion.jda.entities.Message Message} after asynchronous uploading completes.
      */
+    @Deprecated
     void sendFileAsync(File file, Consumer<Message> callback);
+
+    /**
+     * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.entities.TextChannel TextChannel}.
+     * Sends the provided {@link net.dv8tion.jda.entities.Message Message} with the uploaded file.<br>
+     * If you do not wish to send a Message with the uploaded file, you can provide <code>null</code> for
+     * the <code>message</code> parameter.
+     * <p>
+     * <b>Note:</b> This method is blocking, which can cause problems when uploading large files.<br>
+     * Consider {@link #sendFileAsync(java.io.File, java.util.function.Consumer) sendFileAsync(File, Consumer)} for an alternative.
+     *
+     * @param file
+     *          The file to upload to the {@link net.dv8tion.jda.entities.TextChannel TextChannel}.
+     * @param message
+     *          The message to be sent along with the uploaded file. This value can be <code>null</code>.
+     * @return
+     *      The {@link net.dv8tion.jda.entities.Message Message} created from this upload.
+     */
+    Message sendFile(File file, Message message);
+
+    /**
+     * Asynchronously uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.entities.TextChannel TextChannel}.
+     * Sends the provided {@link net.dv8tion.jda.entities.Message Message} with the uploaded file.<br>
+     * If you do not wish to send a Message with the uploaded file, you can provide <code>null</code> for
+     * the <code>message</code> parameter.
+     *
+     * @param file
+     *          The file to upload to the {@link net.dv8tion.jda.entities.TextChannel TextChannel}.
+     * @param message
+     *          The message to be sent along with the uploaded file. This value can be <code>null</code>.
+     * @param callback
+     *          Function to deal with the returned {@link net.dv8tion.jda.entities.Message Message} after asynchronous uploading completes.
+     */
+    void sendFileAsync(File file, Message message, Consumer<Message> callback);
 
     /**
      * Sends the typing status to discord. This is what is used to make the message "X is typing..." appear.<br>

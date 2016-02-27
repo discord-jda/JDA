@@ -23,12 +23,15 @@ import com.mashape.unirest.request.HttpRequest;
 import com.mashape.unirest.request.body.RequestBodyEntity;
 import net.dv8tion.jda.JDAInfo;
 import net.dv8tion.jda.entities.impl.JDAImpl;
+import net.dv8tion.jda.utils.SimpleLog;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Requester
 {
-    public  static final String USER_AGENT = "JDA DiscordBot (" + JDAInfo.GITHUB + ", " + JDAInfo.VERSION + ")";
+    public static final SimpleLog LOG = SimpleLog.getLog("JDARequester");
+    public static final String USER_AGENT = "JDA DiscordBot (" + JDAInfo.GITHUB + ", " + JDAInfo.VERSION + ")";
 
     private final JDAImpl api;
 
@@ -89,44 +92,46 @@ public class Requester
 
     private JSONObject toObject(BaseRequest request)
     {
+        String body = null;
         try
         {
-            if (api.isDebug())
-            {
-                System.out.printf("Requesting %s -> %s\n\tPayload: %s\n\tResponse: ", request.getHttpRequest().getHttpMethod().name(), request.getHttpRequest().getUrl(), ((request instanceof RequestBodyEntity)? ((RequestBodyEntity) request).getBody().toString():"None"));
-            }
-            String body = request.asString().getBody();
-            if (api.isDebug())
-            {
-                System.out.println(body);
-            }
+            String dbg = String.format("Requesting %s -> %s\n\tPayload: %s\n\tResponse: ", request.getHttpRequest().getHttpMethod().name(),
+                    request.getHttpRequest().getUrl(), ((request instanceof RequestBodyEntity) ? ((RequestBodyEntity) request).getBody().toString() : "None"));
+            body = request.asString().getBody();
+            LOG.trace(dbg + body);
             return body == null ? null : new JSONObject(body);
         }
-        catch (UnirestException e)
+        catch (UnirestException ignored)
         {
-            e.printStackTrace();
+            //most likely there is no connection... ignoring to not spam console
+        }
+        catch (JSONException e)
+        {
+            LOG.fatal("Following json caused an exception: " + body);
+            LOG.log(e);
         }
         return null;
     }
 
     private JSONArray toArray(BaseRequest request)
     {
+        String body = null;
         try
         {
-            if (api.isDebug())
-            {
-                System.out.printf("Requesting %s -> %s\n\tPayload: %s\n\tResponse: ", request.getHttpRequest().getHttpMethod().name(), request.getHttpRequest().getUrl(), ((request instanceof RequestBodyEntity)? ((RequestBodyEntity) request).getBody().toString():"None"));
-            }
-            String body = request.asString().getBody();
-            if (api.isDebug())
-            {
-                System.out.println(body);
-            }
+            String dbg = String.format("Requesting %s -> %s\n\tPayload: %s\n\tResponse: ", request.getHttpRequest().getHttpMethod().name(),
+                    request.getHttpRequest().getUrl(), ((request instanceof RequestBodyEntity)? ((RequestBodyEntity) request).getBody().toString():"None"));
+            body = request.asString().getBody();
+            LOG.trace(dbg + body);
             return body == null ? null : new JSONArray(body);
         }
-        catch (UnirestException e)
+        catch (UnirestException ignored)
         {
-            e.printStackTrace();
+            //most likely there is no connection... ignoring to not spam console
+        }
+        catch (JSONException e)
+        {
+            LOG.fatal("Following json caused an exception: " + body);
+            LOG.log(e);
         }
         return null;
     }
