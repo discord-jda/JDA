@@ -135,7 +135,7 @@ public class PermissionUtil
             return true;
 
         int effectivePerms = getEffectivePermission(user, guild, roleOverrides, userOverrides);
-        return (effectivePerms & (1 << perm.getOffset())) > 0;
+        return ((effectivePerms & (1 << Permission.MANAGE_PERMISSIONS.getOffset())) | (effectivePerms & (1 << perm.getOffset()))) > 0;
     }
 
     private static int getEffectivePermission(User user, GuildImpl guild, Map<Role, PermissionOverride> roleOverrides, Map<User, PermissionOverride> userOverrides)
