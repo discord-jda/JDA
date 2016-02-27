@@ -70,8 +70,10 @@ public class InviteUtil
     }
 
     /**
+     * <b>This method is deprecated, use {@link #createInvite(net.dv8tion.jda.entities.Channel)} instead.</b>
+     * <p>
      * Creates a standard-invite (valid for 24hrs, infinite usages, permanent access and not human-readable).
-     * To create a customized Invite, use {@link #createInvite(Channel, JDA, InviteDuration, int, boolean, boolean)} instead.
+     * To create a customized Invite, use {@link #createInvite(Channel, InviteDuration, int, boolean, boolean)} instead.
      *
      * @param chan
      *      The channel to create the invite for.
@@ -83,9 +85,27 @@ public class InviteUtil
      *      If the account connected to the provided JDA object does not have
      *      {@link net.dv8tion.jda.Permission#CREATE_INSTANT_INVITE Permission.CREATE_INSTANT_INVITE} for the provided channel.
      */
+    @Deprecated
     public static AdvancedInvite createInvite(Channel chan, JDA jda)
     {
-        return createInvite(chan, jda, InviteDuration.ONE_DAY, 0, false, false);
+        return createInvite(chan, InviteDuration.ONE_DAY, 0, false, false);
+    }
+
+    /**
+     * Creates a standard-invite (valid for 24hrs, infinite usages, permanent access and not human-readable).
+     * To create a customized Invite, use {@link #createInvite(Channel, InviteDuration, int, boolean, boolean)} instead.
+     *
+     * @param chan
+     *      The channel to create the invite for.
+     * @return
+     *      The created AdvancedInvite object.
+     * @throws net.dv8tion.jda.exceptions.PermissionException
+     *      If the account connected to the provided JDA object does not have
+     *      {@link net.dv8tion.jda.Permission#CREATE_INSTANT_INVITE Permission.CREATE_INSTANT_INVITE} for the provided channel.
+     */
+    public static AdvancedInvite createInvite(Channel chan)
+    {
+        return createInvite(chan, InviteDuration.ONE_DAY, 0, false, false);
     }
 
     /**
@@ -93,8 +113,6 @@ public class InviteUtil
      *
      * @param chan
      *      The channel to create the invite for.
-     * @param jda
-     *      The JDA-instance from who the invite should be created from.
      * @param duration
      *      The duration the invide should be valid for.
      * @param maxUses
@@ -109,8 +127,9 @@ public class InviteUtil
      *      If the account connected to the provided JDA object does not have
      *      {@link net.dv8tion.jda.Permission#CREATE_INSTANT_INVITE Permission.CREATE_INSTANT_INVITE} for the provided channel.
      */
-    public static AdvancedInvite createInvite(Channel chan, JDA jda, InviteDuration duration, int maxUses, boolean temporary, boolean humanReadable)
+    public static AdvancedInvite createInvite(Channel chan, InviteDuration duration, int maxUses, boolean temporary, boolean humanReadable)
     {
+        JDA jda = chan.getJDA();
         if (!chan.checkPermission(jda.getSelfInfo(), Permission.CREATE_INSTANT_INVITE))
             throw new PermissionException(Permission.CREATE_INSTANT_INVITE);
 
