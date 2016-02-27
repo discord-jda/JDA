@@ -71,11 +71,13 @@ Current Promoted Version:
 ![JDA promoted verison](https://www.dropbox.com/s/4jddygn33340uf4/version.png?dl=1)
 
 You can get the latest promoted builds here:
-[Promoted Downloads](https://github.com/DV8FromTheWorld/JDA/releases)
+[Promoted Downloads](https://github.com/DV8FromTheWorld/JDA/releases)<br>
+(Contains information about Maven and Gradle distribution)
 
 
 If you want the most up-to-date builds, you can get them here: [Beta Build Downloads](http://home.dv8tion.net:8080/job/JDA/)<br>
-**Note:** It is quite possible that these are broken or bugged. Use with caution.
+**Note:** It is quite possible that these are broken or bugged. Use with caution.<br>
+The dev builds are also available for maven/gradle on JCenter through Bintray [JDA JCenter Bintray](https://bintray.com/dv8fromtheworld/maven/JDA/)
 
 ## Docs
 Javadocs are available in both jar format and web format.<br>
