@@ -332,42 +332,6 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    @Deprecated
-    public GuildManager createGuild(String name)
-    {
-        return createGuild(name, Region.US_EAST);
-    }
-
-    @Override
-    @Deprecated
-    public GuildManager createGuild(String name, Region region)
-    {
-        if (name == null)
-        {
-            throw new IllegalArgumentException("Guild name must not be null");
-        }
-        JSONObject response = getRequester().post("https://discordapp.com/api/guilds",
-                new JSONObject().put("name", name).put("region", region.getKey()));
-        if (response == null || !response.has("id"))
-        {
-            //error creating guild
-            throw new RuntimeException("Creating a new Guild failed. Reason: " + (response == null ? "Unknown" : response.toString()));
-        }
-        else
-        {
-            Guild g = new EntityBuilder(this).createGuildFirstPass(response, null);
-            return g.isAvailable() ? new GuildManager(g) : null;
-        }
-    }
-
-    @Override
-    @Deprecated
-    public void createGuildAsync(String name, Consumer<GuildManager> callback)
-    {
-        createGuildAsync(name, Region.US_EAST, callback);
-    }
-
-    @Override
     public void createGuildAsync(String name, Region region, Consumer<GuildManager> callback)
     {
         if (name == null)

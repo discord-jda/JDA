@@ -239,16 +239,6 @@ public class JDABuilder
     }
 
     /**
-     * This method has been deprecated due to a name change to clarify what happens.<br>
-     * Please use {@link #buildAsync() buildAsync()} instead to achieve the same functionality.
-     */
-    @Deprecated
-    public JDA build() throws LoginException, IllegalArgumentException
-    {
-        return buildAsync();
-    }
-
-    /**
      * Builds a new {@link net.dv8tion.jda.JDA} instance and uses the provided email and password to start the login process.<br>
      * The login process runs in a different thread, so while this will return immediately, {@link net.dv8tion.jda.JDA} has not
      * finished loading, thus many {@link net.dv8tion.jda.JDA} methods have the chance to return incorrect information.

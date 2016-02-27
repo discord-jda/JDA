@@ -63,65 +63,11 @@ public interface JDA
      */
     void removeEventListener(Object listener);
 
-    /**
-     * <b>This method is deprecated! please switch to {@link net.dv8tion.jda.JDA#createGuildAsync(String, Region, java.util.function.Consumer)}.</b>
-     * <p>
-     * Creates a new {@link net.dv8tion.jda.entities.Guild Guild}.
-     * This will a return the Manager to the existing, but still empty Guild (no members, no channels).
-     * To create a Guild asynchronously (wait for generation of #general chat), use {@link #createGuildAsync(String, Consumer)} instead.
-     *
-     * In the very rare case, that the Discord-server has problems, The created guild can be unavailable until it is actually created.
-     * In that case, this will return null.
-     *
-     * @param name
-     *      the name of the new {@link net.dv8tion.jda.entities.Guild Guild}
-     * @return
-     *      the {@link net.dv8tion.jda.managers.GuildManager GuildManager} for the created Guild, or null, if the created Guild is temporarily unavailable
-     */
-    @Deprecated
-    GuildManager createGuild(String name);
-
-    /**
-     * <b>This method is deprecated! please switch to {@link net.dv8tion.jda.JDA#createGuildAsync(String, Region, java.util.function.Consumer)}.</b>
-     * <p>
-     * Creates a new {@link net.dv8tion.jda.entities.Guild Guild}.
-     * This will a return the Manager to the existing, but still empty Guild (no members, no channels).
-     * To create a Guild asynchronously (wait for generation of #general chat), use {@link #createGuildAsync(String, Consumer)} instead.
-     *
-     * In the very rare case, that the Discord-server has problems, The created guild can be unavailable until it is actually created.
-     * In that case, this will return null.
-     *
-     * @param name
-     *      the name of the new {@link net.dv8tion.jda.entities.Guild Guild}
-     * @param region
-     *      the region of the new {@link net.dv8tion.jda.entities.Guild Guild}
-     * @return
-     *      the {@link net.dv8tion.jda.managers.GuildManager GuildManager} for the created Guild, or null, if the created Guild is temporarily unavailable
-     */
-    @Deprecated
-    GuildManager createGuild(String name, Region region);
-
-    /**
-     * <b>This method is deprecated! please switch to {@link net.dv8tion.jda.JDA#createGuildAsync(String, Region, java.util.function.Consumer)}.</b>
-     * <p>
-     * Creates a new {@link net.dv8tion.jda.entities.Guild Guild}.
-     * This function will wait until the Guild was fully created by the Discord-Server (default channels,...),
-     * and then call the provided callback-function with the GuildManager-object
-     * To create a Guild synchronously, use {@link #createGuild(String)} instead
-     *
-     * @param name
-     *      the name of the new {@link net.dv8tion.jda.entities.Guild Guild}
-     * @param callback
-     *      the callback-function that gets called once the guild was fully initialized
-     */
-    @Deprecated
-    void createGuildAsync(String name, Consumer<GuildManager> callback);
 
     /**
      * Creates a new {@link net.dv8tion.jda.entities.Guild Guild}.<br>
      * This function will wait until the Guild was fully created by the Discord-Server (default channels,...),
-     * and then call the provided callback-function with the GuildManager-object
-     * To create a Guild synchronously, use {@link #createGuild(String)} instead
+     * and then call the provided callback-function with the GuildManager-object.
      * <p>
      * <b>NOTE: If you do not wish to interact with the created guild, the Consumer CAN BE NULL.</b>
      * @param name
