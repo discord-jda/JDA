@@ -385,12 +385,12 @@ public class AudioManager
             else if (e instanceof UnsatisfiedLinkError)
             {
                 LOG.fatal("JDA encountered a problem when attempting to load the Native libraries. Contact a DEV.");
-                LOG.fatal(e);
+                LOG.log(e);
             }
             else
             {
                 LOG.fatal("An unknown error occurred while attempting to setup JDA's audio system!");
-                LOG.fatal(e);
+                LOG.log(e);
             }
 
             nativesRoot = null;

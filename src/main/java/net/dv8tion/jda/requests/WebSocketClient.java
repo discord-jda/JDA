@@ -341,7 +341,7 @@ public class WebSocketClient extends WebSocketAdapter
     private void reconnect()
     {
 //        reconnecting = true;      //we don't want to send resume headers
-        LOG.info("Got disconnected from WebSocket (Internet?!)... Attempting to reconnect in " + reconnectTimeout + "s");
+        LOG.warn("Got disconnected from WebSocket (Internet?!)... Attempting to reconnect in " + reconnectTimeout + "s");
         url = null;         //force refetch of gateway
         while(shouldReconnect)
         {
@@ -350,7 +350,7 @@ public class WebSocketClient extends WebSocketAdapter
                 Thread.sleep(reconnectTimeout * 1000);
             }
             catch(InterruptedException ignored) {}
-            LOG.info("Attempting to reconnect!");
+            LOG.warn("Attempting to reconnect!");
             try
             {
                 connect();
@@ -359,7 +359,7 @@ public class WebSocketClient extends WebSocketAdapter
             catch (RuntimeException ex)
             {
                 reconnectTimeout <<= 1;         //*2 each time
-                LOG.info("Reconnect failed! Next attempt in " + reconnectTimeout + "s");
+                LOG.warn("Reconnect failed! Next attempt in " + reconnectTimeout + "s");
             }
         }
     }
