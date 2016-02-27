@@ -164,4 +164,21 @@ public class AudioPacket
         buffer.putInt(SSRC_INDEX, ssrc);
         return new AudioPacket(buffer.array());
     }
+
+    public static AudioPacket decryptAudioPacket(DatagramPacket packet, byte[] secretKey)
+    {
+        TweetNaclFast.SecretBox boxer = new TweetNaclFast.SecretBox(secretKey);
+        AudioPacket encryptedPacket = new AudioPacket(packet);
+
+        byte[] extendedNonce = new byte[XSALSA20_NONCE_LENGTH];
+        System.arraycopy(encryptedPacket.getNonce(), 0, extendedNonce, 0, RTP_HEADER_BYTE_LENGTH);
+
+        byte[] decryptedAudio = boxer.open(encryptedPacket.getEncodedAudio(), extendedNonce);
+        byte[] decryptedRawPacket = new byte[RTP_HEADER_BYTE_LENGTH + decryptedAudio.length];
+
+        System.arraycopy(encryptedPacket.getNonce(), 0, decryptedRawPacket, 0, RTP_HEADER_BYTE_LENGTH);
+        System.arraycopy(decryptedAudio, 0, decryptedRawPacket, RTP_HEADER_BYTE_LENGTH, decryptedAudio.length);
+
+        return new AudioPacket(decryptedRawPacket);
+    }
 }

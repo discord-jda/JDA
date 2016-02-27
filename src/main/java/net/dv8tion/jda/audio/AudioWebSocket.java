@@ -38,7 +38,7 @@ import java.util.Map;
 
 public class AudioWebSocket extends WebSocketAdapter
 {
-    public static final SimpleLog LOG = SimpleLog.getLog("JDAVoice");
+    public static final SimpleLog LOG = SimpleLog.getLog("JDAAudioSocket");
     public static final int DISCORD_SECRET_KEY_LENGTH = 32;
     public static final int INITIAL_CONNECTION_RESPONSE = 2;
     public static final int HEARTBEAT_PING_RETURN = 3;

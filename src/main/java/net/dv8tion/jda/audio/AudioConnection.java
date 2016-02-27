@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.audio;
 
+import com.iwebpp.crypto.TweetNaclFast;
 import com.sun.jna.ptr.PointerByReference;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Guild;
@@ -33,10 +34,11 @@ import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
+import java.util.Arrays;
 
 public class AudioConnection
 {
-    public static final SimpleLog LOG = SimpleLog.getLog("JDAAudio");
+    public static final SimpleLog LOG = SimpleLog.getLog("JDAAudioConn");
     public static final int OPUS_SAMPLE_RATE = 48000;   //(Hz) We want to use the highest of qualities! All the bandwidth!
     public static final int OPUS_FRAME_SIZE = 960;      //An opus frame size of 960 at 48000hz represents 20 milliseconds of audio.
     public static final int OPUS_FRAME_TIME_AMOUNT = 20;//This is 20 milliseconds. We are only dealing with 20ms opus packets.
@@ -218,14 +220,15 @@ public class AudioConnection
                     {
                         udpSocket.receive(receivedPacket);
 
-                        if (receiveHandler != null && receiveHandler.canReceive())
+                        if (receiveHandler != null && receiveHandler.canReceive() && webSocket.getSecretKey() != null)
                         {
                             //Currently just gives the raw packet with STILL ENCODED DATA
                             //This needs to be changed to ->
                                 //1) possibly buffer by 40-60ms (configurable)
                                 //2) decode from Opus -> raw PCM or another format as defined by the receiveHandler.
-                            AudioPacket packet = new AudioPacket(receivedPacket);
-                            receiveHandler.handleReceivedAudio(packet);
+                            AudioPacket decryptedPacket = AudioPacket.decryptAudioPacket(receivedPacket, webSocket.getSecretKey());
+
+                            receiveHandler.handleReceivedAudio(decryptedPacket);
                         }
                     }
                     catch (SocketException e)

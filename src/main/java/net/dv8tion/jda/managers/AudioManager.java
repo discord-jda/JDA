@@ -24,6 +24,7 @@ import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.utils.NativeUtils;
 import net.dv8tion.jda.utils.ServiceUtil;
+import net.dv8tion.jda.utils.SimpleLog;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -38,6 +39,7 @@ public class AudioManager
     public static boolean AUDIO_SUPPORTED;
     public static String OPUS_LIB_NAME;
     public static final long DEFAULT_CONNECTION_TIMEOUT = 10000;
+    public static final SimpleLog LOG = SimpleLog.getLog("JDAAudioManager");
 
     private static boolean initialized = false;
 
@@ -55,9 +57,9 @@ public class AudioManager
         this.api = api;
         init();
         if (AUDIO_SUPPORTED)
-            System.out.println("Audio System successfully setup!");
+            LOG.info("Audio System successfully setup!");
         else
-            System.out.println("Audio System encountered problems while loading, thus, is disabled.");
+            LOG.info("Audio System encountered problems while loading, thus, is disabled.");
     }
 
     /**
@@ -372,23 +374,23 @@ public class AudioManager
         catch (Throwable e)
         {
             if (e instanceof UnsupportedOperationException)
-                System.err.println("Sorry, JDA's audio system doesn't support this system.\n" +
+                LOG.fatal("Sorry, JDA's audio system doesn't support this system.\n" +
                         "Supported Systems: Windows(x86, x64), Mac(x86, x64) and Linux(x86, x64)\n" +
                         "Operating system: " + Platform.RESOURCE_PREFIX);
             else if (e instanceof  IOException)
             {
-                System.err.println("There was an IO Exception when setting up the temp files for audio.");
-                e.printStackTrace();
+                LOG.fatal("There was an IO Exception when setting up the temp files for audio.");
+                LOG.log(e);
             }
             else if (e instanceof UnsatisfiedLinkError)
             {
-                System.err.println("JDA encountered a problem when attempting to load the Native libraries. Contact a DEV.");
-                e.printStackTrace();
+                LOG.fatal("JDA encountered a problem when attempting to load the Native libraries. Contact a DEV.");
+                LOG.fatal(e);
             }
             else
             {
-                System.err.println("An unknown error occurred while attempting to setup JDA's audio system!");
-                e.printStackTrace();
+                LOG.fatal("An unknown error occurred while attempting to setup JDA's audio system!");
+                LOG.fatal(e);
             }
 
             nativesRoot = null;
