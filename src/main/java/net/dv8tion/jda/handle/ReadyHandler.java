@@ -88,13 +88,14 @@ public class ReadyHandler extends SocketHandler
             builder.createPrivateChannel(priv_chats.getJSONObject(i));
         }
 
-        JDAImpl.LOG.info("Finished (Re)Loading!");    //TODO: Replace with Logger.INFO
         if (isReload)
         {
+            JDAImpl.LOG.info("Finished (Re)Loading!");
             api.getEventManager().handle(new ReconnectedEvent(api, responseNumber));
         }
         else
         {
+            JDAImpl.LOG.info("Finished Loading!");
             api.getEventManager().handle(new ReadyEvent(api, responseNumber));
             api.getClient().ready();
         }
