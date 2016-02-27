@@ -59,7 +59,8 @@ public class SimpleLog
      * Will duplicate the output-streams to a specified file
      * @param std the file to use for System.out logging, or null to not LOG System.out to a file
      * @param err the file to use for System.err logging, or null to not LOG System.err to a file
-     * @throws IOException
+     * @throws IOException If an IO error is encountered while dealing with the file. Most likely
+     *                     to be caused by a lack of permissions when creating the log folders or files.
      */
     public static void addFileLogs(File std, File err) throws IOException {
         if(std != null) {
