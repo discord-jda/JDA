@@ -129,9 +129,14 @@ public class PermissionUtil
 
     private static boolean checkPermission(User user, Permission perm, GuildImpl guild, Map<Role, PermissionOverride> roleOverrides, Map<User, PermissionOverride> userOverrides)
     {
-        //Do we have all permissions possible? (Owner or user has MANAGE_ROLES permission)
-        //If we have all permissions possible, then we will be able to see this room.
-        if (checkPermission(user, Permission.MANAGE_ROLES, guild))
+        //--Do we have all permissions possible? (Owner or user has MANAGE_ROLES permission)
+        //--If we have all permissions possible, then we will be able to see this room.
+        //WE DO NOT WANT TO CHECK THIS FOR CHANNELS, AS CHANNELS CAN OVERRIDE MANAGE_PERMISSIONS
+//        if (checkPermission(user, Permission.MANAGE_ROLES, guild))
+//            return true;
+
+        //BUT: WE DO WANT TO CHECK IF HE IS OWNER
+        if (guild.getOwnerId().equals(user.getId()))
             return true;
 
         int effectivePerms = getEffectivePermission(user, guild, roleOverrides, userOverrides);
