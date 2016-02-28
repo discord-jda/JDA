@@ -225,8 +225,18 @@ public class EntityBuilder
             if (user == null)
                 throw new IllegalArgumentException("When attempting to create a Guild, we were provided with a voice state pertaining to an unknown User. JSON: " + voiceStates);
 
-            VoiceStatus voiceStatus = createVoiceStatus(voiceState, guildObj, user);
-            ((VoiceChannelImpl) voiceStatus.getChannel()).getUsersModifiable().add(user);
+            try
+            {
+                VoiceStatus voiceStatus = createVoiceStatus(voiceState, guildObj, user);
+                ((VoiceChannelImpl) voiceStatus.getChannel()).getUsersModifiable().add(user);
+            }
+            catch (IllegalArgumentException ex)
+            {
+                //This should not happen, BUT: we don't want this to break the whole ready-parsing and leave an incorrect registry-state
+                //Therefore, we do not let it bubble up
+                JDAImpl.LOG.fatal("Following JSON caused an exception: " + voiceState.toString() + "\nGuild: " + guildObj + " with voice-channels: " + guildObj.getVoiceChannels());
+                JDAImpl.LOG.log(ex);
+            }
         }
     }
 
