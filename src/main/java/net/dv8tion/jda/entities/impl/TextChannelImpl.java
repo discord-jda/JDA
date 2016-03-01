@@ -145,7 +145,6 @@ public class TextChannelImpl implements TextChannel
         SelfInfo self = getJDA().getSelfInfo();
         if (!checkPermission(self, Permission.MESSAGE_WRITE))
             throw new PermissionException(Permission.MESSAGE_WRITE);
-        //TODO: PermissionException for Permission.MESSAGE_ATTACH_FILES maybe
 
         JDAImpl api = (JDAImpl) getJDA();
         if (api.getMessageLimit() != null)
@@ -206,6 +205,8 @@ public class TextChannelImpl implements TextChannel
     @Override
     public Message sendFile(File file, Message message)
     {
+        if (!checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_WRITE))
+            throw new PermissionException(Permission.MESSAGE_WRITE);
         if (!checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_ATTACH_FILES))
             throw new PermissionException(Permission.MESSAGE_ATTACH_FILES);
 
@@ -234,6 +235,8 @@ public class TextChannelImpl implements TextChannel
     @Override
     public void sendFileAsync(File file, Message message, Consumer<Message> callback)
     {
+        if (!checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_WRITE))
+            throw new PermissionException(Permission.MESSAGE_WRITE);
         if (!checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_ATTACH_FILES))
             throw new PermissionException(Permission.MESSAGE_ATTACH_FILES);
 

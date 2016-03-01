@@ -51,7 +51,12 @@ public interface MessageChannel
      *          the {@link net.dv8tion.jda.entities.Message Message} to send
      * @return
      *      The created {@link net.dv8tion.jda.entities.Message Message} object or null if it failed
-     * @throws net.dv8tion.jda.exceptions.RateLimitedException when rate-imit is reached
+     * @throws net.dv8tion.jda.exceptions.RateLimitedException
+     *          when rate-limit is reached
+     * @throws net.dv8tion.jda.exceptions.PermissionException
+     *      If this is a {@link net.dv8tion.jda.entities.TextChannel TextChannel} and the logged in account does
+     *      not have {@link net.dv8tion.jda.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}.
+     *
      */
     Message sendMessage(Message msg);
 
@@ -64,6 +69,9 @@ public interface MessageChannel
      *          the text to send
      * @param callback
      *          the Callback-function that is called upon successful sending
+     * @throws net.dv8tion.jda.exceptions.PermissionException
+     *      If this is a {@link net.dv8tion.jda.entities.TextChannel TextChannel} and the logged in account does
+     *      not have {@link net.dv8tion.jda.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}.
      */
     void sendMessageAsync(String msg, Consumer<Message> callback);
 
@@ -78,6 +86,9 @@ public interface MessageChannel
      *          the {@link net.dv8tion.jda.entities.Message Message} to send
      * @param callback
      *          the Callback-function that is called upon successful sending
+     * @throws net.dv8tion.jda.exceptions.PermissionException
+     *      If this is a {@link net.dv8tion.jda.entities.TextChannel TextChannel} and the logged in account does
+     *      not have {@link net.dv8tion.jda.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}.
      */
     void sendMessageAsync(Message msg, Consumer<Message> callback);
 
@@ -94,8 +105,16 @@ public interface MessageChannel
      * @return
      *      The {@link net.dv8tion.jda.entities.Message Message} created from this upload.
      * @throws net.dv8tion.jda.exceptions.PermissionException
-     *      If this is a {@link net.dv8tion.jda.entities.TextChannel TextChannel} and the logged in account does
-     *      not have {@link net.dv8tion.jda.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}.
+     *      <ul>
+     *          <li>
+     *              If this is a {@link net.dv8tion.jda.entities.TextChannel TextChannel} and the logged in account does
+     *              not have {@link net.dv8tion.jda.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}.
+     *          </li>
+     *          <li>
+     *              If this is a {@link net.dv8tion.jda.entities.TextChannel TextChannel} and the logged in account does
+     *              not have {@link net.dv8tion.jda.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}.
+     *          </li>
+     *      </ul>
      */
     @Deprecated
     Message sendFile(File file);
@@ -110,8 +129,16 @@ public interface MessageChannel
      * @param callback
      *          Function to deal with the returned {@link net.dv8tion.jda.entities.Message Message} after asynchronous uploading completes.
      * @throws net.dv8tion.jda.exceptions.PermissionException
-     *      If this is a {@link net.dv8tion.jda.entities.TextChannel TextChannel} and the logged in account does
-     *      not have {@link net.dv8tion.jda.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}.
+     *      <ul>
+     *          <li>
+     *              If this is a {@link net.dv8tion.jda.entities.TextChannel TextChannel} and the logged in account does
+     *              not have {@link net.dv8tion.jda.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}.
+     *          </li>
+     *          <li>
+     *              If this is a {@link net.dv8tion.jda.entities.TextChannel TextChannel} and the logged in account does
+     *              not have {@link net.dv8tion.jda.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}.
+     *          </li>
+     *      </ul>
      */
     @Deprecated
     void sendFileAsync(File file, Consumer<Message> callback);
@@ -132,8 +159,16 @@ public interface MessageChannel
      * @return
      *      The {@link net.dv8tion.jda.entities.Message Message} created from this upload.
      * @throws net.dv8tion.jda.exceptions.PermissionException
-     *      If this is a {@link net.dv8tion.jda.entities.TextChannel TextChannel} and the logged in account does
-     *      not have {@link net.dv8tion.jda.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}.
+     *      <ul>
+     *          <li>
+     *              If this is a {@link net.dv8tion.jda.entities.TextChannel TextChannel} and the logged in account does
+     *              not have {@link net.dv8tion.jda.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}.
+     *          </li>
+     *          <li>
+     *              If this is a {@link net.dv8tion.jda.entities.TextChannel TextChannel} and the logged in account does
+     *              not have {@link net.dv8tion.jda.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}.
+     *          </li>
+     *      </ul>
      */
     Message sendFile(File file, Message message);
 
@@ -150,8 +185,16 @@ public interface MessageChannel
      * @param callback
      *          Function to deal with the returned {@link net.dv8tion.jda.entities.Message Message} after asynchronous uploading completes.
      * @throws net.dv8tion.jda.exceptions.PermissionException
-     *      If this is a {@link net.dv8tion.jda.entities.TextChannel TextChannel} and the logged in account does
-     *      not have {@link net.dv8tion.jda.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}.
+     *      <ul>
+     *          <li>
+     *              If this is a {@link net.dv8tion.jda.entities.TextChannel TextChannel} and the logged in account does
+     *              not have {@link net.dv8tion.jda.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}.
+     *          </li>
+     *          <li>
+     *              If this is a {@link net.dv8tion.jda.entities.TextChannel TextChannel} and the logged in account does
+     *              not have {@link net.dv8tion.jda.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}.
+     *          </li>
+     *      </ul>
      */
     void sendFileAsync(File file, Message message, Consumer<Message> callback);
 
