@@ -16,6 +16,7 @@
 package net.dv8tion.jda.handle;
 
 import net.dv8tion.jda.EmbedType;
+import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.OnlineStatus;
 import net.dv8tion.jda.Region;
 import net.dv8tion.jda.entities.*;
@@ -35,8 +36,8 @@ import java.util.regex.Pattern;
 
 public class EntityBuilder
 {
-    private static final HashMap<String, JSONObject> cachedGuildJson = new HashMap<>();
-    private static final HashMap<String, Consumer<Guild>> cachedGuildCallback = new HashMap<>();
+    private static final HashMap<JDA, HashMap<String, JSONObject>> cachedJdaGuildJsons = new HashMap<>();
+    private static final HashMap<JDA, HashMap<String, Consumer<Guild>>> cachedJdaGuildCallbacks = new HashMap<>();
     private static final Pattern channelMentionPattern = Pattern.compile("<#(\\d+)>");
     private final JDAImpl api;
 
@@ -109,8 +110,20 @@ public class EntityBuilder
         //This fall through is used by JDAImpl.createGuild(String, Region).
         if (secondPassCallback != null && guild.has("large") && guild.getBoolean("large"))
         {
-            cachedGuildJson.put(id, guild);
-            cachedGuildCallback.put(id, secondPassCallback);
+            HashMap<String, JSONObject> cachedGuildJsons = cachedJdaGuildJsons.get(api);
+            HashMap<String, Consumer<Guild>> cachedGuildCallbacks = cachedJdaGuildCallbacks.get(api);
+            if (cachedGuildJsons == null)
+            {
+                cachedGuildJsons = new HashMap<>();
+                cachedJdaGuildJsons.put(api, cachedGuildJsons);
+            }
+            if (cachedGuildCallbacks == null)
+            {
+                cachedGuildCallbacks = new HashMap<>();
+                cachedJdaGuildCallbacks.put(api, cachedGuildCallbacks);
+            }
+            cachedGuildJsons.put(id, guild);
+            cachedGuildCallbacks.put(id, secondPassCallback);
             JSONObject obj = new JSONObject()
                     .put("op", 8)
                     .put("d", new JSONObject()
@@ -145,8 +158,11 @@ public class EntityBuilder
 
     public void createGuildSecondPass(String guildId, List<JSONArray> memberChunks)
     {
-        JSONObject guildJson = cachedGuildJson.remove(guildId);
-        Consumer<Guild> secondPassCallback = cachedGuildCallback.remove(guildId);
+        HashMap<String, JSONObject> cachedGuildJsons = cachedJdaGuildJsons.get(api);
+        HashMap<String, Consumer<Guild>> cachedGuildCallbacks = cachedJdaGuildCallbacks.get(api);
+
+        JSONObject guildJson = cachedGuildJsons.remove(guildId);
+        Consumer<Guild> secondPassCallback = cachedGuildCallbacks.remove(guildId);
         GuildImpl guildObj = (GuildImpl) api.getGuildMap().get(guildId);
 
         if (guildObj == null)
