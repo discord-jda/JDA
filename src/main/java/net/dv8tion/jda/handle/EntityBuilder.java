@@ -246,12 +246,9 @@ public class EntityBuilder
                 VoiceStatus voiceStatus = createVoiceStatus(voiceState, guildObj, user);
                 ((VoiceChannelImpl) voiceStatus.getChannel()).getUsersModifiable().add(user);
             }
-            catch (IllegalArgumentException ex)
+            catch (IllegalArgumentException ignored)
             {
-                //This should not happen, BUT: we don't want this to break the whole ready-parsing and leave an incorrect registry-state
-                //Therefore, we do not let it bubble up
-                JDAImpl.LOG.fatal("Following JSON caused an exception: " + voiceState.toString() + "\nGuild: " + guildObj + " with voice-channels: " + guildObj.getVoiceChannels());
-                JDAImpl.LOG.log(ex);
+                //Ignore this: weird behaviour of Discord itself gives us presences to vc that were deleted
             }
         }
     }

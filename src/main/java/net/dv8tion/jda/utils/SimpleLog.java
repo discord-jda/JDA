@@ -65,8 +65,8 @@ public class SimpleLog
     public static void addFileLogs(File std, File err) throws IOException {
         if(std != null) {
             final OutputStream stdc = System.out;
-            if(!std.getParentFile().exists()) {
-                std.getParentFile().mkdirs();
+            if(!std.getAbsoluteFile().getParentFile().exists()) {
+                std.getAbsoluteFile().getParentFile().mkdirs();
             }
             if(!std.exists()) {
                 std.createNewFile();
@@ -82,8 +82,8 @@ public class SimpleLog
         }
         if(err != null) {
             final OutputStream errc = System.err;
-            if(!err.getParentFile().exists()) {
-                err.getParentFile().mkdirs();
+            if(!err.getAbsoluteFile().getParentFile().exists()) {
+                err.getAbsoluteFile().getParentFile().mkdirs();
             }
             if(!err.exists()) {
                 err.createNewFile();
