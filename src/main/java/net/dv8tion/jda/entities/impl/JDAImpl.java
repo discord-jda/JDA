@@ -21,7 +21,6 @@ import net.dv8tion.jda.Region;
 import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.events.Event;
 import net.dv8tion.jda.events.guild.GuildJoinEvent;
-import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.hooks.EventListener;
 import net.dv8tion.jda.hooks.IEventManager;
 import net.dv8tion.jda.hooks.InterfacedEventManager;
@@ -168,7 +167,7 @@ public class JDAImpl implements JDA
 
         if (valid)
         {
-            LOG.info("Login Successful!"); //TODO: Replace with Logger.INFO
+            LOG.info("Login Successful!");
             client = new WebSocketClient(this, proxy);
             client.setAutoReconnect(reconnect);
         }

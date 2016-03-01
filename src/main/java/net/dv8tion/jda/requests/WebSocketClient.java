@@ -231,7 +231,7 @@ public class WebSocketClient extends WebSocketAdapter
                     //TODO: handle notification updates...
                     break;
                 default:
-                    LOG.debug("Unrecognized event:\n" + message);    //TODO: Replace with "we don't know this type"
+                    LOG.debug("Unrecognized event:\n" + message);
             }
         }
         catch (JSONException ex)
@@ -239,9 +239,8 @@ public class WebSocketClient extends WebSocketAdapter
             LOG.warn("Got an unexpected Json-parse error. Please redirect following message to the devs:\n\t"
                     + ex.getMessage() + "\n\t" + type + " -> " + content);
         }
-        catch (IllegalArgumentException ex)
+        catch (Exception ex)
         {
-            LOG.fatal("JDA encountered an internal error.");
             LOG.log(ex);
         }
     }

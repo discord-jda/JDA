@@ -39,7 +39,7 @@ public class UserTypingHandler extends SocketHandler
     {
         User user = api.getUserMap().get(content.getString("user_id"));
         if (user == null)
-            return;     //TODO:LOGGER - Log ERROR level, output the json.
+            return;
 
         TextChannel channel = api.getChannelMap().get(content.getString("channel_id"));
         OffsetDateTime timestamp = Instant.ofEpochSecond(content.getInt("timestamp")).atOffset(ZoneOffset.UTC);
