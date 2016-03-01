@@ -487,7 +487,7 @@ public class InviteUtil
         }
     }
 
-    enum InviteDuration {
+    public enum InviteDuration {
         INFINITE(0), THIRTY_MINUTES(1800),
         ONE_HOUR(3600), SIX_HOURS(6*3600), TWELVE_HOURS(12*3600),
         ONE_DAY(24*3600);
