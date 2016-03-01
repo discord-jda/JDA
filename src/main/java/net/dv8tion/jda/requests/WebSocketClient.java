@@ -49,6 +49,7 @@ public class WebSocketClient extends WebSocketAdapter
     private final List<String> cachedEvents = new LinkedList<>();
     private String url = null;
     private int reconnectTimeout = 2;
+    private boolean isReconnectRunning = false;
     private boolean reconnecting = false;           //for internal information (op7)
     private boolean shouldReconnect = false;        //for configuration (connection loss)
 
@@ -146,8 +147,9 @@ public class WebSocketClient extends WebSocketAdapter
             switch (type) {
                 case "READY":
                     sessionId = content.getString("session_id");
-                    new ReadyHandler(api, ready, responseTotal).handle(content);
+                    new ReadyHandler(api, isReconnectRunning, responseTotal).handle(content);
                 case "RESUMED":
+                    isReconnectRunning = false;
                     reconnectTimeout = 2;
                     break;
                 case "GUILD_MEMBERS_CHUNK":
@@ -309,6 +311,7 @@ public class WebSocketClient extends WebSocketAdapter
 
     private void connect()
     {
+        ready = false;
         WebSocketFactory factory = new WebSocketFactory();
         if (proxy != null)
         {
@@ -351,6 +354,7 @@ public class WebSocketClient extends WebSocketAdapter
             }
             catch(InterruptedException ignored) {}
             LOG.warn("Attempting to reconnect!");
+            isReconnectRunning = true;
             try
             {
                 connect();

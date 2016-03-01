@@ -97,7 +97,7 @@ public class ReadyHandler extends SocketHandler
         {
             JDAImpl.LOG.info("Finished Loading!");
             api.getEventManager().handle(new ReadyEvent(api, responseNumber));
-            api.getClient().ready();
         }
+        api.getClient().ready();
     }
 }
