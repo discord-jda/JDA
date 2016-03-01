@@ -206,6 +206,9 @@ public class TextChannelImpl implements TextChannel
     @Override
     public Message sendFile(File file, Message message)
     {
+        if (!checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_ATTACH_FILES))
+            throw new PermissionException(Permission.MESSAGE_ATTACH_FILES);
+
         JDAImpl api = (JDAImpl) getJDA();
         try
         {
@@ -231,6 +234,9 @@ public class TextChannelImpl implements TextChannel
     @Override
     public void sendFileAsync(File file, Message message, Consumer<Message> callback)
     {
+        if (!checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_ATTACH_FILES))
+            throw new PermissionException(Permission.MESSAGE_ATTACH_FILES);
+
         Thread thread = new Thread(() ->
         {
             Message messageReturn = sendFile(file, message);

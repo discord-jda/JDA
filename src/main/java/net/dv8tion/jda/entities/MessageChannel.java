@@ -93,6 +93,9 @@ public interface MessageChannel
      *          The file to upload to the {@link net.dv8tion.jda.entities.TextChannel TextChannel}.
      * @return
      *      The {@link net.dv8tion.jda.entities.Message Message} created from this upload.
+     * @throws net.dv8tion.jda.exceptions.PermissionException
+     *      If this is a {@link net.dv8tion.jda.entities.TextChannel TextChannel} and the logged in account does
+     *      not have {@link net.dv8tion.jda.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}.
      */
     @Deprecated
     Message sendFile(File file);
@@ -106,6 +109,9 @@ public interface MessageChannel
      *          The file to upload to the {@link net.dv8tion.jda.entities.TextChannel TextChannel}.
      * @param callback
      *          Function to deal with the returned {@link net.dv8tion.jda.entities.Message Message} after asynchronous uploading completes.
+     * @throws net.dv8tion.jda.exceptions.PermissionException
+     *      If this is a {@link net.dv8tion.jda.entities.TextChannel TextChannel} and the logged in account does
+     *      not have {@link net.dv8tion.jda.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}.
      */
     @Deprecated
     void sendFileAsync(File file, Consumer<Message> callback);
@@ -125,6 +131,9 @@ public interface MessageChannel
      *          The message to be sent along with the uploaded file. This value can be <code>null</code>.
      * @return
      *      The {@link net.dv8tion.jda.entities.Message Message} created from this upload.
+     * @throws net.dv8tion.jda.exceptions.PermissionException
+     *      If this is a {@link net.dv8tion.jda.entities.TextChannel TextChannel} and the logged in account does
+     *      not have {@link net.dv8tion.jda.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}.
      */
     Message sendFile(File file, Message message);
 
@@ -140,6 +149,9 @@ public interface MessageChannel
      *          The message to be sent along with the uploaded file. This value can be <code>null</code>.
      * @param callback
      *          Function to deal with the returned {@link net.dv8tion.jda.entities.Message Message} after asynchronous uploading completes.
+     * @throws net.dv8tion.jda.exceptions.PermissionException
+     *      If this is a {@link net.dv8tion.jda.entities.TextChannel TextChannel} and the logged in account does
+     *      not have {@link net.dv8tion.jda.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}.
      */
     void sendFileAsync(File file, Message message, Consumer<Message> callback);
 
