@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.handle;
 
+import net.dv8tion.jda.OnlineStatus;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.ReadyEvent;
 import net.dv8tion.jda.events.ReconnectedEvent;
@@ -39,8 +40,12 @@ public class ReadyHandler extends SocketHandler
     @Override
     public void handle(final JSONObject content)
     {
+        String oldGame = null;
+        OnlineStatus oldStatus = null;
         if (isReload)
         {
+            oldGame = api.getSelfInfo().getCurrentGame();
+            oldStatus = api.getSelfInfo().getOnlineStatus();
             //clearing the registry...
             api.getChannelMap().clear();
             api.getVoiceChannelMap().clear();
@@ -51,6 +56,14 @@ public class ReadyHandler extends SocketHandler
         }
         //TODO: User-Setings; read_state
         builder.createSelfInfo(content.getJSONObject("user"));
+
+        if (isReload)
+        {
+            if (oldGame != null)
+                api.getAccountManager().setGame(oldGame);
+            if (oldStatus.equals(OnlineStatus.AWAY))
+                api.getAccountManager().setIdle(true);
+        }
 
         JSONArray guilds = content.getJSONArray("guilds");
         final List<String> guildIds = new LinkedList<>();
