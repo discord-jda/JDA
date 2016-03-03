@@ -136,7 +136,7 @@ public class WebSocketClient extends WebSocketAdapter
             keepAliveThread.start();
         }
 
-        LOG.trace(String.format("%s -> %s\n", type, content.toString()));
+        LOG.trace(String.format("%s -> %s", type, content.toString()));
         if (!ready && !(type.equals("READY") || type.equals("GUILD_MEMBERS_CHUNK")))
         {
             cachedEvents.add(message);

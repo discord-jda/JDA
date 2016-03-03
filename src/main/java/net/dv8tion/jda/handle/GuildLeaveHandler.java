@@ -55,7 +55,7 @@ public class GuildLeaveHandler extends SocketHandler
         for (Guild g : api.getGuilds())
         {
             if (g == guild)
-                return;
+            continue;
             usersInOtherGuilds.addAll(g.getUsers());
         }
         for (User user : users)
