@@ -132,6 +132,7 @@ public class WebSocketClient extends WebSocketAdapter
                     }
                 }
             });
+            keepAliveThread.setPriority(Thread.MAX_PRIORITY);
             keepAliveThread.setDaemon(true);
             keepAliveThread.start();
         }
