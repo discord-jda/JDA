@@ -454,7 +454,7 @@ public class EntityBuilder
             }
             else
             {
-                throw new IllegalArgumentException("Could not find Private Channel of id " + channelId);
+                throw new IllegalArgumentException("Could not find Private/Text Channel of id " + channelId);
             }
         }
 
