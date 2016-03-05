@@ -18,6 +18,7 @@ package net.dv8tion.jda;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.ReadyEvent;
 import net.dv8tion.jda.hooks.AnnotatedEventManager;
+import net.dv8tion.jda.hooks.IEventManager;
 import net.dv8tion.jda.hooks.ListenerAdapter;
 import net.dv8tion.jda.hooks.SubscribeEvent;
 
@@ -49,6 +50,7 @@ public class JDABuilder
     boolean debug = false;
     boolean enableVoice = true;
     boolean useAnnotatedManager = false;
+    IEventManager eventManager = null;
     boolean reconnect = true;
 
     /**
@@ -195,13 +197,35 @@ public class JDABuilder
      * There is also an {@link AnnotatedEventManager AnnotatedEventManager} available.
      *
      * @param useAnnotated
-     *          Whether or not to use the {@link net.dv8tion.jda.hooks.AnnotatedEventManager AnnotatedEventManager}
+     *      Whether or not to use the {@link net.dv8tion.jda.hooks.AnnotatedEventManager AnnotatedEventManager}
      * @return
-     *          Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
+     *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
      */
+    @Deprecated
     public JDABuilder useAnnotatedEventManager(boolean useAnnotated)
     {
         this.useAnnotatedManager = useAnnotated;
+        return this;
+    }
+
+    /**
+     * Changes the internally used EventManager.
+     * There are 2 provided Implementations:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.hooks.InterfacedEventManager} which uses the Interface {@link net.dv8tion.jda.hooks.EventListener}
+     *     (tip: use the {@link net.dv8tion.jda.hooks.ListenerAdapter}). This is the default EventManager.</li>
+     *     <li>{@link net.dv8tion.jda.hooks.AnnotatedEventManager} which uses the Annotation {@link net.dv8tion.jda.hooks.SubscribeEvent} to mark the methods that listen for events.</li>
+     * </ul>
+     * You can also create your own EventManager (See {@link net.dv8tion.jda.hooks.IEventManager}).
+     *
+     * @param manager
+     *      The new {@link net.dv8tion.jda.hooks.IEventManager} to use
+     * @return
+     *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public JDABuilder setEventManager(IEventManager manager)
+    {
+        this.eventManager = manager;
         return this;
     }
 
@@ -264,7 +288,11 @@ public class JDABuilder
             jda = new JDAImpl(enableVoice);
         jda.setDebug(debug);
         jda.setAutoReconnect(reconnect);
-        if (useAnnotatedManager)
+        if (eventManager != null)
+        {
+            jda.setEventManager(eventManager);
+        }
+        else if (useAnnotatedManager)
         {
             jda.setEventManager(new AnnotatedEventManager());
         }
