@@ -192,6 +192,8 @@ public class JDABuilder
     }
 
     /**
+     * <b>This method is deprecated! Please switch to {@link #setEventManager(IEventManager)}.</b>
+     * <p>
      * Changes the internal EventManager.
      * The default EventManager is {@link net.dv8tion.jda.hooks.InterfacedEventManager InterfacedEventListener}.
      * There is also an {@link AnnotatedEventManager AnnotatedEventManager} available.
