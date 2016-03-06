@@ -98,6 +98,16 @@ public class Requester
             String dbg = String.format("Requesting %s -> %s\n\tPayload: %s\n\tResponse: ", request.getHttpRequest().getHttpMethod().name(),
                     request.getHttpRequest().getUrl(), ((request instanceof RequestBodyEntity) ? ((RequestBodyEntity) request).getBody().toString() : "None"));
             body = request.asString().getBody();
+            if (body != null && body.startsWith("<"))
+            {
+                LOG.debug(String.format("Requesting %s -> %s returned HTML... retrying", request.getHttpRequest().getHttpMethod().name(), request.getHttpRequest().getUrl()));
+                try
+                {
+                    Thread.sleep(50);
+                }
+                catch (InterruptedException ignored) {}
+                body = request.asString().getBody();
+            }
             LOG.trace(dbg + body);
             return body == null ? null : new JSONObject(body);
         }
@@ -121,6 +131,16 @@ public class Requester
             String dbg = String.format("Requesting %s -> %s\n\tPayload: %s\n\tResponse: ", request.getHttpRequest().getHttpMethod().name(),
                     request.getHttpRequest().getUrl(), ((request instanceof RequestBodyEntity)? ((RequestBodyEntity) request).getBody().toString():"None"));
             body = request.asString().getBody();
+            if (body != null && body.startsWith("<"))
+            {
+                LOG.debug(String.format("Requesting %s -> %s returned HTML... retrying", request.getHttpRequest().getHttpMethod().name(), request.getHttpRequest().getUrl()));
+                try
+                {
+                    Thread.sleep(50);
+                }
+                catch (InterruptedException ignored) {}
+                body = request.asString().getBody();
+            }
             LOG.trace(dbg + body);
             return body == null ? null : new JSONArray(body);
         }
