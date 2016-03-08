@@ -18,7 +18,6 @@ package net.dv8tion.jda.entities.impl;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.body.MultipartBody;
-import javafx.util.Pair;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.MessageBuilder;
 import net.dv8tion.jda.Permission;
@@ -395,11 +394,11 @@ public class TextChannelImpl implements TextChannel
             return instances.get(api);
         }
 
-        private final Queue<Pair<Message, Consumer<Message>>> queue = new LinkedList<>();
+        private final Queue<AbstractMap.SimpleImmutableEntry<Message, Consumer<Message>>> queue = new LinkedList<>();
 
         public synchronized void enqueue(Message msg, Consumer<Message> callback)
         {
-            queue.add(new Pair<>(msg, callback));
+            queue.add(new AbstractMap.SimpleImmutableEntry<>(msg, callback));
             if (runner == null || !runner.isAlive())
             {
                 runner = new Runner(this);
@@ -407,9 +406,9 @@ public class TextChannelImpl implements TextChannel
             }
         }
 
-        private synchronized Queue<Pair<Message, Consumer<Message>>> getQueue()
+        private synchronized Queue<AbstractMap.SimpleImmutableEntry<Message, Consumer<Message>>> getQueue()
         {
-            LinkedList<Pair<Message, Consumer<Message>>> copy = new LinkedList<>(queue);
+            LinkedList<AbstractMap.SimpleImmutableEntry<Message, Consumer<Message>>> copy = new LinkedList<>(queue);
             queue.clear();
             return copy;
         }
@@ -426,7 +425,7 @@ public class TextChannelImpl implements TextChannel
             @Override
             public void run()
             {
-                Queue<Pair<Message, Consumer<Message>>> queue = sender.getQueue();
+                Queue<AbstractMap.SimpleImmutableEntry<Message, Consumer<Message>>> queue = sender.getQueue();
                 while (!queue.isEmpty())
                 {
                     Long messageLimit = sender.api.getMessageLimit();
@@ -441,7 +440,7 @@ public class TextChannelImpl implements TextChannel
                             JDAImpl.LOG.log(e);
                         }
                     }
-                    Pair<Message, Consumer<Message>> peek = queue.peek();
+                    AbstractMap.SimpleImmutableEntry<Message, Consumer<Message>> peek = queue.peek();
                     JSONObject response = sender.api.getRequester().post("https://discordapp.com/api/channels/" + peek.getKey().getChannelId() + "/messages",
                             new JSONObject().put("content", peek.getKey().getRawContent()).put("tts", peek.getKey().isTTS()));
                     if (!response.has("retry_after"))   //success
