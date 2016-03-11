@@ -89,7 +89,34 @@ public class JDAImpl implements JDA
     }
 
     /**
-     * Attempts to login to Discord.
+     * Attempts to login to Discord with a Bot-Account.
+     *
+     * @param botToken
+     *          The token of the bot-account attempting to log in.
+     * @throws IllegalArgumentException
+     *          Thrown if the botToken provided is empty or null.
+     * @throws LoginException
+     *          Thrown if the token fails the auth check with the Discord servers.
+     */
+    public void login(String botToken) throws IllegalArgumentException, LoginException
+    {
+        LOG.info("JDA starting...");
+        if (botToken == null || botToken.isEmpty())
+            throw new IllegalArgumentException("The provided botToken was empty / null.");
+
+        accountManager=new AccountManager(this, null);
+
+        if(!validate(botToken)) {
+            throw new LoginException("The given botToken was invalid");
+        }
+
+        LOG.info("Login Successful!");
+        client = new WebSocketClient(this, proxy);
+        client.setAutoReconnect(reconnect);
+    }
+
+    /**
+     * Attempts to login to Discord with a normal User-Account.
      * Upon successful auth with Discord, a token is generated and stored in token.json.
      *
      * @param email
@@ -126,16 +153,10 @@ public class JDAImpl implements JDA
         {
             if (configs.getJSONObject("tokens").has(email))
             {
-                authToken = configs.getJSONObject("tokens").getString(email);
-                try
-                {
-                    if (getRequester().getA("https://discordapp.com/api/users/@me/guilds") != null)
-                    {
-                        //token is valid (returns array, cant be returned as JSONObject)
+                if(validate(configs.getJSONObject("tokens").getString(email))) {
                         valid = true;
                         LOG.debug("Using cached Token: " + authToken);
-                    }
-                } catch (JSONException ignored) {}//token invalid
+                }
             }
         }
         catch (JSONException ex)
@@ -173,6 +194,20 @@ public class JDAImpl implements JDA
         }
 
         writeJson(tokenFile, configs);
+    }
+
+    private boolean validate(String authToken)
+    {
+        this.authToken = authToken;
+        try
+        {
+            if (getRequester().getA("https://discordapp.com/api/users/@me/guilds") != null)
+            {
+                //token is valid (returns array, cant be returned as JSONObject)
+                return true;
+            }
+        } catch (JSONException ignored) {}//token invalid
+        return false;
     }
 
     /**

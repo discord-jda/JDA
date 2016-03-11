@@ -47,6 +47,7 @@ public class JDABuilder
     final List<Object> listeners;
     String email = null;
     String pass = null;
+    String botToken = null;
     boolean debug = false;
     boolean enableVoice = true;
     boolean useAnnotatedManager = false;
@@ -82,6 +83,18 @@ public class JDABuilder
     }
 
     /**
+     * Creates a new JDABuilder using the provided token that is received when creating a Bot-Account.
+     *
+     * @param botToken
+     *          The token of a Bot-Account.
+     */
+    public JDABuilder(String botToken)
+    {
+        this.botToken = botToken;
+        listeners = new LinkedList<>();
+    }
+
+    /**
      * Sets the email that will be used by the {@link net.dv8tion.jda.JDA} instance to log in when
      * {@link net.dv8tion.jda.JDABuilder#buildAsync() buildAsync()}
      * or {@link net.dv8tion.jda.JDABuilder#buildBlocking() buildBlocking()}
@@ -95,6 +108,22 @@ public class JDABuilder
     public JDABuilder setEmail(String email)
     {
         this.email = email;
+        return this;
+    }
+
+    /**
+     * Sets the botToken that will be used by the {@link net.dv8tion.jda.JDA} instance to log in when
+     * {@link net.dv8tion.jda.JDABuilder#buildAsync() buildAsync()}
+     * or {@link net.dv8tion.jda.JDABuilder#buildBlocking() buildBlocking()}
+     * is called.
+     *
+     * @param botToken
+     *          The token of the bot-account that you would like to login with.
+     * @return
+     *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public JDABuilder setBotToken(String botToken) {
+        this.botToken = botToken;
         return this;
     }
 
@@ -299,7 +328,14 @@ public class JDABuilder
             jda.setEventManager(new AnnotatedEventManager());
         }
         listeners.forEach(jda::addEventListener);
-        jda.login(email, pass);
+        if (botToken != null)
+        {
+            jda.login(botToken);
+        }
+        else
+        {
+            jda.login(email, pass);
+        }
         return jda;
     }
 
