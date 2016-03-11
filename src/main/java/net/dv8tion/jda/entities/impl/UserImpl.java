@@ -33,6 +33,7 @@ public class UserImpl implements User
     private String gameName = null;
     private OnlineStatus onlineStatus = OnlineStatus.OFFLINE;
     private PrivateChannel privateChannel = null;
+    private boolean isBot = false;
 
     public UserImpl(String id, JDAImpl api)
     {
@@ -113,6 +114,12 @@ public class UserImpl implements User
         return privateChannel;
     }
 
+    @Override
+    public boolean isBot()
+    {
+        return isBot;
+    }
+
     public UserImpl setUserName(String username)
     {
         this.username = username;
@@ -150,6 +157,12 @@ public class UserImpl implements User
         {
             api.getPmChannelMap().put(channel.getId(), channel);
         }
+        return this;
+    }
+
+    public UserImpl setIsBot(boolean isBot)
+    {
+        this.isBot = isBot;
         return this;
     }
 

@@ -350,9 +350,10 @@ public class EntityBuilder
             api.getUserMap().put(id, userObj);
         }
         return userObj
-            .setUserName(user.getString("username"))
-            .setDiscriminator(user.get("discriminator").toString())
-            .setAvatarId(user.isNull("avatar") ? null : user.getString("avatar"));
+                .setUserName(user.getString("username"))
+                .setDiscriminator(user.get("discriminator").toString())
+                .setAvatarId(user.isNull("avatar") ? null : user.getString("avatar"))
+                .setIsBot(user.has("bot") && user.getBoolean("bot"));
     }
 
     protected SelfInfo createSelfInfo(JSONObject self)
@@ -360,7 +361,7 @@ public class EntityBuilder
         SelfInfoImpl selfInfo = ((SelfInfoImpl) api.getSelfInfo());
         if (selfInfo == null)
         {
-            selfInfo = new SelfInfoImpl(self.getString("id"), self.getString("email"), api);
+            selfInfo = new SelfInfoImpl(self.getString("id"), self.has("email") ? self.getString("email") : null, api);
             api.setSelfInfo(selfInfo);
         }
         if (!api.getUserMap().containsKey(selfInfo.getId()))
@@ -371,7 +372,8 @@ public class EntityBuilder
                 .setVerified(self.getBoolean("verified"))
                 .setUserName(self.getString("username"))
                 .setDiscriminator(self.getString("discriminator"))
-                .setAvatarId(self.isNull("avatar") ? null : self.getString("avatar"));
+                .setAvatarId(self.isNull("avatar") ? null : self.getString("avatar"))
+                .setIsBot(self.has("bot") && self.getBoolean("bot"));
     }
 
     public Message createMessage(JSONObject jsonObject)
