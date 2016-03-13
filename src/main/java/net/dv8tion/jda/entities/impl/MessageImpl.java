@@ -185,7 +185,7 @@ public class MessageImpl implements Message
     @Override
     public void deleteMessage()
     {
-        if (!api.getSelfInfo().getId().equals(getAuthor().getId()))
+        if (api.getSelfInfo() != getAuthor())
         {
             if (isPrivate())
                 throw new PermissionException("Cannot delete another User's messages in a PrivateChannel.");
