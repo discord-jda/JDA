@@ -111,9 +111,12 @@ public class Requester
             LOG.trace(dbg + body);
             return body == null ? null : new JSONObject(body);
         }
-        catch (UnirestException ignored)
+        catch (UnirestException e)
         {
-            //most likely there is no connection... ignoring to not spam console
+            if (LOG.getEffectiveLevel().compareTo(SimpleLog.Level.DEBUG) != 1)
+            {
+                LOG.log(e);
+            }
         }
         catch (JSONException e)
         {
@@ -144,9 +147,12 @@ public class Requester
             LOG.trace(dbg + body);
             return body == null ? null : new JSONArray(body);
         }
-        catch (UnirestException ignored)
+        catch (UnirestException e)
         {
-            //most likely there is no connection... ignoring to not spam console
+            if (LOG.getEffectiveLevel().compareTo(SimpleLog.Level.DEBUG) != 1)
+            {
+                LOG.log(e);
+            }
         }
         catch (JSONException e)
         {
