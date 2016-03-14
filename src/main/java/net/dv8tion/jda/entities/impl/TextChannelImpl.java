@@ -443,12 +443,25 @@ public class TextChannelImpl implements TextChannel
                     AbstractMap.SimpleImmutableEntry<Message, Consumer<Message>> peek = queue.peek();
                     JSONObject response = sender.api.getRequester().post("https://discordapp.com/api/channels/" + peek.getKey().getChannelId() + "/messages",
                             new JSONObject().put("content", peek.getKey().getRawContent()).put("tts", peek.getKey().isTTS()));
-                    if (!response.has("retry_after"))   //success
+                    if (response == null)
+                    {
+                        JDAImpl.LOG.debug("Error sending async-message (returned null-json)... Retrying after 1s");
+                        sender.api.setMessageTimeout(1000);
+                    }
+                    else if (!response.has("retry_after"))   //success
                     {
                         queue.poll();//remove from queue
                         if (peek.getValue() != null)
                         {
-                            peek.getValue().accept(new EntityBuilder(sender.api).createMessage(response));
+                            try
+                            {
+                                peek.getValue().accept(new EntityBuilder(sender.api).createMessage(response));
+                            }
+                            catch (JSONException ex)
+                            {
+                                //could not generate message from json
+                                JDAImpl.LOG.log(ex);
+                            }
                         }
                     }
                     else
