@@ -479,6 +479,35 @@ public class GuildManager
     }
 
     /**
+     * This method will either prune (kick) all members who were offline for at least <i>days</i> days,
+     * or just return the number of members that would be pruned.
+     *
+     * @param days
+     *      Minimum number of days since a user has been offline to get affected.
+     * @param doKick
+     *      Whether or not these members should actually get kicked or not
+     * @return
+     *      The number of users that have been / would get pruned
+     * @throws PermissionException
+     *      If the JDA-account doesn't have the {@link net.dv8tion.jda.Permission#KICK_MEMBERS KICK_MEMBER Permission}
+     */
+    public int prune(int days, boolean doKick)
+    {
+        if (!PermissionUtil.checkPermission(guild.getJDA().getSelfInfo(), Permission.KICK_MEMBERS, guild))
+            throw new PermissionException(Permission.KICK_MEMBERS);
+        JSONObject returned;
+        if (doKick)
+        {
+            returned = ((JDAImpl) guild.getJDA()).getRequester().post("https://discordapp.com/api/guilds/" + guild.getId() + "/prune?days=" + days, new JSONObject());
+        }
+        else
+        {
+            returned = ((JDAImpl) guild.getJDA()).getRequester().get("https://discordapp.com/api/guilds/" + guild.getId() + "/prune?days=" + days);
+        }
+        return returned.getInt("pruned");
+    }
+
+    /**
      * Kicks a {@link net.dv8tion.jda.entities.User User} from the {@link net.dv8tion.jda.entities.Guild Guild}.
      * This change will be applied immediately.<br>
      * <p>
