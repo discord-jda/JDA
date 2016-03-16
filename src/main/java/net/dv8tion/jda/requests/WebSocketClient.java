@@ -62,6 +62,7 @@ public class WebSocketClient extends WebSocketAdapter
 
     public void send(String message)
     {
+        LOG.trace("<- " + message);
         socket.sendText(message);
     }
 
@@ -72,10 +73,15 @@ public class WebSocketClient extends WebSocketAdapter
         LOG.info("Connected to WebSocket");
         if(!reconnecting)
         {
+            String token = api.getAuthToken();
+            if (token.startsWith("Bot "))
+            {
+                token = token.substring(4);
+            }
             connectObj = new JSONObject()
                     .put("op", 2)
                     .put("d", new JSONObject()
-                            .put("token", api.getAuthToken())
+                            .put("token", token)
                             .put("properties", new JSONObject()
                                     .put("$os", System.getProperty("os.name"))
                                     .put("$browser", "Java Discord API")
@@ -150,8 +156,12 @@ public class WebSocketClient extends WebSocketAdapter
                     sessionId = content.getString("session_id");
                     new ReadyHandler(api, isReconnectRunning, responseTotal).handle(content);
                 case "RESUMED":
+                    //joint stuff
                     isReconnectRunning = false;
                     reconnectTimeout = 2;
+                    //resume only
+                    if(!type.equals("RESUMED")) return;
+                    ready = true;
                     break;
                 case "GUILD_MEMBERS_CHUNK":
                     new GuildMembersChunkHandler(api, responseTotal).handle(content);

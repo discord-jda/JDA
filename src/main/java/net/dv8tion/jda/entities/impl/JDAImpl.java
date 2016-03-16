@@ -104,6 +104,8 @@ public class JDAImpl implements JDA
         if (botToken == null || botToken.isEmpty())
             throw new IllegalArgumentException("The provided botToken was empty / null.");
 
+        botToken = "Bot " + botToken;
+
         accountManager=new AccountManager(this, null);
 
         if(!validate(botToken)) {
