@@ -22,6 +22,7 @@ import net.dv8tion.jda.events.ShutdownEvent;
 import net.dv8tion.jda.handle.*;
 import net.dv8tion.jda.utils.SimpleLog;
 import org.apache.http.HttpHost;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -122,6 +123,20 @@ public class WebSocketClient extends WebSocketAdapter
         String type = content.getString("t");
         int responseTotal = content.getInt("s");
         api.setResponseTotal(responseTotal);
+
+        //Needs special handling due to content of "d" being an array
+        if(type.equals("PRESENCE_REPLACE"))
+        {
+            JSONArray presences = content.getJSONArray("d");
+            PresenceUpdateHandler handler = new PresenceUpdateHandler(api, responseTotal);
+            for (int i = 0; i < presences.length(); i++)
+            {
+                JSONObject presence = presences.getJSONObject(i);
+                handler.handle(presence);
+            }
+            return;
+        }
+
         content = content.getJSONObject("d");
         if (type.equals("READY") || type.equals("RESUMED"))
         {
