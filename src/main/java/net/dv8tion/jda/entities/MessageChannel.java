@@ -35,7 +35,13 @@ public interface MessageChannel
      *          the text to send
      * @return
      *      the Message created by this function
-     * @throws net.dv8tion.jda.exceptions.RateLimitedException when rate-imit is reached
+     * @throws net.dv8tion.jda.exceptions.RateLimitedException
+     *      when rate-imit is reached
+     * @throws net.dv8tion.jda.exceptions.PermissionException
+     *      If this is a {@link net.dv8tion.jda.entities.TextChannel TextChannel} and the logged in account does
+     *      not have {@link net.dv8tion.jda.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}.
+     * @throws net.dv8tion.jda.exceptions.BlockedException
+     *      If this is a {@link net.dv8tion.jda.entities.PrivateChannel PrivateChannel} and PMs are blocked
      */
     Message sendMessage(String text);
 
@@ -56,6 +62,8 @@ public interface MessageChannel
      * @throws net.dv8tion.jda.exceptions.PermissionException
      *      If this is a {@link net.dv8tion.jda.entities.TextChannel TextChannel} and the logged in account does
      *      not have {@link net.dv8tion.jda.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}.
+     * @throws net.dv8tion.jda.exceptions.BlockedException
+     *      If this is a {@link net.dv8tion.jda.entities.PrivateChannel PrivateChannel} and PMs are blocked
      *
      */
     Message sendMessage(Message msg);
@@ -69,9 +77,13 @@ public interface MessageChannel
      *          the text to send
      * @param callback
      *          the Callback-function that is called upon successful sending
+     * @throws net.dv8tion.jda.exceptions.RateLimitedException
+     *          when rate-limit is reached
      * @throws net.dv8tion.jda.exceptions.PermissionException
      *      If this is a {@link net.dv8tion.jda.entities.TextChannel TextChannel} and the logged in account does
      *      not have {@link net.dv8tion.jda.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}.
+     * @throws net.dv8tion.jda.exceptions.BlockedException
+     *      If this is a {@link net.dv8tion.jda.entities.PrivateChannel PrivateChannel} and PMs are blocked
      */
     void sendMessageAsync(String msg, Consumer<Message> callback);
 
@@ -86,9 +98,13 @@ public interface MessageChannel
      *          the {@link net.dv8tion.jda.entities.Message Message} to send
      * @param callback
      *          the Callback-function that is called upon successful sending
+     * @throws net.dv8tion.jda.exceptions.RateLimitedException
+     *          when rate-limit is reached
      * @throws net.dv8tion.jda.exceptions.PermissionException
      *      If this is a {@link net.dv8tion.jda.entities.TextChannel TextChannel} and the logged in account does
      *      not have {@link net.dv8tion.jda.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}.
+     * @throws net.dv8tion.jda.exceptions.BlockedException
+     *      If this is a {@link net.dv8tion.jda.entities.PrivateChannel PrivateChannel} and PMs are blocked
      */
     void sendMessageAsync(Message msg, Consumer<Message> callback);
 

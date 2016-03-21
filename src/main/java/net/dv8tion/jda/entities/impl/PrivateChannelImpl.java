@@ -23,6 +23,7 @@ import net.dv8tion.jda.MessageBuilder;
 import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.exceptions.BlockedException;
 import net.dv8tion.jda.exceptions.RateLimitedException;
 import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.requests.Requester;
@@ -85,6 +86,10 @@ public class PrivateChannelImpl implements PrivateChannel
                 long retry_after = response.getLong("retry_after");
                 api.setMessageTimeout(retry_after);
                 throw new RateLimitedException(retry_after);
+            }
+            if (!response.has("id"))
+            {
+                throw new BlockedException();
             }
             return new EntityBuilder(api).createMessage(response);
         }
