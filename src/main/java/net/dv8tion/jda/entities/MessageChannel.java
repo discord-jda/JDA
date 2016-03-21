@@ -29,7 +29,7 @@ public interface MessageChannel
      * for this channel set
      * After the Message has been sent, the created {@link net.dv8tion.jda.entities.Message Message} object is returned
      * This Object will be null, if the sending failed.
-     * When the Rate-limit is reached (30 Messages in 30 secs), a {@link net.dv8tion.jda.exceptions.RateLimitedException RateLimitedException} is thrown
+     * When the Rate-limit is reached (10 Messages in 10 secs), a {@link net.dv8tion.jda.exceptions.RateLimitedException RateLimitedException} is thrown
      *
      * @param text
      *          the text to send
@@ -51,7 +51,7 @@ public interface MessageChannel
      * Therefore this can also be used to resend already received Messages
      * To allow above behaviour, this method returns a new {@link net.dv8tion.jda.entities.Message Message} instance. The passed one is not modified!
      * If the sending of the Message failed (probably Permissions), this method returns null.
-     * When the Rate-limit is reached (30 Messages in 30 secs), a {@link net.dv8tion.jda.exceptions.RateLimitedException RateLimitedException} is thrown
+     * When the Rate-limit is reached (10 Messages in 10 secs), a {@link net.dv8tion.jda.exceptions.RateLimitedException RateLimitedException} is thrown
      *
      * @param msg
      *          the {@link net.dv8tion.jda.entities.Message Message} to send
@@ -77,8 +77,6 @@ public interface MessageChannel
      *          the text to send
      * @param callback
      *          the Callback-function that is called upon successful sending
-     * @throws net.dv8tion.jda.exceptions.RateLimitedException
-     *          when rate-limit is reached
      * @throws net.dv8tion.jda.exceptions.PermissionException
      *      If this is a {@link net.dv8tion.jda.entities.TextChannel TextChannel} and the logged in account does
      *      not have {@link net.dv8tion.jda.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}.
@@ -98,8 +96,6 @@ public interface MessageChannel
      *          the {@link net.dv8tion.jda.entities.Message Message} to send
      * @param callback
      *          the Callback-function that is called upon successful sending
-     * @throws net.dv8tion.jda.exceptions.RateLimitedException
-     *          when rate-limit is reached
      * @throws net.dv8tion.jda.exceptions.PermissionException
      *      If this is a {@link net.dv8tion.jda.entities.TextChannel TextChannel} and the logged in account does
      *      not have {@link net.dv8tion.jda.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}.
