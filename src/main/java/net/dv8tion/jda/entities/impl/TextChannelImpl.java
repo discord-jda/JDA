@@ -150,7 +150,7 @@ public class TextChannelImpl implements TextChannel
         }
         try
         {
-            JSONObject response = api.getRequester().post("https://discordapp.com/api/channels/" + getId() + "/messages",
+            JSONObject response = api.getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + getId() + "/messages",
                     new JSONObject().put("content", msg.getRawContent()).put("tts", msg.isTTS()));
             if (response.has("retry_after"))
             {
@@ -214,7 +214,7 @@ public class TextChannelImpl implements TextChannel
         JDAImpl api = (JDAImpl) getJDA();
         try
         {
-            MultipartBody body = Unirest.post("https://discordapp.com/api/channels/" + getId() + "/messages")
+            MultipartBody body = Unirest.post(Requester.DISCORD_API_PREFIX + "channels/" + getId() + "/messages")
                     .header("authorization", getJDA().getAuthToken())
                     .header("user-agent", Requester.USER_AGENT)
                     .field("file", file);
@@ -265,7 +265,7 @@ public class TextChannelImpl implements TextChannel
 
     public void sendTyping()
     {
-        ((JDAImpl) getJDA()).getRequester().post("https://discordapp.com/api/channels/" + getId() + "/typing", new JSONObject());
+        ((JDAImpl) getJDA()).getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + getId() + "/typing", new JSONObject());
     }
 
     @Override
@@ -441,7 +441,7 @@ public class TextChannelImpl implements TextChannel
                         }
                     }
                     AbstractMap.SimpleImmutableEntry<Message, Consumer<Message>> peek = queue.peek();
-                    JSONObject response = sender.api.getRequester().post("https://discordapp.com/api/channels/" + peek.getKey().getChannelId() + "/messages",
+                    JSONObject response = sender.api.getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + peek.getKey().getChannelId() + "/messages",
                             new JSONObject().put("content", peek.getKey().getRawContent()).put("tts", peek.getKey().isTTS()));
                     if (response == null)
                     {

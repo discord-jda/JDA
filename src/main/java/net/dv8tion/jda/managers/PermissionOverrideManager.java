@@ -19,6 +19,7 @@ import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.PermissionOverride;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.exceptions.PermissionException;
+import net.dv8tion.jda.requests.Requester;
 import org.json.JSONObject;
 
 public class PermissionOverrideManager
@@ -134,7 +135,7 @@ public class PermissionOverrideManager
     {
         String targetId = override.isRoleOverride() ? override.getRole().getId() : override.getUser().getId();
         ((JDAImpl) override.getJDA()).getRequester()
-                .delete("https://discordapp.com/api/channels/" + override.getChannel().getId() + "/permissions/" + targetId);
+                .delete(Requester.DISCORD_API_PREFIX + "channels/" + override.getChannel().getId() + "/permissions/" + targetId);
     }
 
     /**
@@ -148,7 +149,7 @@ public class PermissionOverrideManager
         }
         String targetId = override.isRoleOverride() ? override.getRole().getId() : override.getUser().getId();
         ((JDAImpl) override.getJDA()).getRequester()
-                .put("https://discordapp.com/api/channels/" + override.getChannel().getId() + "/permissions/" + targetId,
+                .put(Requester.DISCORD_API_PREFIX + "channels/" + override.getChannel().getId() + "/permissions/" + targetId,
                         new JSONObject()
                                 .put("allow", allow)
                                 .put("deny", deny)

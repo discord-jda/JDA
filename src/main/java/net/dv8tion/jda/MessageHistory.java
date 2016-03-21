@@ -22,6 +22,7 @@ import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.exceptions.PermissionException;
 import net.dv8tion.jda.handle.EntityBuilder;
+import net.dv8tion.jda.requests.Requester;
 import org.json.JSONArray;
 
 import java.util.LinkedList;
@@ -100,7 +101,7 @@ public class MessageHistory
             toQueue = Math.min(amount, 100);
             try
             {
-                JSONArray array = api.getRequester().getA("https://discordapp.com/api/channels/" + channelId
+                JSONArray array = api.getRequester().getA(Requester.DISCORD_API_PREFIX + "channels/" + channelId
                         + "/messages?limit=" + toQueue + (lastId != null ? "&before=" + lastId : ""));
 
                 for (int i = 0; i < array.length(); i++)

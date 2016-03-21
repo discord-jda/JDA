@@ -171,7 +171,7 @@ public class JDAImpl implements JDA
             try
             {
                 authToken = null;
-                JSONObject response = getRequester().post("https://discordapp.com/api/auth/login", new JSONObject().put("email", email).put("password", password));
+                JSONObject response = getRequester().post(Requester.DISCORD_API_PREFIX + "auth/login", new JSONObject().put("email", email).put("password", password));
 
                 if (response == null || !response.has("token"))
                     throw new LoginException("The provided email / password combination was incorrect. Please provide valid details.");
@@ -203,7 +203,7 @@ public class JDAImpl implements JDA
         this.authToken = authToken;
         try
         {
-            if (getRequester().getA("https://discordapp.com/api/users/@me/guilds") != null)
+            if (getRequester().getA(Requester.DISCORD_API_PREFIX + "users/@me/guilds") != null)
             {
                 //token is valid (returns array, cant be returned as JSONObject)
                 return true;
@@ -375,7 +375,7 @@ public class JDAImpl implements JDA
         if (region == Region.UNKNOWN)
             throw new IllegalArgumentException("Guild region must not be UNKNOWN");
 
-        JSONObject response = getRequester().post("https://discordapp.com/api/guilds",
+        JSONObject response = getRequester().post(Requester.DISCORD_API_PREFIX + "guilds",
                 new JSONObject().put("name", name).put("region", region.getKey()));
         if (response == null || !response.has("id"))
         {
@@ -585,7 +585,7 @@ public class JDAImpl implements JDA
         {
             throw new RuntimeException("Acking is disabled by default. <b>READ THE JAVADOCS</b> for how to use them!");
         }
-        getRequester().post("https://discordapp.com/api/channels/"+msg.getChannelId()+"/messages/"+msg.getId()+"/ack", new JSONObject());
+        getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + msg.getChannelId() + "/messages/" + msg.getId() + "/ack", new JSONObject());
     }
 
     @Override

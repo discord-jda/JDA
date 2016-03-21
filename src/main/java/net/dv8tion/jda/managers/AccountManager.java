@@ -19,6 +19,7 @@ import net.dv8tion.jda.OnlineStatus;
 import net.dv8tion.jda.entities.SelfInfo;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.entities.impl.SelfInfoImpl;
+import net.dv8tion.jda.requests.Requester;
 import net.dv8tion.jda.utils.AvatarUtil;
 import org.json.JSONObject;
 
@@ -177,7 +178,7 @@ public class AccountManager
             object.put("password", password);
             object.put("username", username == null ? api.getSelfInfo().getUsername() : username);
 
-            JSONObject result = api.getRequester().patch("https://discordapp.com/api/users/@me", object);
+            JSONObject result = api.getRequester().patch(Requester.DISCORD_API_PREFIX + "users/@me", object);
 
             if (result == null || !result.has("token"))
             {

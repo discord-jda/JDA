@@ -20,6 +20,7 @@ import net.dv8tion.jda.OnlineStatus;
 import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.handle.EntityBuilder;
+import net.dv8tion.jda.requests.Requester;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -102,7 +103,7 @@ public class UserImpl implements User
         {
             try
             {
-                JSONObject response = api.getRequester().post("https://discordapp.com/api/users/" + api.getSelfInfo().getId() + "/channels",
+                JSONObject response = api.getRequester().post(Requester.DISCORD_API_PREFIX + "users/" + api.getSelfInfo().getId() + "/channels",
                         new JSONObject().put("recipient_id", getId()));
                 new EntityBuilder(api).createPrivateChannel(response);
             }

@@ -79,7 +79,7 @@ public class PrivateChannelImpl implements PrivateChannel
         }
         try
         {
-            JSONObject response = api.getRequester().post("https://discordapp.com/api/channels/" + getId() + "/messages",
+            JSONObject response = api.getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + getId() + "/messages",
                     new JSONObject().put("content", msg.getRawContent()));
             if (response.has("retry_after"))
             {
@@ -139,7 +139,7 @@ public class PrivateChannelImpl implements PrivateChannel
         JDAImpl api = (JDAImpl) getJDA();
         try
         {
-            MultipartBody body = Unirest.post("https://discordapp.com/api/channels/" + getId() + "/messages")
+            MultipartBody body = Unirest.post(Requester.DISCORD_API_PREFIX + "channels/" + getId() + "/messages")
                     .header("authorization", getJDA().getAuthToken())
                     .header("user-agent", Requester.USER_AGENT)
                     .field("file", file);
@@ -185,7 +185,7 @@ public class PrivateChannelImpl implements PrivateChannel
 
     public void sendTyping()
     {
-        api.getRequester().post("https://discordapp.com/api/channels/" + getId() + "/typing", new JSONObject());
+        api.getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + getId() + "/typing", new JSONObject());
     }
 
     @Override

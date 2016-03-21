@@ -25,6 +25,7 @@ import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.managers.ChannelManager;
 import net.dv8tion.jda.managers.GuildManager;
 import net.dv8tion.jda.managers.RoleManager;
+import net.dv8tion.jda.requests.Requester;
 import net.dv8tion.jda.utils.InviteUtil;
 import net.dv8tion.jda.utils.InviteUtil.AdvancedInvite;
 import net.dv8tion.jda.utils.PermissionUtil;
@@ -146,7 +147,7 @@ public class GuildImpl implements Guild
         {
             throw new GuildUnavailableException();
         }
-        JSONObject response = api.getRequester().post("https://discordapp.com/api/guilds/" + getId() + "/channels", new JSONObject().put("name", name).put("type", "text"));
+        JSONObject response = api.getRequester().post(Requester.DISCORD_API_PREFIX + "guilds/" + getId() + "/channels", new JSONObject().put("name", name).put("type", "text"));
         if (response == null || !response.has("id"))
         {
             //error creating textchannel
@@ -182,7 +183,7 @@ public class GuildImpl implements Guild
         {
             throw new GuildUnavailableException();
         }
-        JSONObject response = api.getRequester().post("https://discordapp.com/api/guilds/" + getId() + "/channels", new JSONObject().put("name", name).put("type", "voice"));
+        JSONObject response = api.getRequester().post(Requester.DISCORD_API_PREFIX + "guilds/" + getId() + "/channels", new JSONObject().put("name", name).put("type", "voice"));
         if (response == null || !response.has("id"))
         {
             //error creating voicechannel
@@ -214,7 +215,7 @@ public class GuildImpl implements Guild
         {
             throw new GuildUnavailableException();
         }
-        JSONObject response = api.getRequester().post("https://discordapp.com/api/guilds/" + getId() + "/roles", new JSONObject());
+        JSONObject response = api.getRequester().post(Requester.DISCORD_API_PREFIX + "guilds/" + getId() + "/roles", new JSONObject());
         if (response == null || !response.has("id"))
         {
             //error creating role

@@ -397,7 +397,7 @@ public class WebSocketClient extends WebSocketAdapter
     {
         try
         {
-            return api.getRequester().get("https://discordapp.com/api/gateway").getString("url");
+            return api.getRequester().get(Requester.DISCORD_API_PREFIX + "gateway").getString("url");
         }
         catch (Exception ex)
         {

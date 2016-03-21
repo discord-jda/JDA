@@ -22,6 +22,7 @@ import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.entities.impl.UserImpl;
 import net.dv8tion.jda.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.exceptions.PermissionException;
+import net.dv8tion.jda.requests.Requester;
 import net.dv8tion.jda.utils.AvatarUtil;
 import net.dv8tion.jda.utils.PermissionUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -414,7 +415,7 @@ public class GuildManager
                 removedRoles.get(user).stream().filter(role -> roleIds.contains(role.getId())).forEach(role -> roleIds.remove(role.getId()));
 
                 ((JDAImpl) guild.getJDA()).getRequester().patch(
-                        "https://discordapp.com/api/guilds/" + guild.getId() + "/members/" + user.getId(),
+                        Requester.DISCORD_API_PREFIX + "guilds/" + guild.getId() + "/members/" + user.getId(),
                         new JSONObject().put("roles", roleIds));
 
             }
@@ -474,7 +475,7 @@ public class GuildManager
                             "for the destination VoiceChannel, so the move cannot be done.");
 
         ((JDAImpl) guild.getJDA()).getRequester().patch(
-                "https://discordapp.com/api/guilds/" + guild.getId() + "/members/" + user.getId(),
+                Requester.DISCORD_API_PREFIX + "guilds/" + guild.getId() + "/members/" + user.getId(),
                 new JSONObject().put("channel_id", voiceChannel.getId()));
     }
 
@@ -498,11 +499,11 @@ public class GuildManager
         JSONObject returned;
         if (doKick)
         {
-            returned = ((JDAImpl) guild.getJDA()).getRequester().post("https://discordapp.com/api/guilds/" + guild.getId() + "/prune?days=" + days, new JSONObject());
+            returned = ((JDAImpl) guild.getJDA()).getRequester().post(Requester.DISCORD_API_PREFIX + "guilds/" + guild.getId() + "/prune?days=" + days, new JSONObject());
         }
         else
         {
-            returned = ((JDAImpl) guild.getJDA()).getRequester().get("https://discordapp.com/api/guilds/" + guild.getId() + "/prune?days=" + days);
+            returned = ((JDAImpl) guild.getJDA()).getRequester().get(Requester.DISCORD_API_PREFIX + "guilds/" + guild.getId() + "/prune?days=" + days);
         }
         return returned.getInt("pruned");
     }
@@ -544,7 +545,7 @@ public class GuildManager
         }
         checkPermission(Permission.KICK_MEMBERS);
 
-        ((JDAImpl) guild.getJDA()).getRequester().delete("https://discordapp.com/api/guilds/"
+        ((JDAImpl) guild.getJDA()).getRequester().delete(Requester.DISCORD_API_PREFIX + "guilds/"
                 + guild.getId() + "/members/" + userId);
     }
 
@@ -593,7 +594,7 @@ public class GuildManager
         }
         checkPermission(Permission.BAN_MEMBERS);
 
-        ((JDAImpl) guild.getJDA()).getRequester().put("https://discordapp.com/api/guilds/"
+        ((JDAImpl) guild.getJDA()).getRequester().put(Requester.DISCORD_API_PREFIX + "guilds/"
                 + guild.getId() + "/bans/" + userId + (delDays > 0 ? "?delete-message-days=" + delDays : ""), new JSONObject());
     }
 
@@ -613,7 +614,7 @@ public class GuildManager
             throw new GuildUnavailableException();
         }
         List<User> bans = new LinkedList<>();
-        JSONArray bannedArr = ((JDAImpl) guild.getJDA()).getRequester().getA("https://discordapp.com/api/guilds/" + guild.getId() + "/bans");
+        JSONArray bannedArr = ((JDAImpl) guild.getJDA()).getRequester().getA(Requester.DISCORD_API_PREFIX + "guilds/" + guild.getId() + "/bans");
         for (int i = 0; i < bannedArr.length(); i++)
         {
             JSONObject userObj = bannedArr.getJSONObject(i).getJSONObject("user");
@@ -665,7 +666,7 @@ public class GuildManager
         }
         checkPermission(Permission.BAN_MEMBERS);
 
-        ((JDAImpl) guild.getJDA()).getRequester().delete("https://discordapp.com/api/guilds/"
+        ((JDAImpl) guild.getJDA()).getRequester().delete(Requester.DISCORD_API_PREFIX + "guilds/"
                 + guild.getId() + "/bans/" + userId);
     }
 
@@ -718,7 +719,7 @@ public class GuildManager
         {
             throw new GuildUnavailableException();
         }
-        ((JDAImpl) guild.getJDA()).getRequester().delete("https://discordapp.com/api/users/@me/guilds/" + guild.getId());
+        ((JDAImpl) guild.getJDA()).getRequester().delete(Requester.DISCORD_API_PREFIX + "users/@me/guilds/" + guild.getId());
     }
 
     /**
@@ -743,7 +744,7 @@ public class GuildManager
         {
             throw new GuildUnavailableException();
         }
-        ((JDAImpl) guild.getJDA()).getRequester().delete("https://discordapp.com/api/guilds/" + guild.getId());
+        ((JDAImpl) guild.getJDA()).getRequester().delete(Requester.DISCORD_API_PREFIX + "guilds/" + guild.getId());
     }
 
     /**
@@ -778,7 +779,7 @@ public class GuildManager
 
     private void update(JSONObject object)
     {
-        ((JDAImpl) guild.getJDA()).getRequester().patch("https://discordapp.com/api/guilds/" + guild.getId(), object);
+        ((JDAImpl) guild.getJDA()).getRequester().patch(Requester.DISCORD_API_PREFIX + "guilds/" + guild.getId(), object);
     }
 
     private void checkPermission(Permission perm)

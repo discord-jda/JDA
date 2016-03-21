@@ -32,6 +32,7 @@ public class Requester
 {
     public static final SimpleLog LOG = SimpleLog.getLog("JDARequester");
     public static final String USER_AGENT = "JDA DiscordBot (" + JDAInfo.GITHUB + ", " + JDAInfo.VERSION + ")";
+    public static final String DISCORD_API_PREFIX = "https://discordapp.com/api/";
 
     private final JDAImpl api;
 
@@ -164,7 +165,9 @@ public class Requester
 
     private <T extends HttpRequest> T addHeaders(T request)
     {
-        if (api.getAuthToken() != null)
+        //adding token to all requests to the discord api or cdn pages
+        //can't check for startsWith(DISCORD_API_PREFIX) due to cdn endpoints
+        if (api.getAuthToken() != null && request.getUrl().contains("discordapp.com"))
         {
             request.header("authorization", api.getAuthToken());
         }
