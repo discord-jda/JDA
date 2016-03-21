@@ -455,7 +455,9 @@ public class TextChannelImpl implements TextChannel
                         {
                             try
                             {
-                                peek.getValue().accept(new EntityBuilder(sender.api).createMessage(response));
+                                //if response didn't have id, sending failed (due to permission/blocked pm,...
+                                peek.getValue().accept(
+                                        response.has("id") ? new EntityBuilder(sender.api).createMessage(response) : null);
                             }
                             catch (JSONException ex)
                             {
