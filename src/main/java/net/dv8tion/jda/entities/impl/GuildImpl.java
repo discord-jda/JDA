@@ -27,10 +27,7 @@ import net.dv8tion.jda.managers.GuildManager;
 import net.dv8tion.jda.managers.RoleManager;
 import net.dv8tion.jda.utils.InviteUtil;
 import net.dv8tion.jda.utils.InviteUtil.AdvancedInvite;
-import net.dv8tion.jda.utils.InviteUtil.Invite;
 import net.dv8tion.jda.utils.PermissionUtil;
-
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
@@ -102,6 +99,12 @@ public class GuildImpl implements Guild
     public String getOwnerId()
     {
         return ownerId;
+    }
+
+    @Override
+    public User getOwner()
+    {
+        return api.getUserById(ownerId);
     }
 
     @Override

@@ -71,14 +71,20 @@ public interface Guild
     String getAfkChannelId();
 
     /**
-     * The {@link net.dv8tion.jda.entities.User User} Id of the owner of this {@link net.dv8tion.jda.entities.Guild Guild}.<br>
-     * Currently, there is no way to transfer ownership of a discord {@link net.dv8tion.jda.entities.Guild Guild},
-     *   and a such this {@link net.dv8tion.jda.entities.User User} is also the original creator.
+     * The {@link net.dv8tion.jda.entities.User User} Id of the owner of this {@link net.dv8tion.jda.entities.Guild Guild}.
      *
      * @return
      *      Never-null String containing the Guild owner's User id.
      */
     String getOwnerId();
+
+    /**
+     * The {@link net.dv8tion.jda.entities.User User} object of the owner of this {@link net.dv8tion.jda.entities.Guild Guild}.
+     *
+     * @return
+     *      Never-null User object containing the Guild owner.
+     */
+    User getOwner();
 
     /**
      * The amount of time (in seconds) that must pass with no activity to be considered AFK by this {@link net.dv8tion.jda.entities.Guild Guild}.
