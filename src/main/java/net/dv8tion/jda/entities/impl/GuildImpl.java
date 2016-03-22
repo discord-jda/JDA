@@ -52,6 +52,7 @@ public class GuildImpl implements Guild
     private Role publicRole;
     private TextChannel publicChannel;
     private final JDAImpl api;
+    private VerificationLevel verificationLevel;
     private boolean available;
 
     public GuildImpl(JDAImpl api, String id)
@@ -271,6 +272,12 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    public VerificationLevel getVerificationLevel()
+    {
+        return verificationLevel;
+    }
+
+    @Override
     public boolean isAvailable()
     {
         return available;
@@ -352,6 +359,12 @@ public class GuildImpl implements Guild
     public Map<User, OffsetDateTime> getJoinedAtMap()
     {
         return joinedAtMap;
+    }
+
+    public GuildImpl setVerificationLevel(VerificationLevel level)
+    {
+        this.verificationLevel = level;
+        return this;
     }
 
     public GuildImpl setAvailable(boolean available)

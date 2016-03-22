@@ -255,6 +255,13 @@ public interface Guild
     List<VoiceStatus> getVoiceStatuses();
 
     /**
+     * Returns the verification-Level of this Guild. For a short description of the different values, see {@link VerificationLevel}.
+     * @return
+     *      The Verification-Level of this Guild.
+     */
+    VerificationLevel getVerificationLevel();
+
+    /**
      * Returns whether or not this Guild is available. A Guild can be unavailable, if the Discord server has problems.
      * If a Guild is unavailable, no actions on it can be performed (Messages, Manager,...)
      *
@@ -270,4 +277,39 @@ public interface Guild
      *      An Immutable List of {@link net.dv8tion.jda.utils.InviteUtil.AdvancedInvite Invites} for this guild.
      */
     List<AdvancedInvite> getInvites();
+
+    /**
+     * Represents the Verification-Level of the Guild.
+     * The Verification-Level determines what requirement you have to meet to be able to speak in this Guild.<br>
+     * None   -&gt; everyone can talk.<br>
+     * Low    -&gt; verified email required.<br>
+     * Medium -&gt; you have to be member for at least 5min.<br>
+     * High   -&gt; you have to be member for at least 10min.
+     */
+    enum VerificationLevel
+    {
+        NONE(0), LOW(1), MEDIUM(2), HIGH(3);
+
+        private final int key;
+
+        VerificationLevel(int key)
+        {
+            this.key = key;
+        }
+
+        public int getKey()
+        {
+            return key;
+        }
+
+        public static VerificationLevel fromKey(int key)
+        {
+            for (VerificationLevel level : VerificationLevel.values())
+            {
+                if(level.getKey() == key)
+                    return level;
+            }
+            return NONE;
+        }
+    }
 }

@@ -85,6 +85,7 @@ public class GuildManager
     private String name = null;
     private Region region = null;
     private AvatarUtil.Avatar icon = null;
+    private Guild.VerificationLevel verificationLevel = null;
     private String afkChannelId;
 
     private final Map<User, Set<Role>> addedRoles = new HashMap<>();
@@ -371,6 +372,37 @@ public class GuildManager
     }
 
     /**
+     * Changes the Verification-Level of this Guild.
+     * This change will only be applied, if {@link #update()} is called.
+     * So multiple changes can be made at once.
+     *
+     * @param level
+     *          the new Verification-Level of the Guild, or null to keep current one
+     * @return
+     *      This {@link net.dv8tion.jda.managers.GuildManager GuildManager} instance. Useful for chaining.
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
+     */
+    public GuildManager setVerificationLevel(Guild.VerificationLevel level)
+    {
+        if (!guild.isAvailable())
+        {
+            throw new GuildUnavailableException();
+        }
+        checkPermission(Permission.MANAGE_SERVER);
+
+        if (guild.getVerificatonLevel() == level)
+        {
+            this.verificationLevel = null;
+        }
+        else
+        {
+            this.verificationLevel = level;
+        }
+        return this;
+    }
+
+    /**
      * This method will apply all accumulated changes received by setters
      *
      * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
@@ -383,7 +415,7 @@ public class GuildManager
             throw new GuildUnavailableException();
         }
 
-        if (name != null || region != null || timeout != null || icon != null || !StringUtils.equals(afkChannelId, guild.getAfkChannelId()))
+        if (name != null || region != null || timeout != null || icon != null || !StringUtils.equals(afkChannelId, guild.getAfkChannelId()) || verificationLevel != null)
         {
             checkPermission(Permission.MANAGE_SERVER);
 
@@ -398,6 +430,8 @@ public class GuildManager
                 frame.put("icon", icon == AvatarUtil.DELETE_AVATAR ? JSONObject.NULL : icon.getEncoded());
             if(!StringUtils.equals(afkChannelId, guild.getAfkChannelId()))
                 frame.put("afk_channel_id", afkChannelId == null ? JSONObject.NULL : afkChannelId);
+            if(verificationLevel != null)
+                frame.put("verification_level", verificationLevel.getKey());
             update(frame);
         }
 

@@ -67,7 +67,8 @@ public class EntityBuilder
             .setName(guild.getString("name"))
             .setOwnerId(guild.getString("owner_id"))
             .setAfkTimeout(guild.getInt("afk_timeout"))
-            .setAfkChannelId(guild.isNull("afk_channel_id") ? null : guild.getString("afk_channel_id"));
+            .setAfkChannelId(guild.isNull("afk_channel_id") ? null : guild.getString("afk_channel_id"))
+            .setVerificationLevel(Guild.VerificationLevel.fromKey(guild.getInt("verification_level")));
 
 
         JSONArray roles = guild.getJSONArray("roles");
