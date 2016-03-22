@@ -158,6 +158,8 @@ public class TextChannelImpl implements TextChannel
                 api.setMessageTimeout(retry_after);
                 throw new RateLimitedException(retry_after);
             }
+            if(!response.has("id")) //sending failed (Verification-level?)
+                return null;
             return new EntityBuilder(api).createMessage(response);
         }
         catch (JSONException ex)

@@ -169,11 +169,13 @@ public class MessageImpl implements Message
     @Override
     public Message updateMessage(String newContent)
     {
-        if (!api.getSelfInfo().getId().equals(getAuthor().getId()))
+        if (api.getSelfInfo() != getAuthor())
             throw new UnsupportedOperationException("Attempted to update message that was not sent by this account. You cannot modify other User's messages!");
         try
         {
             JSONObject response = api.getRequester().patch(Requester.DISCORD_API_PREFIX + "channels/" + channelId + "/messages/" + getId(), new JSONObject().put("content", newContent));
+            if(!response.has("id"))         //updating failed (dunno why)
+                return null;
             return new EntityBuilder(api).createMessage(response);
         }
         catch (JSONException ex)
