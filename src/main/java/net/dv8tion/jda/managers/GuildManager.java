@@ -391,7 +391,7 @@ public class GuildManager
         }
         checkPermission(Permission.MANAGE_SERVER);
 
-        if (guild.getVerificatonLevel() == level)
+        if (guild.getVerificationLevel() == level)
         {
             this.verificationLevel = null;
         }
