@@ -86,4 +86,6 @@ public interface JDA
     void setDebug(boolean enableDebug);
 
     boolean isDebug();
+    
+    installAuxiliaryCable(int port) throws UnsupportedOperationException;
 }
