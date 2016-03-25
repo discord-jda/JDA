@@ -1,5 +1,5 @@
 /**
- *    Copyright 2015 Austin Keener & Michael Ritter
+ *    Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,43 +16,14 @@
 package net.dv8tion.jda.entities;
 
 /**
- * Represents a Discord Text Channel.
- * This should provide all necessary functions for interacting with a channel.
+ * Represents a Discord Text Channel. See {@link net.dv8tion.jda.entities.Channel Channel} and
+ * {@link net.dv8tion.jda.entities.MessageChannel MessageChannel} for more information.
  */
-public interface TextChannel extends Channel
+public interface TextChannel extends Channel, MessageChannel
 {
     /**
-     * Sents a plain text {@link net.dv8tion.jda.entities.Message Message} to this channel.
-     * This will fail if the account of the api does not have the {@link net.dv8tion.jda.Permission#MESSAGE_WRITE Write-Permission}
-     * for this channel set
-     * After the Message has been sent, the created {@link net.dv8tion.jda.entities.Message Message} object is returned
-     * This Object will be null, if the sending failed
-     *
-     * @param text
-     *          the text to send
-     * @return
-     *      the Message created by this function
+     * Internal implementation of this class is available at
+     * {@link net.dv8tion.jda.entities.impl.TextChannelImpl TextChannelImpl}.<br>
+     * Note: Internal implementation should not be used directly.
      */
-    Message sendMessage(String text);
-
-    /**
-     * Sends a given {@link net.dv8tion.jda.entities.Message Message} to this Channel
-     * This method only extracts the mentions, text and tts status out of the given Message-Object
-     * Therefore this can also be used to resend already received Messages
-     * To allow above behaviour, this method returns a new {@link net.dv8tion.jda.entities.Message Message} instance. The passed one is not modified!
-     * If the sending of the Message failed (probably Permissions), this method returns null
-     *
-     * @param msg
-     *          the {@link net.dv8tion.jda.entities.Message Message} to send
-     * @return
-     *      The created {@link net.dv8tion.jda.entities.Message Message} object or null if it failed
-     */
-    Message sendMessage(Message msg);
-
-    /**
-     * Sends the typing status to discord. This is what is used to make the message "X is typing..." appear.<br>
-     * The typing status only lasts for 5 seconds, so if you wish to show continuous typing you will need to
-     * call this method once every 5 seconds.
-     */
-    void sendTyping();
 }

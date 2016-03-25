@@ -1,12 +1,12 @@
 /**
- * Copyright 2015 Austin Keener & Michael Ritter
- * <p>
+ *    Copyright 2015-2016 Austin Keener & Michael Ritter
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -49,6 +49,16 @@ public interface VoiceStatus
     boolean isServerDeaf();
 
     /**
+     * Returns true if this {@link net.dv8tion.jda.entities.User User} is unable to speak because the
+     * channel is actively suppressing audio communication. This occurs only in AFK channels, where no one is
+     * allowed to send audio.
+     *
+     * @return
+     *      True if this {@link net.dv8tion.jda.entities.User User's} audio is being suppressed.
+     */
+    boolean isSuppressed();
+
+    /**
      * Returns the current {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} of the {@link net.dv8tion.jda.entities.User User}
      * If the {@link net.dv8tion.jda.entities.User User} is currently not in a {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel}, this returns null
      *
@@ -74,4 +84,17 @@ public interface VoiceStatus
      *      the User that holds this VoiceStatus
      */
     User getUser();
+
+    String getSessionId();
+
+    /**
+     * Used to determine if the {@link net.dv8tion.jda.entities.User User} is currently in a {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel}
+     * in the {@link net.dv8tion.jda.entities.Guild Guild} returned from {@link #getGuild() getGuild()}.<br>
+     * If this is <code>false</code>, {@link #getChannel() getChannel()} will return <code>null</code>.
+     *
+     * @return
+     *      True if the {@link net.dv8tion.jda.entities.User User} is currently in a {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel}
+     *      in this {@link net.dv8tion.jda.entities.Guild Guild}.
+     */
+    boolean inVoiceChannel();
 }

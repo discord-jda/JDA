@@ -1,5 +1,5 @@
 /**
- *    Copyright 2015 Austin Keener & Michael Ritter
+ *    Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,11 +31,20 @@ public class GuildJoinHandler extends SocketHandler
     @Override
     public void handle(JSONObject content)
     {
-        Guild guild = new EntityBuilder(api).createGuild(content);
-        api.getEventManager().handle(
-                new GuildJoinEvent(
-                        api, responseNumber,
-                        guild));
+        new EntityBuilder(api).createGuildFirstPass(content, guild ->
+        {
+            if (guild.isAvailable())
+            {
+                //TODO: Available-event if previously unavailable
+                api.getEventManager().handle(
+                        new GuildJoinEvent(
+                                api, responseNumber,
+                                guild));
+            }
+            else
+            {
+                //TODO: Unavailable event
+            }
+        });
     }
-
 }

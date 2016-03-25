@@ -1,5 +1,5 @@
 /**
- *    Copyright 2015 Austin Keener & Michael Ritter
+ *    Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,7 @@
 package net.dv8tion.jda.handle;
 
 import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
-import net.dv8tion.jda.events.message.MessageEmbedEvent;
 import net.dv8tion.jda.events.message.MessageUpdateEvent;
 import net.dv8tion.jda.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.events.message.priv.PrivateMessageUpdateEvent;

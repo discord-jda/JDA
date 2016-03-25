@@ -1,5 +1,5 @@
 /**
- *    Copyright 2015 Austin Keener & Michael Ritter
+ *    Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.JDABuilder;
 import net.dv8tion.jda.events.channel.text.*;
 import net.dv8tion.jda.events.channel.voice.*;
 import net.dv8tion.jda.hooks.ListenerAdapter;
-import org.json.JSONObject;
 
 import javax.security.auth.login.LoginException;
 
@@ -27,14 +25,13 @@ public class ChannelListenerExample extends ListenerAdapter
 {
     public static void main(String[] args)
     {
-        JSONObject config = ExampleUtils.getConfig();
         try
         {
-            JDA api = new JDABuilder()
-                    .setEmail(config.getString("email"))
-                    .setPassword(config.getString("password"))
+            new JDABuilder()
+                    .setEmail("EMAIL")
+                    .setPassword("PASSWORD")
                     .addListener(new ChannelListenerExample())
-                    .build();
+                    .buildBlocking();
         }
         catch (IllegalArgumentException e)
         {
@@ -43,6 +40,10 @@ public class ChannelListenerExample extends ListenerAdapter
         catch (LoginException e)
         {
             System.out.println("The provided email / password combination was incorrect. Please provide valid details.");
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
         }
     }
 

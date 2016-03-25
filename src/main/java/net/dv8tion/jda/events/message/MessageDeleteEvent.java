@@ -1,5 +1,5 @@
 /**
- *    Copyright 2015 Austin Keener & Michael Ritter
+ *    Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package net.dv8tion.jda.events.message;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.entities.MessageChannel;
 import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.events.Event;
@@ -38,6 +39,11 @@ public class MessageDeleteEvent extends Event
     public String getMessageId()
     {
         return messageId;
+    }
+
+    public MessageChannel getChannel()
+    {
+        return isPrivate ? getPrivateChannel() : getTextChannel();
     }
 
     public TextChannel getTextChannel()

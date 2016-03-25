@@ -1,12 +1,31 @@
+/**
+ *    Copyright 2015-2016 Austin Keener & Michael Ritter
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package net.dv8tion.jda.managers;
 
 import net.dv8tion.jda.OnlineStatus;
 import net.dv8tion.jda.entities.SelfInfo;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.entities.impl.SelfInfoImpl;
+import net.dv8tion.jda.requests.Requester;
 import net.dv8tion.jda.utils.AvatarUtil;
 import org.json.JSONObject;
 
+/**
+ * Manager used to modify aspects of the logged in account's information.
+ */
 public class AccountManager
 {
 
@@ -119,6 +138,27 @@ public class AccountManager
     }
 
     /**
+     * Used to update the password used with authentication.<br>
+     * This is <b><u>NOT</u></b> used to changed the password. This is used when the password of
+     * the account was changed using a different service (Discord website or Discord client) while the
+     * bot was still running.
+     * <p>
+     * If you would like to change the account's password, please use {@link #setPassword(String)}.
+     *
+     * @param password
+     *          The non-null updated account password.
+     * @return
+     *      This {@link net.dv8tion.jda.managers.AccountManager} instance.
+     */
+    public AccountManager updatePassword(String password)
+    {
+        if (password == null)
+            throw new IllegalArgumentException("Provided password cannot be null!");
+        this.password = password;
+        return this;
+    }
+
+    /**
      * Updates the profile of the connected account, sends the changed data to the Discord server.
      *
      * @return
@@ -138,23 +178,14 @@ public class AccountManager
             object.put("password", password);
             object.put("username", username == null ? api.getSelfInfo().getUsername() : username);
 
-            JSONObject result = api.getRequester().patch("https://discordapp.com/api/users/@me", object);
+            JSONObject result = api.getRequester().patch(Requester.DISCORD_API_PREFIX + "users/@me", object);
 
-            if (result == null)
+            if (result == null || !result.has("token"))
             {
                 throw new Exception("Something went wrong while changing the account settings.");
             }
 
-            SelfInfoImpl self = (SelfInfoImpl) api.getSelfInfo();
-
-            self.setAvatarId(result.isNull("avatar") ? null : result.getString("avatar"));
-            self.setDiscriminator(result.getString("discriminator"));
-            self.setEmail(result.getString("email"));
-            // self.setID(result.getString("id")); ID should never change unless
-            // something really really bad happens
             api.setAuthToken(result.getString("token"));
-            self.setUserName(result.getString("username"));
-            self.setVerified(result.getBoolean("verified"));
             if (newPassword != null)
             {
                 this.password = newPassword;
@@ -166,7 +197,7 @@ public class AccountManager
             this.username = null;
         } catch (Exception e)
         {
-            e.printStackTrace();
+            JDAImpl.LOG.log(e);
         }
         return this;
     }

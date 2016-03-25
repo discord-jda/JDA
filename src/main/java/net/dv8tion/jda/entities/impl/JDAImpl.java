@@ -1,5 +1,5 @@
 /**
- *    Copyright 2015 Austin Keener & Michael Ritter
+ *    Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,20 @@ package net.dv8tion.jda.entities.impl;
 
 import com.mashape.unirest.http.Unirest;
 import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.Region;
 import net.dv8tion.jda.entities.*;
+import net.dv8tion.jda.events.Event;
+import net.dv8tion.jda.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.hooks.EventListener;
-import net.dv8tion.jda.hooks.EventManager;
+import net.dv8tion.jda.hooks.IEventManager;
+import net.dv8tion.jda.hooks.InterfacedEventManager;
+import net.dv8tion.jda.hooks.SubscribeEvent;
 import net.dv8tion.jda.managers.AccountManager;
+import net.dv8tion.jda.managers.AudioManager;
+import net.dv8tion.jda.managers.GuildManager;
 import net.dv8tion.jda.requests.Requester;
 import net.dv8tion.jda.requests.WebSocketClient;
+import net.dv8tion.jda.utils.SimpleLog;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.json.JSONException;
@@ -36,6 +44,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 
@@ -44,37 +53,72 @@ import java.util.stream.Collectors;
  */
 public class JDAImpl implements JDA
 {
+    public static final SimpleLog LOG = SimpleLog.getLog("JDA");
     private final HttpHost proxy;
     private final Map<String, User> userMap = new HashMap<>();
     private final Map<String, Guild> guildMap = new HashMap<>();
-    private final Map<String, TextChannel> channelMap = new HashMap<>();
+    private final Map<String, TextChannel> textChannelMap = new HashMap<>();
     private final Map<String, VoiceChannel> voiceChannelMap = new HashMap<>();
     private final Map<String, PrivateChannel> pmChannelMap = new HashMap<>();
     private final Map<String, String> offline_pms = new HashMap<>();    //Userid -> channelid
-    private final EventManager eventManager = new EventManager();
+    private final AudioManager audioManager;
+    private IEventManager eventManager = new InterfacedEventManager();
     private SelfInfo selfInfo = null;
     private AccountManager accountManager;
     private String authToken = null;
     private WebSocketClient client;
     private final Requester requester = new Requester(this);
-    private boolean debug;
+    private boolean reconnect;
+    private boolean enableAck;
     private int responseTotal;
+    private Long messageLimit = null;
 
-    public JDAImpl()
+    public JDAImpl(boolean useVoice)
     {
         proxy = null;
+        audioManager = useVoice ? new AudioManager(this) : null;
     }
 
-    public JDAImpl(String proxyUrl, int proxyPort)
+    public JDAImpl(String proxyUrl, int proxyPort, boolean useVoice)
     {
         if (proxyUrl == null || proxyUrl.isEmpty() || proxyPort == -1)
             throw new IllegalArgumentException("The provided proxy settings cannot be used to make a proxy. Settings: URL: '" + proxyUrl + "'  Port: " + proxyPort);
         proxy = new HttpHost(proxyUrl, proxyPort);
         Unirest.setProxy(proxy);
+        audioManager = useVoice ? new AudioManager(this) : null;
     }
 
     /**
-     * Attempts to login to Discord.
+     * Attempts to login to Discord with a Bot-Account.
+     *
+     * @param botToken
+     *          The token of the bot-account attempting to log in.
+     * @throws IllegalArgumentException
+     *          Thrown if the botToken provided is empty or null.
+     * @throws LoginException
+     *          Thrown if the token fails the auth check with the Discord servers.
+     */
+    public void login(String botToken) throws IllegalArgumentException, LoginException
+    {
+        LOG.info("JDA starting...");
+        if (botToken == null || botToken.isEmpty())
+            throw new IllegalArgumentException("The provided botToken was empty / null.");
+
+        botToken = "Bot " + botToken;
+
+        accountManager=new AccountManager(this, null);
+
+        if(!validate(botToken)) {
+            throw new LoginException("The given botToken was invalid");
+        }
+
+        LOG.info("Login Successful!");
+        client = new WebSocketClient(this, proxy);
+        client.setAutoReconnect(reconnect);
+    }
+
+    /**
+     * Attempts to login to Discord with a normal User-Account.
      * Upon successful auth with Discord, a token is generated and stored in token.json.
      *
      * @param email
@@ -88,6 +132,7 @@ public class JDAImpl implements JDA
      */
     public void login(String email, String password) throws IllegalArgumentException, LoginException
     {
+        LOG.info("JDA starting...");
         if (email == null || email.isEmpty() || password == null || password.isEmpty())
             throw new IllegalArgumentException("The provided email or password as empty / null.");
 
@@ -95,7 +140,7 @@ public class JDAImpl implements JDA
         
         Path tokenFile = Paths.get("tokens.json");
         JSONObject configs = null;
-        String gateway = null;
+        boolean valid = false;
         if (Files.exists(tokenFile))
         {
             configs = readJson(tokenFile);
@@ -105,53 +150,66 @@ public class JDAImpl implements JDA
             configs = new JSONObject().put("tokens", new JSONObject()).put("version", 1);
         }
 
-        if (configs.getJSONObject("tokens").has(email))
+
+        try
         {
-            try
+            if (configs.getJSONObject("tokens").has(email))
             {
-                authToken = configs.getJSONObject("tokens").getString(email);
-                gateway = getRequester().get("https://discordapp.com/api/gateway").getString("url");
-                System.out.println("Using cached Token: " + authToken);
-            }
-            catch (JSONException ex)
-            {
-                System.out.println("Token-file misformatted. Please delete it for recreation");
-            }
-            catch (Exception ex)
-            {
-                ex.printStackTrace();
+                if(validate(configs.getJSONObject("tokens").getString(email))) {
+                        valid = true;
+                        LOG.debug("Using cached Token: " + authToken);
+                }
             }
         }
+        catch (JSONException ex)
+        {
+            LOG.warn("Token-file misformatted. Please delete it for recreation");
+        }
 
-        if (gateway == null)                                    //no token saved or invalid
+        if (!valid)               //no token saved or invalid
         {
             try
             {
                 authToken = null;
-                JSONObject response = getRequester().post("https://discordapp.com/api/auth/login", new JSONObject().put("email", email).put("password", password));
+                JSONObject response = getRequester().post(Requester.DISCORD_API_PREFIX + "auth/login", new JSONObject().put("email", email).put("password", password));
 
                 if (response == null || !response.has("token"))
                     throw new LoginException("The provided email / password combination was incorrect. Please provide valid details.");
-                System.out.println("Login Successful!"); //TODO: Replace with Logger.INFO
 
                 authToken = response.getString("token");
                 configs.getJSONObject("tokens").put(email, authToken);
-                System.out.println("Created new Token: " + authToken);
+                LOG.debug("Created new Token: " + authToken);
 
-                gateway = getRequester().get("https://discordapp.com/api/gateway").getString("url");
+                valid = true;
             }
             catch (JSONException ex)
             {
-                ex.printStackTrace();
+                LOG.log(ex);
             }
         }
-        else
+
+        if (valid)
         {
-            System.out.println("Login Successful!"); //TODO: Replace with Logger.INFO
+            LOG.info("Login Successful!");
+            client = new WebSocketClient(this, proxy);
+            client.setAutoReconnect(reconnect);
         }
 
         writeJson(tokenFile, configs);
-        client = new WebSocketClient(gateway, this, proxy);
+    }
+
+    private boolean validate(String authToken)
+    {
+        this.authToken = authToken;
+        try
+        {
+            if (getRequester().getA(Requester.DISCORD_API_PREFIX + "users/@me/guilds") != null)
+            {
+                //token is valid (returns array, cant be returned as JSONObject)
+                return true;
+            }
+        } catch (JSONException ignored) {}//token invalid
+        return false;
     }
 
     /**
@@ -170,12 +228,12 @@ public class JDAImpl implements JDA
         }
         catch (IOException e)
         {
-            System.out.println("Error reading token-file. Defaulting to standard");
-            e.printStackTrace();
+            LOG.fatal("Error reading token-file. Defaulting to standard");
+            LOG.log(e);
         }
         catch (JSONException e)
         {
-            System.out.println("Token-file misformatted. Creating default one");
+            LOG.warn("Token-file misformatted. Creating default one");
         }
         return null;
     }
@@ -196,7 +254,7 @@ public class JDAImpl implements JDA
         }
         catch (IOException e)
         {
-            System.out.println("Error creating token-file");
+            LOG.warn("Error creating token-file");
         }
     }
 
@@ -212,18 +270,24 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public void addEventListener(EventListener listener)
+    public void setEventManager(IEventManager manager)
+    {
+        this.eventManager = manager;
+    }
+
+    @Override
+    public void addEventListener(Object listener)
     {
         getEventManager().register(listener);
     }
 
     @Override
-    public void removeEventListener(EventListener listener)
+    public void removeEventListener(Object listener)
     {
         getEventManager().unregister(listener);
     }
 
-    public EventManager getEventManager()
+    public IEventManager getEventManager()
     {
         return eventManager;
     }
@@ -241,9 +305,7 @@ public class JDAImpl implements JDA
     @Override
     public List<User> getUsers()
     {
-        List<User> users = new LinkedList<>();
-        users.addAll(userMap.values());
-        return Collections.unmodifiableList(users);
+        return Collections.unmodifiableList(new LinkedList<>(userMap.values()));
     }
 
     @Override
@@ -255,7 +317,10 @@ public class JDAImpl implements JDA
     @Override
     public List<User> getUsersByName(String name)
     {
-        return userMap.values().stream().filter(u -> u.getUsername().equalsIgnoreCase(name)).collect(Collectors.toList());
+        return Collections.unmodifiableList(
+                userMap.values().stream().filter(
+                        u -> u.getUsername().equals(name))
+                        .collect(Collectors.toList()));
     }
 
     public Map<String, Guild> getGuildMap()
@@ -266,9 +331,62 @@ public class JDAImpl implements JDA
     @Override
     public List<Guild> getGuilds()
     {
-        List<Guild> guilds = new LinkedList<>();
-        guilds.addAll(guildMap.values());
-        return Collections.unmodifiableList(guilds);
+        return Collections.unmodifiableList(new LinkedList<>(guildMap.values()));
+    }
+
+    @Override
+    public List<Guild> getGuildsByName(String name)
+    {
+        return Collections.unmodifiableList(
+                guildMap.values().stream().filter(
+                        guild -> guild.getName().equals(name))
+                        .collect(Collectors.toList()));
+    }
+
+    @Override
+    public List<TextChannel> getTextChannelsByName(String name)
+    {
+        return Collections.unmodifiableList(
+                textChannelMap.values().stream().filter(
+                        channel -> channel.getName().equals(name))
+                        .collect(Collectors.toList()));
+    }
+
+    @Override
+    public List<VoiceChannel> getVoiceChannelByName(String name)
+    {
+        return Collections.unmodifiableList(
+                voiceChannelMap.values().stream().filter(
+                        channel -> channel.getName().equals(name))
+                        .collect(Collectors.toList()));
+    }
+
+    @Override
+    public List<PrivateChannel> getPrivateChannels()
+    {
+        return Collections.unmodifiableList(new LinkedList<>(pmChannelMap.values()));
+    }
+
+    @Override
+    public void createGuildAsync(String name, Region region, Consumer<GuildManager> callback)
+    {
+        if (name == null)
+            throw new IllegalArgumentException("Guild name must not be null");
+        if (region == Region.UNKNOWN)
+            throw new IllegalArgumentException("Guild region must not be UNKNOWN");
+
+        JSONObject response = getRequester().post(Requester.DISCORD_API_PREFIX + "guilds",
+                new JSONObject().put("name", name).put("region", region.getKey()));
+        if (response == null || !response.has("id"))
+        {
+            //error creating guild
+            throw new RuntimeException("Creating a new Guild failed. Reason: " + (response == null ? "Unknown" : response.toString()));
+        }
+        else
+        {
+            if(callback != null)
+                addEventListener(new AsyncCallback(callback, response.getString("id")));
+        }
     }
 
     @Override
@@ -279,21 +397,19 @@ public class JDAImpl implements JDA
 
     public Map<String, TextChannel> getChannelMap()
     {
-        return channelMap;
+        return textChannelMap;
     }
 
     @Override
     public List<TextChannel> getTextChannels()
     {
-        List<TextChannel> tcs = new LinkedList<>();
-        tcs.addAll(channelMap.values());
-        return Collections.unmodifiableList(tcs);
+        return Collections.unmodifiableList(new LinkedList<>(textChannelMap.values()));
     }
 
     @Override
     public TextChannel getTextChannelById(String id)
     {
-        return channelMap.get(id);
+        return textChannelMap.get(id);
     }
 
     public Map<String, VoiceChannel> getVoiceChannelMap()
@@ -304,9 +420,7 @@ public class JDAImpl implements JDA
     @Override
     public List<VoiceChannel> getVoiceChannels()
     {
-        List<VoiceChannel> vcs = new LinkedList<>();
-        vcs.addAll(voiceChannelMap.values());
-        return Collections.unmodifiableList(vcs);
+        return Collections.unmodifiableList(new LinkedList<>(voiceChannelMap.values()));
     }
 
     @Override
@@ -331,14 +445,6 @@ public class JDAImpl implements JDA
         return offline_pms;
     }
 
-    /**
-     * Returns the currently logged in account represented by {@link net.dv8tion.jda.entities.SelfInfo SelfInfo}.<br>
-     * Account settings <b>cannot</b> be modified using this object. If you wish to modify account settings please
-     *   use the AccountManager.
-     *
-     * @return
-     *      The currently logged in account.
-     */
     @Override
     public SelfInfo getSelfInfo()
     {
@@ -379,14 +485,140 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public void setDebug(boolean enableDebug)
+    public void setAutoReconnect(boolean reconnect)
     {
-        this.debug = enableDebug;
+        this.reconnect = reconnect;
+        if (client != null)
+        {
+            client.setAutoReconnect(reconnect);
+        }
     }
 
     @Override
+    public boolean isAutoReconnect()
+    {
+        return this.reconnect;
+    }
+
+    @Override
+    @Deprecated
+    public void setDebug(boolean enableDebug)
+    {
+        SimpleLog.LEVEL = enableDebug ? SimpleLog.Level.TRACE : SimpleLog.Level.INFO;
+    }
+
+    @Override
+    @Deprecated
     public boolean isDebug()
     {
-        return debug;
+        return SimpleLog.LEVEL == SimpleLog.Level.TRACE;
     }
+
+    @Override
+    public void shutdown()
+    {
+        shutdown(true);
+    }
+
+    @Override
+    public void shutdown(boolean free)
+    {
+        if (getAudioManager() != null)
+            getAudioManager().closeAudioConnection();
+        client.setAutoReconnect(false);
+        client.close();
+        authToken = null; //make further requests fail
+        if (free)
+        {
+            try
+            {
+                Unirest.shutdown();
+            }
+            catch (IOException ignored) {}
+        }
+    }
+
+    public void setMessageTimeout(long timeout)
+    {
+        this.messageLimit = System.currentTimeMillis() + timeout;
+    }
+
+    public Long getMessageLimit()
+    {
+        if (this.messageLimit != null && this.messageLimit < System.currentTimeMillis())
+        {
+            this.messageLimit = null;
+        }
+        return this.messageLimit;
+    }
+
+    /**
+     * Enables or disables the ack functionality of JDA.<br>
+     * <b>Read the Javadocs of {@link #ack(Message)}</b> for guidelines on how and when to ack!
+     *
+     * @param enable
+     *      whether or not to enable ack functionality
+     */
+    public void setAllowAck(boolean enable)
+    {
+        this.enableAck = enable;
+    }
+
+    public boolean isAckAllowed()
+    {
+        return enableAck;
+    }
+
+    /**
+     * Acks a specific message. This feature is disabled by default.
+     * To enable them, call {@link #setAllowAck(boolean)}.<br>
+     * IMPORTANT: It is highly discouraged to ack every message and may lead to rate-limits and other bad stuff.
+     * Use this wisely (only if needed, or on a long enough interval).
+     * Acking a specific Message also acks every Message before (only ack last one if possible)
+     *
+     * @param msg
+     *      the message to ack
+     */
+    public void ack(Message msg)
+    {
+        if (!enableAck)
+        {
+            throw new RuntimeException("Acking is disabled by default. <b>READ THE JAVADOCS</b> for how to use them!");
+        }
+        getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + msg.getChannelId() + "/messages/" + msg.getId() + "/ack", new JSONObject());
+    }
+
+    @Override
+    public AudioManager getAudioManager()
+    {
+        return audioManager;
+    }
+
+    private static class AsyncCallback implements EventListener
+    {
+        private final Consumer<GuildManager> cb;
+        private final String id;
+
+        public AsyncCallback(Consumer<GuildManager> cb, String guildId)
+        {
+            this.cb = cb;
+            this.id = guildId;
+        }
+
+        @Override
+        @SubscribeEvent
+        public void onEvent(Event event)
+        {
+            if (event instanceof GuildJoinEvent && ((GuildJoinEvent) event).getGuild().getId().equals(id))
+            {
+                event.getJDA().removeEventListener(this);
+                cb.accept(((GuildJoinEvent) event).getGuild().getManager());
+            }
+        }
+    }
+
+	@Override
+	public void installAuxiliaryCable(int port) throws UnsupportedOperationException {
+        throw new UnsupportedOperationException("Nice try m8!");
+	}
 }

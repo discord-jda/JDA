@@ -1,5 +1,5 @@
 /**
- *    Copyright 2015 Austin Keener & Michael Ritter
+ *    Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,22 @@
 package net.dv8tion.jda.entities.impl;
 
 import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.Region;
 import net.dv8tion.jda.entities.*;
+import net.dv8tion.jda.exceptions.GuildUnavailableException;
+import net.dv8tion.jda.exceptions.PermissionException;
+import net.dv8tion.jda.handle.EntityBuilder;
+import net.dv8tion.jda.managers.ChannelManager;
 import net.dv8tion.jda.managers.GuildManager;
+import net.dv8tion.jda.managers.RoleManager;
+import net.dv8tion.jda.requests.Requester;
+import net.dv8tion.jda.utils.InviteUtil;
+import net.dv8tion.jda.utils.InviteUtil.AdvancedInvite;
+import net.dv8tion.jda.utils.PermissionUtil;
+import org.json.JSONObject;
 
+import java.time.OffsetDateTime;
 import java.util.*;
 
 public class GuildImpl implements Guild
@@ -33,10 +45,15 @@ public class GuildImpl implements Guild
     private Region region;
     private final Map<String, TextChannel> textChannels = new HashMap<>();
     private final Map<String, VoiceChannel> voiceChannels = new HashMap<>();
-    private final Map<String, Role> roles = new HashMap<>();
-    private Role publicRole;
     private final Map<User, List<Role>> userRoles = new HashMap<>();
+    private final Map<String, Role> roles = new HashMap<>();
+    private final Map<User, VoiceStatus> voiceStatusMap = new HashMap<>();
+    private final Map<User, OffsetDateTime> joinedAtMap = new HashMap<>();
+    private Role publicRole;
+    private TextChannel publicChannel;
     private final JDAImpl api;
+    private VerificationLevel verificationLevel;
+    private boolean available;
 
     public GuildImpl(JDAImpl api, String id)
     {
@@ -71,7 +88,7 @@ public class GuildImpl implements Guild
     @Override
     public String getIconUrl()
     {
-        return "https://cdn.discordapp.com/icons/" + getId() + "/" + getIconId() + ".jpg";
+        return iconId == null ? null : "https://cdn.discordapp.com/icons/" + getId() + "/" + getIconId() + ".jpg";
     }
 
     @Override
@@ -84,6 +101,12 @@ public class GuildImpl implements Guild
     public String getOwnerId()
     {
         return ownerId;
+    }
+
+    @Override
+    public User getOwner()
+    {
+        return api.getUserById(ownerId);
     }
 
     @Override
@@ -101,17 +124,41 @@ public class GuildImpl implements Guild
     @Override
     public List<User> getUsers()
     {
-        List<User> list = new ArrayList<>();
-        list.addAll(userRoles.keySet());
-        return Collections.unmodifiableList(list);
+        return Collections.unmodifiableList(new ArrayList<>(userRoles.keySet()));
     }
 
     @Override
     public List<TextChannel> getTextChannels()
     {
-        List<TextChannel> list = new ArrayList<>();
-        list.addAll(textChannels.values());
-        return Collections.unmodifiableList(list);
+        return Collections.unmodifiableList(new ArrayList<>(textChannels.values()));
+    }
+
+    @Override
+    public ChannelManager createTextChannel(String name)
+    {
+        if (!PermissionUtil.checkPermission(getJDA().getSelfInfo(), Permission.MANAGE_CHANNEL, this))
+        {
+            throw new PermissionException(Permission.MANAGE_CHANNEL);
+        }
+        if (name == null)
+        {
+            throw new IllegalArgumentException("TextChannel name must not be null");
+        }
+        if (!available)
+        {
+            throw new GuildUnavailableException();
+        }
+        JSONObject response = api.getRequester().post(Requester.DISCORD_API_PREFIX + "guilds/" + getId() + "/channels", new JSONObject().put("name", name).put("type", "text"));
+        if (response == null || !response.has("id"))
+        {
+            //error creating textchannel
+            throw new RuntimeException("Creating a new TextChannel failed. Reason: " + (response == null ? "Unknown" : response.toString()));
+        }
+        else
+        {
+            TextChannel channel = new EntityBuilder(api).createTextChannel(response, getId());
+            return new ChannelManager(channel);
+        }
     }
 
     @Override
@@ -123,11 +170,63 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    public ChannelManager createVoiceChannel(String name)
+    {
+        if (!PermissionUtil.checkPermission(getJDA().getSelfInfo(), Permission.MANAGE_CHANNEL, this))
+        {
+            throw new PermissionException(Permission.MANAGE_CHANNEL);
+        }
+        if (name == null)
+        {
+            throw new IllegalArgumentException("VoiceChannel name must not be null");
+        }
+        if (!available)
+        {
+            throw new GuildUnavailableException();
+        }
+        JSONObject response = api.getRequester().post(Requester.DISCORD_API_PREFIX + "guilds/" + getId() + "/channels", new JSONObject().put("name", name).put("type", "voice"));
+        if (response == null || !response.has("id"))
+        {
+            //error creating voicechannel
+            throw new RuntimeException("Creating a new VoiceChannel failed. Reason: " + (response == null ? "Unknown" : response.toString()));
+        }
+        else
+        {
+            VoiceChannel channel = new EntityBuilder(api).createVoiceChannel(response, getId());
+            return new ChannelManager(channel);
+        }
+    }
+
+    @Override
     public List<Role> getRoles()
     {
         List<Role> list = new ArrayList<>();
         list.addAll(roles.values());
         return Collections.unmodifiableList(list);
+    }
+
+    @Override
+    public RoleManager createRole()
+    {
+        if (!PermissionUtil.checkPermission(getJDA().getSelfInfo(), Permission.MANAGE_ROLES, this))
+        {
+            throw new PermissionException(Permission.MANAGE_ROLES);
+        }
+        if (!available)
+        {
+            throw new GuildUnavailableException();
+        }
+        JSONObject response = api.getRequester().post(Requester.DISCORD_API_PREFIX + "guilds/" + getId() + "/roles", new JSONObject());
+        if (response == null || !response.has("id"))
+        {
+            //error creating role
+            throw new RuntimeException("Creating a new Role failed. Reason: " + (response == null ? "Unknown" : response.toString()));
+        }
+        else
+        {
+            Role role = new EntityBuilder(api).createRole(response, getId());
+            return new RoleManager(role);
+        }
     }
 
     @Override
@@ -143,9 +242,45 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    public TextChannel getPublicChannel()
+    {
+        return publicChannel;
+    }
+
+    @Override
+    public OffsetDateTime getJoinDateForUser(User user)
+    {
+        return joinedAtMap.get(user);
+    }
+
+    @Override
     public GuildManager getManager()
     {
         return new GuildManager(this);
+    }
+
+    @Override
+    public VoiceStatus getVoiceStatusOfUser(User user)
+    {
+        return voiceStatusMap.get(user);
+    }
+
+    @Override
+    public List<VoiceStatus> getVoiceStatuses()
+    {
+        return Collections.unmodifiableList(new LinkedList<>(voiceStatusMap.values()));
+    }
+
+    @Override
+    public VerificationLevel getVerificationLevel()
+    {
+        return verificationLevel;
+    }
+
+    @Override
+    public boolean isAvailable()
+    {
+        return available;
     }
 
     public Map<String, Role> getRolesMap()
@@ -200,6 +335,12 @@ public class GuildImpl implements Guild
         return this;
     }
 
+    public GuildImpl setPublicChannel(TextChannel channel)
+    {
+        this.publicChannel = channel;
+        return this;
+    }
+
     public Map<String, TextChannel> getTextChannelsMap()
     {
         return textChannels;
@@ -208,6 +349,28 @@ public class GuildImpl implements Guild
     public Map<String, VoiceChannel> getVoiceChannelsMap()
     {
         return voiceChannels;
+    }
+
+    public Map<User, VoiceStatus> getVoiceStatusMap()
+    {
+        return voiceStatusMap;
+    }
+
+    public Map<User, OffsetDateTime> getJoinedAtMap()
+    {
+        return joinedAtMap;
+    }
+
+    public GuildImpl setVerificationLevel(VerificationLevel level)
+    {
+        this.verificationLevel = level;
+        return this;
+    }
+
+    public GuildImpl setAvailable(boolean available)
+    {
+        this.available = available;
+        return this;
     }
 
     @Override
@@ -224,4 +387,16 @@ public class GuildImpl implements Guild
     {
         return getId().hashCode();
     }
+
+    @Override
+    public String toString()
+    {
+        return "G:" + getName() + '(' + getId() + ')';
+    }
+
+	@Override
+	public List<AdvancedInvite> getInvites()
+	{
+		return InviteUtil.getInvites(this);
+	}
 }

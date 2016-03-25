@@ -1,5 +1,5 @@
 /**
- *    Copyright 2015 Austin Keener & Michael Ritter
+ *    Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,9 @@ import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.Role;
+import net.dv8tion.jda.managers.RoleManager;
+
+import java.util.List;
 
 public class RoleImpl implements net.dv8tion.jda.entities.Role
 {
@@ -52,6 +55,18 @@ public class RoleImpl implements net.dv8tion.jda.entities.Role
     public String getId()
     {
         return id;
+    }
+
+    @Override
+    public int getPermissionsRaw()
+    {
+        return permissions;
+    }
+
+    @Override
+    public List<Permission> getPermissions()
+    {
+        return Permission.getPermissions(permissions);
     }
 
     @Override
@@ -90,6 +105,12 @@ public class RoleImpl implements net.dv8tion.jda.entities.Role
         return grouped;
     }
 
+    @Override
+    public RoleManager getManager()
+    {
+        return new RoleManager(this);
+    }
+
     public RoleImpl setName(String name)
     {
         this.name = name;
@@ -126,11 +147,6 @@ public class RoleImpl implements net.dv8tion.jda.entities.Role
         return this;
     }
 
-    public int getPermissions()
-    {
-        return permissions;
-    }
-
     @Override
     public boolean equals(Object o)
     {
@@ -146,4 +162,9 @@ public class RoleImpl implements net.dv8tion.jda.entities.Role
         return getId().hashCode();
     }
 
+    @Override
+    public String toString()
+    {
+        return "R:" + getName() + '(' + getId() + ')';
+    }
 }

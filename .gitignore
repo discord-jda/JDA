@@ -2,6 +2,14 @@
 config.json
 tokens.json
 
+# music files
+*.mp3
+*.aac
+*.m4a
+*.wav
+*.flac
+*.ogg
+
 # gradle
 /build/
 /.gradle/

@@ -1,5 +1,5 @@
 /**
- *    Copyright 2015 Austin Keener & Michael Ritter
+ *    Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,65 +15,102 @@
  */
 package net.dv8tion.jda.handle;
 
-import net.dv8tion.jda.entities.Guild;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.entities.impl.GuildImpl;
+import net.dv8tion.jda.OnlineStatus;
 import net.dv8tion.jda.entities.impl.JDAImpl;
-import net.dv8tion.jda.entities.impl.SelfInfoImpl;
 import net.dv8tion.jda.events.ReadyEvent;
+import net.dv8tion.jda.events.ReconnectedEvent;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 public class ReadyHandler extends SocketHandler
 {
     private final EntityBuilder builder;
+    private final boolean isReload;
 
-    public ReadyHandler(JDAImpl api, int responseNumber)
+    public ReadyHandler(JDAImpl api, boolean isReload, int responseNumber)
     {
         super(api, responseNumber);
         this.builder = new EntityBuilder(api);
+        this.isReload = isReload;
     }
 
     @Override
-    public void handle(JSONObject content)
+    public void handle(final JSONObject content)
     {
-        //TODO: User-Setings; read_state; guild voice states; voice channels
-        builder.createSelfInfo(content.getJSONObject("user"));
-        JSONArray muted = content.getJSONObject("user_settings").getJSONArray("muted_channels");
-        List<String> mutedChannelIds = new ArrayList<>();
-        List<TextChannel> mutedChannels = new ArrayList<>();
-        for (int i = 0; i < muted.length(); i++)
+        String oldGame = null;
+        OnlineStatus oldStatus = null;
+        if (isReload)
         {
-            mutedChannelIds.add(muted.getString(i));
+            oldGame = api.getSelfInfo().getCurrentGame();
+            oldStatus = api.getSelfInfo().getOnlineStatus();
+            //clearing the registry...
+            api.getChannelMap().clear();
+            api.getVoiceChannelMap().clear();
+            api.getGuildMap().clear();
+            api.getUserMap().clear();
+            api.getPmChannelMap().clear();
+            api.getOffline_pms().clear();
         }
+        //TODO: User-Setings; read_state
+        builder.createSelfInfo(content.getJSONObject("user"));
+
+        if (isReload)
+        {
+            if (oldGame != null)
+                api.getAccountManager().setGame(oldGame);
+            if (oldStatus.equals(OnlineStatus.AWAY))
+                api.getAccountManager().setIdle(true);
+        }
+
         JSONArray guilds = content.getJSONArray("guilds");
+        final List<String> guildIds = new LinkedList<>();
         for (int i = 0; i < guilds.length(); i++)
         {
-            Guild guild = builder.createGuild(guilds.getJSONObject(i));
-            Iterator<String> iterator = mutedChannelIds.iterator();
-            while (iterator.hasNext())
+            JSONObject guildJson = guilds.getJSONObject(i);
+            if(guildJson.has("large") && guildJson.getBoolean("large"))
             {
-                String id = iterator.next();
-                TextChannel chan = ((GuildImpl) guild).getTextChannelsMap().get(id);
-                if (chan != null)
+                guildIds.add(guildJson.getString("id"));
+                builder.createGuildFirstPass(guildJson, guild ->
                 {
-                    mutedChannels.add(chan);
-                    iterator.remove();
-                }
+                    guildIds.remove(guild.getId());
+                    if (guildIds.isEmpty())
+                    {
+                        finishReady(content);
+                    }
+                });
+            }
+            else
+            {
+                builder.createGuildFirstPass(guildJson, null);
             }
         }
-        ((SelfInfoImpl) api.getSelfInfo()).setMutedChannels(mutedChannels);
+        if (guildIds.isEmpty())
+        {
+            finishReady(content);
+        }
+    }
+
+    public void finishReady(JSONObject content)
+    {
         JSONArray priv_chats = content.getJSONArray("private_channels");
         for (int i = 0; i < priv_chats.length(); i++)
         {
             builder.createPrivateChannel(priv_chats.getJSONObject(i));
         }
 
-        System.out.println("Finished Loading!");    //TODO: Replace with Logger.INFO
-        api.getEventManager().handle(new ReadyEvent(api, responseNumber));
+        if (isReload)
+        {
+            JDAImpl.LOG.info("Finished (Re)Loading!");
+            api.getEventManager().handle(new ReconnectedEvent(api, responseNumber));
+        }
+        else
+        {
+            JDAImpl.LOG.info("Finished Loading!");
+            api.getEventManager().handle(new ReadyEvent(api, responseNumber));
+        }
+        api.getClient().ready();
     }
 }

@@ -1,5 +1,5 @@
 /**
- *    Copyright 2015 Austin Keener & Michael Ritter
+ *    Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,20 +73,5 @@ public class SelfInfoImpl extends UserImpl implements SelfInfo
     public List<TextChannel> getMutedChannelsModifiable()
     {
         return mutedChannels;
-    }
-
-    @Override
-    public boolean equals(Object o)
-    {
-        if (!(o instanceof SelfInfo))
-            return false;
-        SelfInfo oSelfInfo = (SelfInfo) o;
-        return this == oSelfInfo || this.getId().equals(oSelfInfo.getId());
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return getId().hashCode();
     }
 }

@@ -1,5 +1,5 @@
 /**
- *    Copyright 2015 Austin Keener & Michael Ritter
+ *    Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,11 @@ package net.dv8tion.jda.handle;
 
 import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.entities.impl.GuildImpl;
-import net.dv8tion.jda.entities.impl.JDAImpl;
-import net.dv8tion.jda.entities.impl.PrivateChannelImpl;
-import net.dv8tion.jda.entities.impl.UserImpl;
+import net.dv8tion.jda.entities.impl.*;
 import net.dv8tion.jda.events.guild.member.GuildMemberJoinEvent;
 import org.json.JSONObject;
 
+import java.time.OffsetDateTime;
 import java.util.LinkedList;
 
 public class GuildMemberAddHandler extends SocketHandler
@@ -46,6 +44,9 @@ public class GuildMemberAddHandler extends SocketHandler
             api.getOffline_pms().remove(user.getId());
         }
         guild.getUserRoles().put(user, new LinkedList<>());
+        VoiceStatusImpl voiceStatus = new VoiceStatusImpl(user, guild);
+        guild.getVoiceStatusMap().put(user, voiceStatus);
+        guild.getJoinedAtMap().put(user, OffsetDateTime.parse(content.getString("joined_at")));
         api.getEventManager().handle(
                 new GuildMemberJoinEvent(
                         api, responseNumber,

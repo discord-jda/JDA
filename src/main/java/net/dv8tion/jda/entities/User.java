@@ -1,5 +1,5 @@
 /**
- *    Copyright 2015 Austin Keener & Michael Ritter
+ *    Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,6 +51,14 @@ public interface User
     String getDiscriminator();
 
     /**
+     * Returns the String needed to mention this User in a {@link net.dv8tion.jda.entities.Message Message}.
+     *
+     * @return
+     *      The String needed to mention this User
+     */
+    String getAsMention();
+
+    /**
      * The Discord Id for this user's avatar image.
      * If the user has not set an image, this will return null.
      *
@@ -96,12 +104,12 @@ public interface User
     PrivateChannel getPrivateChannel();
 
     /**
-     * Gets the {@link net.dv8tion.jda.entities.VoiceStatus VoiceStatus} Object holding the current {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel}
-     * and mute/deaf status of the User
+     * Returns whether or not the given user is a Bot-Account (special badge in client, some different behaviour)
      *
-     * @return The User's {@link net.dv8tion.jda.entities.VoiceStatus VoiceStatus}
+     * @return
+     *      If the User's Account is marked as Bot
      */
-    VoiceStatus getVoiceStatus();
+    boolean isBot();
 
     /**
      * Returns the {@link net.dv8tion.jda.JDA JDA} instance of this User

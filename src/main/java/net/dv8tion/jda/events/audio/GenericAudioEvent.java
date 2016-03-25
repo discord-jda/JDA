@@ -1,5 +1,5 @@
 /**
- *    Copyright 2015 Austin Keener & Michael Ritter
+ *    Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,37 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.hooks;
+package net.dv8tion.jda.events.audio;
 
+import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.events.Event;
 
-import java.util.LinkedList;
-import java.util.List;
-
-public class EventManager
+public class GenericAudioEvent extends Event
 {
-    private final List<EventListener> listeners = new LinkedList<>();
-
-    public EventManager()
+    protected GenericAudioEvent(JDA api, int responseNumber)
     {
-
-    }
-
-    public void register(EventListener listener)
-    {
-        listeners.add(listener);
-    }
-
-    public void unregister(EventListener listener)
-    {
-        listeners.remove(listener);
-    }
-
-    public void handle(Event event)
-    {
-        for (EventListener listener : listeners)
-        {
-            listener.onEvent(event);
-        }
+        super(api, responseNumber);
     }
 }

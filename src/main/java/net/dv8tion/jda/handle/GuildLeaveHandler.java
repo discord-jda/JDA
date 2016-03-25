@@ -1,5 +1,5 @@
 /**
- *    Copyright 2015 Austin Keener & Michael Ritter
+ *    Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,16 @@
 package net.dv8tion.jda.handle;
 
 import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.entities.impl.GuildImpl;
 import net.dv8tion.jda.entities.impl.JDAImpl;
+import net.dv8tion.jda.entities.impl.UserImpl;
 import net.dv8tion.jda.events.guild.GuildLeaveEvent;
 import org.json.JSONObject;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class GuildLeaveHandler extends SocketHandler
 {
@@ -32,10 +39,42 @@ public class GuildLeaveHandler extends SocketHandler
     public void handle(JSONObject content)
     {
         Guild guild = api.getGuildMap().get(content.getString("id"));
+        if (content.has("unavailable") && content.getBoolean("unavailable"))
+        {
+            ((GuildImpl) guild).setAvailable(false);
+            //TODO: Unavailable-event. Sever audio connection when guild becomes unavailable.
+            return;
+        }
+        if (api.getAudioManager() != null && api.getAudioManager().isConnected()
+                && api.getAudioManager().getConnectedChannel().getGuild().getId().equals(guild.getId()))
+            api.getAudioManager().closeAudioConnection();
+
+        //cleaning up all users that we do not share a guild with anymore
+        List<User> users = guild.getUsers();
+        Set<User> usersInOtherGuilds = new HashSet<>();
+        for (Guild g : api.getGuilds())
+        {
+            if (g == guild)
+                continue;
+            usersInOtherGuilds.addAll(g.getUsers());
+        }
+        for (User user : users)
+        {
+            if (!usersInOtherGuilds.contains(user))
+            {
+                //clean up this user
+                if (((UserImpl) user).hasPrivateChannel())
+                {
+                    api.getOffline_pms().put(user.getId(), user.getPrivateChannel().getId());
+                }
+                api.getUserMap().remove(user.getId());
+            }
+        }
+
+        api.getGuildMap().remove(guild.getId());
         api.getEventManager().handle(
                 new GuildLeaveEvent(
                         api, responseNumber,
                         guild));
-        api.getGuildMap().remove(guild.getId());
     }
 }

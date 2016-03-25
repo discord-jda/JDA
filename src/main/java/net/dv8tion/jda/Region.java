@@ -1,5 +1,5 @@
 /**
- *    Copyright 2015 Austin Keener & Michael Ritter
+ *    Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,8 @@ public enum Region
     SYDNEY("sydney", "Sydney"),
     US_EAST("us-east", "US East"),
     US_WEST("us-west", "US West"),
+    US_CENTRAL("us-central", "US Central"),
+    US_SOUTH("us-south", "US South"),
     UNKNOWN("", "Unknown Region");
 
     private final String key;

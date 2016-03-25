@@ -1,5 +1,5 @@
 /**
- *    Copyright 2015 Austin Keener & Michael Ritter
+ *    Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,13 @@
 package net.dv8tion.jda;
 
 import net.dv8tion.jda.entities.Message;
+import net.dv8tion.jda.entities.MessageChannel;
+import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
+import net.dv8tion.jda.exceptions.PermissionException;
 import net.dv8tion.jda.handle.EntityBuilder;
+import net.dv8tion.jda.requests.Requester;
 import org.json.JSONArray;
 
 import java.util.LinkedList;
@@ -27,15 +31,18 @@ import java.util.List;
 public class MessageHistory
 {
     private final JDAImpl api;
-    private final TextChannel channel;
+    private final String channelId;
     private String lastId = null;
     private boolean atEnd = false;
     private final List<Message> queued = new LinkedList<>();
 
-    public MessageHistory(JDA api, TextChannel channel)
+    public MessageHistory(JDA api, MessageChannel channel)
     {
+        if (channel instanceof TextChannel && !((TextChannel) channel).checkPermission(api.getSelfInfo(), Permission.MESSAGE_HISTORY))
+            throw new PermissionException(Permission.MESSAGE_HISTORY);
+
         this.api = ((JDAImpl) api);
-        this.channel = channel;
+        this.channelId = (channel instanceof TextChannel) ? ((TextChannel) channel).getId() : ((PrivateChannel) channel).getId();
     }
 
     /**
@@ -63,21 +70,21 @@ public class MessageHistory
     }
 
     /**
-     * Queues the next set of 50 Messages and returns them
+     * Queues the next set of 100 Messages and returns them
      * If the end of the chat was already reached, this function returns null
      *
-     * @return a list of the next 50 Messages (max), or null if at end of chat
+     * @return a list of the next 100 Messages (max), or null if at end of chat
      */
     public List<Message> retrieve()
     {
-        return retrieve(50);
+        return retrieve(100);
     }
 
     /**
      * Queues the next set of Messages and returns them
      * If the end of the chat was already reached, this function returns null
      *
-     * @param amount the amount to Messages to queue (limited to 100)
+     * @param amount the amount to Messages to queue
      * @return a list of the next [amount] Messages (max), or null if at end of chat
      */
     public List<Message> retrieve(int amount)
@@ -86,33 +93,38 @@ public class MessageHistory
         {
             return null;
         }
-        amount = Math.min(amount, 100);
+        int toQueue;
         LinkedList<Message> out = new LinkedList<>();
-        try
+        EntityBuilder builder = new EntityBuilder(api);
+        while(amount > 0)
         {
-            JSONArray array = api.getRequester().getA("https://discordapp.com/api/channels/" + channel.getId()
-                    + "/messages?limit=" + amount + (lastId != null ? "&before=" + lastId : ""));
-
-            EntityBuilder builder = new EntityBuilder(api);
-            for (int i = 0; i < array.length(); i++)
+            toQueue = Math.min(amount, 100);
+            try
             {
-                out.add(builder.createMessage(array.getJSONObject(i)));
-            }
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
+                JSONArray array = api.getRequester().getA(Requester.DISCORD_API_PREFIX + "channels/" + channelId
+                        + "/messages?limit=" + toQueue + (lastId != null ? "&before=" + lastId : ""));
 
-        if (out.size() < amount)
-        {
-            atEnd = true;
+                for (int i = 0; i < array.length(); i++)
+                {
+                    out.add(builder.createMessage(array.getJSONObject(i)));
+                }
+                if(array.length() < toQueue) {
+                    atEnd = true;
+                    break;
+                }
+                else
+                {
+                    lastId = out.getLast().getId();
+                }
+            }
+            catch (Exception ex)
+            {
+                JDAImpl.LOG.log(ex);
+                break;
+            }
+            amount -= toQueue;
         }
-        if (out.size() > 0)
-        {
-            lastId = out.getLast().getId();
-        }
-        else
+        if(out.size() == 0)
         {
             return null;
         }

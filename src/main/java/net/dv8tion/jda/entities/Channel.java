@@ -1,12 +1,12 @@
 /**
- * Copyright 2015 Austin Keener & Michael Ritter
- * <p>
+ *    Copyright 2015-2016 Austin Keener & Michael Ritter
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,9 +18,14 @@ package net.dv8tion.jda.entities;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.managers.ChannelManager;
+import net.dv8tion.jda.managers.PermissionOverrideManager;
+import net.dv8tion.jda.utils.InviteUtil;
 
 import java.util.List;
 
+/**
+ * Represents a {@link net.dv8tion.jda.entities.Guild Guild} channel.
+ */
 public interface Channel
 {
     /**
@@ -104,4 +109,90 @@ public interface Channel
      *      the corresponding JDA instance
      */
     JDA getJDA();
+
+    /**
+     * The {@link PermissionOverride} relating to the specified {@link net.dv8tion.jda.entities.User User}.
+     * If there is no {@link net.dv8tion.jda.entities.PermissionOverride PermissionOverride} for this {@link net.dv8tion.jda.entities.Channel Channel}
+     * relating to the provided {@link net.dv8tion.jda.entities.User User}, then this returns <code>null</code>.
+     *
+     * @param user
+     *          The {@link net.dv8tion.jda.entities.User User} whose {@link net.dv8tion.jda.entities.PermissionOverride PermissionOverride} is requested.
+     * @return
+     *      Possibly-null {@link net.dv8tion.jda.entities.PermissionOverride PermissionOverride} relating to the provided {@link net.dv8tion.jda.entities.User User}.
+     */
+    PermissionOverride getOverrideForUser(User user);
+
+    /**
+     * The {@link PermissionOverride} relating to the specified {@link net.dv8tion.jda.entities.Role Role}.
+     * If there is no {@link net.dv8tion.jda.entities.PermissionOverride PermissionOverride} for this {@link net.dv8tion.jda.entities.Channel Channel}
+     * relating to the provided {@link net.dv8tion.jda.entities.Role Role}, then this returns <code>null</code>.
+     *
+     * @param role
+     *          The {@link net.dv8tion.jda.entities.User Role} whose {@link net.dv8tion.jda.entities.PermissionOverride PermissionOverride} is requested.
+     * @return
+     *      Possibly-null {@link net.dv8tion.jda.entities.PermissionOverride PermissionOverride} relating to the provided {@link net.dv8tion.jda.entities.Role Role}.
+     */
+    PermissionOverride getOverrideForRole(Role role);
+
+    /**
+     * Gets all of the {@link net.dv8tion.jda.entities.PermissionOverride PermissionOverrides} that are part
+     * of this {@link net.dv8tion.jda.entities.Channel Channel}.<br>
+     * This combines {@link net.dv8tion.jda.entities.User User} and {@link net.dv8tion.jda.entities.Role Role} overrides.
+     * If you would like only {@link net.dv8tion.jda.entities.User} overrides or only {@link net.dv8tion.jda.entities.Role Role}
+     * overrides, use {@link #getUserPermissionOverrides()} or {@link #getRolePermissionOverrides()} respectively.
+     *
+     * @return
+     *      Possibly-empty list of all {@link net.dv8tion.jda.entities.PermissionOverride PermissionOverrides} for this {@link net.dv8tion.jda.entities.Channel Channel}.
+     */
+    List<PermissionOverride> getPermissionOverrides();
+
+    /**
+     * Gets all of the {@link net.dv8tion.jda.entities.User User} {@link net.dv8tion.jda.entities.PermissionOverride PermissionOverrides}
+     * that are part of this {@link net.dv8tion.jda.entities.Channel Channel}.
+     *
+     * @return
+     *      Possibly-empty list of all {@link net.dv8tion.jda.entities.PermissionOverride PermissionOverrides} for {@link net.dv8tion.jda.entities.User Users}
+     *      for this {@link net.dv8tion.jda.entities.Channel Channel}.
+     */
+    List<PermissionOverride> getUserPermissionOverrides();
+
+    /**
+     * Gets all of the {@link net.dv8tion.jda.entities.Role Role} {@link net.dv8tion.jda.entities.PermissionOverride PermissionOverrides}
+     * that are part of this {@link net.dv8tion.jda.entities.Channel Channel}.
+     *
+     * @return
+     *      Possibly-empty list of all {@link net.dv8tion.jda.entities.PermissionOverride PermissionOverrides} for {@link net.dv8tion.jda.entities.Role Roles}
+     *      for this {@link net.dv8tion.jda.entities.Channel Channel}.
+     */
+    List<PermissionOverride> getRolePermissionOverrides();
+
+    /**
+     * Creates a new {@link net.dv8tion.jda.entities.PermissionOverride PermissionOverride} for a given {@link net.dv8tion.jda.entities.User User}.
+     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS Permission}
+     *
+     * @param user
+     *      the User to create an Override for
+     * @return
+     *      the PermissionOverrideManager for the created PermissionOverride
+     */
+    PermissionOverrideManager createPermissionOverride(User user);
+
+    /**
+     * Creates a new {@link net.dv8tion.jda.entities.PermissionOverride PermissionOverride} for a given {@link net.dv8tion.jda.entities.Role Role}.
+     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS Permission}
+     *
+     * @param role
+     *      the Role to create an Override for
+     * @return
+     *      the PermissionOverrideManager for the created PermissionOverride
+     */
+    PermissionOverrideManager createPermissionOverride(Role role);
+
+    /**
+     * Provides a list of all {@link net.dv8tion.jda.utils.InviteUtil.AdvancedInvite Invites} for this Channel.
+     *
+     * @return
+     *      An Immutable List of {@link net.dv8tion.jda.utils.InviteUtil.AdvancedInvite Invites} for this channel.
+     */
+    List<InviteUtil.AdvancedInvite> getInvites();
 }

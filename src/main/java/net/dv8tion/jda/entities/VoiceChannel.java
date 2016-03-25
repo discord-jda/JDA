@@ -1,5 +1,5 @@
 /**
- *    Copyright 2015 Austin Keener & Michael Ritter
+ *    Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,4 +22,9 @@ package net.dv8tion.jda.entities;
  */
 public interface VoiceChannel extends Channel
 {
+    /**
+     * Internal implementation of this class is available at
+     * {@link net.dv8tion.jda.entities.impl.VoiceChannelImpl TextChannelImpl}.<br>
+     * Note: Internal implementation should not be used directly.
+     */
 }

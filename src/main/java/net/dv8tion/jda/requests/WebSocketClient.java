@@ -1,5 +1,5 @@
 /**
- *    Copyright 2015 Austin Keener & Michael Ritter
+ *    Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,19 @@ package net.dv8tion.jda.requests;
 
 import com.neovisionaries.ws.client.*;
 import net.dv8tion.jda.entities.impl.JDAImpl;
+import net.dv8tion.jda.events.DisconnectEvent;
+import net.dv8tion.jda.events.ShutdownEvent;
 import net.dv8tion.jda.handle.*;
+import net.dv8tion.jda.utils.SimpleLog;
 import org.apache.http.HttpHost;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.time.OffsetDateTime;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.DataFormatException;
@@ -32,58 +38,72 @@ import java.util.zip.Inflater;
 
 public class WebSocketClient extends WebSocketAdapter
 {
+    public static final SimpleLog LOG = SimpleLog.getLog("JDASocket");
     private Thread keepAliveThread;
     private WebSocket socket;
-    private boolean connected;
     private long keepAliveInterval;
     private final JDAImpl api;
+    private final HttpHost proxy;
+    private String sessionId;
+    private boolean ready = false;
+    private boolean connected;
+    private final List<String> cachedEvents = new LinkedList<>();
+    private String url = null;
+    private int reconnectTimeout = 2;
+    private boolean isReconnectRunning = false;
+    private boolean reconnecting = false;           //for internal information (op7)
+    private boolean shouldReconnect = false;        //for configuration (connection loss)
 
-    public WebSocketClient(String url, JDAImpl api, HttpHost proxy)
+    public WebSocketClient(JDAImpl api, HttpHost proxy)
     {
         this.api = api;
-        WebSocketFactory factory = new WebSocketFactory();
-        if (proxy != null)
-        {
-            ProxySettings settings = factory.getProxySettings();
-            settings.setHost(proxy.getHostName());
-            settings.setPort(proxy.getPort());
-        }
-        try
-        {
-            socket = factory.createSocket(url)
-                    .addHeader("Accept-Encoding", "gzip")
-                    .addListener(this)
-                    .connect();
-        }
-        catch (IOException | WebSocketException e)
-        {
-            //Completely fail here. We couldn't make the connection.
-            throw new RuntimeException(e);
-        }
+        this.proxy = proxy;
+        connect();
     }
 
     public void send(String message)
     {
+        LOG.trace("<- " + message);
         socket.sendText(message);
     }
 
     @Override
     public void onConnected(WebSocket websocket, Map<String, List<String>> headers)
     {
-        JSONObject connectObj = new JSONObject()
-                .put("op", 2)
-                .put("d", new JSONObject()
-                    .put("token", api.getAuthToken())
-                    .put("properties", new JSONObject()
-                        .put("$os", System.getProperty("os.name"))
-                        .put("$browser", "Java Discord API")
-                        .put("$device", "")
-                        .put("$referring_domain", "t.co")
-                        .put("$referrer", "")
-                    )
-                    .put("v", 3)
-                    .put("compress", true)); //Used to make the READY event be given as compressed binary data when over a certain size. TY @ShadowLordAlpha
+        JSONObject connectObj;
+        LOG.info("Connected to WebSocket");
+        if(!reconnecting)
+        {
+            String token = api.getAuthToken();
+            if (token.startsWith("Bot "))
+            {
+                token = token.substring(4);
+            }
+            connectObj = new JSONObject()
+                    .put("op", 2)
+                    .put("d", new JSONObject()
+                            .put("token", token)
+                            .put("properties", new JSONObject()
+                                    .put("$os", System.getProperty("os.name"))
+                                    .put("$browser", "Java Discord API")
+                                    .put("$device", "")
+                                    .put("$referring_domain", "t.co")
+                                    .put("$referrer", "")
+                            )
+                            .put("v", 3)
+                            .put("large_threshold", 250)
+                            .put("compress", true)); //Used to make the READY event be given as compressed binary data when over a certain size. TY @ShadowLordAlpha
+        }
+        else
+        {
+            connectObj = new JSONObject()
+                    .put("op", 6)
+                    .put("d", new JSONObject()
+                            .put("session_id", sessionId)
+                            .put("seq", api.getResponseTotal()));
+        }
         send(connectObj.toString());
+        reconnecting = false;
         connected = true;
     }
 
@@ -91,32 +111,75 @@ public class WebSocketClient extends WebSocketAdapter
     public void onTextMessage(WebSocket websocket, String message)
     {
         JSONObject content = new JSONObject(message);
+
+        if (content.getInt("op") == 7)
+        {
+            url = content.getJSONObject("d").getString("url");
+            reconnecting = true;
+            close();
+            return;
+        }
+
         String type = content.getString("t");
         int responseTotal = content.getInt("s");
         api.setResponseTotal(responseTotal);
+
+        //Needs special handling due to content of "d" being an array
+        if(type.equals("PRESENCE_REPLACE"))
+        {
+            JSONArray presences = content.getJSONArray("d");
+            PresenceUpdateHandler handler = new PresenceUpdateHandler(api, responseTotal);
+            for (int i = 0; i < presences.length(); i++)
+            {
+                JSONObject presence = presences.getJSONObject(i);
+                handler.handle(presence);
+            }
+            return;
+        }
+
         content = content.getJSONObject("d");
-        if (type.equals("READY"))
+        if (type.equals("READY") || type.equals("RESUMED"))
         {
             keepAliveInterval = content.getLong("heartbeat_interval");
             keepAliveThread = new Thread(() -> {
-                while (socket.isOpen()) {
-                    send(new JSONObject().put("op", 1).put("d", System.currentTimeMillis()).toString());
+                while (connected) {
                     try {
+                        send(new JSONObject().put("op", 1).put("d", System.currentTimeMillis()).toString());
                         Thread.sleep(keepAliveInterval);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                        System.exit(0);
+                    } catch (InterruptedException ignored) {}
+                    catch (Exception ex) {
+                        //connection got cut... terminating keepAliveThread
+                        break;
                     }
                 }
             });
+            keepAliveThread.setPriority(Thread.MAX_PRIORITY);
             keepAliveThread.setDaemon(true);
             keepAliveThread.start();
+        }
+
+        LOG.trace(String.format("%s -> %s", type, content.toString()));
+        if (!ready && !(type.equals("READY") || type.equals("GUILD_MEMBERS_CHUNK")))
+        {
+            cachedEvents.add(message);
+            return;
         }
 
         try {
             switch (type) {
                 case "READY":
-                    new ReadyHandler(api, responseTotal).handle(content);
+                    sessionId = content.getString("session_id");
+                    new ReadyHandler(api, isReconnectRunning, responseTotal).handle(content);
+                case "RESUMED":
+                    //joint stuff
+                    isReconnectRunning = false;
+                    reconnectTimeout = 2;
+                    //resume only
+                    if(!type.equals("RESUMED")) return;
+                    ready = true;
+                    break;
+                case "GUILD_MEMBERS_CHUNK":
+                    new GuildMembersChunkHandler(api, responseTotal).handle(content);
                     break;
                 case "PRESENCE_UPDATE":
                     new PresenceUpdateHandler(api, responseTotal).handle(content);
@@ -141,6 +204,9 @@ public class WebSocketClient extends WebSocketAdapter
                     break;
                 case "VOICE_STATE_UPDATE":
                     new VoiceChangeHandler(api, responseTotal).handle(content);
+                    break;
+                case "VOICE_SERVER_UPDATE":
+                    new VoiceServerUpdateHandler(api, responseTotal).handle(content);
                     break;
                 case "CHANNEL_CREATE":
                     new ChannelCreateHandler(api, responseTotal).handle(content);
@@ -184,23 +250,24 @@ public class WebSocketClient extends WebSocketAdapter
                 case "GUILD_ROLE_DELETE":
                     new GuildRoleDeleteHandler(api, responseTotal).handle(content);
                     break;
+                case "USER_UPDATE":
+                    new UserUpdateHandler(api, responseTotal).handle(content);
+                    break;
+                case "USER_GUILD_SETTINGS_UPDATE":
+                    //TODO: handle notification updates...
+                    break;
                 default:
-                    System.out.println("Unrecognized event:\n" + message);    //TODO: Replace with "we don't know this type"
+                    LOG.debug("Unrecognized event:\n" + message);
             }
         }
         catch (JSONException ex)
         {
-            System.err.println("Got an unexpected Json-parse error. Please redirect following message to the devs:");
-            System.err.println('\t' + ex.getMessage());
-            System.err.println('\t' + type + " -> " + content);
+            LOG.warn("Got an unexpected Json-parse error. Please redirect following message to the devs:\n\t"
+                    + ex.getMessage() + "\n\t" + type + " -> " + content);
         }
-        catch (IllegalArgumentException ex)
+        catch (Exception ex)
         {
-            System.err.println("JDA encountered an internal error.");
-            if (api.isDebug())
-                ex.printStackTrace();
-            else
-                System.err.println(ex.getMessage());
+            LOG.log(ex);
         }
     }
 
@@ -227,11 +294,32 @@ public class WebSocketClient extends WebSocketAdapter
     @Override
     public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer)
     {
-        System.out.println("The connection was closed!");
-        System.out.println("By remote? " + closedByServer);
-        System.out.println("Reason: " + serverCloseFrame.getCloseReason());
-        System.out.println("Close code: " + serverCloseFrame.getCloseCode());
         connected = false;
+        if (keepAliveThread != null)
+        {
+            keepAliveThread.interrupt();
+            keepAliveThread = null;
+        }
+        if (reconnecting)           //we issued a reconnect (got op 7)
+        {
+            connect();
+        }
+        else if (!shouldReconnect)        //we should not reconnect
+        {
+            LOG.info("The connection was closed!");
+            LOG.info("By remote? " + closedByServer);
+            if (serverCloseFrame != null)
+            {
+                LOG.info("Reason: " + serverCloseFrame.getCloseReason());
+                LOG.info("Close code: " + serverCloseFrame.getCloseCode());
+            }
+            api.getEventManager().handle(new ShutdownEvent(api, OffsetDateTime.now()));
+        }
+        else
+        {
+            api.getEventManager().handle(new DisconnectEvent(api, serverCloseFrame, clientCloseFrame, closedByServer, OffsetDateTime.now()));
+            reconnect();
+        }
     }
 
     @Override
@@ -243,21 +331,104 @@ public class WebSocketClient extends WebSocketAdapter
     @Override
     public void handleCallbackError(WebSocket websocket, Throwable cause)
     {
-        cause.printStackTrace();
+        LOG.log(cause);
+    }
+
+    private void connect()
+    {
+        ready = false;
+        WebSocketFactory factory = new WebSocketFactory();
+        if (proxy != null)
+        {
+            ProxySettings settings = factory.getProxySettings();
+            settings.setHost(proxy.getHostName());
+            settings.setPort(proxy.getPort());
+        }
+        try
+        {
+            if (url == null)
+            {
+                url = getGateway();
+                if (url == null)
+                {
+                    throw new RuntimeException();
+                }
+            }
+            socket = factory.createSocket(url)
+                    .addHeader("Accept-Encoding", "gzip")
+                    .addListener(this);
+            socket.connect();
+        }
+        catch (IOException | WebSocketException e)
+        {
+            //Completely fail here. We couldn't make the connection.
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void reconnect()
+    {
+//        reconnecting = true;      //we don't want to send resume headers
+        LOG.warn("Got disconnected from WebSocket (Internet?!)... Attempting to reconnect in " + reconnectTimeout + "s");
+        url = null;         //force refetch of gateway
+        while(shouldReconnect)
+        {
+            try
+            {
+                Thread.sleep(reconnectTimeout * 1000);
+            }
+            catch(InterruptedException ignored) {}
+            LOG.warn("Attempting to reconnect!");
+            isReconnectRunning = true;
+            try
+            {
+                connect();
+                break;
+            }
+            catch (RuntimeException ex)
+            {
+                reconnectTimeout <<= 1;         //*2 each time
+                LOG.warn("Reconnect failed! Next attempt in " + reconnectTimeout + "s");
+            }
+        }
+    }
+
+    private String getGateway()
+    {
+        try
+        {
+            return api.getRequester().get(Requester.DISCORD_API_PREFIX + "gateway").getString("url");
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
     }
 
     public void close()
     {
-        if (keepAliveThread != null)
-        {
-            keepAliveThread.interrupt();
-            keepAliveThread = null;
-        }
         socket.sendClose();
+    }
+
+    public void setAutoReconnect(boolean reconnect)
+    {
+        this.shouldReconnect = reconnect;
     }
 
     public boolean isConnected()
     {
         return connected;
+    }
+
+    public void ready()
+    {
+        ready = true;
+        LOG.debug("Resending Cached events...");
+        for (String event : cachedEvents)
+        {
+            onTextMessage(socket, event);
+        }
+        cachedEvents.clear();
+        LOG.debug("Sending of cached events finished.");
     }
 }

@@ -1,5 +1,5 @@
 /**
- *    Copyright 2015 Austin Keener & Michael Ritter
+ *    Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,10 @@ package net.dv8tion.jda;
 
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.ReadyEvent;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.hooks.EventListener;
+import net.dv8tion.jda.hooks.AnnotatedEventManager;
+import net.dv8tion.jda.hooks.IEventManager;
 import net.dv8tion.jda.hooks.ListenerAdapter;
+import net.dv8tion.jda.hooks.SubscribeEvent;
 
 import javax.security.auth.login.LoginException;
 import java.util.LinkedList;
@@ -32,7 +33,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * before {@link net.dv8tion.jda.JDA} attempts to log in.
  * <p>
  * A single JDABuilder can be reused multiple times. Each call to
- * {@link net.dv8tion.jda.JDABuilder#build() build()} or
+ * {@link net.dv8tion.jda.JDABuilder#buildAsync() buildAsync()} or
  * {@link net.dv8tion.jda.JDABuilder#buildBlocking() buildBlocking()}
  * creates a new {@link net.dv8tion.jda.JDA} instance using the same information.
  * This means that you can have listeners easily registered to multiple {@link net.dv8tion.jda.JDA} instances.
@@ -43,26 +44,22 @@ public class JDABuilder
     protected static boolean jdaCreated = false;
     protected static String proxyUrl = null;
     protected static int proxyPort = -1;
-    final List<EventListener> listeners;
+    final List<Object> listeners;
     String email = null;
     String pass = null;
+    String botToken = null;
     boolean debug = false;
-
-    protected final ListenerAdapter acknowledgeListener = new ListenerAdapter()
-    {
-        @Override
-        public void onMessageReceived(MessageReceivedEvent event)
-        {
-            event.getMessage().acknowledge();
-        };
-    };
+    boolean enableVoice = true;
+    boolean useAnnotatedManager = false;
+    IEventManager eventManager = null;
+    boolean reconnect = true;
 
     /**
      * Creates a completely empty JDABuilder.<br>
      * If you use this, you need to set the email and password using
      * {@link net.dv8tion.jda.JDABuilder#setEmail(String) setEmail(String)}
      * and {@link net.dv8tion.jda.JDABuilder#setPassword(String) setPassword(String)}
-     * before calling {@link net.dv8tion.jda.JDABuilder#build() build()}
+     * before calling {@link net.dv8tion.jda.JDABuilder#buildAsync() buildAsync()}
      * or {@link net.dv8tion.jda.JDABuilder#buildBlocking() buildBlocking()}
      */
     public JDABuilder()
@@ -86,8 +83,20 @@ public class JDABuilder
     }
 
     /**
+     * Creates a new JDABuilder using the provided token that is received when creating a Bot-Account.
+     *
+     * @param botToken
+     *          The token of a Bot-Account.
+     */
+    public JDABuilder(String botToken)
+    {
+        this.botToken = botToken;
+        listeners = new LinkedList<>();
+    }
+
+    /**
      * Sets the email that will be used by the {@link net.dv8tion.jda.JDA} instance to log in when
-     * {@link net.dv8tion.jda.JDABuilder#build() build()}
+     * {@link net.dv8tion.jda.JDABuilder#buildAsync() buildAsync()}
      * or {@link net.dv8tion.jda.JDABuilder#buildBlocking() buildBlocking()}
      * is called.
      *
@@ -103,8 +112,24 @@ public class JDABuilder
     }
 
     /**
+     * Sets the botToken that will be used by the {@link net.dv8tion.jda.JDA} instance to log in when
+     * {@link net.dv8tion.jda.JDABuilder#buildAsync() buildAsync()}
+     * or {@link net.dv8tion.jda.JDABuilder#buildBlocking() buildBlocking()}
+     * is called.
+     *
+     * @param botToken
+     *          The token of the bot-account that you would like to login with.
+     * @return
+     *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public JDABuilder setBotToken(String botToken) {
+        this.botToken = botToken;
+        return this;
+    }
+
+    /**
      * Sets the password that will be used by the {@link net.dv8tion.jda.JDA} instance to log in when
-     * {@link net.dv8tion.jda.JDABuilder#build() build()}
+     * {@link net.dv8tion.jda.JDABuilder#buildAsync() buildAsync()}
      * or {@link net.dv8tion.jda.JDABuilder#buildBlocking() buildBlocking()}
      * is called.
      *
@@ -144,25 +169,111 @@ public class JDABuilder
     }
 
     /**
+     * <b>This method is deprecated! please switch to using the {@link net.dv8tion.jda.utils.SimpleLog SimpleLog} class.</b>
+     * <p>
      * Enables developer debug of JDA.<br>
      * Enabling this will print stack traces instead of java logger message when exceptions are encountered.
      *
      * @param debug
      *          True - enables debug printing.
+     * @return
+     *          Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
      */
-    public void setDebug(boolean debug)
+    @Deprecated
+    public JDABuilder setDebug(boolean debug)
     {
        this.debug = debug;
+        return this;
     }
+
+    /**
+     * Enables/Disables Voice functionality.<br>
+     * This is useful, if your current system doesn't support Voice and you do not need it.
+     * <p>
+     * Default: true
+     *
+     * @param enabled
+     *          True - enables voice support.
+     * @return
+     *          Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public JDABuilder setAudioEnabled(boolean enabled)
+    {
+        this.enableVoice = enabled;
+        return this;
+    }
+
+    /**
+     * Sets whether or not JDA should try to reconnect, if a connection-error occured.
+     * This will use and incremental reconnect (timeouts are increased each time an attempt fails).
+     *
+     * Default is true.
+     *
+     * @param reconnect
+     *      If true - enables autoReconnect
+     * @return
+     *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public JDABuilder setAutoReconnect(boolean reconnect)
+    {
+        this.reconnect = reconnect;
+        return this;
+    }
+
+    /**
+     * <b>This method is deprecated! Please switch to {@link #setEventManager(IEventManager)}.</b>
+     * <p>
+     * Changes the internal EventManager.
+     * The default EventManager is {@link net.dv8tion.jda.hooks.InterfacedEventManager InterfacedEventListener}.
+     * There is also an {@link AnnotatedEventManager AnnotatedEventManager} available.
+     *
+     * @param useAnnotated
+     *      Whether or not to use the {@link net.dv8tion.jda.hooks.AnnotatedEventManager AnnotatedEventManager}
+     * @return
+     *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    @Deprecated
+    public JDABuilder useAnnotatedEventManager(boolean useAnnotated)
+    {
+        this.useAnnotatedManager = useAnnotated;
+        return this;
+    }
+
+    /**
+     * Changes the internally used EventManager.
+     * There are 2 provided Implementations:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.hooks.InterfacedEventManager} which uses the Interface {@link net.dv8tion.jda.hooks.EventListener}
+     *     (tip: use the {@link net.dv8tion.jda.hooks.ListenerAdapter}). This is the default EventManager.</li>
+     *     <li>{@link net.dv8tion.jda.hooks.AnnotatedEventManager} which uses the Annotation {@link net.dv8tion.jda.hooks.SubscribeEvent} to mark the methods that listen for events.</li>
+     * </ul>
+     * You can also create your own EventManager (See {@link net.dv8tion.jda.hooks.IEventManager}).
+     *
+     * @param manager
+     *      The new {@link net.dv8tion.jda.hooks.IEventManager} to use
+     * @return
+     *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public JDABuilder setEventManager(IEventManager manager)
+    {
+        this.eventManager = manager;
+        return this;
+    }
+
     /**
      * Adds a listener to the list of listeners that will be used to populate the {@link net.dv8tion.jda.JDA} object.
+     * This uses the {@link net.dv8tion.jda.hooks.InterfacedEventManager InterfacedEventListener} by default.
+     * To switch to the {@link net.dv8tion.jda.hooks.AnnotatedEventManager AnnotatedEventManager}, use {@link #useAnnotatedEventManager(boolean)}.
+     *
+     * Note: when using the {@link net.dv8tion.jda.hooks.InterfacedEventManager InterfacedEventListener} (default),
+     * given listener <b>must</b> be instance of {@link net.dv8tion.jda.hooks.EventListener EventListener}!
      *
      * @param listener
      *          The listener to add to the list.
      * @return
      *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
      */
-    public JDABuilder addListener(EventListener listener)
+    public JDABuilder addListener(Object listener)
     {
         listeners.add(listener);
         return this;
@@ -176,7 +287,7 @@ public class JDABuilder
      * @return
      *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
      */
-    public JDABuilder removeListener(EventListener listener)
+    public JDABuilder removeListener(Object listener)
     {
         listeners.remove(listener);
         return this;
@@ -198,17 +309,33 @@ public class JDABuilder
      * @throws IllegalArgumentException
      *          If either the provided email or password is empty or null.
      */
-    public JDA build() throws LoginException, IllegalArgumentException
+    public JDA buildAsync() throws LoginException, IllegalArgumentException
     {
         jdaCreated = true;
         JDAImpl jda;
         if (proxySet)
-            jda = new JDAImpl(proxyUrl, proxyPort);
+            jda = new JDAImpl(proxyUrl, proxyPort, enableVoice);
         else
-            jda = new JDAImpl();
+            jda = new JDAImpl(enableVoice);
         jda.setDebug(debug);
+        jda.setAutoReconnect(reconnect);
+        if (eventManager != null)
+        {
+            jda.setEventManager(eventManager);
+        }
+        else if (useAnnotatedManager)
+        {
+            jda.setEventManager(new AnnotatedEventManager());
+        }
         listeners.forEach(jda::addEventListener);
-        jda.login(email, pass);
+        if (botToken != null)
+        {
+            jda.login(botToken);
+        }
+        else
+        {
+            jda.login(email, pass);
+        }
         return jda;
     }
 
@@ -233,6 +360,7 @@ public class JDABuilder
         AtomicBoolean ready = new AtomicBoolean(false);
         ListenerAdapter readyListener = new ListenerAdapter()
         {
+            @SubscribeEvent
             @Override
             public void onReady(ReadyEvent event)
             {
@@ -242,7 +370,7 @@ public class JDABuilder
 
         //Add it to our list of listeners, start the login process, wait for the ReadyEvent.
         listeners.add(readyListener);
-        JDA jda = build();
+        JDA jda = buildAsync();
         while(!ready.get())
         {
             Thread.sleep(50);
@@ -252,27 +380,5 @@ public class JDABuilder
         listeners.remove(readyListener);
         jda.removeEventListener(readyListener);
         return jda;
-    }
-
-    /**
-     * Tells the api if it should auto-acknowledge recieved Messages.
-     * This does  not affect Messages send before the api was build.
-     * Will trigger the {@link net.dv8tion.jda.events.message.MessageAcknowledgedEvent MessageAcknowledgedEvent} and it's counterpart for each Message
-     * 
-     * @param acknowledge
-     *          wether the api should auto-acknowledge Messages or not
-     * @return
-     *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
-     */
-    public JDABuilder setAutoAcknowledgeMessages(boolean acknowledge){
-        if (acknowledge)
-        {
-            this.addListener(acknowledgeListener);
-        }
-        else
-        {
-            this.removeListener(acknowledgeListener);
-        }
-        return this;
     }
 }

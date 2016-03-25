@@ -1,5 +1,5 @@
 /**
- *    Copyright 2015 Austin Keener & Michael Ritter
+ *    Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@ import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.OnlineStatus;
 import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.entities.VoiceStatus;
 import net.dv8tion.jda.handle.EntityBuilder;
+import net.dv8tion.jda.requests.Requester;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -34,13 +34,12 @@ public class UserImpl implements User
     private String gameName = null;
     private OnlineStatus onlineStatus = OnlineStatus.OFFLINE;
     private PrivateChannel privateChannel = null;
-    private final VoiceStatus voiceStatus;
+    private boolean isBot = false;
 
     public UserImpl(String id, JDAImpl api)
     {
         this.id = id;
         this.api = api;
-        this.voiceStatus = new VoiceStatusImpl(this);
     }
 
     @Override
@@ -68,6 +67,12 @@ public class UserImpl implements User
     }
 
     @Override
+    public String getAsMention()
+    {
+        return "<@" + getId() + '>';
+    }
+
+    @Override
     public String getAvatarId()
     {
         return avatarId;
@@ -76,7 +81,7 @@ public class UserImpl implements User
     @Override
     public String getAvatarUrl()
     {
-        return "https://cdn.discordapp.com/avatars/" + getId() + "/" + getAvatarId() + ".jpg";
+        return getAvatarId() == null ? null : "https://cdn.discordapp.com/avatars/" + getId() + "/" + getAvatarId() + ".jpg";
     }
 
     @Override
@@ -98,22 +103,22 @@ public class UserImpl implements User
         {
             try
             {
-                JSONObject response = api.getRequester().post("https://discordapp.com/api/users/" + api.getSelfInfo().getId() + "/channels",
+                JSONObject response = api.getRequester().post(Requester.DISCORD_API_PREFIX + "users/" + api.getSelfInfo().getId() + "/channels",
                         new JSONObject().put("recipient_id", getId()));
                 new EntityBuilder(api).createPrivateChannel(response);
             }
             catch (JSONException ex)
             {
-                ex.printStackTrace();
+                JDAImpl.LOG.log(ex);
             }
         }
         return privateChannel;
     }
 
     @Override
-    public VoiceStatus getVoiceStatus()
+    public boolean isBot()
     {
-        return voiceStatus;
+        return isBot;
     }
 
     public UserImpl setUserName(String username)
@@ -149,7 +154,16 @@ public class UserImpl implements User
     public UserImpl setPrivateChannel(PrivateChannel channel)
     {
         this.privateChannel = channel;
-        api.getPmChannelMap().put(channel.getId(), channel);
+        if (channel != null)
+        {
+            api.getPmChannelMap().put(channel.getId(), channel);
+        }
+        return this;
+    }
+
+    public UserImpl setIsBot(boolean isBot)
+    {
+        this.isBot = isBot;
         return this;
     }
 
@@ -171,5 +185,11 @@ public class UserImpl implements User
     public int hashCode()
     {
         return getId().hashCode();
+    }
+
+    @Override
+    public String toString()
+    {
+        return "U:" + getUsername() + '(' + getId() + ')';
     }
 }
