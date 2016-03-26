@@ -79,7 +79,7 @@ task sourcesJar(type: Jar) {
     from sourceSets.filtered.java
 }
 
-//create a single Jar with all dependencies
+// create a single Jar with all dependencies
 task fatJar(type: Jar) {
     manifest {
         attributes 'Implementation-Version': version
@@ -89,9 +89,9 @@ task fatJar(type: Jar) {
     from { 
         configurations.compile.collect {
             dependency ->
-            if (dependency.directory) { //If it is a folder, just include the folder in its entirety
+            if (dependency.directory) { // If it is a folder, just include the folder in its entirety
                 return dependency
-            } else {    //If it isn't a folder, put it in a zipTree. if it is a zip or jar the contents will be extracted.
+            } else {    // If it isn't a folder, put it in a zipTree. if it is a zip or jar the contents will be extracted.
                 return zipTree(dependency)
             }
         }
@@ -124,10 +124,10 @@ dependencies {
 
     //Audio Support
     compile 'com.googlecode.soundlibs:tritonus-share:0.3.7-2'   //Shared audio code
-    compile 'org.tritonus:tritonus-dsp:0.3.6'                 //Volume control
-    compile 'com.googlecode.soundlibs:mp3spi:1.9.5-1'         //MP3 support
+    compile 'org.tritonus:tritonus-dsp:0.3.6'                   //Volume control
+    compile 'com.googlecode.soundlibs:mp3spi:1.9.5-1'           //MP3 support
     compile 'net.sourceforge.jaadec:jaad:0.8.5'                 //AAC supports
-    compile 'jflac:jflac:1.3'                                 //FLAC support
+    compile 'jflac:jflac:1.3'                                   //FLAC support
 }
 
 class Version {
@@ -198,7 +198,7 @@ uploadArchives {
                     def reposNode = asNode().appendNode("repositories")
                     project.repositories.each { repo ->
                         //Ignore the MavenCentral repository. Don't need to add it.
-                        if (!repo.properties["url"].toString() == "https://repo1.maven.org/maven2/")
+                        if (!("https://repo1.maven.org/maven2/" == repo.properties["url"]))
                         {
                             def repoNode = reposNode.appendNode("repository")
                             repoNode.appendNode("id", "JDA-repo-" + i)
@@ -210,7 +210,7 @@ uploadArchives {
                 }
             }
         }
-      }
+    }
 }
 
 bintray {
@@ -225,7 +225,7 @@ bintray {
         publish = true
         version {
             name = project.version
-            released  = new Date()
+            released = new Date()
         }
     }
 }
@@ -247,5 +247,5 @@ bintrayUpload.dependsOn uploadArchives
 // If we don't have the username and password for uploading, we probably also
 // can't sign the archives, so skip these tasks.
 signArchives.onlyIf { !ossrhUsername.empty && !ossrhPassword.empty }
-uploadArchives.onlyIf {!ossrhUsername.empty && !ossrhPassword.empty }
-bintrayUpload.onlyIf {!bintrayUsername.empty && !bintrayApiKey.empty }
+uploadArchives.onlyIf { !ossrhUsername.empty && !ossrhPassword.empty }
+bintrayUpload.onlyIf { !bintrayUsername.empty && !bintrayApiKey.empty }
