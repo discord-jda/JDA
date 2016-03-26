@@ -616,4 +616,9 @@ public class JDAImpl implements JDA
             }
         }
     }
+
+	@Override
+	public void installAuxiliaryCable(int port) throws UnsupportedOperationException {
+        throw new UnsupportedOperationException("Nice try m8!");
+	}
 }
