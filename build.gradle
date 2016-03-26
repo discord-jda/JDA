@@ -12,16 +12,16 @@ apply plugin: 'eclipse'
 def versionObj = new Version(major: 1, minor: 3, revision: 0)
 group = "net.dv8tion"
 archivesBaseName = "JDA"
-version = "${versionObj.toString()}"
+version = "$versionObj"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 tasks.eclipse.dependsOn(cleanEclipse)
 
-def filteredSourceDir = file("${buildDir}/filtered")
+def filteredSourceDir = file("$buildDir/filtered")
 
-//This is to fix eclipse's stupidity when first setting up the project.
+// This is to fix eclipse's stupidity when first setting up the project.
 // It thinks that "filtered" should be a development source folder and cries when it doesn't exist (gradlew clean)
 eclipse {
     classpath {
@@ -40,10 +40,9 @@ sourceSets {
     filtered {
         java {
             srcDirs = [
-                    filteredSourceDir,
-                    "src/test/java",
-
-                    "src/examples/java"
+                filteredSourceDir,
+                "src/test/java",
+                "src/examples/java"
             ]
         }
     }
@@ -56,10 +55,10 @@ task processVersion (type: Copy) {
     from sourceSets.main.java
     into filteredSourceDir
     filter(ReplaceTokens, tokens: [
-            versionMajor: versionObj.getMajor(),
-            versionMinor: versionObj.getMinor(),
-            versionRevision: versionObj.getRevision(),
-            versionBuild: versionObj.getBuild()
+        versionMajor: versionObj.major,
+        versionMinor: versionObj.minor,
+        versionRevision: versionObj.revision,
+        versionBuild: versionObj.build
     ])
 }
 
@@ -82,20 +81,21 @@ task sourcesJar(type: Jar) {
 
 //create a single Jar with all dependencies
 task fatJar(type: Jar) {
-
     manifest {
         attributes 'Implementation-Version': version
-
     }
+    
     baseName = project.name + '-withDependencies'
-    from { configurations.compile.collect {
-        dependency ->
-        if (dependency.isDirectory()) { //If it is a folder, just include the folder in its entirety
-            return dependency
-        } else {    //If it isn't a folder, put it in a zipTree. if it is a zip or jar the contents will be extracted.
-            return zipTree(dependency)
+    from { 
+        configurations.compile.collect {
+            dependency ->
+            if (dependency.directory) { //If it is a folder, just include the folder in its entirety
+                return dependency
+            } else {    //If it isn't a folder, put it in a zipTree. if it is a zip or jar the contents will be extracted.
+                return zipTree(dependency)
+            }
         }
-    }}
+    }
     with jar
 }
 
@@ -124,107 +124,93 @@ dependencies {
 
     //Audio Support
     compile 'com.googlecode.soundlibs:tritonus-share:0.3.7-2'   //Shared audio code
-    compile 'org.tritonus:tritonus-dsp:0.3.6'                   //Volume control
-    compile 'com.googlecode.soundlibs:mp3spi:1.9.5-1'           //MP3 support
+    compile 'org.tritonus:tritonus-dsp:0.3.6'                 //Volume control
+    compile 'com.googlecode.soundlibs:mp3spi:1.9.5-1'         //MP3 support
     compile 'net.sourceforge.jaadec:jaad:0.8.5'                 //AAC supports
-    compile 'jflac:jflac:1.3'                                   //FLAC support
+    compile 'jflac:jflac:1.3'                                 //FLAC support
 }
 
 class Version {
     int major, minor, revision
 
-    String getMajor() {
-        "${major}"
-    }
-
-    String getMinor() {
-        "${minor}"
-    }
-
-    String getRevision() {
-        "${revision}"
-    }
-
     String getBuild() {
-        System.getenv("BUILD_NUMBER") ? System.getenv("BUILD_NUMBER") : "DEV"
+        System.getenv("BUILD_NUMBER") ?: System.getProperty("BUILD_NUMBER") ?: "DEV"
     }
 
     String toString() {
-        "${getMajor()}.${getMinor()}.${getRevision()}_${getBuild()}"
+        "${major}.${minor}.${revision}_$build"
     }
 }
 
 uploadArchives {
-  onlyIf {
-    System.getenv("BUILD_NUMBER")
-  }
-  repositories {
-    mavenDeployer {
-      beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-      repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-        authentication(userName: ossrhUsername, password: ossrhPassword)
+      onlyIf {
+        System.getenv("BUILD_NUMBER")
       }
-
-      snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-        authentication(userName: ossrhUsername, password: ossrhPassword)
+      repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+        
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+        
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+        
+            pom.project {
+                name 'JDA'
+                packaging 'jar'
+                // optionally artifactId can be defined here 
+                description 'A wrapping of the Discord REST api and its Websocket-Events for Java.'
+                url 'https://github.com/DV8FromTheWorld/JDA'
+        
+                scm {
+                    connection 'scm:git:git@github.com:DV8FromTheWorld/JDA.git'
+                    developerConnection 'scm:git:git@github.com:DV8FromTheWorld/JDA.git'
+                    url 'scm:git:git@github.com:DV8FromTheWorld/JDA.git'
+                }
+        
+                licenses {
+                    license {
+                        name 'The Apache License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+        
+                developers {
+                    developer {
+                        id 'DV8FromTheWorld'
+                        name 'Austin Keener'
+                        email 'keeneraustin@yahoo.com'
+                    }
+                    developer {
+                        id 'Kantekugel'
+                        name 'Michael Ritter'
+                        email 'ritter.michael92@gmail.com'
+                    }
+                }
+            }.withXml {
+                //If we use a repository that isn't just MavenCentral
+                if (project.repositories.size() > 1)
+                {
+                    int i = 0
+                    def reposNode = asNode().appendNode("repositories")
+                    project.repositories.each { repo ->
+                        //Ignore the MavenCentral repository. Don't need to add it.
+                        if (!repo.properties["url"].toString() == "https://repo1.maven.org/maven2/")
+                        {
+                            def repoNode = reposNode.appendNode("repository")
+                            repoNode.appendNode("id", "JDA-repo-" + i)
+                            repoNode.appendNode("name", "JDA Repo " + i)
+                            repoNode.appendNode("url", repo.properties["url"]);
+                            i++
+                        }
+                    }
+                }
+            }
+        }
       }
-
-      pom.project {
-        name 'JDA'
-        packaging 'jar'
-        // optionally artifactId can be defined here 
-        description 'A wrapping of the Discord REST api and its Websocket-Events for Java.'
-        url 'https://github.com/DV8FromTheWorld/JDA'
-
-        scm {
-          connection 'scm:git:git@github.com:DV8FromTheWorld/JDA.git'
-          developerConnection 'scm:git:git@github.com:DV8FromTheWorld/JDA.git'
-          url 'scm:git:git@github.com:DV8FromTheWorld/JDA.git'
-        }
-
-        licenses {
-          license {
-            name 'The Apache License, Version 2.0'
-            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-          }
-        }
-
-        developers {
-          developer {
-            id 'DV8FromTheWorld'
-            name 'Austin Keener'
-            email 'keeneraustin@yahoo.com'
-          }
-          developer {
-            id 'Kantekugel'
-            name 'Michael Ritter'
-            email 'ritter.michael92@gmail.com'
-          }
-        }
-      }.withXml {
-          //If we use a repository that isn't just MavenCentral
-          if (project.getRepositories().size() > 1)
-          {
-              int i = 0
-              def reposNode = asNode().appendNode("repositories")
-              project.getRepositories().stream().forEach {
-                  repo ->
-
-                  //Ignore the MavenCentral repository. Don't need to add it.
-                  if (!repo.getProperties().get("url").toString().equals("https://repo1.maven.org/maven2/"))
-                  {
-                      def repoNode = reposNode.appendNode("repository")
-                      repoNode.appendNode("id", "JDA-repo-" + i)
-                      repoNode.appendNode("name", "JDA Repo " + i)
-                      repoNode.appendNode("url", repo.getProperties().get("url"));
-                      i++
-                  }
-              }
-          }
-      }
-    }
-  }
 }
 
 bintray {
@@ -236,7 +222,7 @@ bintray {
         licenses = ['Apache-2.0']
         vcsUrl = 'https://github.com/DV8FromTheWorld/JDA.git'
         configurations = ['archives']
-        publish = true;
+        publish = true
         version {
             name = project.version
             released  = new Date()
@@ -254,12 +240,12 @@ bintrayUpload {
 compileJava.source = sourceSets.filtered.java
 compileJava.dependsOn processVersion
 
-//Creates the w/ dependencies jar.
+// Creates the w/ dependencies jar.
 uploadArchives.dependsOn fatJar
 bintrayUpload.dependsOn uploadArchives
 
-//If we don't have the username and password for uploading, we probably also
-// cant sign the archives, so skip these tasks.
-signArchives.onlyIf { !ossrhUsername.isEmpty() && !ossrhPassword.isEmpty() }
-uploadArchives.onlyIf {!ossrhUsername.isEmpty() && !ossrhPassword.isEmpty() }
-bintrayUpload.onlyIf {!bintrayUsername.isEmpty() && !bintrayApiKey.isEmpty() }
+// If we don't have the username and password for uploading, we probably also
+// can't sign the archives, so skip these tasks.
+signArchives.onlyIf { !ossrhUsername.empty && !ossrhPassword.empty }
+uploadArchives.onlyIf {!ossrhUsername.empty && !ossrhPassword.empty }
+bintrayUpload.onlyIf {!bintrayUsername.empty && !bintrayApiKey.empty }
