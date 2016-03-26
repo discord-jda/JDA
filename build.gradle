@@ -128,9 +128,6 @@ dependencies {
     compile 'com.googlecode.soundlibs:mp3spi:1.9.5-1'         //MP3 support
     compile 'net.sourceforge.jaadec:jaad:0.8.5'                 //AAC supports
     compile 'jflac:jflac:1.3'                                 //FLAC support
-    
-    // Added Libs
-    compile 'org.jsoup:jsoup:1.8.3'        // Notehub Uploader
 }
 
 class Version {
