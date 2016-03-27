@@ -139,6 +139,14 @@ public class PermissionOverrideManager
     }
 
     /**
+     * Resets all queued updates. So the next call to {@link #update()} will change nothing.
+     */
+    public void reset() {
+        allow = override.getAllowedRaw();
+        deny = override.getDeniedRaw();
+    }
+
+    /**
      * This method will apply all accumulated changes received by setters
      */
     public void update()

@@ -403,6 +403,20 @@ public class GuildManager
     }
 
     /**
+     * Resets all queued updates. So the next call to {@link #update()} will change nothing.
+     */
+    public void reset() {
+        name = null;
+        region = null;
+        timeout = null;
+        icon = null;
+        verificationLevel = null;
+        afkChannelId = guild.getAfkChannelId();
+        addedRoles.clear();
+        removedRoles.clear();
+    }
+
+    /**
      * This method will apply all accumulated changes received by setters
      *
      * @throws net.dv8tion.jda.exceptions.GuildUnavailableException

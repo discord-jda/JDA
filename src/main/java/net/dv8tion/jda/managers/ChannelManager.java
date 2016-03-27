@@ -194,6 +194,15 @@ public class ChannelManager
     }
 
     /**
+     * Resets all queued updates. So the next call to {@link #update()} will change nothing.
+     */
+    public void reset() {
+        name = null;
+        topic = null;
+        newPositions.clear();
+    }
+
+    /**
      * This method will apply all accumulated changes received by setters
      */
     public void update()

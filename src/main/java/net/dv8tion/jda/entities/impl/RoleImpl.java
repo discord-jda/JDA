@@ -32,6 +32,7 @@ public class RoleImpl implements net.dv8tion.jda.entities.Role
     private int position;
     private int permissions;
     private boolean managed, grouped;
+    private RoleManager manager = null;
 
     public RoleImpl(String id, Guild guild)
     {
@@ -106,9 +107,11 @@ public class RoleImpl implements net.dv8tion.jda.entities.Role
     }
 
     @Override
-    public RoleManager getManager()
+    public synchronized RoleManager getManager()
     {
-        return new RoleManager(this);
+        if (manager == null)
+            manager = new RoleManager(this);
+        return manager;
     }
 
     public RoleImpl setName(String name)

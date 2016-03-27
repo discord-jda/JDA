@@ -48,6 +48,8 @@ public class TextChannelImpl implements TextChannel
     private final Map<User, PermissionOverride> userPermissionOverrides = new HashMap<>();
     private final Map<Role, PermissionOverride> rolePermissionOverrides = new HashMap<>();
 
+    private ChannelManager manager = null;
+
     public TextChannelImpl(String id, Guild guild)
     {
         this.id = id;
@@ -277,9 +279,11 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
-    public ChannelManager getManager()
+    public synchronized ChannelManager getManager()
     {
-        return new ChannelManager(this);
+        if (manager == null)
+            manager = new ChannelManager(this);
+        return manager;
     }
 
     @Override

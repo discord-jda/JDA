@@ -54,6 +54,7 @@ public class GuildImpl implements Guild
     private final JDAImpl api;
     private VerificationLevel verificationLevel;
     private boolean available;
+    private GuildManager manager = null;
 
     public GuildImpl(JDAImpl api, String id)
     {
@@ -254,9 +255,11 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public GuildManager getManager()
+    public synchronized GuildManager getManager()
     {
-        return new GuildManager(this);
+        if (manager == null)
+            manager = new GuildManager(this);
+        return manager;
     }
 
     @Override

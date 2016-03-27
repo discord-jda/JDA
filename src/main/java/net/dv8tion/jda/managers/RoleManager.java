@@ -18,7 +18,6 @@ package net.dv8tion.jda.managers;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.entities.impl.JDAImpl;
-import net.dv8tion.jda.entities.impl.RoleImpl;
 import net.dv8tion.jda.exceptions.PermissionException;
 import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.requests.Requester;
@@ -42,7 +41,7 @@ public class RoleManager
     public RoleManager(Role role)
     {
         this.role = role;
-        perms = ((RoleImpl) role).getPermissionsRaw();
+        perms = role.getPermissionsRaw();
     }
 
     /**
@@ -214,6 +213,19 @@ public class RoleManager
         return this;
     }
 
+    /**
+     * Resets all queued updates. So the next call to {@link #update()} will change nothing.
+     */
+    public void reset() {
+        name = null;
+        color = -1;
+        grouped = null;
+        perms = role.getPermissionsRaw();
+    }
+
+    /**
+     * This method will apply all accumulated changes received by setters
+     */
     public void update()
     {
         checkPermission(Permission.MANAGE_ROLES);
