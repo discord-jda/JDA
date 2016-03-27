@@ -48,17 +48,35 @@ sourceSets {
     }
 }
 
+javadoc {
+    failOnError = false
 
+    //### excludes ###
+    //jda internals
+    exclude("net/dv8tion/jda/entities/impl")
+    exclude("net/dv8tion/jda/handle")
+    exclude("net/dv8tion/jda/requests")
+
+    exclude("net/dv8tion/jda/audio/AudioConnection.java")
+    exclude("net/dv8tion/jda/audio/AudioPacket.java")
+    exclude("net/dv8tion/jda/audio/AudioWebSocket.java")
+    //org.tritonus
+    exclude("org/tritonus")
+    //opuswrapper
+    exclude("tomp2p/opuswrapper")
+    //voice crypto
+    exclude("com/iwebpp/crypto")
+}
 
 // copy the main sources and filter any '@buildVersion@' occurences. 
 task processVersion (type: Copy) {
     from sourceSets.main.java
     into filteredSourceDir
     filter(ReplaceTokens, tokens: [
-        versionMajor: versionObj.major,
-        versionMinor: versionObj.minor,
-        versionRevision: versionObj.revision,
-        versionBuild: versionObj.build
+        versionMajor: versionObj.major.toString(),
+        versionMinor: versionObj.minor.toString(),
+        versionRevision: versionObj.revision.toString(),
+        versionBuild: versionObj.build.toString()
     ])
 }
 
