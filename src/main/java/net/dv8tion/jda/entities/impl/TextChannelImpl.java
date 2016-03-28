@@ -385,6 +385,7 @@ public class TextChannelImpl implements TextChannel
         private static final Map<JDA, AsyncMessageSender> instances = new HashMap<>();
         private final JDAImpl api;
         private Runner runner = null;
+        private boolean runnerRunning = false;
 
         private AsyncMessageSender(JDAImpl api)
         {
@@ -405,10 +406,29 @@ public class TextChannelImpl implements TextChannel
         public synchronized void enqueue(Message msg, Consumer<Message> callback)
         {
             queue.add(new AbstractMap.SimpleImmutableEntry<>(msg, callback));
-            if (runner == null || !runner.isAlive())
+            if (runner == null)
             {
+                runnerRunning = true;
                 runner = new Runner(this);
+                runner.setDaemon(true);
                 runner.start();
+            }
+            else if (!runnerRunning)
+            {
+                runnerRunning = true;
+                notifyAll();
+            }
+        }
+
+        private synchronized void waitNew()
+        {
+            if (!queue.isEmpty())
+                return;
+            runnerRunning = false;
+            while(!runnerRunning) {
+                try {
+                    wait();
+                } catch(InterruptedException ignored) {}
             }
         }
 
@@ -431,55 +451,59 @@ public class TextChannelImpl implements TextChannel
             @Override
             public void run()
             {
-                Queue<AbstractMap.SimpleImmutableEntry<Message, Consumer<Message>>> queue = sender.getQueue();
-                while (!queue.isEmpty())
+                while (true)
                 {
-                    Long messageLimit = sender.api.getMessageLimit();
-                    if (messageLimit != null)
+                    Queue<AbstractMap.SimpleImmutableEntry<Message, Consumer<Message>>> queue = sender.getQueue();
+                    while (!queue.isEmpty())
                     {
-                        try
-                        {
-                            Thread.sleep(messageLimit - System.currentTimeMillis());
-                        }
-                        catch (InterruptedException e)
-                        {
-                            JDAImpl.LOG.log(e);
-                        }
-                    }
-                    AbstractMap.SimpleImmutableEntry<Message, Consumer<Message>> peek = queue.peek();
-                    JSONObject response = sender.api.getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + peek.getKey().getChannelId() + "/messages",
-                            new JSONObject().put("content", peek.getKey().getRawContent()).put("tts", peek.getKey().isTTS()));
-                    if (response == null)
-                    {
-                        JDAImpl.LOG.debug("Error sending async-message (returned null-json)... Retrying after 1s");
-                        sender.api.setMessageTimeout(1000);
-                    }
-                    else if (!response.has("retry_after"))   //success
-                    {
-                        queue.poll();//remove from queue
-                        if (peek.getValue() != null)
+                        Long messageLimit = sender.api.getMessageLimit();
+                        if (messageLimit != null)
                         {
                             try
                             {
-                                //if response didn't have id, sending failed (due to permission/blocked pm,...
-                                peek.getValue().accept(
-                                        response.has("id") ? new EntityBuilder(sender.api).createMessage(response) : null);
+                                Thread.sleep(messageLimit - System.currentTimeMillis());
                             }
-                            catch (JSONException ex)
+                            catch (InterruptedException e)
                             {
-                                //could not generate message from json
-                                JDAImpl.LOG.log(ex);
+                                JDAImpl.LOG.log(e);
                             }
                         }
+                        AbstractMap.SimpleImmutableEntry<Message, Consumer<Message>> peek = queue.peek();
+                        JSONObject response = sender.api.getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + peek.getKey().getChannelId() + "/messages",
+                                new JSONObject().put("content", peek.getKey().getRawContent()).put("tts", peek.getKey().isTTS()));
+                        if (response == null)
+                        {
+                            JDAImpl.LOG.debug("Error sending async-message (returned null-json)... Retrying after 1s");
+                            sender.api.setMessageTimeout(1000);
+                        }
+                        else if (!response.has("retry_after"))   //success
+                        {
+                            queue.poll();//remove from queue
+                            if (peek.getValue() != null)
+                            {
+                                try
+                                {
+                                    //if response didn't have id, sending failed (due to permission/blocked pm,...
+                                    peek.getValue().accept(
+                                            response.has("id") ? new EntityBuilder(sender.api).createMessage(response) : null);
+                                }
+                                catch (JSONException ex)
+                                {
+                                    //could not generate message from json
+                                    JDAImpl.LOG.log(ex);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            sender.api.setMessageTimeout(response.getLong("retry_after"));
+                        }
+                        if (queue.isEmpty())
+                        {
+                            queue = sender.getQueue();
+                        }
                     }
-                    else
-                    {
-                        sender.api.setMessageTimeout(response.getLong("retry_after"));
-                    }
-                    if (queue.isEmpty())
-                    {
-                        queue = sender.getQueue();
-                    }
+                    sender.waitNew();
                 }
             }
 
