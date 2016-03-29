@@ -63,6 +63,12 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
+    public String getAsMention()
+    {
+        return "<#" + getId() + '>';
+    }
+
+    @Override
     public PermissionOverride getOverrideForUser(User user)
     {
         return userPermissionOverrides.get(user);
