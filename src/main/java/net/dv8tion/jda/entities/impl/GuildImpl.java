@@ -131,7 +131,9 @@ public class GuildImpl implements Guild
     @Override
     public List<TextChannel> getTextChannels()
     {
-        return Collections.unmodifiableList(new ArrayList<>(textChannels.values()));
+        ArrayList<TextChannel> textChannels = new ArrayList<>(this.textChannels.values());
+        Collections.sort(textChannels, (c1, c2) -> Integer.compare(c1.getPosition(), c2.getPosition()));
+        return Collections.unmodifiableList(textChannels);
     }
 
     @Override
@@ -165,8 +167,8 @@ public class GuildImpl implements Guild
     @Override
     public List<VoiceChannel> getVoiceChannels()
     {
-        List<VoiceChannel> list = new ArrayList<>();
-        list.addAll(voiceChannels.values());
+        List<VoiceChannel> list = new ArrayList<>(voiceChannels.values());
+        Collections.sort(list, (v1, v2) -> Integer.compare(v1.getPosition(), v2.getPosition()));
         return Collections.unmodifiableList(list);
     }
 
@@ -201,8 +203,8 @@ public class GuildImpl implements Guild
     @Override
     public List<Role> getRoles()
     {
-        List<Role> list = new ArrayList<>();
-        list.addAll(roles.values());
+        List<Role> list = new ArrayList<>(roles.values());
+        Collections.sort(list, (r1, r2) -> Integer.compare(r2.getPosition(), r1.getPosition()));
         return Collections.unmodifiableList(list);
     }
 

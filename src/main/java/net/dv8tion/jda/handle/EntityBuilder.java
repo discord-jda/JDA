@@ -206,6 +206,7 @@ public class EntityBuilder
                 String roleId = roleArr.getString(j);
                 userRoles.get(user).add(rolesMap.get(roleId));
             }
+            Collections.sort(userRoles.get(user), (r2, r1) -> Integer.compare(r1.getPosition(), r2.getPosition()));
             VoiceStatusImpl voiceStatus = new VoiceStatusImpl(user, guildObj);
             voiceStatus.setServerDeaf(member.getBoolean("deaf"));
             voiceStatus.setServerMute(member.getBoolean("mute"));

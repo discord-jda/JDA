@@ -114,6 +114,7 @@ public interface Guild
 
     /**
      * The {@link net.dv8tion.jda.entities.TextChannel TextChannels} available on the {@link net.dv8tion.jda.entities.Guild Guild}.
+     * The channels returned will be sorted according to their position.
      *
      * @return
      *      An Immutable List of {@link net.dv8tion.jda.entities.TextChannel TextChannels}.
@@ -135,6 +136,7 @@ public interface Guild
 
     /**
      * The {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannels} available on the {@link net.dv8tion.jda.entities.Guild Guild}.
+     * The channels returned will be sorted according to their position.
      *
      * @return
      *      An Immutable List of {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannels}.
@@ -155,7 +157,8 @@ public interface Guild
     ChannelManager createVoiceChannel(String name);
 
     /**
-     * The {@link net.dv8tion.jda.entities.Role Roles} of this {@link net.dv8tion.jda.entities.Guild Guild}
+     * The {@link net.dv8tion.jda.entities.Role Roles} of this {@link net.dv8tion.jda.entities.Guild Guild}.
+     * The roles returned will be sorted according to their position.
      *
      * @return
      *      An Immutable List of {@link net.dv8tion.jda.entities.Role Roles}.
@@ -176,6 +179,8 @@ public interface Guild
     /**
      * Provides all of the {@link net.dv8tion.jda.entities.Role Roles} that the provided {@link net.dv8tion.jda.entities.User User}
      *  has been assigned.
+     * The roles returned will be sorted according to their position.
+     *
      * @param user
      *          The {@link net.dv8tion.jda.entities.User User} that we wish to get the {@link net.dv8tion.jda.entities.Role Roles} related to.
      * @return
