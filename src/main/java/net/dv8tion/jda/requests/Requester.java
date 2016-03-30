@@ -57,7 +57,17 @@ public class Requester
         return exec(addHeaders(Unirest.post(url)).body(body.toString()));
     }
 
+    public Response post(String url, JSONArray body)
+    {
+        return exec(addHeaders(Unirest.post(url)).body(body.toString()));
+    }
+
     public Response patch(String url, JSONObject body)
+    {
+        return exec(addHeaders(Unirest.patch(url)).body(body.toString()));
+    }
+
+    public Response patch(String url, JSONArray body)
     {
         return exec(addHeaders(Unirest.patch(url)).body(body.toString()));
     }
@@ -65,16 +75,6 @@ public class Requester
     public Response put(String url, JSONObject body)
     {
         return exec(addHeaders(Unirest.put(url)).body(body.toString()));
-    }
-
-    public Response post(String url, JSONArray body)
-    {
-        return exec(addHeaders(Unirest.post(url)).body(body.toString()));
-    }
-
-    public Response patch(String url, JSONArray body)
-    {
-        return exec(addHeaders(Unirest.patch(url)).body(body.toString()));
     }
 
     public Response put(String url, JSONArray body)
