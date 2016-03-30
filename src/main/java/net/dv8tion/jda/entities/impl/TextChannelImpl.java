@@ -158,17 +158,17 @@ public class TextChannelImpl implements TextChannel
         }
         try
         {
-            JSONObject response = api.getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + getId() + "/messages",
+            Requester.Response response = api.getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + getId() + "/messages",
                     new JSONObject().put("content", msg.getRawContent()).put("tts", msg.isTTS()));
-            if (response.has("retry_after"))
+            if (response.isRateLimit())
             {
-                long retry_after = response.getLong("retry_after");
+                long retry_after = response.getObject().getLong("retry_after");
                 api.setMessageTimeout(retry_after);
                 throw new RateLimitedException(retry_after);
             }
-            if(!response.has("id")) //sending failed (Verification-level?)
+            if(!response.isOk()) //sending failed (Verification-level?)
                 return null;
-            return new EntityBuilder(api).createMessage(response);
+            return new EntityBuilder(api).createMessage(response.getObject());
         }
         catch (JSONException ex)
         {
@@ -475,14 +475,14 @@ public class TextChannelImpl implements TextChannel
                             }
                         }
                         AbstractMap.SimpleImmutableEntry<Message, Consumer<Message>> peek = queue.peek();
-                        JSONObject response = sender.api.getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + peek.getKey().getChannelId() + "/messages",
+                        Requester.Response response = sender.api.getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + peek.getKey().getChannelId() + "/messages",
                                 new JSONObject().put("content", peek.getKey().getRawContent()).put("tts", peek.getKey().isTTS()));
-                        if (response == null)
+                        if (response.responseText == null)
                         {
-                            JDAImpl.LOG.debug("Error sending async-message (returned null-json)... Retrying after 1s");
+                            JDAImpl.LOG.debug("Error sending async-message (returned null-text)... Retrying after 1s");
                             sender.api.setMessageTimeout(1000);
                         }
-                        else if (!response.has("retry_after"))   //success
+                        else if (!response.isRateLimit())   //success
                         {
                             queue.poll();//remove from queue
                             if (peek.getValue() != null)
@@ -491,7 +491,7 @@ public class TextChannelImpl implements TextChannel
                                 {
                                     //if response didn't have id, sending failed (due to permission/blocked pm,...
                                     peek.getValue().accept(
-                                            response.has("id") ? new EntityBuilder(sender.api).createMessage(response) : null);
+                                            response.isOk() ? new EntityBuilder(sender.api).createMessage(response.getObject()) : null);
                                 }
                                 catch (JSONException ex)
                                 {
@@ -502,7 +502,7 @@ public class TextChannelImpl implements TextChannel
                         }
                         else
                         {
-                            sender.api.setMessageTimeout(response.getLong("retry_after"));
+                            sender.api.setMessageTimeout(response.getObject().getLong("retry_after"));
                         }
                         if (queue.isEmpty())
                         {

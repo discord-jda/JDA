@@ -101,8 +101,8 @@ public class MessageHistory
             toQueue = Math.min(amount, 100);
             try
             {
-                JSONArray array = api.getRequester().getA(Requester.DISCORD_API_PREFIX + "channels/" + channelId
-                        + "/messages?limit=" + toQueue + (lastId != null ? "&before=" + lastId : ""));
+                JSONArray array = api.getRequester().get(Requester.DISCORD_API_PREFIX + "channels/" + channelId
+                        + "/messages?limit=" + toQueue + (lastId != null ? "&before=" + lastId : "")).getArray();
 
                 for (int i = 0; i < array.length(); i++)
                 {

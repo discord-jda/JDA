@@ -151,7 +151,7 @@ public class GuildImpl implements Guild
         {
             throw new GuildUnavailableException();
         }
-        JSONObject response = api.getRequester().post(Requester.DISCORD_API_PREFIX + "guilds/" + getId() + "/channels", new JSONObject().put("name", name).put("type", "text"));
+        JSONObject response = api.getRequester().post(Requester.DISCORD_API_PREFIX + "guilds/" + getId() + "/channels", new JSONObject().put("name", name).put("type", "text")).getObject();
         if (response == null || !response.has("id"))
         {
             //error creating textchannel
@@ -187,7 +187,7 @@ public class GuildImpl implements Guild
         {
             throw new GuildUnavailableException();
         }
-        JSONObject response = api.getRequester().post(Requester.DISCORD_API_PREFIX + "guilds/" + getId() + "/channels", new JSONObject().put("name", name).put("type", "voice"));
+        JSONObject response = api.getRequester().post(Requester.DISCORD_API_PREFIX + "guilds/" + getId() + "/channels", new JSONObject().put("name", name).put("type", "voice")).getObject();
         if (response == null || !response.has("id"))
         {
             //error creating voicechannel
@@ -219,7 +219,7 @@ public class GuildImpl implements Guild
         {
             throw new GuildUnavailableException();
         }
-        JSONObject response = api.getRequester().post(Requester.DISCORD_API_PREFIX + "guilds/" + getId() + "/roles", new JSONObject());
+        JSONObject response = api.getRequester().post(Requester.DISCORD_API_PREFIX + "guilds/" + getId() + "/roles", new JSONObject()).getObject();
         if (response == null || !response.has("id"))
         {
             //error creating role

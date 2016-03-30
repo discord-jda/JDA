@@ -167,7 +167,7 @@ public class RoleManager
         {
             arr.put(new JSONObject().put("position", i + 1).put("id", newOrder.get(i).getId()));
         }
-        ((JDAImpl) role.getJDA()).getRequester().patchA(Requester.DISCORD_API_PREFIX + "guilds/" + role.getGuild().getId() + "/roles", arr);
+        ((JDAImpl) role.getJDA()).getRequester().patch(Requester.DISCORD_API_PREFIX + "guilds/" + role.getGuild().getId() + "/roles", arr);
         return this;
     }
 
@@ -262,7 +262,7 @@ public class RoleManager
 
     private void update(JSONObject object)
     {
-        JSONObject response = ((JDAImpl) role.getJDA()).getRequester().patch(Requester.DISCORD_API_PREFIX + "guilds/" + role.getGuild().getId() + "/roles/" + role.getId(), object);
+        JSONObject response = ((JDAImpl) role.getJDA()).getRequester().patch(Requester.DISCORD_API_PREFIX + "guilds/" + role.getGuild().getId() + "/roles/" + role.getId(), object).getObject();
         if (response == null || !response.has("id"))
         {
             throw new RuntimeException("Setting values of Role " + role.getName() + " with ID " + role.getId()

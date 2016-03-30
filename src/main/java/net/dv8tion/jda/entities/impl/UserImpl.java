@@ -104,7 +104,7 @@ public class UserImpl implements User
             try
             {
                 JSONObject response = api.getRequester().post(Requester.DISCORD_API_PREFIX + "users/" + api.getSelfInfo().getId() + "/channels",
-                        new JSONObject().put("recipient_id", getId()));
+                        new JSONObject().put("recipient_id", getId())).getObject();
                 new EntityBuilder(api).createPrivateChannel(response);
             }
             catch (JSONException ex)

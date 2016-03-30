@@ -547,11 +547,11 @@ public class GuildManager
         JSONObject returned;
         if (doKick)
         {
-            returned = ((JDAImpl) guild.getJDA()).getRequester().post(Requester.DISCORD_API_PREFIX + "guilds/" + guild.getId() + "/prune?days=" + days, new JSONObject());
+            returned = ((JDAImpl) guild.getJDA()).getRequester().post(Requester.DISCORD_API_PREFIX + "guilds/" + guild.getId() + "/prune?days=" + days, new JSONObject()).getObject();
         }
         else
         {
-            returned = ((JDAImpl) guild.getJDA()).getRequester().get(Requester.DISCORD_API_PREFIX + "guilds/" + guild.getId() + "/prune?days=" + days);
+            returned = ((JDAImpl) guild.getJDA()).getRequester().get(Requester.DISCORD_API_PREFIX + "guilds/" + guild.getId() + "/prune?days=" + days).getObject();
         }
         return returned.getInt("pruned");
     }
@@ -661,8 +661,9 @@ public class GuildManager
         {
             throw new GuildUnavailableException();
         }
+        checkPermission(Permission.BAN_MEMBERS);
         List<User> bans = new LinkedList<>();
-        JSONArray bannedArr = ((JDAImpl) guild.getJDA()).getRequester().getA(Requester.DISCORD_API_PREFIX + "guilds/" + guild.getId() + "/bans");
+        JSONArray bannedArr = ((JDAImpl) guild.getJDA()).getRequester().get(Requester.DISCORD_API_PREFIX + "guilds/" + guild.getId() + "/bans").getArray();
         for (int i = 0; i < bannedArr.length(); i++)
         {
             JSONObject userObj = bannedArr.getJSONObject(i).getJSONObject("user");

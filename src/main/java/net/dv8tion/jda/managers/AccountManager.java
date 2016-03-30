@@ -182,7 +182,7 @@ public class AccountManager
             object.put("password", password);
             object.put("username", username == null ? api.getSelfInfo().getUsername() : username);
 
-            JSONObject result = api.getRequester().patch(Requester.DISCORD_API_PREFIX + "users/@me", object);
+            JSONObject result = api.getRequester().patch(Requester.DISCORD_API_PREFIX + "users/@me", object).getObject();
 
             if (result == null || !result.has("token"))
             {

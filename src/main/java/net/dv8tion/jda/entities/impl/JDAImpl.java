@@ -171,7 +171,7 @@ public class JDAImpl implements JDA
             try
             {
                 authToken = null;
-                JSONObject response = getRequester().post(Requester.DISCORD_API_PREFIX + "auth/login", new JSONObject().put("email", email).put("password", password));
+                JSONObject response = getRequester().post(Requester.DISCORD_API_PREFIX + "auth/login", new JSONObject().put("email", email).put("password", password)).getObject();
 
                 if (response == null || !response.has("token"))
                     throw new LoginException("The provided email / password combination was incorrect. Please provide valid details.");
@@ -203,9 +203,8 @@ public class JDAImpl implements JDA
         this.authToken = authToken;
         try
         {
-            if (getRequester().getA(Requester.DISCORD_API_PREFIX + "users/@me/guilds") != null)
+            if (getRequester().get(Requester.DISCORD_API_PREFIX + "users/@me/guilds").isOk())
             {
-                //token is valid (returns array, cant be returned as JSONObject)
                 return true;
             }
         } catch (JSONException ignored) {}//token invalid
@@ -376,7 +375,7 @@ public class JDAImpl implements JDA
             throw new IllegalArgumentException("Guild region must not be UNKNOWN");
 
         JSONObject response = getRequester().post(Requester.DISCORD_API_PREFIX + "guilds",
-                new JSONObject().put("name", name).put("region", region.getKey()));
+                new JSONObject().put("name", name).put("region", region.getKey())).getObject();
         if (response == null || !response.has("id"))
         {
             //error creating guild
