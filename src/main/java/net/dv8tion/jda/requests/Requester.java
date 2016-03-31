@@ -154,8 +154,6 @@ public class Requester
 
         public JSONObject getObject()
         {
-            if(!isOk())
-                return null;
             try
             {
                 return new JSONObject(responseText);
@@ -168,8 +166,6 @@ public class Requester
 
         public JSONArray getArray()
         {
-            if(!isOk())
-                return null;
             try
             {
                 return new JSONArray(responseText);
