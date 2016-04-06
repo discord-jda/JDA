@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.requests;
 
+import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.BaseRequest;
@@ -32,6 +33,7 @@ public class Requester
 {
     public static final SimpleLog LOG = SimpleLog.getLog("JDARequester");
     public static final String USER_AGENT = "JDA DiscordBot (" + JDAInfo.GITHUB + ", " + JDAInfo.VERSION + ")";
+    public static final String DISCORD_API_PREFIX = "https://discordapp.com/api/";
 
     private final JDAImpl api;
 
@@ -40,105 +42,83 @@ public class Requester
         this.api = api;
     }
 
-    public JSONObject get(String url)
+    public Response get(String url)
     {
-        return toObject(addHeaders(Unirest.get(url)));
+        return exec(addHeaders(Unirest.get(url)));
     }
 
-    public JSONObject delete(String url)
+    public Response delete(String url)
     {
-        return toObject(addHeaders(Unirest.delete(url)));
+        return exec(addHeaders(Unirest.delete(url)));
     }
 
-    public JSONObject post(String url, JSONObject body)
+    public Response post(String url, JSONObject body)
     {
-        return toObject(addHeaders(Unirest.post(url)).body(body.toString()));
+        return exec(addHeaders(Unirest.post(url)).body(body.toString()));
     }
 
-    public JSONObject patch(String url, JSONObject body)
+    public Response post(String url, JSONArray body)
     {
-        return toObject(addHeaders(Unirest.patch(url)).body(body.toString()));
+        return exec(addHeaders(Unirest.post(url)).body(body.toString()));
     }
 
-    public JSONObject put(String url, JSONObject body)
+    public Response patch(String url, JSONObject body)
     {
-        return toObject(addHeaders(Unirest.put(url)).body(body.toString()));
+        return exec(addHeaders(Unirest.patch(url)).body(body.toString()));
     }
 
-    public JSONArray getA(String url)
+    public Response patch(String url, JSONArray body)
     {
-        return toArray(addHeaders(Unirest.get(url)));
+        return exec(addHeaders(Unirest.patch(url)).body(body.toString()));
     }
 
-    public JSONArray deleteA(String url)
+    public Response put(String url, JSONObject body)
     {
-        return toArray(addHeaders(Unirest.delete(url)));
+        return exec(addHeaders(Unirest.put(url)).body(body.toString()));
     }
 
-    public JSONArray postA(String url, JSONObject body)
+    public Response put(String url, JSONArray body)
     {
-        return toArray(addHeaders(Unirest.post(url)).body(body.toString()));
+        return exec(addHeaders(Unirest.put(url)).body(body.toString()));
     }
 
-    public JSONArray patchA(String url, JSONObject body)
+    private Response exec(BaseRequest request)
     {
-        return toArray(addHeaders(Unirest.patch(url)).body(body.toString()));
-    }
-
-    public JSONArray patchA(String url, JSONArray body)
-    {
-        return toArray(addHeaders(Unirest.patch(url)).body(body.toString()));
-    }
-
-    private JSONObject toObject(BaseRequest request)
-    {
-        String body = null;
+        HttpResponse<String> ret = null;
         try
         {
             String dbg = String.format("Requesting %s -> %s\n\tPayload: %s\n\tResponse: ", request.getHttpRequest().getHttpMethod().name(),
                     request.getHttpRequest().getUrl(), ((request instanceof RequestBodyEntity) ? ((RequestBodyEntity) request).getBody().toString() : "None"));
-            body = request.asString().getBody();
-            LOG.trace(dbg + body);
-            return body == null ? null : new JSONObject(body);
+            ret = request.asString();
+            if (ret.getBody() != null && ret.getBody().startsWith("<"))
+            {
+                LOG.debug(String.format("Requesting %s -> %s returned HTML... retrying", request.getHttpRequest().getHttpMethod().name(), request.getHttpRequest().getUrl()));
+                try
+                {
+                    Thread.sleep(50);
+                }
+                catch (InterruptedException ignored) {}
+                ret = request.asString();
+            }
+            Response response = new Response(ret.getStatus(), ret.getBody());
+            LOG.trace(dbg + response.code + ": " + response.responseText);
+            return response;
         }
-        catch (UnirestException ignored)
+        catch (UnirestException e)
         {
-            //most likely there is no connection... ignoring to not spam console
+            if (LOG.getEffectiveLevel().compareTo(SimpleLog.Level.DEBUG) != 1)
+            {
+                LOG.log(e);
+            }
         }
-        catch (JSONException e)
-        {
-            LOG.fatal("Following json caused an exception: " + body);
-            LOG.log(e);
-        }
-        return null;
-    }
-
-    private JSONArray toArray(BaseRequest request)
-    {
-        String body = null;
-        try
-        {
-            String dbg = String.format("Requesting %s -> %s\n\tPayload: %s\n\tResponse: ", request.getHttpRequest().getHttpMethod().name(),
-                    request.getHttpRequest().getUrl(), ((request instanceof RequestBodyEntity)? ((RequestBodyEntity) request).getBody().toString():"None"));
-            body = request.asString().getBody();
-            LOG.trace(dbg + body);
-            return body == null ? null : new JSONArray(body);
-        }
-        catch (UnirestException ignored)
-        {
-            //most likely there is no connection... ignoring to not spam console
-        }
-        catch (JSONException e)
-        {
-            LOG.fatal("Following json caused an exception: " + body);
-            LOG.log(e);
-        }
-        return null;
+        return new Response(Response.connectionErrCode, null);
     }
 
     private <T extends HttpRequest> T addHeaders(T request)
     {
-        if (api.getAuthToken() != null)
+        //adding token to all requests to the discord api or cdn pages
+        //can't check for startsWith(DISCORD_API_PREFIX) due to cdn endpoints
+        if (api.getAuthToken() != null && request.getUrl().contains("discordapp.com"))
         {
             request.header("authorization", api.getAuthToken());
         }
@@ -149,5 +129,56 @@ public class Requester
         request.header("user-agent", USER_AGENT);
         request.header("Accept-Encoding", "gzip");
         return request;
+    }
+
+    public static class Response {
+        public static final int connectionErrCode = -1;
+        public final int code;
+        public final String responseText;
+
+        private Response(int code, String response)
+        {
+            this.code = code;
+            this.responseText = response;
+        }
+
+        public boolean isOk()
+        {
+            return code > 199 && code < 300;
+        }
+
+        public boolean isRateLimit()
+        {
+            return code == 429;
+        }
+
+        public JSONObject getObject()
+        {
+            try
+            {
+                return new JSONObject(responseText);
+            }
+            catch (JSONException ex)
+            {
+                return null;
+            }
+        }
+
+        public JSONArray getArray()
+        {
+            try
+            {
+                return new JSONArray(responseText);
+            }
+            catch (JSONException ex)
+            {
+                return null;
+            }
+        }
+
+        public String toString()
+        {
+            return "HTTPResponse[" + code + ": " + responseText + ']';
+        }
     }
 }

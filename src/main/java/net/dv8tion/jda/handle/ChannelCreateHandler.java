@@ -63,7 +63,6 @@ public class ChannelCreateHandler extends SocketHandler
         else
         {
             throw new IllegalArgumentException("ChannelCreateEvent provided an unregonized channel type.  JSON: " + content);
-            //TODO:LOGGER ERROR - A channel type we don't know about?
         }
     }
 }

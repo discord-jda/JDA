@@ -20,6 +20,7 @@ import net.dv8tion.jda.OnlineStatus;
 import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.handle.EntityBuilder;
+import net.dv8tion.jda.requests.Requester;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -33,6 +34,7 @@ public class UserImpl implements User
     private String gameName = null;
     private OnlineStatus onlineStatus = OnlineStatus.OFFLINE;
     private PrivateChannel privateChannel = null;
+    private boolean isBot = false;
 
     public UserImpl(String id, JDAImpl api)
     {
@@ -101,8 +103,8 @@ public class UserImpl implements User
         {
             try
             {
-                JSONObject response = api.getRequester().post("https://discordapp.com/api/users/" + api.getSelfInfo().getId() + "/channels",
-                        new JSONObject().put("recipient_id", getId()));
+                JSONObject response = api.getRequester().post(Requester.DISCORD_API_PREFIX + "users/" + api.getSelfInfo().getId() + "/channels",
+                        new JSONObject().put("recipient_id", getId())).getObject();
                 new EntityBuilder(api).createPrivateChannel(response);
             }
             catch (JSONException ex)
@@ -111,6 +113,12 @@ public class UserImpl implements User
             }
         }
         return privateChannel;
+    }
+
+    @Override
+    public boolean isBot()
+    {
+        return isBot;
     }
 
     public UserImpl setUserName(String username)
@@ -150,6 +158,12 @@ public class UserImpl implements User
         {
             api.getPmChannelMap().put(channel.getId(), channel);
         }
+        return this;
+    }
+
+    public UserImpl setIsBot(boolean isBot)
+    {
+        this.isBot = isBot;
         return this;
     }
 

@@ -20,7 +20,6 @@ import net.dv8tion.jda.entities.MessageEmbed;
 
 public class MessageEmbedImpl implements MessageEmbed
 {
-    //TODO: Id?!
     private String url;
     private String title;
     private String description;

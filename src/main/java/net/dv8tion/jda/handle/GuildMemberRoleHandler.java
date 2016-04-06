@@ -24,6 +24,7 @@ import net.dv8tion.jda.events.guild.member.GuildMemberRoleRemoveEvent;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -67,6 +68,14 @@ public class GuildMemberRoleHandler extends SocketHandler
         if (removedRoles.size() > 0)
         {
             rolesOld.removeAll(removedRoles);
+        }
+        if (rolesNew.size() > 0)
+        {
+            rolesOld.addAll(rolesNew);
+        }
+        Collections.sort(rolesOld, (r2, r1) -> Integer.compare(r1.getPosition(), r2.getPosition()));
+        if (removedRoles.size() > 0)
+        {
             api.getEventManager().handle(
                     new GuildMemberRoleRemoveEvent(
                             api, responseNumber,
@@ -74,7 +83,6 @@ public class GuildMemberRoleHandler extends SocketHandler
         }
         if (rolesNew.size() > 0)
         {
-            rolesOld.addAll(rolesNew);
             api.getEventManager().handle(
                     new GuildMemberRoleAddEvent(
                             api, responseNumber,

@@ -26,6 +26,7 @@ import net.dv8tion.jda.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.exceptions.PermissionException;
 import net.dv8tion.jda.hooks.EventListener;
 import net.dv8tion.jda.hooks.SubscribeEvent;
+import net.dv8tion.jda.requests.Requester;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -58,12 +59,12 @@ public class InviteUtil
             String[] split = code.split("/");
             code = split[split.length - 1];
         }
-        JSONObject response = new JDAImpl(false).getRequester().get("https://discordapp.com/api/invite/" + code);
-        if (response.has("code"))
+        JSONObject object = new JDAImpl(false).getRequester().get(Requester.DISCORD_API_PREFIX + "invite/" + code).getObject();
+        if (object != null && object.has("code"))
         {
-            JSONObject guild = response.getJSONObject("guild");
-            JSONObject channel = response.getJSONObject("channel");
-            return new Invite(response.getString("code"), response.isNull("xkcdpass") ? null : response.getString("xkcdpass"), guild.getString("name"), guild.getString("id"),
+            JSONObject guild = object.getJSONObject("guild");
+            JSONObject channel = object.getJSONObject("channel");
+            return new Invite(object.getString("code"), object.isNull("xkcdpass") ? null : object.getString("xkcdpass"), guild.getString("name"), guild.getString("id"),
                     channel.getString("name"), channel.getString("id"), channel.getString("type").equals("text"));
         }
         return null;
@@ -134,15 +135,15 @@ public class InviteUtil
             throw new PermissionException(Permission.CREATE_INSTANT_INVITE);
 
         maxUses = Math.max(0, maxUses);
-        JSONObject response = ((JDAImpl) jda).getRequester().post("https://discordapp.com/api/channels/" + chan.getId() + "/invites",
+        JSONObject object = ((JDAImpl) jda).getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + chan.getId() + "/invites",
                 new JSONObject()
                         .put("max_age", duration.getDuration())
                         .put("temporary", temporary)
                         .put("max_uses", maxUses)
-                        .put("xkcdpass", humanReadable));
-        if (response.has("code"))
+                        .put("xkcdpass", humanReadable)).getObject();
+        if (object != null && object.has("code"))
         {
-            return AdvancedInvite.fromJson(response, jda);
+            return AdvancedInvite.fromJson(object, jda);
         }
         return null;
     }
@@ -184,7 +185,7 @@ public class InviteUtil
             throw new NullPointerException("The provided JDA object was null!");
         if(callback != null)
             jda.addEventListener(new AsyncCallback(invite.getGuildId(), callback));
-        ((JDAImpl) jda).getRequester().post("https://discordapp.com/api/invite/" + invite.getCode(), new JSONObject());
+        ((JDAImpl) jda).getRequester().post(Requester.DISCORD_API_PREFIX + "invite/" + invite.getCode(), new JSONObject());
     }
 
     @Deprecated
@@ -250,7 +251,7 @@ public class InviteUtil
             throw new PermissionException(Permission.MANAGE_CHANNEL,
                     "JDA cannot delete the invite because the currently logged in account does not have permission");
 
-        ((JDAImpl) jda).getRequester().delete("https://discordapp.com/api/invite/" + invite.getCode());
+        ((JDAImpl) jda).getRequester().delete(Requester.DISCORD_API_PREFIX + "invite/" + invite.getCode());
     }
 
     /**
@@ -292,18 +293,19 @@ public class InviteUtil
 
         List<AdvancedInvite> invites = new ArrayList<>();
 
-        JSONArray array = ((JDAImpl)guildObj.getJDA()).getRequester().getA("https://discordapp.com/api/guilds/" + guildObj.getId() + "/invites");
-
-        for (int i = 0; i < array.length(); i++)
+        JSONArray array = ((JDAImpl) guildObj.getJDA()).getRequester().get(Requester.DISCORD_API_PREFIX + "guilds/" + guildObj.getId() + "/invites").getArray();
+        if (array != null)
         {
-            JSONObject invite = array.getJSONObject(i);
-
-            if (invite.has("code"))
+            for (int i = 0; i < array.length(); i++)
             {
-                invites.add(AdvancedInvite.fromJson(invite, guildObj.getJDA()));
+                JSONObject invite = array.getJSONObject(i);
+
+                if (invite.has("code"))
+                {
+                    invites.add(AdvancedInvite.fromJson(invite, guildObj.getJDA()));
+                }
             }
         }
-
         return Collections.unmodifiableList(invites);
     }
 
@@ -322,18 +324,19 @@ public class InviteUtil
 
         List<AdvancedInvite> invites = new ArrayList<>();
 
-        JSONArray array = ((JDAImpl)channelObj.getJDA()).getRequester().getA("https://discordapp.com/api/channels/" + channelObj.getId() + "/invites");
-
-        for (int i = 0; i < array.length(); i++)
+        JSONArray array = ((JDAImpl)channelObj.getJDA()).getRequester().get(Requester.DISCORD_API_PREFIX + "channels/" + channelObj.getId() + "/invites").getArray();
+        if (array != null)
         {
-            JSONObject invite = array.getJSONObject(i);
-
-            if (invite.has("code"))
+            for (int i = 0; i < array.length(); i++)
             {
-                invites.add(AdvancedInvite.fromJson(invite, channelObj.getJDA()));
+                JSONObject invite = array.getJSONObject(i);
+
+                if (invite.has("code"))
+                {
+                    invites.add(AdvancedInvite.fromJson(invite, channelObj.getJDA()));
+                }
             }
         }
-
         return Collections.unmodifiableList(invites);
     }
 
@@ -487,7 +490,7 @@ public class InviteUtil
         }
     }
 
-    enum InviteDuration {
+    public enum InviteDuration {
         INFINITE(0), THIRTY_MINUTES(1800),
         ONE_HOUR(3600), SIX_HOURS(6*3600), TWELVE_HOURS(12*3600),
         ONE_DAY(24*3600);

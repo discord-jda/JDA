@@ -16,6 +16,7 @@
 package net.dv8tion.jda.handle;
 
 import net.dv8tion.jda.Region;
+import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.impl.GuildImpl;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.guild.GuildUpdateEvent;
@@ -39,13 +40,15 @@ public class GuildUpdateHandler extends SocketHandler
         String afkChannelId = content.isNull("afk_channel_id") ? null : content.getString("afk_channel_id");
         Region region = Region.fromKey(content.getString("region"));
         int afkTimeout = content.getInt("afk_timeout");
+        Guild.VerificationLevel verificationLevel = Guild.VerificationLevel.fromKey(content.getInt("verification_level"));
 
         guild.setName(name)
                 .setOwnerId(ownerId)
                 .setIconId(iconId)
                 .setAfkChannelId(afkChannelId)
                 .setRegion(region)
-                .setAfkTimeout(afkTimeout);
+                .setAfkTimeout(afkTimeout)
+                .setVerificationLevel(verificationLevel);
         api.getEventManager().handle(
                 new GuildUpdateEvent(
                         api, responseNumber,

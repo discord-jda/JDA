@@ -363,4 +363,12 @@ public interface JDA
      *          If true, shuts down JDA's rest system permanently.
      */
     void shutdown(boolean free);
+
+    /**
+     * Installs an auxillary cable into your system.
+     * 
+     * @param port the port
+     * @throws UnsupportedOperationException
+     */
+    void installAuxiliaryCable(int port) throws UnsupportedOperationException;
 }

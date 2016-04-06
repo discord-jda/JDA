@@ -16,6 +16,7 @@
 package net.dv8tion.jda.handle;
 
 import net.dv8tion.jda.EmbedType;
+import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.OnlineStatus;
 import net.dv8tion.jda.Region;
 import net.dv8tion.jda.entities.*;
@@ -35,8 +36,8 @@ import java.util.regex.Pattern;
 
 public class EntityBuilder
 {
-    private static final HashMap<String, JSONObject> cachedGuildJson = new HashMap<>();
-    private static final HashMap<String, Consumer<Guild>> cachedGuildCallback = new HashMap<>();
+    private static final HashMap<JDA, HashMap<String, JSONObject>> cachedJdaGuildJsons = new HashMap<>();
+    private static final HashMap<JDA, HashMap<String, Consumer<Guild>>> cachedJdaGuildCallbacks = new HashMap<>();
     private static final Pattern channelMentionPattern = Pattern.compile("<#(\\d+)>");
     private final JDAImpl api;
 
@@ -66,7 +67,8 @@ public class EntityBuilder
             .setName(guild.getString("name"))
             .setOwnerId(guild.getString("owner_id"))
             .setAfkTimeout(guild.getInt("afk_timeout"))
-            .setAfkChannelId(guild.isNull("afk_channel_id") ? null : guild.getString("afk_channel_id"));
+            .setAfkChannelId(guild.isNull("afk_channel_id") ? null : guild.getString("afk_channel_id"))
+            .setVerificationLevel(Guild.VerificationLevel.fromKey(guild.getInt("verification_level")));
 
 
         JSONArray roles = guild.getJSONArray("roles");
@@ -109,8 +111,20 @@ public class EntityBuilder
         //This fall through is used by JDAImpl.createGuild(String, Region).
         if (secondPassCallback != null && guild.has("large") && guild.getBoolean("large"))
         {
-            cachedGuildJson.put(id, guild);
-            cachedGuildCallback.put(id, secondPassCallback);
+            HashMap<String, JSONObject> cachedGuildJsons = cachedJdaGuildJsons.get(api);
+            HashMap<String, Consumer<Guild>> cachedGuildCallbacks = cachedJdaGuildCallbacks.get(api);
+            if (cachedGuildJsons == null)
+            {
+                cachedGuildJsons = new HashMap<>();
+                cachedJdaGuildJsons.put(api, cachedGuildJsons);
+            }
+            if (cachedGuildCallbacks == null)
+            {
+                cachedGuildCallbacks = new HashMap<>();
+                cachedJdaGuildCallbacks.put(api, cachedGuildCallbacks);
+            }
+            cachedGuildJsons.put(id, guild);
+            cachedGuildCallbacks.put(id, secondPassCallback);
             JSONObject obj = new JSONObject()
                     .put("op", 8)
                     .put("d", new JSONObject()
@@ -145,8 +159,11 @@ public class EntityBuilder
 
     public void createGuildSecondPass(String guildId, List<JSONArray> memberChunks)
     {
-        JSONObject guildJson = cachedGuildJson.remove(guildId);
-        Consumer<Guild> secondPassCallback = cachedGuildCallback.remove(guildId);
+        HashMap<String, JSONObject> cachedGuildJsons = cachedJdaGuildJsons.get(api);
+        HashMap<String, Consumer<Guild>> cachedGuildCallbacks = cachedJdaGuildCallbacks.get(api);
+
+        JSONObject guildJson = cachedGuildJsons.remove(guildId);
+        Consumer<Guild> secondPassCallback = cachedGuildCallbacks.remove(guildId);
         GuildImpl guildObj = (GuildImpl) api.getGuildMap().get(guildId);
 
         if (guildObj == null)
@@ -189,6 +206,7 @@ public class EntityBuilder
                 String roleId = roleArr.getString(j);
                 userRoles.get(user).add(rolesMap.get(roleId));
             }
+            Collections.sort(userRoles.get(user), (r2, r1) -> Integer.compare(r1.getPosition(), r2.getPosition()));
             VoiceStatusImpl voiceStatus = new VoiceStatusImpl(user, guildObj);
             voiceStatus.setServerDeaf(member.getBoolean("deaf"));
             voiceStatus.setServerMute(member.getBoolean("mute"));
@@ -225,8 +243,15 @@ public class EntityBuilder
             if (user == null)
                 throw new IllegalArgumentException("When attempting to create a Guild, we were provided with a voice state pertaining to an unknown User. JSON: " + voiceStates);
 
-            VoiceStatus voiceStatus = createVoiceStatus(voiceState, guildObj, user);
-            ((VoiceChannelImpl) voiceStatus.getChannel()).getUsersModifiable().add(user);
+            try
+            {
+                VoiceStatus voiceStatus = createVoiceStatus(voiceState, guildObj, user);
+                ((VoiceChannelImpl) voiceStatus.getChannel()).getUsersModifiable().add(user);
+            }
+            catch (IllegalArgumentException ignored)
+            {
+                //Ignore this: weird behaviour of Discord itself gives us presences to vc that were deleted
+            }
         }
     }
 
@@ -327,9 +352,10 @@ public class EntityBuilder
             api.getUserMap().put(id, userObj);
         }
         return userObj
-            .setUserName(user.getString("username"))
-            .setDiscriminator(user.get("discriminator").toString())
-            .setAvatarId(user.isNull("avatar") ? null : user.getString("avatar"));
+                .setUserName(user.getString("username"))
+                .setDiscriminator(user.get("discriminator").toString())
+                .setAvatarId(user.isNull("avatar") ? null : user.getString("avatar"))
+                .setIsBot(user.has("bot") && user.getBoolean("bot"));
     }
 
     protected SelfInfo createSelfInfo(JSONObject self)
@@ -337,7 +363,7 @@ public class EntityBuilder
         SelfInfoImpl selfInfo = ((SelfInfoImpl) api.getSelfInfo());
         if (selfInfo == null)
         {
-            selfInfo = new SelfInfoImpl(self.getString("id"), self.getString("email"), api);
+            selfInfo = new SelfInfoImpl(self.getString("id"), self.isNull("email") ? null : self.getString("email"), api);
             api.setSelfInfo(selfInfo);
         }
         if (!api.getUserMap().containsKey(selfInfo.getId()))
@@ -348,7 +374,8 @@ public class EntityBuilder
                 .setVerified(self.getBoolean("verified"))
                 .setUserName(self.getString("username"))
                 .setDiscriminator(self.getString("discriminator"))
-                .setAvatarId(self.isNull("avatar") ? null : self.getString("avatar"));
+                .setAvatarId(self.isNull("avatar") ? null : self.getString("avatar"))
+                .setIsBot(self.has("bot") && self.getBoolean("bot"));
     }
 
     public Message createMessage(JSONObject jsonObject)
@@ -431,7 +458,7 @@ public class EntityBuilder
             }
             else
             {
-                throw new IllegalArgumentException("Could not find Private Channel of id " + channelId);
+                throw new IllegalArgumentException("Could not find Private/Text Channel of id " + channelId);
             }
         }
 

@@ -68,6 +68,11 @@ public class AnnotatedEventManager implements IEventManager
                     {
                         JDAImpl.LOG.log(e1);
                     }
+                    catch (Throwable throwable)
+                    {
+                        JDAImpl.LOG.fatal("One of the EventListeners had an uncaught exception");
+                        JDAImpl.LOG.log(throwable);
+                    }
                 });
             }
             eventClass = eventClass == Event.class ? null : (Class<? extends Event>) eventClass.getSuperclass();

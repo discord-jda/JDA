@@ -71,14 +71,20 @@ public interface Guild
     String getAfkChannelId();
 
     /**
-     * The {@link net.dv8tion.jda.entities.User User} Id of the owner of this {@link net.dv8tion.jda.entities.Guild Guild}.<br>
-     * Currently, there is no way to transfer ownership of a discord {@link net.dv8tion.jda.entities.Guild Guild},
-     *   and a such this {@link net.dv8tion.jda.entities.User User} is also the original creator.
+     * The {@link net.dv8tion.jda.entities.User User} Id of the owner of this {@link net.dv8tion.jda.entities.Guild Guild}.
      *
      * @return
      *      Never-null String containing the Guild owner's User id.
      */
     String getOwnerId();
+
+    /**
+     * The {@link net.dv8tion.jda.entities.User User} object of the owner of this {@link net.dv8tion.jda.entities.Guild Guild}.
+     *
+     * @return
+     *      Never-null User object containing the Guild owner.
+     */
+    User getOwner();
 
     /**
      * The amount of time (in seconds) that must pass with no activity to be considered AFK by this {@link net.dv8tion.jda.entities.Guild Guild}.
@@ -108,6 +114,7 @@ public interface Guild
 
     /**
      * The {@link net.dv8tion.jda.entities.TextChannel TextChannels} available on the {@link net.dv8tion.jda.entities.Guild Guild}.
+     * The channels returned will be sorted according to their position.
      *
      * @return
      *      An Immutable List of {@link net.dv8tion.jda.entities.TextChannel TextChannels}.
@@ -129,6 +136,7 @@ public interface Guild
 
     /**
      * The {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannels} available on the {@link net.dv8tion.jda.entities.Guild Guild}.
+     * The channels returned will be sorted according to their position.
      *
      * @return
      *      An Immutable List of {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannels}.
@@ -149,7 +157,8 @@ public interface Guild
     ChannelManager createVoiceChannel(String name);
 
     /**
-     * The {@link net.dv8tion.jda.entities.Role Roles} of this {@link net.dv8tion.jda.entities.Guild Guild}
+     * The {@link net.dv8tion.jda.entities.Role Roles} of this {@link net.dv8tion.jda.entities.Guild Guild}.
+     * The roles returned will be sorted according to their position.
      *
      * @return
      *      An Immutable List of {@link net.dv8tion.jda.entities.Role Roles}.
@@ -170,6 +179,8 @@ public interface Guild
     /**
      * Provides all of the {@link net.dv8tion.jda.entities.Role Roles} that the provided {@link net.dv8tion.jda.entities.User User}
      *  has been assigned.
+     * The roles returned will be sorted according to their position.
+     *
      * @param user
      *          The {@link net.dv8tion.jda.entities.User User} that we wish to get the {@link net.dv8tion.jda.entities.Role Roles} related to.
      * @return
@@ -249,6 +260,13 @@ public interface Guild
     List<VoiceStatus> getVoiceStatuses();
 
     /**
+     * Returns the verification-Level of this Guild. For a short description of the different values, see {@link VerificationLevel}.
+     * @return
+     *      The Verification-Level of this Guild.
+     */
+    VerificationLevel getVerificationLevel();
+
+    /**
      * Returns whether or not this Guild is available. A Guild can be unavailable, if the Discord server has problems.
      * If a Guild is unavailable, no actions on it can be performed (Messages, Manager,...)
      *
@@ -264,4 +282,39 @@ public interface Guild
      *      An Immutable List of {@link net.dv8tion.jda.utils.InviteUtil.AdvancedInvite Invites} for this guild.
      */
     List<AdvancedInvite> getInvites();
+
+    /**
+     * Represents the Verification-Level of the Guild.
+     * The Verification-Level determines what requirement you have to meet to be able to speak in this Guild.<br>
+     * None   -&gt; everyone can talk.<br>
+     * Low    -&gt; verified email required.<br>
+     * Medium -&gt; you have to be member for at least 5min.<br>
+     * High   -&gt; you have to be member for at least 10min.
+     */
+    enum VerificationLevel
+    {
+        NONE(0), LOW(1), MEDIUM(2), HIGH(3);
+
+        private final int key;
+
+        VerificationLevel(int key)
+        {
+            this.key = key;
+        }
+
+        public int getKey()
+        {
+            return key;
+        }
+
+        public static VerificationLevel fromKey(int key)
+        {
+            for (VerificationLevel level : VerificationLevel.values())
+            {
+                if(level.getKey() == key)
+                    return level;
+            }
+            return NONE;
+        }
+    }
 }

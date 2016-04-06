@@ -21,7 +21,6 @@ import net.dv8tion.jda.Region;
 import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.events.Event;
 import net.dv8tion.jda.events.guild.GuildJoinEvent;
-import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.hooks.EventListener;
 import net.dv8tion.jda.hooks.IEventManager;
 import net.dv8tion.jda.hooks.InterfacedEventManager;
@@ -90,7 +89,36 @@ public class JDAImpl implements JDA
     }
 
     /**
-     * Attempts to login to Discord.
+     * Attempts to login to Discord with a Bot-Account.
+     *
+     * @param botToken
+     *          The token of the bot-account attempting to log in.
+     * @throws IllegalArgumentException
+     *          Thrown if the botToken provided is empty or null.
+     * @throws LoginException
+     *          Thrown if the token fails the auth check with the Discord servers.
+     */
+    public void login(String botToken) throws IllegalArgumentException, LoginException
+    {
+        LOG.info("JDA starting...");
+        if (botToken == null || botToken.isEmpty())
+            throw new IllegalArgumentException("The provided botToken was empty / null.");
+
+        botToken = "Bot " + botToken;
+
+        accountManager=new AccountManager(this, null);
+
+        if(!validate(botToken)) {
+            throw new LoginException("The given botToken was invalid");
+        }
+
+        LOG.info("Login Successful!");
+        client = new WebSocketClient(this, proxy);
+        client.setAutoReconnect(reconnect);
+    }
+
+    /**
+     * Attempts to login to Discord with a normal User-Account.
      * Upon successful auth with Discord, a token is generated and stored in token.json.
      *
      * @param email
@@ -127,16 +155,10 @@ public class JDAImpl implements JDA
         {
             if (configs.getJSONObject("tokens").has(email))
             {
-                authToken = configs.getJSONObject("tokens").getString(email);
-                try
-                {
-                    if (getRequester().getA("https://discordapp.com/api/users/@me/guilds") != null)
-                    {
-                        //token is valid (returns array, cant be returned as JSONObject)
+                if(validate(configs.getJSONObject("tokens").getString(email))) {
                         valid = true;
                         LOG.debug("Using cached Token: " + authToken);
-                    }
-                } catch (JSONException ignored) {}//token invalid
+                }
             }
         }
         catch (JSONException ex)
@@ -149,7 +171,7 @@ public class JDAImpl implements JDA
             try
             {
                 authToken = null;
-                JSONObject response = getRequester().post("https://discordapp.com/api/auth/login", new JSONObject().put("email", email).put("password", password));
+                JSONObject response = getRequester().post(Requester.DISCORD_API_PREFIX + "auth/login", new JSONObject().put("email", email).put("password", password)).getObject();
 
                 if (response == null || !response.has("token"))
                     throw new LoginException("The provided email / password combination was incorrect. Please provide valid details.");
@@ -168,12 +190,25 @@ public class JDAImpl implements JDA
 
         if (valid)
         {
-            LOG.info("Login Successful!"); //TODO: Replace with Logger.INFO
+            LOG.info("Login Successful!");
             client = new WebSocketClient(this, proxy);
             client.setAutoReconnect(reconnect);
         }
 
         writeJson(tokenFile, configs);
+    }
+
+    private boolean validate(String authToken)
+    {
+        this.authToken = authToken;
+        try
+        {
+            if (getRequester().get(Requester.DISCORD_API_PREFIX + "users/@me/guilds").isOk())
+            {
+                return true;
+            }
+        } catch (JSONException ignored) {}//token invalid
+        return false;
     }
 
     /**
@@ -339,8 +374,8 @@ public class JDAImpl implements JDA
         if (region == Region.UNKNOWN)
             throw new IllegalArgumentException("Guild region must not be UNKNOWN");
 
-        JSONObject response = getRequester().post("https://discordapp.com/api/guilds",
-                new JSONObject().put("name", name).put("region", region.getKey()));
+        JSONObject response = getRequester().post(Requester.DISCORD_API_PREFIX + "guilds",
+                new JSONObject().put("name", name).put("region", region.getKey())).getObject();
         if (response == null || !response.has("id"))
         {
             //error creating guild
@@ -549,7 +584,7 @@ public class JDAImpl implements JDA
         {
             throw new RuntimeException("Acking is disabled by default. <b>READ THE JAVADOCS</b> for how to use them!");
         }
-        getRequester().post("https://discordapp.com/api/channels/"+msg.getChannelId()+"/messages/"+msg.getId()+"/ack", new JSONObject());
+        getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + msg.getChannelId() + "/messages/" + msg.getId() + "/ack", new JSONObject());
     }
 
     @Override
@@ -580,4 +615,9 @@ public class JDAImpl implements JDA
             }
         }
     }
+
+	@Override
+	public void installAuxiliaryCable(int port) throws UnsupportedOperationException {
+        throw new UnsupportedOperationException("Nice try m8!");
+	}
 }

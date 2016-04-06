@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.hooks;
+package net.dv8tion.jda.exceptions;
 
-import java.lang.annotation.*;
-
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-@Inherited
-public @interface SubscribeEvent
+public class BlockedException extends RuntimeException
 {
+    public BlockedException()
+    {
+        super("The requested User blocks you or disallows you otherwise from PMing him!");
+    }
 }

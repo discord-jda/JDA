@@ -395,6 +395,7 @@ public class AudioWebSocket extends WebSocketAdapter
                 }
             }
         };
+        udpKeepAliveThread.setPriority(Thread.NORM_PRIORITY + 1);
         udpKeepAliveThread.setDaemon(true);
         udpKeepAliveThread.start();
     }
@@ -424,6 +425,7 @@ public class AudioWebSocket extends WebSocketAdapter
                 }
             }
         };
+        keepAliveThread.setPriority(Thread.MAX_PRIORITY);
         keepAliveThread.setDaemon(true);
         keepAliveThread.start();
     }

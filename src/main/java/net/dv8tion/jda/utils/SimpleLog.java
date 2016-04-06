@@ -55,6 +55,11 @@ public class SimpleLog
         return LOGS.get(name.toLowerCase());
     }
 
+    private static PrintStream origStd = null;
+    private static PrintStream origErr = null;
+    private static FileOutputStream stdOut = null;
+    private static FileOutputStream errOut = null;
+
     /**
      * Will duplicate the output-streams to a specified file
      * @param std the file to use for System.out logging, or null to not LOG System.out to a file
@@ -62,40 +67,61 @@ public class SimpleLog
      * @throws IOException If an IO error is encountered while dealing with the file. Most likely
      *                     to be caused by a lack of permissions when creating the log folders or files.
      */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void addFileLogs(File std, File err) throws IOException {
         if(std != null) {
-            final OutputStream stdc = System.out;
-            if(!std.getParentFile().exists()) {
-                std.getParentFile().mkdirs();
+            if (origStd == null)
+                origStd = System.out;
+            if(!std.getAbsoluteFile().getParentFile().exists()) {
+                std.getAbsoluteFile().getParentFile().mkdirs();
             }
             if(!std.exists()) {
                 std.createNewFile();
             }
-            final OutputStream stdf = new FileOutputStream(std, true);
+            FileOutputStream fOut = new FileOutputStream(std, true);
             System.setOut(new PrintStream(new OutputStream() {
                 @Override
                 public void write(int b) throws IOException {
-                    stdc.write(b);
-                    stdf.write(b);
+                    origStd.write(b);
+                    fOut.write(b);
                 }
             }));
+            if (stdOut != null)
+                stdOut.close();
+            stdOut = fOut;
+        }
+        else if (origStd != null)
+        {
+            System.setOut(origStd);
+            stdOut.close();
+            origStd = null;
         }
         if(err != null) {
-            final OutputStream errc = System.err;
-            if(!err.getParentFile().exists()) {
-                err.getParentFile().mkdirs();
+            if (origErr == null)
+                origErr = System.err;
+            if(!err.getAbsoluteFile().getParentFile().exists()) {
+                err.getAbsoluteFile().getParentFile().mkdirs();
             }
             if(!err.exists()) {
                 err.createNewFile();
             }
-            final OutputStream errf = new FileOutputStream(err, true);
+            FileOutputStream fOut = new FileOutputStream(err, true);
             System.setErr(new PrintStream(new OutputStream() {
                 @Override
                 public void write(int b) throws IOException {
-                    errc.write(b);
-                    errf.write(b);
+                    origErr.write(b);
+                    fOut.write(b);
                 }
             }));
+            if (errOut != null)
+                errOut.close();
+            errOut = fOut;
+        }
+        else if (origErr != null)
+        {
+            System.setErr(origErr);
+            errOut.close();
+            origErr = null;
         }
     }
 

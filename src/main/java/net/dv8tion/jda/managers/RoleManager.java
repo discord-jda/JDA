@@ -18,9 +18,9 @@ package net.dv8tion.jda.managers;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.entities.impl.JDAImpl;
-import net.dv8tion.jda.entities.impl.RoleImpl;
 import net.dv8tion.jda.exceptions.PermissionException;
 import net.dv8tion.jda.handle.EntityBuilder;
+import net.dv8tion.jda.requests.Requester;
 import net.dv8tion.jda.utils.PermissionUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -41,7 +41,7 @@ public class RoleManager
     public RoleManager(Role role)
     {
         this.role = role;
-        perms = ((RoleImpl) role).getPermissionsRaw();
+        perms = role.getPermissionsRaw();
     }
 
     /**
@@ -167,7 +167,7 @@ public class RoleManager
         {
             arr.put(new JSONObject().put("position", i + 1).put("id", newOrder.get(i).getId()));
         }
-        ((JDAImpl) role.getJDA()).getRequester().patchA("https://discordapp.com/api/guilds/" + role.getGuild().getId() + "/roles", arr);
+        ((JDAImpl) role.getJDA()).getRequester().patch(Requester.DISCORD_API_PREFIX + "guilds/" + role.getGuild().getId() + "/roles", arr);
         return this;
     }
 
@@ -213,6 +213,19 @@ public class RoleManager
         return this;
     }
 
+    /**
+     * Resets all queued updates. So the next call to {@link #update()} will change nothing.
+     */
+    public void reset() {
+        name = null;
+        color = -1;
+        grouped = null;
+        perms = role.getPermissionsRaw();
+    }
+
+    /**
+     * This method will apply all accumulated changes received by setters
+     */
     public void update()
     {
         checkPermission(Permission.MANAGE_ROLES);
@@ -235,7 +248,7 @@ public class RoleManager
     {
         checkPermission(Permission.MANAGE_ROLES);
 
-        ((JDAImpl) role.getJDA()).getRequester().delete("https://discordapp.com/api/guilds/" + role.getGuild().getId() + "/roles/" + role.getId());
+        ((JDAImpl) role.getJDA()).getRequester().delete(Requester.DISCORD_API_PREFIX + "guilds/" + role.getGuild().getId() + "/roles/" + role.getId());
     }
 
     private JSONObject getFrame()
@@ -249,7 +262,7 @@ public class RoleManager
 
     private void update(JSONObject object)
     {
-        JSONObject response = ((JDAImpl) role.getJDA()).getRequester().patch("https://discordapp.com/api/guilds/" + role.getGuild().getId() + "/roles/" + role.getId(), object);
+        JSONObject response = ((JDAImpl) role.getJDA()).getRequester().patch(Requester.DISCORD_API_PREFIX + "guilds/" + role.getGuild().getId() + "/roles/" + role.getId(), object).getObject();
         if (response == null || !response.has("id"))
         {
             throw new RuntimeException("Setting values of Role " + role.getName() + " with ID " + role.getId()

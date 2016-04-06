@@ -22,6 +22,7 @@ import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.entities.impl.UserImpl;
 import net.dv8tion.jda.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.exceptions.PermissionException;
+import net.dv8tion.jda.requests.Requester;
 import net.dv8tion.jda.utils.AvatarUtil;
 import net.dv8tion.jda.utils.PermissionUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -84,6 +85,7 @@ public class GuildManager
     private String name = null;
     private Region region = null;
     private AvatarUtil.Avatar icon = null;
+    private Guild.VerificationLevel verificationLevel = null;
     private String afkChannelId;
 
     private final Map<User, Set<Role>> addedRoles = new HashMap<>();
@@ -370,6 +372,51 @@ public class GuildManager
     }
 
     /**
+     * Changes the Verification-Level of this Guild.
+     * This change will only be applied, if {@link #update()} is called.
+     * So multiple changes can be made at once.
+     *
+     * @param level
+     *          the new Verification-Level of the Guild, or null to keep current one
+     * @return
+     *      This {@link net.dv8tion.jda.managers.GuildManager GuildManager} instance. Useful for chaining.
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
+     */
+    public GuildManager setVerificationLevel(Guild.VerificationLevel level)
+    {
+        if (!guild.isAvailable())
+        {
+            throw new GuildUnavailableException();
+        }
+        checkPermission(Permission.MANAGE_SERVER);
+
+        if (guild.getVerificationLevel() == level)
+        {
+            this.verificationLevel = null;
+        }
+        else
+        {
+            this.verificationLevel = level;
+        }
+        return this;
+    }
+
+    /**
+     * Resets all queued updates. So the next call to {@link #update()} will change nothing.
+     */
+    public void reset() {
+        name = null;
+        region = null;
+        timeout = null;
+        icon = null;
+        verificationLevel = null;
+        afkChannelId = guild.getAfkChannelId();
+        addedRoles.clear();
+        removedRoles.clear();
+    }
+
+    /**
      * This method will apply all accumulated changes received by setters
      *
      * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
@@ -382,7 +429,7 @@ public class GuildManager
             throw new GuildUnavailableException();
         }
 
-        if (name != null || region != null || timeout != null || icon != null || !StringUtils.equals(afkChannelId, guild.getAfkChannelId()))
+        if (name != null || region != null || timeout != null || icon != null || !StringUtils.equals(afkChannelId, guild.getAfkChannelId()) || verificationLevel != null)
         {
             checkPermission(Permission.MANAGE_SERVER);
 
@@ -397,6 +444,8 @@ public class GuildManager
                 frame.put("icon", icon == AvatarUtil.DELETE_AVATAR ? JSONObject.NULL : icon.getEncoded());
             if(!StringUtils.equals(afkChannelId, guild.getAfkChannelId()))
                 frame.put("afk_channel_id", afkChannelId == null ? JSONObject.NULL : afkChannelId);
+            if(verificationLevel != null)
+                frame.put("verification_level", verificationLevel.getKey());
             update(frame);
         }
 
@@ -414,7 +463,7 @@ public class GuildManager
                 removedRoles.get(user).stream().filter(role -> roleIds.contains(role.getId())).forEach(role -> roleIds.remove(role.getId()));
 
                 ((JDAImpl) guild.getJDA()).getRequester().patch(
-                        "https://discordapp.com/api/guilds/" + guild.getId() + "/members/" + user.getId(),
+                        Requester.DISCORD_API_PREFIX + "guilds/" + guild.getId() + "/members/" + user.getId(),
                         new JSONObject().put("roles", roleIds));
 
             }
@@ -474,8 +523,37 @@ public class GuildManager
                             "for the destination VoiceChannel, so the move cannot be done.");
 
         ((JDAImpl) guild.getJDA()).getRequester().patch(
-                "https://discordapp.com/api/guilds/" + guild.getId() + "/members/" + user.getId(),
+                Requester.DISCORD_API_PREFIX + "guilds/" + guild.getId() + "/members/" + user.getId(),
                 new JSONObject().put("channel_id", voiceChannel.getId()));
+    }
+
+    /**
+     * This method will either prune (kick) all members who were offline for at least <i>days</i> days,
+     * or just return the number of members that would be pruned.
+     *
+     * @param days
+     *      Minimum number of days since a user has been offline to get affected.
+     * @param doKick
+     *      Whether or not these members should actually get kicked or not
+     * @return
+     *      The number of users that have been / would get pruned
+     * @throws PermissionException
+     *      If the JDA-account doesn't have the {@link net.dv8tion.jda.Permission#KICK_MEMBERS KICK_MEMBER Permission}
+     */
+    public int prune(int days, boolean doKick)
+    {
+        if (!PermissionUtil.checkPermission(guild.getJDA().getSelfInfo(), Permission.KICK_MEMBERS, guild))
+            throw new PermissionException(Permission.KICK_MEMBERS);
+        JSONObject returned;
+        if (doKick)
+        {
+            returned = ((JDAImpl) guild.getJDA()).getRequester().post(Requester.DISCORD_API_PREFIX + "guilds/" + guild.getId() + "/prune?days=" + days, new JSONObject()).getObject();
+        }
+        else
+        {
+            returned = ((JDAImpl) guild.getJDA()).getRequester().get(Requester.DISCORD_API_PREFIX + "guilds/" + guild.getId() + "/prune?days=" + days).getObject();
+        }
+        return returned.getInt("pruned");
     }
 
     /**
@@ -515,7 +593,7 @@ public class GuildManager
         }
         checkPermission(Permission.KICK_MEMBERS);
 
-        ((JDAImpl) guild.getJDA()).getRequester().delete("https://discordapp.com/api/guilds/"
+        ((JDAImpl) guild.getJDA()).getRequester().delete(Requester.DISCORD_API_PREFIX + "guilds/"
                 + guild.getId() + "/members/" + userId);
     }
 
@@ -564,7 +642,7 @@ public class GuildManager
         }
         checkPermission(Permission.BAN_MEMBERS);
 
-        ((JDAImpl) guild.getJDA()).getRequester().put("https://discordapp.com/api/guilds/"
+        ((JDAImpl) guild.getJDA()).getRequester().put(Requester.DISCORD_API_PREFIX + "guilds/"
                 + guild.getId() + "/bans/" + userId + (delDays > 0 ? "?delete-message-days=" + delDays : ""), new JSONObject());
     }
 
@@ -583,8 +661,9 @@ public class GuildManager
         {
             throw new GuildUnavailableException();
         }
+        checkPermission(Permission.BAN_MEMBERS);
         List<User> bans = new LinkedList<>();
-        JSONArray bannedArr = ((JDAImpl) guild.getJDA()).getRequester().getA("https://discordapp.com/api/guilds/" + guild.getId() + "/bans");
+        JSONArray bannedArr = ((JDAImpl) guild.getJDA()).getRequester().get(Requester.DISCORD_API_PREFIX + "guilds/" + guild.getId() + "/bans").getArray();
         for (int i = 0; i < bannedArr.length(); i++)
         {
             JSONObject userObj = bannedArr.getJSONObject(i).getJSONObject("user");
@@ -636,7 +715,7 @@ public class GuildManager
         }
         checkPermission(Permission.BAN_MEMBERS);
 
-        ((JDAImpl) guild.getJDA()).getRequester().delete("https://discordapp.com/api/guilds/"
+        ((JDAImpl) guild.getJDA()).getRequester().delete(Requester.DISCORD_API_PREFIX + "guilds/"
                 + guild.getId() + "/bans/" + userId);
     }
 
@@ -689,7 +768,7 @@ public class GuildManager
         {
             throw new GuildUnavailableException();
         }
-        ((JDAImpl) guild.getJDA()).getRequester().delete("https://discordapp.com/api/users/@me/guilds/" + guild.getId());
+        ((JDAImpl) guild.getJDA()).getRequester().delete(Requester.DISCORD_API_PREFIX + "users/@me/guilds/" + guild.getId());
     }
 
     /**
@@ -714,7 +793,7 @@ public class GuildManager
         {
             throw new GuildUnavailableException();
         }
-        ((JDAImpl) guild.getJDA()).getRequester().delete("https://discordapp.com/api/guilds/" + guild.getId());
+        ((JDAImpl) guild.getJDA()).getRequester().delete(Requester.DISCORD_API_PREFIX + "guilds/" + guild.getId());
     }
 
     /**
@@ -749,7 +828,7 @@ public class GuildManager
 
     private void update(JSONObject object)
     {
-        ((JDAImpl) guild.getJDA()).getRequester().patch("https://discordapp.com/api/guilds/" + guild.getId(), object);
+        ((JDAImpl) guild.getJDA()).getRequester().patch(Requester.DISCORD_API_PREFIX + "guilds/" + guild.getId(), object);
     }
 
     private void checkPermission(Permission perm)

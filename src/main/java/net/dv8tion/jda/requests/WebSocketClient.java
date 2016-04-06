@@ -22,6 +22,7 @@ import net.dv8tion.jda.events.ShutdownEvent;
 import net.dv8tion.jda.handle.*;
 import net.dv8tion.jda.utils.SimpleLog;
 import org.apache.http.HttpHost;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -49,6 +50,7 @@ public class WebSocketClient extends WebSocketAdapter
     private final List<String> cachedEvents = new LinkedList<>();
     private String url = null;
     private int reconnectTimeout = 2;
+    private boolean isReconnectRunning = false;
     private boolean reconnecting = false;           //for internal information (op7)
     private boolean shouldReconnect = false;        //for configuration (connection loss)
 
@@ -61,6 +63,7 @@ public class WebSocketClient extends WebSocketAdapter
 
     public void send(String message)
     {
+        LOG.trace("<- " + message);
         socket.sendText(message);
     }
 
@@ -71,10 +74,15 @@ public class WebSocketClient extends WebSocketAdapter
         LOG.info("Connected to WebSocket");
         if(!reconnecting)
         {
+            String token = api.getAuthToken();
+            if (token.startsWith("Bot "))
+            {
+                token = token.substring(4);
+            }
             connectObj = new JSONObject()
                     .put("op", 2)
                     .put("d", new JSONObject()
-                            .put("token", api.getAuthToken())
+                            .put("token", token)
                             .put("properties", new JSONObject()
                                     .put("$os", System.getProperty("os.name"))
                                     .put("$browser", "Java Discord API")
@@ -115,6 +123,20 @@ public class WebSocketClient extends WebSocketAdapter
         String type = content.getString("t");
         int responseTotal = content.getInt("s");
         api.setResponseTotal(responseTotal);
+
+        //Needs special handling due to content of "d" being an array
+        if(type.equals("PRESENCE_REPLACE"))
+        {
+            JSONArray presences = content.getJSONArray("d");
+            PresenceUpdateHandler handler = new PresenceUpdateHandler(api, responseTotal);
+            for (int i = 0; i < presences.length(); i++)
+            {
+                JSONObject presence = presences.getJSONObject(i);
+                handler.handle(presence);
+            }
+            return;
+        }
+
         content = content.getJSONObject("d");
         if (type.equals("READY") || type.equals("RESUMED"))
         {
@@ -131,11 +153,12 @@ public class WebSocketClient extends WebSocketAdapter
                     }
                 }
             });
+            keepAliveThread.setPriority(Thread.MAX_PRIORITY);
             keepAliveThread.setDaemon(true);
             keepAliveThread.start();
         }
 
-        LOG.trace(String.format("%s -> %s\n", type, content.toString()));
+        LOG.trace(String.format("%s -> %s", type, content.toString()));
         if (!ready && !(type.equals("READY") || type.equals("GUILD_MEMBERS_CHUNK")))
         {
             cachedEvents.add(message);
@@ -146,9 +169,14 @@ public class WebSocketClient extends WebSocketAdapter
             switch (type) {
                 case "READY":
                     sessionId = content.getString("session_id");
-                    new ReadyHandler(api, ready, responseTotal).handle(content);
+                    new ReadyHandler(api, isReconnectRunning, responseTotal).handle(content);
                 case "RESUMED":
+                    //joint stuff
+                    isReconnectRunning = false;
                     reconnectTimeout = 2;
+                    //resume only
+                    if(!type.equals("RESUMED")) return;
+                    ready = true;
                     break;
                 case "GUILD_MEMBERS_CHUNK":
                     new GuildMembersChunkHandler(api, responseTotal).handle(content);
@@ -229,7 +257,7 @@ public class WebSocketClient extends WebSocketAdapter
                     //TODO: handle notification updates...
                     break;
                 default:
-                    LOG.debug("Unrecognized event:\n" + message);    //TODO: Replace with "we don't know this type"
+                    LOG.debug("Unrecognized event:\n" + message);
             }
         }
         catch (JSONException ex)
@@ -237,9 +265,8 @@ public class WebSocketClient extends WebSocketAdapter
             LOG.warn("Got an unexpected Json-parse error. Please redirect following message to the devs:\n\t"
                     + ex.getMessage() + "\n\t" + type + " -> " + content);
         }
-        catch (IllegalArgumentException ex)
+        catch (Exception ex)
         {
-            LOG.fatal("JDA encountered an internal error.");
             LOG.log(ex);
         }
     }
@@ -309,6 +336,7 @@ public class WebSocketClient extends WebSocketAdapter
 
     private void connect()
     {
+        ready = false;
         WebSocketFactory factory = new WebSocketFactory();
         if (proxy != null)
         {
@@ -351,6 +379,7 @@ public class WebSocketClient extends WebSocketAdapter
             }
             catch(InterruptedException ignored) {}
             LOG.warn("Attempting to reconnect!");
+            isReconnectRunning = true;
             try
             {
                 connect();
@@ -368,7 +397,7 @@ public class WebSocketClient extends WebSocketAdapter
     {
         try
         {
-            return api.getRequester().get("https://discordapp.com/api/gateway").getString("url");
+            return api.getRequester().get(Requester.DISCORD_API_PREFIX + "gateway").getObject().getString("url");
         }
         catch (Exception ex)
         {

@@ -15,17 +15,19 @@
  */
 package net.dv8tion.jda.handle;
 
+import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class GuildMembersChunkHandler extends SocketHandler
 {
-    private static String lastGuildId = null;
-    private static List<JSONArray> memberChunks = null;
+    private static HashMap<JDA, String> lastGuildIdCache = new HashMap<>();
+    private static HashMap<JDA, List<JSONArray>> memberChunksCache = new HashMap<>();
 
     public GuildMembersChunkHandler(JDAImpl api, int responseNumber)
     {
@@ -35,17 +37,26 @@ public class GuildMembersChunkHandler extends SocketHandler
     @Override
     public void handle(JSONObject content)
     {
+        String lastGuildId = lastGuildIdCache.get(api);
+        List<JSONArray> memberChunks = memberChunksCache.get(api);
         String guildId = content.getString("guild_id");
         if (lastGuildId == null)
         {
             lastGuildId = guildId;
+            lastGuildIdCache.put(api, guildId);
+
             memberChunks = new ArrayList<>();
+            memberChunksCache.put(api, memberChunks);
         }
         if (!lastGuildId.equals(guildId))
         {
             new EntityBuilder(api).createGuildSecondPass(lastGuildId, memberChunks);
+
             lastGuildId = guildId;
+            lastGuildIdCache.put(api, guildId);
+
             memberChunks = new ArrayList<>();
+            memberChunksCache.put(api, memberChunks);
         }
 
         JSONArray members = content.getJSONArray("members");
@@ -54,8 +65,8 @@ public class GuildMembersChunkHandler extends SocketHandler
         if (members.length() != 1000)
         {
             new EntityBuilder(api).createGuildSecondPass(lastGuildId, memberChunks);
-            lastGuildId = null;
-            memberChunks = null;
+            lastGuildIdCache.remove(api);
+            memberChunksCache.remove(api);
         }
     }
 }

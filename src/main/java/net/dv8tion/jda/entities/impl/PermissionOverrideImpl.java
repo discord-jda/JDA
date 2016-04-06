@@ -30,6 +30,7 @@ public class PermissionOverrideImpl implements PermissionOverride
     private final Channel channel;
     private int allow;
     private int deny;
+    private PermissionOverrideManager manager = null;
 
     public PermissionOverrideImpl(Channel channel, User user, Role role)
     {
@@ -129,9 +130,11 @@ public class PermissionOverrideImpl implements PermissionOverride
     }
 
     @Override
-    public PermissionOverrideManager getManager()
+    public synchronized PermissionOverrideManager getManager()
     {
-        return new PermissionOverrideManager(this);
+        if (manager == null)
+            manager = new PermissionOverrideManager(this);
+        return manager;
     }
 
     @Override

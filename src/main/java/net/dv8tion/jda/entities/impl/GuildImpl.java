@@ -25,12 +25,10 @@ import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.managers.ChannelManager;
 import net.dv8tion.jda.managers.GuildManager;
 import net.dv8tion.jda.managers.RoleManager;
+import net.dv8tion.jda.requests.Requester;
 import net.dv8tion.jda.utils.InviteUtil;
 import net.dv8tion.jda.utils.InviteUtil.AdvancedInvite;
-import net.dv8tion.jda.utils.InviteUtil.Invite;
 import net.dv8tion.jda.utils.PermissionUtil;
-
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
@@ -54,7 +52,9 @@ public class GuildImpl implements Guild
     private Role publicRole;
     private TextChannel publicChannel;
     private final JDAImpl api;
+    private VerificationLevel verificationLevel;
     private boolean available;
+    private GuildManager manager = null;
 
     public GuildImpl(JDAImpl api, String id)
     {
@@ -105,6 +105,12 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    public User getOwner()
+    {
+        return api.getUserById(ownerId);
+    }
+
+    @Override
     public int getAfkTimeout()
     {
         return afkTimeout;
@@ -125,7 +131,9 @@ public class GuildImpl implements Guild
     @Override
     public List<TextChannel> getTextChannels()
     {
-        return Collections.unmodifiableList(new ArrayList<>(textChannels.values()));
+        ArrayList<TextChannel> textChannels = new ArrayList<>(this.textChannels.values());
+        Collections.sort(textChannels, (c1, c2) -> Integer.compare(c1.getPosition(), c2.getPosition()));
+        return Collections.unmodifiableList(textChannels);
     }
 
     @Override
@@ -143,7 +151,7 @@ public class GuildImpl implements Guild
         {
             throw new GuildUnavailableException();
         }
-        JSONObject response = api.getRequester().post("https://discordapp.com/api/guilds/" + getId() + "/channels", new JSONObject().put("name", name).put("type", "text"));
+        JSONObject response = api.getRequester().post(Requester.DISCORD_API_PREFIX + "guilds/" + getId() + "/channels", new JSONObject().put("name", name).put("type", "text")).getObject();
         if (response == null || !response.has("id"))
         {
             //error creating textchannel
@@ -159,8 +167,8 @@ public class GuildImpl implements Guild
     @Override
     public List<VoiceChannel> getVoiceChannels()
     {
-        List<VoiceChannel> list = new ArrayList<>();
-        list.addAll(voiceChannels.values());
+        List<VoiceChannel> list = new ArrayList<>(voiceChannels.values());
+        Collections.sort(list, (v1, v2) -> Integer.compare(v1.getPosition(), v2.getPosition()));
         return Collections.unmodifiableList(list);
     }
 
@@ -179,7 +187,7 @@ public class GuildImpl implements Guild
         {
             throw new GuildUnavailableException();
         }
-        JSONObject response = api.getRequester().post("https://discordapp.com/api/guilds/" + getId() + "/channels", new JSONObject().put("name", name).put("type", "voice"));
+        JSONObject response = api.getRequester().post(Requester.DISCORD_API_PREFIX + "guilds/" + getId() + "/channels", new JSONObject().put("name", name).put("type", "voice")).getObject();
         if (response == null || !response.has("id"))
         {
             //error creating voicechannel
@@ -195,8 +203,8 @@ public class GuildImpl implements Guild
     @Override
     public List<Role> getRoles()
     {
-        List<Role> list = new ArrayList<>();
-        list.addAll(roles.values());
+        List<Role> list = new ArrayList<>(roles.values());
+        Collections.sort(list, (r1, r2) -> Integer.compare(r2.getPosition(), r1.getPosition()));
         return Collections.unmodifiableList(list);
     }
 
@@ -211,7 +219,7 @@ public class GuildImpl implements Guild
         {
             throw new GuildUnavailableException();
         }
-        JSONObject response = api.getRequester().post("https://discordapp.com/api/guilds/" + getId() + "/roles", new JSONObject());
+        JSONObject response = api.getRequester().post(Requester.DISCORD_API_PREFIX + "guilds/" + getId() + "/roles", new JSONObject()).getObject();
         if (response == null || !response.has("id"))
         {
             //error creating role
@@ -249,9 +257,11 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public GuildManager getManager()
+    public synchronized GuildManager getManager()
     {
-        return new GuildManager(this);
+        if (manager == null)
+            manager = new GuildManager(this);
+        return manager;
     }
 
     @Override
@@ -264,6 +274,12 @@ public class GuildImpl implements Guild
     public List<VoiceStatus> getVoiceStatuses()
     {
         return Collections.unmodifiableList(new LinkedList<>(voiceStatusMap.values()));
+    }
+
+    @Override
+    public VerificationLevel getVerificationLevel()
+    {
+        return verificationLevel;
     }
 
     @Override
@@ -348,6 +364,12 @@ public class GuildImpl implements Guild
     public Map<User, OffsetDateTime> getJoinedAtMap()
     {
         return joinedAtMap;
+    }
+
+    public GuildImpl setVerificationLevel(VerificationLevel level)
+    {
+        this.verificationLevel = level;
+        return this;
     }
 
     public GuildImpl setAvailable(boolean available)

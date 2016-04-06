@@ -50,6 +50,14 @@ public class VoiceChangeHandler extends SocketHandler
             throw new IllegalArgumentException("Received a VOICE_STATE_UPDATE for an unknown Guild! JSON: " + content);
 
         VoiceStatusImpl status = (VoiceStatusImpl) guild.getVoiceStatusOfUser(user);
+
+        if (status == null)
+        {
+            //This voiceStatus update is caused by a user being kicked/banned from a guild
+            //we already cleared him in the GuildMemberRemoveHandler, and therefore cant access his status anymore
+            return;
+        }
+
         if (content.isNull("channel_id"))
         {
             if (status.getChannel() != null)
