@@ -16,11 +16,13 @@
 package net.dv8tion.jda.handle;
 
 import net.dv8tion.jda.entities.Message;
+import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.InviteReceivedEvent;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent;
+import net.dv8tion.jda.requests.GuildLock;
 import net.dv8tion.jda.utils.InviteUtil;
 import org.json.JSONObject;
 
@@ -37,15 +39,20 @@ public class MessageReceivedHandler extends SocketHandler
     }
 
     @Override
-    public void handle(JSONObject content)
+    protected String handleInternally(JSONObject content)
     {
         Message message = new EntityBuilder(api).createMessage(content);
         if (!message.isPrivate())
         {
+            TextChannel channel = api.getChannelMap().get(message.getChannelId());
+            if (GuildLock.get(api).isLocked(channel.getGuild().getId()))
+            {
+                return channel.getGuild().getId();
+            }
             api.getEventManager().handle(
                     new GuildMessageReceivedEvent(
                             api, responseNumber,
-                            message, api.getChannelMap().get(message.getChannelId())));
+                            message, channel));
         }
         else
         {
@@ -73,5 +80,6 @@ public class MessageReceivedHandler extends SocketHandler
                                 message,invite));
             }
         }
+        return null;
     }
 }

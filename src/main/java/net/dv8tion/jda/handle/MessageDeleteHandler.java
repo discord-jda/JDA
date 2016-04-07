@@ -21,6 +21,7 @@ import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.events.message.guild.GuildMessageDeleteEvent;
 import net.dv8tion.jda.events.message.priv.PrivateMessageDeleteEvent;
+import net.dv8tion.jda.requests.GuildLock;
 import org.json.JSONObject;
 
 public class MessageDeleteHandler extends SocketHandler
@@ -32,7 +33,7 @@ public class MessageDeleteHandler extends SocketHandler
     }
 
     @Override
-    public void handle(JSONObject content)
+    protected String handleInternally(JSONObject content)
     {
         String messageId = content.getString("id");
         String channelId = content.getString("channel_id");
@@ -40,6 +41,10 @@ public class MessageDeleteHandler extends SocketHandler
 
         if (channel != null)
         {
+            if (GuildLock.get(api).isLocked(channel.getGuild().getId()))
+            {
+                return channel.getGuild().getId();
+            }
             api.getEventManager().handle(
                     new GuildMessageDeleteEvent(
                             api, responseNumber,
@@ -60,5 +65,6 @@ public class MessageDeleteHandler extends SocketHandler
                 new MessageDeleteEvent(
                         api, responseNumber,
                         messageId, channelId, channel != null));
+        return null;
     }
 }

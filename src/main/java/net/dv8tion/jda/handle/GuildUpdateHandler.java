@@ -20,6 +20,7 @@ import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.impl.GuildImpl;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.guild.GuildUpdateEvent;
+import net.dv8tion.jda.requests.GuildLock;
 import org.json.JSONObject;
 
 public class GuildUpdateHandler extends SocketHandler
@@ -31,8 +32,13 @@ public class GuildUpdateHandler extends SocketHandler
     }
 
     @Override
-    public void handle(JSONObject content)
+    protected String handleInternally(JSONObject content)
     {
+        if (GuildLock.get(api).isLocked(content.getString("id")))
+        {
+            return content.getString("id");
+        }
+
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("id"));
         String ownerId = content.getString("owner_id");
         String name = content.getString("name");
@@ -53,5 +59,6 @@ public class GuildUpdateHandler extends SocketHandler
                 new GuildUpdateEvent(
                         api, responseNumber,
                         guild));
+        return null;
     }
 }

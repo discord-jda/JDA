@@ -15,62 +15,64 @@
  */
 package net.dv8tion.jda.handle;
 
+import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.OnlineStatus;
+import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.impl.JDAImpl;
-import net.dv8tion.jda.events.ReadyEvent;
-import net.dv8tion.jda.events.ReconnectedEvent;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class ReadyHandler extends SocketHandler
 {
     private final EntityBuilder builder;
-    private final boolean isReload;
 
-    public ReadyHandler(JDAImpl api, boolean isReload, int responseNumber)
+    private static Map<JDA, Set<String>> guildIds = new HashMap<>();
+    private static Map<JDA, JSONObject> cachedJson = new HashMap<>();
+
+    public ReadyHandler(JDAImpl api, int responseNumber)
     {
         super(api, responseNumber);
         this.builder = new EntityBuilder(api);
-        this.isReload = isReload;
+        if (!guildIds.containsKey(api))
+            guildIds.put(api, new HashSet<>());
     }
 
     @Override
-    public void handle(final JSONObject content)
+    protected String handleInternally(final JSONObject content)
     {
         String oldGame = null;
         OnlineStatus oldStatus = null;
-        if (isReload)
+
+        if (api.getSelfInfo() != null)
         {
             oldGame = api.getSelfInfo().getCurrentGame();
             oldStatus = api.getSelfInfo().getOnlineStatus();
-            //clearing the registry...
-            api.getChannelMap().clear();
-            api.getVoiceChannelMap().clear();
-            api.getGuildMap().clear();
-            api.getUserMap().clear();
-            api.getPmChannelMap().clear();
-            api.getOffline_pms().clear();
         }
-        //TODO: User-Setings; read_state
+
         builder.createSelfInfo(content.getJSONObject("user"));
 
-        if (isReload)
-        {
-            if (oldGame != null)
-                api.getAccountManager().setGame(oldGame);
-            if (oldStatus.equals(OnlineStatus.AWAY))
-                api.getAccountManager().setIdle(true);
-        }
+        if (oldGame != null)
+            api.getAccountManager().setGame(oldGame);
+        if (oldStatus != null && oldStatus.equals(OnlineStatus.AWAY))
+            api.getAccountManager().setIdle(true);
 
+        cachedJson.put(api, content);
         JSONArray guilds = content.getJSONArray("guilds");
-        final List<String> guildIds = new LinkedList<>();
+        final Set<String> guildIds = ReadyHandler.guildIds.get(api);
         for (int i = 0; i < guilds.length(); i++)
         {
             JSONObject guildJson = guilds.getJSONObject(i);
-            if(guildJson.has("large") && guildJson.getBoolean("large"))
+            if (guildJson.has("unavailable") && guildJson.getBoolean("unavailable"))
+            {
+                guildIds.add(guildJson.getString("id"));
+                builder.createGuildFirstPass(guildJson, null);
+            }
+            else if(guildJson.has("large") && guildJson.getBoolean("large"))
             {
                 guildIds.add(guildJson.getString("id"));
                 builder.createGuildFirstPass(guildJson, guild ->
@@ -91,6 +93,17 @@ public class ReadyHandler extends SocketHandler
         {
             finishReady(content);
         }
+        return null;
+    }
+
+    public void onGuildInit(Guild guild)
+    {
+        Set<String> ids = guildIds.get(api);
+        ids.remove(guild.getId());
+        if (ids.isEmpty())
+        {
+            finishReady(cachedJson.get(api));
+        }
     }
 
     public void finishReady(JSONObject content)
@@ -99,17 +112,6 @@ public class ReadyHandler extends SocketHandler
         for (int i = 0; i < priv_chats.length(); i++)
         {
             builder.createPrivateChannel(priv_chats.getJSONObject(i));
-        }
-
-        if (isReload)
-        {
-            JDAImpl.LOG.info("Finished (Re)Loading!");
-            api.getEventManager().handle(new ReconnectedEvent(api, responseNumber));
-        }
-        else
-        {
-            JDAImpl.LOG.info("Finished Loading!");
-            api.getEventManager().handle(new ReadyEvent(api, responseNumber));
         }
         api.getClient().ready();
     }

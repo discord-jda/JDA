@@ -15,7 +15,6 @@
  */
 package net.dv8tion.jda.handle;
 
-import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.guild.GuildJoinEvent;
 import org.json.JSONObject;
@@ -29,22 +28,30 @@ public class GuildJoinHandler extends SocketHandler
     }
 
     @Override
-    public void handle(JSONObject content)
+    protected String handleInternally(JSONObject content)
     {
         new EntityBuilder(api).createGuildFirstPass(content, guild ->
         {
             if (guild.isAvailable())
             {
-                //TODO: Available-event if previously unavailable
-                api.getEventManager().handle(
-                        new GuildJoinEvent(
-                                api, responseNumber,
-                                guild));
+                if (!api.getClient().isReady())
+                {
+                    new ReadyHandler(api, responseNumber).onGuildInit(guild);
+                }
+                else
+                {
+                    //TODO: Available-event if previously unavailable
+                    api.getEventManager().handle(
+                            new GuildJoinEvent(
+                                    api, responseNumber,
+                                    guild));
+                }
             }
             else
             {
                 //TODO: Unavailable event
             }
         });
+        return null;
     }
 }

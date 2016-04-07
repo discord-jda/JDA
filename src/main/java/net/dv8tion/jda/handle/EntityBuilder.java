@@ -24,6 +24,7 @@ import net.dv8tion.jda.entities.MessageEmbed.Provider;
 import net.dv8tion.jda.entities.MessageEmbed.Thumbnail;
 import net.dv8tion.jda.entities.MessageEmbed.VideoInfo;
 import net.dv8tion.jda.entities.impl.*;
+import net.dv8tion.jda.requests.GuildLock;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,6 +45,10 @@ public class EntityBuilder
     public EntityBuilder(JDAImpl api)
     {
         this.api = api;
+        if(!cachedJdaGuildCallbacks.containsKey(api))
+            cachedJdaGuildCallbacks.put(api, new HashMap<>());
+        if(!cachedJdaGuildJsons.containsKey(api))
+            cachedJdaGuildJsons.put(api, new HashMap<>());
     }
 
     public Guild createGuildFirstPass(JSONObject guild, Consumer<Guild> secondPassCallback)
@@ -58,6 +63,11 @@ public class EntityBuilder
         if (guild.has("unavailable") && guild.getBoolean("unavailable"))
         {
             guildObj.setAvailable(false);
+            if (secondPassCallback != null)
+            {
+                secondPassCallback.accept(guildObj);
+            }
+            GuildLock.get(api).lock(id);
             return guildObj;
         }
         guildObj
@@ -105,6 +115,53 @@ public class EntityBuilder
             }
         }
 
+        if (guild.has("channels"))
+        {
+            JSONArray channels = guild.getJSONArray("channels");
+
+            for (int i = 0; i < channels.length(); i++)
+            {
+                JSONObject channel = channels.getJSONObject(i);
+                String type = channel.getString("type");
+                if (type.equalsIgnoreCase("text"))
+                {
+                    TextChannel newChannel = createTextChannel(channel, guildObj.getId());
+                    if (newChannel.getId().equals(guildObj.getId()))
+                        guildObj.setPublicChannel(newChannel);
+                }
+                else if (type.equalsIgnoreCase("voice"))
+                {
+                    createVoiceChannel(channel, guildObj.getId());
+                }
+            }
+        }
+
+        if (guild.has("voice_states"))
+        {
+            JSONArray voiceStates = guild.getJSONArray("voice_states");
+            for (int i = 0; i < voiceStates.length(); i++)
+            {
+                JSONObject voiceState = voiceStates.getJSONObject(i);
+                User user = api.getUserById(voiceState.getString("user_id"));
+                if (user == null)
+                {
+                    //voice-status of offline user -> ignore
+                    continue;
+                }
+
+                try
+                {
+                    VoiceStatus voiceStatus = createVoiceStatus(voiceState, guildObj, user);
+                    ((VoiceChannelImpl) voiceStatus.getChannel()).getUsersModifiable().add(user);
+                }
+                catch (IllegalArgumentException ignored)
+                {
+                    //Ignore this: weird behaviour of Discord itself gives us presences to vc that were deleted
+                }
+            }
+        }
+
+
         //We allow Guild creation without second pass for when JDA itself creates a NEW Guild. We won't need
         // to worry about there being a lack of offline Users because there wont be -any users or, at the very
         // most, the only User will be the JDA user that just created the new Guild.
@@ -113,16 +170,6 @@ public class EntityBuilder
         {
             HashMap<String, JSONObject> cachedGuildJsons = cachedJdaGuildJsons.get(api);
             HashMap<String, Consumer<Guild>> cachedGuildCallbacks = cachedJdaGuildCallbacks.get(api);
-            if (cachedGuildJsons == null)
-            {
-                cachedGuildJsons = new HashMap<>();
-                cachedJdaGuildJsons.put(api, cachedGuildJsons);
-            }
-            if (cachedGuildCallbacks == null)
-            {
-                cachedGuildCallbacks = new HashMap<>();
-                cachedJdaGuildCallbacks.put(api, cachedGuildCallbacks);
-            }
             cachedGuildJsons.put(id, guild);
             cachedGuildCallbacks.put(id, secondPassCallback);
             JSONObject obj = new JSONObject()
@@ -133,27 +180,21 @@ public class EntityBuilder
                             .put("limit", 0)
                     );
             api.getClient().send(obj.toString());
+            GuildLock.get(api).lock(id);
             return null;//Nothing should be using the return of this method besides JDAImpl.createGuild(String, Region)
         }
 
-        if (guild.has("channels"))
-        {
-            JSONArray channels = guild.getJSONArray("channels");
-            createGuildChannelPass(guildObj, channels);
-        }
-
-        if (guild.has("voice_states"))
-        {
-            JSONArray voiceStates = guild.getJSONArray("voice_states");
-            createGuildVoicePass(guildObj, voiceStates);
-        }
+        JSONArray channels = guild.getJSONArray("channels");
+        createGuildChannelPass(guildObj, channels);
 
         if (secondPassCallback != null)
         {
             secondPassCallback.accept(guildObj);
+            GuildLock.get(api).unlock(guildObj.getId());
             return null;//Nothing should be using the return of this method besides JDAImpl.createGuild(String, Region)
         }
 
+        GuildLock.get(api).unlock(guildObj.getId());
         return guildObj;
     }
 
@@ -183,10 +224,8 @@ public class EntityBuilder
         JSONArray channels = guildJson.getJSONArray("channels");
         createGuildChannelPass(guildObj, channels);
 
-        JSONArray voiceStates = guildJson.getJSONArray("voice_states");
-        createGuildVoicePass(guildObj, voiceStates);
-
         secondPassCallback.accept(guildObj);
+        GuildLock.get(api).unlock(guildId);
     }
 
     private void createGuildMemberPass(GuildImpl guildObj, JSONArray members)
@@ -221,36 +260,26 @@ public class EntityBuilder
         {
             JSONObject channel = channels.getJSONObject(i);
             String type = channel.getString("type");
+            Channel channelObj = null;
             if (type.equalsIgnoreCase("text"))
             {
-                TextChannel newChannel = createTextChannel(channel, guildObj.getId());
-                if (newChannel.getId().equals(guildObj.getId()))
-                    guildObj.setPublicChannel(newChannel);
+                channelObj = api.getTextChannelById(channel.getString("id"));
             }
             else if (type.equalsIgnoreCase("voice"))
             {
-                createVoiceChannel(channel, guildObj.getId());
+                channelObj = api.getVoiceChannelById(channel.getString("id"));
             }
-        }
-    }
-
-    private void createGuildVoicePass(GuildImpl guildObj, JSONArray voiceStates)
-    {
-        for (int i = 0; i < voiceStates.length(); i++)
-        {
-            JSONObject voiceState = voiceStates.getJSONObject(i);
-            User user = api.getUserById(voiceState.getString("user_id"));
-            if (user == null)
-                throw new IllegalArgumentException("When attempting to create a Guild, we were provided with a voice state pertaining to an unknown User. JSON: " + voiceStates);
-
-            try
+            if (channelObj != null)
             {
-                VoiceStatus voiceStatus = createVoiceStatus(voiceState, guildObj, user);
-                ((VoiceChannelImpl) voiceStatus.getChannel()).getUsersModifiable().add(user);
+                JSONArray permissionOverwrites = channel.getJSONArray("permission_overwrites");
+                for (int j = 0; j < permissionOverwrites.length(); j++)
+                {
+                    createPermissionOverride(permissionOverwrites.getJSONObject(j), channelObj);
+                }
             }
-            catch (IllegalArgumentException ignored)
+            else
             {
-                //Ignore this: weird behaviour of Discord itself gives us presences to vc that were deleted
+                throw new RuntimeException("Got permission_override for unknown channel with id: " + channel.getString("id"));
             }
         }
     }
@@ -265,12 +294,6 @@ public class EntityBuilder
             channel = new TextChannelImpl(id, guild);
             guild.getTextChannelsMap().put(id, channel);
             api.getChannelMap().put(id, channel);
-        }
-
-        JSONArray permissionOverwrites = json.getJSONArray("permission_overwrites");
-        for (int i = 0; i < permissionOverwrites.length(); i++)
-        {
-            createPermissionOverride(permissionOverwrites.getJSONObject(i), channel);
         }
 
         return channel
@@ -289,12 +312,6 @@ public class EntityBuilder
             channel = new VoiceChannelImpl(id, guild);
             guild.getVoiceChannelsMap().put(id, channel);
             api.getVoiceChannelMap().put(id, channel);
-        }
-
-        JSONArray permissionOverwrites = json.getJSONArray("permission_overwrites");
-        for (int i = 0; i < permissionOverwrites.length(); i++)
-        {
-            createPermissionOverride(permissionOverwrites.getJSONObject(i), channel);
         }
 
         return channel

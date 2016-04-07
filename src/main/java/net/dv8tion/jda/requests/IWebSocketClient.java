@@ -13,23 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.handle;
+package net.dv8tion.jda.requests;
 
-import net.dv8tion.jda.entities.impl.JDAImpl;
+import com.neovisionaries.ws.client.WebSocketListener;
+import net.dv8tion.jda.utils.SimpleLog;
 import org.json.JSONObject;
 
-public class UserUpdateHandler extends SocketHandler
-{
-    public UserUpdateHandler(JDAImpl api, int responseNumber)
-    {
-        super(api, responseNumber);
-    }
+import java.util.List;
 
-    @Override
-    protected String handleInternally(JSONObject content)
-    {
-        new EntityBuilder(api).createSelfInfo(content);
-        //TODO: Events?
-        return null;
-    }
+public interface IWebSocketClient extends WebSocketListener
+{
+    SimpleLog LOG = SimpleLog.getLog("JDASocket");
+
+    void send(String message);
+
+    void close();
+
+    void setAutoReconnect(boolean reconnect);
+
+    boolean isConnected();
+
+    boolean isReady();
+
+    void ready();
+
+    void handle(List<JSONObject> events);
 }

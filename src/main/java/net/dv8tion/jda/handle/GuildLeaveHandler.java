@@ -21,6 +21,7 @@ import net.dv8tion.jda.entities.impl.GuildImpl;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.entities.impl.UserImpl;
 import net.dv8tion.jda.events.guild.GuildLeaveEvent;
+import net.dv8tion.jda.requests.GuildLock;
 import org.json.JSONObject;
 
 import java.util.HashSet;
@@ -36,14 +37,19 @@ public class GuildLeaveHandler extends SocketHandler
     }
 
     @Override
-    public void handle(JSONObject content)
+    protected String handleInternally(JSONObject content)
     {
+        if (GuildLock.get(api).isLocked(content.getString("id")))
+        {
+            return content.getString("id");
+        }
+
         Guild guild = api.getGuildMap().get(content.getString("id"));
         if (content.has("unavailable") && content.getBoolean("unavailable"))
         {
             ((GuildImpl) guild).setAvailable(false);
             //TODO: Unavailable-event. Sever audio connection when guild becomes unavailable.
-            return;
+            return null;
         }
         if (api.getAudioManager() != null && api.getAudioManager().isConnected()
                 && api.getAudioManager().getConnectedChannel().getGuild().getId().equals(guild.getId()))
@@ -76,5 +82,6 @@ public class GuildLeaveHandler extends SocketHandler
                 new GuildLeaveEvent(
                         api, responseNumber,
                         guild));
+        return null;
     }
 }

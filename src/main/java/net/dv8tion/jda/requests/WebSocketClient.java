@@ -20,7 +20,6 @@ import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.DisconnectEvent;
 import net.dv8tion.jda.events.ShutdownEvent;
 import net.dv8tion.jda.handle.*;
-import net.dv8tion.jda.utils.SimpleLog;
 import org.apache.http.HttpHost;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,9 +35,8 @@ import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
 
-public class WebSocketClient extends WebSocketAdapter
+public class WebSocketClient extends WebSocketAdapter implements IWebSocketClient
 {
-    public static final SimpleLog LOG = SimpleLog.getLog("JDASocket");
     private Thread keepAliveThread;
     private WebSocket socket;
     private long keepAliveInterval;
@@ -61,6 +59,13 @@ public class WebSocketClient extends WebSocketAdapter
         connect();
     }
 
+    @Override
+    public void handle(List<JSONObject> events)
+    {
+
+    }
+
+    @Override
     public void send(String message)
     {
         LOG.trace("<- " + message);
@@ -105,6 +110,12 @@ public class WebSocketClient extends WebSocketAdapter
         send(connectObj.toString());
         reconnecting = false;
         connected = true;
+    }
+
+    @Override
+    public boolean isReady()
+    {
+        return ready;
     }
 
     @Override
@@ -169,7 +180,7 @@ public class WebSocketClient extends WebSocketAdapter
             switch (type) {
                 case "READY":
                     sessionId = content.getString("session_id");
-                    new ReadyHandler(api, isReconnectRunning, responseTotal).handle(content);
+                    new ReadyHandler(api, responseTotal).handle(content);
                 case "RESUMED":
                     //joint stuff
                     isReconnectRunning = false;
@@ -405,21 +416,25 @@ public class WebSocketClient extends WebSocketAdapter
         }
     }
 
+    @Override
     public void close()
     {
         socket.sendClose();
     }
 
+    @Override
     public void setAutoReconnect(boolean reconnect)
     {
         this.shouldReconnect = reconnect;
     }
 
+    @Override
     public boolean isConnected()
     {
         return connected;
     }
 
+    @Override
     public void ready()
     {
         ready = true;
