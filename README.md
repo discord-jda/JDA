@@ -49,7 +49,7 @@ public class MessageListener extends ListenerAdapter
     public static void main(String[] args)
     {
         JDA jda = new JDABuilder(args[0], args[1]).buildBlocking();
-        jda.addListener(new MessageListener());
+        jda.addEventListener(new MessageListener());
     }
 
     @Override
