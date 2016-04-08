@@ -28,9 +28,8 @@ import net.dv8tion.jda.hooks.SubscribeEvent;
 import net.dv8tion.jda.managers.AccountManager;
 import net.dv8tion.jda.managers.AudioManager;
 import net.dv8tion.jda.managers.GuildManager;
-import net.dv8tion.jda.requests.IWebSocketClient;
 import net.dv8tion.jda.requests.Requester;
-import net.dv8tion.jda.requests.WebSocketClientV2;
+import net.dv8tion.jda.requests.WebSocketClient;
 import net.dv8tion.jda.utils.SimpleLog;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
@@ -67,7 +66,7 @@ public class JDAImpl implements JDA
     private SelfInfo selfInfo = null;
     private AccountManager accountManager;
     private String authToken = null;
-    private IWebSocketClient client;
+    private WebSocketClient client;
     private final Requester requester = new Requester(this);
     private boolean reconnect;
     private boolean enableAck;
@@ -114,7 +113,7 @@ public class JDAImpl implements JDA
         }
 
         LOG.info("Login Successful!");
-        client = new WebSocketClientV2(this, proxy);
+        client = new WebSocketClient(this, proxy);
         client.setAutoReconnect(reconnect);
     }
 
@@ -192,7 +191,7 @@ public class JDAImpl implements JDA
         if (valid)
         {
             LOG.info("Login Successful!");
-            client = new WebSocketClientV2(this, proxy);
+            client = new WebSocketClient(this, proxy);
             client.setAutoReconnect(reconnect);
         }
 
@@ -292,7 +291,7 @@ public class JDAImpl implements JDA
         return eventManager;
     }
 
-    public IWebSocketClient getClient()
+    public WebSocketClient getClient()
     {
         return client;
     }
