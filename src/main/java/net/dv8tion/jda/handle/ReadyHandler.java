@@ -22,16 +22,14 @@ import net.dv8tion.jda.entities.impl.JDAImpl;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class ReadyHandler extends SocketHandler
 {
     private final EntityBuilder builder;
 
     private static Map<JDA, Set<String>> guildIds = new HashMap<>();
+    private static Map<JDA, Set<String>> chunkIds = new HashMap<>();
     private static Map<JDA, JSONObject> cachedJson = new HashMap<>();
 
     public ReadyHandler(JDAImpl api, int responseNumber)
@@ -40,6 +38,8 @@ public class ReadyHandler extends SocketHandler
         this.builder = new EntityBuilder(api);
         if (!guildIds.containsKey(api))
             guildIds.put(api, new HashSet<>());
+        if (!chunkIds.containsKey(api))
+            chunkIds.put(api, new HashSet<>());
     }
 
     @Override
@@ -96,6 +96,16 @@ public class ReadyHandler extends SocketHandler
         return null;
     }
 
+    public void onGuildNeedsMembers(Guild g)
+    {
+        Set<String> chunks = chunkIds.get(api);
+        chunks.add(g.getId());
+        if (chunks.size() == guildIds.get(api).size())
+        {
+            sendChunks();
+        }
+    }
+
     public void onGuildInit(Guild guild)
     {
         Set<String> ids = guildIds.get(api);
@@ -103,6 +113,43 @@ public class ReadyHandler extends SocketHandler
         if (ids.isEmpty())
         {
             finishReady(cachedJson.get(api));
+        }
+        else if (ids.size() == chunkIds.get(api).size())
+        {
+            sendChunks();
+        }
+    }
+
+    private void sendChunks()
+    {
+        Iterator<String> iterator = chunkIds.get(api).iterator();
+        JSONArray arr = new JSONArray();
+        while (iterator.hasNext())
+        {
+            arr.put(iterator.next());
+            if (arr.length() == 50)
+            {
+                JSONObject obj = new JSONObject()
+                        .put("op", 8)
+                        .put("d", new JSONObject()
+                                .put("guild_id", arr)
+                                .put("query","")
+                                .put("limit", 0)
+                        );
+                api.getClient().send(obj.toString());
+                arr = new JSONArray();
+            }
+        }
+        if (arr.length() > 0)
+        {
+            JSONObject obj = new JSONObject()
+                    .put("op", 8)
+                    .put("d", new JSONObject()
+                            .put("guild_id", arr)
+                            .put("query","")
+                            .put("limit", 0)
+                    );
+            api.getClient().send(obj.toString());
         }
     }
 
