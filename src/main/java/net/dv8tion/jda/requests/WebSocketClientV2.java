@@ -17,10 +17,7 @@ package net.dv8tion.jda.requests;
 
 import com.neovisionaries.ws.client.*;
 import net.dv8tion.jda.entities.impl.JDAImpl;
-import net.dv8tion.jda.events.DisconnectEvent;
-import net.dv8tion.jda.events.ReadyEvent;
-import net.dv8tion.jda.events.ReconnectedEvent;
-import net.dv8tion.jda.events.ShutdownEvent;
+import net.dv8tion.jda.events.*;
 import net.dv8tion.jda.handle.*;
 import org.apache.http.HttpHost;
 import org.json.JSONArray;
@@ -97,11 +94,16 @@ public class WebSocketClientV2 extends WebSocketAdapter implements IWebSocketCli
                 JDAImpl.LOG.info("Finished (Re)Loading!");
                 api.getEventManager().handle(new ReconnectedEvent(api, api.getResponseTotal()));
             }
-            LOG.debug("Resending " + cachedEvents.size() + " cached events...");
-            handle(cachedEvents);
-            LOG.debug("Sending of cached events finished.");
-            cachedEvents.clear();
         }
+        else
+        {
+            JDAImpl.LOG.info("Successfully resumed Session!");
+            api.getEventManager().handle(new ResumedEvent(api, api.getResponseTotal()));
+        }
+        LOG.debug("Resending " + cachedEvents.size() + " cached events...");
+        handle(cachedEvents);
+        LOG.debug("Sending of cached events finished.");
+        cachedEvents.clear();
     }
 
     @Override
@@ -408,6 +410,7 @@ public class WebSocketClientV2 extends WebSocketAdapter implements IWebSocketCli
                     break;
                 case "RESUMED":
                     reconnectTimeoutS = 2;
+                    initiating = false;
                     ready();
                     break;
                 case "GUILD_MEMBERS_CHUNK":
