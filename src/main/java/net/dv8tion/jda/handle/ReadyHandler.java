@@ -63,35 +63,24 @@ public class ReadyHandler extends SocketHandler
 
         cachedJson.put(api, content);
         JSONArray guilds = content.getJSONArray("guilds");
-        final Set<String> guildIds = ReadyHandler.guildIds.get(api);
+        Set<String> guildIds = ReadyHandler.guildIds.get(api);
+        Set<JSONObject> guildJsons = new HashSet<>();
         for (int i = 0; i < guilds.length(); i++)
         {
             JSONObject guildJson = guilds.getJSONObject(i);
+            guildIds.add(guildJson.getString("id"));
+            guildJsons.add(guildJson);
+        }
+        for (JSONObject guildJson : guildJsons)
+        {
             if (guildJson.has("unavailable") && guildJson.getBoolean("unavailable"))
             {
-                guildIds.add(guildJson.getString("id"));
                 builder.createGuildFirstPass(guildJson, null);
-            }
-            else if(guildJson.has("large") && guildJson.getBoolean("large"))
-            {
-                guildIds.add(guildJson.getString("id"));
-                builder.createGuildFirstPass(guildJson, guild ->
-                {
-                    guildIds.remove(guild.getId());
-                    if (guildIds.isEmpty())
-                    {
-                        finishReady(content);
-                    }
-                });
             }
             else
             {
-                builder.createGuildFirstPass(guildJson, null);
+                builder.createGuildFirstPass(guildJson, this::onGuildInit);
             }
-        }
-        if (guildIds.isEmpty())
-        {
-            finishReady(content);
         }
         return null;
     }
