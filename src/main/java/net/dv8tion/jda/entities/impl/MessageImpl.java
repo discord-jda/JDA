@@ -17,10 +17,7 @@ package net.dv8tion.jda.entities.impl;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Permission;
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.MessageEmbed;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.exceptions.PermissionException;
 import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.requests.Requester;
@@ -140,6 +137,12 @@ public class MessageImpl implements Message
     public String getChannelId()
     {
         return channelId;
+    }
+
+    @Override
+    public MessageChannel getChannel()
+    {
+        return isPrivate() ? api.getPrivateChannelById(channelId) : api.getTextChannelById(channelId);
     }
 
     @Override
