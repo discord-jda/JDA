@@ -34,6 +34,10 @@ public class PresenceUpdateHandler extends SocketHandler
     @Override
     protected String handleInternally(JSONObject content)
     {
+        if (!content.has("guild_id"))
+        {
+            return null;
+        }
         if (GuildLock.get(api).isLocked(content.getString("guild_id")))
         {
             return content.getString("guild_id");
