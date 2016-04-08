@@ -17,12 +17,14 @@ package net.dv8tion.jda.requests;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.impl.JDAImpl;
+import net.dv8tion.jda.utils.SimpleLog;
 import org.json.JSONObject;
 
 import java.util.*;
 
 public class GuildLock
 {
+    public static SimpleLog LOG = SimpleLog.getLog("JDAGuildLock");
     private static Map<JDA, GuildLock> locks = new HashMap<>();
 
     public static synchronized GuildLock get(JDA jda)
@@ -58,7 +60,12 @@ public class GuildLock
         {
             cached.remove(guildId);
             List<JSONObject> events = cache.remove(guildId);
-            ((JDAImpl) api).getClient().handle(events);
+            if(events.size() > 0)
+            {
+                LOG.debug("Replaying " + events.size() + " events for unlocked guild with id " + guildId);
+                ((JDAImpl) api).getClient().handle(events);
+                LOG.debug("Finished replaying events for guild with id " + guildId);
+            }
         }
     }
 
@@ -66,6 +73,7 @@ public class GuildLock
     {
         if (isLocked(guildId))
         {
+            LOG.debug("Queueing up event for guild with id" + guildId + ": " + event.toString());
             cache.get(guildId).add(event);
         }
     }

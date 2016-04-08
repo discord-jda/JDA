@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
-//TODO: look at chunks
+//TODO: look at chunking chunks
 
 public class WebSocketClientV2 extends WebSocketAdapter implements IWebSocketClient
 {
@@ -69,19 +69,6 @@ public class WebSocketClientV2 extends WebSocketAdapter implements IWebSocketCli
     }
 
     @Override
-    public void send(String message)
-    {
-        LOG.trace("<- " + message);
-        socket.sendText(message);
-    }
-
-    @Override
-    public void close()
-    {
-        socket.sendClose();
-    }
-
-    @Override
     public void setAutoReconnect(boolean reconnect)
     {
         this.shouldReconnect = reconnect;
@@ -110,7 +97,7 @@ public class WebSocketClientV2 extends WebSocketAdapter implements IWebSocketCli
                 JDAImpl.LOG.info("Finished (Re)Loading!");
                 api.getEventManager().handle(new ReconnectedEvent(api, api.getResponseTotal()));
             }
-            LOG.debug("Resending Cached events...");
+            LOG.debug("Resending " + cachedEvents.size() + " cached events...");
             handle(cachedEvents);
             LOG.debug("Sending of cached events finished.");
             cachedEvents.clear();
@@ -127,6 +114,19 @@ public class WebSocketClientV2 extends WebSocketAdapter implements IWebSocketCli
     public void handle(List<JSONObject> events)
     {
         events.forEach(this::handleEvent);
+    }
+
+    @Override
+    public void send(String message)
+    {
+        LOG.trace("<- " + message);
+        socket.sendText(message);
+    }
+
+    @Override
+    public void close()
+    {
+        socket.sendClose();
     }
 
     /*
@@ -193,59 +193,6 @@ public class WebSocketClientV2 extends WebSocketAdapter implements IWebSocketCli
     }
 
     @Override
-    public void onTextMessage(WebSocket websocket, String message)
-    {
-        JSONObject content = new JSONObject(message);
-        int opCode = content.getInt("op");
-
-        if (content.has("s") && !content.isNull("s"))
-        {
-            api.setResponseTotal(content.getInt("s"));
-        }
-
-        LOG.trace("-> " + content.toString());
-
-        switch (opCode)
-        {
-            case 0:
-                handleEvent(content);
-                break;
-            case 1:
-                sendKeepAlive();
-                break;
-            case 7:
-                close();
-                break;
-            case 9:
-                invalidate();
-                sendIdentify();
-                break;
-            default:
-                LOG.debug("Got unknown op-code: " + opCode + " with content: " + message);
-        }
-    }
-
-    @Override
-    public void onBinaryMessage(WebSocket websocket, byte[] binary) throws UnsupportedEncodingException, DataFormatException
-    {
-        //Thanks to ShadowLordAlpha for code and debugging.
-        //Get the compressed message and inflate it
-        StringBuilder builder = new StringBuilder();
-        Inflater decompresser = new Inflater();
-        decompresser.setInput(binary, 0, binary.length);
-        byte[] result = new byte[128];
-        while(!decompresser.finished())
-        {
-            int resultLength = decompresser.inflate(result);
-            builder.append(new String(result, 0, resultLength, "UTF-8"));
-        }
-        decompresser.end();
-
-        // send the inflated message to the TextMessage method
-        onTextMessage(websocket, builder.toString());
-    }
-
-    @Override
     public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer)
     {
         connected = false;
@@ -303,6 +250,42 @@ public class WebSocketClientV2 extends WebSocketAdapter implements IWebSocketCli
         }
     }
 
+    @Override
+    public void onTextMessage(WebSocket websocket, String message)
+    {
+        JSONObject content = new JSONObject(message);
+        int opCode = content.getInt("op");
+
+        if (content.has("s") && !content.isNull("s"))
+        {
+            api.setResponseTotal(content.getInt("s"));
+        }
+
+        LOG.trace("-> " + content.toString());
+
+        switch (opCode)
+        {
+            case 0:
+                handleEvent(content);
+                break;
+            case 1:
+                LOG.debug("Got Keep-Alive request (OP 1). Sending response...");
+                sendKeepAlive();
+                break;
+            case 7:
+                LOG.debug("Got Reconnect request (OP 7). Closing connection now...");
+                close();
+                break;
+            case 9:
+                LOG.debug("Got Invalidate request (OP 9). Invalidating...");
+                invalidate();
+                sendIdentify();
+                break;
+            default:
+                LOG.debug("Got unknown op-code: " + opCode + " with content: " + message);
+        }
+    }
+
     private void setupKeepAlive(long timeout)
     {
         keepAliveThread = new Thread(() -> {
@@ -329,6 +312,7 @@ public class WebSocketClientV2 extends WebSocketAdapter implements IWebSocketCli
 
     private void sendIdentify()
     {
+        LOG.debug("Sending Identify-packet...");
         String token = api.getAuthToken();
         if (token.startsWith("Bot "))
         {
@@ -353,6 +337,7 @@ public class WebSocketClientV2 extends WebSocketAdapter implements IWebSocketCli
 
     private void sendResume()
     {
+        LOG.debug("Sending Resume-packet...");
         String token = api.getAuthToken();
         if (token.startsWith("Bot "))
         {
@@ -367,16 +352,17 @@ public class WebSocketClientV2 extends WebSocketAdapter implements IWebSocketCli
                 .toString());
     }
 
-    @Override
-    public void onUnexpectedError(WebSocket websocket, WebSocketException cause) throws Exception
+    private void invalidate()
     {
-        handleCallbackError(websocket, cause);
-    }
-
-    @Override
-    public void handleCallbackError(WebSocket websocket, Throwable cause)
-    {
-        LOG.log(cause);
+        sessionId = null;
+        //clearing the registry...
+        api.getChannelMap().clear();
+        api.getVoiceChannelMap().clear();
+        api.getGuildMap().clear();
+        api.getUserMap().clear();
+        api.getPmChannelMap().clear();
+        api.getOffline_pms().clear();
+        GuildLock.get(api).clear();
     }
 
     private void handleEvent(JSONObject raw)
@@ -385,10 +371,23 @@ public class WebSocketClientV2 extends WebSocketAdapter implements IWebSocketCli
         int responseTotal = api.getResponseTotal();
 
         //special handling
+        if (type.equals("READY") || type.equals("RESUMED"))
+        {
+            setupKeepAlive(raw.getJSONObject("d").getLong("heartbeat_interval"));
+        }
+
+        if (initiating && !(type.equals("READY") || type.equals("GUILD_MEMBERS_CHUNK") || type.equals("GUILD_CREATE") || type.equals("RESUMED")))
+        {
+            LOG.debug("Caching " + type + " event during init!");
+            cachedEvents.add(raw);
+            return;
+        }
+
         // Needs special handling due to content of "d" being an array
         if(type.equals("PRESENCE_REPLACE"))
         {
             JSONArray presences = raw.getJSONArray("d");
+            LOG.trace(String.format("%s -> %s", type, presences.toString()));
             PresenceUpdateHandler handler = new PresenceUpdateHandler(api, responseTotal);
             for (int i = 0; i < presences.length(); i++)
             {
@@ -399,17 +398,7 @@ public class WebSocketClientV2 extends WebSocketAdapter implements IWebSocketCli
         }
 
         JSONObject content = raw.getJSONObject("d");
-        if (type.equals("READY") || type.equals("RESUMED"))
-        {
-            setupKeepAlive(content.getLong("heartbeat_interval"));
-        }
-
         LOG.trace(String.format("%s -> %s", type, content.toString()));
-        if (initiating && !(type.equals("READY") || type.equals("GUILD_MEMBERS_CHUNK") || type.equals("GUILD_CREATE") || type.equals("RESUMED")))
-        {
-            cachedEvents.add(raw);
-            return;
-        }
 
         try {
             switch (type) {
@@ -421,9 +410,7 @@ public class WebSocketClientV2 extends WebSocketAdapter implements IWebSocketCli
                     break;
                 case "RESUMED":
                     reconnectTimeoutS = 2;
-                    initiating = false;
-                    handle(cachedEvents);
-                    cachedEvents.clear();
+                    ready();
                     break;
                 case "GUILD_MEMBERS_CHUNK":
                     new GuildMembersChunkHandler(api, responseTotal).handle(raw);
@@ -518,15 +505,35 @@ public class WebSocketClientV2 extends WebSocketAdapter implements IWebSocketCli
         }
     }
 
-    private void invalidate()
+    @Override
+    public void onBinaryMessage(WebSocket websocket, byte[] binary) throws UnsupportedEncodingException, DataFormatException
     {
-        sessionId = null;
-        //clearing the registry...
-        api.getChannelMap().clear();
-        api.getVoiceChannelMap().clear();
-        api.getGuildMap().clear();
-        api.getUserMap().clear();
-        api.getPmChannelMap().clear();
-        api.getOffline_pms().clear();
+        //Thanks to ShadowLordAlpha for code and debugging.
+        //Get the compressed message and inflate it
+        StringBuilder builder = new StringBuilder();
+        Inflater decompresser = new Inflater();
+        decompresser.setInput(binary, 0, binary.length);
+        byte[] result = new byte[128];
+        while(!decompresser.finished())
+        {
+            int resultLength = decompresser.inflate(result);
+            builder.append(new String(result, 0, resultLength, "UTF-8"));
+        }
+        decompresser.end();
+
+        // send the inflated message to the TextMessage method
+        onTextMessage(websocket, builder.toString());
+    }
+
+    @Override
+    public void onUnexpectedError(WebSocket websocket, WebSocketException cause) throws Exception
+    {
+        handleCallbackError(websocket, cause);
+    }
+
+    @Override
+    public void handleCallbackError(WebSocket websocket, Throwable cause)
+    {
+        LOG.log(cause);
     }
 }
