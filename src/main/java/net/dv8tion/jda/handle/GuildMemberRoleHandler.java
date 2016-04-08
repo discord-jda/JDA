@@ -21,6 +21,7 @@ import net.dv8tion.jda.entities.impl.GuildImpl;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.events.guild.member.GuildMemberRoleRemoveEvent;
+import net.dv8tion.jda.requests.GuildLock;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -38,8 +39,13 @@ public class GuildMemberRoleHandler extends SocketHandler
     }
 
     @Override
-    public void handle(JSONObject content)
+    protected String handleInternally(JSONObject content)
     {
+        if (GuildLock.get(api).isLocked(content.getString("guild_id")))
+        {
+            return content.getString("guild_id");
+        }
+
         JSONObject userJson = content.getJSONObject("user");
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("guild_id"));
         User user = api.getUserMap().get(userJson.getString("id"));
@@ -88,6 +94,7 @@ public class GuildMemberRoleHandler extends SocketHandler
                             api, responseNumber,
                             guild, user, rolesNew));
         }
+        return null;
     }
 
     private List<Role> toRolesList(GuildImpl guild, JSONArray array)

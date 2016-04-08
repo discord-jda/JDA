@@ -19,6 +19,7 @@ import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.channel.priv.PrivateChannelCreateEvent;
 import net.dv8tion.jda.events.channel.text.TextChannelCreateEvent;
 import net.dv8tion.jda.events.channel.voice.VoiceChannelCreateEvent;
+import net.dv8tion.jda.requests.GuildLock;
 import org.json.JSONObject;
 
 public class ChannelCreateHandler extends SocketHandler
@@ -29,7 +30,7 @@ public class ChannelCreateHandler extends SocketHandler
         super(api, responseNumber);
     }
     @Override
-    public void handle(JSONObject content)
+    protected String handleInternally(JSONObject content)
     {
         String type;
         if (content.has("type"))
@@ -38,6 +39,11 @@ public class ChannelCreateHandler extends SocketHandler
             type = "private";
         else
             throw new IllegalArgumentException("ChannelCreateEvent provided an unrecognized ChannelCreate format.  JSON: " + content);
+
+        if (!type.equals("private") && GuildLock.get(api).isLocked(content.getString("guild_id")))
+        {
+            return content.getString("guild_id");
+        }
 
         if (type.equals("text"))
         {
@@ -64,5 +70,6 @@ public class ChannelCreateHandler extends SocketHandler
         {
             throw new IllegalArgumentException("ChannelCreateEvent provided an unregonized channel type.  JSON: " + content);
         }
+        return null;
     }
 }

@@ -19,6 +19,7 @@ import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.impl.*;
 import net.dv8tion.jda.events.guild.member.GuildMemberJoinEvent;
+import net.dv8tion.jda.requests.GuildLock;
 import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
@@ -33,8 +34,13 @@ public class GuildMemberAddHandler extends SocketHandler
     }
 
     @Override
-    public void handle(JSONObject content)
+    protected String handleInternally(JSONObject content)
     {
+        if (GuildLock.get(api).isLocked(content.getString("guild_id")))
+        {
+            return content.getString("guild_id");
+        }
+
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("guild_id"));
         User user = new EntityBuilder(api).createUser(content.getJSONObject("user"));
         if (api.getOffline_pms().containsKey(user.getId()))
@@ -51,5 +57,6 @@ public class GuildMemberAddHandler extends SocketHandler
                 new GuildMemberJoinEvent(
                         api, responseNumber,
                         guild, user));
+        return null;
     }
 }

@@ -22,6 +22,7 @@ import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.message.MessageEmbedEvent;
 import net.dv8tion.jda.events.message.guild.GuildMessageEmbedEvent;
 import net.dv8tion.jda.events.message.priv.PrivateMessageEmbedEvent;
+import net.dv8tion.jda.requests.GuildLock;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -36,7 +37,7 @@ public class MessageEmbedHandler extends SocketHandler
     }
 
     @Override
-    public void handle(JSONObject content)
+    protected String handleInternally(JSONObject content)
     {
         EntityBuilder builder = new EntityBuilder(api);
         String messageId = content.getString("id");
@@ -51,6 +52,10 @@ public class MessageEmbedHandler extends SocketHandler
         }
         if (channel != null)
         {
+            if (GuildLock.get(api).isLocked(channel.getGuild().getId()))
+            {
+                return channel.getGuild().getId();
+            }
             api.getEventManager().handle(
                     new GuildMessageEmbedEvent(
                             api, responseNumber,
@@ -71,5 +76,6 @@ public class MessageEmbedHandler extends SocketHandler
                 new MessageEmbedEvent(
                         api, responseNumber,
                         messageId, channelId, embeds, channel != null));
+        return null;
     }
 }

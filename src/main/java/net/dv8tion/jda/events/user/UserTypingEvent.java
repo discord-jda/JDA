@@ -16,24 +16,24 @@
 package net.dv8tion.jda.events.user;
 
 import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.entities.TextChannel;
+import net.dv8tion.jda.entities.MessageChannel;
 import net.dv8tion.jda.entities.User;
 
 import java.time.OffsetDateTime;
 
 public class UserTypingEvent extends GenericUserEvent
 {
-    private final TextChannel channel;
+    private final MessageChannel channel;
     private final OffsetDateTime timestamp;
 
-    public UserTypingEvent(JDA api, int responseNumber, User user, TextChannel channel, OffsetDateTime timestamp)
+    public UserTypingEvent(JDA api, int responseNumber, User user, MessageChannel channel, OffsetDateTime timestamp)
     {
         super(api, responseNumber, user);
         this.channel = channel;
         this.timestamp = timestamp;
     }
 
-    public TextChannel getChannel()
+    public MessageChannel getChannel()
     {
         return channel;
     }

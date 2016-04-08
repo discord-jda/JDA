@@ -35,7 +35,7 @@ public class GuildMembersChunkHandler extends SocketHandler
     }
 
     @Override
-    public void handle(JSONObject content)
+    protected String handleInternally(JSONObject content)
     {
         String lastGuildId = lastGuildIdCache.get(api);
         List<JSONArray> memberChunks = memberChunksCache.get(api);
@@ -68,5 +68,6 @@ public class GuildMembersChunkHandler extends SocketHandler
             lastGuildIdCache.remove(api);
             memberChunksCache.remove(api);
         }
+        return null;
     }
 }

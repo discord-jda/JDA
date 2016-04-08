@@ -23,6 +23,7 @@ import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.entities.impl.UserImpl;
 import net.dv8tion.jda.events.channel.text.TextChannelDeleteEvent;
 import net.dv8tion.jda.events.channel.voice.VoiceChannelDeleteEvent;
+import net.dv8tion.jda.requests.GuildLock;
 import org.json.JSONObject;
 
 public class ChannelDeleteHandler extends SocketHandler
@@ -34,7 +35,7 @@ public class ChannelDeleteHandler extends SocketHandler
     }
 
     @Override
-    public void handle(JSONObject content)
+    protected String handleInternally(JSONObject content)
     {
         if (content.has("is_private") && content.getBoolean("is_private"))
         {
@@ -50,8 +51,14 @@ public class ChannelDeleteHandler extends SocketHandler
             }
             api.getPmChannelMap().remove(content.getString("id"));
             //TODO: PrivateChannelDeleteEvent
-            return;
+            return null;
         }
+
+        if (GuildLock.get(api).isLocked(content.getString("guild_id")))
+        {
+            return content.getString("guild_id");
+        }
+
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("guild_id"));
         switch (content.getString("type"))
         {
@@ -87,5 +94,6 @@ public class ChannelDeleteHandler extends SocketHandler
             default:
                 throw new IllegalArgumentException("CHANNEL_DELETE provided an unknown channel type. JSON: " + content);
         }
+        return null;
     }
 }

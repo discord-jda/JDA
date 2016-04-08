@@ -13,23 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.handle;
+package net.dv8tion.jda.events;
 
-import net.dv8tion.jda.entities.impl.JDAImpl;
-import org.json.JSONObject;
+import net.dv8tion.jda.JDA;
 
-public class UserUpdateHandler extends SocketHandler
+public class ResumedEvent extends Event
 {
-    public UserUpdateHandler(JDAImpl api, int responseNumber)
+    public ResumedEvent(JDA api, int responseNumber)
     {
         super(api, responseNumber);
-    }
-
-    @Override
-    protected String handleInternally(JSONObject content)
-    {
-        new EntityBuilder(api).createSelfInfo(content);
-        //TODO: Events?
-        return null;
     }
 }

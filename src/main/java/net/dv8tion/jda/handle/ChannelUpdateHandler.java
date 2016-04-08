@@ -24,6 +24,7 @@ import net.dv8tion.jda.events.channel.text.TextChannelUpdateTopicEvent;
 import net.dv8tion.jda.events.channel.voice.VoiceChannelUpdateNameEvent;
 import net.dv8tion.jda.events.channel.voice.VoiceChannelUpdatePermissionsEvent;
 import net.dv8tion.jda.events.channel.voice.VoiceChannelUpdatePositionEvent;
+import net.dv8tion.jda.requests.GuildLock;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -45,8 +46,12 @@ public class ChannelUpdateHandler extends SocketHandler
     }
 
     @Override
-    public void handle(JSONObject content)
+    protected String handleInternally(JSONObject content)
     {
+        if (GuildLock.get(api).isLocked(content.getString("guild_id")))
+        {
+            return content.getString("guild_id");
+        }
 
         String name = content.getString("name");
         int position = content.getInt("position");
@@ -186,6 +191,7 @@ public class ChannelUpdateHandler extends SocketHandler
             default:
                 throw new IllegalArgumentException("CHANNEL_UPDATE provided an unrecognized channel type JSON: " + content);
         }
+        return null;
     }
 
     private void handlePermissionOverride(JSONObject override, Channel channel, JSONObject content)
