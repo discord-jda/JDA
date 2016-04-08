@@ -73,7 +73,7 @@ public class GuildLock
     {
         if (isLocked(guildId))
         {
-            LOG.debug("Queueing up event for guild with id" + guildId + ": " + event.toString());
+            LOG.debug("Queueing up event for guild with id " + guildId + ": " + event.toString());
             cache.get(guildId).add(event);
         }
     }

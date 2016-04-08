@@ -172,14 +172,7 @@ public class EntityBuilder
             HashMap<String, Consumer<Guild>> cachedGuildCallbacks = cachedJdaGuildCallbacks.get(api);
             cachedGuildJsons.put(id, guild);
             cachedGuildCallbacks.put(id, secondPassCallback);
-            JSONObject obj = new JSONObject()
-                    .put("op", 8)
-                    .put("d", new JSONObject()
-                            .put("guild_id", id)
-                            .put("query","")
-                            .put("limit", 0)
-                    );
-            api.getClient().send(obj.toString());
+            AsyncChunkSender.getInstance(api).enqueue(id);
             GuildLock.get(api).lock(id);
             return null;//Nothing should be using the return of this method besides JDAImpl.createGuild(String, Region)
         }
@@ -612,5 +605,100 @@ public class EntityBuilder
                 .setServerMute(status.getBoolean("mute"))
                 .setServerDeaf(status.getBoolean("deaf"))
                 .setSuppressed(status.getBoolean("suppress"));
+    }
+
+    private static class AsyncChunkSender
+    {
+        private static final Map<JDA, AsyncChunkSender> instances = new HashMap<>();
+        private final JDAImpl api;
+        private Runner runner = null;
+        private boolean runnerRunning = false;
+
+        private AsyncChunkSender(JDAImpl api)
+        {
+            this.api = api;
+        }
+
+        public static AsyncChunkSender getInstance(JDA api)
+        {
+            if (!instances.containsKey(api))
+            {
+                instances.put(api, new AsyncChunkSender(((JDAImpl) api)));
+            }
+            return instances.get(api);
+        }
+
+        private final Queue<String> queue = new LinkedList<>();
+
+        public synchronized void enqueue(String guildId)
+        {
+            queue.add(guildId);
+            if (runner == null || !runnerRunning)
+            {
+                runnerRunning = true;
+                runner = new Runner(this);
+                runner.setDaemon(true);
+                runner.start();
+            }
+        }
+
+        private synchronized boolean stopRunner()
+        {
+            if (queue.isEmpty())
+            {
+                runnerRunning = false;
+                return true;
+            }
+            return false;
+        }
+
+        private synchronized Queue<String> getQueue()
+        {
+            LinkedList<String> copy = new LinkedList<>(queue);
+            queue.clear();
+            return copy;
+        }
+
+        private static class Runner extends Thread
+        {
+            private final AsyncChunkSender sender;
+
+            public Runner(AsyncChunkSender sender)
+            {
+                this.sender = sender;
+            }
+
+            @Override
+            public void run()
+            {
+                do
+                {
+                    try
+                    {
+                        Thread.sleep(150);
+                    } catch(InterruptedException ignored) {}
+
+                    Queue<String> queue = sender.getQueue();
+                    while (!queue.isEmpty())
+                    {
+                        JSONArray arr = new JSONArray();
+                        for (int i = 0; i < 50 && !queue.isEmpty(); i++)
+                        {
+                            arr.put(queue.poll());
+                        }
+                        JSONObject obj = new JSONObject()
+                                .put("op", 8)
+                                .put("d", new JSONObject()
+                                        .put("guild_id", arr)
+                                        .put("query","")
+                                        .put("limit", 0)
+                                );
+                        sender.api.getClient().send(obj.toString());
+                        queue.addAll(sender.getQueue());
+                    }
+                }
+                while (!sender.stopRunner());
+            }
+        }
     }
 }

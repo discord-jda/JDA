@@ -126,7 +126,7 @@ public class WebSocketClientV2 extends WebSocketAdapter implements IWebSocketCli
     @Override
     public void close()
     {
-        socket.sendClose();
+        socket.sendClose(1000);
     }
 
     /*
@@ -260,8 +260,6 @@ public class WebSocketClientV2 extends WebSocketAdapter implements IWebSocketCli
         {
             api.setResponseTotal(content.getInt("s"));
         }
-
-        LOG.trace("-> " + content.toString());
 
         switch (opCode)
         {
