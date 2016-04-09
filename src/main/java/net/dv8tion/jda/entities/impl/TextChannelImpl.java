@@ -15,14 +15,10 @@
  */
 package net.dv8tion.jda.entities.impl;
 
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.body.MultipartBody;
-import javafx.util.Pair;
 import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.JDAInfo;
 import net.dv8tion.jda.MessageBuilder;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.*;
@@ -31,6 +27,7 @@ import net.dv8tion.jda.exceptions.RateLimitedException;
 import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.managers.ChannelManager;
 import net.dv8tion.jda.managers.PermissionOverrideManager;
+import net.dv8tion.jda.requests.Requester;
 import net.dv8tion.jda.utils.InviteUtil;
 import net.dv8tion.jda.utils.PermissionUtil;
 import org.json.JSONException;
@@ -51,6 +48,8 @@ public class TextChannelImpl implements TextChannel
     private final Map<User, PermissionOverride> userPermissionOverrides = new HashMap<>();
     private final Map<Role, PermissionOverride> rolePermissionOverrides = new HashMap<>();
 
+    private ChannelManager manager = null;
+
     public TextChannelImpl(String id, Guild guild)
     {
         this.id = id;
@@ -61,6 +60,12 @@ public class TextChannelImpl implements TextChannel
     public JDA getJDA()
     {
         return guild.getJDA();
+    }
+
+    @Override
+    public String getAsMention()
+    {
+        return "<#" + getId() + '>';
     }
 
     @Override
@@ -145,7 +150,6 @@ public class TextChannelImpl implements TextChannel
         SelfInfo self = getJDA().getSelfInfo();
         if (!checkPermission(self, Permission.MESSAGE_WRITE))
             throw new PermissionException(Permission.MESSAGE_WRITE);
-        //TODO: PermissionException for Permission.MESSAGE_ATTACH_FILES maybe
 
         JDAImpl api = (JDAImpl) getJDA();
         if (api.getMessageLimit() != null)
@@ -154,15 +158,17 @@ public class TextChannelImpl implements TextChannel
         }
         try
         {
-            JSONObject response = api.getRequester().post("https://discordapp.com/api/channels/" + getId() + "/messages",
+            Requester.Response response = api.getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + getId() + "/messages",
                     new JSONObject().put("content", msg.getRawContent()).put("tts", msg.isTTS()));
-            if (response.has("retry_after"))
+            if (response.isRateLimit())
             {
-                long retry_after = response.getLong("retry_after");
+                long retry_after = response.getObject().getLong("retry_after");
                 api.setMessageTimeout(retry_after);
                 throw new RateLimitedException(retry_after);
             }
-            return new EntityBuilder(api).createMessage(response);
+            if(!response.isOk()) //sending failed (Verification-level?)
+                return null;
+            return new EntityBuilder(api).createMessage(response.getObject());
         }
         catch (JSONException ex)
         {
@@ -190,47 +196,59 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
-    @Deprecated
-    public Message sendFile(File file)
-    {
-        return sendFile(file, null);
-    }
-
-    @Override
-    @Deprecated
-    public void sendFileAsync(File file, Consumer<Message> callback)
-    {
-        sendFileAsync(file, null, callback);
-    }
-
-    @Override
     public Message sendFile(File file, Message message)
     {
+        if (!checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_WRITE))
+            throw new PermissionException(Permission.MESSAGE_WRITE);
+        if (!checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_ATTACH_FILES))
+            throw new PermissionException(Permission.MESSAGE_ATTACH_FILES);
+        if(file == null || !file.exists() || !file.canRead())
+            throw new IllegalArgumentException("Provided file is either null, doesn't exist or is not readable!");
+        if (file.length() > 8<<20)   //8MB
+            throw new IllegalArgumentException("File is to big! Max file-size is 8MB");
+
         JDAImpl api = (JDAImpl) getJDA();
         try
         {
-            MultipartBody body = Unirest.post("https://discordapp.com/api/channels/" + getId() + "/messages")
+            MultipartBody body = Unirest.post(Requester.DISCORD_API_PREFIX + "channels/" + getId() + "/messages")
                     .header("authorization", getJDA().getAuthToken())
-                    .header("user-agent", JDAInfo.GITHUB + " " + JDAInfo.VERSION)
+                    .header("user-agent", Requester.USER_AGENT)
                     .field("file", file);
             if (message != null)
                 body.field("content", message.getRawContent()).field("tts", message.isTTS());
 
-            HttpResponse<JsonNode> response = body.asJson();
+            String dbg = String.format("Requesting %s -> %s\n\tPayload: file: %s, message: %s, tts: %s\n\tResponse: ",
+                    body.getHttpRequest().getHttpMethod().name(), body.getHttpRequest().getUrl(),
+                    file.getAbsolutePath(), message == null ? "null" : message.getRawContent(), message == null ? "N/A" : message.isTTS());
+            String requestBody = body.asString().getBody();
+            Requester.LOG.trace(dbg + body);
 
-            JSONObject messageJson = new JSONObject(response.getBody().toString());
-            return new EntityBuilder(api).createMessage(messageJson);
+            try
+            {
+                JSONObject messageJson = new JSONObject(requestBody);
+                return new EntityBuilder(api).createMessage(messageJson);
+            }
+            catch (JSONException e)
+            {
+                Requester.LOG.fatal("Following json caused an exception: " + requestBody);
+                Requester.LOG.log(e);
+            }
         }
         catch (UnirestException e)
         {
-            JDAImpl.LOG.log(e);
-            return null;
+            Requester.LOG.log(e);
         }
+        return null;
     }
 
     @Override
     public void sendFileAsync(File file, Message message, Consumer<Message> callback)
     {
+        if (!checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_WRITE))
+            throw new PermissionException(Permission.MESSAGE_WRITE);
+        if (!checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_ATTACH_FILES))
+            throw new PermissionException(Permission.MESSAGE_ATTACH_FILES);
+
         Thread thread = new Thread(() ->
         {
             Message messageReturn = sendFile(file, message);
@@ -243,7 +261,7 @@ public class TextChannelImpl implements TextChannel
 
     public void sendTyping()
     {
-        ((JDAImpl) getJDA()).getRequester().post("https://discordapp.com/api/channels/" + getId() + "/typing", new JSONObject());
+        ((JDAImpl) getJDA()).getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + getId() + "/typing", new JSONObject());
     }
 
     @Override
@@ -253,9 +271,11 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
-    public ChannelManager getManager()
+    public synchronized ChannelManager getManager()
     {
-        return new ChannelManager(this);
+        if (manager == null)
+            manager = new ChannelManager(this);
+        return manager;
     }
 
     @Override
@@ -357,6 +377,7 @@ public class TextChannelImpl implements TextChannel
         private static final Map<JDA, AsyncMessageSender> instances = new HashMap<>();
         private final JDAImpl api;
         private Runner runner = null;
+        private boolean runnerRunning = false;
 
         private AsyncMessageSender(JDAImpl api)
         {
@@ -372,21 +393,40 @@ public class TextChannelImpl implements TextChannel
             return instances.get(api);
         }
 
-        private final Queue<Pair<Message, Consumer<Message>>> queue = new LinkedList<>();
+        private final Queue<AbstractMap.SimpleImmutableEntry<Message, Consumer<Message>>> queue = new LinkedList<>();
 
         public synchronized void enqueue(Message msg, Consumer<Message> callback)
         {
-            queue.add(new Pair<>(msg, callback));
-            if (runner == null || !runner.isAlive())
+            queue.add(new AbstractMap.SimpleImmutableEntry<>(msg, callback));
+            if (runner == null)
             {
+                runnerRunning = true;
                 runner = new Runner(this);
+                runner.setDaemon(true);
                 runner.start();
+            }
+            else if (!runnerRunning)
+            {
+                runnerRunning = true;
+                notifyAll();
             }
         }
 
-        private synchronized Queue<Pair<Message, Consumer<Message>>> getQueue()
+        private synchronized void waitNew()
         {
-            LinkedList<Pair<Message, Consumer<Message>>> copy = new LinkedList<>(queue);
+            if (!queue.isEmpty())
+                return;
+            runnerRunning = false;
+            while(!runnerRunning) {
+                try {
+                    wait();
+                } catch(InterruptedException ignored) {}
+            }
+        }
+
+        private synchronized Queue<AbstractMap.SimpleImmutableEntry<Message, Consumer<Message>>> getQueue()
+        {
+            LinkedList<AbstractMap.SimpleImmutableEntry<Message, Consumer<Message>>> copy = new LinkedList<>(queue);
             queue.clear();
             return copy;
         }
@@ -403,40 +443,59 @@ public class TextChannelImpl implements TextChannel
             @Override
             public void run()
             {
-                Queue<Pair<Message, Consumer<Message>>> queue = sender.getQueue();
-                while (!queue.isEmpty())
+                while (true)
                 {
-                    Long messageLimit = sender.api.getMessageLimit();
-                    if (messageLimit != null)
+                    Queue<AbstractMap.SimpleImmutableEntry<Message, Consumer<Message>>> queue = sender.getQueue();
+                    while (!queue.isEmpty())
                     {
-                        try
+                        Long messageLimit = sender.api.getMessageLimit();
+                        if (messageLimit != null)
                         {
-                            Thread.sleep(messageLimit - System.currentTimeMillis());
+                            try
+                            {
+                                Thread.sleep(messageLimit - System.currentTimeMillis());
+                            }
+                            catch (InterruptedException e)
+                            {
+                                JDAImpl.LOG.log(e);
+                            }
                         }
-                        catch (InterruptedException e)
+                        AbstractMap.SimpleImmutableEntry<Message, Consumer<Message>> peek = queue.peek();
+                        Requester.Response response = sender.api.getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + peek.getKey().getChannelId() + "/messages",
+                                new JSONObject().put("content", peek.getKey().getRawContent()).put("tts", peek.getKey().isTTS()));
+                        if (response.responseText == null)
                         {
-                            JDAImpl.LOG.log(e);
+                            JDAImpl.LOG.debug("Error sending async-message (returned null-text)... Retrying after 1s");
+                            sender.api.setMessageTimeout(1000);
                         }
-                    }
-                    Pair<Message, Consumer<Message>> peek = queue.peek();
-                    JSONObject response = sender.api.getRequester().post("https://discordapp.com/api/channels/" + peek.getKey().getChannelId() + "/messages",
-                            new JSONObject().put("content", peek.getKey().getRawContent()).put("tts", peek.getKey().isTTS()));
-                    if (!response.has("retry_after"))   //success
-                    {
-                        queue.poll();//remove from queue
-                        if (peek.getValue() != null)
+                        else if (!response.isRateLimit())   //success
                         {
-                            peek.getValue().accept(new EntityBuilder(sender.api).createMessage(response));
+                            queue.poll();//remove from queue
+                            if (peek.getValue() != null)
+                            {
+                                try
+                                {
+                                    //if response didn't have id, sending failed (due to permission/blocked pm,...
+                                    peek.getValue().accept(
+                                            response.isOk() ? new EntityBuilder(sender.api).createMessage(response.getObject()) : null);
+                                }
+                                catch (JSONException ex)
+                                {
+                                    //could not generate message from json
+                                    JDAImpl.LOG.log(ex);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            sender.api.setMessageTimeout(response.getObject().getLong("retry_after"));
+                        }
+                        if (queue.isEmpty())
+                        {
+                            queue = sender.getQueue();
                         }
                     }
-                    else
-                    {
-                        sender.api.setMessageTimeout(response.getLong("retry_after"));
-                    }
-                    if (queue.isEmpty())
-                    {
-                        queue = sender.getQueue();
-                    }
+                    sender.waitNew();
                 }
             }
 

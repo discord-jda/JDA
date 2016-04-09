@@ -36,6 +36,7 @@ public abstract class ListenerAdapter implements EventListener
 {
     //JDA Events
     public void onReady(ReadyEvent event) {}
+    public void onResume(ResumedEvent event) {}
     public void onReconnect(ReconnectedEvent event) {}
     public void onDisconnect(DisconnectEvent event) {}
     public void onShutdown(ShutdownEvent event) {}
@@ -144,6 +145,8 @@ public abstract class ListenerAdapter implements EventListener
         //JDA Events
         if (event instanceof ReadyEvent)
             onReady((ReadyEvent) event);
+        else if (event instanceof ResumedEvent)
+            onResume((ResumedEvent) event);
         else if (event instanceof ReconnectedEvent)
             onReconnect((ReconnectedEvent) event);
         else if (event instanceof DisconnectEvent)
@@ -246,6 +249,8 @@ public abstract class ListenerAdapter implements EventListener
             onGuildMemberBan((GuildMemberBanEvent) event);
         else if (event instanceof GuildMemberUnbanEvent)
             onGuildMemberUnban((GuildMemberUnbanEvent) event);
+        else if (event instanceof GuildMemberLeaveEvent)
+            onGuildMemberLeave((GuildMemberLeaveEvent) event);
         else if (event instanceof GuildMemberRoleAddEvent)
             onGuildMemberRoleAdd((GuildMemberRoleAddEvent) event);
         else if (event instanceof GuildMemberRoleRemoveEvent)
@@ -288,10 +293,6 @@ public abstract class ListenerAdapter implements EventListener
             onAudioDisconnect((AudioDisconnectEvent) event);
         else if (event instanceof AudioTimeoutEvent)
             onAudioTimeout((AudioTimeoutEvent) event);
-
-        //Leave needs to be checked in a separate if-statement so that the Ban and Kick events will also fire this.
-        if (event instanceof GuildMemberLeaveEvent)
-            onGuildMemberLeave((GuildMemberLeaveEvent) event);
 
         //Grouped Mute/Deaf events
         if (event instanceof VoiceMuteEvent)

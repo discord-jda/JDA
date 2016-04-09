@@ -19,6 +19,7 @@ import net.dv8tion.jda.OnlineStatus;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.entities.impl.UserImpl;
 import net.dv8tion.jda.events.user.*;
+import net.dv8tion.jda.requests.GuildLock;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
@@ -31,8 +32,17 @@ public class PresenceUpdateHandler extends SocketHandler
     }
 
     @Override
-    public void handle(JSONObject content)
+    protected String handleInternally(JSONObject content)
     {
+        if (!content.has("guild_id"))
+        {
+            return null;
+        }
+        if (GuildLock.get(api).isLocked(content.getString("guild_id")))
+        {
+            return content.getString("guild_id");
+        }
+
         JSONObject jsonUser = content.getJSONObject("user");
         String id = jsonUser.getString("id");
         UserImpl user = (UserImpl) api.getUserMap().get(id);
@@ -40,7 +50,7 @@ public class PresenceUpdateHandler extends SocketHandler
         if (user == null)
         {
             //User for update doesn't exist, ignoring
-            return;
+            return null;
         }
 
         if (jsonUser.has("username"))
@@ -97,5 +107,6 @@ public class PresenceUpdateHandler extends SocketHandler
                 new GenericUserEvent(
                         api, responseNumber,
                         user));
+        return null;
     }
 }

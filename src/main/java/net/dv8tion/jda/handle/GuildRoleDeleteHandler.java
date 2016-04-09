@@ -19,6 +19,7 @@ import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.entities.impl.GuildImpl;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.guild.GuildRoleDeleteEvent;
+import net.dv8tion.jda.requests.GuildLock;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -32,8 +33,13 @@ public class GuildRoleDeleteHandler extends SocketHandler
     }
 
     @Override
-    public void handle(JSONObject content)
+    protected String handleInternally(JSONObject content)
     {
+        if (GuildLock.get(api).isLocked(content.getString("guild_id")))
+        {
+            return content.getString("guild_id");
+        }
+
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("guild_id"));
         Role removedRole = guild.getRolesMap().remove(content.getString("role_id"));
         if (removedRole == null)
@@ -48,5 +54,6 @@ public class GuildRoleDeleteHandler extends SocketHandler
                 new GuildRoleDeleteEvent(
                         api, responseNumber,
                         guild, removedRole));
+        return null;
     }
 }

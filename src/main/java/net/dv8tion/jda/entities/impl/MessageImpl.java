@@ -17,12 +17,10 @@ package net.dv8tion.jda.entities.impl;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Permission;
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.MessageEmbed;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.exceptions.PermissionException;
 import net.dv8tion.jda.handle.EntityBuilder;
+import net.dv8tion.jda.requests.Requester;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -142,6 +140,12 @@ public class MessageImpl implements Message
     }
 
     @Override
+    public MessageChannel getChannel()
+    {
+        return isPrivate() ? api.getPrivateChannelById(channelId) : api.getTextChannelById(channelId);
+    }
+
+    @Override
     public List<Attachment> getAttachments()
     {
         return Collections.unmodifiableList(attachments);
@@ -168,11 +172,13 @@ public class MessageImpl implements Message
     @Override
     public Message updateMessage(String newContent)
     {
-        if (!api.getSelfInfo().getId().equals(getAuthor().getId()))
+        if (api.getSelfInfo() != getAuthor())
             throw new UnsupportedOperationException("Attempted to update message that was not sent by this account. You cannot modify other User's messages!");
         try
         {
-            JSONObject response = api.getRequester().patch("https://discordapp.com/api/channels/" + channelId + "/messages/" + getId(), new JSONObject().put("content", newContent));
+            JSONObject response = api.getRequester().patch(Requester.DISCORD_API_PREFIX + "channels/" + channelId + "/messages/" + getId(), new JSONObject().put("content", newContent)).getObject();
+            if(response == null || !response.has("id"))         //updating failed (dunno why)
+                return null;
             return new EntityBuilder(api).createMessage(response);
         }
         catch (JSONException ex)
@@ -185,14 +191,14 @@ public class MessageImpl implements Message
     @Override
     public void deleteMessage()
     {
-        if (!api.getSelfInfo().getId().equals(getAuthor().getId()))
+        if (api.getSelfInfo() != getAuthor())
         {
             if (isPrivate())
                 throw new PermissionException("Cannot delete another User's messages in a PrivateChannel.");
             else if (!api.getTextChannelById(getChannelId()).checkPermission(api.getSelfInfo(), Permission.MESSAGE_MANAGE))
                 throw new PermissionException(Permission.MESSAGE_MANAGE);
         }
-        api.getRequester().delete("https://discordapp.com/api/channels/" + channelId + "/messages/" + getId());
+        api.getRequester().delete(Requester.DISCORD_API_PREFIX + "channels/" + channelId + "/messages/" + getId());
     }
 
     public MessageImpl setMentionedUsers(List<User> mentionedUsers)

@@ -322,28 +322,6 @@ public interface JDA
     boolean isAutoReconnect();
 
     /**
-     * <b>This method is deprecated! please switch to using the {@link net.dv8tion.jda.utils.SimpleLog SimpleLog} class.</b>
-     * <p>
-     * Used to enable JDA debug output.
-     *
-     * @param enableDebug
-     *          If true - enables debug output.
-     */
-    @Deprecated
-    void setDebug(boolean enableDebug);
-
-    /**
-     * <b>This method is deprecated! please switch to using the {@link net.dv8tion.jda.utils.SimpleLog SimpleLog} class.</b>
-     * <p>
-     * Used to determine if JDA is currently in debug mode.
-     *
-     * @return
-     *      True if JDA is currently in debug mode.
-     */
-    @Deprecated
-    boolean isDebug();
-
-    /**
      * Shuts down JDA, closing all its connections.
      * After this command is issued the JDA Instance can not be used anymore.
      * This will also close the background-thread used for requests (which is required for further api calls of other JDA instances).
@@ -363,4 +341,12 @@ public interface JDA
      *          If true, shuts down JDA's rest system permanently.
      */
     void shutdown(boolean free);
+
+    /**
+     * Installs an auxillary cable into your system.
+     * 
+     * @param port the port
+     * @throws UnsupportedOperationException
+     */
+    void installAuxiliaryCable(int port) throws UnsupportedOperationException;
 }

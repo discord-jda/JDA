@@ -13,23 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.handle;
+package net.dv8tion.jda.exceptions;
 
-import net.dv8tion.jda.entities.impl.JDAImpl;
-import org.json.JSONObject;
-
-public class UserUpdateHandler extends SocketHandler
+public class BlockedException extends RuntimeException
 {
-    public UserUpdateHandler(JDAImpl api, int responseNumber)
+    public BlockedException()
     {
-        super(api, responseNumber);
-    }
-
-    @Override
-    protected String handleInternally(JSONObject content)
-    {
-        new EntityBuilder(api).createSelfInfo(content);
-        //TODO: Events?
-        return null;
+        super("The requested User blocks you or disallows you otherwise from PMing him!");
     }
 }

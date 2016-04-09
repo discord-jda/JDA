@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.hooks;
 
+import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.Event;
 
 import java.util.LinkedList;
@@ -51,7 +52,15 @@ public class InterfacedEventManager implements IEventManager
         List<EventListener> listenerCopy = new LinkedList<>(listeners);
         for (EventListener listener : listenerCopy)
         {
-            listener.onEvent(event);
+            try
+            {
+                listener.onEvent(event);
+            }
+            catch (Throwable throwable)
+            {
+                JDAImpl.LOG.fatal("One of the EventListeners had an uncaught exception");
+                JDAImpl.LOG.log(throwable);
+            }
         }
     }
 }

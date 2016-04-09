@@ -26,4 +26,12 @@ public interface TextChannel extends Channel, MessageChannel
      * {@link net.dv8tion.jda.entities.impl.TextChannelImpl TextChannelImpl}.<br>
      * Note: Internal implementation should not be used directly.
      */
+
+    /**
+     * Returns the String needed to mention this TextChannel in a {@link net.dv8tion.jda.entities.Message Message}.
+     *
+     * @return
+     *      The String needed to mention this Channel
+     */
+    String getAsMention();
 }

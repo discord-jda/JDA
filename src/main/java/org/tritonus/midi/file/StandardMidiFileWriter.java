@@ -26,22 +26,11 @@
 
 package org.tritonus.midi.file;
 
-import java.io.DataOutputStream;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.io.IOException;
-import java.io.File;
-
-import javax.sound.midi.MidiEvent;
-import javax.sound.midi.MidiMessage;
-import javax.sound.midi.ShortMessage;
-import javax.sound.midi.SysexMessage;
-import javax.sound.midi.MetaMessage;
-import javax.sound.midi.Sequence;
-import javax.sound.midi.Track;
-import javax.sound.midi.spi.MidiFileWriter;
-
 import org.tritonus.share.TDebug;
+
+import javax.sound.midi.*;
+import javax.sound.midi.spi.MidiFileWriter;
+import java.io.*;
 
 
 
@@ -52,12 +41,8 @@ import org.tritonus.share.TDebug;
 public class StandardMidiFileWriter
 extends MidiFileWriter
 {
-	/**	TODO:
-	 */
 	public static boolean		USE_RUNNING_STATUS = true;
 
-	/**	TODO:
-	 */
 	public static boolean		CANCEL_RUNNING_STATUS_ON_META_AND_SYSEX = true;
 
 
@@ -212,8 +197,6 @@ extends MidiFileWriter
 
 
 
-	/**	TODO:
-	 */
 	private static int writeEvent(MidiEvent event,
 				      MidiEvent previousEvent,
 				      int[] anRunningStatusByte,
@@ -264,8 +247,6 @@ extends MidiFileWriter
 
 
 
-	/**	TODO:
-	 */
 	private static int writeShortMessage(ShortMessage message,
 					     int[] anRunningStatusByte,
 					     DataOutputStream dataOutputStream)
@@ -308,8 +289,6 @@ extends MidiFileWriter
 
 
 
-	/**	TODO:
-	 */
 	private static int writeSysexMessage(SysexMessage message,
 					     int[] anRunningStatusByte,
 					     DataOutputStream dataOutputStream)
@@ -344,8 +323,6 @@ extends MidiFileWriter
 
 
 
-	/**	TODO:
-	 */
 	private static int writeMetaMessage(MetaMessage message,
 					    int[] anRunningStatusByte,
 					    DataOutputStream dataOutputStream)

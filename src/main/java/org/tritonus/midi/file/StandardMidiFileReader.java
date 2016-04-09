@@ -26,37 +26,17 @@
 
 package org.tritonus.midi.file;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.File;
-
-import java.net.URL;
-
-import javax.sound.midi.InvalidMidiDataException;
-import javax.sound.midi.MetaMessage;
-import javax.sound.midi.MidiFileFormat;
-import javax.sound.midi.MidiEvent;
-import javax.sound.midi.MidiMessage;
-import javax.sound.midi.Sequence;
-import javax.sound.midi.ShortMessage;
-import javax.sound.midi.SysexMessage;
-import javax.sound.midi.Track;
-import javax.sound.midi.spi.MidiFileReader;
-
 import org.tritonus.share.TDebug;
 import org.tritonus.share.midi.TMidiFileFormat;
 
+import javax.sound.midi.*;
+import javax.sound.midi.spi.MidiFileReader;
+import java.io.*;
+import java.net.URL;
 
-
-/**	TODO:
- */
 public class StandardMidiFileReader
 extends MidiFileReader
 {
-	/**	TODO:
-	 */
 	public static boolean		CANCEL_RUNNING_STATUS_ON_META_AND_SYSEX = true;
 
 	private static final int	STATUS_NONE = 0;
@@ -102,7 +82,6 @@ extends MidiFileReader
 		int	nResolution = -1;
 		if ((nDivision & 0x8000) != 0)	//frame division
 		{
-			// TODO:
 			int	nFrameType = -((nDivision >>> 8) & 0xFF);
 			switch (nFrameType)
 			{

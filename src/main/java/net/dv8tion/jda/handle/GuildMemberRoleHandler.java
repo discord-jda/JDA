@@ -21,9 +21,11 @@ import net.dv8tion.jda.entities.impl.GuildImpl;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.events.guild.member.GuildMemberRoleRemoveEvent;
+import net.dv8tion.jda.requests.GuildLock;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,8 +39,13 @@ public class GuildMemberRoleHandler extends SocketHandler
     }
 
     @Override
-    public void handle(JSONObject content)
+    protected String handleInternally(JSONObject content)
     {
+        if (GuildLock.get(api).isLocked(content.getString("guild_id")))
+        {
+            return content.getString("guild_id");
+        }
+
         JSONObject userJson = content.getJSONObject("user");
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("guild_id"));
         User user = api.getUserMap().get(userJson.getString("id"));
@@ -67,6 +74,14 @@ public class GuildMemberRoleHandler extends SocketHandler
         if (removedRoles.size() > 0)
         {
             rolesOld.removeAll(removedRoles);
+        }
+        if (rolesNew.size() > 0)
+        {
+            rolesOld.addAll(rolesNew);
+        }
+        Collections.sort(rolesOld, (r2, r1) -> Integer.compare(r1.getPosition(), r2.getPosition()));
+        if (removedRoles.size() > 0)
+        {
             api.getEventManager().handle(
                     new GuildMemberRoleRemoveEvent(
                             api, responseNumber,
@@ -74,12 +89,12 @@ public class GuildMemberRoleHandler extends SocketHandler
         }
         if (rolesNew.size() > 0)
         {
-            rolesOld.addAll(rolesNew);
             api.getEventManager().handle(
                     new GuildMemberRoleAddEvent(
                             api, responseNumber,
                             guild, user, rolesNew));
         }
+        return null;
     }
 
     private List<Role> toRolesList(GuildImpl guild, JSONArray array)

@@ -137,12 +137,21 @@ public interface Message
      * Returns the Id of the Channel this Message was sent in.
      * This can be the id of either a {@link net.dv8tion.jda.entities.TextChannel TextChannel} or a {@link net.dv8tion.jda.entities.PrivateChannel PrivateChannel}
      * To get the corresponding channel, you can use {@link net.dv8tion.jda.JDA#getTextChannelById(String)} or {@link net.dv8tion.jda.JDA#getPrivateChannelById(String)}
+     * or if you just want to reply, you can also use {@link #getChannel()}.
      * (Hint: {@link #isPrivate()} could be helpful!)
      *
      * @return
      *      The Id of the Channel this was sent in
      */
     String getChannelId();
+
+    /**
+     * Returns the {@link net.dv8tion.jda.entities.MessageChannel MessageChannel} that this message was sent in
+     *
+     * @return
+     *      The MessageChannel of this Message
+     */
+    MessageChannel getChannel();
 
     /**
      * An unmodifiable list of {@link net.dv8tion.jda.entities.Message.Attachment Attachment} that are attached to this message.<br>

@@ -17,7 +17,10 @@ package net.dv8tion.jda.utils;
 
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.*;
-import net.dv8tion.jda.entities.impl.*;
+import net.dv8tion.jda.entities.impl.GuildImpl;
+import net.dv8tion.jda.entities.impl.PermissionOverrideImpl;
+import net.dv8tion.jda.entities.impl.TextChannelImpl;
+import net.dv8tion.jda.entities.impl.VoiceChannelImpl;
 
 import java.util.List;
 import java.util.Map;
@@ -94,6 +97,7 @@ public class PermissionUtil
     {
         return guild.getOwnerId().equals(user.getId())
                 || guild.getPublicRole().hasPermission(Permission.MANAGE_ROLES)
+                || guild.getPublicRole().hasPermission(perm)
                 || guild.getRolesForUser(user).stream().anyMatch(role ->
                             role.hasPermission(Permission.MANAGE_ROLES)
                             || role.hasPermission(perm));
@@ -129,23 +133,28 @@ public class PermissionUtil
 
     private static boolean checkPermission(User user, Permission perm, GuildImpl guild, Map<Role, PermissionOverride> roleOverrides, Map<User, PermissionOverride> userOverrides)
     {
-        //Do we have all permissions possible? (Owner or user has MANAGE_ROLES permission)
-        //If we have all permissions possible, then we will be able to see this room.
-        if (checkPermission(user, Permission.MANAGE_ROLES, guild))
+        //--Do we have all permissions possible? (Owner or user has MANAGE_ROLES permission)
+        //--If we have all permissions possible, then we will be able to see this room.
+        //WE DO NOT WANT TO CHECK THIS FOR CHANNELS, AS CHANNELS CAN OVERRIDE MANAGE_PERMISSIONS
+//        if (checkPermission(user, Permission.MANAGE_ROLES, guild))
+//            return true;
+
+        //BUT: WE DO WANT TO CHECK IF HE IS OWNER
+        if (guild.getOwnerId().equals(user.getId()))
             return true;
 
         int effectivePerms = getEffectivePermission(user, guild, roleOverrides, userOverrides);
-        return (effectivePerms & (1 << perm.getOffset())) > 0;
+        return ((effectivePerms & (1 << Permission.MANAGE_PERMISSIONS.getOffset())) | (effectivePerms & (1 << perm.getOffset()))) > 0;
     }
 
     private static int getEffectivePermission(User user, GuildImpl guild, Map<Role, PermissionOverride> roleOverrides, Map<User, PermissionOverride> userOverrides)
     {
         //Default to binary OR of all global permissions in this guild
-        int permission = ((RoleImpl) guild.getPublicRole()).getPermissionsRaw();
+        int permission = guild.getPublicRole().getPermissionsRaw();
         List<Role> rolesOfUser = guild.getRolesForUser(user);
         for (Role role : rolesOfUser)
         {
-            permission = permission | ((RoleImpl) role).getPermissionsRaw();
+            permission = permission | role.getPermissionsRaw();
         }
 
         //override with channel-specific overrides of @everyone

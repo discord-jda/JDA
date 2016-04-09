@@ -20,6 +20,7 @@ import net.dv8tion.jda.audio.AudioWebSocket;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.managers.AudioManager;
+import net.dv8tion.jda.requests.GuildLock;
 import org.json.JSONObject;
 
 public class VoiceServerUpdateHandler extends SocketHandler
@@ -30,8 +31,13 @@ public class VoiceServerUpdateHandler extends SocketHandler
     }
 
     @Override
-    public void handle(JSONObject content)
+    protected String handleInternally(JSONObject content)
     {
+        if (GuildLock.get(api).isLocked(content.getString("guild_id")))
+        {
+            return content.getString("guild_id");
+        }
+
         String endpoint = content.getString("endpoint");
         String token = content.getString("token");
         Guild guild = api.getGuildMap().get(content.getString("guild_id"));
@@ -55,5 +61,6 @@ public class VoiceServerUpdateHandler extends SocketHandler
         AudioWebSocket socket = new AudioWebSocket(endpoint, api, guild, sessionId, token);
         AudioConnection connection = new AudioConnection(socket, audioManager.getQueuedAudioConnection());
         audioManager.setAudioConnection(connection);
+        return null;
     }
 }

@@ -104,6 +104,14 @@ public interface User
     PrivateChannel getPrivateChannel();
 
     /**
+     * Returns whether or not the given user is a Bot-Account (special badge in client, some different behaviour)
+     *
+     * @return
+     *      If the User's Account is marked as Bot
+     */
+    boolean isBot();
+
+    /**
      * Returns the {@link net.dv8tion.jda.JDA JDA} instance of this User
      * @return
      *      the corresponding JDA instance

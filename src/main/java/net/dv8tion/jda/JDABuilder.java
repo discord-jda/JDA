@@ -18,6 +18,7 @@ package net.dv8tion.jda;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.ReadyEvent;
 import net.dv8tion.jda.hooks.AnnotatedEventManager;
+import net.dv8tion.jda.hooks.IEventManager;
 import net.dv8tion.jda.hooks.ListenerAdapter;
 import net.dv8tion.jda.hooks.SubscribeEvent;
 
@@ -46,9 +47,10 @@ public class JDABuilder
     final List<Object> listeners;
     String email = null;
     String pass = null;
-    boolean debug = false;
+    String botToken = null;
     boolean enableVoice = true;
     boolean useAnnotatedManager = false;
+    IEventManager eventManager = null;
     boolean reconnect = true;
 
     /**
@@ -80,6 +82,18 @@ public class JDABuilder
     }
 
     /**
+     * Creates a new JDABuilder using the provided token that is received when creating a Bot-Account.
+     *
+     * @param botToken
+     *          The token of a Bot-Account.
+     */
+    public JDABuilder(String botToken)
+    {
+        this.botToken = botToken;
+        listeners = new LinkedList<>();
+    }
+
+    /**
      * Sets the email that will be used by the {@link net.dv8tion.jda.JDA} instance to log in when
      * {@link net.dv8tion.jda.JDABuilder#buildAsync() buildAsync()}
      * or {@link net.dv8tion.jda.JDABuilder#buildBlocking() buildBlocking()}
@@ -93,6 +107,22 @@ public class JDABuilder
     public JDABuilder setEmail(String email)
     {
         this.email = email;
+        return this;
+    }
+
+    /**
+     * Sets the botToken that will be used by the {@link net.dv8tion.jda.JDA} instance to log in when
+     * {@link net.dv8tion.jda.JDABuilder#buildAsync() buildAsync()}
+     * or {@link net.dv8tion.jda.JDABuilder#buildBlocking() buildBlocking()}
+     * is called.
+     *
+     * @param botToken
+     *          The token of the bot-account that you would like to login with.
+     * @return
+     *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public JDABuilder setBotToken(String botToken) {
+        this.botToken = botToken;
         return this;
     }
 
@@ -138,24 +168,6 @@ public class JDABuilder
     }
 
     /**
-     * <b>This method is deprecated! please switch to using the {@link net.dv8tion.jda.utils.SimpleLog SimpleLog} class.</b>
-     * <p>
-     * Enables developer debug of JDA.<br>
-     * Enabling this will print stack traces instead of java logger message when exceptions are encountered.
-     *
-     * @param debug
-     *          True - enables debug printing.
-     * @return
-     *          Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
-     */
-    @Deprecated
-    public JDABuilder setDebug(boolean debug)
-    {
-       this.debug = debug;
-        return this;
-    }
-
-    /**
      * Enables/Disables Voice functionality.<br>
      * This is useful, if your current system doesn't support Voice and you do not need it.
      * <p>
@@ -190,18 +202,42 @@ public class JDABuilder
     }
 
     /**
+     * <b>This method is deprecated! Please switch to {@link #setEventManager(IEventManager)}.</b>
+     * <p>
      * Changes the internal EventManager.
      * The default EventManager is {@link net.dv8tion.jda.hooks.InterfacedEventManager InterfacedEventListener}.
      * There is also an {@link AnnotatedEventManager AnnotatedEventManager} available.
      *
      * @param useAnnotated
-     *          Whether or not to use the {@link net.dv8tion.jda.hooks.AnnotatedEventManager AnnotatedEventManager}
+     *      Whether or not to use the {@link net.dv8tion.jda.hooks.AnnotatedEventManager AnnotatedEventManager}
      * @return
-     *          Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
+     *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
      */
+    @Deprecated
     public JDABuilder useAnnotatedEventManager(boolean useAnnotated)
     {
         this.useAnnotatedManager = useAnnotated;
+        return this;
+    }
+
+    /**
+     * Changes the internally used EventManager.
+     * There are 2 provided Implementations:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.hooks.InterfacedEventManager} which uses the Interface {@link net.dv8tion.jda.hooks.EventListener}
+     *     (tip: use the {@link net.dv8tion.jda.hooks.ListenerAdapter}). This is the default EventManager.</li>
+     *     <li>{@link net.dv8tion.jda.hooks.AnnotatedEventManager} which uses the Annotation {@link net.dv8tion.jda.hooks.SubscribeEvent} to mark the methods that listen for events.</li>
+     * </ul>
+     * You can also create your own EventManager (See {@link net.dv8tion.jda.hooks.IEventManager}).
+     *
+     * @param manager
+     *      The new {@link net.dv8tion.jda.hooks.IEventManager} to use
+     * @return
+     *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public JDABuilder setEventManager(IEventManager manager)
+    {
+        this.eventManager = manager;
         return this;
     }
 
@@ -262,14 +298,24 @@ public class JDABuilder
             jda = new JDAImpl(proxyUrl, proxyPort, enableVoice);
         else
             jda = new JDAImpl(enableVoice);
-        jda.setDebug(debug);
         jda.setAutoReconnect(reconnect);
-        if (useAnnotatedManager)
+        if (eventManager != null)
+        {
+            jda.setEventManager(eventManager);
+        }
+        else if (useAnnotatedManager)
         {
             jda.setEventManager(new AnnotatedEventManager());
         }
         listeners.forEach(jda::addEventListener);
-        jda.login(email, pass);
+        if (botToken != null)
+        {
+            jda.login(botToken);
+        }
+        else
+        {
+            jda.login(email, pass);
+        }
         return jda;
     }
 

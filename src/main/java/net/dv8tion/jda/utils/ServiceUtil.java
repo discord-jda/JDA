@@ -51,7 +51,7 @@ public class ServiceUtil
         try
         {
             //Creates a new temp file to act as a dummy jar containing only our META-INF/services/ folder.
-            servicesJar = Files.createTempFile("jda-services", "jar").toFile();
+            servicesJar = Files.createTempFile("jda-services", ".jar").toFile();
             servicesJar.deleteOnExit();     //Sets to delete when the JVM closes, but it wont because it is loaded into the JVM. :/
             fos = new FileOutputStream(servicesJar);    //Opens an output stream so we can write to the file
             zos = new JarOutputStream(fos);             //Wraps the stream so we can treat it like writing to a Jar file

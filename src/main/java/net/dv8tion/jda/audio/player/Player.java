@@ -113,7 +113,7 @@ public abstract class Player implements AudioSendHandler
             int amountRead;
             byte[] audio = new byte[AudioConnection.OPUS_FRAME_SIZE * audioFormat.getFrameSize()];
             amountRead = audioSource.read(audio, 0, audio.length);
-            if (amountRead > 0)
+            if (amountRead > -1)
             {
                 return audio;
             }

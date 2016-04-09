@@ -19,6 +19,7 @@ import net.dv8tion.jda.OnlineStatus;
 import net.dv8tion.jda.entities.SelfInfo;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.entities.impl.SelfInfoImpl;
+import net.dv8tion.jda.requests.Requester;
 import net.dv8tion.jda.utils.AvatarUtil;
 import org.json.JSONObject;
 
@@ -106,18 +107,18 @@ public class AccountManager
 
     /**
      * Set currently played game of the connected account.
+     * To remove playing status, supply this method with null
      * This change will be applied <b>immediately</b>
      *
      * @param game
-     *      the name of the game that should be displayed
-     * @return
-     * 	  this
+     *      the name of the game that should be displayed or null for no game
      */
-    public AccountManager setGame(String game)
+    public void setGame(String game)
     {
+        if(game != null && game.trim().isEmpty())
+            game = null;
         ((SelfInfoImpl) api.getSelfInfo()).setCurrentGame(game);
         updateStatusAndGame();
-        return this;
     }
 
     /**
@@ -126,14 +127,11 @@ public class AccountManager
      *
      * @param idle
      *      weather the account should be displayed as idle o not
-     * @return
-     * 	  this
      */
-    public AccountManager setIdle(boolean idle)
+    public void setIdle(boolean idle)
     {
         ((SelfInfoImpl) api.getSelfInfo()).setOnlineStatus(idle ? OnlineStatus.AWAY : OnlineStatus.ONLINE);
         updateStatusAndGame();
-        return this;
     }
 
     /**
@@ -158,12 +156,19 @@ public class AccountManager
     }
 
     /**
-     * Updates the profile of the connected account, sends the changed data to the Discord server.
-     *
-     * @return
-     *      this
+     * Resets all queued updates. So the next call to {@link #update()} will change nothing.
      */
-    public AccountManager update()
+    public void reset() {
+        avatar = null;
+        email = null;
+        newPassword = null;
+        username = null;
+    }
+
+    /**
+     * Updates the profile of the connected account, sends the changed data to the Discord server.
+     */
+    public void update()
     {
         try
         {
@@ -177,7 +182,7 @@ public class AccountManager
             object.put("password", password);
             object.put("username", username == null ? api.getSelfInfo().getUsername() : username);
 
-            JSONObject result = api.getRequester().patch("https://discordapp.com/api/users/@me", object);
+            JSONObject result = api.getRequester().patch(Requester.DISCORD_API_PREFIX + "users/@me", object).getObject();
 
             if (result == null || !result.has("token"))
             {
@@ -198,7 +203,6 @@ public class AccountManager
         {
             JDAImpl.LOG.log(e);
         }
-        return this;
     }
 
     private void updateStatusAndGame()

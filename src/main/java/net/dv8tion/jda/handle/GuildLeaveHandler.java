@@ -16,10 +16,17 @@
 package net.dv8tion.jda.handle;
 
 import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.impl.GuildImpl;
 import net.dv8tion.jda.entities.impl.JDAImpl;
+import net.dv8tion.jda.entities.impl.UserImpl;
 import net.dv8tion.jda.events.guild.GuildLeaveEvent;
+import net.dv8tion.jda.requests.GuildLock;
 import org.json.JSONObject;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class GuildLeaveHandler extends SocketHandler
 {
@@ -30,25 +37,51 @@ public class GuildLeaveHandler extends SocketHandler
     }
 
     @Override
-    public void handle(JSONObject content)
+    protected String handleInternally(JSONObject content)
     {
+        if (GuildLock.get(api).isLocked(content.getString("id")))
+        {
+            return content.getString("id");
+        }
+
         Guild guild = api.getGuildMap().get(content.getString("id"));
         if (content.has("unavailable") && content.getBoolean("unavailable"))
         {
             ((GuildImpl) guild).setAvailable(false);
             //TODO: Unavailable-event. Sever audio connection when guild becomes unavailable.
-            return;
+            return null;
         }
         if (api.getAudioManager() != null && api.getAudioManager().isConnected()
                 && api.getAudioManager().getConnectedChannel().getGuild().getId().equals(guild.getId()))
             api.getAudioManager().closeAudioConnection();
 
-        //TODO: clean up user db for those we don't see anymore (and handle pm channels)
+        //cleaning up all users that we do not share a guild with anymore
+        List<User> users = guild.getUsers();
+        Set<User> usersInOtherGuilds = new HashSet<>();
+        for (Guild g : api.getGuilds())
+        {
+            if (g == guild)
+                continue;
+            usersInOtherGuilds.addAll(g.getUsers());
+        }
+        for (User user : users)
+        {
+            if (!usersInOtherGuilds.contains(user))
+            {
+                //clean up this user
+                if (((UserImpl) user).hasPrivateChannel())
+                {
+                    api.getOffline_pms().put(user.getId(), user.getPrivateChannel().getId());
+                }
+                api.getUserMap().remove(user.getId());
+            }
+        }
 
         api.getGuildMap().remove(guild.getId());
         api.getEventManager().handle(
                 new GuildLeaveEvent(
                         api, responseNumber,
                         guild));
+        return null;
     }
 }

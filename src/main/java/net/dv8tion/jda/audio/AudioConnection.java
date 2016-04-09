@@ -15,7 +15,6 @@
  */
 package net.dv8tion.jda.audio;
 
-import com.iwebpp.crypto.TweetNaclFast;
 import com.sun.jna.ptr.PointerByReference;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Guild;
@@ -34,7 +33,6 @@ import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
-import java.util.Arrays;
 
 public class AudioConnection
 {
@@ -202,6 +200,7 @@ public class AudioConnection
                 }
             }
         };
+        sendThread.setPriority((Thread.NORM_PRIORITY + Thread.MAX_PRIORITY) / 2);
         sendThread.setDaemon(true);
         sendThread.start();
     }

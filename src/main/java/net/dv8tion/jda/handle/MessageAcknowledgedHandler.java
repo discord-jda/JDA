@@ -21,6 +21,7 @@ import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.message.MessageAcknowledgedEvent;
 import net.dv8tion.jda.events.message.guild.GuildMessageAcknowledgedEvent;
 import net.dv8tion.jda.events.message.priv.PrivateMessageAcknowledgedEvent;
+import net.dv8tion.jda.requests.GuildLock;
 import org.json.JSONObject;
 
 public class MessageAcknowledgedHandler extends SocketHandler
@@ -32,7 +33,7 @@ public class MessageAcknowledgedHandler extends SocketHandler
     }
 
     @Override
-    public void handle(JSONObject content)
+    protected String handleInternally(JSONObject content)
     {
         String messageId = content.getString("message_id");
         String channelId = content.getString("channel_id");
@@ -40,6 +41,10 @@ public class MessageAcknowledgedHandler extends SocketHandler
 
         if (channel != null)
         {
+            if (GuildLock.get(api).isLocked(channel.getGuild().getId()))
+            {
+                return channel.getGuild().getId();
+            }
             api.getEventManager().handle(
                     new GuildMessageAcknowledgedEvent(
                             api, responseNumber,
@@ -49,7 +54,7 @@ public class MessageAcknowledgedHandler extends SocketHandler
         {
             PrivateChannel privChannel = api.getPmChannelMap().get(channelId);
             if (privChannel == null)
-                throw new IllegalArgumentException("Message acknowledged in unknown channel with id " + channelId + " ! JSON: " + content);
+                return null;            //prob ack resulting of closing PM-channel; ignoring
             api.getEventManager().handle(
                     new PrivateMessageAcknowledgedEvent(
                             api, responseNumber,
@@ -60,5 +65,6 @@ public class MessageAcknowledgedHandler extends SocketHandler
                 new MessageAcknowledgedEvent(
                         api, responseNumber,
                         messageId, channelId, channel != null));
+        return null;
     }
 }

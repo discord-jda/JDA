@@ -194,13 +194,10 @@ public class AudioWebSocket extends WebSocketAdapter
                     return;
                 }
 
-                if (api.isDebug())
-                {
-                    if (speaking)
-                        LOG.trace(user.getUsername() + " started transmitting audio.");    //Replace with event.
-                    else
-                        LOG.trace(user.getUsername() + " stopped transmitting audio.");    //Replace with event.
-                }
+                if (speaking)
+                    LOG.trace(user.getUsername() + " started transmitting audio.");    //Replace with event.
+                else
+                    LOG.trace(user.getUsername() + " stopped transmitting audio.");    //Replace with event.
                 break;
             }
             default:
@@ -395,6 +392,7 @@ public class AudioWebSocket extends WebSocketAdapter
                 }
             }
         };
+        udpKeepAliveThread.setPriority(Thread.NORM_PRIORITY + 1);
         udpKeepAliveThread.setDaemon(true);
         udpKeepAliveThread.start();
     }
@@ -424,6 +422,7 @@ public class AudioWebSocket extends WebSocketAdapter
                 }
             }
         };
+        keepAliveThread.setPriority(Thread.MAX_PRIORITY);
         keepAliveThread.setDaemon(true);
         keepAliveThread.start();
     }
