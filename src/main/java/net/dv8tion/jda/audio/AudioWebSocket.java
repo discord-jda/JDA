@@ -194,13 +194,10 @@ public class AudioWebSocket extends WebSocketAdapter
                     return;
                 }
 
-                if (api.isDebug())
-                {
-                    if (speaking)
-                        LOG.trace(user.getUsername() + " started transmitting audio.");    //Replace with event.
-                    else
-                        LOG.trace(user.getUsername() + " stopped transmitting audio.");    //Replace with event.
-                }
+                if (speaking)
+                    LOG.trace(user.getUsername() + " started transmitting audio.");    //Replace with event.
+                else
+                    LOG.trace(user.getUsername() + " stopped transmitting audio.");    //Replace with event.
                 break;
             }
             default:
