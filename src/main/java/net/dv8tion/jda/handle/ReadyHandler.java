@@ -61,25 +61,32 @@ public class ReadyHandler extends SocketHandler
         if (oldStatus != null && oldStatus.equals(OnlineStatus.AWAY))
             api.getAccountManager().setIdle(true);
 
-        cachedJson.put(api, content);
         JSONArray guilds = content.getJSONArray("guilds");
-        Set<String> guildIds = ReadyHandler.guildIds.get(api);
-        Set<JSONObject> guildJsons = new HashSet<>();
-        for (int i = 0; i < guilds.length(); i++)
+        if (guilds.length() == 0)
         {
-            JSONObject guildJson = guilds.getJSONObject(i);
-            guildIds.add(guildJson.getString("id"));
-            guildJsons.add(guildJson);
+            finishReady(content);
         }
-        for (JSONObject guildJson : guildJsons)
+        else
         {
-            if (guildJson.has("unavailable") && guildJson.getBoolean("unavailable"))
+            cachedJson.put(api, content);
+            Set<String> guildIds = ReadyHandler.guildIds.get(api);
+            Set<JSONObject> guildJsons = new HashSet<>();
+            for (int i = 0; i < guilds.length(); i++)
             {
-                builder.createGuildFirstPass(guildJson, null);
+                JSONObject guildJson = guilds.getJSONObject(i);
+                guildIds.add(guildJson.getString("id"));
+                guildJsons.add(guildJson);
             }
-            else
+            for (JSONObject guildJson : guildJsons)
             {
-                builder.createGuildFirstPass(guildJson, this::onGuildInit);
+                if (guildJson.has("unavailable") && guildJson.getBoolean("unavailable"))
+                {
+                    builder.createGuildFirstPass(guildJson, null);
+                }
+                else
+                {
+                    builder.createGuildFirstPass(guildJson, this::onGuildInit);
+                }
             }
         }
         return null;

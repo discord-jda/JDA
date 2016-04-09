@@ -94,7 +94,6 @@ public class EntityBuilder
         {
             JSONArray members = guild.getJSONArray("members");
             createGuildMemberPass(guildObj, members);
-
         }
 
         if (guild.has("presences"))
