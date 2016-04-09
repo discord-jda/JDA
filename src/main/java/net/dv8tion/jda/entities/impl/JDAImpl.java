@@ -445,6 +445,11 @@ public class JDAImpl implements JDA
         return offline_pms;
     }
 
+    public Map<Guild, AudioManager> getAudioManagersMap()
+    {
+        return audioManagers;
+    }
+
     @Override
     public SelfInfo getSelfInfo()
     {
@@ -578,7 +583,7 @@ public class JDAImpl implements JDA
     {
         if (!enableAudio)
             throw new IllegalStateException("Audio is disabled. Cannot retrieve an AudioManager while audio is disabled.");
-        
+
         AudioManager manager = audioManagers.get(guild);
         if (manager == null)
         {

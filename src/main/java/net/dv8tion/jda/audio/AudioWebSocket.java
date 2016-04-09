@@ -257,8 +257,8 @@ public class AudioWebSocket extends WebSocketAdapter
             udpSocket.close();
         if (socket != null)
             socket.sendClose();
-        VoiceChannel disconnectedChannel = api.getAudioManager().getConnectedChannel();
-        api.getAudioManager().setAudioConnection(null);
+        VoiceChannel disconnectedChannel = guild.getAudioManager().getConnectedChannel();
+        guild.getAudioManager().setAudioConnection(null);
         api.getEventManager().handle(new AudioDisconnectEvent(api, disconnectedChannel));
     }
 
