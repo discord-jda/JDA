@@ -102,27 +102,6 @@ and create your PR into that same branch. **We will be rejecting any PRs to mast
 
 It is also highly recommended to get in touch with the Devs via the Discord API Guild (see section above).
 
-## TODO
-* Voice
-  * ~~Sending audio~~ (Completed)
-  * Receiving audio
-    * Ability to access a single combined stream and individual user audio streams.
-  * ~~Usage examples~~
-  * Extensive documentation
-* ~~Private Messages~~
-  * ~~Sending Private Messages~~
-  * ~~Figure out a good Event system that handles both, private and guild messages~~
-  * ~~Implement the Handler-code types other than MESSAGE_CREATE~~
-* ~~Invites~~
-* ~~Changing Account details (username, email, avatar, password)~~
-* ~~Changing the own Presence~~
-* ~~Modifying the server~~
-* ~~Permissions~~
-  * ~~Implement Exceptions~~
-  * ~~Revisit the Permission calculation~~
-* Read-States (which Message was last read in which channel)
-  * ~~Message-ACK~~
-
 ## Dependencies:
 This project requires **Java 8**.<br>
 All dependencies are managed automatically by Gradle.
