@@ -61,7 +61,8 @@ public class JDAImpl implements JDA
     private final Map<String, VoiceChannel> voiceChannelMap = new HashMap<>();
     private final Map<String, PrivateChannel> pmChannelMap = new HashMap<>();
     private final Map<String, String> offline_pms = new HashMap<>();    //Userid -> channelid
-    private final AudioManager audioManager;
+    private final Map<Guild, AudioManager> audioManagers = new HashMap<>();
+    private final boolean enableAudio;
     private IEventManager eventManager = new InterfacedEventManager();
     private SelfInfo selfInfo = null;
     private AccountManager accountManager;
@@ -73,19 +74,19 @@ public class JDAImpl implements JDA
     private int responseTotal;
     private Long messageLimit = null;
 
-    public JDAImpl(boolean useVoice)
+    public JDAImpl(boolean enableAudio)
     {
         proxy = null;
-        audioManager = useVoice ? new AudioManager(this) : null;
+        this.enableAudio = enableAudio;
     }
 
-    public JDAImpl(String proxyUrl, int proxyPort, boolean useVoice)
+    public JDAImpl(String proxyUrl, int proxyPort, boolean enableAudio)
     {
         if (proxyUrl == null || proxyUrl.isEmpty() || proxyPort == -1)
             throw new IllegalArgumentException("The provided proxy settings cannot be used to make a proxy. Settings: URL: '" + proxyUrl + "'  Port: " + proxyPort);
         proxy = new HttpHost(proxyUrl, proxyPort);
         Unirest.setProxy(proxy);
-        audioManager = useVoice ? new AudioManager(this) : null;
+        this.enableAudio = enableAudio;
     }
 
     /**
@@ -508,8 +509,7 @@ public class JDAImpl implements JDA
     @Override
     public void shutdown(boolean free)
     {
-        if (getAudioManager() != null)
-            getAudioManager().closeAudioConnection();
+        audioManagers.values().forEach(mng -> mng.closeAudioConnection());
         client.setAutoReconnect(false);
         client.close();
         authToken = null; //make further requests fail
@@ -574,9 +574,18 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public AudioManager getAudioManager()
+    public synchronized AudioManager getAudioManager(Guild guild)
     {
-        return audioManager;
+        if (!enableAudio)
+            throw new IllegalStateException("Audio is disabled. Cannot retrieve an AudioManager while audio is disabled.");
+        
+        AudioManager manager = audioManagers.get(guild);
+        if (manager == null)
+        {
+            manager = new AudioManager(guild);
+            audioManagers.put(guild, manager);
+        }
+        return manager;
     }
 
     private static class AsyncCallback implements EventListener

@@ -280,10 +280,12 @@ public interface JDA
      * instance. AudioManager deals with creating, managing and severing audio connections to
      * {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannels}.
      *
+     * @param guild
+     *          The {@link net.dv8tion.jda.entities.Guild Guild} whose AudioManager you wish to retrieve.
      * @return
      *      The AudioManager for this JDA instance.
      */
-    AudioManager getAudioManager();
+    AudioManager getAudioManager(Guild guild);
 
     /**
      * This value is the total amount of JSON responses that discord has sent.<br>

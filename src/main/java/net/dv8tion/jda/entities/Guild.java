@@ -17,6 +17,7 @@ package net.dv8tion.jda.entities;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Region;
+import net.dv8tion.jda.managers.AudioManager;
 import net.dv8tion.jda.managers.ChannelManager;
 import net.dv8tion.jda.managers.GuildManager;
 import net.dv8tion.jda.managers.RoleManager;
@@ -225,6 +226,15 @@ public interface Guild
      *      if the guild is temporarily unavailable
      */
     GuildManager getManager();
+
+    /**
+     * Returns the {@link net.dv8tion.jda.managers.AudioManager AudioManager} that represents the
+     * audio connection for this Guild.
+     *
+     * @return
+     *      The AudioManager for this Guild.
+     */
+    AudioManager getAudioManager();
 
     /**
      * Returns the {@link net.dv8tion.jda.JDA JDA} instance of this Guild

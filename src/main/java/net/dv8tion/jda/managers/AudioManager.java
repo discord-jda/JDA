@@ -20,6 +20,7 @@ import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.audio.AudioConnection;
 import net.dv8tion.jda.audio.AudioReceiveHandler;
 import net.dv8tion.jda.audio.AudioSendHandler;
+import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.utils.NativeUtils;
@@ -44,6 +45,7 @@ public class AudioManager
     private static boolean initialized = false;
 
     private final JDAImpl api;
+    private final Guild guild;
     private AudioConnection audioConnection = null;
     private VoiceChannel queuedAudioConnection = null;
 
@@ -52,9 +54,10 @@ public class AudioManager
 
     private long timeout = DEFAULT_CONNECTION_TIMEOUT;
 
-    public AudioManager(JDAImpl api)
+    public AudioManager(Guild guild)
     {
-        this.api = api;
+        this.guild = guild;
+        this.api = (JDAImpl) guild.getJDA();
         init();
         if (AUDIO_SUPPORTED)
             LOG.info("Audio System successfully setup!");
@@ -175,6 +178,17 @@ public class AudioManager
     public JDA getJDA()
     {
         return api;
+    }
+
+    /**
+     * Gets the {@link net.dv8tion.jda.entities.Guild Guild} instance that this AudioManager is used for.
+     *
+     * @return
+     *      The Guild that this AudioManager manages.
+     */
+    public Guild getGuild()
+    {
+        return guild;
     }
 
     /**
