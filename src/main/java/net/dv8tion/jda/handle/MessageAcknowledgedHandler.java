@@ -54,7 +54,7 @@ public class MessageAcknowledgedHandler extends SocketHandler
         {
             PrivateChannel privChannel = api.getPmChannelMap().get(channelId);
             if (privChannel == null)
-                throw new IllegalArgumentException("Message acknowledged in unknown channel with id " + channelId + " ! JSON: " + content);
+                return null;            //prob ack resulting of closing PM-channel; ignoring
             api.getEventManager().handle(
                     new PrivateMessageAcknowledgedEvent(
                             api, responseNumber,

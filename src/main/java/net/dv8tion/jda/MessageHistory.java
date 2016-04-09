@@ -101,8 +101,12 @@ public class MessageHistory
             toQueue = Math.min(amount, 100);
             try
             {
-                JSONArray array = api.getRequester().get(Requester.DISCORD_API_PREFIX + "channels/" + channelId
-                        + "/messages?limit=" + toQueue + (lastId != null ? "&before=" + lastId : "")).getArray();
+                Requester.Response response = api.getRequester().get(Requester.DISCORD_API_PREFIX + "channels/" + channelId
+                        + "/messages?limit=" + toQueue + (lastId != null ? "&before=" + lastId : ""));
+                if(!response.isOk())
+                    throw new RuntimeException("Error fetching message-history for channel with id " + channelId + "... Error: " + response.toString());
+
+                JSONArray array = response.getArray();
 
                 for (int i = 0; i < array.length(); i++)
                 {

@@ -262,13 +262,13 @@ public class RoleManager
 
     private void update(JSONObject object)
     {
-        JSONObject response = ((JDAImpl) role.getJDA()).getRequester().patch(Requester.DISCORD_API_PREFIX + "guilds/" + role.getGuild().getId() + "/roles/" + role.getId(), object).getObject();
-        if (response == null || !response.has("id"))
+        Requester.Response response = ((JDAImpl) role.getJDA()).getRequester().patch(Requester.DISCORD_API_PREFIX + "guilds/" + role.getGuild().getId() + "/roles/" + role.getId(), object);
+        if (!response.isOk())
         {
             throw new RuntimeException("Setting values of Role " + role.getName() + " with ID " + role.getId()
-                    + " failed... Reason: " + (response == null ? "Unknown" : response.toString()));
+                    + " failed... Reason: "+response.toString());
         }
-        new EntityBuilder(((JDAImpl) role.getJDA())).createRole(response, role.getGuild().getId());
+        new EntityBuilder(((JDAImpl) role.getJDA())).createRole(response.getObject(), role.getGuild().getId());
     }
 
     private void checkPermission(Permission perm)

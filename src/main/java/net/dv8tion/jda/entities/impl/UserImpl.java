@@ -103,9 +103,12 @@ public class UserImpl implements User
         {
             try
             {
-                JSONObject response = api.getRequester().post(Requester.DISCORD_API_PREFIX + "users/" + api.getSelfInfo().getId() + "/channels",
-                        new JSONObject().put("recipient_id", getId())).getObject();
-                new EntityBuilder(api).createPrivateChannel(response);
+                Requester.Response response = api.getRequester().post(Requester.DISCORD_API_PREFIX + "users/@me/channels",
+                        new JSONObject().put("recipient_id", getId()));
+                if(response.isOk())
+                    new EntityBuilder(api).createPrivateChannel(response.getObject());
+                else
+                    throw new RuntimeException("Could not get Private-channel for user: " + getUsername() + "... Error: " + response.toString());
             }
             catch (JSONException ex)
             {

@@ -156,7 +156,7 @@ public class Requester
         {
             try
             {
-                return new JSONObject(responseText);
+                return responseText == null ? null : new JSONObject(responseText);
             }
             catch (JSONException ex)
             {
@@ -168,7 +168,7 @@ public class Requester
         {
             try
             {
-                return new JSONArray(responseText);
+                return responseText == null ? null : new JSONArray(responseText);
             }
             catch (JSONException ex)
             {
