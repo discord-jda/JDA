@@ -58,6 +58,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     private boolean firstInit = true;
 
+    private WebSocketCustomHandler customHandler;
+
     public WebSocketClient(JDAImpl api, HttpHost proxy)
     {
         this.api = api;
@@ -74,6 +76,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public boolean isConnected()
     {
         return connected;
+    }
+
+    public void setCustomHandler(WebSocketCustomHandler customHandler)
+    {
+        this.customHandler = customHandler;
     }
 
     public void ready()
@@ -256,6 +263,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             api.setResponseTotal(content.getInt("s"));
         }
+
+        //Allows for custom event handling.
+        if (customHandler != null && customHandler.handle(content))
+            return;
 
         switch (opCode)
         {
