@@ -796,31 +796,6 @@ public class GuildManager
         ((JDAImpl) guild.getJDA()).getRequester().delete(Requester.DISCORD_API_PREFIX + "guilds/" + guild.getId());
     }
 
-    /**
-     * <b>This method is deprecated! please use {@link GuildManager#leave()} or {@link GuildManager#delete()} instead.</b>
-     *
-     * Leaves or Deletes this {@link net.dv8tion.jda.entities.Guild Guild}.
-     * If the logged in {@link net.dv8tion.jda.entities.User User} is the owner of
-     * this {@link net.dv8tion.jda.entities.Guild Guild}, the {@link net.dv8tion.jda.entities.Guild Guild} is deleted.
-     * Otherwise, this guild will be left.
-     * This change will be applied immediately.
-     *
-     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
-     *      if the guild is temporarily unavailable
-     */
-    @Deprecated
-    public void leaveOrDelete()
-    {
-        if (guild.getJDA().getSelfInfo().getId().equals(guild.getOwnerId()))
-        {
-            delete();
-        }
-        else
-        {
-            leave();
-        }
-    }
-
     private JSONObject getFrame()
     {
         return new JSONObject().put("name", guild.getName());

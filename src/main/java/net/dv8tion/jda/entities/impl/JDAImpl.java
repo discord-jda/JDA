@@ -500,20 +500,6 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    @Deprecated
-    public void setDebug(boolean enableDebug)
-    {
-        SimpleLog.LEVEL = enableDebug ? SimpleLog.Level.TRACE : SimpleLog.Level.INFO;
-    }
-
-    @Override
-    @Deprecated
-    public boolean isDebug()
-    {
-        return SimpleLog.LEVEL == SimpleLog.Level.TRACE;
-    }
-
-    @Override
     public void shutdown()
     {
         shutdown(true);

@@ -48,7 +48,6 @@ public class JDABuilder
     String email = null;
     String pass = null;
     String botToken = null;
-    boolean debug = false;
     boolean enableVoice = true;
     boolean useAnnotatedManager = false;
     IEventManager eventManager = null;
@@ -165,24 +164,6 @@ public class JDABuilder
         proxySet = true;
         JDABuilder.proxyUrl = proxyUrl;
         JDABuilder.proxyPort = proxyPort;
-        return this;
-    }
-
-    /**
-     * <b>This method is deprecated! please switch to using the {@link net.dv8tion.jda.utils.SimpleLog SimpleLog} class.</b>
-     * <p>
-     * Enables developer debug of JDA.<br>
-     * Enabling this will print stack traces instead of java logger message when exceptions are encountered.
-     *
-     * @param debug
-     *          True - enables debug printing.
-     * @return
-     *          Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
-     */
-    @Deprecated
-    public JDABuilder setDebug(boolean debug)
-    {
-       this.debug = debug;
         return this;
     }
 
@@ -317,7 +298,6 @@ public class JDABuilder
             jda = new JDAImpl(proxyUrl, proxyPort, enableVoice);
         else
             jda = new JDAImpl(enableVoice);
-        jda.setDebug(debug);
         jda.setAutoReconnect(reconnect);
         if (eventManager != null)
         {

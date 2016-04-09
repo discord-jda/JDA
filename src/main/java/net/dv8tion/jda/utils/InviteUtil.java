@@ -71,28 +71,6 @@ public class InviteUtil
     }
 
     /**
-     * <b>This method is deprecated, use {@link #createInvite(net.dv8tion.jda.entities.Channel)} instead.</b>
-     * <p>
-     * Creates a standard-invite (valid for 24hrs, infinite usages, permanent access and not human-readable).
-     * To create a customized Invite, use {@link #createInvite(Channel, InviteDuration, int, boolean, boolean)} instead.
-     *
-     * @param chan
-     *      The channel to create the invite for.
-     * @param jda
-     *      The JDA-instance from who the invite should be created from.
-     * @return
-     *      The created AdvancedInvite object.
-     * @throws net.dv8tion.jda.exceptions.PermissionException
-     *      If the account connected to the provided JDA object does not have
-     *      {@link net.dv8tion.jda.Permission#CREATE_INSTANT_INVITE Permission.CREATE_INSTANT_INVITE} for the provided channel.
-     */
-    @Deprecated
-    public static AdvancedInvite createInvite(Channel chan, JDA jda)
-    {
-        return createInvite(chan, InviteDuration.ONE_DAY, 0, false, false);
-    }
-
-    /**
      * Creates a standard-invite (valid for 24hrs, infinite usages, permanent access and not human-readable).
      * To create a customized Invite, use {@link #createInvite(Channel, InviteDuration, int, boolean, boolean)} instead.
      *
@@ -148,12 +126,6 @@ public class InviteUtil
         return null;
     }
 
-    @Deprecated
-    public static void join(Invite invite, JDA jda)
-    {
-        join(invite, jda, null);
-    }
-
     /**
      * Uses joins the {@link net.dv8tion.jda.entities.Guild Guild} specified by the provided
      * {@link net.dv8tion.jda.utils.InviteUtil.Invite Invite}. Joining invites is always an async process, so you can
@@ -186,12 +158,6 @@ public class InviteUtil
         if(callback != null)
             jda.addEventListener(new AsyncCallback(invite.getGuildId(), callback));
         ((JDAImpl) jda).getRequester().post(Requester.DISCORD_API_PREFIX + "invite/" + invite.getCode(), new JSONObject());
-    }
-
-    @Deprecated
-    public static void join(String code, JDA jda)
-    {
-        join(code, jda, null);
     }
 
     /**

@@ -196,20 +196,6 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
-    @Deprecated
-    public Message sendFile(File file)
-    {
-        return sendFile(file, null);
-    }
-
-    @Override
-    @Deprecated
-    public void sendFileAsync(File file, Consumer<Message> callback)
-    {
-        sendFileAsync(file, null, callback);
-    }
-
-    @Override
     public Message sendFile(File file, Message message)
     {
         if (!checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_WRITE))

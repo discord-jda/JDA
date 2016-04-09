@@ -103,64 +103,13 @@ public interface MessageChannel
     void sendMessageAsync(Message msg, Consumer<Message> callback);
 
     /**
-     * <b>This method has been deprecated. Please use {@link #sendFile(java.io.File, Message)}</b>
-     * <p>
-     * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.entities.TextChannel TextChannel}.
-     * <p>
-     * <b>Note:</b> This method is blocking, which can cause problems when uploading large files.<br>
-     * Consider {@link #sendFileAsync(java.io.File, java.util.function.Consumer) sendFileAsync(File, Consumer)} for an alternative.
-     *
-     * @param file
-     *          The file to upload to the {@link net.dv8tion.jda.entities.TextChannel TextChannel}.
-     * @return
-     *      The {@link net.dv8tion.jda.entities.Message Message} created from this upload.
-     * @throws net.dv8tion.jda.exceptions.PermissionException
-     *      <ul>
-     *          <li>
-     *              If this is a {@link net.dv8tion.jda.entities.TextChannel TextChannel} and the logged in account does
-     *              not have {@link net.dv8tion.jda.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}.
-     *          </li>
-     *          <li>
-     *              If this is a {@link net.dv8tion.jda.entities.TextChannel TextChannel} and the logged in account does
-     *              not have {@link net.dv8tion.jda.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}.
-     *          </li>
-     *      </ul>
-     */
-    @Deprecated
-    Message sendFile(File file);
-
-    /**
-     * <b>This method has been deprecated. Please use {@link #sendFileAsync(java.io.File, Message, java.util.function.Consumer)}</b>
-     * <p>
-     * Asynchronously uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.entities.TextChannel TextChannel}.
-     *
-     * @param file
-     *          The file to upload to the {@link net.dv8tion.jda.entities.TextChannel TextChannel}.
-     * @param callback
-     *          Function to deal with the returned {@link net.dv8tion.jda.entities.Message Message} after asynchronous uploading completes.
-     * @throws net.dv8tion.jda.exceptions.PermissionException
-     *      <ul>
-     *          <li>
-     *              If this is a {@link net.dv8tion.jda.entities.TextChannel TextChannel} and the logged in account does
-     *              not have {@link net.dv8tion.jda.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}.
-     *          </li>
-     *          <li>
-     *              If this is a {@link net.dv8tion.jda.entities.TextChannel TextChannel} and the logged in account does
-     *              not have {@link net.dv8tion.jda.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}.
-     *          </li>
-     *      </ul>
-     */
-    @Deprecated
-    void sendFileAsync(File file, Consumer<Message> callback);
-
-    /**
      * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.entities.TextChannel TextChannel}.
      * Sends the provided {@link net.dv8tion.jda.entities.Message Message} with the uploaded file.<br>
      * If you do not wish to send a Message with the uploaded file, you can provide <code>null</code> for
      * the <code>message</code> parameter.
      * <p>
      * <b>Note:</b> This method is blocking, which can cause problems when uploading large files.<br>
-     * Consider {@link #sendFileAsync(java.io.File, java.util.function.Consumer) sendFileAsync(File, Consumer)} for an alternative.
+     * Consider {@link #sendFileAsync(java.io.File, net.dv8tion.jda.entities.Message, java.util.function.Consumer)} for an alternative.
      *
      * @param file
      *          The file to upload to the {@link net.dv8tion.jda.entities.TextChannel TextChannel}.
