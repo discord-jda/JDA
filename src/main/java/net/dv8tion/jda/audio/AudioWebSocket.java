@@ -205,6 +205,7 @@ public class AudioWebSocket extends WebSocketAdapter
         }
     }
 
+
     @Override
     public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer)
     {
@@ -237,7 +238,7 @@ public class AudioWebSocket extends WebSocketAdapter
         JSONObject obj = new JSONObject()
                 .put("op", 4)
                 .put("d", new JSONObject()
-                        .put("guild_id", JSONObject.NULL)
+                        .put("guild_id", guild.getId())
                         .put("channel_id", JSONObject.NULL)
                         .put("self_mute", false)
                         .put("self_deaf", false)
@@ -256,7 +257,7 @@ public class AudioWebSocket extends WebSocketAdapter
         if (udpSocket != null)
             udpSocket.close();
         if (socket != null)
-            socket.sendClose();
+            socket.sendClose(1000);
         VoiceChannel disconnectedChannel = guild.getAudioManager().getConnectedChannel();
         guild.getAudioManager().setAudioConnection(null);
         api.getEventManager().handle(new AudioDisconnectEvent(api, disconnectedChannel));
