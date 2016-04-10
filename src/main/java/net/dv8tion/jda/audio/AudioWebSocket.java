@@ -51,7 +51,7 @@ public class AudioWebSocket extends WebSocketAdapter
     private boolean connected = false;
     private boolean ready = false;
     private Thread keepAliveThread;
-    public static WebSocket socket;
+    public WebSocket socket;
     private String endpoint;
     private String wssEndpoint;
 
