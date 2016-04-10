@@ -58,11 +58,7 @@ public class AudioManager
     {
         this.guild = guild;
         this.api = (JDAImpl) guild.getJDA();
-        init();
-        if (AUDIO_SUPPORTED)
-            LOG.info("Audio System successfully setup!");
-        else
-            LOG.info("Audio System encountered problems while loading, thus, is disabled.");
+        init(); //Just to make sure that the audio libs have been initialized.
     }
 
     /**
@@ -362,7 +358,7 @@ public class AudioManager
     }
 
     //Load the Opus library.
-    private static synchronized void init()
+    public static synchronized void init()
     {
         if(initialized)
             return;
@@ -413,6 +409,11 @@ public class AudioManager
         {
             OPUS_LIB_NAME = nativesRoot != null ? String.format(nativesRoot, "libopus") : null;
             AUDIO_SUPPORTED = nativesRoot != null;
+
+            if (AUDIO_SUPPORTED)
+                LOG.info("Audio System successfully setup!");
+            else
+                LOG.info("Audio System encountered problems while loading, thus, is disabled.");
         }
 
     }

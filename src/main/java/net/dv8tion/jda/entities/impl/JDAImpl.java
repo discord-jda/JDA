@@ -78,6 +78,8 @@ public class JDAImpl implements JDA
     {
         proxy = null;
         this.enableAudio = enableAudio;
+        if (enableAudio)
+            AudioManager.init();
     }
 
     public JDAImpl(String proxyUrl, int proxyPort, boolean enableAudio)
@@ -87,6 +89,8 @@ public class JDAImpl implements JDA
         proxy = new HttpHost(proxyUrl, proxyPort);
         Unirest.setProxy(proxy);
         this.enableAudio = enableAudio;
+        if (enableAudio)
+            AudioManager.init();
     }
 
     /**
@@ -107,7 +111,7 @@ public class JDAImpl implements JDA
 
         botToken = "Bot " + botToken;
 
-        accountManager=new AccountManager(this, null);
+        accountManager = new AccountManager(this, null);
 
         if(!validate(botToken)) {
             throw new LoginException("The given botToken was invalid");

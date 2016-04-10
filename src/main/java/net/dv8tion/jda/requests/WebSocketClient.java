@@ -36,7 +36,7 @@ import java.util.zip.Inflater;
 
 public class WebSocketClient extends WebSocketAdapter implements WebSocketListener
 {
-    SimpleLog LOG = SimpleLog.getLog("JDASocket");
+    public static final SimpleLog LOG = SimpleLog.getLog("JDASocket");
 
     private final JDAImpl api;
     private final GuildLock guildLock;
