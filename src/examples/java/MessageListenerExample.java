@@ -37,8 +37,7 @@ public class MessageListenerExample extends ListenerAdapter
         try
         {
             new JDABuilder()
-                    .setEmail("EMAIL")
-                    .setPassword("PASSWORD")
+                    .setBotToken("TOKEN")
                     .addListener(new MessageListenerExample())
                     .buildBlocking();
         }

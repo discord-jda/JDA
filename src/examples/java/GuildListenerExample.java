@@ -40,8 +40,7 @@ public class GuildListenerExample extends ListenerAdapter
         try
         {
             new JDABuilder()
-                    .setEmail("EMAIL")
-                    .setPassword("PASSWORD")
+                    .setBotToken("TOKEN")
                     .addListener(new GuildListenerExample())
                     .buildBlocking();
         }

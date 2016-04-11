@@ -38,8 +38,7 @@ public class AudioExample extends ListenerAdapter
         try
         {
             JDA api = new JDABuilder()
-                    .setEmail("EMAIL")
-                    .setPassword("PASSWORD")
+                    .setBotToken("TOKEN")
                     .addListener(new AudioExample())
                     .buildBlocking();
         }

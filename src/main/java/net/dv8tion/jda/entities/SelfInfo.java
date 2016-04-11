@@ -22,21 +22,6 @@ import java.util.List;
  */
 public interface SelfInfo extends User
 {
-    /**
-     * Returns the email of the connected account.
-     *
-     * @return
-     *      Never-null String containing the email of the currently logged in account.
-     */
-    String getEmail();
-
-    /**
-     * A List of {@link net.dv8tion.jda.entities.TextChannel TextChannels} that have been muted on this account.
-     *
-     * @return
-     *      List of muted {@link net.dv8tion.jda.entities.TextChannel TextChannels}.
-     */
-    List<TextChannel> getMutedChannels();
 
     /**
      * The status of this account's verification.<br>

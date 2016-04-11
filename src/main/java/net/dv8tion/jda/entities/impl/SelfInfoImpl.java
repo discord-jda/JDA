@@ -24,26 +24,11 @@ import java.util.List;
 
 public class SelfInfoImpl extends UserImpl implements SelfInfo
 {
-    private String email;
-    private List<TextChannel> mutedChannels = new ArrayList<>();
     private boolean verified;
 
-    public SelfInfoImpl(String id, String email, JDAImpl api)
+    public SelfInfoImpl(String id, JDAImpl api)
     {
         super(id, api);
-        this.email = email;
-    }
-
-    @Override
-    public String getEmail()
-    {
-        return email;
-    }
-
-    @Override
-    public List<TextChannel> getMutedChannels()
-    {
-        return Collections.unmodifiableList(mutedChannels);
     }
 
     @Override
@@ -52,26 +37,9 @@ public class SelfInfoImpl extends UserImpl implements SelfInfo
         return verified;
     }
 
-    public SelfInfoImpl setMutedChannels(List<TextChannel> mutedChannels)
-    {
-        this.mutedChannels = mutedChannels;
-        return this;
-    }
-
     public SelfInfoImpl setVerified(boolean verified)
     {
         this.verified = verified;
         return this;
-    }
-
-    public SelfInfoImpl setEmail(String email)
-    {
-        this.email = email;
-        return this;
-    }
-
-    public List<TextChannel> getMutedChannelsModifiable()
-    {
-        return mutedChannels;
     }
 }

@@ -96,111 +96,28 @@ public class JDAImpl implements JDA
     /**
      * Attempts to login to Discord with a Bot-Account.
      *
-     * @param botToken
+     * @param token
      *          The token of the bot-account attempting to log in.
      * @throws IllegalArgumentException
      *          Thrown if the botToken provided is empty or null.
      * @throws LoginException
      *          Thrown if the token fails the auth check with the Discord servers.
      */
-    public void login(String botToken) throws IllegalArgumentException, LoginException
+    public void login(String token) throws IllegalArgumentException, LoginException
     {
         LOG.info("JDA starting...");
-        if (botToken == null || botToken.isEmpty())
+        if (token == null || token.isEmpty())
             throw new IllegalArgumentException("The provided botToken was empty / null.");
 
-        botToken = "Bot " + botToken;
+        accountManager = new AccountManager(this);
 
-        accountManager = new AccountManager(this, null);
-
-        if(!validate(botToken)) {
-            throw new LoginException("The given botToken was invalid");
+        if(!validate(token)) {
+            throw new LoginException("The given token was invalid");
         }
 
         LOG.info("Login Successful!");
         client = new WebSocketClient(this, proxy);
         client.setAutoReconnect(reconnect);
-    }
-
-    /**
-     * Attempts to login to Discord with a normal User-Account.
-     * Upon successful auth with Discord, a token is generated and stored in token.json.
-     *
-     * @param email
-     *          The email of the account attempting to log in.
-     * @param password
-     *          The password of the account attempting to log in.
-     * @throws IllegalArgumentException
-     *          Thrown if this email or password provided are empty or null.
-     * @throws LoginException
-     *          Thrown if the email-password combination fails the auth check with the Discord servers.
-     */
-    public void login(String email, String password) throws IllegalArgumentException, LoginException
-    {
-        LOG.info("JDA starting...");
-        if (email == null || email.isEmpty() || password == null || password.isEmpty())
-            throw new IllegalArgumentException("The provided email or password as empty / null.");
-
-        accountManager=new AccountManager(this, password);
-        
-        Path tokenFile = Paths.get("tokens.json");
-        JSONObject configs = null;
-        boolean valid = false;
-        if (Files.exists(tokenFile))
-        {
-            configs = readJson(tokenFile);
-        }
-        if (configs == null)
-        {
-            configs = new JSONObject().put("tokens", new JSONObject()).put("version", 1);
-        }
-
-
-        try
-        {
-            if (configs.getJSONObject("tokens").has(email))
-            {
-                if(validate(configs.getJSONObject("tokens").getString(email))) {
-                        valid = true;
-                        LOG.debug("Using cached Token: " + authToken);
-                }
-            }
-        }
-        catch (JSONException ex)
-        {
-            LOG.warn("Token-file misformatted. Please delete it for recreation");
-        }
-
-        if (!valid)               //no token saved or invalid
-        {
-            try
-            {
-                authToken = null;
-                JSONObject response = getRequester().post(Requester.DISCORD_API_PREFIX + "auth/login", new JSONObject().put("email", email).put("password", password)).getObject();
-
-                if (response == null || !response.has("token"))
-                    throw new LoginException("The provided email / password combination was incorrect. Please provide valid details.");
-
-                authToken = response.getString("token");
-                configs.getJSONObject("tokens").put(email, authToken);
-                LOG.debug("Created new Token: " + authToken);
-
-                valid = true;
-            }
-            catch (JSONException ex)
-            {
-                LOG.log(ex);
-            }
-        }
-
-        if (valid)
-        {
-            LOG.info("Login Successful!");
-            client = new WebSocketClient(this, proxy);
-            client.setAutoReconnect(reconnect);
-        }
-
-        writeJson(tokenFile, configs);
     }
 
     private boolean validate(String authToken)

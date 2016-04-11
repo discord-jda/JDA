@@ -45,7 +45,7 @@ public class JDABuilder
     protected static String proxyUrl = null;
     protected static int proxyPort = -1;
     final List<Object> listeners;
-    String botToken = null;
+    String token = null;
     boolean enableVoice = true;
     boolean useAnnotatedManager = false;
     IEventManager eventManager = null;
@@ -60,18 +60,6 @@ public class JDABuilder
      */
     public JDABuilder()
     {
-        this(null);
-    }
-
-    /**
-     * Creates a new JDABuilder using the provided token that is received when creating a Bot-Account.
-     *
-     * @param botToken
-     *          The token of a Bot-Account.
-     */
-    public JDABuilder(String botToken)
-    {
-        this.botToken = botToken;
         listeners = new LinkedList<>();
     }
 
@@ -87,7 +75,7 @@ public class JDABuilder
      *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
      */
     public JDABuilder setBotToken(String botToken) {
-        this.botToken = botToken;
+        this.token = "Bot " + botToken;
         return this;
     }
 
@@ -257,7 +245,7 @@ public class JDABuilder
             jda.setEventManager(new AnnotatedEventManager());
         }
         listeners.forEach(jda::addEventListener);
-        jda.login(botToken);
+        jda.login(token);
         return jda;
     }
 

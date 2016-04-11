@@ -318,15 +318,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     private void sendIdentify()
     {
         LOG.debug("Sending Identify-packet...");
-        String token = api.getAuthToken();
-        if (token.startsWith("Bot "))
-        {
-            token = token.substring(4);
-        }
         send(new JSONObject()
                 .put("op", 2)
                 .put("d", new JSONObject()
-                        .put("token", token)
+                        .put("token", api.getAuthToken())
                         .put("properties", new JSONObject()
                                 .put("$os", System.getProperty("os.name"))
                                 .put("$browser", "Java Discord API")
@@ -343,16 +338,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     private void sendResume()
     {
         LOG.debug("Sending Resume-packet...");
-        String token = api.getAuthToken();
-        if (token.startsWith("Bot "))
-        {
-            token = token.substring(4);
-        }
         send(new JSONObject()
                 .put("op", 6)
                 .put("d", new JSONObject()
                         .put("session_id", sessionId)
-                        .put("token", token)
+                        .put("token", api.getAuthToken())
                         .put("seq", api.getResponseTotal()))
                 .toString());
     }
