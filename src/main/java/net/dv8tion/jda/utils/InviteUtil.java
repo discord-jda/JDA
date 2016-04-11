@@ -127,72 +127,6 @@ public class InviteUtil
     }
 
     /**
-     * Uses joins the {@link net.dv8tion.jda.entities.Guild Guild} specified by the provided
-     * {@link net.dv8tion.jda.utils.InviteUtil.Invite Invite}. Joining invites is always an async process, so you can
-     * provided a {@link java.util.function.Consumer Consumer} to define code to be run after the
-     * {@link net.dv8tion.jda.entities.Guild Guild} is joined.<br>
-     * Example:
-     * <pre>{@code
-     * InviteUtil.join(Invite, JDA, joinedGuild ->
-     * {
-     *     System.out.println("I just joined a guild called: " + joinedGuild.getName();
-     * });
-     * }</pre>
-     * <b>Note:</b> If you do not wish to execute any code after joining, provide <code>null</code> for the consumer.
-     *
-     * @param invite
-     *          The {@link net.dv8tion.jda.utils.InviteUtil.Invite Invite} which to join.
-     * @param jda
-     *          The {@link net.dv8tion.jda.JDA JDA} instance which will join the {@link net.dv8tion.jda.entities.Guild Guild}
-     *          specified by the invie.
-     * @param callback
-     *          The code which will be executed when the {@link net.dv8tion.jda.entities.Guild Guild} has been successfully
-     *          joined. This value can be <code>null</code>.
-     */
-    public static void join(Invite invite, JDA jda, Consumer<Guild> callback)
-    {
-        if (invite == null)
-            throw new NullPointerException("The provided Invite was null!");
-        if (jda == null)
-            throw new NullPointerException("The provided JDA object was null!");
-        if(callback != null)
-            jda.addEventListener(new AsyncCallback(invite.getGuildId(), callback));
-        ((JDAImpl) jda).getRequester().post(Requester.DISCORD_API_PREFIX + "invite/" + invite.getCode(), new JSONObject());
-    }
-
-    /**
-     * Uses joins the {@link net.dv8tion.jda.entities.Guild Guild} specified by the provided
-     * invite code/url. Joining invites is always an async process, so you can
-     * provided a {@link java.util.function.Consumer Consumer} to define code to be run after the
-     * {@link net.dv8tion.jda.entities.Guild Guild} is joined.<br>
-     * Example:
-     * <pre>{@code
-     * InviteUtil.join(Invite, JDA, joinedGuild ->
-     * {
-     *     System.out.println("I just joined a guild called: " + joinedGuild.getName();
-     * });
-     * }</pre>
-     * <b>Note:</b> If you do not wish to execute any code after joining, provide <code>null</code> for the consumer.
-     *
-     * @param code
-     *          The code/url of the invite which to join.
-     * @param jda
-     *          The {@link net.dv8tion.jda.JDA JDA} instance which will join the {@link net.dv8tion.jda.entities.Guild Guild}
-     *          specified by the invite.
-     * @param callback
-     *          The code which will be executed when the {@link net.dv8tion.jda.entities.Guild Guild} has been successfully
-     *          joined. This value can be <code>null</code>.
-     */
-    public static void join(String code, JDA jda, Consumer<Guild> callback)
-    {
-        Invite invite = resolve(code);
-        if (invite == null)
-            throw new IllegalArgumentException("The provided Invite code was invalid, thus JDA cannot " +
-                    "attempt to join using it! Provided Code: " + code);
-        join(invite, jda, callback);
-    }
-
-    /**
      * Tells Discord to delete the specified Invite from the server. After deleting, this Invite will no longer work
      * for anyone.
      *
@@ -483,29 +417,6 @@ public class InviteUtil
                 }
             }
             return INFINITE;
-        }
-    }
-
-    private static class AsyncCallback implements EventListener
-    {
-        private final String id;
-        private final Consumer<Guild> cb;
-
-        public AsyncCallback(String id, Consumer<Guild> cb)
-        {
-            this.id = id;
-            this.cb = cb;
-        }
-
-        @Override
-        @SubscribeEvent
-        public void onEvent(Event event)
-        {
-            if (event instanceof GuildJoinEvent && ((GuildJoinEvent) event).getGuild().getId().equals(id))
-            {
-                event.getJDA().removeEventListener(this);
-                cb.accept(((GuildJoinEvent) event).getGuild());
-            }
         }
     }
 }
