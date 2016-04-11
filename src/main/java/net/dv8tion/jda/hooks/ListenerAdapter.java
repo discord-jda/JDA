@@ -63,7 +63,6 @@ public abstract class ListenerAdapter implements EventListener
     public void onPrivateMessageEmbed(PrivateMessageEmbedEvent event) {}
     //Combined Message Events (Combines Guild and Private message into 1 event)
     public void onMessageReceived(MessageReceivedEvent event) {}
-    public void onMessageAcknowledged(MessageAcknowledgedEvent event) {}
     public void onMessageUpdate(MessageUpdateEvent event) {}
     public void onMessageDelete(MessageDeleteEvent event) {}
     public void onMessageEmbed(MessageEmbedEvent event) {}
@@ -180,8 +179,6 @@ public abstract class ListenerAdapter implements EventListener
         //Combined Message Events (Combines Guild and Private message into 1 event)
         else if (event instanceof MessageReceivedEvent)
             onMessageReceived((MessageReceivedEvent) event);
-        else if (event instanceof MessageAcknowledgedEvent)
-            onMessageAcknowledged((MessageAcknowledgedEvent) event);
         else if (event instanceof MessageUpdateEvent)
             onMessageUpdate((MessageUpdateEvent) event);
         else if (event instanceof MessageDeleteEvent)

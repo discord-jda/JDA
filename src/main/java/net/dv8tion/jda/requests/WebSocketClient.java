@@ -417,9 +417,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 case "TYPING_START":
                     new UserTypingHandler(api, responseTotal).handle(raw);
                     break;
-                case "MESSAGE_ACK":
-                    new MessageAcknowledgedHandler(api, responseTotal).handle(raw);
-                    break;
                 case "MESSAGE_CREATE":
                     new MessageReceivedHandler(api, responseTotal).handle(raw);
                     break;
