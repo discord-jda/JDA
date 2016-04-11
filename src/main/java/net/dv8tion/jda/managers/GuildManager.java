@@ -720,33 +720,6 @@ public class GuildManager
     }
 
     /**
-     * Transfers the ownership of this Guild to another user.
-     * This will only work, if the current owner of the Guild is the JDA-user.
-     * This change will be applied immediately.
-     *
-     * @param newOwner
-     *      the desired new Owner
-     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
-     *      if the guild is temporarily unavailable
-     */
-    public void transferOwnership(User newOwner)
-    {
-        if (!guild.isAvailable())
-        {
-            throw new GuildUnavailableException();
-        }
-        if (!guild.getJDA().getSelfInfo().getId().equals(guild.getOwnerId()))
-        {
-            throw new PermissionException("Moving guild-ownership is only available for guild-owners!");
-        }
-        if (!guild.getUsers().contains(newOwner))
-        {
-            throw new IllegalArgumentException("The new owner is not member of the Guild!");
-        }
-        update(getFrame().put("owner_id", newOwner.getId()));
-    }
-
-    /**
      * Leaves this {@link net.dv8tion.jda.entities.Guild Guild}.
      * If the logged in {@link net.dv8tion.jda.entities.User User} is the owner of
      * this {@link net.dv8tion.jda.entities.Guild Guild}, this method will throw an {@link net.dv8tion.jda.exceptions.PermissionException PermissionException}.
@@ -769,31 +742,6 @@ public class GuildManager
             throw new GuildUnavailableException();
         }
         ((JDAImpl) guild.getJDA()).getRequester().delete(Requester.DISCORD_API_PREFIX + "users/@me/guilds/" + guild.getId());
-    }
-
-    /**
-     * Deletes this {@link net.dv8tion.jda.entities.Guild Guild}.
-     * If the logged in {@link net.dv8tion.jda.entities.User User} is not the owner of
-     * this {@link net.dv8tion.jda.entities.Guild Guild}, this method will throw an {@link net.dv8tion.jda.exceptions.PermissionException PermissionException}.
-     * If you want to leave the Guild instead, use {@link GuildManager#leave()}.
-     * This change will be applied immediately.
-     *
-     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
-     *      if the guild is temporarily unavailable
-     * @throws net.dv8tion.jda.exceptions.PermissionException
-     *      if the account JDA is using is not the owner of the Guild
-     */
-    public void delete()
-    {
-        if (!guild.getJDA().getSelfInfo().getId().equals(guild.getOwnerId()))
-        {
-            throw new PermissionException("You need to be the Guild-owner to delete a Guild");
-        }
-        if (!guild.isAvailable())
-        {
-            throw new GuildUnavailableException();
-        }
-        ((JDAImpl) guild.getJDA()).getRequester().delete(Requester.DISCORD_API_PREFIX + "guilds/" + guild.getId());
     }
 
     private JSONObject getFrame()

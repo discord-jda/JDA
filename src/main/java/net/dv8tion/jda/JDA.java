@@ -20,11 +20,9 @@ import net.dv8tion.jda.hooks.AnnotatedEventManager;
 import net.dv8tion.jda.hooks.IEventManager;
 import net.dv8tion.jda.managers.AccountManager;
 import net.dv8tion.jda.managers.AudioManager;
-import net.dv8tion.jda.managers.GuildManager;
 import org.apache.http.HttpHost;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 
 /**
@@ -62,22 +60,6 @@ public interface JDA
      *          The listener to be removed.
      */
     void removeEventListener(Object listener);
-
-
-    /**
-     * Creates a new {@link net.dv8tion.jda.entities.Guild Guild}.<br>
-     * This function will wait until the Guild was fully created by the Discord-Server (default channels,...),
-     * and then call the provided callback-function with the GuildManager-object.
-     * <p>
-     * <b>NOTE: If you do not wish to interact with the created guild, the Consumer CAN BE NULL.</b>
-     * @param name
-     *      the name of the new {@link net.dv8tion.jda.entities.Guild Guild}
-     * @param region
-     *      the region of the new {@link net.dv8tion.jda.entities.Guild Guild}
-     * @param callback
-     *      the callback-function that gets called once the guild was fully initialized
-     */
-    void createGuildAsync(String name, Region region, Consumer<GuildManager> callback);
 
     /**
      * The login token that is currently being used for Discord authentication.

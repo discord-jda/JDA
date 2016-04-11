@@ -17,7 +17,6 @@ package net.dv8tion.jda.entities.impl;
 
 import com.mashape.unirest.http.Unirest;
 import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.Region;
 import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.events.Event;
 import net.dv8tion.jda.events.guild.GuildJoinEvent;
@@ -41,7 +40,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.function.Consumer;
@@ -285,28 +283,6 @@ public class JDAImpl implements JDA
     public List<PrivateChannel> getPrivateChannels()
     {
         return Collections.unmodifiableList(new LinkedList<>(pmChannelMap.values()));
-    }
-
-    @Override
-    public void createGuildAsync(String name, Region region, Consumer<GuildManager> callback)
-    {
-        if (name == null)
-            throw new IllegalArgumentException("Guild name must not be null");
-        if (region == Region.UNKNOWN)
-            throw new IllegalArgumentException("Guild region must not be UNKNOWN");
-
-        JSONObject response = getRequester().post(Requester.DISCORD_API_PREFIX + "guilds",
-                new JSONObject().put("name", name).put("region", region.getKey())).getObject();
-        if (response == null || !response.has("id"))
-        {
-            //error creating guild
-            throw new RuntimeException("Creating a new Guild failed. Reason: " + (response == null ? "Unknown" : response.toString()));
-        }
-        else
-        {
-            if(callback != null)
-                addEventListener(new AsyncCallback(callback, response.getString("id")));
-        }
     }
 
     @Override
