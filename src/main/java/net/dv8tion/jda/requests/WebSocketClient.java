@@ -39,7 +39,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public static final SimpleLog LOG = SimpleLog.getLog("JDASocket");
 
     private final JDAImpl api;
-    private final GuildLock guildLock;
 
     private final HttpHost proxy;
     private WebSocket socket;
@@ -63,7 +62,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public WebSocketClient(JDAImpl api, HttpHost proxy)
     {
         this.api = api;
-        this.guildLock = GuildLock.get(api);
         this.proxy = proxy;
         connect();
     }
@@ -88,6 +86,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         if (initiating)
         {
             initiating = false;
+            reconnectTimeoutS = 2;
             if (firstInit)
             {
                 firstInit = false;
@@ -218,14 +217,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         else
         {
             api.getEventManager().handle(new DisconnectEvent(api, serverCloseFrame, clientCloseFrame, closedByServer, OffsetDateTime.now()));
-            if (!closedByServer || sessionId != null)
-            {
-                reconnect();
-            }
-            else
-            {
-                LOG.fatal("Session is no longer valid! could not reconnect!");
-            }
+            reconnect();
         }
     }
 
@@ -401,10 +393,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 case "READY":
                     sessionId = content.getString("session_id");
                     new ReadyHandler(api, responseTotal).handle(raw);
-                    reconnectTimeoutS = 2;
                     break;
                 case "RESUMED":
-                    reconnectTimeoutS = 2;
                     initiating = false;
                     ready();
                     break;
