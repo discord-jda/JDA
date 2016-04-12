@@ -473,6 +473,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 case "USER_GUILD_SETTINGS_UPDATE":
                     //TODO: handle notification updates...
                     break;
+                //Events that Bots shouldn't care about.
+                case "MESSAGE_ACK":
+                    break;
                 default:
                     LOG.debug("Unrecognized event:\n" + raw);
             }

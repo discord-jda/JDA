@@ -21,6 +21,7 @@ import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.entities.impl.GuildImpl;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.entities.impl.UserImpl;
+import net.dv8tion.jda.events.channel.priv.PrivateChannelDeleteEvent;
 import net.dv8tion.jda.events.channel.text.TextChannelDeleteEvent;
 import net.dv8tion.jda.events.channel.voice.VoiceChannelDeleteEvent;
 import net.dv8tion.jda.managers.AudioManager;
@@ -51,7 +52,10 @@ public class ChannelDeleteHandler extends SocketHandler
                 ((UserImpl) user).setPrivateChannel(null);
             }
             api.getPmChannelMap().remove(content.getString("id"));
-            //TODO: PrivateChannelDeleteEvent
+            api.getEventManager().handle(
+                    new PrivateChannelDeleteEvent(
+                            api, responseNumber,
+                            user));
             return null;
         }
 

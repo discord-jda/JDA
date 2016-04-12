@@ -169,9 +169,16 @@ public class PrivateChannelImpl implements PrivateChannel
         thread.start();
     }
 
+    @Override
     public void sendTyping()
     {
         api.getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + getId() + "/typing", new JSONObject());
+    }
+
+    @Override
+    public void close()
+    {
+        api.getRequester().delete(Requester.DISCORD_API_PREFIX + "channels/" + getId());
     }
 
     @Override

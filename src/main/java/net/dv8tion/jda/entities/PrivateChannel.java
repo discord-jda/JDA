@@ -47,4 +47,11 @@ public interface PrivateChannel extends MessageChannel
      *      the corresponding JDA instance
      */
     JDA getJDA();
+
+    /**
+     * Closes a PrivateChannel. After being closed successfully the PrivateChannel is removed from the JDA mapping.<br>
+     * As a note, this does not remove the history of the PrivateChannel. If the channel is reoppened the history will
+     * still be present.
+     */
+    void close();
 }
