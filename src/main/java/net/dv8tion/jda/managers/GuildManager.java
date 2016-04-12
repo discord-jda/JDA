@@ -723,7 +723,6 @@ public class GuildManager
      * Leaves this {@link net.dv8tion.jda.entities.Guild Guild}.
      * If the logged in {@link net.dv8tion.jda.entities.User User} is the owner of
      * this {@link net.dv8tion.jda.entities.Guild Guild}, this method will throw an {@link net.dv8tion.jda.exceptions.PermissionException PermissionException}.
-     * If you want to delete the Guild instead, use {@link GuildManager#delete()}.
      * This change will be applied immediately.
      *
      * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
