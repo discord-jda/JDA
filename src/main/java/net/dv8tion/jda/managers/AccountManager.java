@@ -112,8 +112,6 @@ public class AccountManager
      */
     public void update()
     {
-        try
-        {
             JSONObject object = new JSONObject();
             object.put("avatar", avatar == null ? api.getSelfInfo().getAvatarId() : (avatar == AvatarUtil.DELETE_AVATAR ? JSONObject.NULL : avatar.getEncoded()));
             object.put("username", username == null ? api.getSelfInfo().getUsername() : username);
@@ -122,17 +120,13 @@ public class AccountManager
 
             if (result == null || !result.has("token"))
             {
-                throw new Exception("Something went wrong while changing the account settings.");
+                throw new RuntimeException("Something went wrong while changing the account settings.");
             }
 
             api.setAuthToken(result.getString("token"));
 
             this.avatar = null;
             this.username = null;
-        } catch (Exception e)
-        {
-            JDAImpl.LOG.log(e);
-        }
     }
 
     private void updateStatusAndGame()
