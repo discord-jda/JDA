@@ -26,6 +26,7 @@ import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -186,6 +187,15 @@ public class MessageImpl implements Message
             JDAImpl.LOG.log(ex);
             return null;
         }
+    }
+
+    @Override
+    public void updateMessageAsync(String newContent, Consumer<Message> callback)
+    {
+        if (api.getSelfInfo() != getAuthor())
+            throw new UnsupportedOperationException("Attempted to update message that was not sent by this account. You cannot modify other User's messages!");
+        Message newMessage = new MessageImpl(getId(), api).setContent(newContent).setChannelId(getChannelId());
+        TextChannelImpl.AsyncMessageSender.getInstance(api).enqueue(newMessage, true, callback);
     }
 
     @Override

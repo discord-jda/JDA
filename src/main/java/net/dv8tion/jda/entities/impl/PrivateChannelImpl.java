@@ -111,7 +111,7 @@ public class PrivateChannelImpl implements PrivateChannel
     public void sendMessageAsync(Message msg, Consumer<Message> callback)
     {
         ((MessageImpl) msg).setChannelId(getId());
-        TextChannelImpl.AsyncMessageSender.getInstance(getJDA()).enqueue(msg, callback);
+        TextChannelImpl.AsyncMessageSender.getInstance(getJDA()).enqueue(msg, false, callback);
     }
 
     @Override

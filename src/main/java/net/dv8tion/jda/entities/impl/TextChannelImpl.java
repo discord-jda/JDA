@@ -192,7 +192,7 @@ public class TextChannelImpl implements TextChannel
             throw new PermissionException(Permission.MESSAGE_WRITE);
 
         ((MessageImpl) msg).setChannelId(getId());
-        AsyncMessageSender.getInstance(getJDA()).enqueue(msg, callback);
+        AsyncMessageSender.getInstance(getJDA()).enqueue(msg, false, callback);
     }
 
     @Override
@@ -393,11 +393,16 @@ public class TextChannelImpl implements TextChannel
             return instances.get(api);
         }
 
-        private final Queue<AbstractMap.SimpleImmutableEntry<Message, Consumer<Message>>> queue = new LinkedList<>();
+        private final Queue<Task> queue = new LinkedList<>();
 
-        public synchronized void enqueue(Message msg, Consumer<Message> callback)
+        public synchronized void enqueue(Message msg, boolean isEdit, Consumer<Message> callback)
         {
-            queue.add(new AbstractMap.SimpleImmutableEntry<>(msg, callback));
+            enqueue(new Task(msg, isEdit, callback));
+        }
+
+        public synchronized void enqueue(Task task)
+        {
+            queue.add(task);
             if (runner == null)
             {
                 runnerRunning = true;
@@ -424,11 +429,25 @@ public class TextChannelImpl implements TextChannel
             }
         }
 
-        private synchronized Queue<AbstractMap.SimpleImmutableEntry<Message, Consumer<Message>>> getQueue()
+        private synchronized Queue<Task> getQueue()
         {
-            LinkedList<AbstractMap.SimpleImmutableEntry<Message, Consumer<Message>>> copy = new LinkedList<>(queue);
+            Queue<Task> copy = new LinkedList<>(queue);
             queue.clear();
             return copy;
+        }
+
+        public static class Task
+        {
+            public final Message message;
+            public final boolean isEdit;
+            public final Consumer<Message> callback;
+
+            public Task(Message message, boolean isEdit, Consumer<Message> callback)
+            {
+                this.message = message;
+                this.isEdit = isEdit;
+                this.callback = callback;
+            }
         }
 
         private static class Runner extends Thread
@@ -445,7 +464,7 @@ public class TextChannelImpl implements TextChannel
             {
                 while (true)
                 {
-                    Queue<AbstractMap.SimpleImmutableEntry<Message, Consumer<Message>>> queue = sender.getQueue();
+                    Queue<Task> queue = sender.getQueue();
                     while (!queue.isEmpty())
                     {
                         Long messageLimit = sender.api.getMessageLimit();
@@ -460,24 +479,41 @@ public class TextChannelImpl implements TextChannel
                                 JDAImpl.LOG.log(e);
                             }
                         }
-                        AbstractMap.SimpleImmutableEntry<Message, Consumer<Message>> peek = queue.peek();
-                        Requester.Response response = sender.api.getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + peek.getKey().getChannelId() + "/messages",
-                                new JSONObject().put("content", peek.getKey().getRawContent()).put("tts", peek.getKey().isTTS()));
+                        Task task = queue.peek();
+                        Message msg = task.message;
+                        Requester.Response response;
+                        if(task.isEdit)
+                        {
+                            response = sender.api.getRequester().patch(Requester.DISCORD_API_PREFIX + "channels/" + msg.getChannelId() + "/messages/" + msg.getId(),
+                                    new JSONObject().put("content", msg.getRawContent()));
+                        }
+                        else
+                        {
+                            response = sender.api.getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + msg.getChannelId() + "/messages",
+                                    new JSONObject().put("content", msg.getRawContent()).put("tts", msg.isTTS()));
+                        }
                         if (response.responseText == null)
                         {
                             JDAImpl.LOG.debug("Error sending async-message (returned null-text)... Retrying after 1s");
                             sender.api.setMessageTimeout(1000);
                         }
-                        else if (!response.isRateLimit())   //success
+                        else if (!response.isRateLimit())   //success/unrecoverable error
                         {
                             queue.poll();//remove from queue
-                            if (peek.getValue() != null)
+                            if (task.callback != null)
                             {
                                 try
                                 {
-                                    //if response didn't have id, sending failed (due to permission/blocked pm,...
-                                    peek.getValue().accept(
-                                            response.isOk() ? new EntityBuilder(sender.api).createMessage(response.getObject()) : null);
+                                    if (response.isOk())
+                                    {
+                                        task.callback.accept(new EntityBuilder(sender.api).createMessage(response.getObject()));
+                                    }
+                                    else
+                                    {
+                                        //if response didn't have id, sending failed (due to permission/blocked pm,...
+                                        JDAImpl.LOG.fatal("Could not send/update async message. Discord-response: " + response.toString());
+                                        task.callback.accept(null);
+                                    }
                                 }
                                 catch (JSONException ex)
                                 {
