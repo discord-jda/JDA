@@ -17,6 +17,14 @@ JDA jda = new JDABuilder("email", "password").buildBlocking();
 JDA jda = new JDABuilder().setEmail("email").setPassword("password").buildBlocking();
 ```
 
+If the account that you intend on using is registered as a bot account (eg it has a BOT tag), you must provide the bot token instead of the email and password.
+
+```java
+JDA jda = new JDABuilder().setBotToken("token").buildBlocking();
+```
+
+Please see the [Discord docs](https://discordapp.com/developers/docs/reference) for more information about bot accounts.
+
 ## Events
 There a TON of events in JDA that you can listen to.<br>
 There are 2 ways of writing your Event-Listener:
