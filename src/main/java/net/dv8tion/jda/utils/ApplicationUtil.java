@@ -237,6 +237,20 @@ public class ApplicationUtil
             }
         }
 
+        @Override
+        public int hashCode()
+        {
+            return id.hashCode();
+        }
+
+        @Override
+        public String toString()
+        {
+            return "Application[" + name + '(' + id + ')'
+                    + (hasBot() ? ' ' + getBot().toString() : "")
+                    + ']';
+        }
+
         public class Bot {
             private String name;
             private String discrim;
@@ -286,6 +300,18 @@ public class ApplicationUtil
             public String getAuthInvite(Permission... perms)
             {
                 return ApplicationUtil.getAuthInvite(id, perms);
+            }
+
+            @Override
+            public int hashCode()
+            {
+                return id.hashCode();
+            }
+
+            @Override
+            public String toString()
+            {
+                return "Bot[" + name + '(' + id + ")]";
             }
         }
     }
