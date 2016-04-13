@@ -17,14 +17,11 @@ package net.dv8tion.jda.entities;
 
 /**
  * Represents a Discord Voice Channel.
- *
- * Place holder for now until we implement voice support.
+ * As a VoiceChannel has no extra functionality as its {@link net.dv8tion.jda.entities.Channel Channel} parent,
+ * this interface is empty.
+ * This interface only exists to distinct {@link net.dv8tion.jda.entities.Channel Channels} into
+ * VoiceChannels and {@link net.dv8tion.jda.entities.TextChannel TextChannels}.
  */
 public interface VoiceChannel extends Channel
 {
-    /**
-     * Internal implementation of this class is available at
-     * {@link net.dv8tion.jda.entities.impl.VoiceChannelImpl TextChannelImpl}.<br>
-     * Note: Internal implementation should not be used directly.
-     */
 }
