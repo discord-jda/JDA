@@ -16,10 +16,7 @@
 package net.dv8tion.jda.hooks;
 
 import net.dv8tion.jda.events.*;
-import net.dv8tion.jda.events.audio.AudioConnectEvent;
-import net.dv8tion.jda.events.audio.AudioDisconnectEvent;
-import net.dv8tion.jda.events.audio.AudioTimeoutEvent;
-import net.dv8tion.jda.events.audio.GenericAudioEvent;
+import net.dv8tion.jda.events.audio.*;
 import net.dv8tion.jda.events.channel.priv.PrivateChannelCreateEvent;
 import net.dv8tion.jda.events.channel.text.*;
 import net.dv8tion.jda.events.channel.voice.*;
@@ -122,6 +119,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onAudioConnect(AudioConnectEvent event) {}
     public void onAudioDisconnect(AudioDisconnectEvent event) {}
     public void onAudioTimeout(AudioTimeoutEvent event) {}
+    public void onAudioRegionChange(AudioRegionChangeEvent event) {}
 
     //Generic Events
     public void onGenericUserEvent(GenericUserEvent event) {}
@@ -290,6 +288,8 @@ public abstract class ListenerAdapter implements EventListener
             onAudioDisconnect((AudioDisconnectEvent) event);
         else if (event instanceof AudioTimeoutEvent)
             onAudioTimeout((AudioTimeoutEvent) event);
+        else if (event instanceof AudioRegionChangeEvent)
+            onAudioRegionChange((AudioRegionChangeEvent) event);
 
         //Grouped Mute/Deaf events
         if (event instanceof VoiceMuteEvent)
