@@ -189,8 +189,11 @@ public class ApplicationUtil
             {
                 throw new RuntimeException("Can't create a 2nd Bot for this Application!");
             }
-
+            String tokenSave = api.getAuthToken();
+            api.setAuthToken(null);
             String botToken = login(email, password);
+            api.setAuthToken(tokenSave);
+
             Requester.Response response = api.getRequester().post(Requester.DISCORD_API_PREFIX + "oauth2/applications/" + id + "/bot",
                     new JSONObject().put("token", botToken));
             if (response.isOk())
