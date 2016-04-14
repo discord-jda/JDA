@@ -21,6 +21,8 @@ import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.audio.AudioDisconnectEvent;
+import net.dv8tion.jda.events.audio.AudioRegionChangeEvent;
+import net.dv8tion.jda.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.utils.SimpleLog;
 import org.apache.http.HttpHost;
 import org.json.JSONArray;
@@ -216,7 +218,7 @@ public class AudioWebSocket extends WebSocketAdapter
             LOG.debug("Reason: " + serverCloseFrame.getCloseReason());
             LOG.debug("Close code: " + serverCloseFrame.getCloseCode());
         }
-        this.close();
+        this.close(true);
     }
 
     @Override
@@ -231,19 +233,22 @@ public class AudioWebSocket extends WebSocketAdapter
         LOG.log(cause);
     }
 
-    public void close()
+    public void close(boolean regionChange)
     {
         connected = false;
         ready = false;
-        JSONObject obj = new JSONObject()
-                .put("op", 4)
-                .put("d", new JSONObject()
-                        .put("guild_id", guild.getId())
-                        .put("channel_id", JSONObject.NULL)
-                        .put("self_mute", false)
-                        .put("self_deaf", false)
-                );
-        api.getClient().send(obj.toString());
+        if (!regionChange)
+        {
+            JSONObject obj = new JSONObject()
+                    .put("op", 4)
+                    .put("d", new JSONObject()
+                            .put("guild_id", guild.getId())
+                            .put("channel_id", JSONObject.NULL)
+                            .put("self_mute", false)
+                            .put("self_deaf", false)
+                    );
+            api.getClient().send(obj.toString());
+        }
         if (keepAliveThread != null)
         {
             keepAliveThread.interrupt();
@@ -258,9 +263,14 @@ public class AudioWebSocket extends WebSocketAdapter
             udpSocket.close();
         if (socket != null)
             socket.sendClose(1000);
-        VoiceChannel disconnectedChannel = guild.getAudioManager().getConnectedChannel();
-        guild.getAudioManager().setAudioConnection(null);
-        api.getEventManager().handle(new AudioDisconnectEvent(api, disconnectedChannel));
+
+        AudioManagerImpl manager = (AudioManagerImpl) guild.getAudioManager();
+        VoiceChannel disconnectedChannel = manager.getConnectedChannel();
+        manager.setAudioConnection(null);
+        if (regionChange)
+            api.getEventManager().handle(new AudioRegionChangeEvent(api, disconnectedChannel));
+        else
+            api.getEventManager().handle(new AudioDisconnectEvent(api, disconnectedChannel));
     }
 
     public DatagramSocket getUdpSocket()
@@ -378,7 +388,7 @@ public class AudioWebSocket extends WebSocketAdapter
                         LOG.warn("Closing AudioConnection due to inability to ping audio packets.");
                         LOG.warn("Cannot send audio packet because JDA navigate the route to Discord.\n" +
                                 "Are you sure you have internet connection? It is likely that you've lost connection.");
-                        AudioWebSocket.this.close();
+                        AudioWebSocket.this.close(true);
                         break;
                     }
                     catch (IOException e)

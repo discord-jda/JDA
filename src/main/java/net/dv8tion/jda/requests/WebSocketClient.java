@@ -423,7 +423,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     new VoiceChangeHandler(api, responseTotal).handle(raw);
                     break;
                 case "VOICE_SERVER_UPDATE":
-                    new VoiceServerUpdateHandler(api, responseTotal).handle(raw);
+                    if (api.isAudioEnabled())
+                        new VoiceServerUpdateHandler(api, responseTotal).handle(raw);
+                    else
+                        LOG.debug("Received VOICE_SERVER_UPDATE event but ignoring due to audio being disabled/not supported.");
                     break;
                 case "CHANNEL_CREATE":
                     new ChannelCreateHandler(api, responseTotal).handle(raw);

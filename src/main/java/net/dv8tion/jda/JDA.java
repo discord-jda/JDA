@@ -306,6 +306,14 @@ public interface JDA
     boolean isAutoReconnect();
 
     /**
+     * Used to determine whether the instance of JDA supports audio and has it enabled.
+     *
+     * @return
+     *      True if JDA can currently utalize the audio system.
+     */
+    boolean isAudioEnabled();
+
+    /**
      * Shuts down JDA, closing all its connections.
      * After this command is issued the JDA Instance can not be used anymore.
      * This will also close the background-thread used for requests (which is required for further api calls of other JDA instances).

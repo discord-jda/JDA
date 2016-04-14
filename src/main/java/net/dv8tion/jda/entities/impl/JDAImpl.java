@@ -27,6 +27,7 @@ import net.dv8tion.jda.hooks.SubscribeEvent;
 import net.dv8tion.jda.managers.AccountManager;
 import net.dv8tion.jda.managers.AudioManager;
 import net.dv8tion.jda.managers.GuildManager;
+import net.dv8tion.jda.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.requests.Requester;
 import net.dv8tion.jda.requests.WebSocketClient;
 import net.dv8tion.jda.utils.SimpleLog;
@@ -60,7 +61,7 @@ public class JDAImpl implements JDA
     private final Map<String, PrivateChannel> pmChannelMap = new HashMap<>();
     private final Map<String, String> offline_pms = new HashMap<>();    //Userid -> channelid
     private final Map<Guild, AudioManager> audioManagers = new HashMap<>();
-    private final boolean enableAudio;
+    private final boolean audioEnabled;
     private IEventManager eventManager = new InterfacedEventManager();
     private SelfInfo selfInfo = null;
     private AccountManager accountManager;
@@ -74,9 +75,10 @@ public class JDAImpl implements JDA
     public JDAImpl(boolean enableAudio)
     {
         proxy = null;
-        this.enableAudio = enableAudio;
         if (enableAudio)
-            AudioManager.init();
+            this.audioEnabled = AudioManagerImpl.init();
+        else
+            this.audioEnabled = false;
     }
 
     public JDAImpl(String proxyUrl, int proxyPort, boolean enableAudio)
@@ -85,9 +87,10 @@ public class JDAImpl implements JDA
             throw new IllegalArgumentException("The provided proxy settings cannot be used to make a proxy. Settings: URL: '" + proxyUrl + "'  Port: " + proxyPort);
         proxy = new HttpHost(proxyUrl, proxyPort);
         Unirest.setProxy(proxy);
-        this.enableAudio = enableAudio;
         if (enableAudio)
-            AudioManager.init();
+            this.audioEnabled = AudioManagerImpl.init();
+        else
+            this.audioEnabled = false;
     }
 
     /**
@@ -402,6 +405,12 @@ public class JDAImpl implements JDA
     }
 
     @Override
+    public boolean isAudioEnabled()
+    {
+        return audioEnabled;
+    }
+
+    @Override
     public void shutdown()
     {
         shutdown(true);
@@ -441,13 +450,13 @@ public class JDAImpl implements JDA
     @Override
     public synchronized AudioManager getAudioManager(Guild guild)
     {
-        if (!enableAudio)
+        if (!audioEnabled)
             throw new IllegalStateException("Audio is disabled. Cannot retrieve an AudioManager while audio is disabled.");
 
         AudioManager manager = audioManagers.get(guild);
         if (manager == null)
         {
-            manager = new AudioManager(guild);
+            manager = new AudioManagerImpl(guild);
             audioManagers.put(guild, manager);
         }
         return manager;
