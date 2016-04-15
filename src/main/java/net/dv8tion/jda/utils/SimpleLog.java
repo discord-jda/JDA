@@ -148,7 +148,7 @@ public class SimpleLog
         }
     }
 
-    private final String name;
+    public final String name;
     private Level level = null;
 
     private SimpleLog(String name) {
