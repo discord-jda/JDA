@@ -18,9 +18,7 @@ package net.dv8tion.jda.utils;
 import javax.swing.*;
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class SimpleLog
 {
@@ -39,6 +37,7 @@ public class SimpleLog
     private static final SimpleDateFormat DFORMAT = new SimpleDateFormat("HH:mm:ss");
 
     private static final Map<String, SimpleLog> LOGS = new HashMap<>();
+    private static final Set<LogListener> listeners = new HashSet<>();
 
     /**
      * Will get the LOG with the given LOG-name or create one if it didn't exist
@@ -125,6 +124,30 @@ public class SimpleLog
         }
     }
 
+    /**
+     * Adds a custom Listener that receives all logs
+     * @param listener the listener to add
+     */
+    public static void addListener(LogListener listener)
+    {
+        synchronized (listeners)
+        {
+            listeners.add(listener);
+        }
+    }
+
+    /**
+     * Removes a custom Listener
+     * @param listener the listener to remove
+     */
+    public static void removeListener(LogListener listener)
+    {
+        synchronized (listeners)
+        {
+            listeners.remove(listener);
+        }
+    }
+
     private final String name;
     private Level level = null;
 
@@ -172,6 +195,13 @@ public class SimpleLog
      * @param msg   The message to LOG
      */
     public void log(Level level, Object msg) {
+        synchronized (listeners)
+        {
+            for (LogListener listener : listeners)
+            {
+                listener.onLog(this, level, msg);
+            }
+        }
         if(level.getPriority() < ((this.level == null) ? SimpleLog.LEVEL.getPriority() : this.level.getPriority())) {
             return;
         }
@@ -185,6 +215,13 @@ public class SimpleLog
 
     public void log(Throwable ex)
     {
+        synchronized (listeners)
+        {
+            for (LogListener listener : listeners)
+            {
+                listener.onError(this, ex);
+            }
+        }
         log(Level.FATAL, "Encountered an exception:");
         ex.printStackTrace();
     }
@@ -263,6 +300,33 @@ public class SimpleLog
      */
     public static boolean isConsolePresent() {
         return System.console() != null;
+    }
+
+    /**
+     * This interface has to be able to register (via {@link SimpleLog#addListener(LogListener)}) and listen to log-messages.
+     */
+    public interface LogListener
+    {
+        /**
+         * Called on any incoming log-messages (exception: Throwables).
+         * This is also called on log-messages that would normally not print to console due to log-level.
+         * @param log
+         *      the log this message was sent to
+         * @param logLevel
+         *      the level of the message sent
+         * @param message
+         *      the message as object
+         */
+        void onLog(SimpleLog log, Level logLevel, Object message);
+
+        /**
+         * Called on any incoming error-message (Throwable)
+         * @param log
+         *      the log this error was sent to
+         * @param err
+         *      the error as Throwable
+         */
+        void onError(SimpleLog log, Throwable err);
     }
 
     /**
