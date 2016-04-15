@@ -52,6 +52,13 @@ public class GuildMemberRoleHandler extends SocketHandler
         List<Role> rolesNew = toRolesList(guild, content.getJSONArray("roles"));
         List<Role> rolesOld = guild.getUserRoles().get(user);
 
+        if(rolesOld == null)
+        {
+            //something is fishy...
+            JDAImpl.LOG.warn("Got role-update for user which is not in guild? " + content.toString());
+            return null;
+        }
+
         //Find the roles removed.
         List<Role> removedRoles = new LinkedList<>();
         for (Role role : rolesOld)
