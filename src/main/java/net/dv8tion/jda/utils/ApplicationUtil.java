@@ -27,6 +27,17 @@ import java.util.Set;
 
 public class ApplicationUtil
 {
+    /**
+     * Creates a OAuth invite-link used to invite bot-accounts.
+     * This method does not check if the given application actually has a bot-account assigned.
+     *
+     * @param appId
+     *      The id of the application that owns the bot
+     * @param perms
+     *      Possibly empty list of Permissions that should be requested via invite
+     * @return
+     *      The link used to invite the bot
+     */
     public static String getAuthInvite(String appId, Permission... perms)
     {
         int perm = 0;
@@ -39,12 +50,29 @@ public class ApplicationUtil
 
     private final JDAImpl api;
 
+    /**
+     * Creates a new instance of the ApplicationUtil class.
+     * This requires login-informations of the person owning the application(s).
+     * <b>Do not use login-informations of a account you use as bot here.</b>
+     *
+     * @param email
+     *      The email of the owner of the application(s)
+     * @param password
+     *      The email of the owner of the application(s)
+     * @throws LoginException
+     *      When the login-informations were incorrect
+     */
     public ApplicationUtil(String email, String password) throws LoginException
     {
         api = new JDAImpl(false);
         api.setAuthToken(login(email, password));
     }
 
+    /**
+     * Retrieves all already existing Applications for the logged in Account
+     * @return
+     *      A Set of all already existing Applications
+     */
     public Set<Application> getApplications()
     {
         Requester.Response response = api.getRequester().get(Requester.DISCORD_API_PREFIX + "oauth2/applications");
@@ -60,6 +88,13 @@ public class ApplicationUtil
         return apps;
     }
 
+    /**
+     * Retrieves a specific Application of the logged in Account
+     * @param id
+     *      The id of the Application to retrieve
+     * @return
+     *      The requested Application, or null if no Application with that id existed
+     */
     public Application getApplication(String id)
     {
         Requester.Response response = api.getRequester().get(Requester.DISCORD_API_PREFIX + "oauth2/applications/" + id);
@@ -70,6 +105,15 @@ public class ApplicationUtil
         return null;
     }
 
+    /**
+     * Creates a new Application with given name.<br>
+     * Note that an account can have a max of 5 Applications assigned.
+     *
+     * @param appName
+     *      The name of the new Application
+     * @return
+     *      The created Application
+     */
     public Application createApplication(String appName)
     {
         Requester.Response response = api.getRequester().post(Requester.DISCORD_API_PREFIX + "oauth2/applications",
@@ -90,6 +134,9 @@ public class ApplicationUtil
         return response.getObject().getString("token");
     }
 
+    /**
+     * Represents a Application
+     */
     public class Application
     {
         private String id;
@@ -106,16 +153,31 @@ public class ApplicationUtil
             parseFromJson(obj);
         }
 
+        /**
+         * Returns the Id of this Application
+         * @return
+         *      The Id of this Application
+         */
         public String getId()
         {
             return id;
         }
 
+        /**
+         * Returns the name of this Application
+         * @return
+         *      The name of this Application
+         */
         public String getName()
         {
             return name;
         }
 
+        /**
+         * Changes the name of this Application
+         * @param newName
+         *      The new name of this Application
+         */
         public void setName(String newName)
         {
             if(newName == null || newName.trim().length() == 0)
@@ -123,11 +185,21 @@ public class ApplicationUtil
             updateApp(getFrame().put("name", newName));
         }
 
+        /**
+         * Returns the description of this Application
+         * @return
+         *      The description of this Application
+         */
         public String getDescription()
         {
             return description;
         }
 
+        /**
+         * Changes the description of this Application
+         * @param desc
+         *      Not null description of the Application (to remove description pass empty String)
+         */
         public void setDescription(String desc)
         {
             if(desc == null)
@@ -135,36 +207,74 @@ public class ApplicationUtil
             updateApp(getFrame().put("description", desc));
         }
 
+        /**
+         * Returns the Application secret (Used for oAuth)
+         * @return
+         *      The Application secret
+         */
         public String getSecret()
         {
             return secret;
         }
 
+        /**
+         * Returns the iconId of this Application
+         * @return
+         *      The iconId of this Application or null, if no icon is defined
+         */
         public String getIconId()
         {
             return iconId;
         }
 
+        /**
+         * Changes the Icon of this Application.
+         * @param newIcon
+         *      The new icon to use, or null to remove old icon
+         */
         public void setIcon(AvatarUtil.Avatar newIcon)
         {
             updateApp(getFrame().put("icon", (newIcon == null || newIcon == AvatarUtil.DELETE_AVATAR) ? JSONObject.NULL : newIcon.getEncoded()));
         }
 
+        /**
+         * Returns the icon-url of this Application
+         * @return
+         *      The icon-url of this Application or null, if no icon is defined
+         */
         public String getIconUrl()
         {
             return iconId == null ? null : "https://cdn.discordapp.com/app-icons/" + id + '/' + iconId + ".jpg";
         }
 
+        /**
+         * Returns whether or not this Application has a bot-account assigned
+         * @return
+         *      True if this Application has a bot-account assigned, false otherwise
+         */
         public boolean hasBot()
         {
             return bot != null;
         }
 
+        /**
+         * Returns the Bot assigned to this Application
+         * @return
+         *      The Bot assigned to this application, or null if no bot is assigned
+         */
         public Bot getBot()
         {
             return bot;
         }
 
+        /**
+         * Creates a new Bot for this Application.
+         * This is only possible, if no bot-account is already assigned.
+         * The created Bot-account will have its name set to the name of the Application
+         *
+         * @return
+         *      The created Bot
+         */
         public Bot createBot()
         {
             if (hasBot())
@@ -183,6 +293,26 @@ public class ApplicationUtil
             throw new RuntimeException("Error creating a new Bot: " + response.toString());
         }
 
+        /**
+         * Tries to migrate a normal-account to a bot-account and assign it to this Application.
+         * For this to succeed, following must be true:<br>
+         * <ul>
+         *     <li>This Application must not have a bot-account already assigned</li>
+         *     <li>The account to migrate must be a normal account</li>
+         *     <li>The account to migrate must not own Applications itself!</li>
+         * </ul><br>
+         * <b>Note: This is irreversible and will remove the possibility to login with email/password!
+         * Do not migrate an account you want to use in the client! Don't pull a Bastian!</b>
+         *
+         * @param email
+         *      The email of the account to migrate
+         * @param password
+         *      The password of the account to migrate
+         * @return
+         *      The new Bot-account
+         * @throws LoginException
+         *      If the login-credentials were incorrect
+         */
         public Bot migrateBot(String email, String password) throws LoginException
         {
             if (hasBot())
@@ -204,6 +334,18 @@ public class ApplicationUtil
                 return bot;
             }
             throw new RuntimeException("Error creating a new Bot: " + response.toString());
+        }
+
+        /**
+         * Deletes this Application <b>and its assigned Bot (if present)</b>.
+         */
+        public void delete()
+        {
+            Requester.Response response = api.getRequester().delete(Requester.DISCORD_API_PREFIX + "oauth2/applications/" + id);
+            if (!response.isOk())
+            {
+                throw new RuntimeException("Error deleting the application. Error: " + response.toString());
+            }
         }
 
         private void updateApp(JSONObject o)
@@ -254,6 +396,10 @@ public class ApplicationUtil
                     + ']';
         }
 
+        /**
+         * Represents a Bot assigned to an Application
+         * To change its Username, login to JDA and use the {@link net.dv8tion.jda.managers.AccountManager AccountManager}.
+         */
         public class Bot {
             private String name;
             private String discrim;
@@ -270,36 +416,75 @@ public class ApplicationUtil
                 this.avatarId = avatarId;
             }
 
+            /**
+             * Returns the name of this Bot
+             * @return
+             *      The name of this Bot
+             */
             public String getName()
             {
                 return name;
             }
 
+            /**
+             * Returns the discriminator of this Bot
+             * @return
+             *      The discriminator of this Bot
+             */
             public String getDiscrim()
             {
                 return discrim;
             }
 
+            /**
+             * Returns the token used to login to JDA with this Bot
+             * @return
+             *      The login-token of this Bot
+             */
             public String getToken()
             {
                 return token;
             }
 
+            /**
+             * Returns the id of this Bot
+             * @return
+             *      The id of this Bot
+             */
             public String getId()
             {
                 return id;
             }
 
+            /**
+             * Returns the avatarId of this Bot
+             * @return
+             *      The avatarId of this Bot or null, if no avatar is set
+             */
             public String getAvatarId()
             {
                 return avatarId;
             }
 
+            /**
+             * Returns the avatar-url of this Bot
+             * @return
+             *      The avatar-url of this Bot or null, if no avatar is set
+             */
             public String getAvatarUrl()
             {
                 return avatarId == null ? null : "https://cdn.discordapp.com/avatars/" + id + "/" + avatarId + ".jpg";
             }
 
+            /**
+             * Returns the oAuth link used to invite this Bot to a guild.
+             * This is a shortcut to {@link ApplicationUtil#getAuthInvite(String, Permission...)}.
+             *
+             * @param perms
+             *      Possibly empty list of Permissions that should be requested via invite
+             * @return
+             *      The oauth link to invite this Bot
+             */
             public String getAuthInvite(Permission... perms)
             {
                 return ApplicationUtil.getAuthInvite(id, perms);
