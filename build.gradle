@@ -54,6 +54,7 @@ javadoc {
     //### excludes ###
     //jda internals
     exclude("net/dv8tion/jda/entities/impl")
+    exclude("net/dv8tion/jda/managers/impl")
     exclude("net/dv8tion/jda/handle")
     exclude("net/dv8tion/jda/requests")
 
