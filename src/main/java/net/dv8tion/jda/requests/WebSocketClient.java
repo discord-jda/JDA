@@ -16,9 +16,15 @@
 package net.dv8tion.jda.requests;
 
 import com.neovisionaries.ws.client.*;
+import net.dv8tion.jda.audio.AudioReceiveHandler;
+import net.dv8tion.jda.audio.AudioSendHandler;
+import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.*;
 import net.dv8tion.jda.handle.*;
+import net.dv8tion.jda.managers.AudioManager;
+import net.dv8tion.jda.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.utils.SimpleLog;
 import org.apache.http.HttpHost;
 import org.json.JSONArray;
@@ -28,6 +34,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.time.OffsetDateTime;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +61,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     private boolean shouldReconnect = true;
     private int reconnectTimeoutS = 2;
+
+    private final List<VoiceChannel> dcAudioConnections = new LinkedList<>();
+    private final Map<String, AudioSendHandler> audioSendHandlers = new HashMap<>();
+    private final Map<String, AudioReceiveHandler> audioReceivedHandlers = new HashMap<>();
 
     private boolean firstInit = true;
 
@@ -95,12 +106,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             }
             else
             {
+                restoreAudioHandlers();
+                reconnectAudioConnections();
                 JDAImpl.LOG.info("Finished (Re)Loading!");
                 api.getEventManager().handle(new ReconnectedEvent(api, api.getResponseTotal()));
             }
         }
         else
         {
+            reconnectAudioConnections();
             JDAImpl.LOG.info("Successfully resumed Session!");
             api.getEventManager().handle(new ResumedEvent(api, api.getResponseTotal()));
         }
@@ -212,11 +226,27 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 LOG.info("Reason: " + serverCloseFrame.getCloseReason());
                 LOG.info("Close code: " + serverCloseFrame.getCloseCode());
             }
-            api.getEventManager().handle(new ShutdownEvent(api, OffsetDateTime.now()));
+            api.getEventManager().handle(new ShutdownEvent(api, OffsetDateTime.now(), dcAudioConnections));
         }
         else
         {
-            api.getEventManager().handle(new DisconnectEvent(api, serverCloseFrame, clientCloseFrame, closedByServer, OffsetDateTime.now()));
+            for (AudioManager mng : api.getAudioManagersMap().values())
+            {
+                AudioManagerImpl mngImpl = (AudioManagerImpl) mng;
+                VoiceChannel channel = null;
+                if (mngImpl.isConnected())
+                    channel = mng.getConnectedChannel();
+                else if (mngImpl.isAttemptingToConnect())
+                    channel = mng.getQueuedAudioConnection();
+                else if (mngImpl.wasUnexpectedlyDisconnected())
+                    channel = mngImpl.getUnexpectedDisconnectedChannel();
+
+                if (channel != null)
+                {
+                    dcAudioConnections.add(channel);
+                }
+            }
+            api.getEventManager().handle(new DisconnectEvent(api, serverCloseFrame, clientCloseFrame, closedByServer, OffsetDateTime.now(), dcAudioConnections));
             reconnect();
         }
     }
@@ -342,7 +372,21 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     private void invalidate()
     {
         sessionId = null;
+
+        //Preserve the audio handlers through registry invalidation
+        api.getAudioManagersMap().values().forEach(
+            mng ->
+            {
+                String guildId = mng.getGuild().getId();
+                if (mng.getSendingHandler() != null)
+                    audioSendHandlers.put(guildId, mng.getSendingHandler());
+                if (mng.getReceiveHandler() != null)
+                    audioReceivedHandlers.put(guildId, mng.getReceiveHandler());
+            }
+        );
+
         //clearing the registry...
+        api.getAudioManagersMap().clear();
         api.getChannelMap().clear();
         api.getVoiceChannelMap().clear();
         api.getGuildMap().clear();
@@ -350,6 +394,96 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         api.getPmChannelMap().clear();
         api.getOffline_pms().clear();
         GuildLock.get(api).clear();
+    }
+
+    private void restoreAudioHandlers()
+    {
+        LOG.trace("Restoring cached AudioHandlers.");
+
+        audioSendHandlers.forEach((guildId, handler) ->
+        {
+            Guild guild = api.getGuildMap().get(guildId);
+            if (guild != null)
+            {
+                AudioManager mng = api.getAudioManager(guild);
+                mng.setSendingHandler(handler);
+            }
+            else
+            {
+                LOG.warn("Could not restore an AudioSendHandler after reconnect due to the Guild it was connected to " +
+                        "no longer existing in JDA's registry. Guild Id: " + guildId);
+            }
+        });
+
+        audioReceivedHandlers.forEach((guildId, handler) ->
+        {
+            Guild guild = api.getGuildMap().get(guildId);
+            if (guild != null)
+            {
+                AudioManager mng = api.getAudioManager(guild);
+                mng.setReceivingHandler(handler);
+            }
+            else
+            {
+                LOG.warn("Could not restore an AudioReceiveHandler after reconnect due to the Guild it was connected to " +
+                        "no longer existing in JDA's registry. Guild Id: " + guildId);
+            }
+        });
+        audioSendHandlers.clear();
+        audioReceivedHandlers.clear();
+        LOG.trace("Finished restoring cached AudioHandlers");
+    }
+
+    private void reconnectAudioConnections()
+    {
+        if (dcAudioConnections.size() == 0)
+            return;
+
+        LOG.trace("Cleaning up previous Audio Connections.");
+        for (VoiceChannel chan : dcAudioConnections)
+        {
+            JSONObject obj = new JSONObject()
+                    .put("op", 4)
+                    .put("d", new JSONObject()
+                            .put("guild_id", chan.getGuild().getId())
+                            .put("channel_id", JSONObject.NULL)
+                            .put("self_mute", false)
+                            .put("self_deaf", false)
+                    );
+            send(obj.toString());
+        }
+
+        LOG.trace("Attempting to reconnect previous Audio Connections...");
+        for (VoiceChannel chan : dcAudioConnections)
+        {
+            String guildId = chan.getGuild().getId();
+            String chanId = chan.getId();
+
+            Guild guild = api.getGuildMap().get(guildId);
+            if (guild == null)
+            {
+                JDAImpl.LOG.warn("Could not reestablish audio connection during reconnect due to the previous " +
+                        "connection being connected to a Guild that we are no longer connected to. " +
+                        "Guild Id: " + guildId
+                );
+                continue;
+            }
+
+            VoiceChannel channel = api.getVoiceChannelMap().get(chanId);
+            if (channel == null)
+            {
+                JDAImpl.LOG.warn("Could not reestablish audio connection during reconnect due to the previous " +
+                        "connection being connected to a VoiceChannel that no longer exists. " +
+                        "VChannel Id: " + chanId);
+                continue;
+            }
+
+
+            AudioManager manager = api.getAudioManager(guild);
+            manager.openAudioConnection(channel);
+        }
+        LOG.debug("Finished sending packets to reopen previous Audio Connections.");
+        dcAudioConnections.clear();
     }
 
     private void handleEvent(JSONObject raw)

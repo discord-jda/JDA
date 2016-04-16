@@ -17,8 +17,11 @@ package net.dv8tion.jda.events;
 
 import com.neovisionaries.ws.client.WebSocketFrame;
 import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.entities.VoiceChannel;
 
 import java.time.OffsetDateTime;
+import java.util.Collections;
+import java.util.List;
 
 public class DisconnectEvent extends Event
 {
@@ -26,14 +29,17 @@ public class DisconnectEvent extends Event
     protected final WebSocketFrame clientCloseFrame;
     protected final boolean closedByServer;
     protected final OffsetDateTime disconnectTime;
+    protected final List<VoiceChannel> dcAudioConnections;
 
-    public DisconnectEvent(JDA api, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer, OffsetDateTime disconnectTime)
+    public DisconnectEvent(JDA api, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer,
+                           OffsetDateTime disconnectTime, List<VoiceChannel> dcAudioConnections)
     {
         super(api, -1);
         this.serverCloseFrame = serverCloseFrame;
         this.clientCloseFrame = clientCloseFrame;
         this.closedByServer = closedByServer;
         this.disconnectTime = disconnectTime;
+        this.dcAudioConnections = Collections.unmodifiableList(dcAudioConnections);
     }
 
     public WebSocketFrame getServiceCloseFrame()
@@ -54,5 +60,10 @@ public class DisconnectEvent extends Event
     public OffsetDateTime getDisconnectTime()
     {
         return disconnectTime;
+    }
+
+    public List<VoiceChannel> getDisconnectedAudioConnections()
+    {
+        return dcAudioConnections;
     }
 }

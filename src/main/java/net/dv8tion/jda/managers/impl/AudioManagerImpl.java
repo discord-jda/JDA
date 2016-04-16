@@ -43,6 +43,7 @@ public class AudioManagerImpl implements AudioManager
     private final Guild guild;
     private AudioConnection audioConnection = null;
     private VoiceChannel queuedAudioConnection = null;
+    private VoiceChannel unexpectedDisconnectedChannel = null;
 
     private AudioSendHandler sendHandler;
     private AudioReceiveHandler receiveHandler;
@@ -214,6 +215,21 @@ public class AudioManagerImpl implements AudioManager
         this.audioConnection.close(true);
         this.audioConnection = null;
         this.queuedAudioConnection = queuedChannel;
+    }
+
+    public boolean wasUnexpectedlyDisconnected()
+    {
+        return unexpectedDisconnectedChannel != null;
+    }
+
+    public void setUnexpectedDisconnectChannel(VoiceChannel channel)
+    {
+        this.unexpectedDisconnectedChannel = channel;
+    }
+
+    public VoiceChannel getUnexpectedDisconnectedChannel()
+    {
+        return unexpectedDisconnectedChannel;
     }
 
     //Load the Opus library.

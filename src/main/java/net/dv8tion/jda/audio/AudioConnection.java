@@ -135,7 +135,7 @@ public class AudioConnection
 //        setSpeaking(false);
         sendThread.interrupt();
         receiveThread.interrupt();
-        webSocket.close(regionChange);
+        webSocket.close(regionChange, -1);
     }
 
     private void setupSendThread()
@@ -190,7 +190,7 @@ public class AudioConnection
                         LOG.warn("Closing AudioConnection due to inability to send audio packets.");
                         LOG.warn("Cannot send audio packet because JDA navigate the route to Discord.\n" +
                                 "Are you sure you have internet connection? It is likely that you've lost connection.");
-                        webSocket.close(true);
+                        webSocket.close(true, -1);
                     }
                     catch (InterruptedException e)
                     {

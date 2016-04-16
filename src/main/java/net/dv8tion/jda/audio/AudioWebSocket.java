@@ -56,6 +56,7 @@ public class AudioWebSocket extends WebSocketAdapter
     public WebSocket socket;
     private String endpoint;
     private String wssEndpoint;
+    private boolean shutdown;
 
     private int ssrc;
     private String sessionId;
@@ -218,7 +219,14 @@ public class AudioWebSocket extends WebSocketAdapter
             LOG.debug("Reason: " + serverCloseFrame.getCloseReason());
             LOG.debug("Close code: " + serverCloseFrame.getCloseCode());
         }
-        this.close(true);
+        if (clientCloseFrame != null)
+        {
+            LOG.debug("ClientReason: " + clientCloseFrame.getCloseReason());
+            LOG.debug("ClientCode: " + clientCloseFrame.getCloseCode());
+            this.close(false, clientCloseFrame.getCloseCode());
+        }
+        else
+            this.close(false, -1);
     }
 
     @Override
@@ -233,10 +241,14 @@ public class AudioWebSocket extends WebSocketAdapter
         LOG.log(cause);
     }
 
-    public void close(boolean regionChange)
+    public void close(boolean regionChange, int disconnectCode)
     {
+        //Makes sure we don't run this method again after the socket.close(1000) call fires onDisconnect
+        if (shutdown)
+            return;
         connected = false;
         ready = false;
+        shutdown = true;
         if (!regionChange)
         {
             JSONObject obj = new JSONObject()
@@ -261,7 +273,7 @@ public class AudioWebSocket extends WebSocketAdapter
         }
         if (udpSocket != null)
             udpSocket.close();
-        if (socket != null)
+        if (socket != null && socket.isOpen())
             socket.sendClose(1000);
 
         AudioManagerImpl manager = (AudioManagerImpl) guild.getAudioManager();
@@ -271,6 +283,12 @@ public class AudioWebSocket extends WebSocketAdapter
             api.getEventManager().handle(new AudioRegionChangeEvent(api, disconnectedChannel));
         else
             api.getEventManager().handle(new AudioDisconnectEvent(api, disconnectedChannel));
+
+        if (disconnectCode == 1008) //Internal WS code meaning the frame reading was interupted, in this case, by timeout.
+        {
+            LOG.warn("Unexpected disconnect of Audio Connection to guild: " + guild.getId());
+            manager.setUnexpectedDisconnectChannel(disconnectedChannel);
+        }
     }
 
     public DatagramSocket getUdpSocket()
@@ -388,7 +406,7 @@ public class AudioWebSocket extends WebSocketAdapter
                         LOG.warn("Closing AudioConnection due to inability to ping audio packets.");
                         LOG.warn("Cannot send audio packet because JDA navigate the route to Discord.\n" +
                                 "Are you sure you have internet connection? It is likely that you've lost connection.");
-                        AudioWebSocket.this.close(true);
+                        AudioWebSocket.this.close(true, -1);
                         break;
                     }
                     catch (IOException e)
