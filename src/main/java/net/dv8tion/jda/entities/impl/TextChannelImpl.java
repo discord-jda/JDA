@@ -147,6 +147,7 @@ public class TextChannelImpl implements TextChannel
     @Override
     public Message sendMessage(Message msg)
     {
+        ((GuildImpl) guild).checkVerification();
         SelfInfo self = getJDA().getSelfInfo();
         if (!checkPermission(self, Permission.MESSAGE_WRITE))
             throw new PermissionException(Permission.MESSAGE_WRITE);
@@ -187,6 +188,7 @@ public class TextChannelImpl implements TextChannel
     @Override
     public void sendMessageAsync(Message msg, Consumer<Message> callback)
     {
+        ((GuildImpl) guild).checkVerification();
         SelfInfo self = getJDA().getSelfInfo();
         if (!checkPermission(self, Permission.MESSAGE_WRITE))
             throw new PermissionException(Permission.MESSAGE_WRITE);
@@ -198,6 +200,7 @@ public class TextChannelImpl implements TextChannel
     @Override
     public Message sendFile(File file, Message message)
     {
+        ((GuildImpl) guild).checkVerification();
         if (!checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_WRITE))
             throw new PermissionException(Permission.MESSAGE_WRITE);
         if (!checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_ATTACH_FILES))
@@ -244,6 +247,7 @@ public class TextChannelImpl implements TextChannel
     @Override
     public void sendFileAsync(File file, Message message, Consumer<Message> callback)
     {
+        ((GuildImpl) guild).checkVerification();
         if (!checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_WRITE))
             throw new PermissionException(Permission.MESSAGE_WRITE);
         if (!checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_ATTACH_FILES))

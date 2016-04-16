@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.entities;
 
+import net.dv8tion.jda.exceptions.VerificationLevelException;
+
 import java.io.File;
 import java.util.function.Consumer;
 
@@ -42,6 +44,9 @@ public interface MessageChannel
      *      not have {@link net.dv8tion.jda.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}.
      * @throws net.dv8tion.jda.exceptions.BlockedException
      *      If this is a {@link net.dv8tion.jda.entities.PrivateChannel PrivateChannel} and PMs are blocked
+     * @throws VerificationLevelException
+     *      If this is a {@link net.dv8tion.jda.entities.TextChannel TextChannel}
+     *      and you do not meet the required verification-level of the guild.
      */
     Message sendMessage(String text);
 
@@ -64,7 +69,9 @@ public interface MessageChannel
      *      not have {@link net.dv8tion.jda.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}.
      * @throws net.dv8tion.jda.exceptions.BlockedException
      *      If this is a {@link net.dv8tion.jda.entities.PrivateChannel PrivateChannel} and PMs are blocked
-     *
+     * @throws VerificationLevelException
+     *      If this is a {@link net.dv8tion.jda.entities.TextChannel TextChannel}
+     *      and you do not meet the required verification-level of the guild.
      */
     Message sendMessage(Message msg);
 
@@ -81,6 +88,9 @@ public interface MessageChannel
      * @throws net.dv8tion.jda.exceptions.PermissionException
      *      If this is a {@link net.dv8tion.jda.entities.TextChannel TextChannel} and the logged in account does
      *      not have {@link net.dv8tion.jda.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}.
+     * @throws VerificationLevelException
+     *      If this is a {@link net.dv8tion.jda.entities.TextChannel TextChannel}
+     *      and you do not meet the required verification-level of the guild.
      */
     void sendMessageAsync(String msg, Consumer<Message> callback);
 
@@ -99,6 +109,9 @@ public interface MessageChannel
      * @throws net.dv8tion.jda.exceptions.PermissionException
      *      If this is a {@link net.dv8tion.jda.entities.TextChannel TextChannel} and the logged in account does
      *      not have {@link net.dv8tion.jda.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}.
+     * @throws VerificationLevelException
+     *      If this is a {@link net.dv8tion.jda.entities.TextChannel TextChannel}
+     *      and you do not meet the required verification-level of the guild.
      */
     void sendMessageAsync(Message msg, Consumer<Message> callback);
 
@@ -128,6 +141,9 @@ public interface MessageChannel
      *              not have {@link net.dv8tion.jda.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}.
      *          </li>
      *      </ul>
+     * @throws VerificationLevelException
+     *      If this is a {@link net.dv8tion.jda.entities.TextChannel TextChannel}
+     *      and you do not meet the required verification-level of the guild.
      */
     Message sendFile(File file, Message message);
 
@@ -154,6 +170,9 @@ public interface MessageChannel
      *              not have {@link net.dv8tion.jda.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}.
      *          </li>
      *      </ul>
+     * @throws VerificationLevelException
+     *      If this is a {@link net.dv8tion.jda.entities.TextChannel TextChannel}
+     *      and you do not meet the required verification-level of the guild.
      */
     void sendFileAsync(File file, Message message, Consumer<Message> callback);
 

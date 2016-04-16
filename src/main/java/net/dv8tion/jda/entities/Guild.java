@@ -298,8 +298,8 @@ public interface Guild
      * The Verification-Level determines what requirement you have to meet to be able to speak in this Guild.<br>
      * None   -&gt; everyone can talk.<br>
      * Low    -&gt; verified email required.<br>
-     * Medium -&gt; you have to be member for at least 5min.<br>
-     * High   -&gt; you have to be member for at least 10min.
+     * Medium -&gt; you have to be member of discord for at least 5min.<br>
+     * High   -&gt; you have to be member of this guild for at least 10min.
      */
     enum VerificationLevel
     {

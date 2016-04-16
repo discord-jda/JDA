@@ -21,6 +21,7 @@ import net.dv8tion.jda.Region;
 import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.exceptions.PermissionException;
+import net.dv8tion.jda.exceptions.VerificationLevelException;
 import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.managers.AudioManager;
 import net.dv8tion.jda.managers.ChannelManager;
@@ -29,10 +30,12 @@ import net.dv8tion.jda.managers.RoleManager;
 import net.dv8tion.jda.requests.Requester;
 import net.dv8tion.jda.utils.InviteUtil;
 import net.dv8tion.jda.utils.InviteUtil.AdvancedInvite;
+import net.dv8tion.jda.utils.MiscUtil;
 import net.dv8tion.jda.utils.PermissionUtil;
 import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 public class GuildImpl implements Guild
@@ -56,6 +59,7 @@ public class GuildImpl implements Guild
     private VerificationLevel verificationLevel;
     private boolean available;
     private GuildManager manager = null;
+    private boolean canSendVerification = false;
 
     public GuildImpl(JDAImpl api, String id)
     {
@@ -376,7 +380,30 @@ public class GuildImpl implements Guild
     public GuildImpl setVerificationLevel(VerificationLevel level)
     {
         this.verificationLevel = level;
+        this.canSendVerification = false;   //recalc on next send
         return this;
+    }
+
+    public void checkVerification()
+    {
+        if(canSendVerification)
+            return;
+        switch (verificationLevel)
+        {
+            case HIGH:
+                if(ChronoUnit.MINUTES.between(getJoinDateForUser(api.getSelfInfo()), OffsetDateTime.now()) < 10)
+                    break;
+            case MEDIUM:
+                if(ChronoUnit.MINUTES.between(MiscUtil.getCreationTime(api.getSelfInfo()), OffsetDateTime.now()) < 5)
+                    break;
+            case LOW:
+                if(!api.getSelfInfo().isVerified())
+                    break;
+            case NONE:
+                canSendVerification = true;
+                return;
+        }
+        throw new VerificationLevelException(verificationLevel);
     }
 
     public GuildImpl setAvailable(boolean available)
