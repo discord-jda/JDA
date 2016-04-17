@@ -84,8 +84,11 @@ public abstract class ListenerAdapter implements EventListener
 
     //Guild Events
     public void onGuildJoin(GuildJoinEvent event) {}
+    public void onUnavailGuildJoined(UnavailableGuildJoinedEvent event) {}
     public void onGuildUpdate(GuildUpdateEvent event) {}
     public void onGuildLeave(GuildLeaveEvent event) {}
+    public void onGuildAvailable(GuildAvailableEvent event) {}
+    public void onGuildUnavailable(GuildUnavailableEvent event) {}
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {}
     public void onGuildMemberLeave(GuildMemberLeaveEvent event) {}
     public void onGuildMemberBan(GuildMemberBanEvent event) {}
@@ -228,10 +231,16 @@ public abstract class ListenerAdapter implements EventListener
         //Guild Events
         else if (event instanceof GuildJoinEvent)
             onGuildJoin((GuildJoinEvent) event);
+        else if (event instanceof UnavailableGuildJoinedEvent)
+            onUnavailGuildJoined((UnavailableGuildJoinedEvent) event);
         else if (event instanceof GuildUpdateEvent)
             onGuildUpdate((GuildUpdateEvent) event);
         else if (event instanceof GuildLeaveEvent)
             onGuildLeave((GuildLeaveEvent) event);
+        else if (event instanceof GuildAvailableEvent)
+            onGuildAvailable((GuildAvailableEvent) event);
+        else if (event instanceof GuildUnavailableEvent)
+            onGuildUnavailable((GuildUnavailableEvent) event);
         else if (event instanceof GuildMemberJoinEvent)
             onGuildMemberJoin((GuildMemberJoinEvent) event);
         else if (event instanceof GuildMemberBanEvent)

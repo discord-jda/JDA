@@ -21,6 +21,7 @@ import net.dv8tion.jda.entities.impl.GuildImpl;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.entities.impl.UserImpl;
 import net.dv8tion.jda.events.guild.GuildLeaveEvent;
+import net.dv8tion.jda.events.guild.GuildUnavailableEvent;
 import net.dv8tion.jda.managers.AudioManager;
 import net.dv8tion.jda.requests.GuildLock;
 import org.json.JSONObject;
@@ -49,7 +50,9 @@ public class GuildLeaveHandler extends SocketHandler
         if (content.has("unavailable") && content.getBoolean("unavailable"))
         {
             ((GuildImpl) guild).setAvailable(false);
-            //TODO: Unavailable-event. Sever audio connection when guild becomes unavailable.
+            api.getEventManager().handle(
+                    new GuildUnavailableEvent(api, responseNumber, guild)
+            );
             return null;
         }
 
