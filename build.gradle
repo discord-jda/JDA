@@ -90,6 +90,7 @@ jar {
     include "com/iwebpp/crypto/**"
     include "org/tritonus/**"
     include "tomp2p/opuswrapper/**"
+    include "natives/**"
 }
 
 task javadocJar(type: Jar) {
