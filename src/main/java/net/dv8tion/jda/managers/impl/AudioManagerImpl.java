@@ -23,6 +23,7 @@ import net.dv8tion.jda.audio.AudioSendHandler;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
+import net.dv8tion.jda.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.managers.AudioManager;
 import net.dv8tion.jda.utils.NativeUtils;
 import net.dv8tion.jda.utils.ServiceUtil;
@@ -67,6 +68,9 @@ public class AudioManagerImpl implements AudioManager
         if (queuedAudioConnection != null)
             throw new IllegalStateException("Already attempting to start an AudioConnection with a VoiceChannel!\n" +
                     "Currently Attempting Channel ID: " + queuedAudioConnection.getId() + "  |  New Attempt Channel ID: " + channel.getId());
+        if (!guild.isAvailable())
+            throw new GuildUnavailableException("Cannot open an Audio Connection with an unavailable guild. " +
+                    "Please wait until this Guild is available to open a connection.");
         queuedAudioConnection = channel;
         JSONObject obj = new JSONObject()
                 .put("op", 4)

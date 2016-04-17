@@ -47,6 +47,9 @@ public class GuildLeaveHandler extends SocketHandler
         }
 
         Guild guild = api.getGuildMap().get(content.getString("id"));
+        AudioManager manager = api.getAudioManagersMap().get(guild);
+        if (manager != null)
+            manager.closeAudioConnection();
         if (content.has("unavailable") && content.getBoolean("unavailable"))
         {
             ((GuildImpl) guild).setAvailable(false);
@@ -56,13 +59,8 @@ public class GuildLeaveHandler extends SocketHandler
             return null;
         }
 
-        //We use this instead of getAudioManager(Guild) so we don't create a new instance. Efficiency!
-        AudioManager manager = api.getAudioManagersMap().get(guild);
-        if (manager != null && manager.isConnected()
-                && manager.getConnectedChannel().getGuild().getId().equals(guild.getId()))
-        {
-            manager.closeAudioConnection();
-        }
+        if (manager != null)
+            api.getAudioManagersMap().remove(guild);
 
         //cleaning up all users that we do not share a guild with anymore
         List<User> users = guild.getUsers();

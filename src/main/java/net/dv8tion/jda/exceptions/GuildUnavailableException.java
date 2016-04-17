@@ -19,6 +19,11 @@ public class GuildUnavailableException extends RuntimeException
 {
     public GuildUnavailableException()
     {
-        super("This operation is not possible due to the Guild being temporarily unavailable");
+        this("This operation is not possible due to the Guild being temporarily unavailable");
+    }
+
+    public GuildUnavailableException(String reason)
+    {
+        super(reason);
     }
 }
