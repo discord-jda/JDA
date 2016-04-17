@@ -129,6 +129,15 @@ public class ApplicationUtil
     {
         Requester.Response response = api.getRequester().post(Requester.DISCORD_API_PREFIX + "auth/login", new JSONObject().put("email", email).put("password", password));
 
+        if (response.isRateLimit())
+        {
+            try {
+                Thread.sleep(response.getObject().getLong("retry_after"));
+            }
+            catch(InterruptedException ignored) {}
+            return login(email, password);
+        }
+
         if (!response.isOk())
             throw new LoginException("The provided email / password combination was incorrect. Please provide valid details.");
         return response.getObject().getString("token");
