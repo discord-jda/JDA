@@ -147,3 +147,7 @@ All dependencies are managed automatically by Gradle.
    * Version: **1.3**
    * [Sourceforge](https://sourceforge.net/projects/jflac/)
    * [JCenter Repository](https://bintray.com/dv8fromtheworld/maven/jFLAC/view)
+ * JAADec
+   * Version: **0.8.5**
+   * [Github](https://github.com/DV8FromTheWorld/JAADec)
+   * [JCenter Repository](https://bintray.com/dv8fromtheworld/maven/JAADec/view)
