@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,7 @@ import net.dv8tion.jda.entities.Channel;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.impl.JDAImpl;
-import net.dv8tion.jda.events.Event;
-import net.dv8tion.jda.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.exceptions.PermissionException;
-import net.dv8tion.jda.hooks.EventListener;
-import net.dv8tion.jda.hooks.SubscribeEvent;
 import net.dv8tion.jda.requests.Requester;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -34,7 +30,6 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class InviteUtil
 {

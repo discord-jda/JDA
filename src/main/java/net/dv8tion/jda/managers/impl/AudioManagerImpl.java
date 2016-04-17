@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.managers.AudioManager;
 import net.dv8tion.jda.utils.NativeUtils;
 import net.dv8tion.jda.utils.ServiceUtil;
-import net.dv8tion.jda.utils.SimpleLog;
 import org.json.JSONObject;
 
 import java.io.IOException;
