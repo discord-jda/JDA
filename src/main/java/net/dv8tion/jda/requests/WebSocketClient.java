@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,15 @@
 package net.dv8tion.jda.requests;
 
 import com.neovisionaries.ws.client.*;
+import net.dv8tion.jda.audio.AudioReceiveHandler;
+import net.dv8tion.jda.audio.AudioSendHandler;
+import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.*;
 import net.dv8tion.jda.handle.*;
+import net.dv8tion.jda.managers.AudioManager;
+import net.dv8tion.jda.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.utils.SimpleLog;
 import org.apache.http.HttpHost;
 import org.json.JSONArray;
@@ -28,6 +34,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.time.OffsetDateTime;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -36,10 +43,9 @@ import java.util.zip.Inflater;
 
 public class WebSocketClient extends WebSocketAdapter implements WebSocketListener
 {
-    SimpleLog LOG = SimpleLog.getLog("JDASocket");
+    public static final SimpleLog LOG = SimpleLog.getLog("JDASocket");
 
     private final JDAImpl api;
-    private final GuildLock guildLock;
 
     private final HttpHost proxy;
     private WebSocket socket;
@@ -56,12 +62,17 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     private boolean shouldReconnect = true;
     private int reconnectTimeoutS = 2;
 
+    private final List<VoiceChannel> dcAudioConnections = new LinkedList<>();
+    private final Map<String, AudioSendHandler> audioSendHandlers = new HashMap<>();
+    private final Map<String, AudioReceiveHandler> audioReceivedHandlers = new HashMap<>();
+
     private boolean firstInit = true;
+
+    private WebSocketCustomHandler customHandler;
 
     public WebSocketClient(JDAImpl api, HttpHost proxy)
     {
         this.api = api;
-        this.guildLock = GuildLock.get(api);
         this.proxy = proxy;
         connect();
     }
@@ -76,11 +87,17 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         return connected;
     }
 
+    public void setCustomHandler(WebSocketCustomHandler customHandler)
+    {
+        this.customHandler = customHandler;
+    }
+
     public void ready()
     {
         if (initiating)
         {
             initiating = false;
+            reconnectTimeoutS = 2;
             if (firstInit)
             {
                 firstInit = false;
@@ -89,12 +106,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             }
             else
             {
+                restoreAudioHandlers();
+                reconnectAudioConnections();
                 JDAImpl.LOG.info("Finished (Re)Loading!");
                 api.getEventManager().handle(new ReconnectedEvent(api, api.getResponseTotal()));
             }
         }
         else
         {
+            reconnectAudioConnections();
             JDAImpl.LOG.info("Successfully resumed Session!");
             api.getEventManager().handle(new ResumedEvent(api, api.getResponseTotal()));
         }
@@ -206,19 +226,28 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 LOG.info("Reason: " + serverCloseFrame.getCloseReason());
                 LOG.info("Close code: " + serverCloseFrame.getCloseCode());
             }
-            api.getEventManager().handle(new ShutdownEvent(api, OffsetDateTime.now()));
+            api.getEventManager().handle(new ShutdownEvent(api, OffsetDateTime.now(), dcAudioConnections));
         }
         else
         {
-            api.getEventManager().handle(new DisconnectEvent(api, serverCloseFrame, clientCloseFrame, closedByServer, OffsetDateTime.now()));
-            if (!closedByServer || sessionId != null)
+            for (AudioManager mng : api.getAudioManagersMap().values())
             {
-                reconnect();
+                AudioManagerImpl mngImpl = (AudioManagerImpl) mng;
+                VoiceChannel channel = null;
+                if (mngImpl.isConnected())
+                    channel = mng.getConnectedChannel();
+                else if (mngImpl.isAttemptingToConnect())
+                    channel = mng.getQueuedAudioConnection();
+                else if (mngImpl.wasUnexpectedlyDisconnected())
+                    channel = mngImpl.getUnexpectedDisconnectedChannel();
+
+                if (channel != null)
+                {
+                    dcAudioConnections.add(channel);
+                }
             }
-            else
-            {
-                LOG.fatal("Session is no longer valid! could not reconnect!");
-            }
+            api.getEventManager().handle(new DisconnectEvent(api, serverCloseFrame, clientCloseFrame, closedByServer, OffsetDateTime.now(), dcAudioConnections));
+            reconnect();
         }
     }
 
@@ -256,6 +285,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             api.setResponseTotal(content.getInt("s"));
         }
+
+        //Allows for custom event handling.
+        if (customHandler != null && customHandler.handle(content))
+            return;
 
         switch (opCode)
         {
@@ -307,15 +340,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     private void sendIdentify()
     {
         LOG.debug("Sending Identify-packet...");
-        String token = api.getAuthToken();
-        if (token.startsWith("Bot "))
-        {
-            token = token.substring(4);
-        }
         send(new JSONObject()
                 .put("op", 2)
                 .put("d", new JSONObject()
-                        .put("token", token)
+                        .put("token", api.getAuthToken())
                         .put("properties", new JSONObject()
                                 .put("$os", System.getProperty("os.name"))
                                 .put("$browser", "Java Discord API")
@@ -332,16 +360,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     private void sendResume()
     {
         LOG.debug("Sending Resume-packet...");
-        String token = api.getAuthToken();
-        if (token.startsWith("Bot "))
-        {
-            token = token.substring(4);
-        }
         send(new JSONObject()
                 .put("op", 6)
                 .put("d", new JSONObject()
                         .put("session_id", sessionId)
-                        .put("token", token)
+                        .put("token", api.getAuthToken())
                         .put("seq", api.getResponseTotal()))
                 .toString());
     }
@@ -349,7 +372,21 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     private void invalidate()
     {
         sessionId = null;
+
+        //Preserve the audio handlers through registry invalidation
+        api.getAudioManagersMap().values().forEach(
+            mng ->
+            {
+                String guildId = mng.getGuild().getId();
+                if (mng.getSendingHandler() != null)
+                    audioSendHandlers.put(guildId, mng.getSendingHandler());
+                if (mng.getReceiveHandler() != null)
+                    audioReceivedHandlers.put(guildId, mng.getReceiveHandler());
+            }
+        );
+
         //clearing the registry...
+        api.getAudioManagersMap().clear();
         api.getChannelMap().clear();
         api.getVoiceChannelMap().clear();
         api.getGuildMap().clear();
@@ -357,6 +394,96 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         api.getPmChannelMap().clear();
         api.getOffline_pms().clear();
         GuildLock.get(api).clear();
+    }
+
+    private void restoreAudioHandlers()
+    {
+        LOG.trace("Restoring cached AudioHandlers.");
+
+        audioSendHandlers.forEach((guildId, handler) ->
+        {
+            Guild guild = api.getGuildMap().get(guildId);
+            if (guild != null)
+            {
+                AudioManager mng = api.getAudioManager(guild);
+                mng.setSendingHandler(handler);
+            }
+            else
+            {
+                LOG.warn("Could not restore an AudioSendHandler after reconnect due to the Guild it was connected to " +
+                        "no longer existing in JDA's registry. Guild Id: " + guildId);
+            }
+        });
+
+        audioReceivedHandlers.forEach((guildId, handler) ->
+        {
+            Guild guild = api.getGuildMap().get(guildId);
+            if (guild != null)
+            {
+                AudioManager mng = api.getAudioManager(guild);
+                mng.setReceivingHandler(handler);
+            }
+            else
+            {
+                LOG.warn("Could not restore an AudioReceiveHandler after reconnect due to the Guild it was connected to " +
+                        "no longer existing in JDA's registry. Guild Id: " + guildId);
+            }
+        });
+        audioSendHandlers.clear();
+        audioReceivedHandlers.clear();
+        LOG.trace("Finished restoring cached AudioHandlers");
+    }
+
+    private void reconnectAudioConnections()
+    {
+        if (dcAudioConnections.size() == 0)
+            return;
+
+        LOG.trace("Cleaning up previous Audio Connections.");
+        for (VoiceChannel chan : dcAudioConnections)
+        {
+            JSONObject obj = new JSONObject()
+                    .put("op", 4)
+                    .put("d", new JSONObject()
+                            .put("guild_id", chan.getGuild().getId())
+                            .put("channel_id", JSONObject.NULL)
+                            .put("self_mute", false)
+                            .put("self_deaf", false)
+                    );
+            send(obj.toString());
+        }
+
+        LOG.trace("Attempting to reconnect previous Audio Connections...");
+        for (VoiceChannel chan : dcAudioConnections)
+        {
+            String guildId = chan.getGuild().getId();
+            String chanId = chan.getId();
+
+            Guild guild = api.getGuildMap().get(guildId);
+            if (guild == null)
+            {
+                JDAImpl.LOG.warn("Could not reestablish audio connection during reconnect due to the previous " +
+                        "connection being connected to a Guild that we are no longer connected to. " +
+                        "Guild Id: " + guildId
+                );
+                continue;
+            }
+
+            VoiceChannel channel = api.getVoiceChannelMap().get(chanId);
+            if (channel == null)
+            {
+                JDAImpl.LOG.warn("Could not reestablish audio connection during reconnect due to the previous " +
+                        "connection being connected to a VoiceChannel that no longer exists. " +
+                        "VChannel Id: " + chanId);
+                continue;
+            }
+
+
+            AudioManager manager = api.getAudioManager(guild);
+            manager.openAudioConnection(channel);
+        }
+        LOG.debug("Finished sending packets to reopen previous Audio Connections.");
+        dcAudioConnections.clear();
     }
 
     private void handleEvent(JSONObject raw)
@@ -400,10 +527,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 case "READY":
                     sessionId = content.getString("session_id");
                     new ReadyHandler(api, responseTotal).handle(raw);
-                    reconnectTimeoutS = 2;
                     break;
                 case "RESUMED":
-                    reconnectTimeoutS = 2;
                     initiating = false;
                     ready();
                     break;
@@ -415,9 +540,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     break;
                 case "TYPING_START":
                     new UserTypingHandler(api, responseTotal).handle(raw);
-                    break;
-                case "MESSAGE_ACK":
-                    new MessageAcknowledgedHandler(api, responseTotal).handle(raw);
                     break;
                 case "MESSAGE_CREATE":
                     new MessageReceivedHandler(api, responseTotal).handle(raw);
@@ -435,7 +557,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     new VoiceChangeHandler(api, responseTotal).handle(raw);
                     break;
                 case "VOICE_SERVER_UPDATE":
-                    new VoiceServerUpdateHandler(api, responseTotal).handle(raw);
+                    if (api.isAudioEnabled())
+                        new VoiceServerUpdateHandler(api, responseTotal).handle(raw);
+                    else
+                        LOG.debug("Received VOICE_SERVER_UPDATE event but ignoring due to audio being disabled/not supported.");
                     break;
                 case "CHANNEL_CREATE":
                     new ChannelCreateHandler(api, responseTotal).handle(raw);
@@ -484,6 +609,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     break;
                 case "USER_GUILD_SETTINGS_UPDATE":
                     //TODO: handle notification updates...
+                    break;
+                //Events that Bots shouldn't care about.
+                case "MESSAGE_ACK":
                     break;
                 default:
                     LOG.debug("Unrecognized event:\n" + raw);

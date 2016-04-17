@@ -18,12 +18,12 @@ import net.dv8tion.jda.JDABuilder;
 import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.events.guild.GuildLeaveEvent;
-import net.dv8tion.jda.events.guild.GuildRoleCreateEvent;
-import net.dv8tion.jda.events.guild.GuildRoleDeleteEvent;
 import net.dv8tion.jda.events.guild.member.GuildMemberBanEvent;
 import net.dv8tion.jda.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.events.guild.member.GuildMemberUnbanEvent;
+import net.dv8tion.jda.events.guild.role.GuildRoleCreateEvent;
+import net.dv8tion.jda.events.guild.role.GuildRoleDeleteEvent;
 import net.dv8tion.jda.hooks.ListenerAdapter;
 
 import javax.security.auth.login.LoginException;
@@ -40,8 +40,7 @@ public class GuildListenerExample extends ListenerAdapter
         try
         {
             new JDABuilder()
-                    .setEmail("EMAIL")
-                    .setPassword("PASSWORD")
+                    .setBotToken("TOKEN")
                     .addListener(new GuildListenerExample())
                     .buildBlocking();
         }

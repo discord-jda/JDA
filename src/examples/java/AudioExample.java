@@ -38,8 +38,7 @@ public class AudioExample extends ListenerAdapter
         try
         {
             JDA api = new JDABuilder()
-                    .setEmail("EMAIL")
-                    .setPassword("PASSWORD")
+                    .setBotToken("TOKEN")
                     .addListener(new AudioExample())
                     .buildBlocking();
         }
@@ -76,11 +75,11 @@ public class AudioExample extends ListenerAdapter
                 event.getChannel().sendMessage("There isn't a VoiceChannel in this Guild with the name: '" + chanName + "'");
                 return;
             }
-            event.getJDA().getAudioManager().openAudioConnection(channel);
+            event.getGuild().getAudioManager().openAudioConnection(channel);
         }
         //Disconnect the audio connection with the VoiceChannel.
         if (message.equals("leave"))
-            event.getJDA().getAudioManager().closeAudioConnection();
+            event.getGuild().getAudioManager().closeAudioConnection();
 
         //Start playing audio with our FilePlayer. If we haven't created and registered a FilePlayer yet, do that.
         if (message.equals("play"))
@@ -106,7 +105,7 @@ public class AudioExample extends ListenerAdapter
                     // you could just call the pause() method. Otherwise, make canProvide() return false).
                     // Once again, you don't HAVE to pause before severing an audio connection,
                     // but it probably would be good to do.
-                    event.getJDA().getAudioManager().setSendingHandler(player);
+                    event.getGuild().getAudioManager().setSendingHandler(player);
 
                     //Start playback. This will only start after the AudioConnection has completely connected.
                     //NOTE: "completely connected" is not just joining the VoiceChannel. Think about when your Discord

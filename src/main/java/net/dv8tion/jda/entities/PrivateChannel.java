@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,6 @@
 package net.dv8tion.jda.entities;
 
 import net.dv8tion.jda.JDA;
-
-import java.io.File;
-import java.util.function.Consumer;
 
 /**
  * Represents the connection used for direct messaging.
@@ -47,4 +44,11 @@ public interface PrivateChannel extends MessageChannel
      *      the corresponding JDA instance
      */
     JDA getJDA();
+
+    /**
+     * Closes a PrivateChannel. After being closed successfully the PrivateChannel is removed from the JDA mapping.<br>
+     * As a note, this does not remove the history of the PrivateChannel. If the channel is reoppened the history will
+     * still be present.
+     */
+    void close();
 }

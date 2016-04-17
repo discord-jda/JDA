@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,34 +16,14 @@
 package net.dv8tion.jda.entities.impl;
 
 import net.dv8tion.jda.entities.SelfInfo;
-import net.dv8tion.jda.entities.TextChannel;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class SelfInfoImpl extends UserImpl implements SelfInfo
 {
-    private String email;
-    private List<TextChannel> mutedChannels = new ArrayList<>();
     private boolean verified;
 
-    public SelfInfoImpl(String id, String email, JDAImpl api)
+    public SelfInfoImpl(String id, JDAImpl api)
     {
         super(id, api);
-        this.email = email;
-    }
-
-    @Override
-    public String getEmail()
-    {
-        return email;
-    }
-
-    @Override
-    public List<TextChannel> getMutedChannels()
-    {
-        return Collections.unmodifiableList(mutedChannels);
     }
 
     @Override
@@ -52,26 +32,9 @@ public class SelfInfoImpl extends UserImpl implements SelfInfo
         return verified;
     }
 
-    public SelfInfoImpl setMutedChannels(List<TextChannel> mutedChannels)
-    {
-        this.mutedChannels = mutedChannels;
-        return this;
-    }
-
     public SelfInfoImpl setVerified(boolean verified)
     {
         this.verified = verified;
         return this;
-    }
-
-    public SelfInfoImpl setEmail(String email)
-    {
-        this.email = email;
-        return this;
-    }
-
-    public List<TextChannel> getMutedChannelsModifiable()
-    {
-        return mutedChannels;
     }
 }

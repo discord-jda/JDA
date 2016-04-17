@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -111,7 +111,7 @@ public class PrivateChannelImpl implements PrivateChannel
     public void sendMessageAsync(Message msg, Consumer<Message> callback)
     {
         ((MessageImpl) msg).setChannelId(getId());
-        TextChannelImpl.AsyncMessageSender.getInstance(getJDA()).enqueue(msg, callback);
+        TextChannelImpl.AsyncMessageSender.getInstance(getJDA()).enqueue(msg, false, callback);
     }
 
     @Override
@@ -169,9 +169,16 @@ public class PrivateChannelImpl implements PrivateChannel
         thread.start();
     }
 
+    @Override
     public void sendTyping()
     {
         api.getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + getId() + "/typing", new JSONObject());
+    }
+
+    @Override
+    public void close()
+    {
+        api.getRequester().delete(Requester.DISCORD_API_PREFIX + "channels/" + getId());
     }
 
     @Override

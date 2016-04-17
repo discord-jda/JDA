@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,10 @@ import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.entities.impl.GuildImpl;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.entities.impl.UserImpl;
+import net.dv8tion.jda.events.channel.priv.PrivateChannelDeleteEvent;
 import net.dv8tion.jda.events.channel.text.TextChannelDeleteEvent;
 import net.dv8tion.jda.events.channel.voice.VoiceChannelDeleteEvent;
+import net.dv8tion.jda.managers.AudioManager;
 import net.dv8tion.jda.requests.GuildLock;
 import org.json.JSONObject;
 
@@ -50,7 +52,10 @@ public class ChannelDeleteHandler extends SocketHandler
                 ((UserImpl) user).setPrivateChannel(null);
             }
             api.getPmChannelMap().remove(content.getString("id"));
-            //TODO: PrivateChannelDeleteEvent
+            api.getEventManager().handle(
+                    new PrivateChannelDeleteEvent(
+                            api, responseNumber,
+                            user));
             return null;
         }
 
@@ -81,9 +86,13 @@ public class ChannelDeleteHandler extends SocketHandler
                 if (channel == null)
                     throw new IllegalArgumentException("CHANNEL_DELETE attempted to delete a channel that doesn't exist! JSON: " + content);
 
-                if (api.getAudioManager() != null && api.getAudioManager().isConnected()
-                        && api.getAudioManager().getConnectedChannel().getId().equals(channel.getId()))
-                    api.getAudioManager().closeAudioConnection();
+                //We use this instead of getAudioManager(Guild) so we don't create a new instance. Efficiency!
+                AudioManager manager = api.getAudioManagersMap().get(guild);
+                if (manager != null && manager.isConnected()
+                        && manager.getConnectedChannel().getId().equals(channel.getId()))
+                {
+                    manager.closeAudioConnection();
+                }
                 guild.getVoiceChannelsMap().remove(channel.getId());
                 api.getEventManager().handle(
                         new VoiceChannelDeleteEvent(

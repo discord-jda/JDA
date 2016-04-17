@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package net.dv8tion.jda.entities;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Region;
+import net.dv8tion.jda.managers.AudioManager;
 import net.dv8tion.jda.managers.ChannelManager;
 import net.dv8tion.jda.managers.GuildManager;
 import net.dv8tion.jda.managers.RoleManager;
@@ -227,6 +228,15 @@ public interface Guild
     GuildManager getManager();
 
     /**
+     * Returns the {@link net.dv8tion.jda.managers.AudioManager AudioManager} that represents the
+     * audio connection for this Guild.
+     *
+     * @return
+     *      The AudioManager for this Guild.
+     */
+    AudioManager getAudioManager();
+
+    /**
      * Returns the {@link net.dv8tion.jda.JDA JDA} instance of this Guild
      * @return
      *      the corresponding JDA instance
@@ -288,8 +298,8 @@ public interface Guild
      * The Verification-Level determines what requirement you have to meet to be able to speak in this Guild.<br>
      * None   -&gt; everyone can talk.<br>
      * Low    -&gt; verified email required.<br>
-     * Medium -&gt; you have to be member for at least 5min.<br>
-     * High   -&gt; you have to be member for at least 10min.
+     * Medium -&gt; you have to be member of discord for at least 5min.<br>
+     * High   -&gt; you have to be member of this guild for at least 10min.
      */
     enum VerificationLevel
     {

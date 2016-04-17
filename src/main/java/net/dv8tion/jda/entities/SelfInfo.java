@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,28 +15,11 @@
  */
 package net.dv8tion.jda.entities;
 
-import java.util.List;
-
 /**
  * Represents the currently logged in account.
  */
 public interface SelfInfo extends User
 {
-    /**
-     * Returns the email of the connected account.
-     *
-     * @return
-     *      Never-null String containing the email of the currently logged in account.
-     */
-    String getEmail();
-
-    /**
-     * A List of {@link net.dv8tion.jda.entities.TextChannel TextChannels} that have been muted on this account.
-     *
-     * @return
-     *      List of muted {@link net.dv8tion.jda.entities.TextChannel TextChannels}.
-     */
-    List<TextChannel> getMutedChannels();
 
     /**
      * The status of this account's verification.<br>

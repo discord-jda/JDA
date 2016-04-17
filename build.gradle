@@ -9,7 +9,7 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 apply plugin: 'eclipse'
 
-def versionObj = new Version(major: 1, minor: 4, revision: 0)
+def versionObj = new Version(major: 2, minor: 0, revision: 0)
 group = "net.dv8tion"
 archivesBaseName = "JDA"
 version = "$versionObj"
@@ -54,6 +54,7 @@ javadoc {
     //### excludes ###
     //jda internals
     exclude("net/dv8tion/jda/entities/impl")
+    exclude("net/dv8tion/jda/managers/impl")
     exclude("net/dv8tion/jda/handle")
     exclude("net/dv8tion/jda/requests")
 
@@ -85,6 +86,11 @@ jar {
     manifest {
         attributes 'Implementation-Version': version
     }
+    include "net/dv8tion/jda/**"
+    include "com/iwebpp/crypto/**"
+    include "org/tritonus/**"
+    include "tomp2p/opuswrapper/**"
+    include "natives/**"
 }
 
 task javadocJar(type: Jar) {
@@ -95,6 +101,10 @@ task javadocJar(type: Jar) {
 task sourcesJar(type: Jar) {
     classifier = 'sources'
     from sourceSets.filtered.java
+    include "net/dv8tion/jda/**"
+    include "com/iwebpp/crypto/**"
+    include "org/tritonus/**"
+    include "tomp2p/opuswrapper/**"
 }
 
 // create a single Jar with all dependencies

@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@ package net.dv8tion.jda.entities.impl;
 
 import com.mashape.unirest.http.Unirest;
 import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.Region;
 import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.events.Event;
 import net.dv8tion.jda.events.guild.GuildJoinEvent;
@@ -28,6 +27,7 @@ import net.dv8tion.jda.hooks.SubscribeEvent;
 import net.dv8tion.jda.managers.AccountManager;
 import net.dv8tion.jda.managers.AudioManager;
 import net.dv8tion.jda.managers.GuildManager;
+import net.dv8tion.jda.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.requests.Requester;
 import net.dv8tion.jda.requests.WebSocketClient;
 import net.dv8tion.jda.utils.SimpleLog;
@@ -41,7 +41,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.function.Consumer;
@@ -61,7 +60,8 @@ public class JDAImpl implements JDA
     private final Map<String, VoiceChannel> voiceChannelMap = new HashMap<>();
     private final Map<String, PrivateChannel> pmChannelMap = new HashMap<>();
     private final Map<String, String> offline_pms = new HashMap<>();    //Userid -> channelid
-    private final AudioManager audioManager;
+    private final Map<Guild, AudioManager> audioManagers = new HashMap<>();
+    private final boolean audioEnabled;
     private IEventManager eventManager = new InterfacedEventManager();
     private SelfInfo selfInfo = null;
     private AccountManager accountManager;
@@ -69,133 +69,55 @@ public class JDAImpl implements JDA
     private WebSocketClient client;
     private final Requester requester = new Requester(this);
     private boolean reconnect;
-    private boolean enableAck;
     private int responseTotal;
     private Long messageLimit = null;
 
-    public JDAImpl(boolean useVoice)
+    public JDAImpl(boolean enableAudio)
     {
         proxy = null;
-        audioManager = useVoice ? new AudioManager(this) : null;
+        if (enableAudio)
+            this.audioEnabled = AudioManagerImpl.init();
+        else
+            this.audioEnabled = false;
     }
 
-    public JDAImpl(String proxyUrl, int proxyPort, boolean useVoice)
+    public JDAImpl(String proxyUrl, int proxyPort, boolean enableAudio)
     {
         if (proxyUrl == null || proxyUrl.isEmpty() || proxyPort == -1)
             throw new IllegalArgumentException("The provided proxy settings cannot be used to make a proxy. Settings: URL: '" + proxyUrl + "'  Port: " + proxyPort);
         proxy = new HttpHost(proxyUrl, proxyPort);
         Unirest.setProxy(proxy);
-        audioManager = useVoice ? new AudioManager(this) : null;
+        if (enableAudio)
+            this.audioEnabled = AudioManagerImpl.init();
+        else
+            this.audioEnabled = false;
     }
 
     /**
      * Attempts to login to Discord with a Bot-Account.
      *
-     * @param botToken
+     * @param token
      *          The token of the bot-account attempting to log in.
      * @throws IllegalArgumentException
      *          Thrown if the botToken provided is empty or null.
      * @throws LoginException
      *          Thrown if the token fails the auth check with the Discord servers.
      */
-    public void login(String botToken) throws IllegalArgumentException, LoginException
+    public void login(String token) throws IllegalArgumentException, LoginException
     {
         LOG.info("JDA starting...");
-        if (botToken == null || botToken.isEmpty())
+        if (token == null || token.isEmpty())
             throw new IllegalArgumentException("The provided botToken was empty / null.");
 
-        botToken = "Bot " + botToken;
+        accountManager = new AccountManager(this);
 
-        accountManager=new AccountManager(this, null);
-
-        if(!validate(botToken)) {
-            throw new LoginException("The given botToken was invalid");
+        if(!validate(token)) {
+            throw new LoginException("The given token was invalid");
         }
 
         LOG.info("Login Successful!");
         client = new WebSocketClient(this, proxy);
         client.setAutoReconnect(reconnect);
-    }
-
-    /**
-     * Attempts to login to Discord with a normal User-Account.
-     * Upon successful auth with Discord, a token is generated and stored in token.json.
-     *
-     * @param email
-     *          The email of the account attempting to log in.
-     * @param password
-     *          The password of the account attempting to log in.
-     * @throws IllegalArgumentException
-     *          Thrown if this email or password provided are empty or null.
-     * @throws LoginException
-     *          Thrown if the email-password combination fails the auth check with the Discord servers.
-     */
-    public void login(String email, String password) throws IllegalArgumentException, LoginException
-    {
-        LOG.info("JDA starting...");
-        if (email == null || email.isEmpty() || password == null || password.isEmpty())
-            throw new IllegalArgumentException("The provided email or password as empty / null.");
-
-        accountManager=new AccountManager(this, password);
-        
-        Path tokenFile = Paths.get("tokens.json");
-        JSONObject configs = null;
-        boolean valid = false;
-        if (Files.exists(tokenFile))
-        {
-            configs = readJson(tokenFile);
-        }
-        if (configs == null)
-        {
-            configs = new JSONObject().put("tokens", new JSONObject()).put("version", 1);
-        }
-
-
-        try
-        {
-            if (configs.getJSONObject("tokens").has(email))
-            {
-                if(validate(configs.getJSONObject("tokens").getString(email))) {
-                        valid = true;
-                        LOG.debug("Using cached Token: " + authToken);
-                }
-            }
-        }
-        catch (JSONException ex)
-        {
-            LOG.warn("Token-file misformatted. Please delete it for recreation");
-        }
-
-        if (!valid)               //no token saved or invalid
-        {
-            try
-            {
-                authToken = null;
-                JSONObject response = getRequester().post(Requester.DISCORD_API_PREFIX + "auth/login", new JSONObject().put("email", email).put("password", password)).getObject();
-
-                if (response == null || !response.has("token"))
-                    throw new LoginException("The provided email / password combination was incorrect. Please provide valid details.");
-
-                authToken = response.getString("token");
-                configs.getJSONObject("tokens").put(email, authToken);
-                LOG.debug("Created new Token: " + authToken);
-
-                valid = true;
-            }
-            catch (JSONException ex)
-            {
-                LOG.log(ex);
-            }
-        }
-
-        if (valid)
-        {
-            LOG.info("Login Successful!");
-            client = new WebSocketClient(this, proxy);
-            client.setAutoReconnect(reconnect);
-        }
-
-        writeJson(tokenFile, configs);
     }
 
     private boolean validate(String authToken)
@@ -367,28 +289,6 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public void createGuildAsync(String name, Region region, Consumer<GuildManager> callback)
-    {
-        if (name == null)
-            throw new IllegalArgumentException("Guild name must not be null");
-        if (region == Region.UNKNOWN)
-            throw new IllegalArgumentException("Guild region must not be UNKNOWN");
-
-        JSONObject response = getRequester().post(Requester.DISCORD_API_PREFIX + "guilds",
-                new JSONObject().put("name", name).put("region", region.getKey())).getObject();
-        if (response == null || !response.has("id"))
-        {
-            //error creating guild
-            throw new RuntimeException("Creating a new Guild failed. Reason: " + (response == null ? "Unknown" : response.toString()));
-        }
-        else
-        {
-            if(callback != null)
-                addEventListener(new AsyncCallback(callback, response.getString("id")));
-        }
-    }
-
-    @Override
     public Guild getGuildById(String id)
     {
         return guildMap.get(id);
@@ -442,6 +342,11 @@ public class JDAImpl implements JDA
     public Map<String, String> getOffline_pms()
     {
         return offline_pms;
+    }
+
+    public Map<Guild, AudioManager> getAudioManagersMap()
+    {
+        return audioManagers;
     }
 
     @Override
@@ -500,6 +405,12 @@ public class JDAImpl implements JDA
     }
 
     @Override
+    public boolean isAudioEnabled()
+    {
+        return audioEnabled;
+    }
+
+    @Override
     public void shutdown()
     {
         shutdown(true);
@@ -508,8 +419,7 @@ public class JDAImpl implements JDA
     @Override
     public void shutdown(boolean free)
     {
-        if (getAudioManager() != null)
-            getAudioManager().closeAudioConnection();
+        audioManagers.values().forEach(mng -> mng.closeAudioConnection());
         client.setAutoReconnect(false);
         client.close();
         authToken = null; //make further requests fail
@@ -537,46 +447,19 @@ public class JDAImpl implements JDA
         return this.messageLimit;
     }
 
-    /**
-     * Enables or disables the ack functionality of JDA.<br>
-     * <b>Read the Javadocs of {@link #ack(Message)}</b> for guidelines on how and when to ack!
-     *
-     * @param enable
-     *      whether or not to enable ack functionality
-     */
-    public void setAllowAck(boolean enable)
-    {
-        this.enableAck = enable;
-    }
-
-    public boolean isAckAllowed()
-    {
-        return enableAck;
-    }
-
-    /**
-     * Acks a specific message. This feature is disabled by default.
-     * To enable them, call {@link #setAllowAck(boolean)}.<br>
-     * IMPORTANT: It is highly discouraged to ack every message and may lead to rate-limits and other bad stuff.
-     * Use this wisely (only if needed, or on a long enough interval).
-     * Acking a specific Message also acks every Message before (only ack last one if possible)
-     *
-     * @param msg
-     *      the message to ack
-     */
-    public void ack(Message msg)
-    {
-        if (!enableAck)
-        {
-            throw new RuntimeException("Acking is disabled by default. <b>READ THE JAVADOCS</b> for how to use them!");
-        }
-        getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + msg.getChannelId() + "/messages/" + msg.getId() + "/ack", new JSONObject());
-    }
-
     @Override
-    public AudioManager getAudioManager()
+    public synchronized AudioManager getAudioManager(Guild guild)
     {
-        return audioManager;
+        if (!audioEnabled)
+            throw new IllegalStateException("Audio is disabled. Cannot retrieve an AudioManager while audio is disabled.");
+
+        AudioManager manager = audioManagers.get(guild);
+        if (manager == null)
+        {
+            manager = new AudioManagerImpl(guild);
+            audioManagers.put(guild, manager);
+        }
+        return manager;
     }
 
     private static class AsyncCallback implements EventListener

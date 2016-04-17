@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package net.dv8tion.jda.handle;
 import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.entities.impl.GuildImpl;
 import net.dv8tion.jda.entities.impl.JDAImpl;
-import net.dv8tion.jda.events.guild.GuildRoleCreateEvent;
+import net.dv8tion.jda.events.guild.role.GuildRoleCreateEvent;
 import net.dv8tion.jda.requests.GuildLock;
 import org.json.JSONObject;
 

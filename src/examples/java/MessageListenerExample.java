@@ -16,11 +16,9 @@
 
 import net.dv8tion.jda.JDABuilder;
 import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.events.InviteReceivedEvent;
 import net.dv8tion.jda.events.message.MessageEmbedEvent;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.hooks.ListenerAdapter;
-import net.dv8tion.jda.utils.InviteUtil;
 
 import javax.security.auth.login.LoginException;
 import java.util.List;
@@ -37,8 +35,7 @@ public class MessageListenerExample extends ListenerAdapter
         try
         {
             new JDABuilder()
-                    .setEmail("EMAIL")
-                    .setPassword("PASSWORD")
+                    .setBotToken("TOKEN")
                     .addListener(new MessageListenerExample())
                     .buildBlocking();
         }
@@ -63,16 +60,6 @@ public class MessageListenerExample extends ListenerAdapter
         builder.append("Found embed(s) Types: ");
         event.getMessageEmbeds().stream().forEach(embed -> builder.append(embed.getType()).append(", "));
         System.out.println(builder.toString().substring(0, builder.length() - 2));
-    }
-
-    @Override
-    public void onInviteReceived(InviteReceivedEvent event)
-    {
-        System.out.println("Got invite " + event.getInvite().getUrl());
-        if (event.getMessage().getAuthor().getUsername().equalsIgnoreCase("kantenkugel"))
-        {
-            InviteUtil.join(event.getInvite(), event.getJDA(), null);
-        }
     }
 
     //Note: onMessageReceived combines both the PrivateMessageReceivedEvent and GuildMessageReceivedEvent.

@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,18 +30,13 @@ public class AccountManager
 {
 
     private AvatarUtil.Avatar avatar = null;
-    private String email = null;
-    private String newPassword = null;
     private String username = null;
-
-    private String password;
 
     private final JDAImpl api;
 
-    public AccountManager(JDAImpl api, String password)
+    public AccountManager(JDAImpl api)
     {
         this.api = api;
-        this.password = password;
     }
 
     /**
@@ -57,36 +52,6 @@ public class AccountManager
     public AccountManager setAvatar(AvatarUtil.Avatar avatar)
     {
         this.avatar = avatar;
-        return this;
-    }
-
-    /**
-     * Set the email of the connected account.
-     * This change will only be applied, when {@link #update()} is called
-     *
-     * @param email
-     *      the new email or null to discard changes
-     * @return
-     * 	  this
-     */
-    public AccountManager setEmail(String email)
-    {
-        this.email = email;
-        return this;
-    }
-
-    /**
-     * Set the password of the connected account.
-     * This change will only be applied, when {@link #update()} is called
-     *
-     * @param password
-     *      the new password or null to discard changes
-     * @return
-     * 	  this
-     */
-    public AccountManager setPassword(String password)
-    {
-        this.newPassword = password;
         return this;
     }
 
@@ -135,33 +100,10 @@ public class AccountManager
     }
 
     /**
-     * Used to update the password used with authentication.<br>
-     * This is <b><u>NOT</u></b> used to changed the password. This is used when the password of
-     * the account was changed using a different service (Discord website or Discord client) while the
-     * bot was still running.
-     * <p>
-     * If you would like to change the account's password, please use {@link #setPassword(String)}.
-     *
-     * @param password
-     *          The non-null updated account password.
-     * @return
-     *      This {@link net.dv8tion.jda.managers.AccountManager} instance.
-     */
-    public AccountManager updatePassword(String password)
-    {
-        if (password == null)
-            throw new IllegalArgumentException("Provided password cannot be null!");
-        this.password = password;
-        return this;
-    }
-
-    /**
      * Resets all queued updates. So the next call to {@link #update()} will change nothing.
      */
     public void reset() {
         avatar = null;
-        email = null;
-        newPassword = null;
         username = null;
     }
 
@@ -170,39 +112,21 @@ public class AccountManager
      */
     public void update()
     {
-        try
-        {
             JSONObject object = new JSONObject();
             object.put("avatar", avatar == null ? api.getSelfInfo().getAvatarId() : (avatar == AvatarUtil.DELETE_AVATAR ? JSONObject.NULL : avatar.getEncoded()));
-            object.put("email", email == null ? api.getSelfInfo().getEmail() : email);
-            if (newPassword != null)
-            {
-                object.put("new_password", newPassword);
-            }
-            object.put("password", password);
             object.put("username", username == null ? api.getSelfInfo().getUsername() : username);
 
             JSONObject result = api.getRequester().patch(Requester.DISCORD_API_PREFIX + "users/@me", object).getObject();
 
             if (result == null || !result.has("token"))
             {
-                throw new Exception("Something went wrong while changing the account settings.");
+                throw new RuntimeException("Something went wrong while changing the account settings.");
             }
 
             api.setAuthToken(result.getString("token"));
-            if (newPassword != null)
-            {
-                this.password = newPassword;
-            }
 
             this.avatar = null;
-            this.email = null;
-            this.newPassword = null;
             this.username = null;
-        } catch (Exception e)
-        {
-            JDAImpl.LOG.log(e);
-        }
     }
 
     private void updateStatusAndGame()

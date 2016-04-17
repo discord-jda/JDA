@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -110,8 +110,8 @@ public class Requester
             {
                 LOG.log(e);
             }
+            return new Response(e);
         }
-        return new Response(Response.connectionErrCode, null);
     }
 
     private <T extends HttpRequest> T addHeaders(T request)
@@ -133,6 +133,7 @@ public class Requester
 
     public static class Response {
         public static final int connectionErrCode = -1;
+        public final Exception exception;
         public final int code;
         public final String responseText;
 
@@ -140,6 +141,14 @@ public class Requester
         {
             this.code = code;
             this.responseText = response;
+            this.exception = null;
+        }
+
+        private Response(Exception exception)
+        {
+            this.code = connectionErrCode;
+            this.responseText = null;
+            this.exception = exception;
         }
 
         public boolean isOk()
@@ -178,7 +187,8 @@ public class Requester
 
         public String toString()
         {
-            return "HTTPResponse[" + code + ": " + responseText + ']';
+            return exception == null ? "HTTPResponse[" + code + ": " + responseText + ']'
+                    : "HTTPException[" + exception.getMessage() + ']';
         }
     }
 }

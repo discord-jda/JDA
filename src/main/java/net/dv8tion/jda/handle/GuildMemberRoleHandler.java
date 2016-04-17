@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,6 +51,13 @@ public class GuildMemberRoleHandler extends SocketHandler
         User user = api.getUserMap().get(userJson.getString("id"));
         List<Role> rolesNew = toRolesList(guild, content.getJSONArray("roles"));
         List<Role> rolesOld = guild.getUserRoles().get(user);
+
+        if(rolesOld == null)
+        {
+            //something is fishy...
+            JDAImpl.LOG.warn("Got role-update for user which is not in guild? " + content.toString());
+            return null;
+        }
 
         //Find the roles removed.
         List<Role> removedRoles = new LinkedList<>();

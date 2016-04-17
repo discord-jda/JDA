@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Represents a Text message received from Discord.<br>
@@ -186,6 +187,20 @@ public interface Message
      * @return a new Message-Object for the edited message
      */
     Message updateMessage(String newContent);
+
+    /**
+     * Edits this Messages content to the provided String.
+     * If The Message was not created by this account, this does not have any effect.
+     * After the message has been edited, the corresponding new {@link net.dv8tion.jda.entities.Message Message} object is passed to the callback-function
+     * This method will wait, and update later, if a Rate-Limit occurs.
+     *
+     * @param newContent
+     *      the new content of the Message
+     * @param callback
+     *      the Callback-function that is called upon successful edit with the Message-object of the edited message or null, if editing failed.
+     *      You can pass null as callback, if you do not need the updated Message-object.
+     */
+    void updateMessageAsync(String newContent, Consumer<Message> callback);
 
     /**
      * Deletes this Message from the server.

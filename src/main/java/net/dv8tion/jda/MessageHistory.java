@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,12 +36,12 @@ public class MessageHistory
     private boolean atEnd = false;
     private final List<Message> queued = new LinkedList<>();
 
-    public MessageHistory(JDA api, MessageChannel channel)
+    public MessageHistory(MessageChannel channel)
     {
+        this.api = (channel instanceof TextChannel) ? (JDAImpl) ((TextChannel) channel).getJDA() : (JDAImpl) ((PrivateChannel) channel).getJDA();
         if (channel instanceof TextChannel && !((TextChannel) channel).checkPermission(api.getSelfInfo(), Permission.MESSAGE_HISTORY))
             throw new PermissionException(Permission.MESSAGE_HISTORY);
 
-        this.api = ((JDAImpl) api);
         this.channelId = (channel instanceof TextChannel) ? ((TextChannel) channel).getId() : ((PrivateChannel) channel).getId();
     }
 
