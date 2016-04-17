@@ -44,12 +44,12 @@ public class JDABuilder
     protected static boolean jdaCreated = false;
     protected static String proxyUrl = null;
     protected static int proxyPort = -1;
-    final List<Object> listeners;
-    String token = null;
-    boolean enableVoice = true;
-    boolean useAnnotatedManager = false;
-    IEventManager eventManager = null;
-    boolean reconnect = true;
+    protected final List<Object> listeners;
+    protected String token = null;
+    protected boolean enableVoice = true;
+    protected boolean useAnnotatedManager = false;
+    protected IEventManager eventManager = null;
+    protected boolean reconnect = true;
 
     /**
      * Creates a completely empty JDABuilder.<br>
