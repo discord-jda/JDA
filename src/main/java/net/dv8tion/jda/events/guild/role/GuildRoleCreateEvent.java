@@ -13,24 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.events.guild;
+
+package net.dv8tion.jda.events.guild.role;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.Role;
+import net.dv8tion.jda.events.guild.GenericGuildEvent;
 
-public class GuildRoleDeleteEvent extends GenericGuildEvent
+public class GuildRoleCreateEvent extends GenericGuildEvent
 {
-    private final Role deletedRole;
+    private final Role createdRole;
 
-    public GuildRoleDeleteEvent(JDA api, int responseNumber, Guild guild, Role deletedRole)
+    public GuildRoleCreateEvent(JDA api, int responseNumber, Guild guild, Role createdRole)
     {
         super(api, responseNumber, guild);
-        this.deletedRole = deletedRole;
+        this.createdRole = createdRole;
     }
 
     public Role getRole()
     {
-        return deletedRole;
+        return createdRole;
     }
 }

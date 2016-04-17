@@ -18,7 +18,7 @@ package net.dv8tion.jda.handle;
 import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.entities.impl.GuildImpl;
 import net.dv8tion.jda.entities.impl.JDAImpl;
-import net.dv8tion.jda.events.guild.GuildRoleDeleteEvent;
+import net.dv8tion.jda.events.guild.role.GuildRoleDeleteEvent;
 import net.dv8tion.jda.requests.GuildLock;
 import org.json.JSONObject;
 
