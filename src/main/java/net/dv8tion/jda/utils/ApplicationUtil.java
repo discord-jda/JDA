@@ -45,7 +45,7 @@ public class ApplicationUtil
         {
             perm = perm | (1 << permission.getOffset());
         }
-        return "https://discordapp.com/oauth2/authorize?&client_id=" + appId + "&scope=bot&permissions=" + perm;
+        return "https://discordapp.com/oauth2/authorize?client_id=" + appId + "&scope=bot&permissions=" + perm;
     }
 
     private final JDAImpl api;
@@ -496,7 +496,7 @@ public class ApplicationUtil
              */
             public String getAuthInvite(Permission... perms)
             {
-                return ApplicationUtil.getAuthInvite(id, perms);
+                return ApplicationUtil.getAuthInvite(Application.this.id, perms);
             }
 
             @Override
