@@ -18,6 +18,7 @@ package net.dv8tion.jda.hooks;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.Event;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -44,6 +45,12 @@ public class InterfacedEventManager implements IEventManager
     public void unregister(Object listener)
     {
         listeners.remove(listener);
+    }
+
+    @Override
+    public List<Object> getRegisteredListeners()
+    {
+        return Collections.unmodifiableList(listeners);
     }
 
     @Override

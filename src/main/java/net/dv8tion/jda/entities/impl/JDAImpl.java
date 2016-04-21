@@ -208,6 +208,12 @@ public class JDAImpl implements JDA
         getEventManager().unregister(listener);
     }
 
+    @Override
+    public List<Object> getRegisteredListeners()
+    {
+        return Collections.unmodifiableList(getEventManager().getRegisteredListeners());
+    }
+
     public IEventManager getEventManager()
     {
         return eventManager;
