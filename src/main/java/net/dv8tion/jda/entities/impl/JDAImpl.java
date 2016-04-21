@@ -62,6 +62,7 @@ public class JDAImpl implements JDA
     private final Map<String, String> offline_pms = new HashMap<>();    //Userid -> channelid
     private final Map<Guild, AudioManager> audioManagers = new HashMap<>();
     private final boolean audioEnabled;
+    private final boolean useShutdownHook;
     private IEventManager eventManager = new InterfacedEventManager();
     private SelfInfo selfInfo = null;
     private AccountManager accountManager;
@@ -72,16 +73,17 @@ public class JDAImpl implements JDA
     private int responseTotal;
     private Long messageLimit = null;
 
-    public JDAImpl(boolean enableAudio)
+    public JDAImpl(boolean enableAudio, boolean useShutdownHook)
     {
         proxy = null;
         if (enableAudio)
             this.audioEnabled = AudioManagerImpl.init();
         else
             this.audioEnabled = false;
+        this.useShutdownHook = useShutdownHook;
     }
 
-    public JDAImpl(String proxyUrl, int proxyPort, boolean enableAudio)
+    public JDAImpl(String proxyUrl, int proxyPort, boolean enableAudio, boolean useShutdownHook)
     {
         if (proxyUrl == null || proxyUrl.isEmpty() || proxyPort == -1)
             throw new IllegalArgumentException("The provided proxy settings cannot be used to make a proxy. Settings: URL: '" + proxyUrl + "'  Port: " + proxyPort);
@@ -91,6 +93,7 @@ public class JDAImpl implements JDA
             this.audioEnabled = AudioManagerImpl.init();
         else
             this.audioEnabled = false;
+        this.useShutdownHook = useShutdownHook;
     }
 
     /**
@@ -118,6 +121,19 @@ public class JDAImpl implements JDA
         LOG.info("Login Successful!");
         client = new WebSocketClient(this, proxy);
         client.setAutoReconnect(reconnect);
+
+
+        if (useShutdownHook)
+        {
+            Runtime.getRuntime().addShutdownHook(new Thread()
+            {
+                @Override
+                public void run()
+                {
+                    JDAImpl.this.shutdown();
+                }
+            });
+        }
     }
 
     private boolean validate(String authToken)

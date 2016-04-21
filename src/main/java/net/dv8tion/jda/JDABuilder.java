@@ -47,6 +47,7 @@ public class JDABuilder
     protected final List<Object> listeners;
     protected String token = null;
     protected boolean enableVoice = true;
+    protected boolean enableShutdownHook = true;
     protected boolean useAnnotatedManager = false;
     protected IEventManager eventManager = null;
     protected boolean reconnect = true;
@@ -118,6 +119,22 @@ public class JDABuilder
     public JDABuilder setAudioEnabled(boolean enabled)
     {
         this.enableVoice = enabled;
+        return this;
+    }
+
+    /**
+     * Enables/Disables the use of a Shutdown hook to clean up JDA.<br>
+     * When the Java program closes shutdown hooks are run. This is used as a last-second cleanup
+     * attempt by JDA to properly severe connections.
+     *
+     * @param enable
+     *          True (default) - use shutdown hook to clean up JDA if the Java program is closed.
+     * @return
+     *      Return the {@link net.dv8tion.jda.JDABuilder JDABuilder } instance. Useful for chaining.
+     */
+    public JDABuilder setEnableShutdownHook(boolean enable)
+    {
+        this.enableShutdownHook = enable;
         return this;
     }
 
@@ -232,9 +249,9 @@ public class JDABuilder
         jdaCreated = true;
         JDAImpl jda;
         if (proxySet)
-            jda = new JDAImpl(proxyUrl, proxyPort, enableVoice);
+            jda = new JDAImpl(proxyUrl, proxyPort, enableVoice, enableShutdownHook);
         else
-            jda = new JDAImpl(enableVoice);
+            jda = new JDAImpl(enableVoice, enableShutdownHook);
         jda.setAutoReconnect(reconnect);
         if (eventManager != null)
         {
