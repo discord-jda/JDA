@@ -95,8 +95,8 @@ public class AudioWebSocket extends WebSocketAdapter
         try
         {
             socket = factory.createSocket(wssEndpoint)
-                    .addListener(this)
-                    .connect();
+                    .addListener(this);
+            socket.connect();
         }
         catch (IOException | WebSocketException e)
         {
