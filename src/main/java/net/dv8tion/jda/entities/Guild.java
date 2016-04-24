@@ -288,6 +288,16 @@ public interface Guild
     VerificationLevel getVerificationLevel();
 
     /**
+     * Checks if the current Verification-level of this guild allows JDA to send messages to it.
+     *
+     * @return
+     *      True if Verification-level allows sending of messages, false if not.
+     * @see VerificationLevel
+     *      VerificationLevel Enum with a list of possible verification-levels and their requirements
+     */
+    boolean checkVerification();
+
+    /**
      * Returns whether or not this Guild is available. A Guild can be unavailable, if the Discord server has problems.
      * If a Guild is unavailable, no actions on it can be performed (Messages, Manager,...)
      *

@@ -24,6 +24,7 @@ import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.exceptions.PermissionException;
 import net.dv8tion.jda.exceptions.RateLimitedException;
+import net.dv8tion.jda.exceptions.VerificationLevelException;
 import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.managers.ChannelManager;
 import net.dv8tion.jda.managers.PermissionOverrideManager;
@@ -147,7 +148,7 @@ public class TextChannelImpl implements TextChannel
     @Override
     public Message sendMessage(Message msg)
     {
-        ((GuildImpl) guild).checkVerification();
+        checkVerification();
         SelfInfo self = getJDA().getSelfInfo();
         if (!checkPermission(self, Permission.MESSAGE_WRITE))
             throw new PermissionException(Permission.MESSAGE_WRITE);
@@ -188,7 +189,7 @@ public class TextChannelImpl implements TextChannel
     @Override
     public void sendMessageAsync(Message msg, Consumer<Message> callback)
     {
-        ((GuildImpl) guild).checkVerification();
+        checkVerification();
         SelfInfo self = getJDA().getSelfInfo();
         if (!checkPermission(self, Permission.MESSAGE_WRITE))
             throw new PermissionException(Permission.MESSAGE_WRITE);
@@ -200,7 +201,7 @@ public class TextChannelImpl implements TextChannel
     @Override
     public Message sendFile(File file, Message message)
     {
-        ((GuildImpl) guild).checkVerification();
+        checkVerification();
         if (!checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_WRITE))
             throw new PermissionException(Permission.MESSAGE_WRITE);
         if (!checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_ATTACH_FILES))
@@ -247,7 +248,7 @@ public class TextChannelImpl implements TextChannel
     @Override
     public void sendFileAsync(File file, Message message, Consumer<Message> callback)
     {
-        ((GuildImpl) guild).checkVerification();
+        checkVerification();
         if (!checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_WRITE))
             throw new PermissionException(Permission.MESSAGE_WRITE);
         if (!checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_ATTACH_FILES))
@@ -353,6 +354,14 @@ public class TextChannelImpl implements TextChannel
     public Map<Role, PermissionOverride> getRolePermissionOverridesMap()
     {
         return rolePermissionOverrides;
+    }
+
+    private void checkVerification()
+    {
+        if (!((GuildImpl) guild).checkVerification())
+        {
+            throw new VerificationLevelException(guild.getVerificationLevel());
+        }
     }
 
     @Override
