@@ -167,6 +167,17 @@ public interface Guild
     List<Role> getRoles();
 
     /**
+     * This returns the {@link net.dv8tion.jda.entities.Role Role} which has the same id as the one provided.<br>
+     * If there is no {@link net.dv8tion.jda.entities.Role Role} that matches the requested id, <code>null</code> is returned.
+     *
+     * @param id
+     *      The id of the {@link net.dv8tion.jda.entities.Role Role}.
+     * @return
+     *      Possibly-null Role with matching id.
+     */
+    Role getRoleById(String id);
+
+    /**
      * Creates a new {@link net.dv8tion.jda.entities.Role Role} in this Guild.
      * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.Permission#MANAGE_ROLES MANAGE_ROLES Permission}
      *

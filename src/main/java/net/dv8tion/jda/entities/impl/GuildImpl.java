@@ -214,6 +214,12 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    public Role getRoleById(String id)
+    {
+        return roles.get(id);
+    }
+
+    @Override
     public RoleManager createRole()
     {
         if (!PermissionUtil.checkPermission(getJDA().getSelfInfo(), Permission.MANAGE_ROLES, this))
