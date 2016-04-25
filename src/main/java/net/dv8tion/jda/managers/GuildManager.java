@@ -619,7 +619,7 @@ public class GuildManager
     }
 
     /**
-     * Bans the {@link net.dv8tion.jda.entities.User User} specified by the userId nd deletes messages sent by the user
+     * Bans the {@link net.dv8tion.jda.entities.User User} specified by the userId and deletes messages sent by the user
      * based on the amount of delDays.<br>
      * If you wish to ban a user without deleting any messages, provide delDays with a value of 0.
      * This change will be applied immediately.

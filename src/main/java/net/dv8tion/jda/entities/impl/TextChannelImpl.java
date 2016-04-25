@@ -358,7 +358,7 @@ public class TextChannelImpl implements TextChannel
 
     private void checkVerification()
     {
-        if (!((GuildImpl) guild).checkVerification())
+        if (!guild.checkVerification())
         {
             throw new VerificationLevelException(guild.getVerificationLevel());
         }
