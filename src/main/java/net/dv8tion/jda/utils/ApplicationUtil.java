@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.utils;
 
+import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.requests.Requester;
@@ -27,6 +28,29 @@ import java.util.Set;
 
 public class ApplicationUtil
 {
+
+    /**
+     * Tries to retrieve the application-id of the Application that owns the logged in Bot-account.
+     * This requires a JDA instance of a bot account for which it retrieves the parent application.
+     *
+     * @param jda
+     *      The jda-instance of a bot account.
+     * @return
+     *      The application-id of the parent Application of the bot account or null on failure.
+     */
+    public static String getApplicationId(JDA jda) {
+        Requester.Response response = ((JDAImpl) jda).getRequester().get(Requester.DISCORD_API_PREFIX + "oauth2/applications/@me");
+        if (response.isOk())
+        {
+            return response.getObject().getString("id");
+        }
+        else
+        {
+            JDAImpl.LOG.debug("Fetching Application-id failed. Response: " + response.toString());
+            return null;
+        }
+    }
+
     /**
      * Creates a OAuth invite-link used to invite bot-accounts.
      * This method does not check if the given application actually has a bot-account assigned.
@@ -302,6 +326,7 @@ public class ApplicationUtil
             throw new RuntimeException("Error creating a new Bot: " + response.toString());
         }
 
+        //TODO: Remove May 1st
         /**
          * Tries to migrate a normal-account to a bot-account and assign it to this Application.
          * For this to succeed, following must be true:<br>
