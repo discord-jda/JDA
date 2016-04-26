@@ -72,6 +72,24 @@ public class ApplicationUtil
         return "https://discordapp.com/oauth2/authorize?client_id=" + appId + "&scope=bot&permissions=" + perm;
     }
 
+    /**
+     * Creates a OAuth invite-link used to invite bot-accounts.
+     * This requires a JDA instance of a bot account for which it retrieves the parent application.
+     *
+     * @param jda
+     *      The JDA instance of a bot-account
+     * @param perms
+     *      Possibly empty list of Permissions that should be requested via invite
+     * @return
+     *      The link used to invite the bot or null on failure
+     */
+    public static String getAuthInvite(JDA jda, Permission... perms)
+    {
+        String applicationId = getApplicationId(jda);
+        return applicationId == null ? null : getAuthInvite(applicationId, perms);
+    }
+
+
     private final JDAImpl api;
 
     /**
