@@ -28,6 +28,46 @@ import java.util.Map;
 public class PermissionUtil
 {
 
+    /**
+     * Checks if one given User can kick a 2nd given User from given Guild.
+     *
+     * @param issuer
+     *      The user that tries to kick 2nd user
+     * @param target
+     *      The user that is the target of the kick
+     * @param guild
+     *      The guild where permissions should be checked in
+     * @return
+     *      True, if issuer can kick target in guild
+     */
+    public static boolean canKick(User issuer, User target, Guild guild)
+    {
+        return !checkPermission(target, Permission.MANAGE_ROLES, guild) &&
+                (checkPermission(issuer, Permission.MANAGE_ROLES, guild) ||
+                    (checkPermission(issuer, Permission.KICK_MEMBERS, guild) &&
+                            !checkPermission(target, Permission.KICK_MEMBERS, guild)));
+    }
+
+    /**
+     * Checks if one given User can ban a 2nd given User from given Guild.
+     *
+     * @param issuer
+     *      The user that tries to ban 2nd user
+     * @param target
+     *      The user that is the target of the ban
+     * @param guild
+     *      The guild where permissions should be checked in
+     * @return
+     *      True, if issuer can ban target in guild
+     */
+    public static boolean canBan(User issuer, User target, Guild guild)
+    {
+        return !checkPermission(target, Permission.MANAGE_ROLES, guild) &&
+                (checkPermission(issuer, Permission.MANAGE_ROLES, guild) ||
+                        (checkPermission(issuer, Permission.BAN_MEMBERS, guild) &&
+                                !checkPermission(target, Permission.BAN_MEMBERS, guild)));
+    }
+
     public static PermissionOverride getFullPermOverride()
     {
         PermissionOverrideImpl override = new PermissionOverrideImpl(null, null, null);

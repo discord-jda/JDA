@@ -570,7 +570,16 @@ public class GuildManager
      */
     public void kick(User user)
     {
-        kick(user.getId());
+        if (!guild.isAvailable())
+        {
+            throw new GuildUnavailableException();
+        }
+        checkPermission(Permission.KICK_MEMBERS);
+        if(!PermissionUtil.canKick(guild.getJDA().getSelfInfo(), user, guild))
+            throw new PermissionException("You can't kick requested user due to him having equal/higher perms");
+
+        ((JDAImpl) guild.getJDA()).getRequester().delete(Requester.DISCORD_API_PREFIX + "guilds/"
+                + guild.getId() + "/members/" + user.getId());
     }
 
     /**
@@ -587,14 +596,9 @@ public class GuildManager
      */
     public void kick(String userId)
     {
-        if (!guild.isAvailable())
-        {
-            throw new GuildUnavailableException();
-        }
-        checkPermission(Permission.KICK_MEMBERS);
-
-        ((JDAImpl) guild.getJDA()).getRequester().delete(Requester.DISCORD_API_PREFIX + "guilds/"
-                + guild.getId() + "/members/" + userId);
+        User user = guild.getJDA().getUserById(userId);
+        if(user != null)
+            kick(user);
     }
 
     /**
@@ -615,7 +619,16 @@ public class GuildManager
      */
     public void ban(User user, int delDays)
     {
-        ban(user.getId(), delDays);
+        if (!guild.isAvailable())
+        {
+            throw new GuildUnavailableException();
+        }
+        checkPermission(Permission.BAN_MEMBERS);
+        if(!PermissionUtil.canBan(guild.getJDA().getSelfInfo(), user, guild))
+            throw new PermissionException("You can't ban requested user due to him having equal/higher perms");
+
+        ((JDAImpl) guild.getJDA()).getRequester().put(Requester.DISCORD_API_PREFIX + "guilds/"
+                + guild.getId() + "/bans/" + user.getId() + (delDays > 0 ? "?delete-message-days=" + delDays : ""), new JSONObject());
     }
 
     /**
@@ -636,14 +649,9 @@ public class GuildManager
      */
     public void ban(String userId, int delDays)
     {
-        if (!guild.isAvailable())
-        {
-            throw new GuildUnavailableException();
-        }
-        checkPermission(Permission.BAN_MEMBERS);
-
-        ((JDAImpl) guild.getJDA()).getRequester().put(Requester.DISCORD_API_PREFIX + "guilds/"
-                + guild.getId() + "/bans/" + userId + (delDays > 0 ? "?delete-message-days=" + delDays : ""), new JSONObject());
+        User user = guild.getJDA().getUserById(userId);
+        if(user != null)
+            ban(user, delDays);
     }
 
     /**
