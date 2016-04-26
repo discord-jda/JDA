@@ -47,6 +47,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     private final JDAImpl api;
 
+    private final int[] sharding;
     private final HttpHost proxy;
     private WebSocket socket;
     private String gatewayUrl = null;
@@ -70,9 +71,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     private WebSocketCustomHandler customHandler;
 
-    public WebSocketClient(JDAImpl api, HttpHost proxy)
+    public WebSocketClient(JDAImpl api, HttpHost proxy, int[] sharding)
     {
         this.api = api;
+        this.sharding = sharding;
         this.proxy = proxy;
         connect();
     }
@@ -340,7 +342,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     private void sendIdentify()
     {
         LOG.debug("Sending Identify-packet...");
-        send(new JSONObject()
+        JSONObject identify = new JSONObject()
                 .put("op", 2)
                 .put("d", new JSONObject()
                         .put("token", api.getAuthToken())
@@ -353,8 +355,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                         )
                         .put("v", 4)
                         .put("large_threshold", 250)
-                        .put("compress", true))
-                .toString()); //Used to make the READY event be given as compressed binary data when over a certain size. TY @ShadowLordAlpha
+                        .put("compress", true));
+        if (sharding != null)
+        {
+            identify.getJSONObject("d").put("shard", new JSONArray().put(sharding[0]).put(sharding[1]));
+        }
+        send(identify.toString()); //Used to make the READY event be given as compressed binary data when over a certain size. TY @ShadowLordAlpha
     }
 
     private void sendResume()

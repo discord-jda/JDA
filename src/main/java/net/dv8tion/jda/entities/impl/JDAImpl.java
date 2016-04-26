@@ -101,16 +101,23 @@ public class JDAImpl implements JDA
      *
      * @param token
      *          The token of the bot-account attempting to log in.
+     * @param sharding
+     *          A array of length 2 used for sharding or null. Refer to JDABuilder#useSharding for more details
      * @throws IllegalArgumentException
-     *          Thrown if the botToken provided is empty or null.
+     *          Thrown if: <ul>
+     *              <li>the botToken provided is empty or null.</li>
+     *              <li>The sharding parameter is invalid.</li>
+     *          </ul>
      * @throws LoginException
      *          Thrown if the token fails the auth check with the Discord servers.
      */
-    public void login(String token) throws IllegalArgumentException, LoginException
+    public void login(String token, int[] sharding) throws IllegalArgumentException, LoginException
     {
         LOG.info("JDA starting...");
         if (token == null || token.isEmpty())
             throw new IllegalArgumentException("The provided botToken was empty / null.");
+        if (sharding != null && (sharding.length != 2 || sharding[0] < 0 || sharding[0] >= sharding[1] || sharding[1] < 2))
+            throw new IllegalArgumentException("Sharding array is wrong. please refer to JDABuilder#useSharding for help");
 
         accountManager = new AccountManager(this);
 
@@ -119,7 +126,7 @@ public class JDAImpl implements JDA
         }
 
         LOG.info("Login Successful!");
-        client = new WebSocketClient(this, proxy);
+        client = new WebSocketClient(this, proxy, sharding);
         client.setAutoReconnect(reconnect);
 
 
