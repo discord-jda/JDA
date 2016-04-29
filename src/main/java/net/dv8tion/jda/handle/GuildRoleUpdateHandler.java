@@ -64,6 +64,9 @@ public class GuildRoleUpdateHandler extends SocketHandler
             role.setGrouped(rolejson.getBoolean("hoist"));
             api.getEventManager().handle(new GuildRoleUpdateGroupedEvent(api, responseNumber, role));
         }
+        if (role.isMentionable() != rolejson.getBoolean("mentionable"))
+            role.setMentionable(rolejson.getBoolean("mentionable"));
+        //TODO: Add event?
         api.getEventManager().handle(new GuildRoleUpdateEvent(api, responseNumber, role));
         return null;
     }

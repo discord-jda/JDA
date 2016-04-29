@@ -52,6 +52,7 @@ public class GuildImpl implements Guild
     private final Map<String, Role> roles = new HashMap<>();
     private final Map<User, VoiceStatus> voiceStatusMap = new HashMap<>();
     private final Map<User, OffsetDateTime> joinedAtMap = new HashMap<>();
+    private final Map<User, String> nickMap = new HashMap<>();
     private Role publicRole;
     private TextChannel publicChannel;
     private final JDAImpl api;
@@ -293,6 +294,12 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    public String getNicknameForUser(User user)
+    {
+        return nickMap.get(user);
+    }
+
+    @Override
     public VerificationLevel getVerificationLevel()
     {
         return verificationLevel;
@@ -403,6 +410,11 @@ public class GuildImpl implements Guild
     public Map<User, OffsetDateTime> getJoinedAtMap()
     {
         return joinedAtMap;
+    }
+
+    public Map<User, String> getNickMap()
+    {
+        return nickMap;
     }
 
     public GuildImpl setVerificationLevel(VerificationLevel level)

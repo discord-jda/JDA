@@ -240,6 +240,7 @@ public class EntityBuilder
         Map<User, List<Role>> userRoles = guildObj.getUserRoles();
         Map<User, VoiceStatus> voiceStatusMap = guildObj.getVoiceStatusMap();
         Map<User, OffsetDateTime> joinedAtMap = guildObj.getJoinedAtMap();
+        Map<User, String> nickMap = guildObj.getNickMap();
         for (int i = 0; i < members.length(); i++)
         {
             JSONObject member = members.getJSONObject(i);
@@ -257,6 +258,8 @@ public class EntityBuilder
             voiceStatus.setServerMute(member.getBoolean("mute"));
             voiceStatusMap.put(user, voiceStatus);
             joinedAtMap.put(user, OffsetDateTime.parse(member.getString("joined_at")));
+            if(member.has("nick") && !member.isNull("nick"))
+                nickMap.put(user, member.getString("nick"));
         }
     }
 
@@ -350,10 +353,11 @@ public class EntityBuilder
             guild.getRolesMap().put(id, role);
         }
         role.setName(roleJson.getString("name"))
-            .setPosition(roleJson.getInt("position"))
-            .setPermissions(roleJson.getInt("permissions"))
-            .setManaged(roleJson.getBoolean("managed"))
-            .setGrouped(roleJson.getBoolean("hoist"));
+                .setPosition(roleJson.getInt("position"))
+                .setPermissions(roleJson.getInt("permissions"))
+                .setManaged(roleJson.getBoolean("managed"))
+                .setGrouped(roleJson.getBoolean("hoist"))
+                .setMentionable(roleJson.has("mentionable") && roleJson.getBoolean("mentionable"));
         try
         {
             role.setColor(roleJson.getInt("color"));
@@ -457,6 +461,17 @@ public class EntityBuilder
                     mentioned.add(u);
             }
             message.setMentionedUsers(mentioned);
+
+            List<Role> mentionedRoles = new LinkedList<>();
+            JSONArray roleMentions = jsonObject.getJSONArray("mention_roles");
+            for (int i = 0; i < roleMentions.length(); i++)
+            {
+                String roleId = roleMentions.getString(i);
+                Role r = textChannel.getGuild().getRoleById(roleId);
+                if (r != null)
+                    mentionedRoles.add(r);
+            }
+            message.setMentionedRoles(mentionedRoles);
 
             List<TextChannel> mentionedChannels = new LinkedList<>();
             Map<String, TextChannel> chanMap = ((GuildImpl) textChannel.getGuild()).getTextChannelsMap();

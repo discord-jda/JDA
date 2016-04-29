@@ -95,6 +95,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildMemberUnban(GuildMemberUnbanEvent event) {}
     public void onGuildMemberRoleAdd(GuildMemberRoleAddEvent event) {}
     public void onGuildMemberRoleRemove(GuildMemberRoleRemoveEvent event) {}
+    public void onGuildMemberNickChange(GuildMemberNickChangeEvent event) {}
     public void onGuildRoleCreate(GuildRoleCreateEvent event) {}
     public void onGuildRoleDelete(GuildRoleDeleteEvent event) {}
 
@@ -253,6 +254,8 @@ public abstract class ListenerAdapter implements EventListener
             onGuildMemberRoleAdd((GuildMemberRoleAddEvent) event);
         else if (event instanceof GuildMemberRoleRemoveEvent)
             onGuildMemberRoleRemove((GuildMemberRoleRemoveEvent) event);
+        else if (event instanceof GuildMemberNickChangeEvent)
+            onGuildMemberNickChange((GuildMemberNickChangeEvent) event);
         else if (event instanceof GuildRoleCreateEvent)
             onGuildRoleCreate((GuildRoleCreateEvent) event);
         else if (event instanceof GuildRoleDeleteEvent)

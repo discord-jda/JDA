@@ -60,6 +60,22 @@ public interface Role
     boolean isGrouped();
 
     /**
+     * Returns wheter or not this Role is mentionable
+     *
+     * @return
+     *      True if Role is mentionable.
+     */
+    boolean isMentionable();
+
+    /**
+     * Returns the String needed to mention this Role in a {@link net.dv8tion.jda.entities.Message Message}.
+     *
+     * @return
+     *      The String needed to mention this Role
+     */
+    String getAsMention();
+
+    /**
      * The ID of this {@link net.dv8tion.jda.entities.Role Role}.
      *
      * @return

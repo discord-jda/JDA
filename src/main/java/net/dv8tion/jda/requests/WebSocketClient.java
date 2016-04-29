@@ -590,7 +590,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     new GuildMemberAddHandler(api, responseTotal).handle(raw);
                     break;
                 case "GUILD_MEMBER_UPDATE":
-                    new GuildMemberRoleHandler(api, responseTotal).handle(raw);
+                    new GuildMemberUpdateHandler(api, responseTotal).handle(raw);
                     break;
                 case "GUILD_MEMBER_REMOVE":
                     new GuildMemberRemoveHandler(api, responseTotal).handle(raw);

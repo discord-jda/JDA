@@ -281,6 +281,16 @@ public interface Guild
     List<VoiceStatus> getVoiceStatuses();
 
     /**
+     * Returns the current nickname of a user in this Guild.
+     *
+     * @param user
+     *      The user to check.
+     * @return
+     *      The nickname or null, if no nickname is set.
+     */
+    String getNicknameForUser(User user);
+
+    /**
      * Returns the verification-Level of this Guild. For a short description of the different values, see {@link VerificationLevel}.
      * @return
      *      The Verification-Level of this Guild.

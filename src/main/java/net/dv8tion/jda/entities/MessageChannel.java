@@ -178,8 +178,8 @@ public interface MessageChannel
 
     /**
      * Sends the typing status to discord. This is what is used to make the message "X is typing..." appear.<br>
-     * The typing status only lasts for 5 seconds, so if you wish to show continuous typing you will need to
-     * call this method once every 5 seconds.
+     * The typing status only lasts for 10 seconds or until a message is sent.
+     * So if you wish to show continuous typing you will need to call this method once every 10 seconds.
      */
     void sendTyping();
 }

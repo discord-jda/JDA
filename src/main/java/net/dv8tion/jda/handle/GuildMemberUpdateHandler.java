@@ -19,21 +19,19 @@ import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.impl.GuildImpl;
 import net.dv8tion.jda.entities.impl.JDAImpl;
+import net.dv8tion.jda.events.guild.member.GuildMemberNickChangeEvent;
 import net.dv8tion.jda.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.requests.GuildLock;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
-public class GuildMemberRoleHandler extends SocketHandler
+public class GuildMemberUpdateHandler extends SocketHandler
 {
 
-    public GuildMemberRoleHandler(JDAImpl api, int responseNumber)
+    public GuildMemberUpdateHandler(JDAImpl api, int responseNumber)
     {
         super(api, responseNumber);
     }
@@ -100,6 +98,31 @@ public class GuildMemberRoleHandler extends SocketHandler
                     new GuildMemberRoleAddEvent(
                             api, responseNumber,
                             guild, user, rolesNew));
+        }
+        if (content.has("nick"))
+        {
+            Map<User, String> nickMap = guild.getNickMap();
+            String prevNick = nickMap.get(user);
+            if (content.isNull("nick") && prevNick != null)
+            {
+                nickMap.remove(user);
+                api.getEventManager().handle(
+                        new GuildMemberNickChangeEvent(
+                                api, responseNumber,
+                                guild, user, prevNick, null
+                        )
+                );
+            }
+            else if (!content.getString("nick").equals(prevNick))
+            {
+                nickMap.put(user, content.getString("nick"));
+                api.getEventManager().handle(
+                        new GuildMemberNickChangeEvent(
+                                api, responseNumber,
+                                guild, user, prevNick, content.getString("nick")
+                        )
+                );
+            }
         }
         return null;
     }
