@@ -16,7 +16,9 @@
 package net.dv8tion.jda.managers;
 
 import net.dv8tion.jda.OnlineStatus;
+import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.SelfInfo;
+import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.entities.impl.SelfInfoImpl;
 import net.dv8tion.jda.requests.Requester;
@@ -97,6 +99,29 @@ public class AccountManager
     {
         ((SelfInfoImpl) api.getSelfInfo()).setOnlineStatus(idle ? OnlineStatus.AWAY : OnlineStatus.ONLINE);
         updateStatusAndGame();
+    }
+
+    /**
+     * Changes this user's nickname in given guild.
+     * The nickname is visible to all users of the guild.
+     * This requires the correct Permissions to perform
+     * (either {@link net.dv8tion.jda.Permission#NICKNAME_MANAGE NICKNAME_MANAGE} or
+     * {@link net.dv8tion.jda.Permission#NICKNAME_CHANGE NICKNAME_CHANGE}).
+     *
+     * This change will be applied <b>immediately</b>
+     *
+     * @param guild
+     *      The guild where the nickname should be changed.
+     * @param nickname
+     *      The new nickname of this user, or null/"" to reset
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
+     * @see net.dv8tion.jda.managers.GuildManager#setNickname(User, String)
+     *      for more details
+     */
+    public void setNickname(Guild guild, String nickname)
+    {
+        guild.getManager().setNickname(api.getSelfInfo(), nickname);
     }
 
     /**

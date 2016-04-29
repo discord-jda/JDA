@@ -473,6 +473,45 @@ public class GuildManager
     }
 
     /**
+     * Changes a user's nickname in this guild.
+     * The nickname is visible to all users of this guild.
+     * This requires the correct Permissions to perform
+     * ({@link net.dv8tion.jda.Permission#NICKNAME_MANAGE NICKNAME_MANAGE} for others+self and
+     * {@link net.dv8tion.jda.Permission#NICKNAME_CHANGE NICKNAME_CHANGE} for only self).
+     *
+     * @param user
+     *      The user for which the nickname should be changed.
+     * @param nickname
+     *      The new nickname of the user, or null/"" to reset
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
+     */
+    public void setNickname(User user, String nickname)
+    {
+        if (!guild.isAvailable())
+        {
+            throw new GuildUnavailableException();
+        }
+
+        if(user == guild.getJDA().getSelfInfo())
+        {
+            if(!PermissionUtil.checkPermission(user, Permission.NICKNAME_CHANGE, guild) && !PermissionUtil.checkPermission(user, Permission.NICKNAME_MANAGE, guild))
+                throw new PermissionException(Permission.NICKNAME_CHANGE, "You neither have NICKNAME_CHANGE nor NICKNAME_MANAGE permission!");
+        }
+        else
+        {
+            checkPermission(Permission.NICKNAME_MANAGE);
+        }
+
+        if (nickname == null)
+            nickname = "";
+
+        ((JDAImpl) guild.getJDA()).getRequester()
+                .patch(Requester.DISCORD_API_PREFIX + "guilds/" + guild.getId() + "/members/" + user.getId(),
+                        new JSONObject().put("nick", nickname));
+    }
+
+    /**
      * Used to move a {@link net.dv8tion.jda.entities.User User} from one {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel}
      * to another {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel}.<br>
      * As a note, you cannot move a User that isn't already in a VoiceChannel. Also they must be in a VoiceChannel

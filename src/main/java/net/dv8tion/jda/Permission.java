@@ -44,6 +44,9 @@ public enum Permission
     VOICE_MOVE_OTHERS(24),
     VOICE_USE_VAD(25),
 
+    NICKNAME_CHANGE(26),
+    NICKNAME_MANAGE(27),
+
     UNKNOWN(-1);
 
     private final int offset;
