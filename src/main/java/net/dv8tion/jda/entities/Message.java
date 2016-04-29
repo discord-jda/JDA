@@ -54,6 +54,16 @@ public interface Message
     List<User> getMentionedUsers();
 
     /**
+     * Checks if given user was mentioned in this message in any way (@User, @everyone, @here).
+     *
+     * @param user
+     *      The user to check on.
+     * @return
+     *      True if the given user was mentioned in this message.
+     */
+    boolean isMentioned(User user);
+
+    /**
      * A immutable list of all mentioned {@link net.dv8tion.jda.entities.TextChannel TextChannels}. if none were mentioned, this list is empty
      * In {@link net.dv8tion.jda.entities.PrivateChannel PrivateChannel's}, this always returns an empty List
      *

@@ -75,6 +75,12 @@ public class MessageImpl implements Message
     }
 
     @Override
+    public boolean isMentioned(User user)
+    {
+        return mentionsEveryone() || mentionedUsers.contains(user);
+    }
+
+    @Override
     public List<TextChannel> getMentionedChannels()
     {
         return Collections.unmodifiableList(mentionedChannels);
