@@ -103,15 +103,18 @@ public class GuildMemberUpdateHandler extends SocketHandler
         {
             Map<User, String> nickMap = guild.getNickMap();
             String prevNick = nickMap.get(user);
-            if (content.isNull("nick") && prevNick != null)
+            if (content.isNull("nick"))
             {
-                nickMap.remove(user);
-                api.getEventManager().handle(
-                        new GuildMemberNickChangeEvent(
-                                api, responseNumber,
-                                guild, user, prevNick, null
-                        )
-                );
+                if (prevNick != null)
+                {
+                    nickMap.remove(user);
+                    api.getEventManager().handle(
+                            new GuildMemberNickChangeEvent(
+                                    api, responseNumber,
+                                    guild, user, prevNick, null
+                            )
+                    );
+                }
             }
             else if (!content.getString("nick").equals(prevNick))
             {
