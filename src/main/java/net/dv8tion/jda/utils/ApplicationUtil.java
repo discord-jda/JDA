@@ -344,50 +344,6 @@ public class ApplicationUtil
             throw new RuntimeException("Error creating a new Bot: " + response.toString());
         }
 
-        //TODO: Remove May 1st
-        /**
-         * Tries to migrate a normal-account to a bot-account and assign it to this Application.
-         * For this to succeed, following must be true:<br>
-         * <ul>
-         *     <li>This Application must not have a bot-account already assigned</li>
-         *     <li>The account to migrate must be a normal account</li>
-         *     <li>The account to migrate must not own Applications itself!</li>
-         * </ul><br>
-         * <b>Note: This is irreversible and will remove the possibility to login with email/password!
-         * Do not migrate an account you want to use in the client! Don't pull a Bastian!</b>
-         *
-         * @param email
-         *      The email of the account to migrate
-         * @param password
-         *      The password of the account to migrate
-         * @return
-         *      The new Bot-account
-         * @throws LoginException
-         *      If the login-credentials were incorrect
-         */
-        public Bot migrateBot(String email, String password) throws LoginException
-        {
-            if (hasBot())
-            {
-                throw new RuntimeException("Can't create a 2nd Bot for this Application!");
-            }
-            String tokenSave = api.getAuthToken();
-            api.setAuthToken(null);
-            String botToken = login(email, password);
-            api.setAuthToken(tokenSave);
-
-            Requester.Response response = api.getRequester().post(Requester.DISCORD_API_PREFIX + "oauth2/applications/" + id + "/bot",
-                    new JSONObject().put("token", botToken));
-            if (response.isOk())
-            {
-                JSONObject botO = response.getObject();
-                bot = new Bot(botO.getString("username"), botO.getString("discriminator"), botO.getString("token"),
-                        botO.getString("id"), botO.isNull("avatar") ? null : botO.getString("avatar"));
-                return bot;
-            }
-            throw new RuntimeException("Error creating a new Bot: " + response.toString());
-        }
-
         /**
          * Deletes this Application <b>and its assigned Bot (if present)</b>.
          */
