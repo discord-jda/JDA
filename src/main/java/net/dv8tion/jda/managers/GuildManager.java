@@ -506,9 +506,11 @@ public class GuildManager
         if (nickname == null)
             nickname = "";
 
+        String url = Requester.DISCORD_API_PREFIX + "guilds/" + guild.getId() + "/members/"
+                + (user == guild.getJDA().getSelfInfo() ? "@me/nick" : user.getId());
+
         ((JDAImpl) guild.getJDA()).getRequester()
-                .patch(Requester.DISCORD_API_PREFIX + "guilds/" + guild.getId() + "/members/" + user.getId(),
-                        new JSONObject().put("nick", nickname));
+                .patch(url, new JSONObject().put("nick", nickname));
     }
 
     /**
