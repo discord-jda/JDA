@@ -165,7 +165,7 @@ public class GuildImpl implements Guild
         else
         {
             TextChannel channel = new EntityBuilder(api).createTextChannel(response, getId());
-            return new ChannelManager(channel);
+            return channel.getManager();
         }
     }
 
@@ -201,7 +201,7 @@ public class GuildImpl implements Guild
         else
         {
             VoiceChannel channel = new EntityBuilder(api).createVoiceChannel(response, getId());
-            return new ChannelManager(channel);
+            return channel.getManager();
         }
     }
 
@@ -239,7 +239,7 @@ public class GuildImpl implements Guild
         else
         {
             Role role = new EntityBuilder(api).createRole(response, getId());
-            return new RoleManager(role);
+            return role.getManager();
         }
     }
 

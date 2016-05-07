@@ -22,12 +22,9 @@ import net.dv8tion.jda.exceptions.PermissionException;
 import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.requests.Requester;
 import net.dv8tion.jda.utils.PermissionUtil;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class RoleManager
 {
@@ -67,6 +64,7 @@ public class RoleManager
     public RoleManager setName(String name)
     {
         checkPermission(Permission.MANAGE_ROLES);
+        checkPosition();
 
         if (role.getName().equals(name))
         {
@@ -92,6 +90,7 @@ public class RoleManager
     public RoleManager setColor(int color)
     {
         checkPermission(Permission.MANAGE_ROLES);
+        checkPosition();
 
         if (color == role.getColor() || color < 0)
         {
@@ -116,6 +115,8 @@ public class RoleManager
      */
     public RoleManager setColor(Color color)
     {
+        checkPermission(Permission.MANAGE_ROLES);
+        checkPosition();
         return setColor(color == null ? -1 : color.getRGB() & 0xFFFFFF);
     }
 
@@ -132,6 +133,7 @@ public class RoleManager
     public RoleManager setGrouped(Boolean group)
     {
         checkPermission(Permission.MANAGE_ROLES);
+        checkPosition();
 
         if (group == null || group == role.isGrouped())
         {
@@ -155,20 +157,22 @@ public class RoleManager
      */
     public RoleManager move(int offset)
     {
-        checkPermission(Permission.MANAGE_ROLES);
-
-        List<Role> newOrder = new ArrayList<>();
-        role.getGuild().getRoles().stream().filter(r -> r != role && r != role.getGuild().getPublicRole())
-                .sorted((c1, c2) -> Integer.compare(c1.getPosition(), c2.getPosition())).forEachOrdered(newOrder::add);
-        int pos = Math.min(0, Math.max(newOrder.size(), role.getPosition() + offset));
-        newOrder.add(pos, role);
-        JSONArray arr = new JSONArray();
-        for (int i = 0; i < newOrder.size(); i++)
-        {
-            arr.put(new JSONObject().put("position", i + 1).put("id", newOrder.get(i).getId()));
-        }
-        ((JDAImpl) role.getJDA()).getRequester().patch(Requester.DISCORD_API_PREFIX + "guilds/" + role.getGuild().getId() + "/roles", arr);
-        return this;
+        throw new UnsupportedOperationException("This is temporarily disabled!");
+//        checkPermission(Permission.MANAGE_ROLES);
+//
+//        //TODO: FIX THIS (roles are now no longer 1 apart from each other position-wise)
+//        List<Role> newOrder = new ArrayList<>();
+//        role.getGuild().getRoles().stream().filter(r -> r != role && r != role.getGuild().getPublicRole())
+//                .sorted((c1, c2) -> Integer.compare(c1.getPosition(), c2.getPosition())).forEachOrdered(newOrder::add);
+//        int pos = Math.min(0, Math.max(newOrder.size(), role.getPosition() + offset));
+//        newOrder.add(pos, role);
+//        JSONArray arr = new JSONArray();
+//        for (int i = 0; i < newOrder.size(); i++)
+//        {
+//            arr.put(new JSONObject().put("position", i + 1).put("id", newOrder.get(i).getId()));
+//        }
+//        ((JDAImpl) role.getJDA()).getRequester().patch(Requester.DISCORD_API_PREFIX + "guilds/" + role.getGuild().getId() + "/roles", arr);
+//        return this;
     }
 
     /**
@@ -184,6 +188,12 @@ public class RoleManager
     public RoleManager give(Permission... perms)
     {
         checkPermission(Permission.MANAGE_ROLES);
+        checkPosition();
+        //we need to have all perms ourself
+        for (Permission perm : perms)
+        {
+            checkPermission(perm);
+        }
 
         for (Permission perm : perms)
         {
@@ -205,6 +215,11 @@ public class RoleManager
     public RoleManager revoke(Permission... perms)
     {
         checkPermission(Permission.MANAGE_ROLES);
+        checkPosition();
+        for (Permission perm : perms)
+        {
+            checkPermission(perm);
+        }
 
         for (Permission perm : perms)
         {
@@ -229,6 +244,7 @@ public class RoleManager
     public void update()
     {
         checkPermission(Permission.MANAGE_ROLES);
+        checkPosition();
 
         JSONObject frame = getFrame();
         if(name != null)
@@ -247,6 +263,7 @@ public class RoleManager
     public void delete()
     {
         checkPermission(Permission.MANAGE_ROLES);
+        checkPosition();
 
         ((JDAImpl) role.getJDA()).getRequester().delete(Requester.DISCORD_API_PREFIX + "guilds/" + role.getGuild().getId() + "/roles/" + role.getId());
     }
@@ -275,5 +292,11 @@ public class RoleManager
     {
         if (!PermissionUtil.checkPermission(role.getJDA().getSelfInfo(), perm, role.getGuild()))
             throw new PermissionException(perm);
+    }
+
+    private void checkPosition()
+    {
+        if(!PermissionUtil.canInteract(role.getJDA().getSelfInfo(), role))
+            throw new PermissionException("Can't modify role >= highest self-role");
     }
 }

@@ -110,7 +110,7 @@ public interface Role
     int getColor();
 
     /**
-     * Checks if this {@link net.dv8tion.jda.entities.Role Role} a
+     * Checks if this {@link net.dv8tion.jda.entities.Role Role} has a
      * {@link net.dv8tion.jda.entities.Guild Guild} level {@link net.dv8tion.jda.Permission Permission}.<br>
      * This does not check the Channel-specific override {@link net.dv8tion.jda.Permission Permission}.
      *
