@@ -27,10 +27,14 @@ import net.dv8tion.jda.exceptions.BlockedException;
 import net.dv8tion.jda.exceptions.RateLimitedException;
 import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.requests.Requester;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class PrivateChannelImpl implements PrivateChannel
@@ -201,4 +205,87 @@ public class PrivateChannelImpl implements PrivateChannel
     {
         return "PC:" + getUser().getUsername() + '(' + getId() + ')';
     }
+
+    /**
+     * Deletes all of the messages contained in <strong>messages</strong> from the server<br/>
+     * Calling this function with Messages created by another User will skip said Messages
+
+     * @param messages
+     *      a collection of messages to be deleted via bulk delete
+     */
+    public void deleteMessages(Collection<Message> messages, Consumer<Boolean> callback) throws RateLimitedException
+    {
+        if(messages.isEmpty()) 
+        {
+            callback.accept(true);
+            return;
+        }
+        Requester requester = this.api.getRequester();
+
+        // If only one message -> delete
+        // If more than one message -> bulk_delete
+        Thread t = new Thread(() -> 
+        {
+
+            List<List<String>> splitList = new LinkedList<>();
+
+            if (messages.size() == 1) 
+            {
+                Requester.Response response = requester.delete(Requester.DISCORD_API_PREFIX + "channels/" + id + "/messages/" + messages.iterator().next().getId());
+                callback.accept(response.isOk());
+            } 
+            else 
+            {
+                List<String> ids = new LinkedList<>();
+                splitList.add(ids);
+
+                messages.stream().filter(m -> m.getAuthor() == api.getSelfInfo()).forEach(m -> ids.add(m.getId()));
+
+                if (messages.size() > 100) 
+                {
+                    List<String> current = new LinkedList<>();
+                    current.addAll(ids);
+                    splitList.add(ids);
+
+                    while (current.size() > 100) 
+                    {
+                        List<String> next = current.subList(100, current.size());
+
+                        current.removeAll(next);
+
+                        splitList.add(next);
+
+                        current = next;
+                    }
+
+                }
+
+                final boolean[] error = {false};
+
+                splitList.stream().forEach(list -> 
+                {
+                    Requester.Response response = null;
+                    if (list.size() == 1)
+                        response = requester.delete(Requester.DISCORD_API_PREFIX + "channels/" + id + "/messages/" + list.get(0));
+                    else
+                        response = requester.post(Requester.DISCORD_API_PREFIX + "channels/" + id + "/messages/bulk_delete", new JSONObject().put("messages", new JSONArray(list.toString())));
+
+                    if(!response.isOk()) 
+                    {
+                        error[0] = true;
+                    }
+                    try 
+                    {
+                        Thread.sleep(1000);
+                    } 
+                    catch (InterruptedException ignored) 
+                    {
+                    }
+                });
+                callback.accept(!error[0]);
+            }
+        });
+        t.start();
+    }
+
 }
