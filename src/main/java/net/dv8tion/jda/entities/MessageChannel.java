@@ -26,7 +26,7 @@ import java.util.function.Consumer;
 public interface MessageChannel
 {
     /**
-     * Sents a plain text {@link net.dv8tion.jda.entities.Message Message} to this channel.
+     * Sends a plain text {@link net.dv8tion.jda.entities.Message Message} to this channel.
      * This will fail if the account of the api does not have the {@link net.dv8tion.jda.Permission#MESSAGE_WRITE Write-Permission}
      * for this channel set
      * After the Message has been sent, the created {@link net.dv8tion.jda.entities.Message Message} object is returned
