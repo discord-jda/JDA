@@ -165,7 +165,7 @@ public class GuildImpl implements Guild
         else
         {
             TextChannel channel = new EntityBuilder(api).createTextChannel(response, getId());
-            return new ChannelManager(channel);
+            return channel.getManager();
         }
     }
 
@@ -201,7 +201,7 @@ public class GuildImpl implements Guild
         else
         {
             VoiceChannel channel = new EntityBuilder(api).createVoiceChannel(response, getId());
-            return new ChannelManager(channel);
+            return channel.getManager();
         }
     }
 
@@ -239,7 +239,7 @@ public class GuildImpl implements Guild
         else
         {
             Role role = new EntityBuilder(api).createRole(response, getId());
-            return new RoleManager(role);
+            return role.getManager();
         }
     }
 
@@ -247,6 +247,18 @@ public class GuildImpl implements Guild
     public List<Role> getRolesForUser(User user)
     {
         return userRoles.get(user) == null ? new LinkedList<>() : Collections.unmodifiableList(userRoles.get(user));
+    }
+
+    @Override
+    public List<User> getUsersWithRole(Role role)
+    {
+        List<User> users = new LinkedList<>();
+        userRoles.entrySet().forEach(entry ->
+        {
+            if (entry.getValue().contains(role))
+                users.add(entry.getKey());
+        });
+        return Collections.unmodifiableList(users);
     }
 
     @Override

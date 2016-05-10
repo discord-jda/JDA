@@ -17,6 +17,7 @@ package net.dv8tion.jda.handle;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.impl.JDAImpl;
+import net.dv8tion.jda.utils.DebugUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -50,7 +51,18 @@ public class GuildMembersChunkHandler extends SocketHandler
         }
         if (!lastGuildId.equals(guildId))
         {
-            new EntityBuilder(api).createGuildSecondPass(lastGuildId, memberChunks);
+            try
+            {
+                new EntityBuilder(api).createGuildSecondPass(lastGuildId, memberChunks);
+            }
+            catch (Exception e)
+            {
+                JDAImpl.LOG.warn("Error occured when preforming guild second pass. Current JDA state: ");
+                JDAImpl.LOG.warn("\n" + DebugUtil.fromJDA(api, false, true, false, false, false).toString(4));
+                JDAImpl.LOG.warn("GUILD_MEMEBERS_CHUNK json: \n" + content.toString(4));
+                JDAImpl.LOG.warn("The error: ");
+                throw e;
+            }
 
             lastGuildId = guildId;
             lastGuildIdCache.put(api, guildId);

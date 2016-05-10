@@ -29,43 +29,58 @@ public class PermissionUtil
 {
 
     /**
-     * Checks if one given User can kick a 2nd given User from given Guild.
+     * Checks if one given User can interact with a 2nd given User - in a permission sense (kick/ban/modify perms).
+     * This only checks the Role-Position and does not check the actual permission (kick/ban/manage_role/...)
      *
      * @param issuer
-     *      The user that tries to kick 2nd user
+     *      The user that tries to interact with 2nd user
      * @param target
-     *      The user that is the target of the kick
+     *      The user that is the target of the interaction
      * @param guild
      *      The guild where permissions should be checked in
      * @return
-     *      True, if issuer can kick target in guild
+     *      True, if issuer can interact with target in guild
      */
-    public static boolean canKick(User issuer, User target, Guild guild)
+    public static boolean canInteract(User issuer, User target, Guild guild)
     {
-        return !checkPermission(target, Permission.MANAGE_ROLES, guild) &&
-                (checkPermission(issuer, Permission.MANAGE_ROLES, guild) ||
-                    (checkPermission(issuer, Permission.KICK_MEMBERS, guild) &&
-                            !checkPermission(target, Permission.KICK_MEMBERS, guild)));
+        List<Role> issuerRoles = guild.getRolesForUser(issuer);
+        List<Role> targetRoles = guild.getRolesForUser(target);
+        return !issuerRoles.isEmpty() && (targetRoles.isEmpty() || canInteract(issuerRoles.get(0), targetRoles.get(0)));
     }
 
     /**
-     * Checks if one given User can ban a 2nd given User from given Guild.
+     * Checks if a given User can interact with a given Role - in a permission sense (kick/ban/modify perms).
+     * This only checks the Role-Position and does not check the actual permission (kick/ban/manage_role/...)
      *
      * @param issuer
-     *      The user that tries to ban 2nd user
+     *      The user that tries to interact with the role
      * @param target
-     *      The user that is the target of the ban
-     * @param guild
-     *      The guild where permissions should be checked in
+     *      The role that is the target of the interaction
      * @return
-     *      True, if issuer can ban target in guild
+     *      True, if issuer can interact with target
      */
-    public static boolean canBan(User issuer, User target, Guild guild)
+    public static boolean canInteract(User issuer, Role target)
     {
-        return !checkPermission(target, Permission.MANAGE_ROLES, guild) &&
-                (checkPermission(issuer, Permission.MANAGE_ROLES, guild) ||
-                        (checkPermission(issuer, Permission.BAN_MEMBERS, guild) &&
-                                !checkPermission(target, Permission.BAN_MEMBERS, guild)));
+        List<Role> issuerRoles = target.getGuild().getRolesForUser(issuer);
+        return !issuerRoles.isEmpty() && canInteract(issuerRoles.get(0), target);
+    }
+    
+    /**
+     * Checks if one given Role can interact with a 2nd given Role - in a permission sense (kick/ban/modify perms).
+     * This only checks the Role-Position and does not check the actual permission (kick/ban/manage_role/...)
+     *
+     * @param issuer
+     *      The role that tries to interact with 2nd role
+     * @param target
+     *      The role that is the target of the interaction
+     * @return
+     *      True, if issuer can interact with target
+     */
+    public static boolean canInteract(Role issuer, Role target)
+    {
+        if(issuer.getGuild() != target.getGuild())
+            throw new IllegalArgumentException("The 2 Roles are not from same Guild!");
+        return target.getPosition() < issuer.getPosition();
     }
 
     public static PermissionOverride getFullPermOverride()
@@ -89,7 +104,7 @@ public class PermissionUtil
      * <p>
      * <b>Note:</b> this is based on effective permissions, not literal permissions. If a user has permissions that would
      * enable them to do something without the literal permission to do it, this will still return true.<br>
-     * Example: If a user has the {@link net.dv8tion.jda.Permission#MANAGE_ROLES} permission, they will be able to
+     * Example: If a user has the {@link net.dv8tion.jda.Permission#ADMINISTRATOR} permission, they will be able to
      * {@link net.dv8tion.jda.Permission#MESSAGE_WRITE} in every channel.
      *
      * @param user
@@ -121,7 +136,7 @@ public class PermissionUtil
      * <p>
      * <b>Note:</b> this is based on effective permissions, not literal permissions. If a user has permissions that would
      * enable them to do something without the literal permission to do it, this will still return true.<br>
-     * Example: If a user has the {@link net.dv8tion.jda.Permission#MANAGE_ROLES} permission, they will be able to
+     * Example: If a user has the {@link net.dv8tion.jda.Permission#ADMINISTRATOR} permission, they will be able to
      * {@link net.dv8tion.jda.Permission#MANAGE_SERVER} as well, even without the literal permission.
      *
      * @param user
@@ -136,10 +151,10 @@ public class PermissionUtil
     public static boolean checkPermission(User user, Permission perm, Guild guild)
     {
         return guild.getOwnerId().equals(user.getId())
-                || guild.getPublicRole().hasPermission(Permission.MANAGE_ROLES)
+                || guild.getPublicRole().hasPermission(Permission.ADMINISTRATOR)
                 || guild.getPublicRole().hasPermission(perm)
                 || guild.getRolesForUser(user).stream().anyMatch(role ->
-                            role.hasPermission(Permission.MANAGE_ROLES)
+                            role.hasPermission(Permission.ADMINISTRATOR)
                             || role.hasPermission(perm));
     }
 
@@ -171,23 +186,22 @@ public class PermissionUtil
         }
     }
 
-    private static boolean checkPermission(User user, Permission perm, GuildImpl guild, Map<Role, PermissionOverride> roleOverrides, Map<User, PermissionOverride> userOverrides)
-    {
-        //--Do we have all permissions possible? (Owner or user has MANAGE_ROLES permission)
-        //--If we have all permissions possible, then we will be able to see this room.
-        //WE DO NOT WANT TO CHECK THIS FOR CHANNELS, AS CHANNELS CAN OVERRIDE MANAGE_PERMISSIONS
-//        if (checkPermission(user, Permission.MANAGE_ROLES, guild))
-//            return true;
-
-        //BUT: WE DO WANT TO CHECK IF HE IS OWNER
-        if (guild.getOwnerId().equals(user.getId()))
-            return true;
-
-        int effectivePerms = getEffectivePermission(user, guild, roleOverrides, userOverrides);
-        return ((effectivePerms & (1 << Permission.MANAGE_PERMISSIONS.getOffset())) | (effectivePerms & (1 << perm.getOffset()))) > 0;
-    }
-
-    private static int getEffectivePermission(User user, GuildImpl guild, Map<Role, PermissionOverride> roleOverrides, Map<User, PermissionOverride> userOverrides)
+    /**
+     * Gets the <code>int</code> representation of the effective permissions allowed for this {@link net.dv8tion.jda.entities.User User}
+     * in this {@link net.dv8tion.jda.entities.Guild Guild}. This can be used in conjunction with
+     * {@link net.dv8tion.jda.Permission#getPermissions(int) Permission.getPermissions(int)} to easily get a list of all
+     * {@link net.dv8tion.jda.Permission Permissions} that this user has in this {@link net.dv8tion.jda.entities.Guild Guild}.
+     *
+     * This only returns the Guild-level permissions!
+     *
+     * @param user
+     *          The {@link net.dv8tion.jda.entities.User User} whose permissions are being checked.
+     * @param guild
+     *          The {@link net.dv8tion.jda.entities.Guild Guild} being checked.
+     * @return
+     *      The <code>int</code> representation of the literal permissions that this {@link net.dv8tion.jda.entities.User User} has in this {@link net.dv8tion.jda.entities.Guild Guild}.
+     */
+    public static int getEffectivePermission(User user, Guild guild)
     {
         //Default to binary OR of all global permissions in this guild
         int permission = guild.getPublicRole().getPermissionsRaw();
@@ -196,6 +210,29 @@ public class PermissionUtil
         {
             permission = permission | role.getPermissionsRaw();
         }
+        return permission;
+    }
+
+    private static boolean checkPermission(User user, Permission perm, GuildImpl guild, Map<Role, PermissionOverride> roleOverrides, Map<User, PermissionOverride> userOverrides)
+    {
+        //--Do we have all permissions possible? (Owner or user has ADMINISTRATOR permission)
+        //--If we have all permissions possible, then we will be able to see this room.
+        //WE DO NOT WANT TO CHECK THIS FOR CHANNELS, AS CHANNELS CAN OVERRIDE MANAGE_PERMISSIONS
+//        if (checkPermission(user, Permission.ADMINISTRATOR, guild))
+//            return true;
+
+        //BUT: WE DO WANT TO CHECK IF HE IS OWNER
+        if (guild.getOwnerId().equals(user.getId()))
+            return true;
+
+        int effectivePerms = getEffectivePermission(user, guild, roleOverrides, userOverrides);
+        return ((effectivePerms & (1 << Permission.ADMINISTRATOR.getOffset())) | (effectivePerms & (1 << perm.getOffset()))) > 0;
+    }
+
+    private static int getEffectivePermission(User user, GuildImpl guild, Map<Role, PermissionOverride> roleOverrides, Map<User, PermissionOverride> userOverrides)
+    {
+        int permission = getEffectivePermission(user, guild);
+        List<Role> rolesOfUser = guild.getRolesForUser(user);
 
         //override with channel-specific overrides of @everyone
         PermissionOverride override = roleOverrides.get(guild.getPublicRole());

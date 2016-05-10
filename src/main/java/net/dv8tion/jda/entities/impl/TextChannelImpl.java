@@ -297,7 +297,7 @@ public class TextChannelImpl implements TextChannel
         PermissionOverrideImpl override = new PermissionOverrideImpl(this, user, null);
         //hacky way of putting entity to server without using requester here
         override.setAllow(1 << Permission.MANAGE_PERMISSIONS.getOffset()).setDeny(0);
-        PermissionOverrideManager manager = new PermissionOverrideManager(override);
+        PermissionOverrideManager manager = override.getManager();
         manager.reset(Permission.MANAGE_PERMISSIONS).update();
         return manager;
     }
@@ -316,7 +316,7 @@ public class TextChannelImpl implements TextChannel
         PermissionOverrideImpl override = new PermissionOverrideImpl(this, null, role);
         //hacky way of putting entity to server without using requester here
         override.setAllow(1 << Permission.MANAGE_PERMISSIONS.getOffset()).setDeny(0);
-        PermissionOverrideManager manager = new PermissionOverrideManager(override);
+        PermissionOverrideManager manager = override.getManager();
         manager.reset(Permission.MANAGE_PERMISSIONS).update();
         return manager;
     }
