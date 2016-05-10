@@ -1,11 +1,11 @@
-/**
- *      Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,10 +20,7 @@ import net.dv8tion.jda.events.Event;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class AnnotatedEventManager implements IEventManager
 {
@@ -49,6 +46,12 @@ public class AnnotatedEventManager implements IEventManager
     }
 
     @Override
+    public List<Object> getRegisteredListeners()
+    {
+        return Collections.unmodifiableList(new LinkedList<>(listeners));
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public void handle(Event event)
     {
@@ -67,6 +70,11 @@ public class AnnotatedEventManager implements IEventManager
                     catch (IllegalAccessException | InvocationTargetException e1)
                     {
                         JDAImpl.LOG.log(e1);
+                    }
+                    catch (Throwable throwable)
+                    {
+                        JDAImpl.LOG.fatal("One of the EventListeners had an uncaught exception");
+                        JDAImpl.LOG.log(throwable);
                     }
                 });
             }

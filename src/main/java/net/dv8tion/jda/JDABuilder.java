@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package net.dv8tion.jda;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.ReadyEvent;
 import net.dv8tion.jda.hooks.AnnotatedEventManager;
+import net.dv8tion.jda.hooks.IEventManager;
 import net.dv8tion.jda.hooks.ListenerAdapter;
 import net.dv8tion.jda.hooks.SubscribeEvent;
 
@@ -43,72 +44,40 @@ public class JDABuilder
     protected static boolean jdaCreated = false;
     protected static String proxyUrl = null;
     protected static int proxyPort = -1;
-    final List<Object> listeners;
-    String email = null;
-    String pass = null;
-    boolean debug = false;
-    boolean enableVoice = true;
-    boolean useAnnotatedManager = false;
-    boolean reconnect = true;
+    protected final List<Object> listeners;
+    protected String token = null;
+    protected boolean enableVoice = true;
+    protected boolean enableShutdownHook = true;
+    protected boolean useAnnotatedManager = false;
+    protected IEventManager eventManager = null;
+    protected boolean reconnect = true;
+    protected int[] sharding = null;
 
     /**
      * Creates a completely empty JDABuilder.<br>
-     * If you use this, you need to set the email and password using
-     * {@link net.dv8tion.jda.JDABuilder#setEmail(String) setEmail(String)}
-     * and {@link net.dv8tion.jda.JDABuilder#setPassword(String) setPassword(String)}
+     * If you use this, you need to set the bot token using
+     * {@link net.dv8tion.jda.JDABuilder#setBotToken(String) setBotToken(String)}
      * before calling {@link net.dv8tion.jda.JDABuilder#buildAsync() buildAsync()}
      * or {@link net.dv8tion.jda.JDABuilder#buildBlocking() buildBlocking()}
      */
     public JDABuilder()
     {
-        this(null, null);
-    }
-
-    /**
-     * Creates a new JDABuilder using the provided email and password.
-     *
-     * @param email
-     *          The email of the account that will be used to log into Discord.
-     * @param password
-     *          The password of the account that will be used to log into Discord.
-     */
-    public JDABuilder(String email, String password)
-    {
-        this.email = email;
-        this.pass = password;
         listeners = new LinkedList<>();
     }
 
     /**
-     * Sets the email that will be used by the {@link net.dv8tion.jda.JDA} instance to log in when
+     * Sets the botToken that will be used by the {@link net.dv8tion.jda.JDA} instance to log in when
      * {@link net.dv8tion.jda.JDABuilder#buildAsync() buildAsync()}
      * or {@link net.dv8tion.jda.JDABuilder#buildBlocking() buildBlocking()}
      * is called.
      *
-     * @param email
-     *          The email of the account that you would like to login with.
+     * @param botToken
+     *          The token of the bot-account that you would like to login with.
      * @return
      *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
      */
-    public JDABuilder setEmail(String email)
-    {
-        this.email = email;
-        return this;
-    }
-
-    /**
-     * Sets the password that will be used by the {@link net.dv8tion.jda.JDA} instance to log in when
-     * {@link net.dv8tion.jda.JDABuilder#buildAsync() buildAsync()}
-     * or {@link net.dv8tion.jda.JDABuilder#buildBlocking() buildBlocking()}
-     * is called.
-     *
-     * @param password
-     *          The password of the account that you would like to login with.
-     * @return
-     *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
-     */
-    public JDABuilder setPassword(String password) {
-        this.pass = password;
+    public JDABuilder setBotToken(String botToken) {
+        this.token = "Bot " + botToken;
         return this;
     }
 
@@ -138,24 +107,6 @@ public class JDABuilder
     }
 
     /**
-     * <b>This method is deprecated! please switch to using the {@link net.dv8tion.jda.utils.SimpleLog SimpleLog} class.</b>
-     * <p>
-     * Enables developer debug of JDA.<br>
-     * Enabling this will print stack traces instead of java logger message when exceptions are encountered.
-     *
-     * @param debug
-     *          True - enables debug printing.
-     * @return
-     *          Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
-     */
-    @Deprecated
-    public JDABuilder setDebug(boolean debug)
-    {
-       this.debug = debug;
-        return this;
-    }
-
-    /**
      * Enables/Disables Voice functionality.<br>
      * This is useful, if your current system doesn't support Voice and you do not need it.
      * <p>
@@ -169,6 +120,22 @@ public class JDABuilder
     public JDABuilder setAudioEnabled(boolean enabled)
     {
         this.enableVoice = enabled;
+        return this;
+    }
+
+    /**
+     * Enables/Disables the use of a Shutdown hook to clean up JDA.<br>
+     * When the Java program closes shutdown hooks are run. This is used as a last-second cleanup
+     * attempt by JDA to properly severe connections.
+     *
+     * @param enable
+     *          True (default) - use shutdown hook to clean up JDA if the Java program is closed.
+     * @return
+     *      Return the {@link net.dv8tion.jda.JDABuilder JDABuilder } instance. Useful for chaining.
+     */
+    public JDABuilder setEnableShutdownHook(boolean enable)
+    {
+        this.enableShutdownHook = enable;
         return this;
     }
 
@@ -190,18 +157,42 @@ public class JDABuilder
     }
 
     /**
+     * <b>This method is deprecated! Please switch to {@link #setEventManager(IEventManager)}.</b>
+     * <p>
      * Changes the internal EventManager.
      * The default EventManager is {@link net.dv8tion.jda.hooks.InterfacedEventManager InterfacedEventListener}.
      * There is also an {@link AnnotatedEventManager AnnotatedEventManager} available.
      *
      * @param useAnnotated
-     *          Whether or not to use the {@link net.dv8tion.jda.hooks.AnnotatedEventManager AnnotatedEventManager}
+     *      Whether or not to use the {@link net.dv8tion.jda.hooks.AnnotatedEventManager AnnotatedEventManager}
      * @return
-     *          Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
+     *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
      */
+    @Deprecated
     public JDABuilder useAnnotatedEventManager(boolean useAnnotated)
     {
         this.useAnnotatedManager = useAnnotated;
+        return this;
+    }
+
+    /**
+     * Changes the internally used EventManager.
+     * There are 2 provided Implementations:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.hooks.InterfacedEventManager} which uses the Interface {@link net.dv8tion.jda.hooks.EventListener}
+     *     (tip: use the {@link net.dv8tion.jda.hooks.ListenerAdapter}). This is the default EventManager.</li>
+     *     <li>{@link net.dv8tion.jda.hooks.AnnotatedEventManager} which uses the Annotation {@link net.dv8tion.jda.hooks.SubscribeEvent} to mark the methods that listen for events.</li>
+     * </ul>
+     * You can also create your own EventManager (See {@link net.dv8tion.jda.hooks.IEventManager}).
+     *
+     * @param manager
+     *      The new {@link net.dv8tion.jda.hooks.IEventManager} to use
+     * @return
+     *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public JDABuilder setEventManager(IEventManager manager)
+    {
+        this.eventManager = manager;
         return this;
     }
 
@@ -239,6 +230,31 @@ public class JDABuilder
     }
 
     /**
+     * This will enable sharding mode for JDA.
+     * In sharding mode, guilds are split up and assigned one of multiple shards (clients).
+     * The shardId that receives all stuff related to given bot is calculated as follows: shardId = (guildId &gt;&gt; 22)%numShards .
+     * PMs are only sent to shard 0.
+     *
+     * Please note, that a shard will not even know about guilds not assigned to.
+     *
+     * @param shardId
+     *      The id of this shard (starting at 0).
+     * @param numShards
+     *      The number of overall shards.
+     * @return
+     *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public JDABuilder useSharding(int shardId, int numShards)
+    {
+        if (shardId < 0 || numShards < 2 || shardId >= numShards)
+        {
+            throw new RuntimeException("This configuration of shardId and numShards is not allowed! 0 <= shardId < numShards with numShards > 1");
+        }
+        sharding = new int[] {shardId, numShards};
+        return this;
+    }
+
+    /**
      * Builds a new {@link net.dv8tion.jda.JDA} instance and uses the provided email and password to start the login process.<br>
      * The login process runs in a different thread, so while this will return immediately, {@link net.dv8tion.jda.JDA} has not
      * finished loading, thus many {@link net.dv8tion.jda.JDA} methods have the chance to return incorrect information.
@@ -259,17 +275,20 @@ public class JDABuilder
         jdaCreated = true;
         JDAImpl jda;
         if (proxySet)
-            jda = new JDAImpl(proxyUrl, proxyPort, enableVoice);
+            jda = new JDAImpl(proxyUrl, proxyPort, enableVoice, enableShutdownHook);
         else
-            jda = new JDAImpl(enableVoice);
-        jda.setDebug(debug);
+            jda = new JDAImpl(enableVoice, enableShutdownHook);
         jda.setAutoReconnect(reconnect);
-        if (useAnnotatedManager)
+        if (eventManager != null)
+        {
+            jda.setEventManager(eventManager);
+        }
+        else if (useAnnotatedManager)
         {
             jda.setEventManager(new AnnotatedEventManager());
         }
         listeners.forEach(jda::addEventListener);
-        jda.login(email, pass);
+        jda.login(token, sharding);
         return jda;
     }
 

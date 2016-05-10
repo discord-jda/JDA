@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,5 +39,30 @@ public class GenericGuildMessageEvent extends GenericMessageEvent
     public Guild getGuild()
     {
         return channel.getGuild();
+    }
+
+    /**
+     * Returns the author's nickname in the guild the message was sent in.
+     * Returns null if no nickname is set.
+     *
+     * @return
+     *      Author's nickname in guild or null if unset.
+     */
+    public String getAuthorNick()
+    {
+        return getGuild().getNicknameForUser(getAuthor());
+    }
+
+    /**
+     * Returns the Author's effective name in the guild the message was sent in.
+     * This returns the nickname if set or the author's username if no nick is set.
+     *
+     * @return
+     *      Author's effective name.
+     */
+    public String getAuthorName()
+    {
+        String nickname = getAuthorNick();
+        return nickname == null ? getAuthor().getUsername() : nickname;
     }
 }

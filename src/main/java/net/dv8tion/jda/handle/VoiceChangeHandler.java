@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.entities.impl.VoiceChannelImpl;
 import net.dv8tion.jda.entities.impl.VoiceStatusImpl;
 import net.dv8tion.jda.events.voice.*;
+import net.dv8tion.jda.requests.GuildLock;
 import org.json.JSONObject;
 
 public class VoiceChangeHandler extends SocketHandler
@@ -32,17 +33,22 @@ public class VoiceChangeHandler extends SocketHandler
     }
 
     @Override
-    public void handle(JSONObject content)
+    protected String handleInternally(JSONObject content)
     {
+        if (GuildLock.get(api).isLocked(content.getString("guild_id")))
+        {
+            return content.getString("guild_id");
+        }
+
         User user = api.getUserMap().get(content.getString("user_id"));
         if (user == null)
         {
             if (!content.isNull("channel_id"))
                 throw new IllegalArgumentException("Received a VOICE_STATE_UPDATE for an unknown User! JSON: " + content);
             else
-                return; //This is most likely a VOICE_STATE_UPDATE telling us that a user that left/was kicked/was banned
-                        // has been disconnected from the VoiceChannel they were in.
-                        //The VoiceLeaveEvent has already been handled by GuildMemberRemoveHandler
+                return null; //This is most likely a VOICE_STATE_UPDATE telling us that a user that left/was kicked/was banned
+                             // has been disconnected from the VoiceChannel they were in.
+                             //The VoiceLeaveEvent has already been handled by GuildMemberRemoveHandler
         }
 
         Guild guild = api.getGuildMap().get(content.getString("guild_id"));
@@ -50,6 +56,14 @@ public class VoiceChangeHandler extends SocketHandler
             throw new IllegalArgumentException("Received a VOICE_STATE_UPDATE for an unknown Guild! JSON: " + content);
 
         VoiceStatusImpl status = (VoiceStatusImpl) guild.getVoiceStatusOfUser(user);
+
+        if (status == null)
+        {
+            //This voiceStatus update is caused by a user being kicked/banned from a guild
+            //we already cleared him in the GuildMemberRemoveHandler, and therefore cant access his status anymore
+            return null;
+        }
+
         if (content.isNull("channel_id"))
         {
             if (status.getChannel() != null)
@@ -112,5 +126,6 @@ public class VoiceChangeHandler extends SocketHandler
             status.setServerDeaf(!status.isServerDeaf());
             api.getEventManager().handle(new VoiceServerDeafEvent(api, responseNumber, status));
         }
+        return null;
     }
 }

@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,9 @@ package net.dv8tion.jda.handle;
 
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.impl.JDAImpl;
+import net.dv8tion.jda.events.guild.GuildAvailableEvent;
 import net.dv8tion.jda.events.guild.GuildJoinEvent;
+import net.dv8tion.jda.events.guild.UnavailableGuildJoinedEvent;
 import org.json.JSONObject;
 
 public class GuildJoinHandler extends SocketHandler
@@ -29,22 +31,47 @@ public class GuildJoinHandler extends SocketHandler
     }
 
     @Override
-    public void handle(JSONObject content)
+    protected String handleInternally(JSONObject content)
     {
+        Guild g = api.getGuildById(content.getString("id"));
+        Boolean wasAvail = (g == null || g.getName() == null) ? null : g.isAvailable();
         new EntityBuilder(api).createGuildFirstPass(content, guild ->
         {
             if (guild.isAvailable())
             {
-                //TODO: Available-event if previously unavailable
-                api.getEventManager().handle(
-                        new GuildJoinEvent(
-                                api, responseNumber,
-                                guild));
+                if (!api.getClient().isReady())
+                {
+                    new ReadyHandler(api, responseNumber).onGuildInit(guild);
+                }
+                else
+                {
+                    if(wasAvail == null)                    //didn't exist
+                    {
+                        api.getEventManager().handle(
+                                new GuildJoinEvent(
+                                        api, responseNumber,
+                                        guild));
+                    }
+                    else if (!wasAvail)                     //was previously unavailable
+                    {
+                        api.getEventManager().handle(
+                                new GuildAvailableEvent(api, responseNumber, guild)
+                        );
+                    }
+                    else
+                    {
+                        throw new RuntimeException("Got a GuildCreateEvent for a guild that already existed! Json: " + content.toString());
+                    }
+                }
             }
             else
             {
-                //TODO: Unavailable event
+                //Proper GuildJoinedEvent is fired when guild was populated
+                api.getEventManager().handle(
+                        new UnavailableGuildJoinedEvent(api, responseNumber, guild.getId())
+                );
             }
         });
+        return null;
     }
 }

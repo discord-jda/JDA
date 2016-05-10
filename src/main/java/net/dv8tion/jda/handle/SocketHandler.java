@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package net.dv8tion.jda.handle;
 
 import net.dv8tion.jda.entities.impl.JDAImpl;
+import net.dv8tion.jda.requests.GuildLock;
 import org.json.JSONObject;
 
 public abstract class SocketHandler
@@ -29,5 +30,22 @@ public abstract class SocketHandler
         this.responseNumber = responseNumber;
     }
 
-    public abstract void handle(JSONObject content);
+
+    public final void handle(JSONObject o)
+    {
+        String guildId = handleInternally(o.getJSONObject("d"));
+        if (guildId != null)
+        {
+            GuildLock.get(api).queue(guildId, o);
+        }
+    }
+
+    /**
+     * Handles a given data-json of the Event handled by this Handler.
+     * @param content
+     *      the content of the event to handle
+     * @return
+     *      Guild-id if that guild has a lock, or null if successful
+     */
+    protected abstract String handleInternally(JSONObject content);
 }

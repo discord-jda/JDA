@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,6 +102,14 @@ public interface User
      *      Never-null {@link net.dv8tion.jda.entities.PrivateChannel PrivateChannel} that is associated with this {@link net.dv8tion.jda.entities.User User}.
      */
     PrivateChannel getPrivateChannel();
+
+    /**
+     * Returns whether or not the given user is a Bot-Account (special badge in client, some different behaviour)
+     *
+     * @return
+     *      If the User's Account is marked as Bot
+     */
+    boolean isBot();
 
     /**
      * Returns the {@link net.dv8tion.jda.JDA JDA} instance of this User

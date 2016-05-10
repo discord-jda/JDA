@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import net.dv8tion.jda.entities.impl.GuildImpl;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.entities.impl.RoleImpl;
 import net.dv8tion.jda.events.guild.role.*;
+import net.dv8tion.jda.requests.GuildLock;
 import org.json.JSONObject;
 
 public class GuildRoleUpdateHandler extends SocketHandler
@@ -29,8 +30,13 @@ public class GuildRoleUpdateHandler extends SocketHandler
     }
 
     @Override
-    public void handle(JSONObject content)
+    protected String handleInternally(JSONObject content)
     {
+        if (GuildLock.get(api).isLocked(content.getString("guild_id")))
+        {
+            return content.getString("guild_id");
+        }
+
         JSONObject rolejson = content.getJSONObject("role");
         RoleImpl role = (RoleImpl) ((GuildImpl) api.getGuildMap().get(content.getString("guild_id"))).getRolesMap().get(rolejson.getString("id"));
         if (!role.getName().equals(rolejson.getString("name")))
@@ -58,6 +64,10 @@ public class GuildRoleUpdateHandler extends SocketHandler
             role.setGrouped(rolejson.getBoolean("hoist"));
             api.getEventManager().handle(new GuildRoleUpdateGroupedEvent(api, responseNumber, role));
         }
+        if (role.isMentionable() != rolejson.getBoolean("mentionable"))
+            role.setMentionable(rolejson.getBoolean("mentionable"));
+        //TODO: Add event?
         api.getEventManager().handle(new GuildRoleUpdateEvent(api, responseNumber, role));
+        return null;
     }
 }

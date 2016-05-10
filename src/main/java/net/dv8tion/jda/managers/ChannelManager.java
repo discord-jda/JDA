@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.exceptions.PermissionException;
+import net.dv8tion.jda.requests.Requester;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
@@ -189,7 +190,16 @@ public class ChannelManager
     {
         checkPermission(Permission.MANAGE_CHANNEL);
 
-        ((JDAImpl) channel.getJDA()).getRequester().delete("https://discordapp.com/api/channels/" + channel.getId());
+        ((JDAImpl) channel.getJDA()).getRequester().delete(Requester.DISCORD_API_PREFIX + "channels/" + channel.getId());
+    }
+
+    /**
+     * Resets all queued updates. So the next call to {@link #update()} will change nothing.
+     */
+    public void reset() {
+        name = null;
+        topic = null;
+        newPositions.clear();
     }
 
     /**
@@ -230,7 +240,7 @@ public class ChannelManager
 
     private void update(Channel chan, JSONObject o)
     {
-        ((JDAImpl) chan.getJDA()).getRequester().patch("https://discordapp.com/api/channels/" + chan.getId(), o);
+        ((JDAImpl) chan.getJDA()).getRequester().patch(Requester.DISCORD_API_PREFIX + "channels/" + chan.getId(), o);
     }
 
     private void checkPermission(Permission perm)

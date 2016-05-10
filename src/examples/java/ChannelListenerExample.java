@@ -28,8 +28,7 @@ public class ChannelListenerExample extends ListenerAdapter
         try
         {
             new JDABuilder()
-                    .setEmail("EMAIL")
-                    .setPassword("PASSWORD")
+                    .setBotToken("TOKEN")
                     .addListener(new ChannelListenerExample())
                     .buildBlocking();
         }

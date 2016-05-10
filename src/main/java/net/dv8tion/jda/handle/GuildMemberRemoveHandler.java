@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.entities.impl.*;
 import net.dv8tion.jda.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.events.voice.VoiceLeaveEvent;
+import net.dv8tion.jda.requests.GuildLock;
 import org.json.JSONObject;
 
 public class GuildMemberRemoveHandler extends SocketHandler
@@ -30,13 +31,18 @@ public class GuildMemberRemoveHandler extends SocketHandler
     }
 
     @Override
-    public void handle(JSONObject content)
+    protected String handleInternally(JSONObject content)
     {
+        if (GuildLock.get(api).isLocked(content.getString("guild_id")))
+        {
+            return content.getString("guild_id");
+        }
+
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("guild_id"));
         if(guild == null)
         {
             //We probably just left the guild, therefore ignore
-            return;
+            return null;
         }
         UserImpl user = ((UserImpl) api.getUserMap().get(content.getJSONObject("user").getString("id")));
         if (guild.getVoiceStatusMap().get(user).inVoiceChannel())   //If this user was in a VoiceChannel, fire VoiceLeaveEvent.
@@ -65,5 +71,6 @@ public class GuildMemberRemoveHandler extends SocketHandler
                 new GuildMemberLeaveEvent(
                         api, responseNumber,
                         guild, user));
+        return null;
     }
 }

@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,31 @@
 package net.dv8tion.jda.events;
 
 import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.entities.VoiceChannel;
 
 import java.time.OffsetDateTime;
+import java.util.Collections;
+import java.util.List;
 
 public class ShutdownEvent extends Event
 {
     protected final OffsetDateTime shutdownTime;
+    protected final List<VoiceChannel> dcAudioConnections;
 
-    public ShutdownEvent(JDA api, OffsetDateTime shutdownTime)
+    public ShutdownEvent(JDA api, OffsetDateTime shutdownTime, List<VoiceChannel> dcAudioConnectons)
     {
         super(api, -1);
         this.shutdownTime = shutdownTime;
+        this.dcAudioConnections = Collections.unmodifiableList(dcAudioConnectons);
     }
 
     public OffsetDateTime getShutdownTime()
     {
         return shutdownTime;
+    }
+
+    public List<VoiceChannel> getDisconnectedAudioConnections()
+    {
+        return dcAudioConnections;
     }
 }

@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,4 +26,12 @@ public interface TextChannel extends Channel, MessageChannel
      * {@link net.dv8tion.jda.entities.impl.TextChannelImpl TextChannelImpl}.<br>
      * Note: Internal implementation should not be used directly.
      */
+
+    /**
+     * Returns the String needed to mention this TextChannel in a {@link net.dv8tion.jda.entities.Message Message}.
+     *
+     * @return
+     *      The String needed to mention this Channel
+     */
+    String getAsMention();
 }

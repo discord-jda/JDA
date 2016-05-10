@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.entities.impl.UserImpl;
 import net.dv8tion.jda.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.exceptions.PermissionException;
+import net.dv8tion.jda.requests.Requester;
 import net.dv8tion.jda.utils.AvatarUtil;
 import net.dv8tion.jda.utils.PermissionUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -84,6 +85,7 @@ public class GuildManager
     private String name = null;
     private Region region = null;
     private AvatarUtil.Avatar icon = null;
+    private Guild.VerificationLevel verificationLevel = null;
     private String afkChannelId;
 
     private final Map<User, Set<Role>> addedRoles = new HashMap<>();
@@ -267,9 +269,14 @@ public class GuildManager
     }
 
     /**
-     * Gives the {@link net.dv8tion.jda.entities.User User} the specified {@link net.dv8tion.jda.entities.Role Role}.<br>
-     * If the {@link net.dv8tion.jda.entities.User User} already has the provided {@link net.dv8tion.jda.entities.Role Role}
+     * Gives the {@link net.dv8tion.jda.entities.User User} the specified {@link net.dv8tion.jda.entities.Role Role(s)}.<br>
+     * If the {@link net.dv8tion.jda.entities.User User} already has the provided {@link net.dv8tion.jda.entities.Role Role(s)}
      * this method will do nothing.
+     *
+     * For this to work, the JDA user has to have a higher role than the highest of the user that gets assigned new roles
+     * AND all roles assigned have to be lower than highest role of the JDA user.
+     *
+     * This also requires the {@link net.dv8tion.jda.Permission#MANAGE_ROLES MANAGE_ROLES Permission}.
      *
      * This change will only be applied, if {@link #update()} is called.
      * So multiple changes can be made at once.
@@ -290,6 +297,11 @@ public class GuildManager
             throw new GuildUnavailableException();
         }
         checkPermission(Permission.MANAGE_ROLES);
+        checkPosition(user);
+        for (Role role : roles)
+        {
+            checkPosition(role);
+        }
 
         Set<Role> addRoles = addedRoles.get(user);
         if (addRoles == null)
@@ -317,9 +329,13 @@ public class GuildManager
     }
 
     /**
-     * Removes the specified {@link net.dv8tion.jda.entities.Role Role} from the {@link net.dv8tion.jda.entities.User User}.<br>
-     * If the {@link net.dv8tion.jda.entities.User User} does not have the specified {@link net.dv8tion.jda.entities.Role Role}
+     * Removes the specified {@link net.dv8tion.jda.entities.Role Role(s)} from the {@link net.dv8tion.jda.entities.User User}.<br>
+     * If the {@link net.dv8tion.jda.entities.User User} does not have the specified {@link net.dv8tion.jda.entities.Role Role(s)}
      * this method will do nothing.
+     *
+     * For this to work, the JDA user has to have a higher role than the highest of the user where roles are removed.
+     *
+     * This also requires the {@link net.dv8tion.jda.Permission#MANAGE_ROLES MANAGE_ROLES Permission}.
      *
      * This change will only be applied, if {@link #update()} is called.
      * So multiple changes can be made at once.
@@ -343,6 +359,8 @@ public class GuildManager
             throw new GuildUnavailableException();
         }
         checkPermission(Permission.MANAGE_ROLES);
+        checkPosition(user);
+        //we automatically are above all roles that are being removed (due to users highest role being lower than ours)
 
         Set<Role> addRoles = addedRoles.get(user);
         if (addRoles == null)
@@ -370,6 +388,51 @@ public class GuildManager
     }
 
     /**
+     * Changes the Verification-Level of this Guild.
+     * This change will only be applied, if {@link #update()} is called.
+     * So multiple changes can be made at once.
+     *
+     * @param level
+     *          the new Verification-Level of the Guild, or null to keep current one
+     * @return
+     *      This {@link net.dv8tion.jda.managers.GuildManager GuildManager} instance. Useful for chaining.
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
+     */
+    public GuildManager setVerificationLevel(Guild.VerificationLevel level)
+    {
+        if (!guild.isAvailable())
+        {
+            throw new GuildUnavailableException();
+        }
+        checkPermission(Permission.MANAGE_SERVER);
+
+        if (guild.getVerificationLevel() == level)
+        {
+            this.verificationLevel = null;
+        }
+        else
+        {
+            this.verificationLevel = level;
+        }
+        return this;
+    }
+
+    /**
+     * Resets all queued updates. So the next call to {@link #update()} will change nothing.
+     */
+    public void reset() {
+        name = null;
+        region = null;
+        timeout = null;
+        icon = null;
+        verificationLevel = null;
+        afkChannelId = guild.getAfkChannelId();
+        addedRoles.clear();
+        removedRoles.clear();
+    }
+
+    /**
      * This method will apply all accumulated changes received by setters
      *
      * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
@@ -382,7 +445,7 @@ public class GuildManager
             throw new GuildUnavailableException();
         }
 
-        if (name != null || region != null || timeout != null || icon != null || !StringUtils.equals(afkChannelId, guild.getAfkChannelId()))
+        if (name != null || region != null || timeout != null || icon != null || !StringUtils.equals(afkChannelId, guild.getAfkChannelId()) || verificationLevel != null)
         {
             checkPermission(Permission.MANAGE_SERVER);
 
@@ -397,6 +460,8 @@ public class GuildManager
                 frame.put("icon", icon == AvatarUtil.DELETE_AVATAR ? JSONObject.NULL : icon.getEncoded());
             if(!StringUtils.equals(afkChannelId, guild.getAfkChannelId()))
                 frame.put("afk_channel_id", afkChannelId == null ? JSONObject.NULL : afkChannelId);
+            if(verificationLevel != null)
+                frame.put("verification_level", verificationLevel.getKey());
             update(frame);
         }
 
@@ -414,13 +479,55 @@ public class GuildManager
                 removedRoles.get(user).stream().filter(role -> roleIds.contains(role.getId())).forEach(role -> roleIds.remove(role.getId()));
 
                 ((JDAImpl) guild.getJDA()).getRequester().patch(
-                        "https://discordapp.com/api/guilds/" + guild.getId() + "/members/" + user.getId(),
+                        Requester.DISCORD_API_PREFIX + "guilds/" + guild.getId() + "/members/" + user.getId(),
                         new JSONObject().put("roles", roleIds));
 
             }
             addedRoles.clear();
             removedRoles.clear();
         }
+    }
+
+    /**
+     * Changes a user's nickname in this guild.
+     * The nickname is visible to all users of this guild.
+     * This requires the correct Permissions to perform
+     * ({@link net.dv8tion.jda.Permission#NICKNAME_MANAGE NICKNAME_MANAGE} for others+self and
+     * {@link net.dv8tion.jda.Permission#NICKNAME_CHANGE NICKNAME_CHANGE} for only self).
+     *
+     * @param user
+     *      The user for which the nickname should be changed.
+     * @param nickname
+     *      The new nickname of the user, or null/"" to reset
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
+     */
+    public void setNickname(User user, String nickname)
+    {
+        if (!guild.isAvailable())
+        {
+            throw new GuildUnavailableException();
+        }
+
+        if(user == guild.getJDA().getSelfInfo())
+        {
+            if(!PermissionUtil.checkPermission(user, Permission.NICKNAME_CHANGE, guild) && !PermissionUtil.checkPermission(user, Permission.NICKNAME_MANAGE, guild))
+                throw new PermissionException(Permission.NICKNAME_CHANGE, "You neither have NICKNAME_CHANGE nor NICKNAME_MANAGE permission!");
+        }
+        else
+        {
+            checkPermission(Permission.NICKNAME_MANAGE);
+            checkPosition(user);
+        }
+
+        if (nickname == null)
+            nickname = "";
+
+        String url = Requester.DISCORD_API_PREFIX + "guilds/" + guild.getId() + "/members/"
+                + (user == guild.getJDA().getSelfInfo() ? "@me/nick" : user.getId());
+
+        ((JDAImpl) guild.getJDA()).getRequester()
+                .patch(url, new JSONObject().put("nick", nickname));
     }
 
     /**
@@ -474,8 +581,37 @@ public class GuildManager
                             "for the destination VoiceChannel, so the move cannot be done.");
 
         ((JDAImpl) guild.getJDA()).getRequester().patch(
-                "https://discordapp.com/api/guilds/" + guild.getId() + "/members/" + user.getId(),
+                Requester.DISCORD_API_PREFIX + "guilds/" + guild.getId() + "/members/" + user.getId(),
                 new JSONObject().put("channel_id", voiceChannel.getId()));
+    }
+
+    /**
+     * This method will either prune (kick) all members who were offline for at least <i>days</i> days,
+     * or just return the number of members that would be pruned.
+     *
+     * @param days
+     *      Minimum number of days since a user has been offline to get affected.
+     * @param doKick
+     *      Whether or not these members should actually get kicked or not
+     * @return
+     *      The number of users that have been / would get pruned
+     * @throws PermissionException
+     *      If the JDA-account doesn't have the {@link net.dv8tion.jda.Permission#KICK_MEMBERS KICK_MEMBER Permission}
+     */
+    public int prune(int days, boolean doKick)
+    {
+        if (!PermissionUtil.checkPermission(guild.getJDA().getSelfInfo(), Permission.KICK_MEMBERS, guild))
+            throw new PermissionException(Permission.KICK_MEMBERS);
+        JSONObject returned;
+        if (doKick)
+        {
+            returned = ((JDAImpl) guild.getJDA()).getRequester().post(Requester.DISCORD_API_PREFIX + "guilds/" + guild.getId() + "/prune?days=" + days, new JSONObject()).getObject();
+        }
+        else
+        {
+            returned = ((JDAImpl) guild.getJDA()).getRequester().get(Requester.DISCORD_API_PREFIX + "guilds/" + guild.getId() + "/prune?days=" + days).getObject();
+        }
+        return returned.getInt("pruned");
     }
 
     /**
@@ -492,7 +628,15 @@ public class GuildManager
      */
     public void kick(User user)
     {
-        kick(user.getId());
+        if (!guild.isAvailable())
+        {
+            throw new GuildUnavailableException();
+        }
+        checkPermission(Permission.KICK_MEMBERS);
+        checkPosition(user);
+
+        ((JDAImpl) guild.getJDA()).getRequester().delete(Requester.DISCORD_API_PREFIX + "guilds/"
+                + guild.getId() + "/members/" + user.getId());
     }
 
     /**
@@ -509,14 +653,9 @@ public class GuildManager
      */
     public void kick(String userId)
     {
-        if (!guild.isAvailable())
-        {
-            throw new GuildUnavailableException();
-        }
-        checkPermission(Permission.KICK_MEMBERS);
-
-        ((JDAImpl) guild.getJDA()).getRequester().delete("https://discordapp.com/api/guilds/"
-                + guild.getId() + "/members/" + userId);
+        User user = guild.getJDA().getUserById(userId);
+        if(user != null)
+            kick(user);
     }
 
     /**
@@ -537,11 +676,19 @@ public class GuildManager
      */
     public void ban(User user, int delDays)
     {
-        ban(user.getId(), delDays);
+        if (!guild.isAvailable())
+        {
+            throw new GuildUnavailableException();
+        }
+        checkPermission(Permission.BAN_MEMBERS);
+        checkPosition(user);
+
+        ((JDAImpl) guild.getJDA()).getRequester().put(Requester.DISCORD_API_PREFIX + "guilds/"
+                + guild.getId() + "/bans/" + user.getId() + (delDays > 0 ? "?delete-message-days=" + delDays : ""), new JSONObject());
     }
 
     /**
-     * Bans the {@link net.dv8tion.jda.entities.User User} specified by the userId nd deletes messages sent by the user
+     * Bans the {@link net.dv8tion.jda.entities.User User} specified by the userId and deletes messages sent by the user
      * based on the amount of delDays.<br>
      * If you wish to ban a user without deleting any messages, provide delDays with a value of 0.
      * This change will be applied immediately.
@@ -558,14 +705,9 @@ public class GuildManager
      */
     public void ban(String userId, int delDays)
     {
-        if (!guild.isAvailable())
-        {
-            throw new GuildUnavailableException();
-        }
-        checkPermission(Permission.BAN_MEMBERS);
-
-        ((JDAImpl) guild.getJDA()).getRequester().put("https://discordapp.com/api/guilds/"
-                + guild.getId() + "/bans/" + userId + (delDays > 0 ? "?delete-message-days=" + delDays : ""), new JSONObject());
+        User user = guild.getJDA().getUserById(userId);
+        if(user != null)
+            ban(user, delDays);
     }
 
     /**
@@ -583,8 +725,9 @@ public class GuildManager
         {
             throw new GuildUnavailableException();
         }
+        checkPermission(Permission.BAN_MEMBERS);
         List<User> bans = new LinkedList<>();
-        JSONArray bannedArr = ((JDAImpl) guild.getJDA()).getRequester().getA("https://discordapp.com/api/guilds/" + guild.getId() + "/bans");
+        JSONArray bannedArr = ((JDAImpl) guild.getJDA()).getRequester().get(Requester.DISCORD_API_PREFIX + "guilds/" + guild.getId() + "/bans").getArray();
         for (int i = 0; i < bannedArr.length(); i++)
         {
             JSONObject userObj = bannedArr.getJSONObject(i).getJSONObject("user");
@@ -636,42 +779,14 @@ public class GuildManager
         }
         checkPermission(Permission.BAN_MEMBERS);
 
-        ((JDAImpl) guild.getJDA()).getRequester().delete("https://discordapp.com/api/guilds/"
+        ((JDAImpl) guild.getJDA()).getRequester().delete(Requester.DISCORD_API_PREFIX + "guilds/"
                 + guild.getId() + "/bans/" + userId);
-    }
-
-    /**
-     * Transfers the ownership of this Guild to another user.
-     * This will only work, if the current owner of the Guild is the JDA-user.
-     * This change will be applied immediately.
-     *
-     * @param newOwner
-     *      the desired new Owner
-     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
-     *      if the guild is temporarily unavailable
-     */
-    public void transferOwnership(User newOwner)
-    {
-        if (!guild.isAvailable())
-        {
-            throw new GuildUnavailableException();
-        }
-        if (!guild.getJDA().getSelfInfo().getId().equals(guild.getOwnerId()))
-        {
-            throw new PermissionException("Moving guild-ownership is only available for guild-owners!");
-        }
-        if (!guild.getUsers().contains(newOwner))
-        {
-            throw new IllegalArgumentException("The new owner is not member of the Guild!");
-        }
-        update(getFrame().put("owner_id", newOwner.getId()));
     }
 
     /**
      * Leaves this {@link net.dv8tion.jda.entities.Guild Guild}.
      * If the logged in {@link net.dv8tion.jda.entities.User User} is the owner of
      * this {@link net.dv8tion.jda.entities.Guild Guild}, this method will throw an {@link net.dv8tion.jda.exceptions.PermissionException PermissionException}.
-     * If you want to delete the Guild instead, use {@link GuildManager#delete()}.
      * This change will be applied immediately.
      *
      * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
@@ -689,57 +804,7 @@ public class GuildManager
         {
             throw new GuildUnavailableException();
         }
-        ((JDAImpl) guild.getJDA()).getRequester().delete("https://discordapp.com/api/users/@me/guilds/" + guild.getId());
-    }
-
-    /**
-     * Deletes this {@link net.dv8tion.jda.entities.Guild Guild}.
-     * If the logged in {@link net.dv8tion.jda.entities.User User} is not the owner of
-     * this {@link net.dv8tion.jda.entities.Guild Guild}, this method will throw an {@link net.dv8tion.jda.exceptions.PermissionException PermissionException}.
-     * If you want to leave the Guild instead, use {@link GuildManager#leave()}.
-     * This change will be applied immediately.
-     *
-     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
-     *      if the guild is temporarily unavailable
-     * @throws net.dv8tion.jda.exceptions.PermissionException
-     *      if the account JDA is using is not the owner of the Guild
-     */
-    public void delete()
-    {
-        if (!guild.getJDA().getSelfInfo().getId().equals(guild.getOwnerId()))
-        {
-            throw new PermissionException("You need to be the Guild-owner to delete a Guild");
-        }
-        if (!guild.isAvailable())
-        {
-            throw new GuildUnavailableException();
-        }
-        ((JDAImpl) guild.getJDA()).getRequester().delete("https://discordapp.com/api/guilds/" + guild.getId());
-    }
-
-    /**
-     * <b>This method is deprecated! please use {@link GuildManager#leave()} or {@link GuildManager#delete()} instead.</b>
-     *
-     * Leaves or Deletes this {@link net.dv8tion.jda.entities.Guild Guild}.
-     * If the logged in {@link net.dv8tion.jda.entities.User User} is the owner of
-     * this {@link net.dv8tion.jda.entities.Guild Guild}, the {@link net.dv8tion.jda.entities.Guild Guild} is deleted.
-     * Otherwise, this guild will be left.
-     * This change will be applied immediately.
-     *
-     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
-     *      if the guild is temporarily unavailable
-     */
-    @Deprecated
-    public void leaveOrDelete()
-    {
-        if (guild.getJDA().getSelfInfo().getId().equals(guild.getOwnerId()))
-        {
-            delete();
-        }
-        else
-        {
-            leave();
-        }
+        ((JDAImpl) guild.getJDA()).getRequester().delete(Requester.DISCORD_API_PREFIX + "users/@me/guilds/" + guild.getId());
     }
 
     private JSONObject getFrame()
@@ -749,7 +814,7 @@ public class GuildManager
 
     private void update(JSONObject object)
     {
-        ((JDAImpl) guild.getJDA()).getRequester().patch("https://discordapp.com/api/guilds/" + guild.getId(), object);
+        ((JDAImpl) guild.getJDA()).getRequester().patch(Requester.DISCORD_API_PREFIX + "guilds/" + guild.getId(), object);
     }
 
     private void checkPermission(Permission perm)
@@ -757,5 +822,17 @@ public class GuildManager
         if (!PermissionUtil.checkPermission(getGuild().getJDA().getSelfInfo(), perm, getGuild()))
             throw new PermissionException(perm);
 
+    }
+
+    private void checkPosition(User u)
+    {
+        if(!PermissionUtil.canInteract(guild.getJDA().getSelfInfo(), u, guild))
+            throw new PermissionException("Can't modify a user with higher or equal highest role than yourself!");
+    }
+
+    private void checkPosition(Role r)
+    {
+        if(!PermissionUtil.canInteract(guild.getJDA().getSelfInfo(), r))
+            throw new PermissionException("Can't modify a user with higher or equal highest role than yourself!");
     }
 }

@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,7 +113,7 @@ public abstract class Player implements AudioSendHandler
             int amountRead;
             byte[] audio = new byte[AudioConnection.OPUS_FRAME_SIZE * audioFormat.getFrameSize()];
             amountRead = audioSource.read(audio, 0, audio.length);
-            if (amountRead > 0)
+            if (amountRead > -1)
             {
                 return audio;
             }

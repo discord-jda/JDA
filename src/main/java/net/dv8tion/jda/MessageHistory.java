@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.exceptions.PermissionException;
 import net.dv8tion.jda.handle.EntityBuilder;
+import net.dv8tion.jda.requests.Requester;
 import org.json.JSONArray;
 
 import java.util.LinkedList;
@@ -35,12 +36,12 @@ public class MessageHistory
     private boolean atEnd = false;
     private final List<Message> queued = new LinkedList<>();
 
-    public MessageHistory(JDA api, MessageChannel channel)
+    public MessageHistory(MessageChannel channel)
     {
+        this.api = (channel instanceof TextChannel) ? (JDAImpl) ((TextChannel) channel).getJDA() : (JDAImpl) ((PrivateChannel) channel).getJDA();
         if (channel instanceof TextChannel && !((TextChannel) channel).checkPermission(api.getSelfInfo(), Permission.MESSAGE_HISTORY))
             throw new PermissionException(Permission.MESSAGE_HISTORY);
 
-        this.api = ((JDAImpl) api);
         this.channelId = (channel instanceof TextChannel) ? ((TextChannel) channel).getId() : ((PrivateChannel) channel).getId();
     }
 
@@ -100,8 +101,12 @@ public class MessageHistory
             toQueue = Math.min(amount, 100);
             try
             {
-                JSONArray array = api.getRequester().getA("https://discordapp.com/api/channels/" + channelId
+                Requester.Response response = api.getRequester().get(Requester.DISCORD_API_PREFIX + "channels/" + channelId
                         + "/messages?limit=" + toQueue + (lastId != null ? "&before=" + lastId : ""));
+                if(!response.isOk())
+                    throw new RuntimeException("Error fetching message-history for channel with id " + channelId + "... Error: " + response.toString());
+
+                JSONArray array = response.getArray();
 
                 for (int i = 0; i < array.length(); i++)
                 {

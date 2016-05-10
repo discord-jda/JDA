@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,10 @@
  */
 package net.dv8tion.jda.hooks;
 
+import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.Event;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -46,12 +48,26 @@ public class InterfacedEventManager implements IEventManager
     }
 
     @Override
+    public List<Object> getRegisteredListeners()
+    {
+        return Collections.unmodifiableList(listeners);
+    }
+
+    @Override
     public void handle(Event event)
     {
         List<EventListener> listenerCopy = new LinkedList<>(listeners);
         for (EventListener listener : listenerCopy)
         {
-            listener.onEvent(event);
+            try
+            {
+                listener.onEvent(event);
+            }
+            catch (Throwable throwable)
+            {
+                JDAImpl.LOG.fatal("One of the EventListeners had an uncaught exception");
+                JDAImpl.LOG.log(throwable);
+            }
         }
     }
 }

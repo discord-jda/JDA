@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,19 +15,18 @@
  */
 package net.dv8tion.jda.entities.impl;
 
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.body.MultipartBody;
 import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.JDAInfo;
 import net.dv8tion.jda.MessageBuilder;
 import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.exceptions.BlockedException;
 import net.dv8tion.jda.exceptions.RateLimitedException;
 import net.dv8tion.jda.handle.EntityBuilder;
+import net.dv8tion.jda.requests.Requester;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -80,15 +79,19 @@ public class PrivateChannelImpl implements PrivateChannel
         }
         try
         {
-            JSONObject response = api.getRequester().post("https://discordapp.com/api/channels/" + getId() + "/messages",
+            Requester.Response response = api.getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + getId() + "/messages",
                     new JSONObject().put("content", msg.getRawContent()));
-            if (response.has("retry_after"))
+            if (response.isRateLimit())
             {
-                long retry_after = response.getLong("retry_after");
+                long retry_after = response.getObject().getLong("retry_after");
                 api.setMessageTimeout(retry_after);
                 throw new RateLimitedException(retry_after);
             }
-            return new EntityBuilder(api).createMessage(response);
+            if (!response.isOk())
+            {
+                throw new BlockedException();
+            }
+            return new EntityBuilder(api).createMessage(response.getObject());
         }
         catch (JSONException ex)
         {
@@ -108,46 +111,49 @@ public class PrivateChannelImpl implements PrivateChannel
     public void sendMessageAsync(Message msg, Consumer<Message> callback)
     {
         ((MessageImpl) msg).setChannelId(getId());
-        TextChannelImpl.AsyncMessageSender.getInstance(getJDA()).enqueue(msg, callback);
-    }
-
-    @Override
-    @Deprecated
-    public Message sendFile(File file)
-    {
-        return sendFile(file, null);
-    }
-
-    @Override
-    @Deprecated
-    public void sendFileAsync(File file, Consumer<Message> callback)
-    {
-        sendFileAsync(file, null, callback);
+        TextChannelImpl.AsyncMessageSender.getInstance(getJDA()).enqueue(msg, false, callback);
     }
 
     @Override
     public Message sendFile(File file, Message message)
     {
+        if(file == null || !file.exists() || !file.canRead())
+            throw new IllegalArgumentException("Provided file is either null, doesn't exist or is not readable!");
+        if (file.length() > 8<<20)   //8MB
+            throw new IllegalArgumentException("File is to big! Max file-size is 8MB");
+
         JDAImpl api = (JDAImpl) getJDA();
         try
         {
-            MultipartBody body = Unirest.post("https://discordapp.com/api/channels/" + getId() + "/messages")
+            MultipartBody body = Unirest.post(Requester.DISCORD_API_PREFIX + "channels/" + getId() + "/messages")
                     .header("authorization", getJDA().getAuthToken())
-                    .header("user-agent", JDAInfo.GITHUB + " " + JDAInfo.VERSION)
+                    .header("user-agent", Requester.USER_AGENT)
                     .field("file", file);
             if (message != null)
                 body.field("content", message.getRawContent()).field("tts", message.isTTS());
 
-            HttpResponse<JsonNode> response = body.asJson();
+            String dbg = String.format("Requesting %s -> %s\n\tPayload: file: %s, message: %s, tts: %s\n\tResponse: ",
+                    body.getHttpRequest().getHttpMethod().name(), body.getHttpRequest().getUrl(),
+                    file.getAbsolutePath(), message == null ? "null" : message.getRawContent(), message == null ? "N/A" : message.isTTS());
+            String requestBody = body.asString().getBody();
+            Requester.LOG.trace(dbg + body);
 
-            JSONObject messageJson = new JSONObject(response.getBody().toString());
-            return new EntityBuilder(api).createMessage(messageJson);
+            try
+            {
+                JSONObject messageJson = new JSONObject(requestBody);
+                return new EntityBuilder(api).createMessage(messageJson);
+            }
+            catch (JSONException e)
+            {
+                Requester.LOG.fatal("Following json caused an exception: " + requestBody);
+                Requester.LOG.log(e);
+            }
         }
         catch (UnirestException e)
         {
-            JDAImpl.LOG.log(e);
-            return null;
+            Requester.LOG.log(e);
         }
+        return null;
     }
 
     @Override
@@ -163,9 +169,16 @@ public class PrivateChannelImpl implements PrivateChannel
         thread.start();
     }
 
+    @Override
     public void sendTyping()
     {
-        api.getRequester().post("https://discordapp.com/api/channels/" + getId() + "/typing", new JSONObject());
+        api.getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + getId() + "/typing", new JSONObject());
+    }
+
+    @Override
+    public void close()
+    {
+        api.getRequester().delete(Requester.DISCORD_API_PREFIX + "channels/" + getId());
     }
 
     @Override

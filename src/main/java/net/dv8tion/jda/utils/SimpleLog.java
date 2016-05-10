@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,7 @@ package net.dv8tion.jda.utils;
 import javax.swing.*;
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class SimpleLog
 {
@@ -39,6 +37,7 @@ public class SimpleLog
     private static final SimpleDateFormat DFORMAT = new SimpleDateFormat("HH:mm:ss");
 
     private static final Map<String, SimpleLog> LOGS = new HashMap<>();
+    private static final Set<LogListener> listeners = new HashSet<>();
 
     /**
      * Will get the LOG with the given LOG-name or create one if it didn't exist
@@ -55,6 +54,11 @@ public class SimpleLog
         return LOGS.get(name.toLowerCase());
     }
 
+    private static PrintStream origStd = null;
+    private static PrintStream origErr = null;
+    private static FileOutputStream stdOut = null;
+    private static FileOutputStream errOut = null;
+
     /**
      * Will duplicate the output-streams to a specified file
      * @param std the file to use for System.out logging, or null to not LOG System.out to a file
@@ -62,44 +66,89 @@ public class SimpleLog
      * @throws IOException If an IO error is encountered while dealing with the file. Most likely
      *                     to be caused by a lack of permissions when creating the log folders or files.
      */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void addFileLogs(File std, File err) throws IOException {
         if(std != null) {
-            final OutputStream stdc = System.out;
-            if(!std.getParentFile().exists()) {
-                std.getParentFile().mkdirs();
+            if (origStd == null)
+                origStd = System.out;
+            if(!std.getAbsoluteFile().getParentFile().exists()) {
+                std.getAbsoluteFile().getParentFile().mkdirs();
             }
             if(!std.exists()) {
                 std.createNewFile();
             }
-            final OutputStream stdf = new FileOutputStream(std, true);
+            FileOutputStream fOut = new FileOutputStream(std, true);
             System.setOut(new PrintStream(new OutputStream() {
                 @Override
                 public void write(int b) throws IOException {
-                    stdc.write(b);
-                    stdf.write(b);
+                    origStd.write(b);
+                    fOut.write(b);
                 }
             }));
+            if (stdOut != null)
+                stdOut.close();
+            stdOut = fOut;
+        }
+        else if (origStd != null)
+        {
+            System.setOut(origStd);
+            stdOut.close();
+            origStd = null;
         }
         if(err != null) {
-            final OutputStream errc = System.err;
-            if(!err.getParentFile().exists()) {
-                err.getParentFile().mkdirs();
+            if (origErr == null)
+                origErr = System.err;
+            if(!err.getAbsoluteFile().getParentFile().exists()) {
+                err.getAbsoluteFile().getParentFile().mkdirs();
             }
             if(!err.exists()) {
                 err.createNewFile();
             }
-            final OutputStream errf = new FileOutputStream(err, true);
+            FileOutputStream fOut = new FileOutputStream(err, true);
             System.setErr(new PrintStream(new OutputStream() {
                 @Override
                 public void write(int b) throws IOException {
-                    errc.write(b);
-                    errf.write(b);
+                    origErr.write(b);
+                    fOut.write(b);
                 }
             }));
+            if (errOut != null)
+                errOut.close();
+            errOut = fOut;
+        }
+        else if (origErr != null)
+        {
+            System.setErr(origErr);
+            errOut.close();
+            origErr = null;
         }
     }
 
-    private final String name;
+    /**
+     * Adds a custom Listener that receives all logs
+     * @param listener the listener to add
+     */
+    public static void addListener(LogListener listener)
+    {
+        synchronized (listeners)
+        {
+            listeners.add(listener);
+        }
+    }
+
+    /**
+     * Removes a custom Listener
+     * @param listener the listener to remove
+     */
+    public static void removeListener(LogListener listener)
+    {
+        synchronized (listeners)
+        {
+            listeners.remove(listener);
+        }
+    }
+
+    public final String name;
     private Level level = null;
 
     private SimpleLog(String name) {
@@ -146,6 +195,13 @@ public class SimpleLog
      * @param msg   The message to LOG
      */
     public void log(Level level, Object msg) {
+        synchronized (listeners)
+        {
+            for (LogListener listener : listeners)
+            {
+                listener.onLog(this, level, msg);
+            }
+        }
         if(level.getPriority() < ((this.level == null) ? SimpleLog.LEVEL.getPriority() : this.level.getPriority())) {
             return;
         }
@@ -159,6 +215,13 @@ public class SimpleLog
 
     public void log(Throwable ex)
     {
+        synchronized (listeners)
+        {
+            for (LogListener listener : listeners)
+            {
+                listener.onError(this, ex);
+            }
+        }
         log(Level.FATAL, "Encountered an exception:");
         ex.printStackTrace();
     }
@@ -237,6 +300,33 @@ public class SimpleLog
      */
     public static boolean isConsolePresent() {
         return System.console() != null;
+    }
+
+    /**
+     * This interface has to be able to register (via {@link SimpleLog#addListener(LogListener)}) and listen to log-messages.
+     */
+    public interface LogListener
+    {
+        /**
+         * Called on any incoming log-messages (exception: Throwables).
+         * This is also called on log-messages that would normally not print to console due to log-level.
+         * @param log
+         *      the log this message was sent to
+         * @param logLevel
+         *      the level of the message sent
+         * @param message
+         *      the message as object
+         */
+        void onLog(SimpleLog log, Level logLevel, Object message);
+
+        /**
+         * Called on any incoming error-message (Throwable)
+         * @param log
+         *      the log this error was sent to
+         * @param err
+         *      the error as Throwable
+         */
+        void onError(SimpleLog log, Throwable err);
     }
 
     /**

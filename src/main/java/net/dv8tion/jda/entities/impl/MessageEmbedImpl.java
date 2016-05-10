@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import net.dv8tion.jda.entities.MessageEmbed;
 
 public class MessageEmbedImpl implements MessageEmbed
 {
-    //TODO: Id?!
     private String url;
     private String title;
     private String description;

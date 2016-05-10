@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,8 @@ public class VoiceChannelImpl implements VoiceChannel
     private List<User> connectedUsers = new ArrayList<>();
     private final Map<User, PermissionOverride> userPermissionOverrides = new HashMap<>();
     private final Map<Role, PermissionOverride> rolePermissionOverrides = new HashMap<>();
+
+    private ChannelManager manager = null;
 
     public VoiceChannelImpl(String id, Guild guild)
     {
@@ -118,9 +120,11 @@ public class VoiceChannelImpl implements VoiceChannel
     }
 
     @Override
-    public ChannelManager getManager()
+    public synchronized ChannelManager getManager()
     {
-        return new ChannelManager(this);
+        if (manager == null)
+            manager = new ChannelManager(this);
+        return manager;
     }
 
     @Override
@@ -137,7 +141,7 @@ public class VoiceChannelImpl implements VoiceChannel
         PermissionOverrideImpl override = new PermissionOverrideImpl(this, user, null);
         //hacky way of putting entity to server without using requester here
         override.setAllow(1 << Permission.MANAGE_PERMISSIONS.getOffset()).setDeny(0);
-        PermissionOverrideManager manager = new PermissionOverrideManager(override);
+        PermissionOverrideManager manager = override.getManager();
         manager.reset(Permission.MANAGE_PERMISSIONS).update();
         return manager;
     }
@@ -156,7 +160,7 @@ public class VoiceChannelImpl implements VoiceChannel
         PermissionOverrideImpl override = new PermissionOverrideImpl(this, null, role);
         //hacky way of putting entity to server without using requester here
         override.setAllow(1 << Permission.MANAGE_PERMISSIONS.getOffset()).setDeny(0);
-        PermissionOverrideManager manager = new PermissionOverrideManager(override);
+        PermissionOverrideManager manager = override.getManager();
         manager.reset(Permission.MANAGE_PERMISSIONS).update();
         return manager;
     }

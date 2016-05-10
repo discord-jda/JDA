@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,100 +15,44 @@
  */
 package net.dv8tion.jda.managers;
 
-import com.sun.jna.Platform;
 import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.audio.AudioConnection;
 import net.dv8tion.jda.audio.AudioReceiveHandler;
 import net.dv8tion.jda.audio.AudioSendHandler;
+import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.VoiceChannel;
-import net.dv8tion.jda.entities.impl.JDAImpl;
-import net.dv8tion.jda.utils.NativeUtils;
-import net.dv8tion.jda.utils.ServiceUtil;
 import net.dv8tion.jda.utils.SimpleLog;
-import org.json.JSONObject;
-
-import java.io.IOException;
 
 /**
  * AudioManager deals with creating, managing and severing audio connections to
  * {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannels}. Also controls audio handlers.
  */
-public class AudioManager
+public interface AudioManager
 {
-    //These values are set at the bottom of this file.
-    public static boolean AUDIO_SUPPORTED;
-    public static String OPUS_LIB_NAME;
-    public static final long DEFAULT_CONNECTION_TIMEOUT = 10000;
-    public static final SimpleLog LOG = SimpleLog.getLog("JDAAudioManager");
-
-    private static boolean initialized = false;
-
-    private final JDAImpl api;
-    private AudioConnection audioConnection = null;
-    private VoiceChannel queuedAudioConnection = null;
-
-    private AudioSendHandler sendHandler;
-    private AudioReceiveHandler receiveHandler;
-
-    private long timeout = DEFAULT_CONNECTION_TIMEOUT;
-
-    public AudioManager(JDAImpl api)
-    {
-        this.api = api;
-        init();
-        if (AUDIO_SUPPORTED)
-            LOG.info("Audio System successfully setup!");
-        else
-            LOG.info("Audio System encountered problems while loading, thus, is disabled.");
-    }
+    long DEFAULT_CONNECTION_TIMEOUT = 10000;
+    SimpleLog LOG = SimpleLog.getLog("JDAAudioManager");
 
     /**
      * Starts the process to create an audio connection with a {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel}.<br>
      * Note: Currently you can only be connected to a single {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel}
-     * at a time.
+     * per {@link net.dv8tion.jda.entities.Guild Guild}.
      *
      * @param channel
      *          The {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} to open an audio connection with.
      *
      * @throws java.lang.IllegalStateException
      *          If JDA is already has an active audio connection with a {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel}
-     *          this will be thrown. JDA can only have 1 audio connection at a time.<br>
+     *          in the {@link net.dv8tion.jda.entities.Guild Guild} the this AudioManager handles then
+     *          this will be thrown. JDA can only have 1 audio connection per Guild at a time.<br>
      *          This will also be thrown if JDA is currently attempting to setup an audio connection.<br>
      *          For both of these situations, first checking {@link #isAttemptingToConnect()} and {@link #isConnected()}
      *          is advised.
-     *
-     * @throws java.lang.UnsupportedOperationException
-     *          If {@link #AUDIO_SUPPORTED AUDIO_SUPPORTED} is false due to a problem when JDA initially set up the
-     *          audio system then this will be thrown.<br>
-     *          Consider checking the value of {@link #AUDIO_SUPPORTED AudioManager.AUDIO_SUPPORTED} first.
      */
-    public void openAudioConnection(VoiceChannel channel)
-    {
-        if (!AUDIO_SUPPORTED)
-            throw new UnsupportedOperationException("Sorry! Audio is disabled due to an internal JDA error! Contact Dev!");
-        if (audioConnection != null)
-            throw new IllegalStateException("Cannot have more than 1 audio connection at a time. Please close existing" +
-                    " connection before attempting to open a new connection.");
-        if (queuedAudioConnection != null)
-            throw new IllegalStateException("Already attempting to start an AudioConnection with a VoiceChannel!\n" +
-                    "Currently Attempting Channel ID: " + queuedAudioConnection.getId() + "  |  New Attempt Channel ID: " + channel.getId());
-        queuedAudioConnection = channel;
-        JSONObject obj = new JSONObject()
-                .put("op", 4)
-                .put("d", new JSONObject()
-                        .put("guild_id", channel.getGuild().getId())
-                        .put("channel_id", channel.getId())
-                        .put("self_mute", false)
-                        .put("self_deaf", false)
-                );
-        api.getClient().send(obj.toString());
-    }
+    void openAudioConnection(VoiceChannel channel);
 
     /**
      * Moves the audio connection from one {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} to a different
-     * {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel}. The destination channel MUST be in the same
-     * {@link net.dv8tion.jda.entities.Guild Guild} as {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} that
-     * the audio connection is currently connected to.<br>
+     * {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel}. The destination channel MUST be in the
+     * {@link net.dv8tion.jda.entities.Guild Guild} that this AudioManager handles.<br>
      * Note: if the VoiceChannel provided is the same as the channel that the audio connection is currently connected
      * to, there will be no change.
      *
@@ -123,48 +67,13 @@ public class AudioManager
      *              <li>If the provided channel is not part of the Guild that the current audio connection is connected to.</li>
      *          </ul>
      */
-    public void moveAudioConnection(VoiceChannel channel)
-    {
-        if (!isConnected())
-            throw new IllegalStateException("Cannot change to a different VoiceChannel when not currently connected. " +
-                    "Please use openAudioConnection(VoiceChannel) to start an audio connection.");
-
-        if (channel == null)
-            throw new IllegalArgumentException("The provided VoiceChannel was null! Cannot determine which VoiceChannel " +
-                    "to move to from a null VoiceChannel!");
-
-        if (!audioConnection.getChannel().getGuild().getId().equals(channel.getGuild().getId()))
-            throw new IllegalArgumentException("Cannot move to a VoiceChannel that isn't in the same Guild as the " +
-                    "active VoiceChannel audio connection. If you wish to open an audio connection with a VoiceChannel " +
-                    "on a different Guild, please close the active connection and start a new one.");
-
-        //If we are already connected to this VoiceChannel, then do nothing.
-        if (channel.getId().equals(audioConnection.getChannel().getId()))
-            return;
-
-        JSONObject obj = new JSONObject()
-                .put("op", 4)
-                .put("d", new JSONObject()
-                        .put("guild_id", channel.getGuild().getId())
-                        .put("channel_id", channel.getId())
-                        .put("self_mute", false)
-                        .put("self_deaf", false)
-                );
-        api.getClient().send(obj.toString());
-        audioConnection.setChannel(channel);
-    }
+    void moveAudioConnection(VoiceChannel channel);
 
     /**
      * Used to close down the audio connection and disconnect from the {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel}.<br>
      * As a note, if this is called when JDA doesn't have an audio connection, nothing happens.
      */
-    public void closeAudioConnection()
-    {
-        if (audioConnection == null)
-            return;
-        this.audioConnection.close();
-        this.audioConnection = null;
-    }
+    void closeAudioConnection();
 
     /**
      * Gets the {@link net.dv8tion.jda.JDA JDA} instance that this AudioManager is a part of.
@@ -172,10 +81,15 @@ public class AudioManager
      * @return
      *      This AudioManager's JDA instance.
      */
-    public JDA getJDA()
-    {
-        return api;
-    }
+    JDA getJDA();
+
+    /**
+     * Gets the {@link net.dv8tion.jda.entities.Guild Guild} instance that this AudioManager is used for.
+     *
+     * @return
+     *      The Guild that this AudioManager manages.
+     */
+    Guild getGuild();
 
     /**
      * This can be used to find out if JDA is currently attempting to setup an audio connection.<br>
@@ -185,10 +99,7 @@ public class AudioManager
      * @return
      *      True if JDA is currently attempting to create an audio connection.
      */
-    public boolean isAttemptingToConnect()
-    {
-        return queuedAudioConnection != null;
-    }
+    boolean isAttemptingToConnect();
 
     /**
      * This can be used to find out what {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} JDA is currently
@@ -201,10 +112,7 @@ public class AudioManager
      *      The {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} that JDA is attempting to create an
      *      audio connection with, or null if JDA isn't attempting to create a connection.
      */
-    public VoiceChannel getQueuedAudioConnection()
-    {
-        return queuedAudioConnection;
-    }
+    VoiceChannel getQueuedAudioConnection();
 
     /**
      * Returns the {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} that JDA currently has an audio connection
@@ -215,10 +123,7 @@ public class AudioManager
      *      The {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} the audio connection is connected to
      *      or <code>null</code> if not connected.
      */
-    public VoiceChannel getConnectedChannel()
-    {
-        return audioConnection == null ? null : audioConnection.getChannel();
-    }
+    VoiceChannel getConnectedChannel();
 
     /**
      * This can be used to find out if JDA currently has an active audio connection with a
@@ -229,31 +134,7 @@ public class AudioManager
      * @return
      *      True if JDA currently has an active audio connection.
      */
-    public boolean isConnected()
-    {
-        return audioConnection != null;
-    }
-
-    //Consider finding a way to hide this? It shouldn't be able to be seen by JDA users.
-    /**
-     * <b><u>Please don't touch this method. Bad Bad things will happen.</u></b><br>
-     * If you would like to start an audio connection, please use
-     * {@link #openAudioConnection(net.dv8tion.jda.entities.VoiceChannel)}
-     *
-     * @param audioConnection
-     *          The audio connection to deal with. Once again, <b>don't use this method</b> ;_;
-     */
-    public void setAudioConnection(AudioConnection audioConnection)
-    {
-        this.queuedAudioConnection = null;
-        this.audioConnection = audioConnection;
-        if (audioConnection == null)
-            return;
-
-        audioConnection.setSendingHandler(sendHandler);
-        audioConnection.setReceivingHandler(receiveHandler);
-        audioConnection.ready(timeout);
-    }
+    boolean isConnected();
 
     /**
      * Sets the amount of time, in milliseconds, that will be used as the timeout when waiting for the audio connection
@@ -265,10 +146,7 @@ public class AudioManager
      *          The amount of time, in milliseconds, that should be waited when waiting for the audio connection
      *          to be established.
      */
-    public void setConnectTimeout(long timeout)
-    {
-        this.timeout = timeout;
-    }
+    void setConnectTimeout(long timeout);
 
     /**
      * Returns the currently set timeout value, in milliseconds, used when waiting for an audio connection to be established.
@@ -276,10 +154,7 @@ public class AudioManager
      * @return
      *      The currently set timeout.
      */
-    public long getConnectTimeout()
-    {
-        return timeout;
-    }
+    long getConnectTimeout();
 
     /**
      * Sets the {@link net.dv8tion.jda.audio.AudioSendHandler}
@@ -296,12 +171,7 @@ public class AudioManager
      * @param handler
      *          The {@link net.dv8tion.jda.audio.AudioSendHandler AudioSendHandler} used to provide audio data.
      */
-    public void setSendingHandler(AudioSendHandler handler)
-    {
-        sendHandler = handler;
-        if (audioConnection != null)
-            audioConnection.setSendingHandler(handler);
-    }
+    void setSendingHandler(AudioSendHandler handler);
 
     /**
      * Returns the currently set {@link net.dv8tion.jda.audio.AudioSendHandler AudioSendHandler}. If there is
@@ -310,10 +180,7 @@ public class AudioManager
      * @return
      *      The currently active {@link net.dv8tion.jda.audio.AudioSendHandler AudioSendHandler} or <code>null</code>.
      */
-    public AudioSendHandler getSendingHandler()
-    {
-        return sendHandler;
-    }
+    AudioSendHandler getSendingHandler();
 
     /**
      * Sets the {@link net.dv8tion.jda.audio.AudioReceiveHandler AudioReceiveHandler}
@@ -328,12 +195,7 @@ public class AudioManager
      *          The {@link net.dv8tion.jda.audio.AudioReceiveHandler AudioReceiveHandler} used to process
      *          received audio data.
      */
-    public void setReceivingHandler(AudioReceiveHandler handler)
-    {
-        receiveHandler = handler;
-        if (audioConnection != null)
-            audioConnection.setReceivingHandler(handler);
-    }
+    void setReceivingHandler(AudioReceiveHandler handler);
 
     /**
      * Returns the currently set {@link net.dv8tion.jda.audio.AudioReceiveHandler AudioReceiveHandler}. If there is
@@ -342,64 +204,5 @@ public class AudioManager
      * @return
      *      The currently active {@link net.dv8tion.jda.audio.AudioReceiveHandler AudioReceiveHandler} or <code>null</code>.
      */
-    public AudioReceiveHandler getReceiveHandler()
-    {
-        return receiveHandler;
-    }
-
-    //Load the Opus library.
-    private static synchronized void init()
-    {
-        if(initialized)
-            return;
-        initialized = true;
-        ServiceUtil.loadServices();
-        String nativesRoot  = null;
-        try
-        {
-            //The libraries that this is referencing are available in the src/main/resources/opus/ folder.
-            //Of course, when JDA is compiled that just becomes /opus/
-            nativesRoot = "/natives/" + Platform.RESOURCE_PREFIX + "/%s";
-            if (nativesRoot.contains("darwin")) //Mac
-                nativesRoot += ".dylib";
-            else if (nativesRoot.contains("win"))
-                nativesRoot += ".dll";
-            else if (nativesRoot.contains("linux"))
-                nativesRoot += ".so";
-            else
-                throw new UnsupportedOperationException();
-
-            NativeUtils.loadLibraryFromJar(String.format(nativesRoot, "libopus"));
-        }
-        catch (Throwable e)
-        {
-            if (e instanceof UnsupportedOperationException)
-                LOG.fatal("Sorry, JDA's audio system doesn't support this system.\n" +
-                        "Supported Systems: Windows(x86, x64), Mac(x86, x64) and Linux(x86, x64)\n" +
-                        "Operating system: " + Platform.RESOURCE_PREFIX);
-            else if (e instanceof  IOException)
-            {
-                LOG.fatal("There was an IO Exception when setting up the temp files for audio.");
-                LOG.log(e);
-            }
-            else if (e instanceof UnsatisfiedLinkError)
-            {
-                LOG.fatal("JDA encountered a problem when attempting to load the Native libraries. Contact a DEV.");
-                LOG.log(e);
-            }
-            else
-            {
-                LOG.fatal("An unknown error occurred while attempting to setup JDA's audio system!");
-                LOG.log(e);
-            }
-
-            nativesRoot = null;
-        }
-        finally
-        {
-            OPUS_LIB_NAME = nativesRoot != null ? String.format(nativesRoot, "libopus") : null;
-            AUDIO_SUPPORTED = nativesRoot != null;
-        }
-
-    }
+    AudioReceiveHandler getReceiveHandler();
 }

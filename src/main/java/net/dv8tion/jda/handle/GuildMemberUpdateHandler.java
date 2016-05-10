@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,31 +19,43 @@ import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.impl.GuildImpl;
 import net.dv8tion.jda.entities.impl.JDAImpl;
+import net.dv8tion.jda.events.guild.member.GuildMemberNickChangeEvent;
 import net.dv8tion.jda.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.events.guild.member.GuildMemberRoleRemoveEvent;
+import net.dv8tion.jda.requests.GuildLock;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
-public class GuildMemberRoleHandler extends SocketHandler
+public class GuildMemberUpdateHandler extends SocketHandler
 {
 
-    public GuildMemberRoleHandler(JDAImpl api, int responseNumber)
+    public GuildMemberUpdateHandler(JDAImpl api, int responseNumber)
     {
         super(api, responseNumber);
     }
 
     @Override
-    public void handle(JSONObject content)
+    protected String handleInternally(JSONObject content)
     {
+        if (GuildLock.get(api).isLocked(content.getString("guild_id")))
+        {
+            return content.getString("guild_id");
+        }
+
         JSONObject userJson = content.getJSONObject("user");
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("guild_id"));
         User user = api.getUserMap().get(userJson.getString("id"));
         List<Role> rolesNew = toRolesList(guild, content.getJSONArray("roles"));
         List<Role> rolesOld = guild.getUserRoles().get(user);
+
+        if(rolesOld == null)
+        {
+            //something is fishy...
+            JDAImpl.LOG.warn("Got role-update for user which is not in guild? " + content.toString());
+            return null;
+        }
 
         //Find the roles removed.
         List<Role> removedRoles = new LinkedList<>();
@@ -67,6 +79,14 @@ public class GuildMemberRoleHandler extends SocketHandler
         if (removedRoles.size() > 0)
         {
             rolesOld.removeAll(removedRoles);
+        }
+        if (rolesNew.size() > 0)
+        {
+            rolesOld.addAll(rolesNew);
+        }
+        Collections.sort(rolesOld, (r2, r1) -> Integer.compare(r1.getPosition(), r2.getPosition()));
+        if (removedRoles.size() > 0)
+        {
             api.getEventManager().handle(
                     new GuildMemberRoleRemoveEvent(
                             api, responseNumber,
@@ -74,12 +94,40 @@ public class GuildMemberRoleHandler extends SocketHandler
         }
         if (rolesNew.size() > 0)
         {
-            rolesOld.addAll(rolesNew);
             api.getEventManager().handle(
                     new GuildMemberRoleAddEvent(
                             api, responseNumber,
                             guild, user, rolesNew));
         }
+        if (content.has("nick"))
+        {
+            Map<User, String> nickMap = guild.getNickMap();
+            String prevNick = nickMap.get(user);
+            if (content.isNull("nick"))
+            {
+                if (prevNick != null)
+                {
+                    nickMap.remove(user);
+                    api.getEventManager().handle(
+                            new GuildMemberNickChangeEvent(
+                                    api, responseNumber,
+                                    guild, user, prevNick, null
+                            )
+                    );
+                }
+            }
+            else if (!content.getString("nick").equals(prevNick))
+            {
+                nickMap.put(user, content.getString("nick"));
+                api.getEventManager().handle(
+                        new GuildMemberNickChangeEvent(
+                                api, responseNumber,
+                                guild, user, prevNick, content.getString("nick")
+                        )
+                );
+            }
+        }
+        return null;
     }
 
     private List<Role> toRolesList(GuildImpl guild, JSONArray array)

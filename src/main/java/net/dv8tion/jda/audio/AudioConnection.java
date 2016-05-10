@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package net.dv8tion.jda.audio;
 
-import com.iwebpp.crypto.TweetNaclFast;
 import com.sun.jna.ptr.PointerByReference;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Guild;
@@ -27,14 +26,10 @@ import net.dv8tion.jda.utils.SimpleLog;
 import org.json.JSONObject;
 import tomp2p.opuswrapper.Opus;
 
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.NoRouteToHostException;
-import java.net.SocketException;
+import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
-import java.util.Arrays;
 
 public class AudioConnection
 {
@@ -135,10 +130,12 @@ public class AudioConnection
         return channel.getGuild();
     }
 
-    public void close()
+    public void close(boolean regionChange)
     {
-        setSpeaking(false);
-        webSocket.close();
+//        setSpeaking(false);
+        sendThread.interrupt();
+        receiveThread.interrupt();
+        webSocket.close(regionChange, -1);
     }
 
     private void setupSendThread()
@@ -151,7 +148,7 @@ public class AudioConnection
                 char seq = 0;           //Sequence of audio packets. Used to determine the order of the packets.
                 int timestamp = 0;      //Used to sync up our packets within the same timeframe of other people talking.
                 long lastFrameSent = System.currentTimeMillis();
-                while (!udpSocket.isClosed())
+                while (!udpSocket.isClosed() && !this.isInterrupted())
                 {
                     try
                     {
@@ -164,26 +161,20 @@ public class AudioConnection
                             {
                                 if (speaking && (System.currentTimeMillis() - lastFrameSent) > OPUS_FRAME_TIME_AMOUNT)
                                     setSpeaking(false);
-                                continue;
                             }
-                            byte[] encodedAudio = encodeToOpus(rawAudio);
-                            AudioPacket packet = new AudioPacket(seq, timestamp, webSocket.getSSRC(), encodedAudio);
-                            if (!speaking)
-                                setSpeaking(true);
-                            udpSocket.send(packet.asEncryptedUdpPacket(webSocket.getAddress(), webSocket.getSecretKey()));
-
-                            if (seq + 1 > Character.MAX_VALUE)
-                                seq = 0;
                             else
-                                seq++;
-
-                            timestamp += OPUS_FRAME_SIZE;
-                            long sleepTime = (OPUS_FRAME_TIME_AMOUNT) - (System.currentTimeMillis() - lastFrameSent);
-                            if (sleepTime > 0)
                             {
-                                Thread.sleep(sleepTime);
-                            }
-                            lastFrameSent = System.currentTimeMillis();
+                                byte[] encodedAudio = encodeToOpus(rawAudio);
+                                AudioPacket packet = new AudioPacket(seq, timestamp, webSocket.getSSRC(), encodedAudio);
+                                if (!speaking)
+                                    setSpeaking(true);
+                                udpSocket.send(packet.asEncryptedUdpPacket(webSocket.getAddress(), webSocket.getSecretKey()));
+
+                                if (seq + 1 > Character.MAX_VALUE)
+                                    seq = 0;
+                                else
+                                    seq++;
+							}
                         }
                         else if (speaking && (System.currentTimeMillis() - lastFrameSent) > OPUS_FRAME_TIME_AMOUNT)
                             setSpeaking(false);
@@ -193,15 +184,36 @@ public class AudioConnection
                         LOG.warn("Closing AudioConnection due to inability to send audio packets.");
                         LOG.warn("Cannot send audio packet because JDA navigate the route to Discord.\n" +
                                 "Are you sure you have internet connection? It is likely that you've lost connection.");
-                        webSocket.close();
+                        webSocket.close(true, -1);
+                    }
+                    catch (SocketException e)
+                    {
+                        //Most likely the socket has been closed due to the audio connection be closed. Next iteration will kill loop.
                     }
                     catch (Exception e)
                     {
                         LOG.log(e);
                     }
+                    finally
+                    {
+                        timestamp += OPUS_FRAME_SIZE;
+                        long sleepTime = (OPUS_FRAME_TIME_AMOUNT) - (System.currentTimeMillis() - lastFrameSent);
+                        if (sleepTime > 0)
+                        {
+                            try
+                            {
+                                Thread.sleep(sleepTime);
+                            } catch (InterruptedException e)
+                            {
+                                //We've been asked to stop. The next iteration will kill the loop. 
+                            }
+                        }
+                        lastFrameSent += OPUS_FRAME_TIME_AMOUNT;
+                    }
                 }
             }
         };
+        sendThread.setPriority((Thread.NORM_PRIORITY + Thread.MAX_PRIORITY) / 2);
         sendThread.setDaemon(true);
         sendThread.start();
     }
@@ -213,7 +225,15 @@ public class AudioConnection
             @Override
             public void run()
             {
-                while (!udpSocket.isClosed())
+                try
+                {
+                    udpSocket.setSoTimeout(100);
+                }
+                catch (SocketException e)
+                {
+                    LOG.log(e);
+                }
+                while (!udpSocket.isClosed() && !this.isInterrupted())
                 {
                     DatagramPacket receivedPacket = new DatagramPacket(new byte[1920], 1920);
                     try
@@ -230,6 +250,10 @@ public class AudioConnection
 
                             receiveHandler.handleReceivedAudio(decryptedPacket);
                         }
+                    }
+                    catch (SocketTimeoutException e)
+                    {
+                        //Ignore. We set a low timeout so that we wont block forever so we can properly shutdown the loop.
                     }
                     catch (SocketException e)
                     {

@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,7 @@
 package net.dv8tion.jda.hooks;
 
 import net.dv8tion.jda.events.*;
-import net.dv8tion.jda.events.audio.AudioConnectEvent;
-import net.dv8tion.jda.events.audio.AudioDisconnectEvent;
-import net.dv8tion.jda.events.audio.AudioTimeoutEvent;
-import net.dv8tion.jda.events.audio.GenericAudioEvent;
+import net.dv8tion.jda.events.audio.*;
 import net.dv8tion.jda.events.channel.priv.PrivateChannelCreateEvent;
 import net.dv8tion.jda.events.channel.text.*;
 import net.dv8tion.jda.events.channel.voice.*;
@@ -36,6 +33,7 @@ public abstract class ListenerAdapter implements EventListener
 {
     //JDA Events
     public void onReady(ReadyEvent event) {}
+    public void onResume(ResumedEvent event) {}
     public void onReconnect(ReconnectedEvent event) {}
     public void onDisconnect(DisconnectEvent event) {}
     public void onShutdown(ShutdownEvent event) {}
@@ -50,19 +48,16 @@ public abstract class ListenerAdapter implements EventListener
     //Message Events
     //Guild (TextChannel) Message Events
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {}
-    public void onGuildMessageAcknowledged(GuildMessageAcknowledgedEvent event) {}
     public void onGuildMessageUpdate(GuildMessageUpdateEvent event) {}
     public void onGuildMessageDelete(GuildMessageDeleteEvent event) {}
     public void onGuildMessageEmbed(GuildMessageEmbedEvent event) {}
     //Private Message Events
     public void onPrivateMessageReceived(PrivateMessageReceivedEvent event) {}
-    public void onPrivateMessageAcknowledged(PrivateMessageAcknowledgedEvent event) {}
     public void onPrivateMessageUpdate(PrivateMessageUpdateEvent event) {}
     public void onPrivateMessageDelete(PrivateMessageDeleteEvent event) {}
     public void onPrivateMessageEmbed(PrivateMessageEmbedEvent event) {}
     //Combined Message Events (Combines Guild and Private message into 1 event)
     public void onMessageReceived(MessageReceivedEvent event) {}
-    public void onMessageAcknowledged(MessageAcknowledgedEvent event) {}
     public void onMessageUpdate(MessageUpdateEvent event) {}
     public void onMessageDelete(MessageDeleteEvent event) {}
     public void onMessageEmbed(MessageEmbedEvent event) {}
@@ -89,14 +84,18 @@ public abstract class ListenerAdapter implements EventListener
 
     //Guild Events
     public void onGuildJoin(GuildJoinEvent event) {}
+    public void onUnavailGuildJoined(UnavailableGuildJoinedEvent event) {}
     public void onGuildUpdate(GuildUpdateEvent event) {}
     public void onGuildLeave(GuildLeaveEvent event) {}
+    public void onGuildAvailable(GuildAvailableEvent event) {}
+    public void onGuildUnavailable(GuildUnavailableEvent event) {}
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {}
     public void onGuildMemberLeave(GuildMemberLeaveEvent event) {}
     public void onGuildMemberBan(GuildMemberBanEvent event) {}
     public void onGuildMemberUnban(GuildMemberUnbanEvent event) {}
     public void onGuildMemberRoleAdd(GuildMemberRoleAddEvent event) {}
     public void onGuildMemberRoleRemove(GuildMemberRoleRemoveEvent event) {}
+    public void onGuildMemberNickChange(GuildMemberNickChangeEvent event) {}
     public void onGuildRoleCreate(GuildRoleCreateEvent event) {}
     public void onGuildRoleDelete(GuildRoleDeleteEvent event) {}
 
@@ -122,6 +121,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onAudioConnect(AudioConnectEvent event) {}
     public void onAudioDisconnect(AudioDisconnectEvent event) {}
     public void onAudioTimeout(AudioTimeoutEvent event) {}
+    public void onAudioRegionChange(AudioRegionChangeEvent event) {}
 
     //Generic Events
     public void onGenericUserEvent(GenericUserEvent event) {}
@@ -144,6 +144,8 @@ public abstract class ListenerAdapter implements EventListener
         //JDA Events
         if (event instanceof ReadyEvent)
             onReady((ReadyEvent) event);
+        else if (event instanceof ResumedEvent)
+            onResume((ResumedEvent) event);
         else if (event instanceof ReconnectedEvent)
             onReconnect((ReconnectedEvent) event);
         else if (event instanceof DisconnectEvent)
@@ -155,8 +157,6 @@ public abstract class ListenerAdapter implements EventListener
         //Guild (TextChannel) Message Events
         else if (event instanceof GuildMessageReceivedEvent)
             onGuildMessageReceived((GuildMessageReceivedEvent) event);
-        else if (event instanceof GuildMessageAcknowledgedEvent)
-            onGuildMessageAcknowledged((GuildMessageAcknowledgedEvent) event);
         else if (event instanceof GuildMessageUpdateEvent)
             onGuildMessageUpdate((GuildMessageUpdateEvent) event);
         else if (event instanceof GuildMessageDeleteEvent)
@@ -166,8 +166,6 @@ public abstract class ListenerAdapter implements EventListener
         //Private Message Events
         else if (event instanceof PrivateMessageReceivedEvent)
             onPrivateMessageReceived((PrivateMessageReceivedEvent) event);
-        else if (event instanceof PrivateMessageAcknowledgedEvent)
-            onPrivateMessageAcknowledged((PrivateMessageAcknowledgedEvent) event);
         else if (event instanceof PrivateMessageUpdateEvent)
             onPrivateMessageUpdate((PrivateMessageUpdateEvent) event);
         else if (event instanceof PrivateMessageDeleteEvent)
@@ -177,8 +175,6 @@ public abstract class ListenerAdapter implements EventListener
         //Combined Message Events (Combines Guild and Private message into 1 event)
         else if (event instanceof MessageReceivedEvent)
             onMessageReceived((MessageReceivedEvent) event);
-        else if (event instanceof MessageAcknowledgedEvent)
-            onMessageAcknowledged((MessageAcknowledgedEvent) event);
         else if (event instanceof MessageUpdateEvent)
             onMessageUpdate((MessageUpdateEvent) event);
         else if (event instanceof MessageDeleteEvent)
@@ -236,20 +232,30 @@ public abstract class ListenerAdapter implements EventListener
         //Guild Events
         else if (event instanceof GuildJoinEvent)
             onGuildJoin((GuildJoinEvent) event);
+        else if (event instanceof UnavailableGuildJoinedEvent)
+            onUnavailGuildJoined((UnavailableGuildJoinedEvent) event);
         else if (event instanceof GuildUpdateEvent)
             onGuildUpdate((GuildUpdateEvent) event);
         else if (event instanceof GuildLeaveEvent)
             onGuildLeave((GuildLeaveEvent) event);
+        else if (event instanceof GuildAvailableEvent)
+            onGuildAvailable((GuildAvailableEvent) event);
+        else if (event instanceof GuildUnavailableEvent)
+            onGuildUnavailable((GuildUnavailableEvent) event);
         else if (event instanceof GuildMemberJoinEvent)
             onGuildMemberJoin((GuildMemberJoinEvent) event);
         else if (event instanceof GuildMemberBanEvent)
             onGuildMemberBan((GuildMemberBanEvent) event);
         else if (event instanceof GuildMemberUnbanEvent)
             onGuildMemberUnban((GuildMemberUnbanEvent) event);
+        else if (event instanceof GuildMemberLeaveEvent)
+            onGuildMemberLeave((GuildMemberLeaveEvent) event);
         else if (event instanceof GuildMemberRoleAddEvent)
             onGuildMemberRoleAdd((GuildMemberRoleAddEvent) event);
         else if (event instanceof GuildMemberRoleRemoveEvent)
             onGuildMemberRoleRemove((GuildMemberRoleRemoveEvent) event);
+        else if (event instanceof GuildMemberNickChangeEvent)
+            onGuildMemberNickChange((GuildMemberNickChangeEvent) event);
         else if (event instanceof GuildRoleCreateEvent)
             onGuildRoleCreate((GuildRoleCreateEvent) event);
         else if (event instanceof GuildRoleDeleteEvent)
@@ -288,10 +294,8 @@ public abstract class ListenerAdapter implements EventListener
             onAudioDisconnect((AudioDisconnectEvent) event);
         else if (event instanceof AudioTimeoutEvent)
             onAudioTimeout((AudioTimeoutEvent) event);
-
-        //Leave needs to be checked in a separate if-statement so that the Ban and Kick events will also fire this.
-        if (event instanceof GuildMemberLeaveEvent)
-            onGuildMemberLeave((GuildMemberLeaveEvent) event);
+        else if (event instanceof AudioRegionChangeEvent)
+            onAudioRegionChange((AudioRegionChangeEvent) event);
 
         //Grouped Mute/Deaf events
         if (event instanceof VoiceMuteEvent)

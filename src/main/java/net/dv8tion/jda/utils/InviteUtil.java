@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,8 @@ import net.dv8tion.jda.entities.Channel;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.impl.JDAImpl;
-import net.dv8tion.jda.events.Event;
-import net.dv8tion.jda.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.exceptions.PermissionException;
-import net.dv8tion.jda.hooks.EventListener;
-import net.dv8tion.jda.hooks.SubscribeEvent;
+import net.dv8tion.jda.requests.Requester;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -33,7 +30,6 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class InviteUtil
 {
@@ -58,37 +54,15 @@ public class InviteUtil
             String[] split = code.split("/");
             code = split[split.length - 1];
         }
-        JSONObject response = new JDAImpl(false).getRequester().get("https://discordapp.com/api/invite/" + code);
-        if (response.has("code"))
+        JSONObject object = new JDAImpl(false, false).getRequester().get(Requester.DISCORD_API_PREFIX + "invite/" + code).getObject();
+        if (object != null && object.has("code"))
         {
-            JSONObject guild = response.getJSONObject("guild");
-            JSONObject channel = response.getJSONObject("channel");
-            return new Invite(response.getString("code"), response.isNull("xkcdpass") ? null : response.getString("xkcdpass"), guild.getString("name"), guild.getString("id"),
+            JSONObject guild = object.getJSONObject("guild");
+            JSONObject channel = object.getJSONObject("channel");
+            return new Invite(object.getString("code"), object.isNull("xkcdpass") ? null : object.getString("xkcdpass"), guild.getString("name"), guild.getString("id"),
                     channel.getString("name"), channel.getString("id"), channel.getString("type").equals("text"));
         }
         return null;
-    }
-
-    /**
-     * <b>This method is deprecated, use {@link #createInvite(net.dv8tion.jda.entities.Channel)} instead.</b>
-     * <p>
-     * Creates a standard-invite (valid for 24hrs, infinite usages, permanent access and not human-readable).
-     * To create a customized Invite, use {@link #createInvite(Channel, InviteDuration, int, boolean, boolean)} instead.
-     *
-     * @param chan
-     *      The channel to create the invite for.
-     * @param jda
-     *      The JDA-instance from who the invite should be created from.
-     * @return
-     *      The created AdvancedInvite object.
-     * @throws net.dv8tion.jda.exceptions.PermissionException
-     *      If the account connected to the provided JDA object does not have
-     *      {@link net.dv8tion.jda.Permission#CREATE_INSTANT_INVITE Permission.CREATE_INSTANT_INVITE} for the provided channel.
-     */
-    @Deprecated
-    public static AdvancedInvite createInvite(Channel chan, JDA jda)
-    {
-        return createInvite(chan, InviteDuration.ONE_DAY, 0, false, false);
     }
 
     /**
@@ -134,95 +108,17 @@ public class InviteUtil
             throw new PermissionException(Permission.CREATE_INSTANT_INVITE);
 
         maxUses = Math.max(0, maxUses);
-        JSONObject response = ((JDAImpl) jda).getRequester().post("https://discordapp.com/api/channels/" + chan.getId() + "/invites",
+        JSONObject object = ((JDAImpl) jda).getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + chan.getId() + "/invites",
                 new JSONObject()
                         .put("max_age", duration.getDuration())
                         .put("temporary", temporary)
                         .put("max_uses", maxUses)
-                        .put("xkcdpass", humanReadable));
-        if (response.has("code"))
+                        .put("xkcdpass", humanReadable)).getObject();
+        if (object != null && object.has("code"))
         {
-            return AdvancedInvite.fromJson(response, jda);
+            return AdvancedInvite.fromJson(object, jda);
         }
         return null;
-    }
-
-    @Deprecated
-    public static void join(Invite invite, JDA jda)
-    {
-        join(invite, jda, null);
-    }
-
-    /**
-     * Uses joins the {@link net.dv8tion.jda.entities.Guild Guild} specified by the provided
-     * {@link net.dv8tion.jda.utils.InviteUtil.Invite Invite}. Joining invites is always an async process, so you can
-     * provided a {@link java.util.function.Consumer Consumer} to define code to be run after the
-     * {@link net.dv8tion.jda.entities.Guild Guild} is joined.<br>
-     * Example:
-     * <pre>{@code
-     * InviteUtil.join(Invite, JDA, joinedGuild ->
-     * {
-     *     System.out.println("I just joined a guild called: " + joinedGuild.getName();
-     * });
-     * }</pre>
-     * <b>Note:</b> If you do not wish to execute any code after joining, provide <code>null</code> for the consumer.
-     *
-     * @param invite
-     *          The {@link net.dv8tion.jda.utils.InviteUtil.Invite Invite} which to join.
-     * @param jda
-     *          The {@link net.dv8tion.jda.JDA JDA} instance which will join the {@link net.dv8tion.jda.entities.Guild Guild}
-     *          specified by the invie.
-     * @param callback
-     *          The code which will be executed when the {@link net.dv8tion.jda.entities.Guild Guild} has been successfully
-     *          joined. This value can be <code>null</code>.
-     */
-    public static void join(Invite invite, JDA jda, Consumer<Guild> callback)
-    {
-        if (invite == null)
-            throw new NullPointerException("The provided Invite was null!");
-        if (jda == null)
-            throw new NullPointerException("The provided JDA object was null!");
-        if(callback != null)
-            jda.addEventListener(new AsyncCallback(invite.getGuildId(), callback));
-        ((JDAImpl) jda).getRequester().post("https://discordapp.com/api/invite/" + invite.getCode(), new JSONObject());
-    }
-
-    @Deprecated
-    public static void join(String code, JDA jda)
-    {
-        join(code, jda, null);
-    }
-
-    /**
-     * Uses joins the {@link net.dv8tion.jda.entities.Guild Guild} specified by the provided
-     * invite code/url. Joining invites is always an async process, so you can
-     * provided a {@link java.util.function.Consumer Consumer} to define code to be run after the
-     * {@link net.dv8tion.jda.entities.Guild Guild} is joined.<br>
-     * Example:
-     * <pre>{@code
-     * InviteUtil.join(Invite, JDA, joinedGuild ->
-     * {
-     *     System.out.println("I just joined a guild called: " + joinedGuild.getName();
-     * });
-     * }</pre>
-     * <b>Note:</b> If you do not wish to execute any code after joining, provide <code>null</code> for the consumer.
-     *
-     * @param code
-     *          The code/url of the invite which to join.
-     * @param jda
-     *          The {@link net.dv8tion.jda.JDA JDA} instance which will join the {@link net.dv8tion.jda.entities.Guild Guild}
-     *          specified by the invite.
-     * @param callback
-     *          The code which will be executed when the {@link net.dv8tion.jda.entities.Guild Guild} has been successfully
-     *          joined. This value can be <code>null</code>.
-     */
-    public static void join(String code, JDA jda, Consumer<Guild> callback)
-    {
-        Invite invite = resolve(code);
-        if (invite == null)
-            throw new IllegalArgumentException("The provided Invite code was invalid, thus JDA cannot " +
-                    "attempt to join using it! Provided Code: " + code);
-        join(invite, jda, callback);
     }
 
     /**
@@ -250,7 +146,7 @@ public class InviteUtil
             throw new PermissionException(Permission.MANAGE_CHANNEL,
                     "JDA cannot delete the invite because the currently logged in account does not have permission");
 
-        ((JDAImpl) jda).getRequester().delete("https://discordapp.com/api/invite/" + invite.getCode());
+        ((JDAImpl) jda).getRequester().delete(Requester.DISCORD_API_PREFIX + "invite/" + invite.getCode());
     }
 
     /**
@@ -292,18 +188,19 @@ public class InviteUtil
 
         List<AdvancedInvite> invites = new ArrayList<>();
 
-        JSONArray array = ((JDAImpl)guildObj.getJDA()).getRequester().getA("https://discordapp.com/api/guilds/" + guildObj.getId() + "/invites");
-
-        for (int i = 0; i < array.length(); i++)
+        JSONArray array = ((JDAImpl) guildObj.getJDA()).getRequester().get(Requester.DISCORD_API_PREFIX + "guilds/" + guildObj.getId() + "/invites").getArray();
+        if (array != null)
         {
-            JSONObject invite = array.getJSONObject(i);
-
-            if (invite.has("code"))
+            for (int i = 0; i < array.length(); i++)
             {
-                invites.add(AdvancedInvite.fromJson(invite, guildObj.getJDA()));
+                JSONObject invite = array.getJSONObject(i);
+
+                if (invite.has("code"))
+                {
+                    invites.add(AdvancedInvite.fromJson(invite, guildObj.getJDA()));
+                }
             }
         }
-
         return Collections.unmodifiableList(invites);
     }
 
@@ -322,18 +219,19 @@ public class InviteUtil
 
         List<AdvancedInvite> invites = new ArrayList<>();
 
-        JSONArray array = ((JDAImpl)channelObj.getJDA()).getRequester().getA("https://discordapp.com/api/channels/" + channelObj.getId() + "/invites");
-
-        for (int i = 0; i < array.length(); i++)
+        JSONArray array = ((JDAImpl)channelObj.getJDA()).getRequester().get(Requester.DISCORD_API_PREFIX + "channels/" + channelObj.getId() + "/invites").getArray();
+        if (array != null)
         {
-            JSONObject invite = array.getJSONObject(i);
-
-            if (invite.has("code"))
+            for (int i = 0; i < array.length(); i++)
             {
-                invites.add(AdvancedInvite.fromJson(invite, channelObj.getJDA()));
+                JSONObject invite = array.getJSONObject(i);
+
+                if (invite.has("code"))
+                {
+                    invites.add(AdvancedInvite.fromJson(invite, channelObj.getJDA()));
+                }
             }
         }
-
         return Collections.unmodifiableList(invites);
     }
 
@@ -487,7 +385,7 @@ public class InviteUtil
         }
     }
 
-    enum InviteDuration {
+    public enum InviteDuration {
         INFINITE(0), THIRTY_MINUTES(1800),
         ONE_HOUR(3600), SIX_HOURS(6*3600), TWELVE_HOURS(12*3600),
         ONE_DAY(24*3600);
@@ -514,29 +412,6 @@ public class InviteUtil
                 }
             }
             return INFINITE;
-        }
-    }
-
-    private static class AsyncCallback implements EventListener
-    {
-        private final String id;
-        private final Consumer<Guild> cb;
-
-        public AsyncCallback(String id, Consumer<Guild> cb)
-        {
-            this.id = id;
-            this.cb = cb;
-        }
-
-        @Override
-        @SubscribeEvent
-        public void onEvent(Event event)
-        {
-            if (event instanceof GuildJoinEvent && ((GuildJoinEvent) event).getGuild().getId().equals(id))
-            {
-                event.getJDA().removeEventListener(this);
-                cb.accept(((GuildJoinEvent) event).getGuild());
-            }
         }
     }
 }

@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,11 @@
 package net.dv8tion.jda.handle;
 
 import net.dv8tion.jda.Region;
+import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.impl.GuildImpl;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.guild.GuildUpdateEvent;
+import net.dv8tion.jda.requests.GuildLock;
 import org.json.JSONObject;
 
 public class GuildUpdateHandler extends SocketHandler
@@ -30,8 +32,13 @@ public class GuildUpdateHandler extends SocketHandler
     }
 
     @Override
-    public void handle(JSONObject content)
+    protected String handleInternally(JSONObject content)
     {
+        if (GuildLock.get(api).isLocked(content.getString("id")))
+        {
+            return content.getString("id");
+        }
+
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("id"));
         String ownerId = content.getString("owner_id");
         String name = content.getString("name");
@@ -39,16 +46,19 @@ public class GuildUpdateHandler extends SocketHandler
         String afkChannelId = content.isNull("afk_channel_id") ? null : content.getString("afk_channel_id");
         Region region = Region.fromKey(content.getString("region"));
         int afkTimeout = content.getInt("afk_timeout");
+        Guild.VerificationLevel verificationLevel = Guild.VerificationLevel.fromKey(content.getInt("verification_level"));
 
         guild.setName(name)
                 .setOwnerId(ownerId)
                 .setIconId(iconId)
                 .setAfkChannelId(afkChannelId)
                 .setRegion(region)
-                .setAfkTimeout(afkTimeout);
+                .setAfkTimeout(afkTimeout)
+                .setVerificationLevel(verificationLevel);
         api.getEventManager().handle(
                 new GuildUpdateEvent(
                         api, responseNumber,
                         guild));
+        return null;
     }
 }

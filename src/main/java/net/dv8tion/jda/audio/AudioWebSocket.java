@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.audio.AudioDisconnectEvent;
+import net.dv8tion.jda.events.audio.AudioRegionChangeEvent;
+import net.dv8tion.jda.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.utils.SimpleLog;
 import org.apache.http.HttpHost;
 import org.json.JSONArray;
@@ -51,9 +53,10 @@ public class AudioWebSocket extends WebSocketAdapter
     private boolean connected = false;
     private boolean ready = false;
     private Thread keepAliveThread;
-    public static WebSocket socket;
+    public WebSocket socket;
     private String endpoint;
     private String wssEndpoint;
+    private boolean shutdown;
 
     private int ssrc;
     private String sessionId;
@@ -92,8 +95,8 @@ public class AudioWebSocket extends WebSocketAdapter
         try
         {
             socket = factory.createSocket(wssEndpoint)
-                    .addListener(this)
-                    .connect();
+                    .addListener(this);
+            socket.connect();
         }
         catch (IOException | WebSocketException e)
         {
@@ -194,19 +197,17 @@ public class AudioWebSocket extends WebSocketAdapter
                     return;
                 }
 
-                if (api.isDebug())
-                {
-                    if (speaking)
-                        LOG.trace(user.getUsername() + " started transmitting audio.");    //Replace with event.
-                    else
-                        LOG.trace(user.getUsername() + " stopped transmitting audio.");    //Replace with event.
-                }
+                if (speaking)
+                    LOG.trace(user.getUsername() + " started transmitting audio.");    //Replace with event.
+                else
+                    LOG.trace(user.getUsername() + " stopped transmitting audio.");    //Replace with event.
                 break;
             }
             default:
                 LOG.debug("Unknown Audio OP code.\n" + contentAll.toString(4));
         }
     }
+
 
     @Override
     public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer)
@@ -218,7 +219,14 @@ public class AudioWebSocket extends WebSocketAdapter
             LOG.debug("Reason: " + serverCloseFrame.getCloseReason());
             LOG.debug("Close code: " + serverCloseFrame.getCloseCode());
         }
-        this.close();
+        if (clientCloseFrame != null)
+        {
+            LOG.debug("ClientReason: " + clientCloseFrame.getCloseReason());
+            LOG.debug("ClientCode: " + clientCloseFrame.getCloseCode());
+            this.close(false, clientCloseFrame.getCloseCode());
+        }
+        else
+            this.close(false, -1);
     }
 
     @Override
@@ -233,19 +241,26 @@ public class AudioWebSocket extends WebSocketAdapter
         LOG.log(cause);
     }
 
-    public void close()
+    public void close(boolean regionChange, int disconnectCode)
     {
+        //Makes sure we don't run this method again after the socket.close(1000) call fires onDisconnect
+        if (shutdown)
+            return;
         connected = false;
         ready = false;
-        JSONObject obj = new JSONObject()
-                .put("op", 4)
-                .put("d", new JSONObject()
-                        .put("guild_id", JSONObject.NULL)
-                        .put("channel_id", JSONObject.NULL)
-                        .put("self_mute", false)
-                        .put("self_deaf", false)
-                );
-        api.getClient().send(obj.toString());
+        shutdown = true;
+        if (!regionChange)
+        {
+            JSONObject obj = new JSONObject()
+                    .put("op", 4)
+                    .put("d", new JSONObject()
+                            .put("guild_id", guild.getId())
+                            .put("channel_id", JSONObject.NULL)
+                            .put("self_mute", false)
+                            .put("self_deaf", false)
+                    );
+            api.getClient().send(obj.toString());
+        }
         if (keepAliveThread != null)
         {
             keepAliveThread.interrupt();
@@ -258,11 +273,22 @@ public class AudioWebSocket extends WebSocketAdapter
         }
         if (udpSocket != null)
             udpSocket.close();
-        if (socket != null)
-            socket.sendClose();
-        VoiceChannel disconnectedChannel = api.getAudioManager().getConnectedChannel();
-        api.getAudioManager().setAudioConnection(null);
-        api.getEventManager().handle(new AudioDisconnectEvent(api, disconnectedChannel));
+        if (socket != null && socket.isOpen())
+            socket.sendClose(1000);
+
+        AudioManagerImpl manager = (AudioManagerImpl) guild.getAudioManager();
+        VoiceChannel disconnectedChannel = manager.getConnectedChannel();
+        manager.setAudioConnection(null);
+        if (regionChange)
+            api.getEventManager().handle(new AudioRegionChangeEvent(api, disconnectedChannel));
+        else
+            api.getEventManager().handle(new AudioDisconnectEvent(api, disconnectedChannel));
+
+        if (disconnectCode == 1008) //Internal WS code meaning the frame reading was interupted, in this case, by timeout.
+        {
+            LOG.warn("Unexpected disconnect of Audio Connection to guild: " + guild.getId());
+            manager.setUnexpectedDisconnectChannel(disconnectedChannel);
+        }
     }
 
     public DatagramSocket getUdpSocket()
@@ -380,7 +406,7 @@ public class AudioWebSocket extends WebSocketAdapter
                         LOG.warn("Closing AudioConnection due to inability to ping audio packets.");
                         LOG.warn("Cannot send audio packet because JDA navigate the route to Discord.\n" +
                                 "Are you sure you have internet connection? It is likely that you've lost connection.");
-                        AudioWebSocket.this.close();
+                        AudioWebSocket.this.close(true, -1);
                         break;
                     }
                     catch (IOException e)
@@ -395,6 +421,7 @@ public class AudioWebSocket extends WebSocketAdapter
                 }
             }
         };
+        udpKeepAliveThread.setPriority(Thread.NORM_PRIORITY + 1);
         udpKeepAliveThread.setDaemon(true);
         udpKeepAliveThread.start();
     }
@@ -424,6 +451,7 @@ public class AudioWebSocket extends WebSocketAdapter
                 }
             }
         };
+        keepAliveThread.setPriority(Thread.MAX_PRIORITY);
         keepAliveThread.setDaemon(true);
         keepAliveThread.start();
     }

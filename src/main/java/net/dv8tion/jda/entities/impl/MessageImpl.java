@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,16 @@ package net.dv8tion.jda.entities.impl;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Permission;
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.MessageEmbed;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.exceptions.PermissionException;
 import net.dv8tion.jda.handle.EntityBuilder;
+import net.dv8tion.jda.requests.Requester;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,6 +46,7 @@ public class MessageImpl implements Message
     private OffsetDateTime editedTime = null;
     private List<User> mentionedUsers = new LinkedList<>();
     private List<TextChannel> mentionedChannels = new LinkedList<>();
+    private List<Role> mentionedRoles = new LinkedList<>();
     private List<Attachment> attachments = new LinkedList<>();
     private List<MessageEmbed> embeds = new LinkedList<>();
 
@@ -75,9 +75,21 @@ public class MessageImpl implements Message
     }
 
     @Override
+    public boolean isMentioned(User user)
+    {
+        return mentionsEveryone() || mentionedUsers.contains(user);
+    }
+
+    @Override
     public List<TextChannel> getMentionedChannels()
     {
         return Collections.unmodifiableList(mentionedChannels);
+    }
+
+    @Override
+    public List<Role> getMentionedRoles()
+    {
+        return Collections.unmodifiableList(mentionedRoles);
     }
 
     @Override
@@ -115,14 +127,31 @@ public class MessageImpl implements Message
     {
         if (subContent == null)
         {
+            Guild g = isPrivate ? null : api.getTextChannelById(channelId).getGuild();
             String tmp = content;
             for (User user : mentionedUsers)
             {
-                tmp = tmp.replace("<@" + user.getId() + '>', '@' + user.getUsername());
+                if (isPrivate)
+                {
+                    tmp = tmp.replace("<@" + user.getId() + '>', '@' + user.getUsername())
+                            .replace("<@!" + user.getId() + '>', '@' + user.getUsername());
+                }
+                else
+                {
+                    String name = g.getNicknameForUser(user);
+                    if (name == null)
+                        name = user.getUsername();
+                    tmp = tmp.replace("<@" + user.getId() + '>', '@' + name)
+                            .replace("<@!" + user.getId() + '>', '@' + name);
+                }
             }
             for (TextChannel mentionedChannel : mentionedChannels)
             {
                 tmp = tmp.replace("<#" + mentionedChannel.getId() + '>', '#' + mentionedChannel.getName());
+            }
+            for (Role mentionedRole : mentionedRoles)
+            {
+                tmp = tmp.replace("<@&" + mentionedRole.getId() + '>', '@' + mentionedRole.getName());
             }
             subContent = tmp;
         }
@@ -139,6 +168,12 @@ public class MessageImpl implements Message
     public String getChannelId()
     {
         return channelId;
+    }
+
+    @Override
+    public MessageChannel getChannel()
+    {
+        return isPrivate() ? api.getPrivateChannelById(channelId) : api.getTextChannelById(channelId);
     }
 
     @Override
@@ -168,11 +203,13 @@ public class MessageImpl implements Message
     @Override
     public Message updateMessage(String newContent)
     {
-        if (!api.getSelfInfo().getId().equals(getAuthor().getId()))
+        if (api.getSelfInfo() != getAuthor())
             throw new UnsupportedOperationException("Attempted to update message that was not sent by this account. You cannot modify other User's messages!");
         try
         {
-            JSONObject response = api.getRequester().patch("https://discordapp.com/api/channels/" + channelId + "/messages/" + getId(), new JSONObject().put("content", newContent));
+            JSONObject response = api.getRequester().patch(Requester.DISCORD_API_PREFIX + "channels/" + channelId + "/messages/" + getId(), new JSONObject().put("content", newContent)).getObject();
+            if(response == null || !response.has("id"))         //updating failed (dunno why)
+                return null;
             return new EntityBuilder(api).createMessage(response);
         }
         catch (JSONException ex)
@@ -183,16 +220,25 @@ public class MessageImpl implements Message
     }
 
     @Override
+    public void updateMessageAsync(String newContent, Consumer<Message> callback)
+    {
+        if (api.getSelfInfo() != getAuthor())
+            throw new UnsupportedOperationException("Attempted to update message that was not sent by this account. You cannot modify other User's messages!");
+        Message newMessage = new MessageImpl(getId(), api).setContent(newContent).setChannelId(getChannelId());
+        TextChannelImpl.AsyncMessageSender.getInstance(api).enqueue(newMessage, true, callback);
+    }
+
+    @Override
     public void deleteMessage()
     {
-        if (!api.getSelfInfo().getId().equals(getAuthor().getId()))
+        if (api.getSelfInfo() != getAuthor())
         {
             if (isPrivate())
                 throw new PermissionException("Cannot delete another User's messages in a PrivateChannel.");
             else if (!api.getTextChannelById(getChannelId()).checkPermission(api.getSelfInfo(), Permission.MESSAGE_MANAGE))
                 throw new PermissionException(Permission.MESSAGE_MANAGE);
         }
-        api.getRequester().delete("https://discordapp.com/api/channels/" + channelId + "/messages/" + getId());
+        api.getRequester().delete(Requester.DISCORD_API_PREFIX + "channels/" + channelId + "/messages/" + getId());
     }
 
     public MessageImpl setMentionedUsers(List<User> mentionedUsers)
@@ -204,6 +250,12 @@ public class MessageImpl implements Message
     public MessageImpl setMentionedChannels(List<TextChannel> mentionedChannels)
     {
         this.mentionedChannels = mentionedChannels;
+        return this;
+    }
+
+    public MessageImpl setMentionedRoles(List<Role> mentionedRoles)
+    {
+        this.mentionedRoles = mentionedRoles;
         return this;
     }
 

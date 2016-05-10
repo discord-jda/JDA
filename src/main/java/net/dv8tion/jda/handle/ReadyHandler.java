@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,68 +15,137 @@
  */
 package net.dv8tion.jda.handle;
 
+import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.OnlineStatus;
+import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.impl.JDAImpl;
-import net.dv8tion.jda.events.ReadyEvent;
-import net.dv8tion.jda.events.ReconnectedEvent;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class ReadyHandler extends SocketHandler
 {
     private final EntityBuilder builder;
-    private final boolean isReload;
 
-    public ReadyHandler(JDAImpl api, boolean isReload, int responseNumber)
+    private static Map<JDA, Set<String>> guildIds = new HashMap<>();
+    private static Map<JDA, Set<String>> chunkIds = new HashMap<>();
+    private static Map<JDA, JSONObject> cachedJson = new HashMap<>();
+
+    public ReadyHandler(JDAImpl api, int responseNumber)
     {
         super(api, responseNumber);
         this.builder = new EntityBuilder(api);
-        this.isReload = isReload;
+        if (!guildIds.containsKey(api))
+            guildIds.put(api, new HashSet<>());
+        if (!chunkIds.containsKey(api))
+            chunkIds.put(api, new HashSet<>());
     }
 
     @Override
-    public void handle(final JSONObject content)
+    protected String handleInternally(final JSONObject content)
     {
-        if (isReload)
+        String oldGame = null;
+        OnlineStatus oldStatus = null;
+
+        if (api.getSelfInfo() != null)
         {
-            //clearing the registry...
-            api.getChannelMap().clear();
-            api.getVoiceChannelMap().clear();
-            api.getGuildMap().clear();
-            api.getUserMap().clear();
-            api.getPmChannelMap().clear();
-            api.getOffline_pms().clear();
+            oldGame = api.getSelfInfo().getCurrentGame();
+            oldStatus = api.getSelfInfo().getOnlineStatus();
         }
-        //TODO: User-Setings; read_state
+
         builder.createSelfInfo(content.getJSONObject("user"));
 
+        if (oldGame != null)
+            api.getAccountManager().setGame(oldGame);
+        if (oldStatus != null && oldStatus.equals(OnlineStatus.AWAY))
+            api.getAccountManager().setIdle(true);
+
         JSONArray guilds = content.getJSONArray("guilds");
-        final List<String> guildIds = new LinkedList<>();
-        for (int i = 0; i < guilds.length(); i++)
-        {
-            JSONObject guildJson = guilds.getJSONObject(i);
-            if(guildJson.has("large") && guildJson.getBoolean("large"))
-            {
-                guildIds.add(guildJson.getString("id"));
-                builder.createGuildFirstPass(guildJson, guild ->
-                {
-                    guildIds.remove(guild.getId());
-                    if (guildIds.isEmpty())
-                    {
-                        finishReady(content);
-                    }
-                });
-            }
-            else
-            {
-                builder.createGuildFirstPass(guildJson, null);
-            }
-        }
-        if (guildIds.isEmpty())
+        if (guilds.length() == 0)
         {
             finishReady(content);
+        }
+        else
+        {
+            cachedJson.put(api, content);
+            Set<String> guildIds = ReadyHandler.guildIds.get(api);
+            Set<JSONObject> guildJsons = new HashSet<>();
+            for (int i = 0; i < guilds.length(); i++)
+            {
+                JSONObject guildJson = guilds.getJSONObject(i);
+                guildIds.add(guildJson.getString("id"));
+                guildJsons.add(guildJson);
+            }
+            for (JSONObject guildJson : guildJsons)
+            {
+                if (guildJson.has("unavailable") && guildJson.getBoolean("unavailable"))
+                {
+                    builder.createGuildFirstPass(guildJson, null);
+                }
+                else
+                {
+                    builder.createGuildFirstPass(guildJson, this::onGuildInit);
+                }
+            }
+        }
+        return null;
+    }
+
+    public void onGuildNeedsMembers(Guild g)
+    {
+        Set<String> chunks = chunkIds.get(api);
+        chunks.add(g.getId());
+        if (chunks.size() == guildIds.get(api).size())
+        {
+            sendChunks();
+        }
+    }
+
+    public void onGuildInit(Guild guild)
+    {
+        Set<String> ids = guildIds.get(api);
+        ids.remove(guild.getId());
+        if (ids.isEmpty())
+        {
+            finishReady(cachedJson.get(api));
+        }
+        else if (ids.size() == chunkIds.get(api).size())
+        {
+            sendChunks();
+        }
+    }
+
+    private void sendChunks()
+    {
+        Iterator<String> iterator = chunkIds.get(api).iterator();
+        JSONArray arr = new JSONArray();
+        while (iterator.hasNext())
+        {
+            arr.put(iterator.next());
+            if (arr.length() == 50)
+            {
+                JSONObject obj = new JSONObject()
+                        .put("op", 8)
+                        .put("d", new JSONObject()
+                                .put("guild_id", arr)
+                                .put("query","")
+                                .put("limit", 0)
+                        );
+                api.getClient().send(obj.toString());
+                arr = new JSONArray();
+            }
+        }
+        if (arr.length() > 0)
+        {
+            JSONObject obj = new JSONObject()
+                    .put("op", 8)
+                    .put("d", new JSONObject()
+                            .put("guild_id", arr)
+                            .put("query","")
+                            .put("limit", 0)
+                    );
+            api.getClient().send(obj.toString());
         }
     }
 
@@ -87,17 +156,6 @@ public class ReadyHandler extends SocketHandler
         {
             builder.createPrivateChannel(priv_chats.getJSONObject(i));
         }
-
-        if (isReload)
-        {
-            JDAImpl.LOG.info("Finished (Re)Loading!");
-            api.getEventManager().handle(new ReconnectedEvent(api, responseNumber));
-        }
-        else
-        {
-            JDAImpl.LOG.info("Finished Loading!");
-            api.getEventManager().handle(new ReadyEvent(api, responseNumber));
-            api.getClient().ready();
-        }
+        api.getClient().ready();
     }
 }

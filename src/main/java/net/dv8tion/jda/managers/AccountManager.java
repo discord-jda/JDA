@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,12 @@
 package net.dv8tion.jda.managers;
 
 import net.dv8tion.jda.OnlineStatus;
+import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.SelfInfo;
+import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.entities.impl.SelfInfoImpl;
+import net.dv8tion.jda.requests.Requester;
 import net.dv8tion.jda.utils.AvatarUtil;
 import org.json.JSONObject;
 
@@ -29,18 +32,13 @@ public class AccountManager
 {
 
     private AvatarUtil.Avatar avatar = null;
-    private String email = null;
-    private String newPassword = null;
     private String username = null;
-
-    private String password;
 
     private final JDAImpl api;
 
-    public AccountManager(JDAImpl api, String password)
+    public AccountManager(JDAImpl api)
     {
         this.api = api;
-        this.password = password;
     }
 
     /**
@@ -56,36 +54,6 @@ public class AccountManager
     public AccountManager setAvatar(AvatarUtil.Avatar avatar)
     {
         this.avatar = avatar;
-        return this;
-    }
-
-    /**
-     * Set the email of the connected account.
-     * This change will only be applied, when {@link #update()} is called
-     *
-     * @param email
-     *      the new email or null to discard changes
-     * @return
-     * 	  this
-     */
-    public AccountManager setEmail(String email)
-    {
-        this.email = email;
-        return this;
-    }
-
-    /**
-     * Set the password of the connected account.
-     * This change will only be applied, when {@link #update()} is called
-     *
-     * @param password
-     *      the new password or null to discard changes
-     * @return
-     * 	  this
-     */
-    public AccountManager setPassword(String password)
-    {
-        this.newPassword = password;
         return this;
     }
 
@@ -106,18 +74,18 @@ public class AccountManager
 
     /**
      * Set currently played game of the connected account.
+     * To remove playing status, supply this method with null
      * This change will be applied <b>immediately</b>
      *
      * @param game
-     *      the name of the game that should be displayed
-     * @return
-     * 	  this
+     *      the name of the game that should be displayed or null for no game
      */
-    public AccountManager setGame(String game)
+    public void setGame(String game)
     {
+        if(game != null && game.trim().isEmpty())
+            game = null;
         ((SelfInfoImpl) api.getSelfInfo()).setCurrentGame(game);
         updateStatusAndGame();
-        return this;
     }
 
     /**
@@ -126,79 +94,64 @@ public class AccountManager
      *
      * @param idle
      *      weather the account should be displayed as idle o not
-     * @return
-     * 	  this
      */
-    public AccountManager setIdle(boolean idle)
+    public void setIdle(boolean idle)
     {
         ((SelfInfoImpl) api.getSelfInfo()).setOnlineStatus(idle ? OnlineStatus.AWAY : OnlineStatus.ONLINE);
         updateStatusAndGame();
-        return this;
     }
 
     /**
-     * Used to update the password used with authentication.<br>
-     * This is <b><u>NOT</u></b> used to changed the password. This is used when the password of
-     * the account was changed using a different service (Discord website or Discord client) while the
-     * bot was still running.
-     * <p>
-     * If you would like to change the account's password, please use {@link #setPassword(String)}.
+     * Changes this user's nickname in given guild.
+     * The nickname is visible to all users of the guild.
+     * This requires the correct Permissions to perform
+     * (either {@link net.dv8tion.jda.Permission#NICKNAME_MANAGE NICKNAME_MANAGE} or
+     * {@link net.dv8tion.jda.Permission#NICKNAME_CHANGE NICKNAME_CHANGE}).
      *
-     * @param password
-     *          The non-null updated account password.
-     * @return
-     *      This {@link net.dv8tion.jda.managers.AccountManager} instance.
+     * This change will be applied <b>immediately</b>
+     *
+     * @param guild
+     *      The guild where the nickname should be changed.
+     * @param nickname
+     *      The new nickname of this user, or null/"" to reset
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
+     * @see net.dv8tion.jda.managers.GuildManager#setNickname(User, String)
+     *      for more details
      */
-    public AccountManager updatePassword(String password)
+    public void setNickname(Guild guild, String nickname)
     {
-        if (password == null)
-            throw new IllegalArgumentException("Provided password cannot be null!");
-        this.password = password;
-        return this;
+        guild.getManager().setNickname(api.getSelfInfo(), nickname);
+    }
+
+    /**
+     * Resets all queued updates. So the next call to {@link #update()} will change nothing.
+     */
+    public void reset() {
+        avatar = null;
+        username = null;
     }
 
     /**
      * Updates the profile of the connected account, sends the changed data to the Discord server.
-     *
-     * @return
-     *      this
      */
-    public AccountManager update()
+    public void update()
     {
-        try
-        {
             JSONObject object = new JSONObject();
             object.put("avatar", avatar == null ? api.getSelfInfo().getAvatarId() : (avatar == AvatarUtil.DELETE_AVATAR ? JSONObject.NULL : avatar.getEncoded()));
-            object.put("email", email == null ? api.getSelfInfo().getEmail() : email);
-            if (newPassword != null)
-            {
-                object.put("new_password", newPassword);
-            }
-            object.put("password", password);
             object.put("username", username == null ? api.getSelfInfo().getUsername() : username);
 
-            JSONObject result = api.getRequester().patch("https://discordapp.com/api/users/@me", object);
+            JSONObject result = api.getRequester().patch(Requester.DISCORD_API_PREFIX + "users/@me", object).getObject();
 
             if (result == null || !result.has("token"))
             {
-                throw new Exception("Something went wrong while changing the account settings.");
+                throw new RuntimeException("Something went wrong while changing the account settings.");
             }
 
             api.setAuthToken(result.getString("token"));
-            if (newPassword != null)
-            {
-                this.password = newPassword;
-            }
 
             this.avatar = null;
-            this.email = null;
-            this.newPassword = null;
             this.username = null;
-        } catch (Exception e)
-        {
-            JDAImpl.LOG.log(e);
-        }
-        return this;
     }
 
     private void updateStatusAndGame()

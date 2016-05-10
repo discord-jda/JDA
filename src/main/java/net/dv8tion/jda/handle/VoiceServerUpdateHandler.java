@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,9 @@ import net.dv8tion.jda.audio.AudioConnection;
 import net.dv8tion.jda.audio.AudioWebSocket;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.impl.JDAImpl;
-import net.dv8tion.jda.managers.AudioManager;
+import net.dv8tion.jda.managers.impl.AudioManagerImpl;
+import net.dv8tion.jda.requests.GuildLock;
+import net.dv8tion.jda.requests.WebSocketClient;
 import org.json.JSONObject;
 
 public class VoiceServerUpdateHandler extends SocketHandler
@@ -30,8 +32,13 @@ public class VoiceServerUpdateHandler extends SocketHandler
     }
 
     @Override
-    public void handle(JSONObject content)
+    protected String handleInternally(JSONObject content)
     {
+        if (GuildLock.get(api).isLocked(content.getString("guild_id")))
+        {
+            return content.getString("guild_id");
+        }
+
         String endpoint = content.getString("endpoint");
         String token = content.getString("token");
         Guild guild = api.getGuildMap().get(content.getString("guild_id"));
@@ -44,16 +51,23 @@ public class VoiceServerUpdateHandler extends SocketHandler
         //Strip the port from the endpoint.
         endpoint = endpoint.replace(":80", "");
 
-        AudioManager audioManager = api.getAudioManager();
+        AudioManagerImpl audioManager = (AudioManagerImpl) guild.getAudioManager();
         if (audioManager.isConnected())
-            throw new IllegalStateException("Received VOICE_SERVER_UPDATE event while already connected to a VoiceChannel.\n" +
-                    "Did Discord allow multi-guild / multi-channel audio while we weren't looking? O.o");
+            audioManager.prepareForRegionChange();
         if (!audioManager.isAttemptingToConnect())
-            throw new IllegalStateException("Attempted to create an AudioConnection when we weren't expecting to create one.\n" +
-                    "Did you attempt to start an audio connection...?");
+        {
+            WebSocketClient.LOG.debug("Received a VOICE_SERVER_UPDATE but JDA is not currently connected nor attempted to connect " +
+                    "to a VoiceChannel. Assuming that this is caused by another client running on this account. Ignoring the event.");
+            return null;
+        }
+
+//        if (!audioManager.isAttemptingToConnect())
+//            throw new IllegalStateException("Attempted to create an AudioConnection when we weren't expecting to create one.\n" +
+//                    "Did you attempt to start an audio connection...?");
 
         AudioWebSocket socket = new AudioWebSocket(endpoint, api, guild, sessionId, token);
         AudioConnection connection = new AudioConnection(socket, audioManager.getQueuedAudioConnection());
         audioManager.setAudioConnection(connection);
+        return null;
     }
 }

@@ -1,5 +1,5 @@
-/**
- *    Copyright 2015-2016 Austin Keener & Michael Ritter
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,19 +89,20 @@ public class AvatarUtil
     }
 
     private static BufferedImage resize(BufferedImage originalImage){
-        BufferedImage resizedImage = new BufferedImage(SIZE, SIZE,
-                originalImage.getType() == 0 ? BufferedImage.TYPE_INT_ARGB : originalImage.getType());
+        BufferedImage resizedImage = new BufferedImage(SIZE, SIZE, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = resizedImage.createGraphics();
-        g.drawImage(originalImage, 0, 0, SIZE, SIZE, Color.white, null);
-        g.dispose();
-        g.setComposite(AlphaComposite.Src);
 
+        g.setComposite(AlphaComposite.Src);
         g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                 RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         g.setRenderingHint(RenderingHints.KEY_RENDERING,
                 RenderingHints.VALUE_RENDER_QUALITY);
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
+
+        g.drawImage(originalImage, 0, 0, SIZE, SIZE, Color.white, null);
+
+        g.dispose();
 
         return resizedImage;
     }
