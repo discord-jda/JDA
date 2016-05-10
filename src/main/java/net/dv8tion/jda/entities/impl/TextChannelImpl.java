@@ -355,6 +355,38 @@ public class TextChannelImpl implements TextChannel
     {
         return rolePermissionOverrides;
     }
+    
+    @Override
+    public void deleteMessages(List<Message> messages)
+    {
+        if(messages.size() > 100)
+        {
+            throw new IllegalArgumentException("Can't delete more than 100 messages at a time, got " + messages.size());
+        }
+        else if(messages.size() == 1)
+        {
+            messages.get(0).deleteMessage();
+            return;
+        }
+        else if(messages.isEmpty())
+        {
+            return;
+        }
+        
+        if(PermissionUtil.checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_MANAGE, this) == false)
+        {
+            throw new PermissionException(Permission.MANAGE_PERMISSIONS, "Must have MESSAGE_MANAGE in order to bulk delete messages in this channel regardless of author.");
+        }
+        
+        JSONObject body = new JSONObject();
+        ArrayList<String> ids = new ArrayList<>();
+        for(Message msg : messages)
+        {
+            ids.add(msg.getId());
+        }
+        body.put("messages", ids);
+        ((JDAImpl) getJDA()).getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + id + "/messages/bulk_delete", body);
+    }
 
     private void checkVerification()
     {

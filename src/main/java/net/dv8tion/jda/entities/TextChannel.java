@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.entities;
 
+import java.util.List;
+
 /**
  * Represents a Discord Text Channel. See {@link net.dv8tion.jda.entities.Channel Channel} and
  * {@link net.dv8tion.jda.entities.MessageChannel MessageChannel} for more information.
@@ -34,4 +36,14 @@ public interface TextChannel extends Channel, MessageChannel
      *      The String needed to mention this Channel
      */
     String getAsMention();
+    
+    /**
+     * Bulk deletes a list of messages. Must not be more than 100 messages at a time.
+     * You must have permission to delete a message. You may always delete your own messages. In the event that you do not have permission to delete a message, the message will be skipped.
+     * @param messages
+     *      The messages to delete.
+     * @throws IllegalArgumentException
+     *      If the size of the list is more than 100 messages.
+     */
+    void deleteMessages(List<Message> messages);
 }
