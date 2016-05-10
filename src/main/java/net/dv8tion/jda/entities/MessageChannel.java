@@ -15,9 +15,11 @@
  */
 package net.dv8tion.jda.entities;
 
+import net.dv8tion.jda.exceptions.RateLimitedException;
 import net.dv8tion.jda.exceptions.VerificationLevelException;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.function.Consumer;
 
 /**
@@ -182,4 +184,17 @@ public interface MessageChannel
      * So if you wish to show continuous typing you will need to call this method once every 10 seconds.
      */
     void sendTyping();
+
+    /**
+     * Deletes all of the messages contained in <strong>messages</strong> from the server<br/>
+     * Calling this function with Messages created by another User while not having the
+     * {@link net.dv8tion.jda.Permission#MESSAGE_MANAGE MESSAGE_MANAGE Permission} will skip said Messages
+
+     * @param messages
+     *      a collection of messages to be deleted via bulk delete
+     *
+     * @param callback
+     *      will be called upon finish
+     */
+    void deleteMessages(Collection<Message> messages, Consumer<Boolean> callback) throws RateLimitedException;
 }
