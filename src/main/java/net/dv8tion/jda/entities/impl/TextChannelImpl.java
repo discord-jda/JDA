@@ -357,7 +357,7 @@ public class TextChannelImpl implements TextChannel
     }
     
     @Override
-    public void deleteMessages(List<Message> messages)
+    public void deleteMessages(Collection<Message> messages)
     {
         if(messages.size() > 100)
         {
@@ -365,7 +365,7 @@ public class TextChannelImpl implements TextChannel
         }
         else if(messages.size() == 1)
         {
-            messages.get(0).deleteMessage();
+            messages.iterator().next().deleteMessage();
             return;
         }
         else if(messages.isEmpty())
@@ -375,7 +375,7 @@ public class TextChannelImpl implements TextChannel
         
         if(PermissionUtil.checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_MANAGE, this) == false)
         {
-            throw new PermissionException(Permission.MANAGE_PERMISSIONS, "Must have MESSAGE_MANAGE in order to bulk delete messages in this channel regardless of author.");
+            throw new PermissionException(Permission.MESSAGE_MANAGE, "Must have MESSAGE_MANAGE in order to bulk delete messages in this channel regardless of author.");
         }
         
         JSONObject body = new JSONObject();
