@@ -201,6 +201,16 @@ public interface Guild
     List<Role> getRolesForUser(User user);
 
     /**
+     * Provides all {@link net.dv8tion.jda.entities.User Users} that have the provided role.
+     *
+     * @param role
+     *          The {@link net.dv8tion.jda.entities.Role Role} that we are checking which users have.
+     * @return
+     *      An Immutable List of {@link net.dv8tion.jda.entities.User Users}.
+     */
+    List<User> getUsersWithRole(Role role);
+
+    /**
      * The @everyone {@link net.dv8tion.jda.entities.Role Role} of this {@link net.dv8tion.jda.entities.Guild Guild}
      *
      * @return The @everyone {@link net.dv8tion.jda.entities.Role Role}

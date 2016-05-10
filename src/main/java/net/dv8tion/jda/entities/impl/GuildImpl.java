@@ -250,6 +250,18 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    public List<User> getUsersWithRole(Role role)
+    {
+        List<User> users = new LinkedList<>();
+        userRoles.entrySet().forEach(entry ->
+        {
+            if (entry.getValue().contains(role))
+                users.add(entry.getKey());
+        });
+        return Collections.unmodifiableList(users);
+    }
+
+    @Override
     public Role getPublicRole()
     {
         return publicRole;

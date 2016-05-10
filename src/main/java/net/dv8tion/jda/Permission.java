@@ -52,12 +52,12 @@ public enum Permission
     UNKNOWN(-1, false, false);
 
     private final int offset;
-    private final boolean isServer, isChannel;
+    private final boolean isGuild, isChannel;
 
-    Permission(int offset, boolean isServer, boolean isChannel)
+    Permission(int offset, boolean isGuild, boolean isChannel)
     {
         this.offset = offset;
-        this.isServer = isServer;
+        this.isGuild = isGuild;
         this.isChannel = isChannel;
     }
 
@@ -100,9 +100,9 @@ public enum Permission
      * @return
      *      True if this permission is present Guild-side
      */
-    public boolean isServer()
+    public boolean isGuild()
     {
-        return isServer;
+        return isGuild;
     }
 
     /**
