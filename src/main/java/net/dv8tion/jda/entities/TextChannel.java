@@ -40,7 +40,7 @@ public interface TextChannel extends Channel, MessageChannel
     /**
      * Bulk deletes a list of messages. Must not be more than 100 messages at a time.
      * You must have channel permission to delete messages.
-     * If only a single message is supplied then this function will resort to using deleteMessage() instead.
+     * If only a single message is supplied then this function will resort to using {@link net.dv8tion.jda.entities.Message#deleteMessage} instead.
      * @param messages
      *      The messages to delete.
      * @throws IllegalArgumentException
