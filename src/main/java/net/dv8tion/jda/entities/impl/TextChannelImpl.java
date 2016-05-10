@@ -554,7 +554,8 @@ public class TextChannelImpl implements TextChannel
 
     public void deleteMessages(Collection<Message> messages, Consumer<Boolean> callback) throws RateLimitedException
     {
-        if(messages.isEmpty()) {
+        if(messages.isEmpty()) 
+        {
             callback.accept(true);
             return;
         }
@@ -562,14 +563,18 @@ public class TextChannelImpl implements TextChannel
 
         // If only one message -> delete
         // If more than one message -> bulk_delete
-        Thread t = new Thread(() -> {
+        Thread t = new Thread(() -> 
+        {
 
             List<List<String>> splitList = new LinkedList<>();
 
-            if (messages.size() == 1) {
+            if (messages.size() == 1) 
+            {
                 Requester.Response response = requester.delete(Requester.DISCORD_API_PREFIX + "channels/" + id + "/messages/" + messages.iterator().next().getId());
                 callback.accept(response.isOk());
-            } else {
+            }
+            else
+            {
                 List<String> ids = new LinkedList<>();
                 splitList.add(ids);
 
@@ -578,12 +583,14 @@ public class TextChannelImpl implements TextChannel
                 else
                     messages.stream().forEach(m -> ids.add(m.getId()));
 
-                if (messages.size() > 100) {
+                if (messages.size() > 100) 
+                {
                     List<String> current = new LinkedList<>();
                     current.addAll(ids);
                     splitList.add(ids);
 
-                    while (current.size() > 100) {
+                    while (current.size() > 100)
+                    {
                         List<String> next = current.subList(100, current.size());
 
                         current.removeAll(next);
@@ -597,19 +604,24 @@ public class TextChannelImpl implements TextChannel
 
                 final boolean[] error = {false};
 
-                splitList.stream().forEach(list -> {
+                splitList.stream().forEach(list -> 
+                {
                     Requester.Response response = null;
                     if (list.size() == 1)
                         response = requester.delete(Requester.DISCORD_API_PREFIX + "channels/" + id + "/messages/" + list.get(0));
                     else
                         response = requester.post(Requester.DISCORD_API_PREFIX + "channels/" + id + "/messages/bulk_delete", new JSONObject().put("messages", new JSONArray(list.toString())));
 
-                    if(!response.isOk()) {
+                    if(!response.isOk()) 
+                    {
                         error[0] = true;
                     }
-                    try {
+                    try
+                    {
                         Thread.sleep(1000);
-                    } catch (InterruptedException ignored) {
+                    } 
+                    catch (InterruptedException ignored)
+                    {
                     }
                 });
                 callback.accept(!error[0]);
