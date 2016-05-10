@@ -25,3 +25,7 @@ tokens.json
 *.iml
 *.ipr
 *.iws
+
+# netbeans files
+/.nb-gradle/
+*.nb-gradle-properties
