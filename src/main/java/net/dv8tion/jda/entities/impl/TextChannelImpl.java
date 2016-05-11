@@ -373,7 +373,7 @@ public class TextChannelImpl implements TextChannel
             return;
         }
         
-        if(PermissionUtil.checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_MANAGE, this) == false)
+        if(!PermissionUtil.checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_MANAGE, this))
         {
             throw new PermissionException(Permission.MESSAGE_MANAGE, "Must have MESSAGE_MANAGE in order to bulk delete messages in this channel regardless of author.");
         }
