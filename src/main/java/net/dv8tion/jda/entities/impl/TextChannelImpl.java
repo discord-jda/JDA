@@ -363,27 +363,34 @@ public class TextChannelImpl implements TextChannel
         {
             throw new IllegalArgumentException("Can't delete more than 100 messages at a time, got " + messages.size());
         }
-        else if(messages.size() == 1)
+        
+        JSONObject body = new JSONObject();
+        ArrayList<String> ids = new ArrayList<>();
+        Message lastProcessedMessage = null;//In case we only have one message to delete
+        for(Message msg : messages)
         {
-            messages.iterator().next().deleteMessage();
-            return;
-        }
-        else if(messages.isEmpty())
-        {
-            return;
+            //Check if the message has been sent, if not then ignore
+            if(msg.getId() != null && !"".equals(msg.getId()))
+            {
+                ids.add(msg.getId());
+                lastProcessedMessage = msg;
+            }
         }
         
-        if(!PermissionUtil.checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_MANAGE, this))
+        if(ids.size() == 1)
+        {
+            lastProcessedMessage.deleteMessage();
+            return;
+        }
+        else if(ids.isEmpty())
+        {
+            return;
+        }
+        else if(!PermissionUtil.checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_MANAGE, this))
         {
             throw new PermissionException(Permission.MESSAGE_MANAGE, "Must have MESSAGE_MANAGE in order to bulk delete messages in this channel regardless of author.");
         }
         
-        JSONObject body = new JSONObject();
-        ArrayList<String> ids = new ArrayList<>();
-        for(Message msg : messages)
-        {
-            ids.add(msg.getId());
-        }
         body.put("messages", ids);
         ((JDAImpl) getJDA()).getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + id + "/messages/bulk_delete", body);
     }
