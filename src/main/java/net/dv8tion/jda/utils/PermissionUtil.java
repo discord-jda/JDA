@@ -43,6 +43,10 @@ public class PermissionUtil
      */
     public static boolean canInteract(User issuer, User target, Guild guild)
     {
+        if(guild.getOwner() == issuer)
+            return true;
+        if(guild.getOwner() == target)
+            return false;
         List<Role> issuerRoles = guild.getRolesForUser(issuer);
         List<Role> targetRoles = guild.getRolesForUser(target);
         return !issuerRoles.isEmpty() && (targetRoles.isEmpty() || canInteract(issuerRoles.get(0), targetRoles.get(0)));
@@ -61,6 +65,8 @@ public class PermissionUtil
      */
     public static boolean canInteract(User issuer, Role target)
     {
+        if(target.getGuild().getOwner() == issuer)
+            return true;
         List<Role> issuerRoles = target.getGuild().getRolesForUser(issuer);
         return !issuerRoles.isEmpty() && canInteract(issuerRoles.get(0), target);
     }

@@ -297,7 +297,6 @@ public class GuildManager
             throw new GuildUnavailableException();
         }
         checkPermission(Permission.MANAGE_ROLES);
-        checkPosition(user);
         for (Role role : roles)
         {
             checkPosition(role);
@@ -359,8 +358,10 @@ public class GuildManager
             throw new GuildUnavailableException();
         }
         checkPermission(Permission.MANAGE_ROLES);
-        checkPosition(user);
-        //we automatically are above all roles that are being removed (due to users highest role being lower than ours)
+        for (Role role : roles)
+        {
+            checkPosition(role);
+        }
 
         Set<Role> addRoles = addedRoles.get(user);
         if (addRoles == null)
