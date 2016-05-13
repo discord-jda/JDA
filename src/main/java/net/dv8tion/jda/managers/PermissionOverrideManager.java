@@ -36,10 +36,10 @@ public class PermissionOverrideManager
      */
     public PermissionOverrideManager(PermissionOverride override)
     {
-        checkPermission(Permission.MANAGE_PERMISSIONS);
         this.override = override;
         this.allow = override.getAllowedRaw();
         this.deny = override.getDeniedRaw();
+        checkPermission(Permission.MANAGE_PERMISSIONS);
     }
 
     //TODO: find a good system for this
