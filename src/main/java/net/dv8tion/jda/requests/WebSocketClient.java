@@ -503,6 +503,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             setupKeepAlive(raw.getJSONObject("d").getLong("heartbeat_interval"));
         }
 
+        if (type.equals("GUILD_MEMBER_ADD"))
+            GuildMembersChunkHandler.modifyExpectedGuildMember(api, raw.getJSONObject("d").getString("guild_id"), 1);
+        if (type.equals("GUILD_MEMBER_REMOVE"))
+            GuildMembersChunkHandler.modifyExpectedGuildMember(api, raw.getJSONObject("d").getString("guild_id"), -1);
+
         if (initiating && !(type.equals("READY") || type.equals("GUILD_MEMBERS_CHUNK") || type.equals("GUILD_CREATE") || type.equals("RESUMED")))
         {
             LOG.debug("Caching " + type + " event during init!");

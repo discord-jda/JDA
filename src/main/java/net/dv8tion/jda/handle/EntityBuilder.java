@@ -171,6 +171,7 @@ public class EntityBuilder
             HashMap<String, Consumer<Guild>> cachedGuildCallbacks = cachedJdaGuildCallbacks.get(api);
             cachedGuildJsons.put(id, guild);
             cachedGuildCallbacks.put(id, secondPassCallback);
+            GuildMembersChunkHandler.setExpectedGuildMembers(api, id, guild.getInt("member_count"));
             if (api.getClient().isReady())
             {
                 JSONObject obj = new JSONObject()
