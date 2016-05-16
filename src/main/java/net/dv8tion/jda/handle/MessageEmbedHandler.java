@@ -65,7 +65,14 @@ public class MessageEmbedHandler extends SocketHandler
         {
             PrivateChannel privChannel = api.getPmChannelMap().get(channelId);
             if (privChannel == null)
-                throw new IllegalArgumentException("Unrecognized Channel Id! JSON: " + content);
+            {
+                EventCache.cache(api, EventCache.Type.CHANNEL, channelId, () ->
+                {
+                    handle(allContent);
+                });
+                EventCache.LOG.warn("Got unrecognized Channel Id for MessageEmbed! JSON: " + content);
+                return null;
+            }
             api.getEventManager().handle(
                     new PrivateMessageEmbedEvent(
                             api, responseNumber,

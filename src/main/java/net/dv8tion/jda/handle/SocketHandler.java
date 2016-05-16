@@ -23,6 +23,7 @@ public abstract class SocketHandler
 {
     protected final JDAImpl api;
     protected final int responseNumber;
+    protected JSONObject allContent;
 
     public SocketHandler(JDAImpl api, int responseNumber)
     {
@@ -33,6 +34,7 @@ public abstract class SocketHandler
 
     public final void handle(JSONObject o)
     {
+        this.allContent = o;
         String guildId = handleInternally(o.getJSONObject("d"));
         if (guildId != null)
         {

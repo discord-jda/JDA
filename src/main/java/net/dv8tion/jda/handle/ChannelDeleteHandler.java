@@ -71,7 +71,14 @@ public class ChannelDeleteHandler extends SocketHandler
             {
                 TextChannel channel = api.getChannelMap().remove(content.getString("id"));
                 if (channel == null)
-                    throw new IllegalArgumentException("CHANNEL_DELETE attempted to delete a channel that doesn't exist! JSON: " + content);
+                {
+                    EventCache.cache(api, EventCache.Type.CHANNEL, content.getString("id"), () ->
+                    {
+                        handle(allContent);
+                    });
+                    EventCache.LOG.warn("CHANNEL_DELETE attempted to delete a channel that doesn't exist! JSON: " + content);
+                    return null;
+                }
 
                 guild.getTextChannelsMap().remove(channel.getId());
                 api.getEventManager().handle(
@@ -84,8 +91,14 @@ public class ChannelDeleteHandler extends SocketHandler
             {
                 VoiceChannel channel = guild.getVoiceChannelsMap().remove(content.getString("id"));
                 if (channel == null)
-                    throw new IllegalArgumentException("CHANNEL_DELETE attempted to delete a channel that doesn't exist! JSON: " + content);
-
+                {
+                    EventCache.cache(api, EventCache.Type.CHANNEL, content.getString("id"), () ->
+                    {
+                        handle(allContent);
+                    });
+                    EventCache.LOG.warn("CHANNEL_DELETE attempted to delete a channel that doesn't exist! JSON: " + content);
+                    return null;
+                }
                 //We use this instead of getAudioManager(Guild) so we don't create a new instance. Efficiency!
                 AudioManager manager = api.getAudioManagersMap().get(guild);
                 if (manager != null && manager.isConnected()
