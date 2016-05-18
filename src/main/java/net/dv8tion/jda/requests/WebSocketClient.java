@@ -399,8 +399,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         api.getUserMap().clear();
         api.getPmChannelMap().clear();
         api.getOffline_pms().clear();
-        GuildLock.get(api).clear();
+        new EntityBuilder(api).clearCache();
+        new ReadyHandler(api, 0).clearCache();
         EventCache.clear(api);
+        GuildLock.get(api).clear();
     }
 
     private void restoreAudioHandlers()

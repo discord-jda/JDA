@@ -116,6 +116,23 @@ public class ReadyHandler extends SocketHandler
         }
     }
 
+    public void finishReady(JSONObject content)
+    {
+        JSONArray priv_chats = content.getJSONArray("private_channels");
+        for (int i = 0; i < priv_chats.length(); i++)
+        {
+            builder.createPrivateChannel(priv_chats.getJSONObject(i));
+        }
+        api.getClient().ready();
+    }
+
+    public void clearCache()
+    {
+        guildIds.get(api).clear();
+        chunkIds.get(api).clear();
+        cachedJson.remove(api);
+    }
+
     private void sendChunks()
     {
         Iterator<String> iterator = chunkIds.get(api).iterator();
@@ -147,15 +164,6 @@ public class ReadyHandler extends SocketHandler
                     );
             api.getClient().send(obj.toString());
         }
-    }
-
-    public void finishReady(JSONObject content)
-    {
-        JSONArray priv_chats = content.getJSONArray("private_channels");
-        for (int i = 0; i < priv_chats.length(); i++)
-        {
-            builder.createPrivateChannel(priv_chats.getJSONObject(i));
-        }
-        api.getClient().ready();
+        chunkIds.clear();
     }
 }

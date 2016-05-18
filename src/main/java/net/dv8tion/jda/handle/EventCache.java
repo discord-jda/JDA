@@ -82,7 +82,9 @@ public class EventCache
 
     public static void clear(JDA jda)
     {
-        eventCache.get(jda).clear();
+        HashMap cache = eventCache.get(jda);
+        if (cache != null)
+            cache.clear();
     }
 
     enum Type
