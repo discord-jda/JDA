@@ -49,7 +49,11 @@ public class PresenceUpdateHandler extends SocketHandler
 
         if (user == null)
         {
-            //User for update doesn't exist, ignoring
+            EventCache.cache(api, EventCache.Type.USER, id, () ->
+            {
+                handle(allContent);
+            });
+            EventCache.LOG.warn("Received a Presence Update for an unknown user. UserId: " + id);
             return null;
         }
 

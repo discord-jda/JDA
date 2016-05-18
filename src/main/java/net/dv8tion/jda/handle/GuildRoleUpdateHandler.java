@@ -39,6 +39,17 @@ public class GuildRoleUpdateHandler extends SocketHandler
 
         JSONObject rolejson = content.getJSONObject("role");
         RoleImpl role = (RoleImpl) ((GuildImpl) api.getGuildMap().get(content.getString("guild_id"))).getRolesMap().get(rolejson.getString("id"));
+
+        if (role == null)
+        {
+            EventCache.cache(api, EventCache.Type.ROLE, rolejson.getString("id"), () ->
+            {
+                handle(allContent);
+            });
+            EventCache.LOG.warn("Received a Role Update for a non-existent role! JSON: " + content);
+            return null;
+        }
+
         if (!role.getName().equals(rolejson.getString("name")))
         {
             role.setName(rolejson.getString("name"));

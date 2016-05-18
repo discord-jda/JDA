@@ -52,8 +52,11 @@ public class GuildMemberUpdateHandler extends SocketHandler
 
         if(rolesOld == null)
         {
-            //something is fishy...
-            JDAImpl.LOG.warn("Got role-update for user which is not in guild? " + content.toString());
+            EventCache.cache(api, EventCache.Type.USER, userJson.getString("id"), () ->
+            {
+                handle(allContent);
+            });
+            EventCache.LOG.warn("Got role-update for user which is not in guild? " + content.toString());
             return null;
         }
 

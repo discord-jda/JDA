@@ -29,7 +29,7 @@ public class EventCache
     public static final SimpleLog LOG = SimpleLog.getLog("EventCache");
     private static HashMap<JDA, HashMap<Type, HashMap<String, List<Runnable>>>> eventCache = new HashMap<>();
 
-    public static void cache(JDA jda, Type type, String triggerId, Runnable handler)
+    protected static void cache(JDA jda, Type type, String triggerId, Runnable handler)
     {
         HashMap<Type, HashMap<String, List<Runnable>>> typeCache = eventCache.get(jda);
         if (typeCache == null)
@@ -55,7 +55,7 @@ public class EventCache
         items.add(handler);
     }
 
-    public static void playbackCache(JDA jda, Type type, String triggerId)
+    protected static void playbackCache(JDA jda, Type type, String triggerId)
     {
         List<Runnable> items;
         try
@@ -68,16 +68,25 @@ public class EventCache
             return;
         }
 
-        List<Runnable> itemsCopy = new LinkedList<>(items);
-        items.clear();
-        for (Runnable item : itemsCopy)
+        if (!items.isEmpty())
         {
-            item.run();
+            EventCache.LOG.warn("Replaying " + items.size() + " events from the EventCache for a " + type + " with id: " + triggerId);
+            List<Runnable> itemsCopy = new LinkedList<>(items);
+            items.clear();
+            for (Runnable item : itemsCopy)
+            {
+                item.run();
+            }
         }
+    }
+
+    public static void clear(JDA jda)
+    {
+        eventCache.get(jda).clear();
     }
 
     enum Type
     {
-        USER, MESSAGE, GUILD, CHANNEL, ROLE
+        USER, GUILD, CHANNEL, ROLE
     }
 }
