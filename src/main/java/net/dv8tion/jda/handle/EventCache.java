@@ -68,7 +68,7 @@ public class EventCache
             return;
         }
 
-        if (!items.isEmpty())
+        if (items != null && !items.isEmpty())
         {
             EventCache.LOG.warn("Replaying " + items.size() + " events from the EventCache for a " + type + " with id: " + triggerId);
             List<Runnable> itemsCopy = new LinkedList<>(items);
