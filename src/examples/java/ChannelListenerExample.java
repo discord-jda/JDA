@@ -34,7 +34,7 @@ public class ChannelListenerExample extends ListenerAdapter
         }
         catch (IllegalArgumentException e)
         {
-            System.out.println("The config was not populated. Please enter a bot token token.");
+            System.out.println("The config was not populated. Please enter a bot token.");
         }
         catch (LoginException e)
         {
