@@ -89,6 +89,7 @@ public class PresenceUpdateHandler extends SocketHandler
                 ? null : (content.getJSONObject("game").isNull("url") ? null : content.getJSONObject("game").get("url").toString());
         Game.GameType type = (content.isNull("game") || content.getJSONObject("game").isNull("name"))
                 ? null : (content.getJSONObject("game").isNull("type") ? Game.GameType.DEFAULT : Game.GameType.fromKey((int)content.getJSONObject("game").get("type")));
+        Game nextGame = (gameName==null?null:new GameImpl(gameName,gameUrl,type));
         OnlineStatus status = OnlineStatus.fromKey(content.getString("status"));
 
         if (!user.getOnlineStatus().equals(status))
@@ -100,10 +101,10 @@ public class PresenceUpdateHandler extends SocketHandler
                             api, responseNumber,
                             user, oldStatus));
         }
-        if (!StringUtils.equals(user.getCurrentGame().getName(), gameName) || !StringUtils.equals(user.getCurrentGame().getUrl(), gameUrl) || user.getCurrentGame().getType()!=type)
+        if(user.getCurrentGame()==null?nextGame!=null:!user.getCurrentGame().equals(nextGame))
         {
             Game oldGame = user.getCurrentGame();
-            user.setCurrentGame(new GameImpl(gameName,gameUrl,type));
+            user.setCurrentGame(nextGame);
             api.getEventManager().handle(
                     new UserGameUpdateEvent(
                             api, responseNumber,

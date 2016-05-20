@@ -52,6 +52,20 @@ public class GameImpl implements Game
 
 
     @Override
+    public boolean equals(Object obj) {
+        if(obj==null || !(obj instanceof Game))
+            return false;
+        Game other = (Game)obj;
+        if(other.getType()!=type)
+            return false;
+        if(name==null)
+            return other.getName()==null;
+        if(url==null)
+            return other.getUrl()==null;
+        return name.equals(other.getName()) && url.equals(other.getUrl());
+    }
+
+    @Override
     public String toString()
     {
         return getName();
