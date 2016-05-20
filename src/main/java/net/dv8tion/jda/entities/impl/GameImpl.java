@@ -12,25 +12,48 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * @author John Grosh (jagrosh)
  */
-package net.dv8tion.jda.events.user;
+package net.dv8tion.jda.entities.impl;
 
-import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Game;
-import net.dv8tion.jda.entities.User;
 
-public class UserGameUpdateEvent extends GenericUserEvent
+public class GameImpl implements Game
 {
-    private final Game previousGame;
+    private String name;
+    private String url;
+    private GameType type;
 
-    public UserGameUpdateEvent(JDA api, int responseNumber, User user, Game previousGame)
+    public GameImpl(String name, String url, GameType type)
     {
-        super(api, responseNumber, user);
-        this.previousGame = previousGame;
+        this.name = name;
+        this.url = url;
+        this.type = type;
     }
 
-    public Game getPreviousGame()
+    @Override
+    public String getName()
     {
-        return previousGame;
+        return name;
+    }
+
+    @Override
+    public String getUrl()
+    {
+        return url;
+    }
+
+    @Override
+    public GameType getType()
+    {
+        return type;
+    }
+
+
+    @Override
+    public String toString()
+    {
+        return getName();
     }
 }

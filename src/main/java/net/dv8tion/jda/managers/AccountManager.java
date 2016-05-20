@@ -16,9 +16,11 @@
 package net.dv8tion.jda.managers;
 
 import net.dv8tion.jda.OnlineStatus;
+import net.dv8tion.jda.entities.Game;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.SelfInfo;
 import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.entities.impl.GameImpl;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.entities.impl.SelfInfoImpl;
 import net.dv8tion.jda.requests.Requester;
@@ -84,7 +86,27 @@ public class AccountManager
     {
         if(game != null && game.trim().isEmpty())
             game = null;
-        ((SelfInfoImpl) api.getSelfInfo()).setCurrentGame(game);
+        ((SelfInfoImpl) api.getSelfInfo()).setCurrentGame(game==null?null:new GameImpl(game,null, Game.GameType.DEFAULT));
+        updateStatusAndGame();
+    }
+
+    /**
+     * Set currently played game of the connected account.
+     * To remove playing status, supply this method with null
+     * This change will be applied <b>immediately</b>
+     *
+     * @param title
+     *      the name of the stream that should be displayed or null for no game
+     * @param url
+     *      the url of the twitch stream
+     */
+    public void setStreaming(String title, String url)
+    {
+        if(title != null && title.trim().isEmpty())
+            title = null;
+        if(url != null && url.trim().isEmpty())
+            url = null;
+        ((SelfInfoImpl) api.getSelfInfo()).setCurrentGame(title==null||url==null?null:(Game)new GameImpl(title,url, Game.GameType.TWITCH));
         updateStatusAndGame();
     }
 
