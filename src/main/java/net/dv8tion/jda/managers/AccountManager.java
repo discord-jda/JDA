@@ -179,8 +179,14 @@ public class AccountManager
     private void updateStatusAndGame()
     {
         SelfInfo selfInfo = api.getSelfInfo();
+        JSONObject game = null;
+        if(selfInfo.getCurrentGame()!=null) {
+            game = new JSONObject().put("name", selfInfo.getCurrentGame().getName());
+            if(selfInfo.getCurrentGame().getType()!=Game.GameType.DEFAULT)
+                game = game.put("url",selfInfo.getCurrentGame().getUrl()).put("type",selfInfo.getCurrentGame().getType().getKey());
+        }
         JSONObject content = new JSONObject()
-                .put("game", selfInfo.getCurrentGame() == null ? JSONObject.NULL : new JSONObject().put("name", selfInfo.getCurrentGame()))
+                .put("game", game == null ? JSONObject.NULL : game)
                 .put("idle_since", selfInfo.getOnlineStatus() == OnlineStatus.AWAY ? System.currentTimeMillis() : JSONObject.NULL);
         api.getClient().send(new JSONObject().put("op", 3).put("d", content).toString());
     }
