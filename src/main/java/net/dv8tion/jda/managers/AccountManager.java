@@ -186,8 +186,9 @@ public class AccountManager
         {
             game = new JSONObject().put("name", selfInfo.getCurrentGame().getName());
             if(selfInfo.getCurrentGame().getType()!= Game.GameType.DEFAULT)
-                game = game .put("url", selfInfo.getCurrentGame().getUrl())
-                            .put("type", selfInfo.getCurrentGame().getType().getKey());
+                game = game
+                        .put("url", selfInfo.getCurrentGame().getUrl())
+                        .put("type", selfInfo.getCurrentGame().getType().getKey());
         }
         JSONObject content = new JSONObject()
                 .put("game", game == null ? JSONObject.NULL : game)

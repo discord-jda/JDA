@@ -115,8 +115,9 @@ public class EntityBuilder
                             presence.getJSONObject("game").isNull("url") ? null : presence.getJSONObject("game").get("url").toString(),
                             presence.getJSONObject("game").isNull("type") ? Game.GameType.DEFAULT : Game.GameType.fromKey((int) presence.getJSONObject("game").get("type")) );
                 }
-                user    .setCurrentGame(presenceGame)
-                        .setOnlineStatus(OnlineStatus.fromKey(presence.getString("status")));
+                user
+                    .setCurrentGame(presenceGame)
+                    .setOnlineStatus(OnlineStatus.fromKey(presence.getString("status")));
             }
         }
 
