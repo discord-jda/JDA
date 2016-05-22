@@ -49,7 +49,11 @@ public class PresenceUpdateHandler extends SocketHandler
 
         if (user == null)
         {
-            //User for update doesn't exist, ignoring
+            //This is basically only received when a user has left a guild. Discord doesn't always send events
+            // in order, so sometimes we get the presence updated after the GuildMemberLeave event has been received
+            // thus there is no user which to apply a presence update to.
+            //We don't cache this event because it is completely unneeded, furthermore it can (and probably will)
+            // cause problems if the user rejoins the guild.
             return null;
         }
 

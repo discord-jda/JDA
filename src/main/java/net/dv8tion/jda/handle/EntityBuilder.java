@@ -51,6 +51,12 @@ public class EntityBuilder
             cachedJdaGuildJsons.put(api, new HashMap<>());
     }
 
+    public void clearCache()
+    {
+        cachedJdaGuildCallbacks.get(api).clear();
+        cachedJdaGuildJsons.get(api).clear();
+    }
+
     public Guild createGuildFirstPass(JSONObject guild, Consumer<Guild> secondPassCallback)
     {
         String id = guild.getString("id");

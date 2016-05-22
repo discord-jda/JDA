@@ -63,7 +63,14 @@ public class ChannelUpdateHandler extends SocketHandler
                 String topic = content.isNull("topic") ? null : content.getString("topic");
                 TextChannelImpl channel = (TextChannelImpl) api.getChannelMap().get(content.getString("id"));
                 if (channel == null)
-                    throw new IllegalArgumentException("CHANNEL_UPDATE attemped to update a TextChannel that does not exist. JSON: " + content);
+                {
+                    EventCache.get(api).cache(EventCache.Type.CHANNEL, content.getString("id"), () ->
+                    {
+                        handle(allContent);
+                    });
+                    EventCache.LOG.debug("CHANNEL_UPDATE attemped to update a TextChannel that does not exist. JSON: " + content);
+                    return null;
+                }
 
                 //If any properties changed, update the values and fire the proper events.
                 if (!StringUtils.equals(channel.getName(), name))
@@ -132,8 +139,14 @@ public class ChannelUpdateHandler extends SocketHandler
             {
                 VoiceChannelImpl channel = (VoiceChannelImpl) api.getVoiceChannelMap().get(content.getString("id"));
                 if (channel == null)
-                    throw new IllegalArgumentException("CHANNEL_UPDATE attemped to update a VoiceChannel that does not exist. JSON: " + content);
-
+                {
+                    EventCache.get(api).cache(EventCache.Type.CHANNEL, content.getString("id"), () ->
+                    {
+                        handle(allContent);
+                    });
+                    EventCache.LOG.debug("CHANNEL_UPDATE attemped to update a VoiceChannel that does not exist. JSON: " + content);
+                    return null;
+                }
                 //If any properties changed, update the values and fire the proper events.
                 if (!StringUtils.equals(channel.getName(), name))
                 {
@@ -206,7 +219,15 @@ public class ChannelUpdateHandler extends SocketHandler
             {
                 Role role = ((GuildImpl) channel.getGuild()).getRolesMap().get(id);
                 if (role == null)
-                    throw new IllegalArgumentException("CHANNEL_UPDATE attempted to create or update a PermissionOverride for a Role that doesn't exist! JSON: " + content);
+                {
+                    EventCache.get(api).cache(EventCache.Type.ROLE, id, () ->
+                    {
+                        handlePermissionOverride(override, channel, content);
+                    });
+                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to create or update a PermissionOverride for a Role that doesn't exist! JSON: " + content);
+                    return;
+                }
+
                 PermissionOverride permOverride;
                 if (channel instanceof TextChannel)
                     permOverride = ((TextChannelImpl) channel).getRolePermissionOverridesMap().get(role);
@@ -230,8 +251,16 @@ public class ChannelUpdateHandler extends SocketHandler
             case "member":
             {
                 User user = api.getUserMap().get(override.getString("id"));
-                if (user == null)
-                    throw new IllegalArgumentException("CHANNEL_UPDATE attempted to create or update a PermissionOverride for User that doesn't exist! JSON: " + content);
+                if (user == null || !channel.getGuild().getUsers().contains(user))
+                {
+                    EventCache.get(api).cache(EventCache.Type.USER, id, () ->
+                    {
+                        handlePermissionOverride(override, channel, content);
+                    });
+                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to create or update a PermissionOverride for User that doesn't exist in this Guild! JSON: " + content);
+                    return;
+                }
+
                 PermissionOverride permOverride;
                 if (channel instanceof TextChannel)
                     permOverride = ((TextChannelImpl) channel).getUserPermissionOverridesMap().get(user);
