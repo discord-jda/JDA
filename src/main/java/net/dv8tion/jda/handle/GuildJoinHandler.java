@@ -51,7 +51,7 @@ public class GuildJoinHandler extends SocketHandler
                                 new GuildJoinEvent(
                                         api, responseNumber,
                                         guild));
-                        EventCache.playbackCache(api, EventCache.Type.GUILD, guild.getId());
+                        EventCache.get(api).playbackCache(EventCache.Type.GUILD, guild.getId());
                     }
                     else if (!wasAvail)                     //was previously unavailable
                     {

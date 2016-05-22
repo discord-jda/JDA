@@ -72,7 +72,7 @@ public class ChannelDeleteHandler extends SocketHandler
                 TextChannel channel = api.getChannelMap().remove(content.getString("id"));
                 if (channel == null)
                 {
-                    EventCache.cache(api, EventCache.Type.CHANNEL, content.getString("id"), () ->
+                    EventCache.get(api).cache(EventCache.Type.CHANNEL, content.getString("id"), () ->
                     {
                         handle(allContent);
                     });
@@ -92,7 +92,7 @@ public class ChannelDeleteHandler extends SocketHandler
                 VoiceChannel channel = guild.getVoiceChannelsMap().remove(content.getString("id"));
                 if (channel == null)
                 {
-                    EventCache.cache(api, EventCache.Type.CHANNEL, content.getString("id"), () ->
+                    EventCache.get(api).cache(EventCache.Type.CHANNEL, content.getString("id"), () ->
                     {
                         handle(allContent);
                     });

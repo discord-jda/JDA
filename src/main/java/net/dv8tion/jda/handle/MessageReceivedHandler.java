@@ -48,7 +48,7 @@ public class MessageReceivedHandler extends SocketHandler
         }
         catch (IllegalArgumentException e)
         {
-            EventCache.cache(api, EventCache.Type.CHANNEL, content.getString("channel_id"), () ->
+            EventCache.get(api).cache(EventCache.Type.CHANNEL, content.getString("channel_id"), () ->
             {
                 handle(allContent);
             });

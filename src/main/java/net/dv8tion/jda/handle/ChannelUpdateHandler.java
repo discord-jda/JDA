@@ -64,7 +64,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 TextChannelImpl channel = (TextChannelImpl) api.getChannelMap().get(content.getString("id"));
                 if (channel == null)
                 {
-                    EventCache.cache(api, EventCache.Type.CHANNEL, content.getString("id"), () ->
+                    EventCache.get(api).cache(EventCache.Type.CHANNEL, content.getString("id"), () ->
                     {
                         handle(allContent);
                     });
@@ -140,7 +140,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 VoiceChannelImpl channel = (VoiceChannelImpl) api.getVoiceChannelMap().get(content.getString("id"));
                 if (channel == null)
                 {
-                    EventCache.cache(api, EventCache.Type.CHANNEL, content.getString("id"), () ->
+                    EventCache.get(api).cache(EventCache.Type.CHANNEL, content.getString("id"), () ->
                     {
                         handle(allContent);
                     });
@@ -220,7 +220,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 Role role = ((GuildImpl) channel.getGuild()).getRolesMap().get(id);
                 if (role == null)
                 {
-                    EventCache.cache(api, EventCache.Type.ROLE, id, () ->
+                    EventCache.get(api).cache(EventCache.Type.ROLE, id, () ->
                     {
                         handlePermissionOverride(override, channel, content);
                     });
@@ -253,7 +253,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 User user = api.getUserMap().get(override.getString("id"));
                 if (user == null || !channel.getGuild().getUsers().contains(user))
                 {
-                    EventCache.cache(api, EventCache.Type.USER, id, () ->
+                    EventCache.get(api).cache(EventCache.Type.USER, id, () ->
                     {
                         handlePermissionOverride(override, channel, content);
                     });

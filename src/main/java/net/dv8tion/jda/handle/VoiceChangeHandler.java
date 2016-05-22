@@ -45,7 +45,7 @@ public class VoiceChangeHandler extends SocketHandler
         {
             if (!content.isNull("channel_id"))
             {
-                EventCache.cache(api, EventCache.Type.USER, content.getString("user_id"), () ->
+                EventCache.get(api).cache(EventCache.Type.USER, content.getString("user_id"), () ->
                 {
                     handle(allContent);
                 });
@@ -61,7 +61,7 @@ public class VoiceChangeHandler extends SocketHandler
         Guild guild = api.getGuildMap().get(content.getString("guild_id"));
         if (guild == null)
         {
-            EventCache.cache(api, EventCache.Type.GUILD, content.getString("guild_id"), () ->
+            EventCache.get(api).cache(EventCache.Type.GUILD, content.getString("guild_id"), () ->
             {
                 handle(allContent);
             });
@@ -100,7 +100,7 @@ public class VoiceChangeHandler extends SocketHandler
                 VoiceChannel newChannel = api.getVoiceChannelMap().get(content.getString("channel_id"));
                 if (newChannel == null)
                 {
-                    EventCache.cache(api, EventCache.Type.CHANNEL, content.getString("channel_id"), () ->
+                    EventCache.get(api).cache(EventCache.Type.CHANNEL, content.getString("channel_id"), () ->
                     {
                         handle(allContent);
                     });

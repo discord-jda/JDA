@@ -27,22 +27,27 @@ import java.util.function.Consumer;
 public class EventCache
 {
     public static final SimpleLog LOG = SimpleLog.getLog("EventCache");
-    private static HashMap<JDA, HashMap<Type, HashMap<String, List<Runnable>>>> eventCache = new HashMap<>();
+    private static HashMap<JDA, EventCache> caches = new HashMap<>();
+    private HashMap<Type, HashMap<String, List<Runnable>>> eventCache = new HashMap<>();
 
-    protected static void cache(JDA jda, Type type, String triggerId, Runnable handler)
+    public static EventCache get(JDA jda)
     {
-        HashMap<Type, HashMap<String, List<Runnable>>> typeCache = eventCache.get(jda);
-        if (typeCache == null)
+        EventCache cache = caches.get(jda);
+        if (cache == null)
         {
-            typeCache = new HashMap<>();
-            eventCache.put(jda, typeCache);
+            cache = new EventCache();
+            caches.put(jda, cache);
         }
+        return cache;
+    }
 
-        HashMap<String, List<Runnable>> triggerCache = typeCache.get(type);
+    protected void cache(Type type, String triggerId, Runnable handler)
+    {
+        HashMap<String, List<Runnable>> triggerCache = eventCache.get(type);
         if (triggerCache == null)
         {
             triggerCache = new HashMap<>();
-            typeCache.put(type, triggerCache);
+            eventCache.put(type, triggerCache);
         }
 
         List<Runnable> items = triggerCache.get(triggerId);
@@ -55,12 +60,12 @@ public class EventCache
         items.add(handler);
     }
 
-    protected static void playbackCache(JDA jda, Type type, String triggerId)
+    protected void playbackCache(Type type, String triggerId)
     {
         List<Runnable> items;
         try
         {
-            items = eventCache.get(jda).get(type).get(triggerId);
+            items = eventCache.get(type).get(triggerId);
         }
         catch (NullPointerException e)
         {
@@ -80,11 +85,9 @@ public class EventCache
         }
     }
 
-    public static void clear(JDA jda)
+    public void clear()
     {
-        HashMap cache = eventCache.get(jda);
-        if (cache != null)
-            cache.clear();
+        eventCache.clear();
     }
 
     enum Type

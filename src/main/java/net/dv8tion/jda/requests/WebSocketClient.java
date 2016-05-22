@@ -401,7 +401,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         api.getOffline_pms().clear();
         new EntityBuilder(api).clearCache();
         new ReadyHandler(api, 0).clearCache();
-        EventCache.clear(api);
+        EventCache.get(api).clear();
         GuildLock.get(api).clear();
     }
 

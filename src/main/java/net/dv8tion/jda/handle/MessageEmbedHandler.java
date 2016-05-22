@@ -66,7 +66,7 @@ public class MessageEmbedHandler extends SocketHandler
             PrivateChannel privChannel = api.getPmChannelMap().get(channelId);
             if (privChannel == null)
             {
-                EventCache.cache(api, EventCache.Type.CHANNEL, channelId, () ->
+                EventCache.get(api).cache(EventCache.Type.CHANNEL, channelId, () ->
                 {
                     handle(allContent);
                 });

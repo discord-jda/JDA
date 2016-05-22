@@ -44,7 +44,7 @@ public class GuildRoleDeleteHandler extends SocketHandler
         Role removedRole = guild.getRolesMap().remove(content.getString("role_id"));
         if (removedRole == null)
         {
-            EventCache.cache(api, EventCache.Type.ROLE, content.getString("role_id"), () ->
+            EventCache.get(api).cache(EventCache.Type.ROLE, content.getString("role_id"), () ->
             {
                 handle(allContent);
             });

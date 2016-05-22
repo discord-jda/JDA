@@ -42,7 +42,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
 
         if (role == null)
         {
-            EventCache.cache(api, EventCache.Type.ROLE, rolejson.getString("id"), () ->
+            EventCache.get(api).cache(EventCache.Type.ROLE, rolejson.getString("id"), () ->
             {
                 handle(allContent);
             });

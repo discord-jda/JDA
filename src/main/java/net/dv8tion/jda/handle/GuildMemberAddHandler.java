@@ -57,7 +57,7 @@ public class GuildMemberAddHandler extends SocketHandler
                 new GuildMemberJoinEvent(
                         api, responseNumber,
                         guild, user));
-        EventCache.playbackCache(api, EventCache.Type.USER, user.getId());
+        EventCache.get(api).playbackCache(EventCache.Type.USER, user.getId());
         return null;
     }
 }

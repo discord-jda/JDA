@@ -52,7 +52,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
 
         if(rolesOld == null)
         {
-            EventCache.cache(api, EventCache.Type.USER, userJson.getString("id"), () ->
+            EventCache.get(api).cache(EventCache.Type.USER, userJson.getString("id"), () ->
             {
                 handle(allContent);
             });
