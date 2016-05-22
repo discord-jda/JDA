@@ -58,14 +58,15 @@ public class ReadyHandler extends SocketHandler
         builder.createSelfInfo(content.getJSONObject("user"));
 
         if (oldGame != null)
-            if(oldGame.getType() == Game.GameType.DEFAULT)
+        {
+            if (oldGame.getType() == Game.GameType.DEFAULT)
             {
                 api.getAccountManager().setGame(oldGame.getName());
-            }
-            else
+            } else
             {
                 api.getAccountManager().setStreaming(oldGame.getName(), oldGame.getUrl());
             }
+        }
         if (oldStatus != null && oldStatus.equals(OnlineStatus.AWAY))
         {
             api.getAccountManager().setIdle(true);

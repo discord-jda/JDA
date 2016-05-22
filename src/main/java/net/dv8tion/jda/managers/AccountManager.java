@@ -151,7 +151,8 @@ public class AccountManager
     /**
      * Resets all queued updates. So the next call to {@link #update()} will change nothing.
      */
-    public void reset() {
+    public void reset()
+    {
         avatar = null;
         username = null;
     }
@@ -186,9 +187,11 @@ public class AccountManager
         {
             game = new JSONObject().put("name", selfInfo.getCurrentGame().getName());
             if(selfInfo.getCurrentGame().getType()!= Game.GameType.DEFAULT)
+            {
                 game = game
                         .put("url", selfInfo.getCurrentGame().getUrl())
                         .put("type", selfInfo.getCurrentGame().getType().getKey());
+            }
         }
         JSONObject content = new JSONObject()
                 .put("game", game == null ? JSONObject.NULL : game)
