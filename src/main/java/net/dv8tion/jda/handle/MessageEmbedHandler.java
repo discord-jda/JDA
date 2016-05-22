@@ -70,7 +70,7 @@ public class MessageEmbedHandler extends SocketHandler
                 {
                     handle(allContent);
                 });
-                EventCache.LOG.warn("Got unrecognized Channel Id for MessageEmbed! JSON: " + content);
+                EventCache.LOG.debug("Got unrecognized Channel Id for MessageEmbed! JSON: " + content);
                 return null;
             }
             api.getEventManager().handle(

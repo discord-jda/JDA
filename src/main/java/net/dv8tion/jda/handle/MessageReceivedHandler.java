@@ -52,7 +52,7 @@ public class MessageReceivedHandler extends SocketHandler
             {
                 handle(allContent);
             });
-            EventCache.LOG.warn(e.getMessage());
+            EventCache.LOG.debug(e.getMessage());
             return null;
         }
 

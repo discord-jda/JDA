@@ -49,7 +49,7 @@ public class VoiceChangeHandler extends SocketHandler
                 {
                     handle(allContent);
                 });
-                EventCache.LOG.warn("Received a VOICE_STATE_UPDATE for an unknown User! JSON: " + content);
+                EventCache.LOG.debug("Received a VOICE_STATE_UPDATE for an unknown User! JSON: " + content);
                 return null;
             }
             else
@@ -65,7 +65,7 @@ public class VoiceChangeHandler extends SocketHandler
             {
                 handle(allContent);
             });
-            EventCache.LOG.warn("Received a VOICE_STATE_UPDATE for an unknown Guild! JSON: " + content);
+            EventCache.LOG.debug("Received a VOICE_STATE_UPDATE for an unknown Guild! JSON: " + content);
             return null;
         }
 
@@ -104,7 +104,7 @@ public class VoiceChangeHandler extends SocketHandler
                     {
                         handle(allContent);
                     });
-                    EventCache.LOG.warn("Received a VOICE_STATE_CHANGE for an unknown Channel! JSON: " + content);
+                    EventCache.LOG.debug("Received a VOICE_STATE_CHANGE for an unknown Channel! JSON: " + content);
                     return null;
                 }
                 status.setChannel(newChannel);

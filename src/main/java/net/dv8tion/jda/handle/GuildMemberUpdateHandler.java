@@ -56,7 +56,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
             {
                 handle(allContent);
             });
-            EventCache.LOG.warn("Got role-update for user which is not in guild? " + content.toString());
+            EventCache.LOG.debug("Got role-update for user which is not in guild? " + content.toString());
             return null;
         }
 

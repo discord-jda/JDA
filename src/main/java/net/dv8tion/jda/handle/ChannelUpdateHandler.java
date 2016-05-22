@@ -68,7 +68,7 @@ public class ChannelUpdateHandler extends SocketHandler
                     {
                         handle(allContent);
                     });
-                    EventCache.LOG.warn("CHANNEL_UPDATE attemped to update a TextChannel that does not exist. JSON: " + content);
+                    EventCache.LOG.debug("CHANNEL_UPDATE attemped to update a TextChannel that does not exist. JSON: " + content);
                     return null;
                 }
 
@@ -144,7 +144,7 @@ public class ChannelUpdateHandler extends SocketHandler
                     {
                         handle(allContent);
                     });
-                    EventCache.LOG.warn("CHANNEL_UPDATE attemped to update a VoiceChannel that does not exist. JSON: " + content);
+                    EventCache.LOG.debug("CHANNEL_UPDATE attemped to update a VoiceChannel that does not exist. JSON: " + content);
                     return null;
                 }
                 //If any properties changed, update the values and fire the proper events.
@@ -224,7 +224,7 @@ public class ChannelUpdateHandler extends SocketHandler
                     {
                         handlePermissionOverride(override, channel, content);
                     });
-                    EventCache.LOG.warn("CHANNEL_UPDATE attempted to create or update a PermissionOverride for a Role that doesn't exist! JSON: " + content);
+                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to create or update a PermissionOverride for a Role that doesn't exist! JSON: " + content);
                     return;
                 }
 
@@ -257,7 +257,7 @@ public class ChannelUpdateHandler extends SocketHandler
                     {
                         handlePermissionOverride(override, channel, content);
                     });
-                    EventCache.LOG.warn("CHANNEL_UPDATE attempted to create or update a PermissionOverride for User that doesn't exist in this Guild! JSON: " + content);
+                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to create or update a PermissionOverride for User that doesn't exist in this Guild! JSON: " + content);
                     return;
                 }
 

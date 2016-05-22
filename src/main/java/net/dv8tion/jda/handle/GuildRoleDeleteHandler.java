@@ -48,7 +48,7 @@ public class GuildRoleDeleteHandler extends SocketHandler
             {
                 handle(allContent);
             });
-            EventCache.LOG.warn("GUILD_ROLE_DELETE attempted to delete a role that didn't exist! JSON: " + content);
+            EventCache.LOG.debug("GUILD_ROLE_DELETE attempted to delete a role that didn't exist! JSON: " + content);
             return null;
         }
         //Now that the role is removed from the Guild, remove it from all users.

@@ -46,7 +46,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
             {
                 handle(allContent);
             });
-            EventCache.LOG.warn("Received a Role Update for a non-existent role! JSON: " + content);
+            EventCache.LOG.debug("Received a Role Update for a non-existent role! JSON: " + content);
             return null;
         }
 

@@ -76,7 +76,7 @@ public class ChannelDeleteHandler extends SocketHandler
                     {
                         handle(allContent);
                     });
-                    EventCache.LOG.warn("CHANNEL_DELETE attempted to delete a channel that doesn't exist! JSON: " + content);
+                    EventCache.LOG.debug("CHANNEL_DELETE attempted to delete a channel that doesn't exist! JSON: " + content);
                     return null;
                 }
 
@@ -96,7 +96,7 @@ public class ChannelDeleteHandler extends SocketHandler
                     {
                         handle(allContent);
                     });
-                    EventCache.LOG.warn("CHANNEL_DELETE attempted to delete a channel that doesn't exist! JSON: " + content);
+                    EventCache.LOG.debug("CHANNEL_DELETE attempted to delete a channel that doesn't exist! JSON: " + content);
                     return null;
                 }
                 //We use this instead of getAudioManager(Guild) so we don't create a new instance. Efficiency!
