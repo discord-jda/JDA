@@ -17,7 +17,7 @@
 package net.dv8tion.jda.entities;
 
 /**
- * Represents a Discord {@link net.dv8tion.jda.entities.Guild Guild}. This should contain all information provided from Discord about a Guild.
+ * Represents a Discord {@link net.dv8tion.jda.entities.Game Game}. This should contain all information provided from Discord about a Game.
  */
 public interface Game
 {
@@ -50,7 +50,8 @@ public interface Game
     /**
      * Checks if a given String is a valid Twitch url (ie, one that will display "Streaming" on the Discord client.
      */
-    static boolean isValidTwitchUrl(String url) {
+    static boolean isValidStreamingUrl(String url)
+    {
         return url != null && url.matches("^https?:\\/\\/(www\\.)?twitch\\.tv\\/.+");
     }
 

@@ -86,7 +86,8 @@ public class PresenceUpdateHandler extends SocketHandler
         String gameName = null;
         String gameUrl = null;
         Game.GameType type = null;
-        if ( !content.isNull("game") && !content.getJSONObject("game").isNull("name") ) {
+        if ( !content.isNull("game") && !content.getJSONObject("game").isNull("name") )
+        {
             gameName = content.getJSONObject("game").get("name").toString();
             gameUrl = ( content.getJSONObject("game").isNull("url") ? null : content.getJSONObject("game").get("url").toString() );
             type = (content.getJSONObject("game").isNull("type") ? Game.GameType.DEFAULT : Game.GameType.fromKey((int)content.getJSONObject("game").get("type")));

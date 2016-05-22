@@ -96,7 +96,7 @@ public class AccountManager
      * This change will be applied <b>immediately</b>
      *
      * @param title
-     *      the name of the stream that should be displayed or null for no game
+     *      the name of the stream that should be displayed
      * @param url
      *      the url of the twitch stream
      */
@@ -106,8 +106,8 @@ public class AccountManager
             title = null;
         if(url != null && url.trim().isEmpty())
             url = null;
-        if(!Game.isValidTwitchUrl(url))
-            throw new IllegalArgumentException("Twitch Url must be valid!");
+        if(title != null && !Game.isValidStreamingUrl(url))
+            throw new IllegalArgumentException("Streaming Url must be valid!");
         ((SelfInfoImpl) api.getSelfInfo()).setCurrentGame( title == null ? null : new GameImpl(title, url, Game.GameType.TWITCH));
         updateStatusAndGame();
     }
@@ -182,7 +182,8 @@ public class AccountManager
     {
         SelfInfo selfInfo = api.getSelfInfo();
         JSONObject game = null;
-        if(selfInfo.getCurrentGame() != null) {
+        if(selfInfo.getCurrentGame() != null)
+        {
             game = new JSONObject().put("name", selfInfo.getCurrentGame().getName());
             if(selfInfo.getCurrentGame().getType()!= Game.GameType.DEFAULT)
                 game = game .put("url", selfInfo.getCurrentGame().getUrl())
