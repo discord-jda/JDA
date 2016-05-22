@@ -83,13 +83,15 @@ public class PresenceUpdateHandler extends SocketHandler
             }
         }
 
-        String gameName = (content.isNull("game") || content.getJSONObject("game").isNull("name"))
-                ? null : content.getJSONObject("game").get("name").toString();
-        String gameUrl = (content.isNull("game") || content.getJSONObject("game").isNull("name"))
-                ? null : (content.getJSONObject("game").isNull("url") ? null : content.getJSONObject("game").get("url").toString());
-        Game.GameType type = (content.isNull("game") || content.getJSONObject("game").isNull("name"))
-                ? null : (content.getJSONObject("game").isNull("type") ? Game.GameType.DEFAULT : Game.GameType.fromKey((int)content.getJSONObject("game").get("type")));
-        Game nextGame = (gameName==null?null:new GameImpl(gameName,gameUrl,type));
+        String gameName = null;
+        String gameUrl = null;
+        Game.GameType type = null;
+        if ( !content.isNull("game") && !content.getJSONObject("game").isNull("name") ) {
+            gameName = content.getJSONObject("game").get("name").toString();
+            gameUrl = ( content.getJSONObject("game").isNull("url") ? null : content.getJSONObject("game").get("url").toString() );
+            type = (content.getJSONObject("game").isNull("type") ? Game.GameType.DEFAULT : Game.GameType.fromKey((int)content.getJSONObject("game").get("type")));
+        }
+        Game nextGame = ( gameName == null ? null : new GameImpl(gameName, gameUrl, type));
         OnlineStatus status = OnlineStatus.fromKey(content.getString("status"));
 
         if (!user.getOnlineStatus().equals(status))
@@ -101,7 +103,7 @@ public class PresenceUpdateHandler extends SocketHandler
                             api, responseNumber,
                             user, oldStatus));
         }
-        if(user.getCurrentGame()==null?nextGame!=null:!user.getCurrentGame().equals(nextGame))
+        if(user.getCurrentGame() == null ? nextGame != null : !user.getCurrentGame().equals(nextGame))
         {
             Game oldGame = user.getCurrentGame();
             user.setCurrentGame(nextGame);

@@ -108,12 +108,14 @@ public class EntityBuilder
                     //corresponding user to presence not found... ignoring
                     continue;
                 }
-                user
-                        .setCurrentGame(presence.isNull("game") || presence.getJSONObject("game").isNull("name") ? null
-                                : new GameImpl(presence.getJSONObject("game").get("name").toString(),
-                                presence.getJSONObject("game").isNull("url")?null:presence.getJSONObject("game").get("url")
-                                .toString(),presence.getJSONObject("game").isNull("type")? Game.GameType.DEFAULT:
-                                Game.GameType.fromKey((int)presence.getJSONObject("game").get("type"))))
+                Game presenceGame = null;
+                if( !presence.isNull("game") && !presence.getJSONObject("game").isNull("name") )
+                {
+                    presenceGame = new GameImpl(presence.getJSONObject("game").get("name").toString(),
+                            presence.getJSONObject("game").isNull("url") ? null : presence.getJSONObject("game").get("url").toString(),
+                            presence.getJSONObject("game").isNull("type") ? Game.GameType.DEFAULT : Game.GameType.fromKey((int) presence.getJSONObject("game").get("type")) );
+                }
+                user    .setCurrentGame(presenceGame)
                         .setOnlineStatus(OnlineStatus.fromKey(presence.getString("status")));
             }
         }

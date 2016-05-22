@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * @author John Grosh (jagrosh)
  */
 package net.dv8tion.jda.entities.impl;
 
@@ -53,15 +52,15 @@ public class GameImpl implements Game
 
     @Override
     public boolean equals(Object obj) {
-        if(obj==null || !(obj instanceof Game))
+        if(!( obj instanceof Game ))
             return false;
-        Game other = (Game)obj;
-        if(other.getType()!=type)
+        Game other = (Game) obj;
+        if(other.getType() != type)
             return false;
-        if(name==null)
-            return other.getName()==null;
-        if(url==null)
-            return other.getUrl()==null;
+        if(name == null)
+            return other.getName() == null;
+        if(url == null)
+            return other.getUrl() == null;
         return name.equals(other.getName()) && url.equals(other.getUrl());
     }
 

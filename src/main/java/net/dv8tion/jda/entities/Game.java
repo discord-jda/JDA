@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * @author John Grosh (jagrosh)
  */
 package net.dv8tion.jda.entities;
 
@@ -47,6 +46,13 @@ public interface Game
      */
     GameType getType();
 
+
+    /**
+     * Checks if a given String is a valid Twitch url (ie, one that will display "Streaming" on the Discord client.
+     */
+    static boolean isValidTwitchUrl(String url) {
+        return url != null && url.matches("^https?:\\/\\/(www\\.)?twitch\\.tv\\/.+");
+    }
 
     enum GameType
     {

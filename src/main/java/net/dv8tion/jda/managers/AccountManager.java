@@ -86,7 +86,7 @@ public class AccountManager
     {
         if(game != null && game.trim().isEmpty())
             game = null;
-        ((SelfInfoImpl) api.getSelfInfo()).setCurrentGame(game==null?null:new GameImpl(game,null, Game.GameType.DEFAULT));
+        ((SelfInfoImpl) api.getSelfInfo()).setCurrentGame(game == null ? null : new GameImpl(game, null, Game.GameType.DEFAULT));
         updateStatusAndGame();
     }
 
@@ -100,13 +100,15 @@ public class AccountManager
      * @param url
      *      the url of the twitch stream
      */
-    public void setStreaming(String title, String url)
+    public void setStreaming(String title, String url) throws IllegalArgumentException
     {
         if(title != null && title.trim().isEmpty())
             title = null;
         if(url != null && url.trim().isEmpty())
             url = null;
-        ((SelfInfoImpl) api.getSelfInfo()).setCurrentGame(title==null||url==null?null:(Game)new GameImpl(title,url, Game.GameType.TWITCH));
+        if(!Game.isValidTwitchUrl(url))
+            throw new IllegalArgumentException("Twitch Url must be valid!");
+        ((SelfInfoImpl) api.getSelfInfo()).setCurrentGame( title == null ? null : new GameImpl(title, url, Game.GameType.TWITCH));
         updateStatusAndGame();
     }
 
@@ -180,10 +182,11 @@ public class AccountManager
     {
         SelfInfo selfInfo = api.getSelfInfo();
         JSONObject game = null;
-        if(selfInfo.getCurrentGame()!=null) {
+        if(selfInfo.getCurrentGame() != null) {
             game = new JSONObject().put("name", selfInfo.getCurrentGame().getName());
-            if(selfInfo.getCurrentGame().getType()!=Game.GameType.DEFAULT)
-                game = game.put("url",selfInfo.getCurrentGame().getUrl()).put("type",selfInfo.getCurrentGame().getType().getKey());
+            if(selfInfo.getCurrentGame().getType()!= Game.GameType.DEFAULT)
+                game = game .put("url", selfInfo.getCurrentGame().getUrl())
+                            .put("type", selfInfo.getCurrentGame().getType().getKey());
         }
         JSONObject content = new JSONObject()
                 .put("game", game == null ? JSONObject.NULL : game)
