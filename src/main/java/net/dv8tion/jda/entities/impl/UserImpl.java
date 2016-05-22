@@ -17,6 +17,7 @@ package net.dv8tion.jda.entities.impl;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.OnlineStatus;
+import net.dv8tion.jda.entities.Game;
 import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.handle.EntityBuilder;
@@ -31,7 +32,7 @@ public class UserImpl implements User
     private String username;
     private String discriminator;
     private String avatarId;
-    private String gameName = null;
+    private Game game = null;
     private OnlineStatus onlineStatus = OnlineStatus.OFFLINE;
     private PrivateChannel privateChannel = null;
     private boolean isBot = false;
@@ -85,9 +86,9 @@ public class UserImpl implements User
     }
 
     @Override
-    public String getCurrentGame()
+    public Game getCurrentGame()
     {
-        return gameName;
+        return game;
     }
 
     @Override
@@ -142,9 +143,9 @@ public class UserImpl implements User
         return this;
     }
 
-    public UserImpl setCurrentGame(String name)
+    public UserImpl setCurrentGame(Game game)
     {
-        this.gameName = name;
+        this.game = game;
         return this;
     }
 

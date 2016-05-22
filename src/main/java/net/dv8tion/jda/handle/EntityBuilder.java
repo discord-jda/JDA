@@ -114,9 +114,16 @@ public class EntityBuilder
                     //corresponding user to presence not found... ignoring
                     continue;
                 }
+                Game presenceGame = null;
+                if( !presence.isNull("game") && !presence.getJSONObject("game").isNull("name") )
+                {
+                    presenceGame = new GameImpl(presence.getJSONObject("game").get("name").toString(),
+                            presence.getJSONObject("game").isNull("url") ? null : presence.getJSONObject("game").get("url").toString(),
+                            presence.getJSONObject("game").isNull("type") ? Game.GameType.DEFAULT : Game.GameType.fromKey((int) presence.getJSONObject("game").get("type")) );
+                }
                 user
-                        .setCurrentGame(presence.isNull("game") || presence.getJSONObject("game").isNull("name") ? null : presence.getJSONObject("game").get("name").toString())
-                        .setOnlineStatus(OnlineStatus.fromKey(presence.getString("status")));
+                    .setCurrentGame(presenceGame)
+                    .setOnlineStatus(OnlineStatus.fromKey(presence.getString("status")));
             }
         }
 

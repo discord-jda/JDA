@@ -17,6 +17,7 @@ package net.dv8tion.jda.handle;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.OnlineStatus;
+import net.dv8tion.jda.entities.Game;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import org.json.JSONArray;
@@ -45,7 +46,7 @@ public class ReadyHandler extends SocketHandler
     @Override
     protected String handleInternally(final JSONObject content)
     {
-        String oldGame = null;
+        Game oldGame = null;
         OnlineStatus oldStatus = null;
 
         if (api.getSelfInfo() != null)
@@ -57,9 +58,19 @@ public class ReadyHandler extends SocketHandler
         builder.createSelfInfo(content.getJSONObject("user"));
 
         if (oldGame != null)
-            api.getAccountManager().setGame(oldGame);
+        {
+            if (oldGame.getType() == Game.GameType.DEFAULT)
+            {
+                api.getAccountManager().setGame(oldGame.getName());
+            } else
+            {
+                api.getAccountManager().setStreaming(oldGame.getName(), oldGame.getUrl());
+            }
+        }
         if (oldStatus != null && oldStatus.equals(OnlineStatus.AWAY))
+        {
             api.getAccountManager().setIdle(true);
+        }
 
         JSONArray guilds = content.getJSONArray("guilds");
         if (guilds.length() == 0)
