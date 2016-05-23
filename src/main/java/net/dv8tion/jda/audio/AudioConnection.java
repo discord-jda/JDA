@@ -77,8 +77,8 @@ public class AudioConnection
                 {
                     if (timeout > 0 && System.currentTimeMillis() - started > timeout)
                     {
-                        api.getEventManager().handle(new AudioTimeoutEvent(api, channel, timeout));
                         connectionTimeout = true;
+                        break;
                     }
 
                     try
@@ -90,10 +90,18 @@ public class AudioConnection
                         LOG.log(e);
                     }
                 }
-                AudioConnection.this.udpSocket = webSocket.getUdpSocket();
-                setupSendThread();
-                setupReceiveThread();
-                api.getEventManager().handle(new AudioConnectEvent(api, AudioConnection.this.channel));
+                if (!connectionTimeout)
+                {
+                    AudioConnection.this.udpSocket = webSocket.getUdpSocket();
+                    setupSendThread();
+                    setupReceiveThread();
+                    api.getEventManager().handle(new AudioConnectEvent(api, AudioConnection.this.channel));
+                }
+                else
+                {
+                    webSocket.close(false, AudioWebSocket.CONNECTION_SETUP_TIMEOUT);
+                    api.getEventManager().handle(new AudioTimeoutEvent(api, AudioConnection.this.channel, timeout));
+                }
             }
         };
         readyThread.setDaemon(true);

@@ -22,6 +22,7 @@ import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.audio.AudioDisconnectEvent;
 import net.dv8tion.jda.events.audio.AudioRegionChangeEvent;
+import net.dv8tion.jda.events.audio.AudioTimeoutEvent;
 import net.dv8tion.jda.events.audio.AudioUnableToConnectEvent;
 import net.dv8tion.jda.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.utils.SimpleLog;
@@ -46,6 +47,7 @@ public class AudioWebSocket extends WebSocketAdapter
     public static final int USER_SPEAKING_UPDATE = 5;
 
     public static final int WEBSOCKET_READ_TIMEOUT = 1008;
+    public static final int CONNECTION_SETUP_TIMEOUT = -41;
     public static final int UDP_UNABLE_TO_CONNECT = -42;
 
     private final JDAImpl api;
@@ -302,13 +304,19 @@ public class AudioWebSocket extends WebSocketAdapter
         {
             api.getEventManager().handle(new AudioRegionChangeEvent(api, disconnectedChannel));
         }
-        else if (disconnectCode == UDP_UNABLE_TO_CONNECT)
-        {
-            api.getEventManager().handle(new AudioUnableToConnectEvent(api, disconnectedChannel));
-        }
         else
         {
-            api.getEventManager().handle(new AudioDisconnectEvent(api, disconnectedChannel));
+            switch (disconnectCode)
+            {
+                case CONNECTION_SETUP_TIMEOUT:
+                    //Handled in AudioConnection
+                    break;
+                case UDP_UNABLE_TO_CONNECT:
+                    api.getEventManager().handle(new AudioUnableToConnectEvent(api, disconnectedChannel));
+                    break;
+                default:
+                    api.getEventManager().handle(new AudioDisconnectEvent(api, disconnectedChannel));
+            }
         }
     }
 
