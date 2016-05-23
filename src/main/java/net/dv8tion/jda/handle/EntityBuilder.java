@@ -465,27 +465,34 @@ public class EntityBuilder
         {
             message.setChannelId(textChannel.getId());
             message.setIsPrivate(false);
-            List<User> mentioned = new LinkedList<>();
+            TreeMap<Integer, User> mentionedUsers = new TreeMap<>();
             JSONArray mentions = jsonObject.getJSONArray("mentions");
             for (int i = 0; i < mentions.length(); i++)
             {
                 JSONObject mention = mentions.getJSONObject(i);
                 User u = api.getUserMap().get(mention.getString("id"));
                 if (u != null)
-                    mentioned.add(u);
+                {
+                    //We do this to properly order the mentions. The array given by discord is out of order sometimes.
+                    int index = content.indexOf("<@" + mention.getString("id") + ">");
+                    mentionedUsers.put(index, u);
+                }
             }
-            message.setMentionedUsers(mentioned);
+            message.setMentionedUsers(new LinkedList<User>(mentionedUsers.values()));
 
-            List<Role> mentionedRoles = new LinkedList<>();
+            TreeMap<Integer, Role> mentionedRoles = new TreeMap<>();
             JSONArray roleMentions = jsonObject.getJSONArray("mention_roles");
             for (int i = 0; i < roleMentions.length(); i++)
             {
                 String roleId = roleMentions.getString(i);
                 Role r = textChannel.getGuild().getRoleById(roleId);
                 if (r != null)
-                    mentionedRoles.add(r);
+                {
+                    int index = content.indexOf("<@&" + roleId + ">");
+                    mentionedRoles.put(index, r);
+                }
             }
-            message.setMentionedRoles(mentionedRoles);
+            message.setMentionedRoles(new LinkedList<Role>(mentionedRoles.values()));
 
             List<TextChannel> mentionedChannels = new LinkedList<>();
             Map<String, TextChannel> chanMap = ((GuildImpl) textChannel.getGuild()).getTextChannelsMap();
@@ -493,7 +500,7 @@ public class EntityBuilder
             while (matcher.find())
             {
                 TextChannel channel = chanMap.get(matcher.group(1));
-                if(channel != null)
+                if(channel != null && !mentionedChannels.contains(channel))
                 {
                     mentionedChannels.add(channel);
                 }
