@@ -22,6 +22,7 @@ import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.audio.AudioDisconnectEvent;
 import net.dv8tion.jda.events.audio.AudioRegionChangeEvent;
+import net.dv8tion.jda.events.audio.AudioUnableToConnectEvent;
 import net.dv8tion.jda.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.utils.SimpleLog;
 import org.apache.http.HttpHost;
@@ -29,10 +30,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetSocketAddress;
-import java.net.NoRouteToHostException;
+import java.net.*;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
@@ -46,6 +44,9 @@ public class AudioWebSocket extends WebSocketAdapter
     public static final int HEARTBEAT_PING_RETURN = 3;
     public static final int CONNECTING_COMPLETED = 4;
     public static final int USER_SPEAKING_UPDATE = 5;
+
+    public static final int WEBSOCKET_READ_TIMEOUT = 1008;
+    public static final int UDP_UNABLE_TO_CONNECT = -42;
 
     private final JDAImpl api;
     private final Guild guild;
@@ -141,9 +142,21 @@ public class AudioWebSocket extends WebSocketAdapter
                 int heartbeatInterval = content.getInt("heartbeat_interval");
 
                 //Find our external IP and Port using Discord
-                InetSocketAddress externalIpAndPort = handleUdpDiscovery(new InetSocketAddress(endpoint, port), ssrc);
-                if (externalIpAndPort == null)
-                    throw new RuntimeException("Couldn't get external ip and port from UDP discovery");
+                InetSocketAddress externalIpAndPort = null;
+
+                int tries = 0;
+                do
+                {
+                    externalIpAndPort = handleUdpDiscovery(new InetSocketAddress(endpoint, port), ssrc);
+                    tries++;
+                    if (externalIpAndPort == null && tries > 5)
+                    {
+                        close(false, UDP_UNABLE_TO_CONNECT);
+                        return;
+                    }
+                } while (externalIpAndPort == null);
+
+                setupUdpKeepAliveThread();
 
                 send(new JSONObject()
                         .put("op", 1)
@@ -279,15 +292,23 @@ public class AudioWebSocket extends WebSocketAdapter
         AudioManagerImpl manager = (AudioManagerImpl) guild.getAudioManager();
         VoiceChannel disconnectedChannel = manager.getConnectedChannel();
         manager.setAudioConnection(null);
-        if (regionChange)
-            api.getEventManager().handle(new AudioRegionChangeEvent(api, disconnectedChannel));
-        else
-            api.getEventManager().handle(new AudioDisconnectEvent(api, disconnectedChannel));
 
-        if (disconnectCode == 1008) //Internal WS code meaning the frame reading was interupted, in this case, by timeout.
+        if (disconnectCode == WEBSOCKET_READ_TIMEOUT || disconnectCode == UDP_UNABLE_TO_CONNECT)
         {
             LOG.warn("Unexpected disconnect of Audio Connection to guild: " + guild.getId());
             manager.setUnexpectedDisconnectChannel(disconnectedChannel);
+        }
+        if (regionChange)
+        {
+            api.getEventManager().handle(new AudioRegionChangeEvent(api, disconnectedChannel));
+        }
+        else if (disconnectCode == UDP_UNABLE_TO_CONNECT)
+        {
+            api.getEventManager().handle(new AudioUnableToConnectEvent(api, disconnectedChannel));
+        }
+        else
+        {
+            api.getEventManager().handle(new AudioDisconnectEvent(api, disconnectedChannel));
         }
     }
 
@@ -337,6 +358,7 @@ public class AudioWebSocket extends WebSocketAdapter
 
             //Discord responds to our packet, returning a packet containing our external ip and the port we connected through.
             DatagramPacket receivedPacket = new DatagramPacket(new byte[70], 70);   //Give a buffer the same size as the one we sent.
+            udpSocket.setSoTimeout(1000);
             udpSocket.receive(receivedPacket);
 
             //The byte array returned by discord containing our external ip and the port that we used
@@ -370,18 +392,21 @@ public class AudioWebSocket extends WebSocketAdapter
             int ourPort = (firstByte << 8) | secondByte;
 
             this.address = address;
-            setupUdpKeepAliveThread(address);
 
             return new InetSocketAddress(ourIP, ourPort);
+        }
+        catch (SocketException e)
+        {
+            return null;
         }
         catch (IOException e)
         {
             LOG.log(e);
+            return null;
         }
-        return null;
     }
 
-    private void setupUdpKeepAliveThread(final InetSocketAddress address)
+    private void setupUdpKeepAliveThread()
     {
         udpKeepAliveThread = new Thread()
         {

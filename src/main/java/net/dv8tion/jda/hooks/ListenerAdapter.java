@@ -120,6 +120,7 @@ public abstract class ListenerAdapter implements EventListener
     //Audio System Events
     public void onAudioConnect(AudioConnectEvent event) {}
     public void onAudioDisconnect(AudioDisconnectEvent event) {}
+    public void onAudioUnableToConnect(AudioUnableToConnectEvent event) {}
     public void onAudioTimeout(AudioTimeoutEvent event) {}
     public void onAudioRegionChange(AudioRegionChangeEvent event) {}
 
@@ -292,6 +293,8 @@ public abstract class ListenerAdapter implements EventListener
             onAudioConnect((AudioConnectEvent) event);
         else if (event instanceof AudioDisconnectEvent)
             onAudioDisconnect((AudioDisconnectEvent) event);
+        else if (event instanceof AudioUnableToConnectEvent)
+            onAudioUnableToConnect((AudioUnableToConnectEvent) event);
         else if (event instanceof AudioTimeoutEvent)
             onAudioTimeout((AudioTimeoutEvent) event);
         else if (event instanceof AudioRegionChangeEvent)
