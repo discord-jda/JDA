@@ -175,6 +175,6 @@ public class ReadyHandler extends SocketHandler
                     );
             api.getClient().send(obj.toString());
         }
-        chunkIds.clear();
+        chunkIds.get(api).clear();
     }
 }
