@@ -25,6 +25,7 @@ import net.dv8tion.jda.entities.MessageEmbed.Thumbnail;
 import net.dv8tion.jda.entities.MessageEmbed.VideoInfo;
 import net.dv8tion.jda.entities.impl.*;
 import net.dv8tion.jda.requests.GuildLock;
+import net.dv8tion.jda.requests.WebSocketClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -264,7 +265,17 @@ public class EntityBuilder
             for (int j = 0; j < roleArr.length(); j++)
             {
                 String roleId = roleArr.getString(j);
-                userRoles.get(user).add(rolesMap.get(roleId));
+                Role role = rolesMap.get(roleId);
+                if (role != null)
+                {
+                    userRoles.get(user).add(role);
+                }
+                else
+                {
+                    WebSocketClient.LOG.warn("While building the guild users, encountered a user that is assigned a " +
+                            "non-existent role. This is a Discord error, not a JDA error. Ignoring the role. " +
+                            "GuildId: " + guildObj.getId() + " UserId: " + user.getId() + " RoleId: " + roleId);
+                }
             }
             Collections.sort(userRoles.get(user), (r2, r1) -> Integer.compare(r1.getPosition(), r2.getPosition()));
             VoiceStatusImpl voiceStatus = new VoiceStatusImpl(user, guildObj);
