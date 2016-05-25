@@ -96,7 +96,9 @@ public class PresenceUpdateHandler extends SocketHandler
             gameUrl = ( content.getJSONObject("game").isNull("url") ? null : content.getJSONObject("game").get("url").toString() );
             try
             {
-                type = ( content.getJSONObject("game").isNull("type") ? Game.GameType.DEFAULT : Game.GameType.fromKey( Integer.parseInt( content.getJSONObject("game").get("type").toString() ) ) );
+                type = content.getJSONObject("game").isNull("type")
+                    ? Game.GameType.DEFAULT
+                    : Game.GameType.fromKey(Integer.parseInt(content.getJSONObject("game").get("type").toString()));
             }
             catch (NumberFormatException ex)
             {
