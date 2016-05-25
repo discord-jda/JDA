@@ -308,7 +308,14 @@ public class EntityBuilder
                 JSONArray permissionOverwrites = channel.getJSONArray("permission_overwrites");
                 for (int j = 0; j < permissionOverwrites.length(); j++)
                 {
-                    createPermissionOverride(permissionOverwrites.getJSONObject(j), channelObj);
+                    try
+                    {
+                        createPermissionOverride(permissionOverwrites.getJSONObject(j), channelObj);
+                    }
+                    catch (IllegalArgumentException e)
+                    {
+                        WebSocketClient.LOG.warn(e.getMessage() + ". Ignoring PermissionOverride.");
+                    }
                 }
             }
             else
