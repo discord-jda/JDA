@@ -21,7 +21,7 @@ import java.util.Collection;
  * Represents a Discord Text Channel. See {@link net.dv8tion.jda.entities.Channel Channel} and
  * {@link net.dv8tion.jda.entities.MessageChannel MessageChannel} for more information.
  */
-public interface TextChannel extends Channel, MessageChannel
+public interface TextChannel extends Channel, MessageChannel, Comparable<TextChannel>
 {
     /**
      * Internal implementation of this class is available at

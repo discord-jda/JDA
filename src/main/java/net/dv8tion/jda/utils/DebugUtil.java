@@ -199,6 +199,8 @@ public class DebugUtil
         JSONObject obj = new JSONObject();
         obj.put("id", chan.getId())
                 .put("name", chan.getName())
+                .put("position", chan.getPosition())
+                .put("position_raw", chan.getPositionRaw())
                 .put("guild_id", chan.getGuild().getId());
         if (chan instanceof TextChannel)
             obj.put("topic", chan.getTopic());
@@ -259,6 +261,7 @@ public class DebugUtil
         obj.put("id", role.getId())
                 .put("name", role.getName())
                 .put("position", role.getPosition())
+                .put("position_raw", role.getPositionRaw())
                 .put("color", role.getColor())
                 .put("hoisted", role.isGrouped())
                 .put("managed", role.isManaged())

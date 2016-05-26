@@ -22,8 +22,10 @@ import net.dv8tion.jda.exceptions.PermissionException;
 import net.dv8tion.jda.managers.ChannelManager;
 import net.dv8tion.jda.managers.PermissionOverrideManager;
 import net.dv8tion.jda.utils.InviteUtil;
+import net.dv8tion.jda.utils.MiscUtil;
 import net.dv8tion.jda.utils.PermissionUtil;
 
+import java.time.OffsetDateTime;
 import java.util.*;
 
 public class VoiceChannelImpl implements VoiceChannel
@@ -103,6 +105,20 @@ public class VoiceChannelImpl implements VoiceChannel
 
     @Override
     public int getPosition()
+    {
+        //Subtract 1 to get into 0-index;
+        int i = guild.getVoiceChannels().size() - 1;
+        for (VoiceChannel chan : guild.getVoiceChannels())
+        {
+            if (chan == this)
+                return i;
+            i--;
+        }
+        throw new RuntimeException("Somehow when determining position we never found the VoiceChannel in the Guild's channels? wtf?");
+    }
+
+    @Override
+    public int getPositionRaw()
     {
         return position;
     }
@@ -229,5 +245,26 @@ public class VoiceChannelImpl implements VoiceChannel
     public String toString()
     {
         return "VC:" + getName() + '(' + getId() + ')';
+    }
+
+    @Override
+    public int compareTo(VoiceChannel chan)
+    {
+        if (this == chan)
+            return 0;
+
+        if (this.getGuild() != chan.getGuild())
+            throw new IllegalArgumentException("Cannot compare VoiceChannels that aren't from the same guild!");
+
+        if (this.getPositionRaw() != chan.getPositionRaw())
+            return chan.getPositionRaw() - this.getPositionRaw();
+
+        OffsetDateTime thisTime = MiscUtil.getCreationTime(this);
+        OffsetDateTime chanTime = MiscUtil.getCreationTime(chan);
+
+        //We compare the provided channel's time to this's time instead of the reverse as one would expect due to how
+        // discord deals with hierarchy. The more recent a channel was created, the lower its hierarchy ranking when
+        // it shares the same position as another channel.
+        return chanTime.compareTo(thisTime);
     }
 }

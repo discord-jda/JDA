@@ -21,17 +21,30 @@ import net.dv8tion.jda.managers.RoleManager;
 
 import java.util.List;
 
-public interface Role
+public interface Role extends Comparable<Role>
 {
     /**
-     * The position of this {@link net.dv8tion.jda.entities.Role Role} in the {@link net.dv8tion.jda.entities.Guild Guild} hierarchy.<br>
+     * The hierarchical position of this {@link net.dv8tion.jda.entities.Role Role} in the {@link net.dv8tion.jda.entities.Guild Guild} hierarchy.<br>
      * (higher value means higher role).<br>
-     * The @everyone {@link net.dv8tion.jda.entities.Role Role} always return -1
+     * The @everyone {@link net.dv8tion.jda.entities.Role Role} always return -1.
      *
      * @return
      *      The position of this {@link net.dv8tion.jda.entities.Role Role} as integer.
      */
     int getPosition();
+
+    /**
+     * The actual position of the {@link net.dv8tion.jda.entities.Role Role} as stored and given by Discord.
+     * Role positions are actually based on a pairing of the creation time (as stored in the snowflake id)
+     * and the position. If 2 or more roles share the same position then they are sorted based on their creation date.
+     * The more recent a role was created, the lower it is in the heirarchy. This is handled by {@link #getPosition()}
+     * and it is most likely the method you want. If, for some reason, you want the actual position of the
+     * Role then this method will give you that value.
+     *
+     * @return
+     *      The true, Discord stored, position of the {@link net.dv8tion.jda.entities.Role Role}.
+     */
+    int getPositionRaw();
 
     /**
      * The Name of the {@link net.dv8tion.jda.entities.Role Role}.

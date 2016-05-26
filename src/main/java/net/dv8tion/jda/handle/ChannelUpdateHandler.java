@@ -91,9 +91,9 @@ public class ChannelUpdateHandler extends SocketHandler
                                     api, responseNumber,
                                     channel, oldTopic));
                 }
-                if (channel.getPosition() != position)
+                if (channel.getPositionRaw() != position)
                 {
-                    int oldPosition = channel.getPosition();
+                    int oldPosition = channel.getPositionRaw();
                     channel.setPosition(position);
                     api.getEventManager().handle(
                             new TextChannelUpdatePositionEvent(
@@ -157,9 +157,9 @@ public class ChannelUpdateHandler extends SocketHandler
                                     api, responseNumber,
                                     channel, oldName));
                 }
-                if (channel.getPosition() != position)
+                if (channel.getPositionRaw() != position)
                 {
-                    int oldPosition = channel.getPosition();
+                    int oldPosition = channel.getPositionRaw();
                     channel.setPosition(position);
                     api.getEventManager().handle(
                             new VoiceChannelUpdatePositionEvent(

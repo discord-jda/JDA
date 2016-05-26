@@ -87,7 +87,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
         {
             rolesOld.addAll(rolesNew);
         }
-        Collections.sort(rolesOld, (r2, r1) -> Integer.compare(r1.getPosition(), r2.getPosition()));
+        Collections.sort(rolesOld, (r1, r2) -> r2.compareTo(r1));
         if (removedRoles.size() > 0)
         {
             api.getEventManager().handle(
