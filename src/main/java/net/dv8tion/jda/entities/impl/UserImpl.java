@@ -225,7 +225,8 @@ public class UserImpl implements User
         }
 
         @Override
-        public String toString() {
+        public String toString()
+        {
             return text;
         }
     }
