@@ -138,13 +138,11 @@ public class TextChannelImpl implements TextChannel
     @Override
     public int getPosition()
     {
-        //Subtract 1 to get into 0-index;
-        int i = guild.getTextChannels().size() - 1;
-        for (TextChannel chan : guild.getTextChannels())
+        List<TextChannel> channels = guild.getTextChannels();
+        for (int i = 0; i < channels.size(); i++)
         {
-            if (chan == this)
+            if (channels.get(i) == this)
                 return i;
-            i--;
         }
         throw new RuntimeException("Somehow when determining position we never found the TextChannel in the Guild's channels? wtf?");
     }

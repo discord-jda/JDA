@@ -106,13 +106,11 @@ public class VoiceChannelImpl implements VoiceChannel
     @Override
     public int getPosition()
     {
-        //Subtract 1 to get into 0-index;
-        int i = guild.getVoiceChannels().size() - 1;
-        for (VoiceChannel chan : guild.getVoiceChannels())
+        List<VoiceChannel> channels = guild.getVoiceChannels();
+        for (int i = 0; i < channels.size(); i++)
         {
-            if (chan == this)
+            if (channels.get(i) == this)
                 return i;
-            i--;
         }
         throw new RuntimeException("Somehow when determining position we never found the VoiceChannel in the Guild's channels? wtf?");
     }
