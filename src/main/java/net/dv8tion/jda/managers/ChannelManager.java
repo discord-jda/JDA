@@ -22,11 +22,17 @@ import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.exceptions.PermissionException;
 import net.dv8tion.jda.requests.Requester;
+import net.dv8tion.jda.utils.PermissionUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Manager used to modify aspects of a {@link net.dv8tion.jda.entities.TextChannel TextChannel}
@@ -38,6 +44,7 @@ public class ChannelManager
 
     private String name = null;
     private String topic = null;
+    private int position = -1;
     private Map<Integer, Channel> newPositions = new HashMap<>();
 
     public ChannelManager(Channel channel)
@@ -129,56 +136,45 @@ public class ChannelManager
      */
     public ChannelManager setPosition(int newPosition)
     {
-        checkPermission(Permission.MANAGE_CHANNEL);
-
+        if (!PermissionUtil.checkPermission(channel.getJDA().getSelfInfo(), Permission.MANAGE_CHANNEL, channel.getGuild()))
+            throw new PermissionException("Do not have " + Permission.MANAGE_CHANNEL + " for this Guild. Cannot change the position of channels.");
         newPositions.clear();
+
         if (newPosition < 0 || newPosition == channel.getPosition())
         {
             return this;
         }
-        Map<Integer, Channel> currentPositions = new HashMap<>();
+        this.position = newPosition;
 
-        if (channel instanceof TextChannel)
+        Map<Integer, Channel> currentPositions  = (channel instanceof TextChannel
+                ? channel.getGuild().getTextChannels()
+                : channel.getGuild().getVoiceChannels())
+                .stream().collect(Collectors.toMap(
+                        chan -> chan.getPosition(),
+                        chan -> chan));
+
+        //We create a search index to make sure we insert at the right place. If the position we are inserting at
+        // is greater than where the channel was before, that means it will be skipping over its original position
+        // in the channel list, thus the iterating index will be 1 less than expected, so we decrement the
+        // search index by 1 to account for this.
+        int searchIndex = newPosition > channel.getPosition() ? newPosition - 1 : newPosition;
+        int index = 0;
+        for (Channel chan : currentPositions.values())
         {
-            channel.getGuild().getTextChannels().forEach(chan -> currentPositions.put(chan.getPosition(), chan));
+            //When we encounter the old position of the channel, ignore it.
+            if (chan == channel)
+                continue;
+            if (index == searchIndex)
+            {
+                newPositions.put(index, channel);
+                index++;
+            }
+            newPositions.put(index, chan);
+            index++;
         }
-        else
-        {
-            channel.getGuild().getVoiceChannels().forEach(chan -> currentPositions.put(chan.getPosition(), chan));
-        }
-        if (currentPositions.containsKey(newPosition))
-        {
+        //If the channel was moved to the very bottom, this will make sure it is properly handled.
+        if (!newPositions.containsKey(newPosition))
             newPositions.put(newPosition, channel);
-            //check if there is space above this channel (a hole to fill)
-            if (currentPositions.keySet().stream().filter(n -> n < newPosition).count() < newPosition)
-            {
-                for (int i = newPosition; i > 0; i--)
-                {
-                    if (currentPositions.containsKey(i))
-                    {
-                        newPositions.put(i - 1, currentPositions.get(i));
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-            }
-            else    //no space above, shift below channels further down
-            {
-                for (int i = newPosition; true; i++)
-                {
-                    if (currentPositions.containsKey(i))
-                    {
-                        newPositions.put(i + 1, currentPositions.get(i));
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-            }
-        }
         return this;
     }
 
@@ -199,6 +195,7 @@ public class ChannelManager
     public void reset() {
         name = null;
         topic = null;
+        position = -1;
         newPositions.clear();
     }
 
@@ -216,26 +213,37 @@ public class ChannelManager
         {
             frame.put("topic", this.topic);
         }
-        for (Map.Entry<Integer, Channel> posEntry : newPositions.entrySet())
+        if (position != -1 && !newPositions.isEmpty())
         {
-            if (posEntry.getValue() == channel)
-            {
-                frame.put("position", posEntry.getKey());
-            }
-            else
-            {
-                update(posEntry.getValue(), getFrame(posEntry.getValue()).put("position", posEntry.getKey()));
-            }
+            updatePosition();
+            frame.put("position", this.position);
         }
+
         update(channel, frame);
+        reset();
+    }
+
+    private void updatePosition()
+    {
+        JSONArray bulkUpdate = new JSONArray();
+        newPositions.forEach((pos, chan) ->
+        {
+            bulkUpdate.put(new JSONObject()
+                .put("id", chan.getId())
+                .put("position", pos));
+        });
+        ((JDAImpl) channel.getJDA()).getRequester().patch(Requester.DISCORD_API_PREFIX
+                + "guilds/" + channel.getGuild().getId() + "/channels", bulkUpdate);
     }
 
     private JSONObject getFrame(Channel chan)
     {
         return new JSONObject()
                 .put("name", chan.getName())
-                .put("position", chan.getPosition())
-                .put("topic", chan.getTopic() == null ? "" : chan.getTopic());
+                .put("topic", chan.getTopic() == null ? "" : chan.getTopic())
+                .put("position", chan.getPositionRaw());
+//                .put("bitrate", chan instanceof VoiceChannel ? ((VoiceChannel) chan).getBitrate() : 64000)
+//                .put("user_limit", chan instanceof VoiceChannel ? ((VoiceChannel) chan).getUserLimit() : 0)
     }
 
     private void update(Channel chan, JSONObject o)
