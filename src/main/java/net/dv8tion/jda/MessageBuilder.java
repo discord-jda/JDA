@@ -128,6 +128,18 @@ public class MessageBuilder
         mentionEveryone = true;
         return this;
     }
+    
+    /**
+     * Appends a @here mention to the Message
+     *
+     * @return this instance
+     */
+    public MessageBuilder appendHereMention()
+    {
+        builder.append("@here");
+        mentionEveryone = true;
+        return this;
+    }
 
     /**
      * Appends a channel mention to the Message.
