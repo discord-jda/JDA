@@ -104,7 +104,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             {
                 firstInit = false;
                 JDAImpl.LOG.info("Finished Loading!");
-                if (api.getGuilds().size() >= 0) //Show large warning when connected to >2500 guilds
+                if (api.getGuilds().size() >= 2500) //Show large warning when connected to >2500 guilds
                 {
                     JDAImpl.LOG.warn(" __      __ _    ___  _  _  ___  _  _   ___  _ ");
                     JDAImpl.LOG.warn(" \\ \\    / //_\\  | _ \\| \\| ||_ _|| \\| | / __|| |");
