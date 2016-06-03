@@ -468,9 +468,9 @@ public class GuildImpl implements Guild
         return "G:" + getName() + '(' + getId() + ')';
     }
 
-	@Override
-	public List<AdvancedInvite> getInvites()
-	{
-		return InviteUtil.getInvites(this);
-	}
+    @Override
+    public List<AdvancedInvite> getInvites()
+    {
+        return InviteUtil.getInvites(this);
+    }
 }
