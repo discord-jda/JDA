@@ -173,7 +173,7 @@ public class ChannelManager
             index++;
         }
         //If the channel was moved to the very bottom, this will make sure it is properly handled.
-        if (!newPositions.containsKey(newPosition))
+        if (!newPositions.containsValue(channel))
             newPositions.put(newPosition, channel);
         return this;
     }
