@@ -51,7 +51,7 @@ public class AccountManager
      * @param avatar
      *      a Avatar object, null to keep current Avatar or {@link net.dv8tion.jda.utils.AvatarUtil#DELETE_AVATAR AvatarUtil#DELETE_AVATAR} to remove the avatar
      * @return
-     * 	  this
+     *      this
      */
     public AccountManager setAvatar(AvatarUtil.Avatar avatar)
     {
@@ -66,7 +66,7 @@ public class AccountManager
      * @param username
      *      the new username or null to discard changes
      * @return
-     * 	  this
+     *      this
      */
     public AccountManager setUsername(String username)
     {
