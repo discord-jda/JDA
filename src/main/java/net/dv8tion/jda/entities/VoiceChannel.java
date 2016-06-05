@@ -24,4 +24,25 @@ package net.dv8tion.jda.entities;
  */
 public interface VoiceChannel extends Channel, Comparable<VoiceChannel>
 {
+    /**
+     * The maximum amount of {@link net.dv8tion.jda.entities.User Users} that can be in this
+     * {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} at one time.
+     * <br>
+     * 0 - No limit <br>
+     *
+     * @return
+     *      The maximum amount of users allowed in this channel at one time.
+     */
+    int getUserLimit();
+
+    /**
+     * The audio bitrate of the voice audio that is played in this channel. While higher bitrates can be sent to
+     * this channel, it will be scaled down by the client.
+     * <br>
+     * Default and recommended value is 64000
+     *
+     * @return
+     *      The audio bitrate of this voice channel.
+     */
+    int getBitrate();
 }

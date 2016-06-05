@@ -34,6 +34,8 @@ public class VoiceChannelImpl implements VoiceChannel
     private final Guild guild;
     private String name;
     private int position;
+    private int userLimit;
+    private int bitrate;
     private List<User> connectedUsers = new ArrayList<>();
     private final Map<User, PermissionOverride> userPermissionOverrides = new HashMap<>();
     private final Map<Role, PermissionOverride> rolePermissionOverrides = new HashMap<>();
@@ -185,6 +187,18 @@ public class VoiceChannelImpl implements VoiceChannel
         return InviteUtil.getInvites(this);
     }
 
+    @Override
+    public int getUserLimit()
+    {
+        return userLimit;
+    }
+
+    @Override
+    public int getBitrate()
+    {
+        return bitrate;
+    }
+
     public VoiceChannelImpl setName(String name)
     {
         this.name = name;
@@ -200,6 +214,18 @@ public class VoiceChannelImpl implements VoiceChannel
     public VoiceChannelImpl setUsers(List<User> connectedUsers)
     {
         this.connectedUsers = connectedUsers;
+        return this;
+    }
+
+    public VoiceChannelImpl setUserLimit(int userLimit)
+    {
+        this.userLimit = userLimit;
+        return this;
+    }
+
+    public VoiceChannelImpl setBitrate(int bitrate)
+    {
+        this.bitrate = bitrate;
         return this;
     }
 

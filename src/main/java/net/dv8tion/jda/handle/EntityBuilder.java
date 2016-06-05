@@ -356,7 +356,9 @@ public class EntityBuilder
 
         return channel
                 .setName(json.getString("name"))
-                .setPosition(json.getInt("position"));
+                .setPosition(json.getInt("position"))
+                .setUserLimit(json.getInt("user_limit"))
+                .setBitrate(json.getInt("bitrate"));
     }
 
     public PrivateChannel createPrivateChannel(JSONObject privatechat)

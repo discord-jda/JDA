@@ -45,6 +45,8 @@ public class ChannelManager
     private String name = null;
     private String topic = null;
     private int position = -1;
+    private int userLimit = -1;
+    private int bitrate = -1;
     private Map<Integer, Channel> newPositions = new HashMap<>();
 
     public ChannelManager(Channel channel)
@@ -117,6 +119,77 @@ public class ChannelManager
         else
         {
             this.topic = topic;
+        }
+        return this;
+    }
+
+    /**
+     * Used to set the maximum amount of users that can be connected to a
+     * {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} at the same time.
+     * <p>
+     * The accepted range is 0-99, with 0 representing no limit. -1 can be provided to reset the value.<br>
+     * The default is: 0
+     *
+     * @param userLimit
+     *          The maximum amount of Users that can be connected to a voice channel at a time.
+     * @return
+     *      This ChannelManager
+     * @throws java.lang.UnsupportedOperationException
+     *      thrown when attempting to set the userLimit for a {@link net.dv8tion.jda.entities.TextChannel}
+     * @throws java.lang.IllegalArgumentException
+     *      thrown if the provided userLimit it outside the range of 0 to 99, not including the reset value: -1
+     */
+    public ChannelManager setUserLimit(int userLimit)
+    {
+        checkPermission(Permission.MANAGE_CHANNEL);
+
+        if (channel instanceof TextChannel)
+            throw new UnsupportedOperationException("Setting user limit for TextChannels is not allowed!");
+        if (userLimit < -1 || userLimit > 99)
+            throw new IllegalArgumentException("Provided userlimit must be either within the bounds of 0-99 inclusive or -1 to reset.");
+
+        if (userLimit == ((VoiceChannel) channel).getUserLimit())
+        {
+            this.userLimit = -1;
+        }
+        else
+        {
+            this.userLimit = userLimit;
+        }
+        return this;
+    }
+
+    /**
+     * Used to set the bitrate that Discord clients will use when sending and receiving audio.
+     * <p>
+     * The accepted range is 8000-96000. -1 can be provided to reset the value.<br>
+     * The default value is: 64000
+     *
+     * @param bitrate
+     *          The bitrate which Discord clients will conform to when dealing with the audio from this channel.
+     * @return
+     *      This ChannelManager
+     * @throws java.lang.UnsupportedOperationException
+     *      thrown when attempting to set the bitrate for a {@link net.dv8tion.jda.entities.TextChannel}
+     * @throws java.lang.IllegalArgumentException
+     *      thrown if the provided bitrate it outside the range of 8000 to 96000, not including the reset value: -1
+     */
+    public ChannelManager setBitrate(int bitrate)
+    {
+        checkPermission(Permission.MANAGE_CHANNEL);
+
+        if (channel instanceof TextChannel)
+            throw new UnsupportedOperationException("Setting user limit for TextChannels is not allowed!");
+        if (bitrate != -1 && (bitrate < 8000 || bitrate > 96000))
+            throw new IllegalArgumentException("Provided bitrate must be within the range of 8000 to 96000, or -1 to reset. Recommended is 64000");
+
+        if (bitrate == ((VoiceChannel) channel).getBitrate())
+        {
+            this.bitrate = -1;
+        }
+        else
+        {
+            this.bitrate = bitrate;
         }
         return this;
     }
@@ -218,6 +291,14 @@ public class ChannelManager
             updatePosition();
             frame.put("position", this.position);
         }
+        if (userLimit != -1)
+        {
+            frame.put("user_limit", userLimit);
+        }
+        if (bitrate != -1)
+        {
+            frame.put("bitrate", bitrate);
+        }
 
         update(channel, frame);
         reset();
@@ -241,9 +322,9 @@ public class ChannelManager
         return new JSONObject()
                 .put("name", chan.getName())
                 .put("topic", chan.getTopic() == null ? "" : chan.getTopic())
-                .put("position", chan.getPositionRaw());
-//                .put("bitrate", chan instanceof VoiceChannel ? ((VoiceChannel) chan).getBitrate() : 64000)
-//                .put("user_limit", chan instanceof VoiceChannel ? ((VoiceChannel) chan).getUserLimit() : 0)
+                .put("position", chan.getPositionRaw())
+                .put("bitrate", chan instanceof VoiceChannel ? ((VoiceChannel) chan).getBitrate() : 64000)
+                .put("user_limit", chan instanceof VoiceChannel ? ((VoiceChannel) chan).getUserLimit() : 0);
     }
 
     private void update(Channel chan, JSONObject o)

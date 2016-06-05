@@ -76,6 +76,8 @@ public abstract class ListenerAdapter implements EventListener
     public void onVoiceChannelDelete(VoiceChannelDeleteEvent event) {}
     public void onVoiceChannelUpdateName(VoiceChannelUpdateNameEvent event) {}
     public void onVoiceChannelUpdatePosition(VoiceChannelUpdatePositionEvent event) {}
+    public void onVoiceChannelUpdateUserLimit(VoiceChannelUpdateUserLimitEvent event) {}
+    public void onVoiceChannelUpdateBitrate(VoiceChannelUpdateBitrateEvent event) {}
     public void onVoiceChannelUpdatePermissions(VoiceChannelUpdatePermissionsEvent event) {}
     public void onVoiceChannelCreate(VoiceChannelCreateEvent event) {}
 
@@ -221,6 +223,10 @@ public abstract class ListenerAdapter implements EventListener
             onVoiceChannelUpdateName((VoiceChannelUpdateNameEvent) event);
         else if (event instanceof VoiceChannelUpdatePositionEvent)
             onVoiceChannelUpdatePosition((VoiceChannelUpdatePositionEvent) event);
+        else if (event instanceof VoiceChannelUpdateUserLimitEvent)
+            onVoiceChannelUpdateUserLimit((VoiceChannelUpdateUserLimitEvent) event);
+        else if (event instanceof VoiceChannelUpdateBitrateEvent)
+            onVoiceChannelUpdateBitrate((VoiceChannelUpdateBitrateEvent) event);
         else if (event instanceof VoiceChannelUpdatePermissionsEvent)
             onVoiceChannelUpdatePermissions((VoiceChannelUpdatePermissionsEvent) event);
         else if (event instanceof VoiceChannelDeleteEvent)
