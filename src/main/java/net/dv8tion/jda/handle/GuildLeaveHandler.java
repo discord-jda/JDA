@@ -16,9 +16,11 @@
 package net.dv8tion.jda.handle;
 
 import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.impl.GuildImpl;
 import net.dv8tion.jda.entities.impl.JDAImpl;
+import net.dv8tion.jda.entities.impl.TextChannelImpl;
 import net.dv8tion.jda.entities.impl.UserImpl;
 import net.dv8tion.jda.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.events.guild.GuildUnavailableEvent;
@@ -85,6 +87,7 @@ public class GuildLeaveHandler extends SocketHandler
         }
 
         api.getGuildMap().remove(guild.getId());
+        TextChannelImpl.AsyncMessageSender.stop(api, guild.getId());
         api.getEventManager().handle(
                 new GuildLeaveEvent(
                         api, responseNumber,

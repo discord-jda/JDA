@@ -21,6 +21,7 @@ import net.dv8tion.jda.audio.AudioSendHandler;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
+import net.dv8tion.jda.entities.impl.TextChannelImpl;
 import net.dv8tion.jda.events.*;
 import net.dv8tion.jda.handle.*;
 import net.dv8tion.jda.managers.AudioManager;
@@ -415,6 +416,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         new ReadyHandler(api, 0).clearCache();
         EventCache.get(api).clear();
         GuildLock.get(api).clear();
+        TextChannelImpl.AsyncMessageSender.stopAll(api);
     }
 
     private void restoreAudioHandlers()

@@ -59,6 +59,7 @@ public class JDAImpl implements JDA
     private final Map<String, TextChannel> textChannelMap = new HashMap<>();
     private final Map<String, VoiceChannel> voiceChannelMap = new HashMap<>();
     private final Map<String, PrivateChannel> pmChannelMap = new HashMap<>();
+    private final Map<String, Long> messageRatelimitTimeouts = new HashMap<>(); //(GuildId or PrivateChannelId) - Timeout.
     private final Map<String, String> offline_pms = new HashMap<>();    //Userid -> channelid
     private final Map<Guild, AudioManager> audioManagers = new HashMap<>();
     private final boolean audioEnabled;
@@ -71,7 +72,6 @@ public class JDAImpl implements JDA
     private final Requester requester = new Requester(this);
     private boolean reconnect;
     private int responseTotal;
-    private Long messageLimit = null;
 
     public JDAImpl(boolean enableAudio, boolean useShutdownHook)
     {
@@ -448,6 +448,7 @@ public class JDAImpl implements JDA
     @Override
     public void shutdown(boolean free)
     {
+        TextChannelImpl.AsyncMessageSender.stopAll(this);
         audioManagers.values().forEach(mng -> mng.closeAudioConnection());
         client.setAutoReconnect(false);
         client.close();
@@ -462,18 +463,20 @@ public class JDAImpl implements JDA
         }
     }
 
-    public void setMessageTimeout(long timeout)
+    public void setMessageTimeout(String ratelimitIdentifier, long timeout)
     {
-        this.messageLimit = System.currentTimeMillis() + timeout;
+        messageRatelimitTimeouts.put(ratelimitIdentifier, System.currentTimeMillis() + timeout);
     }
 
-    public Long getMessageLimit()
+    public Long getMessageLimit(String ratelimitIdentifier)
     {
-        if (this.messageLimit != null && this.messageLimit < System.currentTimeMillis())
+        Long messageRatelimitTimeout = messageRatelimitTimeouts.get(ratelimitIdentifier);
+        if (messageRatelimitTimeout != null && messageRatelimitTimeout < System.currentTimeMillis())
         {
-            this.messageLimit = null;
+            messageRatelimitTimeout = null;
+            messageRatelimitTimeouts.remove(ratelimitIdentifier);
         }
-        return this.messageLimit;
+        return messageRatelimitTimeout;
     }
 
     @Override

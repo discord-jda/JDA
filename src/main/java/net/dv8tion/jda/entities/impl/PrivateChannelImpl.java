@@ -73,9 +73,9 @@ public class PrivateChannelImpl implements PrivateChannel
     @Override
     public Message sendMessage(Message msg)
     {
-        if (api.getMessageLimit() != null)
+        if (api.getMessageLimit(id) != null)
         {
-            throw new RateLimitedException(api.getMessageLimit() - System.currentTimeMillis());
+            throw new RateLimitedException(api.getMessageLimit(id) - System.currentTimeMillis());
         }
         try
         {
@@ -84,7 +84,7 @@ public class PrivateChannelImpl implements PrivateChannel
             if (response.isRateLimit())
             {
                 long retry_after = response.getObject().getLong("retry_after");
-                api.setMessageTimeout(retry_after);
+                api.setMessageTimeout(id, retry_after);
                 throw new RateLimitedException(retry_after);
             }
             if (!response.isOk())
@@ -110,8 +110,8 @@ public class PrivateChannelImpl implements PrivateChannel
     @Override
     public void sendMessageAsync(Message msg, Consumer<Message> callback)
     {
-        ((MessageImpl) msg).setChannelId(getId());
-        TextChannelImpl.AsyncMessageSender.getInstance(getJDA()).enqueue(msg, false, callback);
+        ((MessageImpl) msg).setChannelId(id);
+        TextChannelImpl.AsyncMessageSender.getInstance(getJDA(), id).enqueue(msg, false, callback);
     }
 
     @Override
