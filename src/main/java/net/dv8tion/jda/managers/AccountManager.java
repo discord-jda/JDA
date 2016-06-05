@@ -33,10 +33,10 @@ import org.json.JSONObject;
 public class AccountManager
 {
 
-    private AvatarUtil.Avatar avatar = null;
-    private String username = null;
+    protected AvatarUtil.Avatar avatar = null;
+    protected String username = null;
 
-    private final JDAImpl api;
+    protected final JDAImpl api;
 
     public AccountManager(JDAImpl api)
     {
@@ -179,7 +179,7 @@ public class AccountManager
             this.username = null;
     }
 
-    private void updateStatusAndGame()
+    protected void updateStatusAndGame()
     {
         SelfInfo selfInfo = api.getSelfInfo();
         JSONObject game = null;

@@ -53,25 +53,25 @@ import java.util.stream.Collectors;
 public class JDAImpl implements JDA
 {
     public static final SimpleLog LOG = SimpleLog.getLog("JDA");
-    private final HttpHost proxy;
-    private final Map<String, User> userMap = new HashMap<>();
-    private final Map<String, Guild> guildMap = new HashMap<>();
-    private final Map<String, TextChannel> textChannelMap = new HashMap<>();
-    private final Map<String, VoiceChannel> voiceChannelMap = new HashMap<>();
-    private final Map<String, PrivateChannel> pmChannelMap = new HashMap<>();
-    private final Map<String, Long> messageRatelimitTimeouts = new HashMap<>(); //(GuildId or PrivateChannelId) - Timeout.
-    private final Map<String, String> offline_pms = new HashMap<>();    //Userid -> channelid
-    private final Map<Guild, AudioManager> audioManagers = new HashMap<>();
-    private final boolean audioEnabled;
-    private final boolean useShutdownHook;
-    private IEventManager eventManager = new InterfacedEventManager();
-    private SelfInfo selfInfo = null;
-    private AccountManager accountManager;
-    private String authToken = null;
-    private WebSocketClient client;
-    private final Requester requester = new Requester(this);
-    private boolean reconnect;
-    private int responseTotal;
+    protected final HttpHost proxy;
+    protected final Map<String, User> userMap = new HashMap<>();
+    protected final Map<String, Guild> guildMap = new HashMap<>();
+    protected final Map<String, TextChannel> textChannelMap = new HashMap<>();
+    protected final Map<String, VoiceChannel> voiceChannelMap = new HashMap<>();
+    protected final Map<String, PrivateChannel> pmChannelMap = new HashMap<>();
+    protected final Map<String, Long> messageRatelimitTimeouts = new HashMap<>(); //(GuildId or PrivateChannelId) - Timeout.
+    protected final Map<String, String> offline_pms = new HashMap<>();    //Userid -> channelid
+    protected final Map<Guild, AudioManager> audioManagers = new HashMap<>();
+    protected final boolean audioEnabled;
+    protected final boolean useShutdownHook;
+    protected IEventManager eventManager = new InterfacedEventManager();
+    protected SelfInfo selfInfo = null;
+    protected AccountManager accountManager;
+    protected String authToken = null;
+    protected WebSocketClient client;
+    protected final Requester requester = new Requester(this);
+    protected boolean reconnect;
+    protected int responseTotal;
 
     public JDAImpl(boolean enableAudio, boolean useShutdownHook)
     {
@@ -143,7 +143,7 @@ public class JDAImpl implements JDA
         }
     }
 
-    private boolean validate(String authToken)
+    protected boolean validate(String authToken)
     {
         this.authToken = authToken;
         try
@@ -164,7 +164,7 @@ public class JDAImpl implements JDA
      * @return
      *      The {@link org.json.JSONObject JSONObject} representation of the json in the file.
      */
-    private static JSONObject readJson(Path file)
+    protected static JSONObject readJson(Path file)
     {
         try
         {
@@ -190,7 +190,7 @@ public class JDAImpl implements JDA
      * @param object
      *          The {@link org.json.JSONObject JSONObject} to write to file.
      */
-    private static void writeJson(Path file, JSONObject object)
+    protected static void writeJson(Path file, JSONObject object)
     {
         try
         {
@@ -494,10 +494,10 @@ public class JDAImpl implements JDA
         return manager;
     }
 
-    private static class AsyncCallback implements EventListener
+    protected static class AsyncCallback implements EventListener
     {
-        private final Consumer<GuildManager> cb;
-        private final String id;
+        protected final Consumer<GuildManager> cb;
+        protected final String id;
 
         public AsyncCallback(Consumer<GuildManager> cb, String guildId)
         {

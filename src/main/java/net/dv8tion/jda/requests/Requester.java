@@ -35,7 +35,7 @@ public class Requester
     public static String USER_AGENT = "JDA DiscordBot (" + JDAInfo.GITHUB + ", " + JDAInfo.VERSION + ")";
     public static final String DISCORD_API_PREFIX = "https://discordapp.com/api/";
 
-    private final JDAImpl api;
+    protected final JDAImpl api;
 
     public Requester(JDAImpl api)
     {
@@ -82,7 +82,7 @@ public class Requester
         return exec(addHeaders(Unirest.put(url)).body(body.toString()));
     }
 
-    private Response exec(BaseRequest request)
+    protected Response exec(BaseRequest request)
     {
         HttpResponse<String> ret = null;
         try
@@ -114,7 +114,7 @@ public class Requester
         }
     }
 
-    private <T extends HttpRequest> T addHeaders(T request)
+    protected <T extends HttpRequest> T addHeaders(T request)
     {
         //adding token to all requests to the discord api or cdn pages
         //can't check for startsWith(DISCORD_API_PREFIX) due to cdn endpoints
@@ -137,14 +137,14 @@ public class Requester
         public final int code;
         public final String responseText;
 
-        private Response(int code, String response)
+        protected Response(int code, String response)
         {
             this.code = code;
             this.responseText = response;
             this.exception = null;
         }
 
-        private Response(Exception exception)
+        protected Response(Exception exception)
         {
             this.code = connectionErrCode;
             this.responseText = null;

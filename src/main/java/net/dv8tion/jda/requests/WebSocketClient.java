@@ -46,31 +46,31 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 {
     public static final SimpleLog LOG = SimpleLog.getLog("JDASocket");
 
-    private final JDAImpl api;
+    protected final JDAImpl api;
 
-    private final int[] sharding;
-    private final HttpHost proxy;
-    private WebSocket socket;
-    private String gatewayUrl = null;
+    protected final int[] sharding;
+    protected final HttpHost proxy;
+    protected WebSocket socket;
+    protected String gatewayUrl = null;
 
-    private String sessionId = null;
+    protected String sessionId = null;
 
-    private Thread keepAliveThread;
-    private boolean connected;
+    protected Thread keepAliveThread;
+    protected boolean connected;
 
-    private boolean initiating;             //cache all events?
-    private final List<JSONObject> cachedEvents = new LinkedList<>();
+    protected boolean initiating;             //cache all events?
+    protected final List<JSONObject> cachedEvents = new LinkedList<>();
 
-    private boolean shouldReconnect = true;
-    private int reconnectTimeoutS = 2;
+    protected boolean shouldReconnect = true;
+    protected int reconnectTimeoutS = 2;
 
-    private final List<VoiceChannel> dcAudioConnections = new LinkedList<>();
-    private final Map<String, AudioSendHandler> audioSendHandlers = new HashMap<>();
-    private final Map<String, AudioReceiveHandler> audioReceivedHandlers = new HashMap<>();
+    protected final List<VoiceChannel> dcAudioConnections = new LinkedList<>();
+    protected final Map<String, AudioSendHandler> audioSendHandlers = new HashMap<>();
+    protected final Map<String, AudioReceiveHandler> audioReceivedHandlers = new HashMap<>();
 
-    private boolean firstInit = true;
+    protected boolean firstInit = true;
 
-    private WebSocketCustomHandler customHandler;
+    protected WebSocketCustomHandler customHandler;
 
     public WebSocketClient(JDAImpl api, HttpHost proxy, int[] sharding)
     {
@@ -164,7 +164,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         ### Start Internal methods ###
      */
 
-    private void connect()
+    protected void connect()
     {
         initiating = true;
         WebSocketFactory factory = new WebSocketFactory();
@@ -196,7 +196,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
-    private String getGateway()
+    protected String getGateway()
     {
         try
         {
@@ -266,7 +266,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
-    private void reconnect()
+    protected void reconnect()
     {
         LOG.warn("Got disconnected from WebSocket (Internet?!)... Attempting to reconnect in " + reconnectTimeoutS + "s");
         while(shouldReconnect)
@@ -328,7 +328,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
-    private void setupKeepAlive(long timeout)
+    protected void setupKeepAlive(long timeout)
     {
         keepAliveThread = new Thread(() -> {
             while (connected) {
@@ -347,12 +347,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         keepAliveThread.start();
     }
 
-    private void sendKeepAlive()
+    protected void sendKeepAlive()
     {
         send(new JSONObject().put("op", 1).put("d", api.getResponseTotal()).toString());
     }
 
-    private void sendIdentify()
+    protected void sendIdentify()
     {
         LOG.debug("Sending Identify-packet...");
         JSONObject identify = new JSONObject()
@@ -376,7 +376,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         send(identify.toString()); //Used to make the READY event be given as compressed binary data when over a certain size. TY @ShadowLordAlpha
     }
 
-    private void sendResume()
+    protected void sendResume()
     {
         LOG.debug("Sending Resume-packet...");
         send(new JSONObject()
@@ -388,7 +388,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 .toString());
     }
 
-    private void invalidate()
+    protected void invalidate()
     {
         sessionId = null;
 
@@ -419,7 +419,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         TextChannelImpl.AsyncMessageSender.stopAll(api);
     }
 
-    private void restoreAudioHandlers()
+    protected void restoreAudioHandlers()
     {
         LOG.trace("Restoring cached AudioHandlers.");
 
@@ -457,7 +457,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         LOG.trace("Finished restoring cached AudioHandlers");
     }
 
-    private void reconnectAudioConnections()
+    protected void reconnectAudioConnections()
     {
         if (dcAudioConnections.size() == 0)
             return;
@@ -509,7 +509,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         dcAudioConnections.clear();
     }
 
-    private void handleEvent(JSONObject raw)
+    protected void handleEvent(JSONObject raw)
     {
         String type = raw.getString("t");
         int responseTotal = api.getResponseTotal();

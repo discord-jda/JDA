@@ -37,18 +37,18 @@ public class AudioManagerImpl implements AudioManager
     public static boolean AUDIO_SUPPORTED;
     public static String OPUS_LIB_NAME;
 
-    private static boolean initialized = false;
+    protected static boolean initialized = false;
 
-    private final JDAImpl api;
-    private final Guild guild;
-    private AudioConnection audioConnection = null;
-    private VoiceChannel queuedAudioConnection = null;
-    private VoiceChannel unexpectedDisconnectedChannel = null;
+    protected final JDAImpl api;
+    protected final Guild guild;
+    protected AudioConnection audioConnection = null;
+    protected VoiceChannel queuedAudioConnection = null;
+    protected VoiceChannel unexpectedDisconnectedChannel = null;
 
-    private AudioSendHandler sendHandler;
-    private AudioReceiveHandler receiveHandler;
+    protected AudioSendHandler sendHandler;
+    protected AudioReceiveHandler receiveHandler;
 
-    private long timeout = DEFAULT_CONNECTION_TIMEOUT;
+    protected long timeout = DEFAULT_CONNECTION_TIMEOUT;
 
     public AudioManagerImpl(Guild guild)
     {
