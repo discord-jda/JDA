@@ -156,52 +156,6 @@ public class JDAImpl implements JDA
         return false;
     }
 
-    /**
-     * Takes a provided json file, reads all lines and constructs a {@link org.json.JSONObject JSONObject} from it.
-     *
-     * @param file
-     *          The json file to read.
-     * @return
-     *      The {@link org.json.JSONObject JSONObject} representation of the json in the file.
-     */
-    protected static JSONObject readJson(Path file)
-    {
-        try
-        {
-            return new JSONObject(StringUtils.join(Files.readAllLines(file, StandardCharsets.UTF_8), ""));
-        }
-        catch (IOException e)
-        {
-            LOG.fatal("Error reading token-file. Defaulting to standard");
-            LOG.log(e);
-        }
-        catch (JSONException e)
-        {
-            LOG.warn("Token-file misformatted. Creating default one");
-        }
-        return null;
-    }
-
-    /**
-     * Writes the json representation of the provided {@link org.json.JSONObject JSONObject} to the provided file.
-     *
-     * @param file
-     *          The file which will have the json representation of object written into.
-     * @param object
-     *          The {@link org.json.JSONObject JSONObject} to write to file.
-     */
-    protected static void writeJson(Path file, JSONObject object)
-    {
-        try
-        {
-            Files.write(file, Arrays.asList(object.toString(4).split("\n")), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-        }
-        catch (IOException e)
-        {
-            LOG.warn("Error creating token-file");
-        }
-    }
-
     @Override
     public String getAuthToken()
     {
