@@ -127,7 +127,7 @@ public class MessageImpl implements Message
     {
         if (subContent == null)
         {
-            Guild g = isPrivate ? null : api.getTextChannelById(channelId).getGuild();
+            Guild g = (isPrivate || api.getTextChannelById(channelId)==null) ? null : api.getTextChannelById(channelId).getGuild();
             String tmp = content;
             for (User user : mentionedUsers)
             {
