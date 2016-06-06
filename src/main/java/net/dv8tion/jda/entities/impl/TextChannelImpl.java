@@ -463,7 +463,7 @@ public class TextChannelImpl implements TextChannel
     {
         private static final Map<JDA, Map<String, AsyncMessageSender>> instances = new HashMap<>();
         private final JDAImpl api;
-        private final String ratelimitIdentifier; //GuildId or PrivateChannelId
+        private final String ratelimitIdentifier; //GuildId or GlobalPrivateChannel
         private Runner runner = null;
         private boolean runnerRunning = false;
         private boolean alive = true;

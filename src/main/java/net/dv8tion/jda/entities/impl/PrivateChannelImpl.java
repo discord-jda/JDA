@@ -35,6 +35,7 @@ import java.util.function.Consumer;
 
 public class PrivateChannelImpl implements PrivateChannel
 {
+    public static final String RATE_LIMIT_IDENTIFIER = "GLOBAL_PRIV_CHANNEL_RATELIMIT";
     private final String id;
     private final User user;
     private final JDAImpl api;
@@ -73,9 +74,9 @@ public class PrivateChannelImpl implements PrivateChannel
     @Override
     public Message sendMessage(Message msg)
     {
-        if (api.getMessageLimit(id) != null)
+        if (api.getMessageLimit(RATE_LIMIT_IDENTIFIER) != null)
         {
-            throw new RateLimitedException(api.getMessageLimit(id) - System.currentTimeMillis());
+            throw new RateLimitedException(api.getMessageLimit(RATE_LIMIT_IDENTIFIER) - System.currentTimeMillis());
         }
         try
         {
@@ -84,7 +85,7 @@ public class PrivateChannelImpl implements PrivateChannel
             if (response.isRateLimit())
             {
                 long retry_after = response.getObject().getLong("retry_after");
-                api.setMessageTimeout(id, retry_after);
+                api.setMessageTimeout(RATE_LIMIT_IDENTIFIER, retry_after);
                 throw new RateLimitedException(retry_after);
             }
             if (!response.isOk())
@@ -111,7 +112,7 @@ public class PrivateChannelImpl implements PrivateChannel
     public void sendMessageAsync(Message msg, Consumer<Message> callback)
     {
         ((MessageImpl) msg).setChannelId(id);
-        TextChannelImpl.AsyncMessageSender.getInstance(getJDA(), id).enqueue(msg, false, callback);
+        TextChannelImpl.AsyncMessageSender.getInstance(getJDA(), RATE_LIMIT_IDENTIFIER).enqueue(msg, false, callback);
     }
 
     @Override

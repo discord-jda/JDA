@@ -59,7 +59,7 @@ public class JDAImpl implements JDA
     protected final Map<String, TextChannel> textChannelMap = new HashMap<>();
     protected final Map<String, VoiceChannel> voiceChannelMap = new HashMap<>();
     protected final Map<String, PrivateChannel> pmChannelMap = new HashMap<>();
-    protected final Map<String, Long> messageRatelimitTimeouts = new HashMap<>(); //(GuildId or PrivateChannelId) - Timeout.
+    protected final Map<String, Long> messageRatelimitTimeouts = new HashMap<>(); //(GuildId or GlobalPrivateChannel) - Timeout.
     protected final Map<String, String> offline_pms = new HashMap<>();    //Userid -> channelid
     protected final Map<Guild, AudioManager> audioManagers = new HashMap<>();
     protected final boolean audioEnabled;

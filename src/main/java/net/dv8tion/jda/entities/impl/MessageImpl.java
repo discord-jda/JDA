@@ -225,7 +225,9 @@ public class MessageImpl implements Message
         if (api.getSelfInfo() != getAuthor())
             throw new UnsupportedOperationException("Attempted to update message that was not sent by this account. You cannot modify other User's messages!");
         Message newMessage = new MessageImpl(getId(), api).setContent(newContent).setChannelId(getChannelId());
-        String ratelimitIdentifier = isPrivate ? channelId : api.getTextChannelById(channelId).getGuild().getId();
+        String ratelimitIdentifier = isPrivate
+                ? PrivateChannelImpl.RATE_LIMIT_IDENTIFIER
+                : api.getTextChannelById(channelId).getGuild().getId();
         TextChannelImpl.AsyncMessageSender.getInstance(api, ratelimitIdentifier).enqueue(newMessage, true, callback);
     }
 
