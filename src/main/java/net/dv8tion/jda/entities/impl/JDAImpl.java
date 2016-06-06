@@ -69,7 +69,7 @@ public class JDAImpl implements JDA
     protected AccountManager accountManager;
     protected String authToken = null;
     protected WebSocketClient client;
-    protected final Requester requester = new Requester(this);
+    protected Requester requester = new Requester(this);
     protected boolean reconnect;
     protected int responseTotal;
 
