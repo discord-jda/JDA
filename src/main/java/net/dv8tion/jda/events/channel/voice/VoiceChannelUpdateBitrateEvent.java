@@ -13,17 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.events.guild.member;
+package net.dv8tion.jda.events.channel.voice;
 
 import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.entities.Guild;
-import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.entities.VoiceChannel;
 
-public class GuildMemberUnbanEvent extends GenericGuildMemberEvent
+public class VoiceChannelUpdateBitrateEvent extends GenericVoiceChannelUpdateEvent
 {
+    protected final int oldBitrate;
 
-    public GuildMemberUnbanEvent(JDA api, int responseNumber, Guild guild, User user)
+    public VoiceChannelUpdateBitrateEvent(JDA api, int responseNumber, VoiceChannel channel, int oldBitrate)
     {
-        super(api, responseNumber, guild, user);
+        super(api, responseNumber, channel);
+        this.oldBitrate = oldBitrate;
+    }
+
+    public int getOldBitrate()
+    {
+        return oldBitrate;
     }
 }

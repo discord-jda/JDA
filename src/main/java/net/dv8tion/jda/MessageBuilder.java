@@ -16,6 +16,7 @@
 package net.dv8tion.jda;
 
 import net.dv8tion.jda.entities.Message;
+import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.impl.MessageImpl;
@@ -28,6 +29,7 @@ public class MessageBuilder
     private final StringBuilder builder = new StringBuilder();
     private final List<User> mentioned = new LinkedList<>();
     private final List<TextChannel> mentionedTextChannels = new LinkedList<>();
+    private final List<Role> mentionedRoles = new LinkedList<>();
     private boolean mentionEveryone = false;
     private boolean isTTS = false;
 
@@ -126,6 +128,18 @@ public class MessageBuilder
         mentionEveryone = true;
         return this;
     }
+    
+    /**
+     * Appends a @here mention to the Message
+     *
+     * @return this instance
+     */
+    public MessageBuilder appendHereMention()
+    {
+        builder.append("@here");
+        mentionEveryone = true;
+        return this;
+    }
 
     /**
      * Appends a channel mention to the Message.
@@ -138,6 +152,20 @@ public class MessageBuilder
     {
         builder.append("<#").append(channel.getId()).append('>');
         mentionedTextChannels.add(channel);
+        return this;
+    }
+
+    /**
+     * Appends a Role mention to the Message.
+     * For this to work, the given Role has to be from the Guild the mention is posted to.
+     *
+     * @param role the Role to mention
+     * @return this instance
+     */
+    public MessageBuilder appendMention(Role role)
+    {
+        builder.append("<@&").append(role.getId()).append('>');
+        mentionedRoles.add(role);
         return this;
     }
 
@@ -175,7 +203,7 @@ public class MessageBuilder
             throw new UnsupportedOperationException("Cannot build a Message with more than 2000 characters. Please limit your input.");
 
         return new MessageImpl("", null).setContent(message).setTTS(isTTS).setMentionedUsers(mentioned)
-                .setMentionedChannels(mentionedTextChannels).setMentionsEveryone(mentionEveryone);
+                .setMentionedChannels(mentionedTextChannels).setMentionedRoles(mentionedRoles).setMentionsEveryone(mentionEveryone);
     }
 
     /**

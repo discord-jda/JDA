@@ -20,10 +20,7 @@ import net.dv8tion.jda.events.Event;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class AnnotatedEventManager implements IEventManager
 {
@@ -46,6 +43,12 @@ public class AnnotatedEventManager implements IEventManager
         {
             updateMethods();
         }
+    }
+
+    @Override
+    public List<Object> getRegisteredListeners()
+    {
+        return Collections.unmodifiableList(new LinkedList<>(listeners));
     }
 
     @Override

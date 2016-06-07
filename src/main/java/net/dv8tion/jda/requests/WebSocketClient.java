@@ -21,6 +21,7 @@ import net.dv8tion.jda.audio.AudioSendHandler;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
+import net.dv8tion.jda.entities.impl.TextChannelImpl;
 import net.dv8tion.jda.events.*;
 import net.dv8tion.jda.handle.*;
 import net.dv8tion.jda.managers.AudioManager;
@@ -45,34 +46,36 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 {
     public static final SimpleLog LOG = SimpleLog.getLog("JDASocket");
 
-    private final JDAImpl api;
+    protected final JDAImpl api;
 
-    private final HttpHost proxy;
-    private WebSocket socket;
-    private String gatewayUrl = null;
+    protected final int[] sharding;
+    protected final HttpHost proxy;
+    protected WebSocket socket;
+    protected String gatewayUrl = null;
 
-    private String sessionId = null;
+    protected String sessionId = null;
 
-    private Thread keepAliveThread;
-    private boolean connected;
+    protected Thread keepAliveThread;
+    protected boolean connected;
 
-    private boolean initiating;             //cache all events?
-    private final List<JSONObject> cachedEvents = new LinkedList<>();
+    protected boolean initiating;             //cache all events?
+    protected final List<JSONObject> cachedEvents = new LinkedList<>();
 
-    private boolean shouldReconnect = true;
-    private int reconnectTimeoutS = 2;
+    protected boolean shouldReconnect = true;
+    protected int reconnectTimeoutS = 2;
 
-    private final List<VoiceChannel> dcAudioConnections = new LinkedList<>();
-    private final Map<String, AudioSendHandler> audioSendHandlers = new HashMap<>();
-    private final Map<String, AudioReceiveHandler> audioReceivedHandlers = new HashMap<>();
+    protected final List<VoiceChannel> dcAudioConnections = new LinkedList<>();
+    protected final Map<String, AudioSendHandler> audioSendHandlers = new HashMap<>();
+    protected final Map<String, AudioReceiveHandler> audioReceivedHandlers = new HashMap<>();
 
-    private boolean firstInit = true;
+    protected boolean firstInit = true;
 
-    private WebSocketCustomHandler customHandler;
+    protected WebSocketCustomHandler customHandler;
 
-    public WebSocketClient(JDAImpl api, HttpHost proxy)
+    public WebSocketClient(JDAImpl api, HttpHost proxy, int[] sharding)
     {
         this.api = api;
+        this.sharding = sharding;
         this.proxy = proxy;
         connect();
     }
@@ -102,6 +105,18 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             {
                 firstInit = false;
                 JDAImpl.LOG.info("Finished Loading!");
+                if (api.getGuilds().size() >= 2500) //Show large warning when connected to >2500 guilds
+                {
+                    JDAImpl.LOG.warn(" __      __ _    ___  _  _  ___  _  _   ___  _ ");
+                    JDAImpl.LOG.warn(" \\ \\    / //_\\  | _ \\| \\| ||_ _|| \\| | / __|| |");
+                    JDAImpl.LOG.warn("  \\ \\/\\/ // _ \\ |   /| .` | | | | .` || (_ ||_|");
+                    JDAImpl.LOG.warn("   \\_/\\_//_/ \\_\\|_|_\\|_|\\_||___||_|\\_| \\___|(_)");
+                    JDAImpl.LOG.warn("You're running a session with over 2500 connected");
+                    JDAImpl.LOG.warn("guilds. You should shard the connection in order");
+                    JDAImpl.LOG.warn("to split the load or things like resuming");
+                    JDAImpl.LOG.warn("connection might not work as expected.");
+                    JDAImpl.LOG.warn("For more info see https://git.io/vrFWP");
+                }
                 api.getEventManager().handle(new ReadyEvent(api, api.getResponseTotal()));
             }
             else
@@ -149,7 +164,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         ### Start Internal methods ###
      */
 
-    private void connect()
+    protected void connect()
     {
         initiating = true;
         WebSocketFactory factory = new WebSocketFactory();
@@ -181,7 +196,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
-    private String getGateway()
+    protected String getGateway()
     {
         try
         {
@@ -251,7 +266,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
-    private void reconnect()
+    protected void reconnect()
     {
         LOG.warn("Got disconnected from WebSocket (Internet?!)... Attempting to reconnect in " + reconnectTimeoutS + "s");
         while(shouldReconnect)
@@ -313,7 +328,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
-    private void setupKeepAlive(long timeout)
+    protected void setupKeepAlive(long timeout)
     {
         keepAliveThread = new Thread(() -> {
             while (connected) {
@@ -332,15 +347,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         keepAliveThread.start();
     }
 
-    private void sendKeepAlive()
+    protected void sendKeepAlive()
     {
         send(new JSONObject().put("op", 1).put("d", api.getResponseTotal()).toString());
     }
 
-    private void sendIdentify()
+    protected void sendIdentify()
     {
         LOG.debug("Sending Identify-packet...");
-        send(new JSONObject()
+        JSONObject identify = new JSONObject()
                 .put("op", 2)
                 .put("d", new JSONObject()
                         .put("token", api.getAuthToken())
@@ -353,11 +368,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                         )
                         .put("v", 4)
                         .put("large_threshold", 250)
-                        .put("compress", true))
-                .toString()); //Used to make the READY event be given as compressed binary data when over a certain size. TY @ShadowLordAlpha
+                        .put("compress", true));
+        if (sharding != null)
+        {
+            identify.getJSONObject("d").put("shard", new JSONArray().put(sharding[0]).put(sharding[1]));
+        }
+        send(identify.toString()); //Used to make the READY event be given as compressed binary data when over a certain size. TY @ShadowLordAlpha
     }
 
-    private void sendResume()
+    protected void sendResume()
     {
         LOG.debug("Sending Resume-packet...");
         send(new JSONObject()
@@ -369,7 +388,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 .toString());
     }
 
-    private void invalidate()
+    protected void invalidate()
     {
         sessionId = null;
 
@@ -393,10 +412,14 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         api.getUserMap().clear();
         api.getPmChannelMap().clear();
         api.getOffline_pms().clear();
+        new EntityBuilder(api).clearCache();
+        new ReadyHandler(api, 0).clearCache();
+        EventCache.get(api).clear();
         GuildLock.get(api).clear();
+        TextChannelImpl.AsyncMessageSender.stopAll(api);
     }
 
-    private void restoreAudioHandlers()
+    protected void restoreAudioHandlers()
     {
         LOG.trace("Restoring cached AudioHandlers.");
 
@@ -434,7 +457,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         LOG.trace("Finished restoring cached AudioHandlers");
     }
 
-    private void reconnectAudioConnections()
+    protected void reconnectAudioConnections()
     {
         if (dcAudioConnections.size() == 0)
             return;
@@ -486,7 +509,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         dcAudioConnections.clear();
     }
 
-    private void handleEvent(JSONObject raw)
+    protected void handleEvent(JSONObject raw)
     {
         String type = raw.getString("t");
         int responseTotal = api.getResponseTotal();
@@ -496,6 +519,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             setupKeepAlive(raw.getJSONObject("d").getLong("heartbeat_interval"));
         }
+
+        if (type.equals("GUILD_MEMBER_ADD"))
+            GuildMembersChunkHandler.modifyExpectedGuildMember(api, raw.getJSONObject("d").getString("guild_id"), 1);
+        if (type.equals("GUILD_MEMBER_REMOVE"))
+            GuildMembersChunkHandler.modifyExpectedGuildMember(api, raw.getJSONObject("d").getString("guild_id"), -1);
 
         if (initiating && !(type.equals("READY") || type.equals("GUILD_MEMBERS_CHUNK") || type.equals("GUILD_CREATE") || type.equals("RESUMED")))
         {
@@ -584,7 +612,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     new GuildMemberAddHandler(api, responseTotal).handle(raw);
                     break;
                 case "GUILD_MEMBER_UPDATE":
-                    new GuildMemberRoleHandler(api, responseTotal).handle(raw);
+                    new GuildMemberUpdateHandler(api, responseTotal).handle(raw);
                     break;
                 case "GUILD_MEMBER_REMOVE":
                     new GuildMemberRemoveHandler(api, responseTotal).handle(raw);

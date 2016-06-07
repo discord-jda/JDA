@@ -25,6 +25,7 @@ import net.dv8tion.jda.entities.MessageEmbed.Thumbnail;
 import net.dv8tion.jda.entities.MessageEmbed.VideoInfo;
 import net.dv8tion.jda.entities.impl.*;
 import net.dv8tion.jda.requests.GuildLock;
+import net.dv8tion.jda.requests.WebSocketClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,6 +50,12 @@ public class EntityBuilder
             cachedJdaGuildCallbacks.put(api, new HashMap<>());
         if(!cachedJdaGuildJsons.containsKey(api))
             cachedJdaGuildJsons.put(api, new HashMap<>());
+    }
+
+    public void clearCache()
+    {
+        cachedJdaGuildCallbacks.get(api).clear();
+        cachedJdaGuildJsons.get(api).clear();
     }
 
     public Guild createGuildFirstPass(JSONObject guild, Consumer<Guild> secondPassCallback)
@@ -108,9 +115,16 @@ public class EntityBuilder
                     //corresponding user to presence not found... ignoring
                     continue;
                 }
+                Game presenceGame = null;
+                if( !presence.isNull("game") && !presence.getJSONObject("game").isNull("name") )
+                {
+                    presenceGame = new GameImpl(presence.getJSONObject("game").get("name").toString(),
+                            presence.getJSONObject("game").isNull("url") ? null : presence.getJSONObject("game").get("url").toString(),
+                            presence.getJSONObject("game").isNull("type") ? Game.GameType.DEFAULT : Game.GameType.fromKey((int) presence.getJSONObject("game").get("type")) );
+                }
                 user
-                        .setCurrentGame(presence.isNull("game") || presence.getJSONObject("game").isNull("name") ? null : presence.getJSONObject("game").get("name").toString())
-                        .setOnlineStatus(OnlineStatus.fromKey(presence.getString("status")));
+                    .setCurrentGame(presenceGame)
+                    .setOnlineStatus(OnlineStatus.fromKey(presence.getString("status")));
             }
         }
 
@@ -171,6 +185,7 @@ public class EntityBuilder
             HashMap<String, Consumer<Guild>> cachedGuildCallbacks = cachedJdaGuildCallbacks.get(api);
             cachedGuildJsons.put(id, guild);
             cachedGuildCallbacks.put(id, secondPassCallback);
+            GuildMembersChunkHandler.setExpectedGuildMembers(api, id, guild.getInt("member_count"));
             if (api.getClient().isReady())
             {
                 JSONObject obj = new JSONObject()
@@ -240,6 +255,7 @@ public class EntityBuilder
         Map<User, List<Role>> userRoles = guildObj.getUserRoles();
         Map<User, VoiceStatus> voiceStatusMap = guildObj.getVoiceStatusMap();
         Map<User, OffsetDateTime> joinedAtMap = guildObj.getJoinedAtMap();
+        Map<User, String> nickMap = guildObj.getNickMap();
         for (int i = 0; i < members.length(); i++)
         {
             JSONObject member = members.getJSONObject(i);
@@ -249,14 +265,25 @@ public class EntityBuilder
             for (int j = 0; j < roleArr.length(); j++)
             {
                 String roleId = roleArr.getString(j);
-                userRoles.get(user).add(rolesMap.get(roleId));
+                Role role = rolesMap.get(roleId);
+                if (role != null)
+                {
+                    userRoles.get(user).add(role);
+                }
+                else
+                {
+                    WebSocketClient.LOG.warn("While building the guild users, encountered a user that is assigned a " +
+                            "non-existent role. This is a Discord error, not a JDA error. Ignoring the role. " +
+                            "GuildId: " + guildObj.getId() + " UserId: " + user.getId() + " RoleId: " + roleId);
+                }
             }
-            Collections.sort(userRoles.get(user), (r2, r1) -> Integer.compare(r1.getPosition(), r2.getPosition()));
             VoiceStatusImpl voiceStatus = new VoiceStatusImpl(user, guildObj);
             voiceStatus.setServerDeaf(member.getBoolean("deaf"));
             voiceStatus.setServerMute(member.getBoolean("mute"));
             voiceStatusMap.put(user, voiceStatus);
             joinedAtMap.put(user, OffsetDateTime.parse(member.getString("joined_at")));
+            if(member.has("nick") && !member.isNull("nick"))
+                nickMap.put(user, member.getString("nick"));
         }
     }
 
@@ -280,7 +307,14 @@ public class EntityBuilder
                 JSONArray permissionOverwrites = channel.getJSONArray("permission_overwrites");
                 for (int j = 0; j < permissionOverwrites.length(); j++)
                 {
-                    createPermissionOverride(permissionOverwrites.getJSONObject(j), channelObj);
+                    try
+                    {
+                        createPermissionOverride(permissionOverwrites.getJSONObject(j), channelObj);
+                    }
+                    catch (IllegalArgumentException e)
+                    {
+                        WebSocketClient.LOG.warn(e.getMessage() + ". Ignoring PermissionOverride.");
+                    }
                 }
             }
             else
@@ -322,7 +356,9 @@ public class EntityBuilder
 
         return channel
                 .setName(json.getString("name"))
-                .setPosition(json.getInt("position"));
+                .setPosition(json.getInt("position"))
+                .setUserLimit(json.getInt("user_limit"))
+                .setBitrate(json.getInt("bitrate"));
     }
 
     public PrivateChannel createPrivateChannel(JSONObject privatechat)
@@ -350,10 +386,11 @@ public class EntityBuilder
             guild.getRolesMap().put(id, role);
         }
         role.setName(roleJson.getString("name"))
-            .setPosition(roleJson.getInt("position"))
-            .setPermissions(roleJson.getInt("permissions"))
-            .setManaged(roleJson.getBoolean("managed"))
-            .setGrouped(roleJson.getBoolean("hoist"));
+                .setPosition(roleJson.getInt("position"))
+                .setPermissions(roleJson.getInt("permissions"))
+                .setManaged(roleJson.getBoolean("managed"))
+                .setGrouped(roleJson.getBoolean("hoist"))
+                .setMentionable(roleJson.has("mentionable") && roleJson.getBoolean("mentionable"));
         try
         {
             role.setColor(roleJson.getInt("color"));
@@ -447,16 +484,34 @@ public class EntityBuilder
         {
             message.setChannelId(textChannel.getId());
             message.setIsPrivate(false);
-            List<User> mentioned = new LinkedList<>();
+            TreeMap<Integer, User> mentionedUsers = new TreeMap<>();
             JSONArray mentions = jsonObject.getJSONArray("mentions");
             for (int i = 0; i < mentions.length(); i++)
             {
                 JSONObject mention = mentions.getJSONObject(i);
                 User u = api.getUserMap().get(mention.getString("id"));
                 if (u != null)
-                    mentioned.add(u);
+                {
+                    //We do this to properly order the mentions. The array given by discord is out of order sometimes.
+                    int index = content.indexOf("<@" + mention.getString("id") + ">");
+                    mentionedUsers.put(index, u);
+                }
             }
-            message.setMentionedUsers(mentioned);
+            message.setMentionedUsers(new LinkedList<User>(mentionedUsers.values()));
+
+            TreeMap<Integer, Role> mentionedRoles = new TreeMap<>();
+            JSONArray roleMentions = jsonObject.getJSONArray("mention_roles");
+            for (int i = 0; i < roleMentions.length(); i++)
+            {
+                String roleId = roleMentions.getString(i);
+                Role r = textChannel.getGuild().getRoleById(roleId);
+                if (r != null)
+                {
+                    int index = content.indexOf("<@&" + roleId + ">");
+                    mentionedRoles.put(index, r);
+                }
+            }
+            message.setMentionedRoles(new LinkedList<Role>(mentionedRoles.values()));
 
             List<TextChannel> mentionedChannels = new LinkedList<>();
             Map<String, TextChannel> chanMap = ((GuildImpl) textChannel.getGuild()).getTextChannelsMap();
@@ -464,7 +519,7 @@ public class EntityBuilder
             while (matcher.find())
             {
                 TextChannel channel = chanMap.get(matcher.group(1));
-                if(channel != null)
+                if(channel != null && !mentionedChannels.contains(channel))
                 {
                     mentionedChannels.add(channel);
                 }

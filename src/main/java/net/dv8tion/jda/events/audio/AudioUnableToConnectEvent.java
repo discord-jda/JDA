@@ -13,17 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.events.guild.member;
+package net.dv8tion.jda.events.audio;
 
 import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.entities.Guild;
-import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.entities.VoiceChannel;
 
-public class GuildMemberUnbanEvent extends GenericGuildMemberEvent
+public class AudioUnableToConnectEvent extends GenericAudioEvent
 {
+    protected final VoiceChannel channel;
 
-    public GuildMemberUnbanEvent(JDA api, int responseNumber, Guild guild, User user)
+    public AudioUnableToConnectEvent(JDA api, VoiceChannel channel)
     {
-        super(api, responseNumber, guild, user);
+        super(api, -1);
+        this.channel = channel;
+    }
+
+    public VoiceChannel getChannel()
+    {
+        return channel;
     }
 }

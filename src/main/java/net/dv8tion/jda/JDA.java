@@ -17,6 +17,7 @@ package net.dv8tion.jda;
 
 import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.hooks.AnnotatedEventManager;
+import net.dv8tion.jda.hooks.EventListener;
 import net.dv8tion.jda.hooks.IEventManager;
 import net.dv8tion.jda.managers.AccountManager;
 import net.dv8tion.jda.managers.AudioManager;
@@ -60,6 +61,14 @@ public interface JDA
      *          The listener to be removed.
      */
     void removeEventListener(Object listener);
+
+    /**
+     * Returns an unmodifiable List of Objects that have been registered as EventListeners.
+     *
+     * @return
+     *      List of currently registered Objects acting as EventListeners.
+     */
+    List<Object> getRegisteredListeners();
 
     /**
      * The login token that is currently being used for Discord authentication.

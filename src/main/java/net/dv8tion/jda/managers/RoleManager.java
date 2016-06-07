@@ -26,8 +26,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class RoleManager
 {
@@ -67,6 +68,7 @@ public class RoleManager
     public RoleManager setName(String name)
     {
         checkPermission(Permission.MANAGE_ROLES);
+        checkPosition();
 
         if (role.getName().equals(name))
         {
@@ -92,6 +94,7 @@ public class RoleManager
     public RoleManager setColor(int color)
     {
         checkPermission(Permission.MANAGE_ROLES);
+        checkPosition();
 
         if (color == role.getColor() || color < 0)
         {
@@ -116,6 +119,8 @@ public class RoleManager
      */
     public RoleManager setColor(Color color)
     {
+        checkPermission(Permission.MANAGE_ROLES);
+        checkPosition();
         return setColor(color == null ? -1 : color.getRGB() & 0xFFFFFF);
     }
 
@@ -132,6 +137,7 @@ public class RoleManager
     public RoleManager setGrouped(Boolean group)
     {
         checkPermission(Permission.MANAGE_ROLES);
+        checkPosition();
 
         if (group == null || group == role.isGrouped())
         {
@@ -148,26 +154,62 @@ public class RoleManager
      * Moves this Role up or down in the list of Roles (changing position attribute)
      * This change takes effect immediately!
      *
-     * @param offset
+     * @param newPosition
      *      the amount of positions to move up (offset &lt; 0) or down (offset &gt; 0)
      * @return
      *      this
      */
-    public RoleManager move(int offset)
+    public RoleManager move(int newPosition)
     {
         checkPermission(Permission.MANAGE_ROLES);
+        checkPosition();
+        int maxRolePosition = role.getGuild().getRolesForUser(role.getJDA().getSelfInfo()).get(0).getPosition();
+        if (newPosition >= maxRolePosition)
+            throw new PermissionException("Cannot move to a position equal to or higher than the highest role that you have access to.");
 
-        List<Role> newOrder = new ArrayList<>();
-        role.getGuild().getRoles().stream().filter(r -> r != role && r != role.getGuild().getPublicRole())
-                .sorted((c1, c2) -> Integer.compare(c1.getPosition(), c2.getPosition())).forEachOrdered(newOrder::add);
-        int pos = Math.min(0, Math.max(newOrder.size(), role.getPosition() + offset));
-        newOrder.add(pos, role);
-        JSONArray arr = new JSONArray();
-        for (int i = 0; i < newOrder.size(); i++)
+        if (newPosition < 0 || newPosition == role.getPosition())
+            return this;
+
+        Map<Integer, Role> newPositions = new HashMap<>();
+        Map<Integer, Role> currentPositions = role.getGuild().getRoles().stream()
+                .collect(Collectors.toMap(
+                    role -> role.getPosition(),
+                    role -> role));
+
+        //Remove the @everyone role from our working set.
+        currentPositions.remove(-1);
+        int searchIndex = newPosition > role.getPosition() ? newPosition : newPosition;
+        int index = 0;
+        for (Role r : currentPositions.values())
         {
-            arr.put(new JSONObject().put("position", i + 1).put("id", newOrder.get(i).getId()));
+            if (r == role)
+                continue;
+            if (index == searchIndex)
+            {
+                newPositions.put(index, role);
+                index++;
+            }
+            newPositions.put(index, r);
+            index++;
         }
-        ((JDAImpl) role.getJDA()).getRequester().patch(Requester.DISCORD_API_PREFIX + "guilds/" + role.getGuild().getId() + "/roles", arr);
+        //If the role was moved to the very top, this will make sure it is properly handled.
+        if (!newPositions.containsValue(role))
+            newPositions.put(newPosition, role);
+
+        for (int i = 0; i < newPositions.size(); i++)
+        {
+            if (currentPositions.get(i) == newPositions.get(i))
+                newPositions.remove(i);
+        }
+
+        JSONArray rolePositions = new JSONArray();
+        newPositions.forEach((pos, r) ->
+        {
+            rolePositions.put(new JSONObject()
+                    .put("id", r.getId())
+                    .put("position", pos + 1));
+        });
+        ((JDAImpl) role.getJDA()).getRequester().patch(Requester.DISCORD_API_PREFIX + "guilds/" + role.getGuild().getId() + "/roles", rolePositions);
         return this;
     }
 
@@ -184,6 +226,12 @@ public class RoleManager
     public RoleManager give(Permission... perms)
     {
         checkPermission(Permission.MANAGE_ROLES);
+        checkPosition();
+        //we need to have all perms ourself
+        for (Permission perm : perms)
+        {
+            checkPermission(perm);
+        }
 
         for (Permission perm : perms)
         {
@@ -205,6 +253,11 @@ public class RoleManager
     public RoleManager revoke(Permission... perms)
     {
         checkPermission(Permission.MANAGE_ROLES);
+        checkPosition();
+        for (Permission perm : perms)
+        {
+            checkPermission(perm);
+        }
 
         for (Permission perm : perms)
         {
@@ -229,6 +282,7 @@ public class RoleManager
     public void update()
     {
         checkPermission(Permission.MANAGE_ROLES);
+        checkPosition();
 
         JSONObject frame = getFrame();
         if(name != null)
@@ -247,6 +301,7 @@ public class RoleManager
     public void delete()
     {
         checkPermission(Permission.MANAGE_ROLES);
+        checkPosition();
 
         ((JDAImpl) role.getJDA()).getRequester().delete(Requester.DISCORD_API_PREFIX + "guilds/" + role.getGuild().getId() + "/roles/" + role.getId());
     }
@@ -275,5 +330,11 @@ public class RoleManager
     {
         if (!PermissionUtil.checkPermission(role.getJDA().getSelfInfo(), perm, role.getGuild()))
             throw new PermissionException(perm);
+    }
+
+    private void checkPosition()
+    {
+        if(!PermissionUtil.canInteract(role.getJDA().getSelfInfo(), role))
+            throw new PermissionException("Can't modify role >= highest self-role");
     }
 }

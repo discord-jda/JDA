@@ -21,9 +21,7 @@ import net.dv8tion.jda.events.channel.text.TextChannelUpdateNameEvent;
 import net.dv8tion.jda.events.channel.text.TextChannelUpdatePermissionsEvent;
 import net.dv8tion.jda.events.channel.text.TextChannelUpdatePositionEvent;
 import net.dv8tion.jda.events.channel.text.TextChannelUpdateTopicEvent;
-import net.dv8tion.jda.events.channel.voice.VoiceChannelUpdateNameEvent;
-import net.dv8tion.jda.events.channel.voice.VoiceChannelUpdatePermissionsEvent;
-import net.dv8tion.jda.events.channel.voice.VoiceChannelUpdatePositionEvent;
+import net.dv8tion.jda.events.channel.voice.*;
 import net.dv8tion.jda.requests.GuildLock;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
@@ -63,7 +61,14 @@ public class ChannelUpdateHandler extends SocketHandler
                 String topic = content.isNull("topic") ? null : content.getString("topic");
                 TextChannelImpl channel = (TextChannelImpl) api.getChannelMap().get(content.getString("id"));
                 if (channel == null)
-                    throw new IllegalArgumentException("CHANNEL_UPDATE attemped to update a TextChannel that does not exist. JSON: " + content);
+                {
+                    EventCache.get(api).cache(EventCache.Type.CHANNEL, content.getString("id"), () ->
+                    {
+                        handle(allContent);
+                    });
+                    EventCache.LOG.debug("CHANNEL_UPDATE attemped to update a TextChannel that does not exist. JSON: " + content);
+                    return null;
+                }
 
                 //If any properties changed, update the values and fire the proper events.
                 if (!StringUtils.equals(channel.getName(), name))
@@ -84,9 +89,9 @@ public class ChannelUpdateHandler extends SocketHandler
                                     api, responseNumber,
                                     channel, oldTopic));
                 }
-                if (channel.getPosition() != position)
+                if (channel.getPositionRaw() != position)
                 {
-                    int oldPosition = channel.getPosition();
+                    int oldPosition = channel.getPositionRaw();
                     channel.setPosition(position);
                     api.getEventManager().handle(
                             new TextChannelUpdatePositionEvent(
@@ -131,9 +136,17 @@ public class ChannelUpdateHandler extends SocketHandler
             case "voice":
             {
                 VoiceChannelImpl channel = (VoiceChannelImpl) api.getVoiceChannelMap().get(content.getString("id"));
+                int userLimit = content.getInt("user_limit");
+                int bitrate = content.getInt("bitrate");
                 if (channel == null)
-                    throw new IllegalArgumentException("CHANNEL_UPDATE attemped to update a VoiceChannel that does not exist. JSON: " + content);
-
+                {
+                    EventCache.get(api).cache(EventCache.Type.CHANNEL, content.getString("id"), () ->
+                    {
+                        handle(allContent);
+                    });
+                    EventCache.LOG.debug("CHANNEL_UPDATE attemped to update a VoiceChannel that does not exist. JSON: " + content);
+                    return null;
+                }
                 //If any properties changed, update the values and fire the proper events.
                 if (!StringUtils.equals(channel.getName(), name))
                 {
@@ -144,14 +157,32 @@ public class ChannelUpdateHandler extends SocketHandler
                                     api, responseNumber,
                                     channel, oldName));
                 }
-                if (channel.getPosition() != position)
+                if (channel.getPositionRaw() != position)
                 {
-                    int oldPosition = channel.getPosition();
+                    int oldPosition = channel.getPositionRaw();
                     channel.setPosition(position);
                     api.getEventManager().handle(
                             new VoiceChannelUpdatePositionEvent(
                                     api, responseNumber,
                                     channel, oldPosition));
+                }
+                if (channel.getUserLimit() != userLimit)
+                {
+                    int oldLimit = channel.getUserLimit();
+                    channel.setUserLimit(userLimit);
+                    api.getEventManager().handle(
+                            new VoiceChannelUpdateUserLimitEvent(
+                                    api, responseNumber,
+                                    channel, oldLimit));
+                }
+                if (channel.getBitrate() != bitrate)
+                {
+                    int oldBitrate = channel.getBitrate();
+                    channel.setBitrate(bitrate);
+                    api.getEventManager().handle(
+                            new VoiceChannelUpdateBitrateEvent(
+                                    api, responseNumber,
+                                    channel, oldBitrate));
                 }
 
                 //Determines if a new PermissionOverride was created or updated.
@@ -206,7 +237,15 @@ public class ChannelUpdateHandler extends SocketHandler
             {
                 Role role = ((GuildImpl) channel.getGuild()).getRolesMap().get(id);
                 if (role == null)
-                    throw new IllegalArgumentException("CHANNEL_UPDATE attempted to create or update a PermissionOverride for a Role that doesn't exist! JSON: " + content);
+                {
+                    EventCache.get(api).cache(EventCache.Type.ROLE, id, () ->
+                    {
+                        handlePermissionOverride(override, channel, content);
+                    });
+                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to create or update a PermissionOverride for a Role that doesn't exist! JSON: " + content);
+                    return;
+                }
+
                 PermissionOverride permOverride;
                 if (channel instanceof TextChannel)
                     permOverride = ((TextChannelImpl) channel).getRolePermissionOverridesMap().get(role);
@@ -230,8 +269,16 @@ public class ChannelUpdateHandler extends SocketHandler
             case "member":
             {
                 User user = api.getUserMap().get(override.getString("id"));
-                if (user == null)
-                    throw new IllegalArgumentException("CHANNEL_UPDATE attempted to create or update a PermissionOverride for User that doesn't exist! JSON: " + content);
+                if (user == null || !channel.getGuild().getUsers().contains(user))
+                {
+                    EventCache.get(api).cache(EventCache.Type.USER, id, () ->
+                    {
+                        handlePermissionOverride(override, channel, content);
+                    });
+                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to create or update a PermissionOverride for User that doesn't exist in this Guild! JSON: " + content);
+                    return;
+                }
+
                 PermissionOverride permOverride;
                 if (channel instanceof TextChannel)
                     permOverride = ((TextChannelImpl) channel).getUserPermissionOverridesMap().get(user);

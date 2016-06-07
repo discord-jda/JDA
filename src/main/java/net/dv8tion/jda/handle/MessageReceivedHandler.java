@@ -41,7 +41,21 @@ public class MessageReceivedHandler extends SocketHandler
     @Override
     protected String handleInternally(JSONObject content)
     {
-        Message message = new EntityBuilder(api).createMessage(content);
+        Message message;
+        try
+        {
+            message = new EntityBuilder(api).createMessage(content);
+        }
+        catch (IllegalArgumentException e)
+        {
+            EventCache.get(api).cache(EventCache.Type.CHANNEL, content.getString("channel_id"), () ->
+            {
+                handle(allContent);
+            });
+            EventCache.LOG.debug(e.getMessage());
+            return null;
+        }
+
         if (!message.isPrivate())
         {
             TextChannel channel = api.getChannelMap().get(message.getChannelId());

@@ -20,7 +20,9 @@ import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.managers.RoleManager;
+import net.dv8tion.jda.utils.MiscUtil;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 public class RoleImpl implements net.dv8tion.jda.entities.Role
@@ -31,7 +33,7 @@ public class RoleImpl implements net.dv8tion.jda.entities.Role
     private int color;
     private int position;
     private int permissions;
-    private boolean managed, grouped;
+    private boolean managed, grouped, mentionable;
     private RoleManager manager = null;
 
     public RoleImpl(String id, Guild guild)
@@ -85,13 +87,30 @@ public class RoleImpl implements net.dv8tion.jda.entities.Role
     @Override
     public int getPosition()
     {
+        if (this == guild.getPublicRole())
+            return -1;
+
+        //Subtract 1 to get into 0-index, and 1 to disregard the everyone role.
+        int i = guild.getRoles().size() - 2;
+        for (Role r : guild.getRoles())
+        {
+            if (r == this)
+                return i;
+            i--;
+        }
+        throw new RuntimeException("Somehow when determining position we never found the role in the Guild's roles? wtf?");
+    }
+
+    @Override
+    public int getPositionRaw()
+    {
         return position;
     }
 
     @Override
     public boolean hasPermission(Permission perm)
     {
-        return ((1 << perm.getOffset()) & permissions) > 0 || ((1 << Permission.MANAGE_ROLES.getOffset()) & permissions) > 0;
+        return ((1 << perm.getOffset()) & permissions) > 0 || ((1 << Permission.ADMINISTRATOR.getOffset()) & permissions) > 0;
     }
 
     @Override
@@ -104,6 +123,18 @@ public class RoleImpl implements net.dv8tion.jda.entities.Role
     public boolean isGrouped()
     {
         return grouped;
+    }
+
+    @Override
+    public boolean isMentionable()
+    {
+        return mentionable;
+    }
+
+    @Override
+    public String getAsMention()
+    {
+        return "<@&" + getId() + '>';
     }
 
     @Override
@@ -150,6 +181,12 @@ public class RoleImpl implements net.dv8tion.jda.entities.Role
         return this;
     }
 
+    public RoleImpl setMentionable(boolean mentionable)
+    {
+        this.mentionable = mentionable;
+        return this;
+    }
+
     @Override
     public boolean equals(Object o)
     {
@@ -169,5 +206,26 @@ public class RoleImpl implements net.dv8tion.jda.entities.Role
     public String toString()
     {
         return "R:" + getName() + '(' + getId() + ')';
+    }
+
+    @Override
+    public int compareTo(Role r)
+    {
+        if (this == r)
+            return 0;
+
+        if (this.getGuild() != r.getGuild())
+            throw new IllegalArgumentException("Cannot compare roles that aren't from the same guild!");
+
+        if (this.getPositionRaw() != r.getPositionRaw())
+            return this.getPositionRaw() - r.getPositionRaw();
+
+        OffsetDateTime thisTime = MiscUtil.getCreationTime(this);
+        OffsetDateTime rTime = MiscUtil.getCreationTime(r);
+
+        //We compare the provided role's time to this's time instead of the reverse as one would expect due to how
+        // discord deals with hierarchy. The more recent a role was created, the lower its hierarchy ranking when
+        // it shares the same position as another role.
+        return rTime.compareTo(thisTime);
     }
 }

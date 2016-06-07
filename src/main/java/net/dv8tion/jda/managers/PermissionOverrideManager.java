@@ -36,15 +36,13 @@ public class PermissionOverrideManager
      */
     public PermissionOverrideManager(PermissionOverride override)
     {
-        if (!override.getChannel().checkPermission(override.getJDA().getSelfInfo(), Permission.MANAGE_PERMISSIONS))
-        {
-            throw new PermissionException(Permission.MANAGE_PERMISSIONS);
-        }
         this.override = override;
         this.allow = override.getAllowedRaw();
         this.deny = override.getDeniedRaw();
+        checkPermission(Permission.MANAGE_PERMISSIONS);
     }
 
+    //TODO: find a good system for this
     /**
      * Sets this Overrides allow/deny flags according to given PermissionOverride (copy behaviour)
      *
@@ -58,9 +56,10 @@ public class PermissionOverrideManager
      */
     public PermissionOverrideManager overwrite(PermissionOverride overwrite)
     {
-        this.allow = overwrite.getAllowedRaw();
-        this.deny = overwrite.getDeniedRaw();
-        return this;
+        throw new UnsupportedOperationException("Method temporarily disabled");
+//        this.allow = overwrite.getAllowedRaw();
+//        this.deny = overwrite.getDeniedRaw();
+//        return this;
     }
 
     /**
@@ -76,6 +75,10 @@ public class PermissionOverrideManager
      */
     public PermissionOverrideManager grant(Permission... perms)
     {
+        for (Permission perm : perms)
+        {
+            checkPermission(perm);
+        }
         for (Permission perm : perms)
         {
             allow = allow | (1<<perm.getOffset());
@@ -99,6 +102,10 @@ public class PermissionOverrideManager
     {
         for (Permission perm : perms)
         {
+            checkPermission(perm);
+        }
+        for (Permission perm : perms)
+        {
             deny = deny | (1<<perm.getOffset());
         }
         allow = allow & (~deny);
@@ -119,6 +126,10 @@ public class PermissionOverrideManager
      */
     public PermissionOverrideManager reset(Permission... perms)
     {
+        for (Permission perm : perms)
+        {
+            checkPermission(perm);
+        }
         for (Permission perm : perms)
         {
             allow = allow & (~(1 << perm.getOffset()));
@@ -163,5 +174,11 @@ public class PermissionOverrideManager
                                 .put("deny", deny)
                                 .put("id", targetId)
                                 .put("type", override.isRoleOverride() ? "role" : "member"));
+    }
+
+    private void checkPermission(Permission permission)
+    {
+        if(!override.getChannel().checkPermission(override.getJDA().getSelfInfo(), permission))
+            throw new PermissionException(permission);
     }
 }

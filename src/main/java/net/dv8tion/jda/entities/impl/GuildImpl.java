@@ -21,7 +21,6 @@ import net.dv8tion.jda.Region;
 import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.exceptions.PermissionException;
-import net.dv8tion.jda.exceptions.VerificationLevelException;
 import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.managers.AudioManager;
 import net.dv8tion.jda.managers.ChannelManager;
@@ -53,6 +52,7 @@ public class GuildImpl implements Guild
     private final Map<String, Role> roles = new HashMap<>();
     private final Map<User, VoiceStatus> voiceStatusMap = new HashMap<>();
     private final Map<User, OffsetDateTime> joinedAtMap = new HashMap<>();
+    private final Map<User, String> nickMap = new HashMap<>();
     private Role publicRole;
     private TextChannel publicChannel;
     private final JDAImpl api;
@@ -137,7 +137,7 @@ public class GuildImpl implements Guild
     public List<TextChannel> getTextChannels()
     {
         ArrayList<TextChannel> textChannels = new ArrayList<>(this.textChannels.values());
-        Collections.sort(textChannels, (c1, c2) -> Integer.compare(c1.getPosition(), c2.getPosition()));
+        Collections.sort(textChannels, (c1, c2) -> c2.compareTo(c1));
         return Collections.unmodifiableList(textChannels);
     }
 
@@ -165,7 +165,7 @@ public class GuildImpl implements Guild
         else
         {
             TextChannel channel = new EntityBuilder(api).createTextChannel(response, getId());
-            return new ChannelManager(channel);
+            return channel.getManager();
         }
     }
 
@@ -173,7 +173,7 @@ public class GuildImpl implements Guild
     public List<VoiceChannel> getVoiceChannels()
     {
         List<VoiceChannel> list = new ArrayList<>(voiceChannels.values());
-        Collections.sort(list, (v1, v2) -> Integer.compare(v1.getPosition(), v2.getPosition()));
+        Collections.sort(list, (v1, v2) -> v2.compareTo(v1));
         return Collections.unmodifiableList(list);
     }
 
@@ -201,7 +201,7 @@ public class GuildImpl implements Guild
         else
         {
             VoiceChannel channel = new EntityBuilder(api).createVoiceChannel(response, getId());
-            return new ChannelManager(channel);
+            return channel.getManager();
         }
     }
 
@@ -209,8 +209,14 @@ public class GuildImpl implements Guild
     public List<Role> getRoles()
     {
         List<Role> list = new ArrayList<>(roles.values());
-        Collections.sort(list, (r1, r2) -> Integer.compare(r2.getPosition(), r1.getPosition()));
+        Collections.sort(list, (r1, r2) -> r2.compareTo(r1));
         return Collections.unmodifiableList(list);
+    }
+
+    @Override
+    public Role getRoleById(String id)
+    {
+        return roles.get(id);
     }
 
     @Override
@@ -233,14 +239,31 @@ public class GuildImpl implements Guild
         else
         {
             Role role = new EntityBuilder(api).createRole(response, getId());
-            return new RoleManager(role);
+            return role.getManager();
         }
     }
 
     @Override
     public List<Role> getRolesForUser(User user)
     {
-        return userRoles.get(user) == null ? new LinkedList<>() : Collections.unmodifiableList(userRoles.get(user));
+        List<Role> roles = userRoles.get(user);
+        if (roles == null)
+            return new LinkedList<>();
+
+        Collections.sort(roles, (r1, r2) -> r2.compareTo(r1));
+        return Collections.unmodifiableList(roles);
+    }
+
+    @Override
+    public List<User> getUsersWithRole(Role role)
+    {
+        List<User> users = new LinkedList<>();
+        userRoles.entrySet().forEach(entry ->
+        {
+            if (entry.getValue().contains(role))
+                users.add(entry.getKey());
+        });
+        return Collections.unmodifiableList(users);
     }
 
     @Override
@@ -288,9 +311,38 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    public String getNicknameForUser(User user)
+    {
+        return nickMap.get(user);
+    }
+
+    @Override
     public VerificationLevel getVerificationLevel()
     {
         return verificationLevel;
+    }
+
+    @Override
+    public boolean checkVerification()
+    {
+        if(canSendVerification)
+            return true;
+        switch (verificationLevel)
+        {
+            case HIGH:
+                if(ChronoUnit.MINUTES.between(getJoinDateForUser(api.getSelfInfo()), OffsetDateTime.now()) < 10)
+                    break;
+            case MEDIUM:
+                if(ChronoUnit.MINUTES.between(MiscUtil.getCreationTime(api.getSelfInfo()), OffsetDateTime.now()) < 5)
+                    break;
+            case LOW:
+                if(!api.getSelfInfo().isVerified())
+                    break;
+            case NONE:
+                canSendVerification = true;
+                return true;
+        }
+        return false;
     }
 
     @Override
@@ -377,33 +429,16 @@ public class GuildImpl implements Guild
         return joinedAtMap;
     }
 
+    public Map<User, String> getNickMap()
+    {
+        return nickMap;
+    }
+
     public GuildImpl setVerificationLevel(VerificationLevel level)
     {
         this.verificationLevel = level;
         this.canSendVerification = false;   //recalc on next send
         return this;
-    }
-
-    public void checkVerification()
-    {
-        if(canSendVerification)
-            return;
-        switch (verificationLevel)
-        {
-            case HIGH:
-                if(ChronoUnit.MINUTES.between(getJoinDateForUser(api.getSelfInfo()), OffsetDateTime.now()) < 10)
-                    break;
-            case MEDIUM:
-                if(ChronoUnit.MINUTES.between(MiscUtil.getCreationTime(api.getSelfInfo()), OffsetDateTime.now()) < 5)
-                    break;
-            case LOW:
-                if(!api.getSelfInfo().isVerified())
-                    break;
-            case NONE:
-                canSendVerification = true;
-                return;
-        }
-        throw new VerificationLevelException(verificationLevel);
     }
 
     public GuildImpl setAvailable(boolean available)
@@ -433,9 +468,9 @@ public class GuildImpl implements Guild
         return "G:" + getName() + '(' + getId() + ')';
     }
 
-	@Override
-	public List<AdvancedInvite> getInvites()
-	{
-		return InviteUtil.getInvites(this);
-	}
+    @Override
+    public List<AdvancedInvite> getInvites()
+    {
+        return InviteUtil.getInvites(this);
+    }
 }

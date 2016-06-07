@@ -77,13 +77,29 @@ public interface User
     String getAvatarUrl();
 
     /**
-     * The name of the game that the user is currently playing.
+     * The Discord Id for this user's default avatar image.
+     *
+     * @return
+     *      Never-null String containing the {@link net.dv8tion.jda.entities.User User} default avatar id.
+     */
+    String getDefaultAvatarId();
+
+    /**
+     * The URL for the for the user's default avatar image.
+     *
+     * @return
+     *      Never-null String containing the {@link net.dv8tion.jda.entities.User User} default avatar url.
+     */
+    String getDefaultAvatarUrl();
+
+    /**
+     * The game that the user is currently playing.
      * If the user is not currently playing a game, this will return null.
      *
      * @return
-     *      Possibly-null String containing the name of the game that the {@link net.dv8tion.jda.entities.User User} is currently playing.
+     *      Possibly-null {@link net.dv8tion.jda.entities.Game Game} containing the game that the {@link net.dv8tion.jda.entities.User User} is currently playing.
      */
-    String getCurrentGame();
+    Game getCurrentGame();
 
     /**
      * Returns the {@link net.dv8tion.jda.OnlineStatus OnlineStatus} of the User.<br>

@@ -76,6 +76,8 @@ public abstract class ListenerAdapter implements EventListener
     public void onVoiceChannelDelete(VoiceChannelDeleteEvent event) {}
     public void onVoiceChannelUpdateName(VoiceChannelUpdateNameEvent event) {}
     public void onVoiceChannelUpdatePosition(VoiceChannelUpdatePositionEvent event) {}
+    public void onVoiceChannelUpdateUserLimit(VoiceChannelUpdateUserLimitEvent event) {}
+    public void onVoiceChannelUpdateBitrate(VoiceChannelUpdateBitrateEvent event) {}
     public void onVoiceChannelUpdatePermissions(VoiceChannelUpdatePermissionsEvent event) {}
     public void onVoiceChannelCreate(VoiceChannelCreateEvent event) {}
 
@@ -95,6 +97,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildMemberUnban(GuildMemberUnbanEvent event) {}
     public void onGuildMemberRoleAdd(GuildMemberRoleAddEvent event) {}
     public void onGuildMemberRoleRemove(GuildMemberRoleRemoveEvent event) {}
+    public void onGuildMemberNickChange(GuildMemberNickChangeEvent event) {}
     public void onGuildRoleCreate(GuildRoleCreateEvent event) {}
     public void onGuildRoleDelete(GuildRoleDeleteEvent event) {}
 
@@ -119,6 +122,7 @@ public abstract class ListenerAdapter implements EventListener
     //Audio System Events
     public void onAudioConnect(AudioConnectEvent event) {}
     public void onAudioDisconnect(AudioDisconnectEvent event) {}
+    public void onAudioUnableToConnect(AudioUnableToConnectEvent event) {}
     public void onAudioTimeout(AudioTimeoutEvent event) {}
     public void onAudioRegionChange(AudioRegionChangeEvent event) {}
 
@@ -219,6 +223,10 @@ public abstract class ListenerAdapter implements EventListener
             onVoiceChannelUpdateName((VoiceChannelUpdateNameEvent) event);
         else if (event instanceof VoiceChannelUpdatePositionEvent)
             onVoiceChannelUpdatePosition((VoiceChannelUpdatePositionEvent) event);
+        else if (event instanceof VoiceChannelUpdateUserLimitEvent)
+            onVoiceChannelUpdateUserLimit((VoiceChannelUpdateUserLimitEvent) event);
+        else if (event instanceof VoiceChannelUpdateBitrateEvent)
+            onVoiceChannelUpdateBitrate((VoiceChannelUpdateBitrateEvent) event);
         else if (event instanceof VoiceChannelUpdatePermissionsEvent)
             onVoiceChannelUpdatePermissions((VoiceChannelUpdatePermissionsEvent) event);
         else if (event instanceof VoiceChannelDeleteEvent)
@@ -253,6 +261,8 @@ public abstract class ListenerAdapter implements EventListener
             onGuildMemberRoleAdd((GuildMemberRoleAddEvent) event);
         else if (event instanceof GuildMemberRoleRemoveEvent)
             onGuildMemberRoleRemove((GuildMemberRoleRemoveEvent) event);
+        else if (event instanceof GuildMemberNickChangeEvent)
+            onGuildMemberNickChange((GuildMemberNickChangeEvent) event);
         else if (event instanceof GuildRoleCreateEvent)
             onGuildRoleCreate((GuildRoleCreateEvent) event);
         else if (event instanceof GuildRoleDeleteEvent)
@@ -289,6 +299,8 @@ public abstract class ListenerAdapter implements EventListener
             onAudioConnect((AudioConnectEvent) event);
         else if (event instanceof AudioDisconnectEvent)
             onAudioDisconnect((AudioDisconnectEvent) event);
+        else if (event instanceof AudioUnableToConnectEvent)
+            onAudioUnableToConnect((AudioUnableToConnectEvent) event);
         else if (event instanceof AudioTimeoutEvent)
             onAudioTimeout((AudioTimeoutEvent) event);
         else if (event instanceof AudioRegionChangeEvent)

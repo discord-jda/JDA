@@ -26,7 +26,7 @@ import java.util.function.Consumer;
 public interface MessageChannel
 {
     /**
-     * Sents a plain text {@link net.dv8tion.jda.entities.Message Message} to this channel.
+     * Sends a plain text {@link net.dv8tion.jda.entities.Message Message} to this channel.
      * This will fail if the account of the api does not have the {@link net.dv8tion.jda.Permission#MESSAGE_WRITE Write-Permission}
      * for this channel set
      * After the Message has been sent, the created {@link net.dv8tion.jda.entities.Message Message} object is returned
@@ -178,8 +178,8 @@ public interface MessageChannel
 
     /**
      * Sends the typing status to discord. This is what is used to make the message "X is typing..." appear.<br>
-     * The typing status only lasts for 5 seconds, so if you wish to show continuous typing you will need to
-     * call this method once every 5 seconds.
+     * The typing status only lasts for 10 seconds or until a message is sent.
+     * So if you wish to show continuous typing you will need to call this method once every 10 seconds.
      */
     void sendTyping();
 }

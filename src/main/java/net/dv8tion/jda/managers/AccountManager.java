@@ -16,7 +16,11 @@
 package net.dv8tion.jda.managers;
 
 import net.dv8tion.jda.OnlineStatus;
+import net.dv8tion.jda.entities.Game;
+import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.SelfInfo;
+import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.entities.impl.GameImpl;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.entities.impl.SelfInfoImpl;
 import net.dv8tion.jda.requests.Requester;
@@ -29,10 +33,10 @@ import org.json.JSONObject;
 public class AccountManager
 {
 
-    private AvatarUtil.Avatar avatar = null;
-    private String username = null;
+    protected AvatarUtil.Avatar avatar = null;
+    protected String username = null;
 
-    private final JDAImpl api;
+    protected final JDAImpl api;
 
     public AccountManager(JDAImpl api)
     {
@@ -47,7 +51,7 @@ public class AccountManager
      * @param avatar
      *      a Avatar object, null to keep current Avatar or {@link net.dv8tion.jda.utils.AvatarUtil#DELETE_AVATAR AvatarUtil#DELETE_AVATAR} to remove the avatar
      * @return
-     * 	  this
+     *      this
      */
     public AccountManager setAvatar(AvatarUtil.Avatar avatar)
     {
@@ -62,7 +66,7 @@ public class AccountManager
      * @param username
      *      the new username or null to discard changes
      * @return
-     * 	  this
+     *      this
      */
     public AccountManager setUsername(String username)
     {
@@ -82,7 +86,29 @@ public class AccountManager
     {
         if(game != null && game.trim().isEmpty())
             game = null;
-        ((SelfInfoImpl) api.getSelfInfo()).setCurrentGame(game);
+        ((SelfInfoImpl) api.getSelfInfo()).setCurrentGame(game == null ? null : new GameImpl(game, null, Game.GameType.DEFAULT));
+        updateStatusAndGame();
+    }
+
+    /**
+     * Set currently played game of the connected account.
+     * To remove playing status, supply this method with null
+     * This change will be applied <b>immediately</b>
+     *
+     * @param title
+     *      the name of the stream that should be displayed
+     * @param url
+     *      the url of the twitch stream
+     */
+    public void setStreaming(String title, String url) throws IllegalArgumentException
+    {
+        if(title != null && title.trim().isEmpty())
+            title = null;
+        if(url != null && url.trim().isEmpty())
+            url = null;
+        if(title != null && !Game.isValidStreamingUrl(url))
+            throw new IllegalArgumentException("Streaming Url must be valid!");
+        ((SelfInfoImpl) api.getSelfInfo()).setCurrentGame( title == null ? null : new GameImpl(title, url, Game.GameType.TWITCH));
         updateStatusAndGame();
     }
 
@@ -100,9 +126,33 @@ public class AccountManager
     }
 
     /**
+     * Changes this user's nickname in given guild.
+     * The nickname is visible to all users of the guild.
+     * This requires the correct Permissions to perform
+     * (either {@link net.dv8tion.jda.Permission#NICKNAME_MANAGE NICKNAME_MANAGE} or
+     * {@link net.dv8tion.jda.Permission#NICKNAME_CHANGE NICKNAME_CHANGE}).
+     *
+     * This change will be applied <b>immediately</b>
+     *
+     * @param guild
+     *      The guild where the nickname should be changed.
+     * @param nickname
+     *      The new nickname of this user, or null/"" to reset
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
+     * @see net.dv8tion.jda.managers.GuildManager#setNickname(User, String)
+     *      for more details
+     */
+    public void setNickname(Guild guild, String nickname)
+    {
+        guild.getManager().setNickname(api.getSelfInfo(), nickname);
+    }
+
+    /**
      * Resets all queued updates. So the next call to {@link #update()} will change nothing.
      */
-    public void reset() {
+    public void reset()
+    {
         avatar = null;
         username = null;
     }
@@ -129,11 +179,22 @@ public class AccountManager
             this.username = null;
     }
 
-    private void updateStatusAndGame()
+    protected void updateStatusAndGame()
     {
         SelfInfo selfInfo = api.getSelfInfo();
+        JSONObject game = null;
+        if(selfInfo.getCurrentGame() != null)
+        {
+            game = new JSONObject().put("name", selfInfo.getCurrentGame().getName());
+            if(selfInfo.getCurrentGame().getType()!= Game.GameType.DEFAULT)
+            {
+                game = game
+                        .put("url", selfInfo.getCurrentGame().getUrl())
+                        .put("type", selfInfo.getCurrentGame().getType().getKey());
+            }
+        }
         JSONObject content = new JSONObject()
-                .put("game", selfInfo.getCurrentGame() == null ? JSONObject.NULL : new JSONObject().put("name", selfInfo.getCurrentGame()))
+                .put("game", game == null ? JSONObject.NULL : game)
                 .put("idle_since", selfInfo.getOnlineStatus() == OnlineStatus.AWAY ? System.currentTimeMillis() : JSONObject.NULL);
         api.getClient().send(new JSONObject().put("op", 3).put("d", content).toString());
     }

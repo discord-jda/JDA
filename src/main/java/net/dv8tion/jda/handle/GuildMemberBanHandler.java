@@ -18,6 +18,7 @@ package net.dv8tion.jda.handle;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.impl.GuildImpl;
 import net.dv8tion.jda.entities.impl.JDAImpl;
+import net.dv8tion.jda.entities.impl.UserImpl;
 import net.dv8tion.jda.events.guild.member.GuildMemberBanEvent;
 import net.dv8tion.jda.events.guild.member.GuildMemberUnbanEvent;
 import net.dv8tion.jda.requests.GuildLock;
@@ -43,9 +44,17 @@ public class GuildMemberBanHandler extends SocketHandler
 
         JSONObject userJson = content.getJSONObject("user");
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("guild_id"));
+        User user = api.getUserMap().get(userJson.getString("id"));
+        if (user == null)
+        {
+            //Create user here, instead of using the EntityBuilder (don't want to add users to registry)
+            user = new UserImpl(userJson.getString("id"), ((JDAImpl) guild.getJDA()))
+                    .setUserName(userJson.getString("username"))
+                    .setDiscriminator(userJson.get("discriminator").toString())
+                    .setAvatarId(userJson.isNull("avatar") ? null : userJson.getString("avatar"));
+        }
         if (banned)
         {
-            User user = api.getUserMap().get(userJson.getString("id"));
             api.getEventManager().handle(
                     new GuildMemberBanEvent(
                             api, responseNumber,
@@ -53,13 +62,10 @@ public class GuildMemberBanHandler extends SocketHandler
         }
         else
         {
-            String id = userJson.getString("id");
-            String username = userJson.getString("username");
-            String discriminator = userJson.get("discriminator").toString();
             api.getEventManager().handle(
                     new GuildMemberUnbanEvent(
                             api, responseNumber,
-                            guild, id, username, discriminator));
+                            guild, user));
         }
         return null;
     }

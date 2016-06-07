@@ -19,21 +19,19 @@ import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.impl.GuildImpl;
 import net.dv8tion.jda.entities.impl.JDAImpl;
+import net.dv8tion.jda.events.guild.member.GuildMemberNickChangeEvent;
 import net.dv8tion.jda.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.requests.GuildLock;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
-public class GuildMemberRoleHandler extends SocketHandler
+public class GuildMemberUpdateHandler extends SocketHandler
 {
 
-    public GuildMemberRoleHandler(JDAImpl api, int responseNumber)
+    public GuildMemberUpdateHandler(JDAImpl api, int responseNumber)
     {
         super(api, responseNumber);
     }
@@ -54,8 +52,11 @@ public class GuildMemberRoleHandler extends SocketHandler
 
         if(rolesOld == null)
         {
-            //something is fishy...
-            JDAImpl.LOG.warn("Got role-update for user which is not in guild? " + content.toString());
+            EventCache.get(api).cache(EventCache.Type.USER, userJson.getString("id"), () ->
+            {
+                handle(allContent);
+            });
+            EventCache.LOG.debug("Got role-update for user which is not in guild? " + content.toString());
             return null;
         }
 
@@ -86,7 +87,7 @@ public class GuildMemberRoleHandler extends SocketHandler
         {
             rolesOld.addAll(rolesNew);
         }
-        Collections.sort(rolesOld, (r2, r1) -> Integer.compare(r1.getPosition(), r2.getPosition()));
+        Collections.sort(rolesOld, (r1, r2) -> r2.compareTo(r1));
         if (removedRoles.size() > 0)
         {
             api.getEventManager().handle(
@@ -100,6 +101,34 @@ public class GuildMemberRoleHandler extends SocketHandler
                     new GuildMemberRoleAddEvent(
                             api, responseNumber,
                             guild, user, rolesNew));
+        }
+        if (content.has("nick"))
+        {
+            Map<User, String> nickMap = guild.getNickMap();
+            String prevNick = nickMap.get(user);
+            if (content.isNull("nick"))
+            {
+                if (prevNick != null)
+                {
+                    nickMap.remove(user);
+                    api.getEventManager().handle(
+                            new GuildMemberNickChangeEvent(
+                                    api, responseNumber,
+                                    guild, user, prevNick, null
+                            )
+                    );
+                }
+            }
+            else if (!content.getString("nick").equals(prevNick))
+            {
+                nickMap.put(user, content.getString("nick"));
+                api.getEventManager().handle(
+                        new GuildMemberNickChangeEvent(
+                                api, responseNumber,
+                                guild, user, prevNick, content.getString("nick")
+                        )
+                );
+            }
         }
         return null;
     }

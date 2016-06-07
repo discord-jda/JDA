@@ -46,6 +46,7 @@ public class MessageImpl implements Message
     private OffsetDateTime editedTime = null;
     private List<User> mentionedUsers = new LinkedList<>();
     private List<TextChannel> mentionedChannels = new LinkedList<>();
+    private List<Role> mentionedRoles = new LinkedList<>();
     private List<Attachment> attachments = new LinkedList<>();
     private List<MessageEmbed> embeds = new LinkedList<>();
 
@@ -74,9 +75,21 @@ public class MessageImpl implements Message
     }
 
     @Override
+    public boolean isMentioned(User user)
+    {
+        return mentionsEveryone() || mentionedUsers.contains(user);
+    }
+
+    @Override
     public List<TextChannel> getMentionedChannels()
     {
         return Collections.unmodifiableList(mentionedChannels);
+    }
+
+    @Override
+    public List<Role> getMentionedRoles()
+    {
+        return Collections.unmodifiableList(mentionedRoles);
     }
 
     @Override
@@ -114,14 +127,31 @@ public class MessageImpl implements Message
     {
         if (subContent == null)
         {
+            Guild g = isPrivate ? null : api.getTextChannelById(channelId).getGuild();
             String tmp = content;
             for (User user : mentionedUsers)
             {
-                tmp = tmp.replace("<@" + user.getId() + '>', '@' + user.getUsername());
+                if (isPrivate)
+                {
+                    tmp = tmp.replace("<@" + user.getId() + '>', '@' + user.getUsername())
+                            .replace("<@!" + user.getId() + '>', '@' + user.getUsername());
+                }
+                else
+                {
+                    String name = g.getNicknameForUser(user);
+                    if (name == null)
+                        name = user.getUsername();
+                    tmp = tmp.replace("<@" + user.getId() + '>', '@' + name)
+                            .replace("<@!" + user.getId() + '>', '@' + name);
+                }
             }
             for (TextChannel mentionedChannel : mentionedChannels)
             {
                 tmp = tmp.replace("<#" + mentionedChannel.getId() + '>', '#' + mentionedChannel.getName());
+            }
+            for (Role mentionedRole : mentionedRoles)
+            {
+                tmp = tmp.replace("<@&" + mentionedRole.getId() + '>', '@' + mentionedRole.getName());
             }
             subContent = tmp;
         }
@@ -195,7 +225,10 @@ public class MessageImpl implements Message
         if (api.getSelfInfo() != getAuthor())
             throw new UnsupportedOperationException("Attempted to update message that was not sent by this account. You cannot modify other User's messages!");
         Message newMessage = new MessageImpl(getId(), api).setContent(newContent).setChannelId(getChannelId());
-        TextChannelImpl.AsyncMessageSender.getInstance(api).enqueue(newMessage, true, callback);
+        String ratelimitIdentifier = isPrivate
+                ? PrivateChannelImpl.RATE_LIMIT_IDENTIFIER
+                : api.getTextChannelById(channelId).getGuild().getId();
+        TextChannelImpl.AsyncMessageSender.getInstance(api, ratelimitIdentifier).enqueue(newMessage, true, callback);
     }
 
     @Override
@@ -220,6 +253,12 @@ public class MessageImpl implements Message
     public MessageImpl setMentionedChannels(List<TextChannel> mentionedChannels)
     {
         this.mentionedChannels = mentionedChannels;
+        return this;
+    }
+
+    public MessageImpl setMentionedRoles(List<Role> mentionedRoles)
+    {
+        this.mentionedRoles = mentionedRoles;
         return this;
     }
 

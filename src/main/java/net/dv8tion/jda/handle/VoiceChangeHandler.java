@@ -44,7 +44,14 @@ public class VoiceChangeHandler extends SocketHandler
         if (user == null)
         {
             if (!content.isNull("channel_id"))
-                throw new IllegalArgumentException("Received a VOICE_STATE_UPDATE for an unknown User! JSON: " + content);
+            {
+                EventCache.get(api).cache(EventCache.Type.USER, content.getString("user_id"), () ->
+                {
+                    handle(allContent);
+                });
+                EventCache.LOG.debug("Received a VOICE_STATE_UPDATE for an unknown User! JSON: " + content);
+                return null;
+            }
             else
                 return null; //This is most likely a VOICE_STATE_UPDATE telling us that a user that left/was kicked/was banned
                              // has been disconnected from the VoiceChannel they were in.
@@ -53,7 +60,14 @@ public class VoiceChangeHandler extends SocketHandler
 
         Guild guild = api.getGuildMap().get(content.getString("guild_id"));
         if (guild == null)
-            throw new IllegalArgumentException("Received a VOICE_STATE_UPDATE for an unknown Guild! JSON: " + content);
+        {
+            EventCache.get(api).cache(EventCache.Type.GUILD, content.getString("guild_id"), () ->
+            {
+                handle(allContent);
+            });
+            EventCache.LOG.debug("Received a VOICE_STATE_UPDATE for an unknown Guild! JSON: " + content);
+            return null;
+        }
 
         VoiceStatusImpl status = (VoiceStatusImpl) guild.getVoiceStatusOfUser(user);
 
@@ -84,6 +98,15 @@ public class VoiceChangeHandler extends SocketHandler
             {
                 VoiceChannel oldChannel = status.getChannel();
                 VoiceChannel newChannel = api.getVoiceChannelMap().get(content.getString("channel_id"));
+                if (newChannel == null)
+                {
+                    EventCache.get(api).cache(EventCache.Type.CHANNEL, content.getString("channel_id"), () ->
+                    {
+                        handle(allContent);
+                    });
+                    EventCache.LOG.debug("Received a VOICE_STATE_CHANGE for an unknown Channel! JSON: " + content);
+                    return null;
+                }
                 status.setChannel(newChannel);
                 if (oldChannel != null)
                 {

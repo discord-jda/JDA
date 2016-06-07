@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.utils;
 
+import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.requests.Requester;
@@ -27,6 +28,29 @@ import java.util.Set;
 
 public class ApplicationUtil
 {
+
+    /**
+     * Tries to retrieve the application-id of the Application that owns the logged in Bot-account.
+     * This requires a JDA instance of a bot account for which it retrieves the parent application.
+     *
+     * @param jda
+     *      The jda-instance of a bot account.
+     * @return
+     *      The application-id of the parent Application of the bot account or null on failure.
+     */
+    public static String getApplicationId(JDA jda) {
+        Requester.Response response = ((JDAImpl) jda).getRequester().get(Requester.DISCORD_API_PREFIX + "oauth2/applications/@me");
+        if (response.isOk())
+        {
+            return response.getObject().getString("id");
+        }
+        else
+        {
+            JDAImpl.LOG.debug("Fetching Application-id failed. Response: " + response.toString());
+            return null;
+        }
+    }
+
     /**
      * Creates a OAuth invite-link used to invite bot-accounts.
      * This method does not check if the given application actually has a bot-account assigned.
@@ -45,8 +69,26 @@ public class ApplicationUtil
         {
             perm = perm | (1 << permission.getOffset());
         }
-        return "https://discordapp.com/oauth2/authorize?&client_id=" + appId + "&scope=bot&permissions=" + perm;
+        return "https://discordapp.com/oauth2/authorize?client_id=" + appId + "&scope=bot&permissions=" + perm;
     }
+
+    /**
+     * Creates a OAuth invite-link used to invite bot-accounts.
+     * This requires a JDA instance of a bot account for which it retrieves the parent application.
+     *
+     * @param jda
+     *      The JDA instance of a bot-account
+     * @param perms
+     *      Possibly empty list of Permissions that should be requested via invite
+     * @return
+     *      The link used to invite the bot or null on failure
+     */
+    public static String getAuthInvite(JDA jda, Permission... perms)
+    {
+        String applicationId = getApplicationId(jda);
+        return applicationId == null ? null : getAuthInvite(applicationId, perms);
+    }
+
 
     private final JDAImpl api;
 
@@ -64,7 +106,7 @@ public class ApplicationUtil
      */
     public ApplicationUtil(String email, String password) throws LoginException
     {
-        api = new JDAImpl(false);
+        api = new JDAImpl(false, true);
         api.setAuthToken(login(email, password));
     }
 
@@ -303,49 +345,6 @@ public class ApplicationUtil
         }
 
         /**
-         * Tries to migrate a normal-account to a bot-account and assign it to this Application.
-         * For this to succeed, following must be true:<br>
-         * <ul>
-         *     <li>This Application must not have a bot-account already assigned</li>
-         *     <li>The account to migrate must be a normal account</li>
-         *     <li>The account to migrate must not own Applications itself!</li>
-         * </ul><br>
-         * <b>Note: This is irreversible and will remove the possibility to login with email/password!
-         * Do not migrate an account you want to use in the client! Don't pull a Bastian!</b>
-         *
-         * @param email
-         *      The email of the account to migrate
-         * @param password
-         *      The password of the account to migrate
-         * @return
-         *      The new Bot-account
-         * @throws LoginException
-         *      If the login-credentials were incorrect
-         */
-        public Bot migrateBot(String email, String password) throws LoginException
-        {
-            if (hasBot())
-            {
-                throw new RuntimeException("Can't create a 2nd Bot for this Application!");
-            }
-            String tokenSave = api.getAuthToken();
-            api.setAuthToken(null);
-            String botToken = login(email, password);
-            api.setAuthToken(tokenSave);
-
-            Requester.Response response = api.getRequester().post(Requester.DISCORD_API_PREFIX + "oauth2/applications/" + id + "/bot",
-                    new JSONObject().put("token", botToken));
-            if (response.isOk())
-            {
-                JSONObject botO = response.getObject();
-                bot = new Bot(botO.getString("username"), botO.getString("discriminator"), botO.getString("token"),
-                        botO.getString("id"), botO.isNull("avatar") ? null : botO.getString("avatar"));
-                return bot;
-            }
-            throw new RuntimeException("Error creating a new Bot: " + response.toString());
-        }
-
-        /**
          * Deletes this Application <b>and its assigned Bot (if present)</b>.
          */
         public void delete()
@@ -496,7 +495,7 @@ public class ApplicationUtil
              */
             public String getAuthInvite(Permission... perms)
             {
-                return ApplicationUtil.getAuthInvite(id, perms);
+                return ApplicationUtil.getAuthInvite(Application.this.id, perms);
             }
 
             @Override

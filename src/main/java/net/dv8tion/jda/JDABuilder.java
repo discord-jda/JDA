@@ -44,12 +44,14 @@ public class JDABuilder
     protected static boolean jdaCreated = false;
     protected static String proxyUrl = null;
     protected static int proxyPort = -1;
-    final List<Object> listeners;
-    String token = null;
-    boolean enableVoice = true;
-    boolean useAnnotatedManager = false;
-    IEventManager eventManager = null;
-    boolean reconnect = true;
+    protected final List<Object> listeners;
+    protected String token = null;
+    protected boolean enableVoice = true;
+    protected boolean enableShutdownHook = true;
+    protected boolean useAnnotatedManager = false;
+    protected IEventManager eventManager = null;
+    protected boolean reconnect = true;
+    protected int[] sharding = null;
 
     /**
      * Creates a completely empty JDABuilder.<br>
@@ -118,6 +120,22 @@ public class JDABuilder
     public JDABuilder setAudioEnabled(boolean enabled)
     {
         this.enableVoice = enabled;
+        return this;
+    }
+
+    /**
+     * Enables/Disables the use of a Shutdown hook to clean up JDA.<br>
+     * When the Java program closes shutdown hooks are run. This is used as a last-second cleanup
+     * attempt by JDA to properly severe connections.
+     *
+     * @param enable
+     *          True (default) - use shutdown hook to clean up JDA if the Java program is closed.
+     * @return
+     *      Return the {@link net.dv8tion.jda.JDABuilder JDABuilder } instance. Useful for chaining.
+     */
+    public JDABuilder setEnableShutdownHook(boolean enable)
+    {
+        this.enableShutdownHook = enable;
         return this;
     }
 
@@ -212,6 +230,31 @@ public class JDABuilder
     }
 
     /**
+     * This will enable sharding mode for JDA.
+     * In sharding mode, guilds are split up and assigned one of multiple shards (clients).
+     * The shardId that receives all stuff related to given bot is calculated as follows: shardId = (guildId &gt;&gt; 22)%numShards .
+     * PMs are only sent to shard 0.
+     *
+     * Please note, that a shard will not even know about guilds not assigned to.
+     *
+     * @param shardId
+     *      The id of this shard (starting at 0).
+     * @param numShards
+     *      The number of overall shards.
+     * @return
+     *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public JDABuilder useSharding(int shardId, int numShards)
+    {
+        if (shardId < 0 || numShards < 2 || shardId >= numShards)
+        {
+            throw new RuntimeException("This configuration of shardId and numShards is not allowed! 0 <= shardId < numShards with numShards > 1");
+        }
+        sharding = new int[] {shardId, numShards};
+        return this;
+    }
+
+    /**
      * Builds a new {@link net.dv8tion.jda.JDA} instance and uses the provided email and password to start the login process.<br>
      * The login process runs in a different thread, so while this will return immediately, {@link net.dv8tion.jda.JDA} has not
      * finished loading, thus many {@link net.dv8tion.jda.JDA} methods have the chance to return incorrect information.
@@ -232,9 +275,9 @@ public class JDABuilder
         jdaCreated = true;
         JDAImpl jda;
         if (proxySet)
-            jda = new JDAImpl(proxyUrl, proxyPort, enableVoice);
+            jda = new JDAImpl(proxyUrl, proxyPort, enableVoice, enableShutdownHook);
         else
-            jda = new JDAImpl(enableVoice);
+            jda = new JDAImpl(enableVoice, enableShutdownHook);
         jda.setAutoReconnect(reconnect);
         if (eventManager != null)
         {
@@ -245,7 +288,7 @@ public class JDABuilder
             jda.setEventManager(new AnnotatedEventManager());
         }
         listeners.forEach(jda::addEventListener);
-        jda.login(token);
+        jda.login(token, sharding);
         return jda;
     }
 

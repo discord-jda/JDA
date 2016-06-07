@@ -16,6 +16,8 @@
 package net.dv8tion.jda.handle;
 
 import net.dv8tion.jda.OnlineStatus;
+import net.dv8tion.jda.entities.Game;
+import net.dv8tion.jda.entities.impl.GameImpl;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.entities.impl.UserImpl;
 import net.dv8tion.jda.events.user.*;
@@ -49,7 +51,11 @@ public class PresenceUpdateHandler extends SocketHandler
 
         if (user == null)
         {
-            //User for update doesn't exist, ignoring
+            //This is basically only received when a user has left a guild. Discord doesn't always send events
+            // in order, so sometimes we get the presence updated after the GuildMemberLeave event has been received
+            // thus there is no user which to apply a presence update to.
+            //We don't cache this event because it is completely unneeded, furthermore it can (and probably will)
+            // cause problems if the user rejoins the guild.
             return null;
         }
 
@@ -81,8 +87,25 @@ public class PresenceUpdateHandler extends SocketHandler
             }
         }
 
-        String gameName = (content.isNull("game") || content.getJSONObject("game").isNull("name"))
-                ? null : content.getJSONObject("game").get("name").toString();
+        String gameName = null;
+        String gameUrl = null;
+        Game.GameType type = null;
+        if ( !content.isNull("game") && !content.getJSONObject("game").isNull("name") )
+        {
+            gameName = content.getJSONObject("game").get("name").toString();
+            gameUrl = ( content.getJSONObject("game").isNull("url") ? null : content.getJSONObject("game").get("url").toString() );
+            try
+            {
+                type = content.getJSONObject("game").isNull("type")
+                    ? Game.GameType.DEFAULT
+                    : Game.GameType.fromKey(Integer.parseInt(content.getJSONObject("game").get("type").toString()));
+            }
+            catch (NumberFormatException ex)
+            {
+                type = Game.GameType.DEFAULT;
+            }
+        }
+        Game nextGame = ( gameName == null ? null : new GameImpl(gameName, gameUrl, type));
         OnlineStatus status = OnlineStatus.fromKey(content.getString("status"));
 
         if (!user.getOnlineStatus().equals(status))
@@ -94,14 +117,14 @@ public class PresenceUpdateHandler extends SocketHandler
                             api, responseNumber,
                             user, oldStatus));
         }
-        if (!StringUtils.equals(user.getCurrentGame(), gameName))
+        if(user.getCurrentGame() == null ? nextGame != null : !user.getCurrentGame().equals(nextGame))
         {
-            String oldGameName = user.getCurrentGame();
-            user.setCurrentGame(gameName);
+            Game oldGame = user.getCurrentGame();
+            user.setCurrentGame(nextGame);
             api.getEventManager().handle(
                     new UserGameUpdateEvent(
                             api, responseNumber,
-                            user, oldGameName));
+                            user, oldGame));
         }
         api.getEventManager().handle(
                 new GenericUserEvent(

@@ -46,11 +46,11 @@ public class GuildListenerExample extends ListenerAdapter
         }
         catch (IllegalArgumentException e)
         {
-            System.out.println("The config was not populated. Please enter an email and password.");
+            System.out.println("The config was not populated. Please enter a bot token.");
         }
         catch (LoginException e)
         {
-            System.out.println("The provided email / password combination was incorrect. Please provide valid details.");
+            System.out.println("The provided bot token was incorrect. Please provide valid details.");
         }
         catch (InterruptedException e)
         {
@@ -79,7 +79,7 @@ public class GuildListenerExample extends ListenerAdapter
     @Override
     public void onGuildMemberUnban(GuildMemberUnbanEvent event)
     {
-        System.out.println(event.getUserName() + " was unbanned.  Better keep an eye on them...");
+        System.out.println(event.getUser().getUsername() + " was unbanned.  Better keep an eye on them...");
     }
 
     @Override

@@ -70,6 +70,7 @@ public class ChannelCreateHandler extends SocketHandler
         {
             throw new IllegalArgumentException("ChannelCreateEvent provided an unregonized channel type.  JSON: " + content);
         }
+        EventCache.get(api).playbackCache(EventCache.Type.CHANNEL, content.getString("id"));
         return null;
     }
 }

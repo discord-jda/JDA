@@ -43,8 +43,14 @@ public class GuildRoleDeleteHandler extends SocketHandler
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("guild_id"));
         Role removedRole = guild.getRolesMap().remove(content.getString("role_id"));
         if (removedRole == null)
-            throw new IllegalArgumentException("GUILD_ROLE_DELETE attempted to delete a role that didn't exist! JSON: " + content);
-
+        {
+            EventCache.get(api).cache(EventCache.Type.ROLE, content.getString("role_id"), () ->
+            {
+                handle(allContent);
+            });
+            EventCache.LOG.debug("GUILD_ROLE_DELETE attempted to delete a role that didn't exist! JSON: " + content);
+            return null;
+        }
         //Now that the role is removed from the Guild, remove it from all users.
         for (List<Role> userRoles : guild.getUserRoles().values())
         {

@@ -17,6 +17,7 @@ package net.dv8tion.jda.handle;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.OnlineStatus;
+import net.dv8tion.jda.entities.Game;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import org.json.JSONArray;
@@ -45,7 +46,7 @@ public class ReadyHandler extends SocketHandler
     @Override
     protected String handleInternally(final JSONObject content)
     {
-        String oldGame = null;
+        Game oldGame = null;
         OnlineStatus oldStatus = null;
 
         if (api.getSelfInfo() != null)
@@ -57,9 +58,19 @@ public class ReadyHandler extends SocketHandler
         builder.createSelfInfo(content.getJSONObject("user"));
 
         if (oldGame != null)
-            api.getAccountManager().setGame(oldGame);
+        {
+            if (oldGame.getType() == Game.GameType.DEFAULT)
+            {
+                api.getAccountManager().setGame(oldGame.getName());
+            } else
+            {
+                api.getAccountManager().setStreaming(oldGame.getName(), oldGame.getUrl());
+            }
+        }
         if (oldStatus != null && oldStatus.equals(OnlineStatus.AWAY))
+        {
             api.getAccountManager().setIdle(true);
+        }
 
         JSONArray guilds = content.getJSONArray("guilds");
         if (guilds.length() == 0)
@@ -116,6 +127,23 @@ public class ReadyHandler extends SocketHandler
         }
     }
 
+    public void finishReady(JSONObject content)
+    {
+        JSONArray priv_chats = content.getJSONArray("private_channels");
+        for (int i = 0; i < priv_chats.length(); i++)
+        {
+            builder.createPrivateChannel(priv_chats.getJSONObject(i));
+        }
+        api.getClient().ready();
+    }
+
+    public void clearCache()
+    {
+        guildIds.get(api).clear();
+        chunkIds.get(api).clear();
+        cachedJson.remove(api);
+    }
+
     private void sendChunks()
     {
         Iterator<String> iterator = chunkIds.get(api).iterator();
@@ -147,15 +175,6 @@ public class ReadyHandler extends SocketHandler
                     );
             api.getClient().send(obj.toString());
         }
-    }
-
-    public void finishReady(JSONObject content)
-    {
-        JSONArray priv_chats = content.getJSONArray("private_channels");
-        for (int i = 0; i < priv_chats.length(); i++)
-        {
-            builder.createPrivateChannel(priv_chats.getJSONObject(i));
-        }
-        api.getClient().ready();
+        chunkIds.get(api).clear();
     }
 }

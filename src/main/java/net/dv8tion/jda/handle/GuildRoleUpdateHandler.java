@@ -39,12 +39,23 @@ public class GuildRoleUpdateHandler extends SocketHandler
 
         JSONObject rolejson = content.getJSONObject("role");
         RoleImpl role = (RoleImpl) ((GuildImpl) api.getGuildMap().get(content.getString("guild_id"))).getRolesMap().get(rolejson.getString("id"));
+
+        if (role == null)
+        {
+            EventCache.get(api).cache(EventCache.Type.ROLE, rolejson.getString("id"), () ->
+            {
+                handle(allContent);
+            });
+            EventCache.LOG.debug("Received a Role Update for a non-existent role! JSON: " + content);
+            return null;
+        }
+
         if (!role.getName().equals(rolejson.getString("name")))
         {
             role.setName(rolejson.getString("name"));
             api.getEventManager().handle(new GuildRoleUpdateNameEvent(api, responseNumber, role));
         }
-        if (role.getPosition() != rolejson.getInt("position"))
+        if (role.getPositionRaw() != rolejson.getInt("position"))
         {
             role.setPosition(rolejson.getInt("position"));
             api.getEventManager().handle(new GuildRoleUpdatePositionEvent(api, responseNumber, role));
@@ -64,6 +75,9 @@ public class GuildRoleUpdateHandler extends SocketHandler
             role.setGrouped(rolejson.getBoolean("hoist"));
             api.getEventManager().handle(new GuildRoleUpdateGroupedEvent(api, responseNumber, role));
         }
+        if (role.isMentionable() != rolejson.getBoolean("mentionable"))
+            role.setMentionable(rolejson.getBoolean("mentionable"));
+        //TODO: Add event?
         api.getEventManager().handle(new GuildRoleUpdateEvent(api, responseNumber, role));
         return null;
     }
