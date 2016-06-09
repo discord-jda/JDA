@@ -712,6 +712,36 @@ public class GuildManager
     }
 
     /**
+     * Deafens a {@link net.dv8tion.jda.entities.User User} in this {@link net.dv8tion.jda.entities.Guild Guild}.
+     * Requires the {@link net.dv8tion.jda.Permission#VOICE_DEAF_OTHERS VOICE_DEAF_OTHERS} permission.
+     * 
+     * @param user
+     *      The user who should be deafened.
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
+     * @see GuildManager#undeafen(User)
+     */
+    public void deafen(User user)
+    {
+        this.deafen(user, true);
+    }
+
+    /**
+     * Mutes a {@link net.dv8tion.jda.entities.User User} in this {@link net.dv8tion.jda.entities.Guild Guild}.
+     * Requires the {@link net.dv8tion.jda.Permission#VOICE_MUTE_OTHERS VOICE_MUTE_OTHERS} permission.
+     * 
+     * @param user
+     *      The user who should be muted.
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
+     * @see GuildManager#unmute(User)
+     */
+    public void mute(User user)
+    {
+        this.mute(user, true);
+    }
+
+    /**
      * Gets an unmodifiable list of the currently banned {@link net.dv8tion.jda.entities.User Users}.<br>
      * If you wish to ban or unban a user, please use one of the ban or unban methods of this Manager
      *
@@ -785,6 +815,36 @@ public class GuildManager
     }
 
     /**
+     * Undeafens a {@link net.dv8tion.jda.entities.User User} in this {@link net.dv8tion.jda.entities.Guild Guild}.
+     * Requires the {@link net.dv8tion.jda.Permission#VOICE_DEAF_OTHERS VOICE_DEAF_OTHERS} permission.
+     * 
+     * @param user
+     *      The user who should be undeafened.
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
+     * @see GuildManager#deafen(User)
+     */
+    public void undeafen(User user)
+    {
+        this.deafen(user, false);
+    }
+    
+    /**
+     * Unmutes a {@link net.dv8tion.jda.entities.User User} in this {@link net.dv8tion.jda.entities.Guild Guild}.
+     * Requires the {@link net.dv8tion.jda.Permission#VOICE_MUTE_OTHERS VOICE_MUTE_OTHERS} permission.
+     * 
+     * @param user
+     *      The user who should be unmuted.
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
+     * @see GuildManager#mute(User)
+     */
+    public void unmute(User user)
+    {
+        this.mute(user, false);
+    }
+
+    /**
      * Leaves this {@link net.dv8tion.jda.entities.Guild Guild}.
      * If the logged in {@link net.dv8tion.jda.entities.User User} is the owner of
      * this {@link net.dv8tion.jda.entities.Guild Guild}, this method will throw an {@link net.dv8tion.jda.exceptions.PermissionException PermissionException}.
@@ -808,6 +868,36 @@ public class GuildManager
         ((JDAImpl) guild.getJDA()).getRequester().delete(Requester.DISCORD_API_PREFIX + "users/@me/guilds/" + guild.getId());
     }
 
+    private void deafen(User user, boolean deafen)
+    {
+        if (!guild.isAvailable())
+        {
+            throw new GuildUnavailableException();
+        }
+
+        checkPermission(Permission.VOICE_DEAF_OTHERS);
+
+        String url = Requester.DISCORD_API_PREFIX + "guilds/" + guild.getId() + "/members/" + user.getId();
+
+        ((JDAImpl) guild.getJDA()).getRequester()
+                .patch(url, new JSONObject().put("deaf", deafen));
+    }
+    
+    private void mute(User user, boolean mute)
+    {
+        if (!guild.isAvailable())
+        {
+            throw new GuildUnavailableException();
+        }
+
+        checkPermission(Permission.VOICE_MUTE_OTHERS);
+
+        String url = Requester.DISCORD_API_PREFIX + "guilds/" + guild.getId() + "/members/" + user.getId();
+
+        ((JDAImpl) guild.getJDA()).getRequester()
+                .patch(url, new JSONObject().put("mute", mute));
+    }
+
     private JSONObject getFrame()
     {
         return new JSONObject().put("name", guild.getName());
@@ -822,7 +912,6 @@ public class GuildManager
     {
         if (!PermissionUtil.checkPermission(getGuild().getJDA().getSelfInfo(), perm, getGuild()))
             throw new PermissionException(perm);
-
     }
 
     private void checkPosition(User u)
