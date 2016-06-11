@@ -49,7 +49,7 @@ public class AccountManager
      * Avatars can get generated through the methods of {@link net.dv8tion.jda.utils.AvatarUtil AvatarUtil}
      *
      * @param avatar
-     *      a Avatar object, null to keep current Avatar or {@link net.dv8tion.jda.utils.AvatarUtil#DELETE_AVATAR AvatarUtil#DELETE_AVATAR} to remove the avatar
+     *      an Avatar object, null to keep current Avatar or {@link net.dv8tion.jda.utils.AvatarUtil#DELETE_AVATAR AvatarUtil#DELETE_AVATAR} to remove the avatar
      * @return
      *      this
      */
@@ -117,7 +117,7 @@ public class AccountManager
      * This change will be applied <b>immediately</b>
      *
      * @param idle
-     *      weather the account should be displayed as idle o not
+     *      whether the account should be displayed as idle or not
      */
     public void setIdle(boolean idle)
     {
