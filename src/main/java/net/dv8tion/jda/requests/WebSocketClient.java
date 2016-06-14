@@ -250,7 +250,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 AudioManagerImpl mngImpl = (AudioManagerImpl) mng;
                 VoiceChannel channel = null;
                 if (mngImpl.isConnected())
+                {
+                    //This causes the AudioDisconnectEvent to be fired.. maybe we should reevaluate that.
                     channel = mng.getConnectedChannel();
+                    mngImpl.closeAudioConnection();
+                }
                 else if (mngImpl.isAttemptingToConnect())
                     channel = mng.getQueuedAudioConnection();
                 else if (mngImpl.wasUnexpectedlyDisconnected())

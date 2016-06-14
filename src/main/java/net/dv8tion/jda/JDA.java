@@ -307,7 +307,7 @@ public interface JDA
     void setAutoReconnect(boolean reconnect);
 
     /**
-     * Returns whether or not autoReconnect is enabled for JDA
+     * Returns whether or not autoReconnect is enabled for JDA.
      *
      * @return
      *      True if JDA attempts to autoReconnect
@@ -318,7 +318,7 @@ public interface JDA
      * Used to determine whether the instance of JDA supports audio and has it enabled.
      *
      * @return
-     *      True if JDA can currently utalize the audio system.
+     *      True if JDA can currently utilize the audio system.
      */
     boolean isAudioEnabled();
 
@@ -344,7 +344,7 @@ public interface JDA
     void shutdown(boolean free);
 
     /**
-     * Installs an auxillary cable into your system.
+     * Installs an auxiliary cable into your system.
      * 
      * @param port the port
      * @throws UnsupportedOperationException

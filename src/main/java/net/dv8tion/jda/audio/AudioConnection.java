@@ -172,8 +172,11 @@ public class AudioConnection
                             }
                             else
                             {
-                                byte[] encodedAudio = encodeToOpus(rawAudio);
-                                AudioPacket packet = new AudioPacket(seq, timestamp, webSocket.getSSRC(), encodedAudio);
+                                if (!sendHandler.isOpus())
+                                {
+                                    rawAudio = encodeToOpus(rawAudio);
+                                }
+                                AudioPacket packet = new AudioPacket(seq, timestamp, webSocket.getSSRC(), rawAudio);
                                 if (!speaking)
                                     setSpeaking(true);
                                 udpSocket.send(packet.asEncryptedUdpPacket(webSocket.getAddress(), webSocket.getSecretKey()));

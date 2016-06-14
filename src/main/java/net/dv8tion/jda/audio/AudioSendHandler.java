@@ -18,5 +18,11 @@ package net.dv8tion.jda.audio;
 public interface AudioSendHandler
 {
     boolean canProvide();
+    
     byte[] provide20MsAudio();
+    
+    default boolean isOpus()
+    {
+        return false;
+    }
 }

@@ -41,7 +41,7 @@ public interface User
     String getUsername();
 
     /**
-     * The descriminator of the {@link net.dv8tion.jda.entities.User User}. Used to differentiate between users with the same usernames.<br>
+     * The discriminator of the {@link net.dv8tion.jda.entities.User User}. Used to differentiate between users with the same usernames.<br>
      * This will be important when the friends list is released for human readable searching.<br>
      * Ex: DV8FromTheWorld#9148
      *

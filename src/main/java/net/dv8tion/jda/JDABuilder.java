@@ -157,25 +157,6 @@ public class JDABuilder
     }
 
     /**
-     * <b>This method is deprecated! Please switch to {@link #setEventManager(IEventManager)}.</b>
-     * <p>
-     * Changes the internal EventManager.
-     * The default EventManager is {@link net.dv8tion.jda.hooks.InterfacedEventManager InterfacedEventListener}.
-     * There is also an {@link AnnotatedEventManager AnnotatedEventManager} available.
-     *
-     * @param useAnnotated
-     *      Whether or not to use the {@link net.dv8tion.jda.hooks.AnnotatedEventManager AnnotatedEventManager}
-     * @return
-     *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
-     */
-    @Deprecated
-    public JDABuilder useAnnotatedEventManager(boolean useAnnotated)
-    {
-        this.useAnnotatedManager = useAnnotated;
-        return this;
-    }
-
-    /**
      * Changes the internally used EventManager.
      * There are 2 provided Implementations:
      * <ul>
@@ -255,7 +236,7 @@ public class JDABuilder
     }
 
     /**
-     * Builds a new {@link net.dv8tion.jda.JDA} instance and uses the provided email and password to start the login process.<br>
+     * Builds a new {@link net.dv8tion.jda.JDA} instance and uses the provided token to start the login process.<br>
      * The login process runs in a different thread, so while this will return immediately, {@link net.dv8tion.jda.JDA} has not
      * finished loading, thus many {@link net.dv8tion.jda.JDA} methods have the chance to return incorrect information.
      * <p>
@@ -266,9 +247,9 @@ public class JDABuilder
      * @return
      *      A {@link net.dv8tion.jda.JDA} instance that has started the login process. It is unknown as to whether or not loading has finished when this returns.
      * @throws LoginException
-     *          If the provided email-password combination fails the Discord security authentication.
+     *          If the provided token is invalid.
      * @throws IllegalArgumentException
-     *          If either the provided email or password is empty or null.
+     *          If the provided token is empty or null.
      */
     public JDA buildAsync() throws LoginException, IllegalArgumentException
     {
@@ -293,16 +274,16 @@ public class JDABuilder
     }
 
     /**
-     * Builds a new {@link net.dv8tion.jda.JDA} instance and uses the provided email and password to start the login process.<br>
+     * Builds a new {@link net.dv8tion.jda.JDA} instance and uses the provided token to start the login process.<br>
      * This method will block until JDA has logged in and finished loading all resources. This is an alternative
      * to using {@link net.dv8tion.jda.events.ReadyEvent ReadyEvent}.
      *
      * @return
      *      A {@link net.dv8tion.jda.JDA} Object that is <b>guaranteed</b> to be logged in and finished loading.
      * @throws LoginException
-     *          If the provided email-password combination fails the Discord security authentication.
+     *          If the provided token is invalid.
      * @throws IllegalArgumentException
-     *          If either the provided email or password is empty or null.
+     *          If the provided token is empty or null.
      * @throws InterruptedException
      *          If an interrupt request is received while waiting for {@link net.dv8tion.jda.JDA} to finish logging in.
      *          This would most likely be caused by a JVM shutdown request.
