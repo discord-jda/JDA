@@ -346,6 +346,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 }
             }
         });
+        keepAliveThread.setName("JDA MainWS-KeepAlive" + (sharding != null
+                    ? " Shard [" + sharding[0] + " / " + sharding[1] + "]"
+                    : ""));
         keepAliveThread.setPriority(Thread.MAX_PRIORITY);
         keepAliveThread.setDaemon(true);
         keepAliveThread.start();

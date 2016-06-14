@@ -416,7 +416,7 @@ public class AudioWebSocket extends WebSocketAdapter
 
     private void setupUdpKeepAliveThread()
     {
-        udpKeepAliveThread = new Thread()
+        udpKeepAliveThread = new Thread("AudioWebSocket UDP-KeepAlive Guild: " + guild.getId())
         {
             @Override
             public void run()
@@ -461,7 +461,7 @@ public class AudioWebSocket extends WebSocketAdapter
 
     private void setupKeepAliveThread(int keepAliveInterval)
     {
-        keepAliveThread = new Thread()
+        keepAliveThread = new Thread("AudioWebSocket WS-KeepAlive Guild: " + guild.getId())
         {
             @Override
             public void run()

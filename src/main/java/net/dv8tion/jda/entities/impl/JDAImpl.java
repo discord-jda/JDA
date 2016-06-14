@@ -132,7 +132,7 @@ public class JDAImpl implements JDA
 
         if (useShutdownHook)
         {
-            Runtime.getRuntime().addShutdownHook(new Thread()
+            Runtime.getRuntime().addShutdownHook(new Thread("JDA Shutdown Hook")
             {
                 @Override
                 public void run()

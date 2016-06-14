@@ -274,6 +274,7 @@ public class TextChannelImpl implements TextChannel
             if (callback != null)
                 callback.accept(message);
         });
+        thread.setName("TextChannelImpl sendFileAsync Channel: " + id);
         thread.setDaemon(true);
         thread.start();
     }
@@ -588,6 +589,7 @@ public class TextChannelImpl implements TextChannel
             public Runner(AsyncMessageSender sender)
             {
                 this.sender = sender;
+                this.setName("AsyncMessageSender Runner. Identifier: " + sender.ratelimitIdentifier);
             }
 
             @Override

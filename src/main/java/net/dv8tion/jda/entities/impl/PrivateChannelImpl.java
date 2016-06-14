@@ -166,6 +166,7 @@ public class PrivateChannelImpl implements PrivateChannel
             if (callback != null)
                 callback.accept(message);
         });
+        thread.setName("PrivateChannelImpl SendFileAsync Channel: " + id);
         thread.setDaemon(true);
         thread.start();
     }
