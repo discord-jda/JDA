@@ -17,12 +17,11 @@ package net.dv8tion.jda.handle;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.utils.SimpleLog;
-import org.json.JSONObject;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class EventCache
 {
@@ -83,6 +82,19 @@ public class EventCache
                 item.run();
             }
         }
+    }
+
+    public int size()
+    {
+        int count = 0;
+        for (HashMap<String, List<Runnable>> typeMap : eventCache.values())
+        {
+            for (List<Runnable> eventList : typeMap.values())
+            {
+                count += eventList.size();
+            }
+        }
+        return count;
     }
 
     public void clear()
