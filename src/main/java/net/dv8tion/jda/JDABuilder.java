@@ -157,25 +157,6 @@ public class JDABuilder
     }
 
     /**
-     * <b>This method is deprecated! Please switch to {@link #setEventManager(IEventManager)}.</b>
-     * <p>
-     * Changes the internal EventManager.
-     * The default EventManager is {@link net.dv8tion.jda.hooks.InterfacedEventManager InterfacedEventListener}.
-     * There is also an {@link AnnotatedEventManager AnnotatedEventManager} available.
-     *
-     * @param useAnnotated
-     *      Whether or not to use the {@link net.dv8tion.jda.hooks.AnnotatedEventManager AnnotatedEventManager}
-     * @return
-     *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
-     */
-    @Deprecated
-    public JDABuilder useAnnotatedEventManager(boolean useAnnotated)
-    {
-        this.useAnnotatedManager = useAnnotated;
-        return this;
-    }
-
-    /**
      * Changes the internally used EventManager.
      * There are 2 provided Implementations:
      * <ul>
