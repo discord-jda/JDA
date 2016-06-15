@@ -20,6 +20,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.body.MultipartBody;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.MessageBuilder;
+import net.dv8tion.jda.MessageHistory;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.exceptions.PermissionException;
@@ -279,6 +280,52 @@ public class TextChannelImpl implements TextChannel
         thread.start();
     }
 
+    @Override
+    public Message getMessageById(String messageId)
+    {
+        if (!checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_READ))
+            throw new PermissionException(Permission.MESSAGE_READ);
+        if (!checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_HISTORY))
+            throw new PermissionException(Permission.MESSAGE_HISTORY);
+
+        Requester.Response response = ((JDAImpl) getJDA()).getRequester().get(Requester.DISCORD_API_PREFIX + "channels/" + id + "/messages/" + messageId);
+
+        if (response.isOk())
+            return new EntityBuilder((JDAImpl) getJDA()).createMessage(response.getObject());
+
+        //Doesn't exist.
+        return null;
+    }
+
+    @Override
+    public boolean deleteMessageById(String messageId)
+    {
+        if (!checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_READ))
+            throw new PermissionException(Permission.MESSAGE_READ);
+
+        Requester.Response response = ((JDAImpl) getJDA()).getRequester().delete(Requester.DISCORD_API_PREFIX + "channels/" + id + "/messages/" + messageId);
+
+        if (response.isOk())
+            return true;
+        else if (response.code == 403)  //This block is needed because we cant check who owns the message before attempting to delete.
+        {
+            //We double check to make sure the permission didn't change.
+            if (!checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_READ))
+                throw new PermissionException(Permission.MESSAGE_READ);
+            else
+                throw new PermissionException(Permission.MESSAGE_MANAGE, "You need MESSAGE_MANAGE permission to delete another users Messages");
+        }
+
+        //Doesn't exist. Either never existed, bad id, was deleted already, or not in this channel.
+        return false;
+    }
+
+    @Override
+    public MessageHistory getHistory()
+    {
+        return new MessageHistory(this);
+    }
+
     public void sendTyping()
     {
         ((JDAImpl) getJDA()).getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + getId() + "/typing", new JSONObject());
@@ -374,39 +421,24 @@ public class TextChannelImpl implements TextChannel
     @Override
     public void deleteMessages(Collection<Message> messages)
     {
-        if(messages.size() > 100)
+        deleteMessagesByIds(messages.stream()
+                .map(msg -> msg.getId())
+                .collect(Collectors.toList()));
+    }
+
+    @Override
+    public void deleteMessagesByIds(Collection<String> messageIds)
+    {
+        if (messageIds.size() < 2 || messageIds.size() > 100)
         {
-            throw new IllegalArgumentException("Can't delete more than 100 messages at a time, got " + messages.size());
+            throw new IllegalArgumentException("Must provide at least 2 or at most 100 messages to be deleted.");
         }
-        
-        JSONObject body = new JSONObject();
-        ArrayList<String> ids = new ArrayList<>();
-        Message lastProcessedMessage = null;//In case we only have one message to delete
-        for(Message msg : messages)
-        {
-            //Check if the message has been sent, if not then ignore
-            if(msg.getId() != null && !"".equals(msg.getId()))
-            {
-                ids.add(msg.getId());
-                lastProcessedMessage = msg;
-            }
-        }
-        
-        if(ids.size() == 1)
-        {
-            lastProcessedMessage.deleteMessage();
-            return;
-        }
-        else if(ids.isEmpty())
-        {
-            return;
-        }
-        else if(!PermissionUtil.checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_MANAGE, this))
+        else if (!PermissionUtil.checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_MANAGE, this))
         {
             throw new PermissionException(Permission.MESSAGE_MANAGE, "Must have MESSAGE_MANAGE in order to bulk delete messages in this channel regardless of author.");
         }
-        
-        body.put("messages", ids);
+
+        JSONObject body = new JSONObject().put("messages", messageIds);
         ((JDAImpl) getJDA()).getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + id + "/messages/bulk_delete", body);
     }
 
