@@ -396,7 +396,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                         .put("token", api.getAuthToken())
                         .put("properties", new JSONObject()
                                 .put("$os", System.getProperty("os.name"))
-                                .put("$browser", "Java Discord API")
+                                .put("$browser", "JDA")
                                 .put("$device", "")
                                 .put("$referring_domain", "")
                                 .put("$referrer", "")
