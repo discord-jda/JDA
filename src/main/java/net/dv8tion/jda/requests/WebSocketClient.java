@@ -610,6 +610,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 case "MESSAGE_DELETE":
                     new MessageDeleteHandler(api, responseTotal).handle(raw);
                     break;
+                case "MESSAGE_DELETE_BULK":
+                    new MessageBulkDeleteHandler(api, responseTotal).handle(raw);
+                    break;
                 case "VOICE_STATE_UPDATE":
                     new VoiceChangeHandler(api, responseTotal).handle(raw);
                     break;

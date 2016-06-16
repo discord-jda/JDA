@@ -323,6 +323,21 @@ public interface JDA
     boolean isAudioEnabled();
 
     /**
+     * Used to determine if JDA will process MESSAGE_DELETE_BULK messages received from Discord as a single
+     * {@link net.dv8tion.jda.events.message.MessageBulkDeleteEvent MessageBulkDeleteEvent} or split
+     * the deleted messages up and fire multiple {@link net.dv8tion.jda.events.message.MessageDeleteEvent MessageDeleteEvents},
+     * one for each deleted message.
+     * <p>
+     * By default, JDA will separate the bulk delete event into individual delete events, but this isn't as efficient as
+     * handling a single event would be. It is recommended that BulkDelete Splitting be disabled and that the developer
+     * should instead handle the {@link net.dv8tion.jda.events.message.MessageBulkDeleteEvent MessageBulkDeleteEvent}
+     *
+     * @return
+     *      Whether or not JDA currently handles the BULK_MESSAGE_DELETE event by splitting it into individual MessageDeleteEvents or not.
+     */
+    boolean isBulkDeleteSplittingEnabled();
+
+    /**
      * Shuts down JDA, closing all its connections.
      * After this command is issued the JDA Instance can not be used anymore.
      * This will also close the background-thread used for requests (which is required for further api calls of other JDA instances).

@@ -60,6 +60,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onMessageReceived(MessageReceivedEvent event) {}
     public void onMessageUpdate(MessageUpdateEvent event) {}
     public void onMessageDelete(MessageDeleteEvent event) {}
+    public void onMessageBulkDelete(MessageBulkDeleteEvent event) {}
     public void onMessageEmbed(MessageEmbedEvent event) {}
 
     public void onInviteReceived(InviteReceivedEvent event) {}
@@ -182,6 +183,8 @@ public abstract class ListenerAdapter implements EventListener
             onMessageUpdate((MessageUpdateEvent) event);
         else if (event instanceof MessageDeleteEvent)
             onMessageDelete((MessageDeleteEvent) event);
+        else if (event instanceof MessageBulkDeleteEvent)
+            onMessageBulkDelete((MessageBulkDeleteEvent) event);
         else if (event instanceof MessageEmbedEvent)
             onMessageEmbed((MessageEmbedEvent) event);
         //Invite Messages

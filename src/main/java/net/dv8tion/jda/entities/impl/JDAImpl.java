@@ -64,6 +64,7 @@ public class JDAImpl implements JDA
     protected final Map<Guild, AudioManager> audioManagers = new HashMap<>();
     protected final boolean audioEnabled;
     protected final boolean useShutdownHook;
+    protected final boolean bulkDeleteSplittingEnabled;
     protected IEventManager eventManager = new InterfacedEventManager();
     protected SelfInfo selfInfo = null;
     protected AccountManager accountManager;
@@ -73,7 +74,7 @@ public class JDAImpl implements JDA
     protected boolean reconnect;
     protected int responseTotal;
 
-    public JDAImpl(boolean enableAudio, boolean useShutdownHook)
+    public JDAImpl(boolean enableAudio, boolean useShutdownHook, boolean enableBulkDeleteSplitting)
     {
         proxy = null;
         if (enableAudio)
@@ -81,9 +82,11 @@ public class JDAImpl implements JDA
         else
             this.audioEnabled = false;
         this.useShutdownHook = useShutdownHook;
+        this.bulkDeleteSplittingEnabled = enableBulkDeleteSplitting;
     }
 
-    public JDAImpl(String proxyUrl, int proxyPort, boolean enableAudio, boolean useShutdownHook)
+    public JDAImpl(String proxyUrl, int proxyPort, boolean enableAudio, boolean useShutdownHook,
+                   boolean enableBulkDeleteSplitting)
     {
         if (proxyUrl == null || proxyUrl.isEmpty() || proxyPort == -1)
             throw new IllegalArgumentException("The provided proxy settings cannot be used to make a proxy. Settings: URL: '" + proxyUrl + "'  Port: " + proxyPort);
@@ -94,6 +97,7 @@ public class JDAImpl implements JDA
         else
             this.audioEnabled = false;
         this.useShutdownHook = useShutdownHook;
+        this.bulkDeleteSplittingEnabled = enableBulkDeleteSplitting;
     }
 
     /**
@@ -391,6 +395,12 @@ public class JDAImpl implements JDA
     public boolean isAudioEnabled()
     {
         return audioEnabled;
+    }
+
+    @Override
+    public boolean isBulkDeleteSplittingEnabled()
+    {
+        return bulkDeleteSplittingEnabled;
     }
 
     @Override
