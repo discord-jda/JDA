@@ -82,6 +82,32 @@ public class RoleManager
     }
 
     /**
+     * Sets the <code>int</code> representation of the permissions for this {@link net.dv8tion.jda.entities.Role Role}.<br>
+     * This change will only be applied, if {@link #update()} is called.
+     * So multiple changes can be made at once.
+     *
+     * @param perms
+     *      int containing offset permissions of this role
+     * @return
+     *      this
+     * @see
+     *      <a href="https://discordapp.com/developers/docs/topics/permissions">Discord Permission Documentation</a>
+     */
+    public RoleManager setPermissionsRaw(int perms)
+    {
+        checkPermission(Permission.MANAGE_ROLES);
+        checkPosition();
+
+        for (Permission perm : Permission.getPermissions(perms))
+        {
+            checkPermission(perm);   
+        }
+
+        this.perms = perms;
+        return this;
+    }
+
+    /**
      * Sets the color of this Role.
      * This change will only be applied, if {@link #update()} is called.
      * So multiple changes can be made at once.
