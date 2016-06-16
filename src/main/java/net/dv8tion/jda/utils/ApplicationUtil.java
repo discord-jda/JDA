@@ -106,7 +106,7 @@ public class ApplicationUtil
      */
     public ApplicationUtil(String email, String password) throws LoginException
     {
-        api = new JDAImpl(false, true, true);
+        api = new JDAImpl(false, false, false);
         api.setAuthToken(login(email, password));
     }
 

@@ -83,6 +83,8 @@ public class JDAImpl implements JDA
             this.audioEnabled = false;
         this.useShutdownHook = useShutdownHook;
         this.bulkDeleteSplittingEnabled = enableBulkDeleteSplitting;
+        if (bulkDeleteSplittingEnabled)
+            LOG.warn("BulkDeleteSplitting is enabled. For best performance, please look at the javadoc for JDABuilder#setBulkDeleteEnabled(boolean).");
     }
 
     public JDAImpl(String proxyUrl, int proxyPort, boolean enableAudio, boolean useShutdownHook,
@@ -98,6 +100,8 @@ public class JDAImpl implements JDA
             this.audioEnabled = false;
         this.useShutdownHook = useShutdownHook;
         this.bulkDeleteSplittingEnabled = enableBulkDeleteSplitting;
+        if (bulkDeleteSplittingEnabled)
+            LOG.warn("BulkDeleteSplitting is enabled. For best performance, please look at the javadoc for JDABuilder#setBulkDeleteEnabled(boolean).");
     }
 
     /**
