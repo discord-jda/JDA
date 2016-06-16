@@ -244,6 +244,28 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    public RoleManager createCopyOfRole(Role role)
+    {
+        if (!PermissionUtil.checkPermission(role.getJDA().getSelfInfo(), Permission.MANAGE_ROLES, role.getGuild()))
+            throw new PermissionException(Permission.MANAGE_ROLES);
+        for (Permission perm : role.getPermissions())
+        {
+            if (!PermissionUtil.checkPermission(role.getJDA().getSelfInfo(), perm, role.getGuild()))
+                throw new PermissionException(perm);  
+        }
+
+        RoleManager manager = createRole();
+        manager.setPermissionsRaw(role.getPermissionsRaw());
+        manager.setName(role.getName());
+        manager.setColor(role.getColor());
+        manager.setGrouped(role.isGrouped());
+        manager.setMentionable(role.isMentionable());
+        manager.update();
+
+        return manager;
+    }
+
+    @Override
     public List<Role> getRolesForUser(User user)
     {
         List<Role> roles = userRoles.get(user);
