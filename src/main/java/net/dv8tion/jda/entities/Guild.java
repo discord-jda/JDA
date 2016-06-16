@@ -201,6 +201,13 @@ public interface Guild
     List<Role> getRolesForUser(User user);
 
     /**
+     * Provides the {@link net.dv8tion.jda.entities.Role Role} that determines the color for the provided {@link net.dv8tion.jda.entities.User User}
+     * 
+     * If the {@link net.dv8tion.jda.entities.User User} has the default color, this returns the same as getPublicRole();
+     */
+    Role getColorDeterminantRoleForUser(User user);
+
+    /**
      * Provides all {@link net.dv8tion.jda.entities.User Users} that have the provided role.
      *
      * @param role
