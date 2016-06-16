@@ -37,6 +37,7 @@ public class RoleManager
     private String name = null;
     private int color = -1;
     private Boolean grouped = null;
+    private Boolean mentionable;
     private int perms;
 
     public RoleManager(Role role)
@@ -172,6 +173,32 @@ public class RoleManager
         else
         {
             this.grouped = group;
+        }
+        return this;
+    }
+
+    /**
+     * Sets, whether this Role should be mentionable.
+     * This change will only be applied, if {@link #update()} is called.
+     * So multiple changes can be made at once.
+     *
+     * @param group
+     *      Whether or not this should be mentionable, or null to keep current grouping status
+     * @return
+     *      this
+     */
+    public RoleManager setMentionable(Boolean mention)
+    {
+        checkPermission(Permission.MANAGE_ROLES);
+        checkPosition();
+
+        if (mention == null || mention == role.isMentionable())
+        {
+            this.mentionable = null;
+        }
+        else
+        {
+            this.mentionable = mention;
         }
         return this;
     }
@@ -317,6 +344,8 @@ public class RoleManager
             frame.put("color", color);
         if(grouped != null)
             frame.put("hoist", grouped.booleanValue());
+        if(mentionable != null)
+            frame.put("mentionable", mentionable.booleanValue());
         update(frame);
     }
 
