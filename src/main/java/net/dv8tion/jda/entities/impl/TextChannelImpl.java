@@ -439,7 +439,9 @@ public class TextChannelImpl implements TextChannel
         }
 
         JSONObject body = new JSONObject().put("messages", messageIds);
-        ((JDAImpl) getJDA()).getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + id + "/messages/bulk_delete", body);
+        Requester.Response response = ((JDAImpl) getJDA()).getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + id + "/messages/bulk_delete", body);
+        if (response.isRateLimit())
+            throw new RateLimitedException(response.getObject().getInt("retry_after"));
     }
 
     private void checkVerification()

@@ -57,6 +57,8 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *      If the size of the list less than 2 or more than 100 messages.
      * @throws net.dv8tion.jda.exceptions.PermissionException
      *      If this account does not have MANAGE_MESSAGES
+     * @throws net.dv8tion.jda.exceptions.RateLimitedException
+     *      If the a ratelimit is encountered. Ratelimit for bulk_delete is 1 call / second / guild.
      */
     void deleteMessages(Collection<Message> messages);
 
@@ -80,6 +82,8 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *      If the size of the list less than 2 or more than 100 messages.
      * @throws net.dv8tion.jda.exceptions.PermissionException
      *      If this account does not have MANAGE_MESSAGES
+     * @throws net.dv8tion.jda.exceptions.RateLimitedException
+     *      If the a ratelimit is encountered. Ratelimit for bulk_delete is 1 call / second / guild.
      */
     void deleteMessagesByIds(Collection<String> messageIds);
 }
