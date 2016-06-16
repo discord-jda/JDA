@@ -248,6 +248,15 @@ public class GuildImpl implements Guild
     {
         return userRoles.get(user) == null ? new LinkedList<>() : Collections.unmodifiableList(userRoles.get(user));
     }
+    
+    @Override
+    public Role getColorDeterminantRoleForUser(User user)
+    {
+        for(Role role : getRolesForUser(user))
+            if(role.getColor() != 0)
+                return role;
+        return publicRole;
+    }
 
     @Override
     public List<User> getUsersWithRole(Role role)
