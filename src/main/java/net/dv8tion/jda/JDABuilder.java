@@ -286,6 +286,7 @@ public class JDABuilder
             jda.setEventManager(eventManager);
         }
         listeners.forEach(jda::addEventListener);
+        jda.setStatus(JDA.Status.INITIALIZED);  //This is already set by JDA internally, but this is to make sure the listeners catch it.
         jda.login(token, sharding);
         return jda;
     }

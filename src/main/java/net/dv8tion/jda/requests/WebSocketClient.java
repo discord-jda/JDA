@@ -16,6 +16,7 @@
 package net.dv8tion.jda.requests;
 
 import com.neovisionaries.ws.client.*;
+import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.audio.AudioReceiveHandler;
 import net.dv8tion.jda.audio.AudioSendHandler;
 import net.dv8tion.jda.entities.Guild;
@@ -98,6 +99,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     public void ready()
     {
+        api.setStatus(JDA.Status.CONNECTED);
         if (initiating)
         {
             initiating = false;
@@ -167,6 +169,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected void connect()
     {
+        if (api.getStatus() != JDA.Status.ATTEMPTING_TO_RECONNECT)
+            api.setStatus(JDA.Status.CONNECTING_TO_WEBSOCKET);
         initiating = true;
         WebSocketFactory factory = new WebSocketFactory();
         if (proxy != null)
@@ -212,6 +216,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     @Override
     public void onConnected(WebSocket websocket, Map<String, List<String>> headers)
     {
+        api.setStatus(JDA.Status.LOADING_SUBSYSTEMS);
         LOG.info("Connected to WebSocket");
         if (sessionId == null)
         {
@@ -228,6 +233,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer)
     {
         connected = false;
+        api.setStatus(JDA.Status.DISCONNECTED);
         if (keepAliveThread != null)
         {
             keepAliveThread.interrupt();
@@ -242,6 +248,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 LOG.info("Reason: " + serverCloseFrame.getCloseReason());
                 LOG.info("Close code: " + serverCloseFrame.getCloseCode());
             }
+            api.setStatus(JDA.Status.SHUTDOWN);
             api.getEventManager().handle(new ShutdownEvent(api, OffsetDateTime.now(), dcAudioConnections));
         }
         else
@@ -278,7 +285,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             try
             {
+                api.setStatus(JDA.Status.WAITING_TO_RECONNECT);
                 Thread.sleep(reconnectTimeoutS * 1000);
+                api.setStatus(JDA.Status.ATTEMPTING_TO_RECONNECT);
             }
             catch(InterruptedException ignored) {}
             LOG.warn("Attempting to reconnect!");
