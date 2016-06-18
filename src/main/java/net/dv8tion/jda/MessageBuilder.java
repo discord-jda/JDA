@@ -21,17 +21,30 @@ import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.impl.MessageImpl;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MessageBuilder
 {
-    private final StringBuilder builder = new StringBuilder();
-    private final List<User> mentioned = new LinkedList<>();
-    private final List<TextChannel> mentionedTextChannels = new LinkedList<>();
-    private final List<Role> mentionedRoles = new LinkedList<>();
-    private boolean mentionEveryone = false;
-    private boolean isTTS = false;
+    public static final String USER_KEY = "%U%";
+    public static final String ROLE_KEY = "%R%";
+    public static final String TEXTCHANNEL_KEY = "%TC%";
+    public static final String EVERYONE_KEY = "%E%";
+    public static final String HERE_KEY = "%H%";
+    protected final StringBuilder builder = new StringBuilder();
+    protected final List<User> mentioned = new LinkedList<>();
+    protected final List<TextChannel> mentionedTextChannels = new LinkedList<>();
+    protected final List<Role> mentionedRoles = new LinkedList<>();
+    protected boolean mentionEveryone = false;
+    protected boolean isTTS = false;
+    protected Pattern formatPattern;
+
+    public MessageBuilder()
+    {
+        formatPattern = Pattern.compile(String.format("%s|%s|%s|%s|%s",
+                USER_KEY, ROLE_KEY, TEXTCHANNEL_KEY, EVERYONE_KEY, HERE_KEY));
+    }
 
     /**
      * Makes the created Message a TTS message
@@ -88,6 +101,148 @@ public class MessageBuilder
             if (format[i] == Formatting.BLOCK) continue;
             builder.append(format[i].getTag());
         }
+        return this;
+    }
+
+    /**
+     * This method is an extended form of {@link String#format(String, Object...)}. It allows for all of
+     * the token replacement functionality that String.format(String, Object...) supports, but it also supports
+     * specialized token replacement specific to JDA objects.
+     * <p>
+     * Current tokens:
+     * <ul>
+     *     <li><b>%U%</b> - Used to mention a {@link net.dv8tion.jda.entities.User User}.
+     *          Same as {@link #appendMention(net.dv8tion.jda.entities.User)}</li>
+     *     <li><b>%R%</b> - Used to mention a {@link net.dv8tion.jda.entities.Role Role}.
+     *          Same as {@link #appendMention(net.dv8tion.jda.entities.Role)}</li>
+     *     <li><b>%TC%</b> - Used to mention a {@link net.dv8tion.jda.entities.TextChannel TextChannel}.
+     *          Same as {@link #appendMention(net.dv8tion.jda.entities.TextChannel)}</li>
+     *     <li><b>%E%</b> - Used to mention @everyone. Same as {@link #appendEveryoneMention()}</li>
+     *     <li><b>%H%</b> - Used to mention @here. Same as {@link #appendHereMention()}</li>
+     * </ul>
+     * <p>
+     * Example: <br>
+     * If you placed the following code in an method handling a
+     * {@link net.dv8tion.jda.events.message.MessageReceivedEvent MessageReceivedEvent}<br>
+     *
+     * <pre>{@code
+     * User user = event.getAuthor();
+     * MessageBuilder builder = new MessageBuilder();
+     * builder.appendFormat("%U% is really cool!", user);
+     * builder.build();
+     * }</pre>
+     *
+     * It would build a message that mentions the author and says that he is really cool!. If the user's
+     * name was "Bob", it would say:<br>
+     * <pre>  "Bob is really cool!"</pre>
+     *
+     * @param format
+     *          A format string.
+     * @param args
+     *          An array objects that will be used to replace the tokens.
+     *          They must be provided in the order that the tokens appear in the provided format string.
+     * @return
+     *      this instance of the MessageBuilder. Useful for chaining.
+     */
+    public MessageBuilder appendFormat(String format, Object... args)
+    {
+        if (format == null || format.isEmpty())
+            return this;
+
+        int index = 0;
+        int stringIndex = 0;
+        StringBuilder sb = new StringBuilder();
+        Matcher m = formatPattern.matcher(format);
+        List<Class> classes = Arrays.asList(User.class, TextChannel.class, Role.class);
+        while (m.find() && stringIndex < format.length())
+        {
+            Class target = null;
+            boolean everyone = false;
+            switch (m.group())
+            {
+                case USER_KEY:
+                    target = User.class;
+                    break;
+                case TEXTCHANNEL_KEY:
+                    target = TextChannel.class;
+                    break;
+                case ROLE_KEY:
+                    target = Role.class;
+                    break;
+                case EVERYONE_KEY:
+                    everyone = true;
+                    break;
+                case HERE_KEY:
+                    everyone = false;
+                    break;
+                default:
+                    throw new IllegalArgumentException("MessageBuilder's format regex triggered on an unknown key. How?!");
+            }
+
+            sb.append(format.substring(stringIndex, m.start())).append("%s");
+            stringIndex = m.end();
+            if (target != null)
+            {
+                boolean found = false;
+                for (int i = index; i < args.length; i++)
+                {
+                    Object arg = args[i];
+
+                    //This is a JDA object. If it isn't, skip it.
+                    if (classes.stream().anyMatch(c -> c.isInstance(arg)))
+                    {
+                        //This isn't the object type we were expecting.
+                        if (!target.isInstance(arg))
+                            throw new IllegalArgumentException(String.format("Expected: %s at args index: %d but received: %s instead",
+                                    target.getSimpleName(), index, arg.getClass().getSimpleName()));
+                        if (arg instanceof User)
+                        {
+                            User u = (User) arg;
+                            args[i] = u.getAsMention();
+                            mentioned.add(u);
+                        }
+                        else if (arg instanceof TextChannel)
+                        {
+                            TextChannel tc = (TextChannel) arg;
+                            args[i] = tc.getAsMention();
+                            mentionedTextChannels.add(tc);
+                        }
+                        else if (arg instanceof Role)
+                        {
+                            Role r = (Role) arg;
+                            args[i] = r.getAsMention();
+                            mentionedRoles.add(r);
+                        }
+                        else
+                            throw new IllegalArgumentException("When checking instances of arguments, something failed. Contact dev.");
+
+                        index++;
+                        found = true;
+                        break;
+                    }
+                    index++;
+                }
+                if (!found)
+                    throw new MissingFormatArgumentException(m.group());
+            }
+            else
+            {
+                if (everyone)
+                {
+                    sb.append("@everyone");
+                    mentionEveryone = true;
+                }
+                else
+                {
+                    sb.append("@here");
+                    mentionEveryone = true;
+                }
+            }
+        }
+        if (stringIndex < format.length())
+            sb.append(format.substring(stringIndex, format.length()));
+        String finalFormat = String.format(sb.toString(), args);
+        builder.append(finalFormat);
         return this;
     }
 
