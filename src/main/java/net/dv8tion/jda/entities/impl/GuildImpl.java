@@ -137,7 +137,7 @@ public class GuildImpl implements Guild
     public List<TextChannel> getTextChannels()
     {
         ArrayList<TextChannel> textChannels = new ArrayList<>(this.textChannels.values());
-        Collections.sort(textChannels, (c1, c2) -> Integer.compare(c1.getPosition(), c2.getPosition()));
+        Collections.sort(textChannels, (c1, c2) -> c2.compareTo(c1));
         return Collections.unmodifiableList(textChannels);
     }
 
@@ -173,7 +173,7 @@ public class GuildImpl implements Guild
     public List<VoiceChannel> getVoiceChannels()
     {
         List<VoiceChannel> list = new ArrayList<>(voiceChannels.values());
-        Collections.sort(list, (v1, v2) -> Integer.compare(v1.getPosition(), v2.getPosition()));
+        Collections.sort(list, (v1, v2) -> v2.compareTo(v1));
         return Collections.unmodifiableList(list);
     }
 
@@ -209,7 +209,7 @@ public class GuildImpl implements Guild
     public List<Role> getRoles()
     {
         List<Role> list = new ArrayList<>(roles.values());
-        Collections.sort(list, (r1, r2) -> Integer.compare(r2.getPosition(), r1.getPosition()));
+        Collections.sort(list, (r1, r2) -> r2.compareTo(r1));
         return Collections.unmodifiableList(list);
     }
 
@@ -244,9 +244,36 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    public RoleManager createCopyOfRole(Role role)
+    {
+        if (!PermissionUtil.checkPermission(role.getJDA().getSelfInfo(), Permission.MANAGE_ROLES, role.getGuild()))
+            throw new PermissionException(Permission.MANAGE_ROLES);
+        for (Permission perm : role.getPermissions())
+        {
+            if (!PermissionUtil.checkPermission(role.getJDA().getSelfInfo(), perm, role.getGuild()))
+                throw new PermissionException(perm);  
+        }
+
+        RoleManager manager = createRole();
+        manager.setPermissionsRaw(role.getPermissionsRaw());
+        manager.setName(role.getName());
+        manager.setColor(role.getColor());
+        manager.setGrouped(role.isGrouped());
+        manager.setMentionable(role.isMentionable());
+        manager.update();
+
+        return manager;
+    }
+
+    @Override
     public List<Role> getRolesForUser(User user)
     {
-        return userRoles.get(user) == null ? new LinkedList<>() : Collections.unmodifiableList(userRoles.get(user));
+        List<Role> roles = userRoles.get(user);
+        if (roles == null)
+            return new LinkedList<>();
+
+        Collections.sort(roles, (r1, r2) -> r2.compareTo(r1));
+        return Collections.unmodifiableList(roles);
     }
 
     @Override
@@ -463,9 +490,9 @@ public class GuildImpl implements Guild
         return "G:" + getName() + '(' + getId() + ')';
     }
 
-	@Override
-	public List<AdvancedInvite> getInvites()
-	{
-		return InviteUtil.getInvites(this);
-	}
+    @Override
+    public List<AdvancedInvite> getInvites()
+    {
+        return InviteUtil.getInvites(this);
+    }
 }

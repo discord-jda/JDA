@@ -27,11 +27,16 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AudioExample extends ListenerAdapter
 {
 
-    private Player player = null;
+    /**
+     * This map is used as cache and contains all player instances
+     */
+    private Map<String,Player> players = new HashMap<>();
 
     public static void main(String[] args)
     {
@@ -59,6 +64,7 @@ public class AudioExample extends ListenerAdapter
     public void onGuildMessageReceived(GuildMessageReceivedEvent event)
     {
         String message = event.getMessage().getContent();
+        Player player = players.get(event.getGuild().getId());
 
         //Start an audio connection with a VoiceChannel
         if (message.startsWith("join "))
@@ -91,11 +97,14 @@ public class AudioExample extends ListenerAdapter
                 URL audioUrl = null;
                 try
                 {
-                    audioFile = new File("aac-41100.m4a");
+                    audioFile = new File("BABYMETAL Gimme chocolate!!.wav");
 //                    audioUrl = new URL("https://dl.dropboxusercontent.com/u/41124983/anime-48000.mp3?dl=1");
 
                     player = new FilePlayer(audioFile);
 //                    player = new URLPlayer(event.getJDA(), audioUrl);
+
+                    //Add the new player to the cache
+                    players.put(event.getGuild().getId(), player);
 
                     //Provide the handler to send audio.
                     //NOTE: You don't have to set the handler each time you create an audio connection with the
@@ -154,4 +163,5 @@ public class AudioExample extends ListenerAdapter
                 player.restart();
         }
     }
+
 }

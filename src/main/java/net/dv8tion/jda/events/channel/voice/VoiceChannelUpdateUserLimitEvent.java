@@ -13,16 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.audio;
+package net.dv8tion.jda.events.channel.voice;
 
-public interface AudioSendHandler
+import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.entities.VoiceChannel;
+
+public class VoiceChannelUpdateUserLimitEvent extends GenericVoiceChannelUpdateEvent
 {
-    boolean canProvide();
-    
-    byte[] provide20MsAudio();
-    
-    default boolean isOpus()
+    protected final int oldUserLimit;
+
+    public VoiceChannelUpdateUserLimitEvent(JDA api, int responseNumber, VoiceChannel channel, int oldUserLimit)
     {
-        return false;
+        super(api, responseNumber, channel);
+        this.oldUserLimit = oldUserLimit;
+    }
+
+    public int getOldUserLimit()
+    {
+        return oldUserLimit;
     }
 }

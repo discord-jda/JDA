@@ -33,10 +33,10 @@ import org.json.JSONObject;
 public class AccountManager
 {
 
-    private AvatarUtil.Avatar avatar = null;
-    private String username = null;
+    protected AvatarUtil.Avatar avatar = null;
+    protected String username = null;
 
-    private final JDAImpl api;
+    protected final JDAImpl api;
 
     public AccountManager(JDAImpl api)
     {
@@ -49,9 +49,9 @@ public class AccountManager
      * Avatars can get generated through the methods of {@link net.dv8tion.jda.utils.AvatarUtil AvatarUtil}
      *
      * @param avatar
-     *      a Avatar object, null to keep current Avatar or {@link net.dv8tion.jda.utils.AvatarUtil#DELETE_AVATAR AvatarUtil#DELETE_AVATAR} to remove the avatar
+     *      an Avatar object, null to keep current Avatar or {@link net.dv8tion.jda.utils.AvatarUtil#DELETE_AVATAR AvatarUtil#DELETE_AVATAR} to remove the avatar
      * @return
-     * 	  this
+     *      this
      */
     public AccountManager setAvatar(AvatarUtil.Avatar avatar)
     {
@@ -66,7 +66,7 @@ public class AccountManager
      * @param username
      *      the new username or null to discard changes
      * @return
-     * 	  this
+     *      this
      */
     public AccountManager setUsername(String username)
     {
@@ -117,7 +117,7 @@ public class AccountManager
      * This change will be applied <b>immediately</b>
      *
      * @param idle
-     *      weather the account should be displayed as idle o not
+     *      whether the account should be displayed as idle or not
      */
     public void setIdle(boolean idle)
     {
@@ -179,7 +179,7 @@ public class AccountManager
             this.username = null;
     }
 
-    private void updateStatusAndGame()
+    protected void updateStatusAndGame()
     {
         SelfInfo selfInfo = api.getSelfInfo();
         JSONObject game = null;

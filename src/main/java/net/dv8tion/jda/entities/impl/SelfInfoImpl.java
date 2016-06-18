@@ -15,7 +15,9 @@
  */
 package net.dv8tion.jda.entities.impl;
 
+import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.SelfInfo;
+import net.dv8tion.jda.utils.ApplicationUtil;
 
 public class SelfInfoImpl extends UserImpl implements SelfInfo
 {
@@ -30,6 +32,12 @@ public class SelfInfoImpl extends UserImpl implements SelfInfo
     public boolean isVerified()
     {
         return verified;
+    }
+
+    @Override
+    public String getAuthUrl(Permission... perms)
+    {
+        return ApplicationUtil.getAuthInvite(getJDA(), perms);
     }
 
     public SelfInfoImpl setVerified(boolean verified)

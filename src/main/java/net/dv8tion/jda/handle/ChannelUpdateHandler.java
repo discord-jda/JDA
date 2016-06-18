@@ -21,9 +21,7 @@ import net.dv8tion.jda.events.channel.text.TextChannelUpdateNameEvent;
 import net.dv8tion.jda.events.channel.text.TextChannelUpdatePermissionsEvent;
 import net.dv8tion.jda.events.channel.text.TextChannelUpdatePositionEvent;
 import net.dv8tion.jda.events.channel.text.TextChannelUpdateTopicEvent;
-import net.dv8tion.jda.events.channel.voice.VoiceChannelUpdateNameEvent;
-import net.dv8tion.jda.events.channel.voice.VoiceChannelUpdatePermissionsEvent;
-import net.dv8tion.jda.events.channel.voice.VoiceChannelUpdatePositionEvent;
+import net.dv8tion.jda.events.channel.voice.*;
 import net.dv8tion.jda.requests.GuildLock;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
@@ -91,9 +89,9 @@ public class ChannelUpdateHandler extends SocketHandler
                                     api, responseNumber,
                                     channel, oldTopic));
                 }
-                if (channel.getPosition() != position)
+                if (channel.getPositionRaw() != position)
                 {
-                    int oldPosition = channel.getPosition();
+                    int oldPosition = channel.getPositionRaw();
                     channel.setPosition(position);
                     api.getEventManager().handle(
                             new TextChannelUpdatePositionEvent(
@@ -138,6 +136,8 @@ public class ChannelUpdateHandler extends SocketHandler
             case "voice":
             {
                 VoiceChannelImpl channel = (VoiceChannelImpl) api.getVoiceChannelMap().get(content.getString("id"));
+                int userLimit = content.getInt("user_limit");
+                int bitrate = content.getInt("bitrate");
                 if (channel == null)
                 {
                     EventCache.get(api).cache(EventCache.Type.CHANNEL, content.getString("id"), () ->
@@ -157,14 +157,32 @@ public class ChannelUpdateHandler extends SocketHandler
                                     api, responseNumber,
                                     channel, oldName));
                 }
-                if (channel.getPosition() != position)
+                if (channel.getPositionRaw() != position)
                 {
-                    int oldPosition = channel.getPosition();
+                    int oldPosition = channel.getPositionRaw();
                     channel.setPosition(position);
                     api.getEventManager().handle(
                             new VoiceChannelUpdatePositionEvent(
                                     api, responseNumber,
                                     channel, oldPosition));
+                }
+                if (channel.getUserLimit() != userLimit)
+                {
+                    int oldLimit = channel.getUserLimit();
+                    channel.setUserLimit(userLimit);
+                    api.getEventManager().handle(
+                            new VoiceChannelUpdateUserLimitEvent(
+                                    api, responseNumber,
+                                    channel, oldLimit));
+                }
+                if (channel.getBitrate() != bitrate)
+                {
+                    int oldBitrate = channel.getBitrate();
+                    channel.setBitrate(bitrate);
+                    api.getEventManager().handle(
+                            new VoiceChannelUpdateBitrateEvent(
+                                    api, responseNumber,
+                                    channel, oldBitrate));
                 }
 
                 //Determines if a new PermissionOverride was created or updated.

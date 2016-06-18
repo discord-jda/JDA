@@ -148,7 +148,7 @@ public class AudioConnection
 
     private void setupSendThread()
     {
-        sendThread = new Thread()
+        sendThread = new Thread("AudioConnection SendThread Guild: " + channel.getGuild().getId())
         {
             @Override
             public void run()
@@ -172,8 +172,11 @@ public class AudioConnection
                             }
                             else
                             {
-                                byte[] encodedAudio = encodeToOpus(rawAudio);
-                                AudioPacket packet = new AudioPacket(seq, timestamp, webSocket.getSSRC(), encodedAudio);
+                                if (!sendHandler.isOpus())
+                                {
+                                    rawAudio = encodeToOpus(rawAudio);
+                                }
+                                AudioPacket packet = new AudioPacket(seq, timestamp, webSocket.getSSRC(), rawAudio);
                                 if (!speaking)
                                     setSpeaking(true);
                                 udpSocket.send(packet.asEncryptedUdpPacket(webSocket.getAddress(), webSocket.getSecretKey()));
@@ -228,7 +231,7 @@ public class AudioConnection
 
     private void setupReceiveThread()
     {
-        receiveThread = new Thread()
+        receiveThread = new Thread("AudioConnection ReceiveThread Guild: " + channel.getGuild().getId())
         {
             @Override
             public void run()

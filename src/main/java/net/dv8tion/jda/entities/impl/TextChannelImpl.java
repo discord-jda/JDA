@@ -20,6 +20,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.body.MultipartBody;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.MessageBuilder;
+import net.dv8tion.jda.MessageHistory;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.exceptions.PermissionException;
@@ -30,11 +31,13 @@ import net.dv8tion.jda.managers.ChannelManager;
 import net.dv8tion.jda.managers.PermissionOverrideManager;
 import net.dv8tion.jda.requests.Requester;
 import net.dv8tion.jda.utils.InviteUtil;
+import net.dv8tion.jda.utils.MiscUtil;
 import net.dv8tion.jda.utils.PermissionUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -136,6 +139,18 @@ public class TextChannelImpl implements TextChannel
     @Override
     public int getPosition()
     {
+        List<TextChannel> channels = guild.getTextChannels();
+        for (int i = 0; i < channels.size(); i++)
+        {
+            if (channels.get(i) == this)
+                return i;
+        }
+        throw new RuntimeException("Somehow when determining position we never found the TextChannel in the Guild's channels? wtf?");
+    }
+
+    @Override
+    public int getPositionRaw()
+    {
         return position;
     }
 
@@ -154,9 +169,9 @@ public class TextChannelImpl implements TextChannel
             throw new PermissionException(Permission.MESSAGE_WRITE);
 
         JDAImpl api = (JDAImpl) getJDA();
-        if (api.getMessageLimit() != null)
+        if (api.getMessageLimit(guild.getId()) != null)
         {
-            throw new RateLimitedException(api.getMessageLimit() - System.currentTimeMillis());
+            throw new RateLimitedException(api.getMessageLimit(guild.getId()) - System.currentTimeMillis());
         }
         try
         {
@@ -165,7 +180,7 @@ public class TextChannelImpl implements TextChannel
             if (response.isRateLimit())
             {
                 long retry_after = response.getObject().getLong("retry_after");
-                api.setMessageTimeout(retry_after);
+                api.setMessageTimeout(guild.getId(), retry_after);
                 throw new RateLimitedException(retry_after);
             }
             if(!response.isOk()) //sending failed (Verification-level?)
@@ -194,8 +209,8 @@ public class TextChannelImpl implements TextChannel
         if (!checkPermission(self, Permission.MESSAGE_WRITE))
             throw new PermissionException(Permission.MESSAGE_WRITE);
 
-        ((MessageImpl) msg).setChannelId(getId());
-        AsyncMessageSender.getInstance(getJDA()).enqueue(msg, false, callback);
+        ((MessageImpl) msg).setChannelId(id);
+        AsyncMessageSender.getInstance(getJDA(), guild.getId()).enqueue(msg, false, callback);
     }
 
     @Override
@@ -260,8 +275,55 @@ public class TextChannelImpl implements TextChannel
             if (callback != null)
                 callback.accept(message);
         });
+        thread.setName("TextChannelImpl sendFileAsync Channel: " + id);
         thread.setDaemon(true);
         thread.start();
+    }
+
+    @Override
+    public Message getMessageById(String messageId)
+    {
+        if (!checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_READ))
+            throw new PermissionException(Permission.MESSAGE_READ);
+        if (!checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_HISTORY))
+            throw new PermissionException(Permission.MESSAGE_HISTORY);
+
+        Requester.Response response = ((JDAImpl) getJDA()).getRequester().get(Requester.DISCORD_API_PREFIX + "channels/" + id + "/messages/" + messageId);
+
+        if (response.isOk())
+            return new EntityBuilder((JDAImpl) getJDA()).createMessage(response.getObject());
+
+        //Doesn't exist.
+        return null;
+    }
+
+    @Override
+    public boolean deleteMessageById(String messageId)
+    {
+        if (!checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_READ))
+            throw new PermissionException(Permission.MESSAGE_READ);
+
+        Requester.Response response = ((JDAImpl) getJDA()).getRequester().delete(Requester.DISCORD_API_PREFIX + "channels/" + id + "/messages/" + messageId);
+
+        if (response.isOk())
+            return true;
+        else if (response.code == 403)  //This block is needed because we cant check who owns the message before attempting to delete.
+        {
+            //We double check to make sure the permission didn't change.
+            if (!checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_READ))
+                throw new PermissionException(Permission.MESSAGE_READ);
+            else
+                throw new PermissionException(Permission.MESSAGE_MANAGE, "You need MESSAGE_MANAGE permission to delete another users Messages");
+        }
+
+        //Doesn't exist. Either never existed, bad id, was deleted already, or not in this channel.
+        return false;
+    }
+
+    @Override
+    public MessageHistory getHistory()
+    {
+        return new MessageHistory(this);
     }
 
     public void sendTyping()
@@ -359,40 +421,27 @@ public class TextChannelImpl implements TextChannel
     @Override
     public void deleteMessages(Collection<Message> messages)
     {
-        if(messages.size() > 100)
+        deleteMessagesByIds(messages.stream()
+                .map(msg -> msg.getId())
+                .collect(Collectors.toList()));
+    }
+
+    @Override
+    public void deleteMessagesByIds(Collection<String> messageIds)
+    {
+        if (messageIds.size() < 2 || messageIds.size() > 100)
         {
-            throw new IllegalArgumentException("Can't delete more than 100 messages at a time, got " + messages.size());
+            throw new IllegalArgumentException("Must provide at least 2 or at most 100 messages to be deleted.");
         }
-        
-        JSONObject body = new JSONObject();
-        ArrayList<String> ids = new ArrayList<>();
-        Message lastProcessedMessage = null;//In case we only have one message to delete
-        for(Message msg : messages)
-        {
-            //Check if the message has been sent, if not then ignore
-            if(msg.getId() != null && !"".equals(msg.getId()))
-            {
-                ids.add(msg.getId());
-                lastProcessedMessage = msg;
-            }
-        }
-        
-        if(ids.size() == 1)
-        {
-            lastProcessedMessage.deleteMessage();
-            return;
-        }
-        else if(ids.isEmpty())
-        {
-            return;
-        }
-        else if(!PermissionUtil.checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_MANAGE, this))
+        else if (!PermissionUtil.checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_MANAGE, this))
         {
             throw new PermissionException(Permission.MESSAGE_MANAGE, "Must have MESSAGE_MANAGE in order to bulk delete messages in this channel regardless of author.");
         }
-        
-        body.put("messages", ids);
-        ((JDAImpl) getJDA()).getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + id + "/messages/bulk_delete", body);
+
+        JSONObject body = new JSONObject().put("messages", messageIds);
+        Requester.Response response = ((JDAImpl) getJDA()).getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + id + "/messages/bulk_delete", body);
+        if (response.isRateLimit())
+            throw new RateLimitedException(response.getObject().getInt("retry_after"));
     }
 
     private void checkVerification()
@@ -424,28 +473,87 @@ public class TextChannelImpl implements TextChannel
         return "TC:" + getName() + '(' + getId() + ')';
     }
 
+    @Override
+    public int compareTo(TextChannel chan)
+    {
+        if (this == chan)
+            return 0;
+
+        if (this.getGuild() != chan.getGuild())
+            throw new IllegalArgumentException("Cannot compare TextChannels that aren't from the same guild!");
+
+        if (this.getPositionRaw() != chan.getPositionRaw())
+            return chan.getPositionRaw() - this.getPositionRaw();
+
+        OffsetDateTime thisTime = MiscUtil.getCreationTime(this);
+        OffsetDateTime chanTime = MiscUtil.getCreationTime(chan);
+
+        //We compare the provided channel's time to this's time instead of the reverse as one would expect due to how
+        // discord deals with hierarchy. The more recent a channel was created, the lower its hierarchy ranking when
+        // it shares the same position as another channel.
+        return chanTime.compareTo(thisTime);
+    }
+
     public static class AsyncMessageSender
     {
-        private static final Map<JDA, AsyncMessageSender> instances = new HashMap<>();
+        private static final Map<JDA, Map<String, AsyncMessageSender>> instances = new HashMap<>();
         private final JDAImpl api;
+        private final String ratelimitIdentifier; //GuildId or GlobalPrivateChannel
         private Runner runner = null;
         private boolean runnerRunning = false;
+        private boolean alive = true;
+        private final Queue<Task> queue = new LinkedList<>();
 
-        private AsyncMessageSender(JDAImpl api)
+        private AsyncMessageSender(JDAImpl api, String ratelimitIdentifier)
         {
             this.api = api;
+            this.ratelimitIdentifier = ratelimitIdentifier;
         }
 
-        public static AsyncMessageSender getInstance(JDA api)
+        public static AsyncMessageSender getInstance(JDA api, String ratelimitIdentifier)
         {
-            if (!instances.containsKey(api))
+            Map<String, AsyncMessageSender> senders = instances.get(api);
+            if (senders == null)
             {
-                instances.put(api, new AsyncMessageSender(((JDAImpl) api)));
+                senders = new HashMap<>();
+                instances.put(api, senders);
             }
-            return instances.get(api);
+
+            AsyncMessageSender sender = senders.get(ratelimitIdentifier);
+            if (sender == null)
+            {
+                sender = new AsyncMessageSender(((JDAImpl) api), ratelimitIdentifier);
+                senders.put(ratelimitIdentifier, sender);
+            }
+            return sender;
         }
 
-        private final Queue<Task> queue = new LinkedList<>();
+        public synchronized static void stop(JDA api, String ratelimitIdentifier)
+        {
+            Map<String, AsyncMessageSender> senders = instances.get(api);
+            if (senders != null && !senders.isEmpty())
+            {
+                AsyncMessageSender sender = senders.get(ratelimitIdentifier);
+                if (sender != null)
+                {
+                    sender.kill();
+                    senders.remove(ratelimitIdentifier);
+                }
+            }
+        }
+
+        public synchronized static void stopAll(JDA api)
+        {
+            Map<String, AsyncMessageSender> senders = instances.get(api);
+            if (senders != null && !senders.isEmpty())
+            {
+                senders.values().forEach(sender ->
+                {
+                    sender.kill();
+                });
+                senders.clear();
+            }
+        }
 
         public synchronized void enqueue(Message msg, boolean isEdit, Consumer<Message> callback)
         {
@@ -467,6 +575,12 @@ public class TextChannelImpl implements TextChannel
                 runnerRunning = true;
                 notifyAll();
             }
+        }
+
+        public synchronized void kill()
+        {
+            alive = false;
+            notifyAll();
         }
 
         private synchronized void waitNew()
@@ -509,62 +623,72 @@ public class TextChannelImpl implements TextChannel
             public Runner(AsyncMessageSender sender)
             {
                 this.sender = sender;
+                this.setName("AsyncMessageSender Runner. Identifier: " + sender.ratelimitIdentifier);
             }
 
             @Override
             public void run()
             {
-                while (true)
-                {
-                    Queue<Task> queue = sender.getQueue();
-                    while (!queue.isEmpty())
+                sending:    //Label so that, if needed, we can completely kill the while loop from inside the nested loop.
+                    while (sender.alive)
                     {
-                        Long messageLimit = sender.api.getMessageLimit();
-                        if (messageLimit != null)
+                        Queue<Task> queue = sender.getQueue();
+                        while (sender.alive && !queue.isEmpty())
                         {
-                            try
+                            Long messageLimit = sender.api.getMessageLimit(sender.ratelimitIdentifier);
+                            if (messageLimit != null)
                             {
-                                Thread.sleep(messageLimit - System.currentTimeMillis());
+                                try
+                                {
+                                    Thread.sleep(messageLimit - System.currentTimeMillis());
+                                }
+                                catch (InterruptedException e)
+                                {
+                                    JDAImpl.LOG.log(e);
+                                }
                             }
-                            catch (InterruptedException e)
+                            Task task = queue.peek();
+                            Message msg = task.message;
+                            Requester.Response response;
+                            if (sender.api.getTextChannelById(msg.getChannelId()) == null
+                                    && sender.api.getPrivateChannelById(msg.getChannelId()) == null)
                             {
-                                JDAImpl.LOG.log(e);
+                                //We no longer have access to the MessageChannel that this message is queued to
+                                // send to. This is most likely because it was deleted.
+                                AsyncMessageSender.stop(sender.api, sender.ratelimitIdentifier);
+                                break sending;
                             }
-                        }
-                        Task task = queue.peek();
-                        Message msg = task.message;
-                        Requester.Response response;
-                        if(task.isEdit)
-                        {
-                            response = sender.api.getRequester().patch(Requester.DISCORD_API_PREFIX + "channels/" + msg.getChannelId() + "/messages/" + msg.getId(),
-                                    new JSONObject().put("content", msg.getRawContent()));
-                        }
-                        else
-                        {
-                            response = sender.api.getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + msg.getChannelId() + "/messages",
-                                    new JSONObject().put("content", msg.getRawContent()).put("tts", msg.isTTS()));
-                        }
-                        if (response.responseText == null)
-                        {
-                            JDAImpl.LOG.debug("Error sending async-message (returned null-text)... Retrying after 1s");
-                            sender.api.setMessageTimeout(1000);
-                        }
-                        else if (!response.isRateLimit())   //success/unrecoverable error
-                        {
-                            queue.poll();//remove from queue
-                            if (task.callback != null)
+                            if(task.isEdit)
                             {
+                                response = sender.api.getRequester().patch(Requester.DISCORD_API_PREFIX + "channels/" + msg.getChannelId() + "/messages/" + msg.getId(),
+                                        new JSONObject().put("content", msg.getRawContent()));
+                            }
+                            else
+                            {
+                                response = sender.api.getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + msg.getChannelId() + "/messages",
+                                        new JSONObject().put("content", msg.getRawContent()).put("tts", msg.isTTS()));
+                            }
+                            if (response.responseText == null)
+                            {
+                                JDAImpl.LOG.debug("Error sending async-message (returned null-text)... Retrying after 1s");
+                                sender.api.setMessageTimeout(sender.ratelimitIdentifier, 1000);
+                            }
+                            else if (!response.isRateLimit())   //success/unrecoverable error
+                            {
+                                queue.poll();//remove from queue
                                 try
                                 {
                                     if (response.isOk())
                                     {
-                                        task.callback.accept(new EntityBuilder(sender.api).createMessage(response.getObject()));
+                                        if (task.callback != null)
+                                            task.callback.accept(new EntityBuilder(sender.api).createMessage(response.getObject()));
                                     }
                                     else
                                     {
                                         //if response didn't have id, sending failed (due to permission/blocked pm,...
-                                        JDAImpl.LOG.fatal("Could not send/update async message. Discord-response: " + response.toString());
-                                        task.callback.accept(null);
+                                        JDAImpl.LOG.fatal("Could not send/update async message to channel: " + msg.getChannelId() + ". Discord-response: " + response.toString());
+                                        if (task.callback != null)
+                                            task.callback.accept(null);
                                     }
                                 }
                                 catch (JSONException ex)
@@ -572,21 +696,23 @@ public class TextChannelImpl implements TextChannel
                                     //could not generate message from json
                                     JDAImpl.LOG.log(ex);
                                 }
+                                catch (IllegalArgumentException ex)
+                                {
+                                    JDAImpl.LOG.log(ex);
+                                }
+                            }
+                            else
+                            {
+                                sender.api.setMessageTimeout(sender.ratelimitIdentifier, response.getObject().getLong("retry_after"));
+                            }
+                            if (queue.isEmpty())
+                            {
+                                queue = sender.getQueue();
                             }
                         }
-                        else
-                        {
-                            sender.api.setMessageTimeout(response.getObject().getLong("retry_after"));
-                        }
-                        if (queue.isEmpty())
-                        {
-                            queue = sender.getQueue();
-                        }
+                        sender.waitNew();
                     }
-                    sender.waitNew();
-                }
             }
-
         }
     }
 }

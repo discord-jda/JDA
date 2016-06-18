@@ -79,7 +79,7 @@ public class GuildListenerExample extends ListenerAdapter
     @Override
     public void onGuildMemberUnban(GuildMemberUnbanEvent event)
     {
-        System.out.println(event.getUserName() + " was unbanned.  Better keep an eye on them...");
+        System.out.println(event.getUser().getUsername() + " was unbanned.  Better keep an eye on them...");
     }
 
     @Override

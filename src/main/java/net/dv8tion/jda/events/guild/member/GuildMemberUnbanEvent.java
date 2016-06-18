@@ -17,33 +17,13 @@ package net.dv8tion.jda.events.guild.member;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.entities.User;
 
 public class GuildMemberUnbanEvent extends GenericGuildMemberEvent
 {
-    private final String userId;
-    private final String userName;
-    private final String userDiscriminator;
 
-    public GuildMemberUnbanEvent(JDA api, int responseNumber, Guild guild, String userId, String userName, String userDiscriminator)
+    public GuildMemberUnbanEvent(JDA api, int responseNumber, Guild guild, User user)
     {
-        super(api, responseNumber, guild, null);
-        this.userId = userId;
-        this.userName = userName;
-        this.userDiscriminator = userDiscriminator;
-    }
-
-    public String getUserId()
-    {
-        return userId;
-    }
-
-    public String getUserName()
-    {
-        return userName;
-    }
-
-    public String getUserDiscriminator()
-    {
-        return userDiscriminator;
+        super(api, responseNumber, guild, user);
     }
 }

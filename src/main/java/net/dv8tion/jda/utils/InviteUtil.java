@@ -54,8 +54,8 @@ public class InviteUtil
             String[] split = code.split("/");
             code = split[split.length - 1];
         }
-        JSONObject object = new JDAImpl(false, false).getRequester().get(Requester.DISCORD_API_PREFIX + "invite/" + code).getObject();
-        if (object != null && object.has("code"))
+        JSONObject object = new JDAImpl(false, false, false).getRequester().get(Requester.DISCORD_API_PREFIX + "invite/" + code).getObject();
+        if (object != null && object.has("code") && object.has("guild"))
         {
             JSONObject guild = object.getJSONObject("guild");
             JSONObject channel = object.getJSONObject("channel");

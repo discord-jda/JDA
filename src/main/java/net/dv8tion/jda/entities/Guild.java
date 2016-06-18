@@ -189,6 +189,23 @@ public interface Guild
     RoleManager createRole();
 
     /**
+     * Creates a new {@link net.dv8tion.jda.entities.Role Role} in this {@link net.dv8tion.jda.entities.Guild Guild} with the same settings as the given {@link net.dv8tion.jda.entities.Role Role}.
+     * It will be placed at the bottom (just over the @everyone role) to avoid permission hierarchy conflicts.
+     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.Permission#MANAGE_ROLES MANAGE_ROLES Permission}
+     * and all {@link net.dv8tion.jda.Permission Permissions} the given {@link net.dv8tion.jda.entities.Role Role} has.
+     *
+     * @param role 
+     *      The {@link net.dv8tion.jda.entities.Role Role} that should be copied 
+     * @return
+     *      the RoleManager for the created Role
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
+     * @throws net.dv8tion.jda.exceptions.PermissionException
+     *      if the bot doesn't has {@link net.dv8tion.jda.Permission#MANAGE_ROLES MANAGE_ROLES Permission} and every Permission the given Role has
+     */
+    RoleManager createCopyOfRole(Role role);
+
+    /**
      * Provides all of the {@link net.dv8tion.jda.entities.Role Roles} that the provided {@link net.dv8tion.jda.entities.User User}
      *  has been assigned.
      * The roles returned will be sorted according to their position.

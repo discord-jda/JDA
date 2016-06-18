@@ -48,7 +48,7 @@ public class JDABuilder
     protected String token = null;
     protected boolean enableVoice = true;
     protected boolean enableShutdownHook = true;
-    protected boolean useAnnotatedManager = false;
+    protected boolean enableBulkDeleteSplitting = true;
     protected IEventManager eventManager = null;
     protected boolean reconnect = true;
     protected int[] sharding = null;
@@ -110,7 +110,7 @@ public class JDABuilder
      * Enables/Disables Voice functionality.<br>
      * This is useful, if your current system doesn't support Voice and you do not need it.
      * <p>
-     * Default: true
+     * Default: <b>true (enabled)</b>
      *
      * @param enabled
      *          True - enables voice support.
@@ -124,9 +124,29 @@ public class JDABuilder
     }
 
     /**
+     * If enabled, JDA will separate the bulk delete event into individual delete events, but this isn't as efficient as
+     * handling a single event would be. It is recommended that BulkDelete Splitting be disabled and that the developer
+     * should instead handle the {@link net.dv8tion.jda.events.message.MessageBulkDeleteEvent MessageBulkDeleteEvent}
+     * <p>
+     * Default: <b>true (enabled)</b>
+     *
+     * @param enabled
+     *          True - The MESSAGE_DELTE_BULK will be split into multiple individual MessageDeleteEvents.
+     * @return
+     *       Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public JDABuilder setBulkDeleteSplittingEnabled(boolean enabled)
+    {
+        this.enableBulkDeleteSplitting = enabled;
+        return this;
+    }
+
+    /**
      * Enables/Disables the use of a Shutdown hook to clean up JDA.<br>
      * When the Java program closes shutdown hooks are run. This is used as a last-second cleanup
      * attempt by JDA to properly severe connections.
+     * <p>
+     * Default: <b>true (enabled)</b>
      *
      * @param enable
      *          True (default) - use shutdown hook to clean up JDA if the Java program is closed.
@@ -157,25 +177,6 @@ public class JDABuilder
     }
 
     /**
-     * <b>This method is deprecated! Please switch to {@link #setEventManager(IEventManager)}.</b>
-     * <p>
-     * Changes the internal EventManager.
-     * The default EventManager is {@link net.dv8tion.jda.hooks.InterfacedEventManager InterfacedEventListener}.
-     * There is also an {@link AnnotatedEventManager AnnotatedEventManager} available.
-     *
-     * @param useAnnotated
-     *      Whether or not to use the {@link net.dv8tion.jda.hooks.AnnotatedEventManager AnnotatedEventManager}
-     * @return
-     *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
-     */
-    @Deprecated
-    public JDABuilder useAnnotatedEventManager(boolean useAnnotated)
-    {
-        this.useAnnotatedManager = useAnnotated;
-        return this;
-    }
-
-    /**
      * Changes the internally used EventManager.
      * There are 2 provided Implementations:
      * <ul>
@@ -199,7 +200,8 @@ public class JDABuilder
     /**
      * Adds a listener to the list of listeners that will be used to populate the {@link net.dv8tion.jda.JDA} object.
      * This uses the {@link net.dv8tion.jda.hooks.InterfacedEventManager InterfacedEventListener} by default.
-     * To switch to the {@link net.dv8tion.jda.hooks.AnnotatedEventManager AnnotatedEventManager}, use {@link #useAnnotatedEventManager(boolean)}.
+     * To switch to the {@link net.dv8tion.jda.hooks.AnnotatedEventManager AnnotatedEventManager},
+     * use {@link #setEventManager(net.dv8tion.jda.hooks.IEventManager) setEventManager(new AnnotatedEventManager())}.
      *
      * Note: when using the {@link net.dv8tion.jda.hooks.InterfacedEventManager InterfacedEventListener} (default),
      * given listener <b>must</b> be instance of {@link net.dv8tion.jda.hooks.EventListener EventListener}!
@@ -255,7 +257,7 @@ public class JDABuilder
     }
 
     /**
-     * Builds a new {@link net.dv8tion.jda.JDA} instance and uses the provided email and password to start the login process.<br>
+     * Builds a new {@link net.dv8tion.jda.JDA} instance and uses the provided token to start the login process.<br>
      * The login process runs in a different thread, so while this will return immediately, {@link net.dv8tion.jda.JDA} has not
      * finished loading, thus many {@link net.dv8tion.jda.JDA} methods have the chance to return incorrect information.
      * <p>
@@ -266,43 +268,40 @@ public class JDABuilder
      * @return
      *      A {@link net.dv8tion.jda.JDA} instance that has started the login process. It is unknown as to whether or not loading has finished when this returns.
      * @throws LoginException
-     *          If the provided email-password combination fails the Discord security authentication.
+     *          If the provided token is invalid.
      * @throws IllegalArgumentException
-     *          If either the provided email or password is empty or null.
+     *          If the provided token is empty or null.
      */
     public JDA buildAsync() throws LoginException, IllegalArgumentException
     {
         jdaCreated = true;
         JDAImpl jda;
         if (proxySet)
-            jda = new JDAImpl(proxyUrl, proxyPort, enableVoice, enableShutdownHook);
+            jda = new JDAImpl(proxyUrl, proxyPort, enableVoice, enableShutdownHook, enableBulkDeleteSplitting);
         else
-            jda = new JDAImpl(enableVoice, enableShutdownHook);
+            jda = new JDAImpl(enableVoice, enableShutdownHook, enableBulkDeleteSplitting);
         jda.setAutoReconnect(reconnect);
         if (eventManager != null)
         {
             jda.setEventManager(eventManager);
         }
-        else if (useAnnotatedManager)
-        {
-            jda.setEventManager(new AnnotatedEventManager());
-        }
         listeners.forEach(jda::addEventListener);
+        jda.setStatus(JDA.Status.INITIALIZED);  //This is already set by JDA internally, but this is to make sure the listeners catch it.
         jda.login(token, sharding);
         return jda;
     }
 
     /**
-     * Builds a new {@link net.dv8tion.jda.JDA} instance and uses the provided email and password to start the login process.<br>
+     * Builds a new {@link net.dv8tion.jda.JDA} instance and uses the provided token to start the login process.<br>
      * This method will block until JDA has logged in and finished loading all resources. This is an alternative
      * to using {@link net.dv8tion.jda.events.ReadyEvent ReadyEvent}.
      *
      * @return
      *      A {@link net.dv8tion.jda.JDA} Object that is <b>guaranteed</b> to be logged in and finished loading.
      * @throws LoginException
-     *          If the provided email-password combination fails the Discord security authentication.
+     *          If the provided token is invalid.
      * @throws IllegalArgumentException
-     *          If either the provided email or password is empty or null.
+     *          If the provided token is empty or null.
      * @throws InterruptedException
      *          If an interrupt request is received while waiting for {@link net.dv8tion.jda.JDA} to finish logging in.
      *          This would most likely be caused by a JVM shutdown request.

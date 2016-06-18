@@ -37,6 +37,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onReconnect(ReconnectedEvent event) {}
     public void onDisconnect(DisconnectEvent event) {}
     public void onShutdown(ShutdownEvent event) {}
+    public void onStatusChange(StatusChangeEvent event) {}
 
     //User Events
     public void onUserNameUpdate(UserNameUpdateEvent event) {}
@@ -60,6 +61,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onMessageReceived(MessageReceivedEvent event) {}
     public void onMessageUpdate(MessageUpdateEvent event) {}
     public void onMessageDelete(MessageDeleteEvent event) {}
+    public void onMessageBulkDelete(MessageBulkDeleteEvent event) {}
     public void onMessageEmbed(MessageEmbedEvent event) {}
 
     public void onInviteReceived(InviteReceivedEvent event) {}
@@ -76,6 +78,8 @@ public abstract class ListenerAdapter implements EventListener
     public void onVoiceChannelDelete(VoiceChannelDeleteEvent event) {}
     public void onVoiceChannelUpdateName(VoiceChannelUpdateNameEvent event) {}
     public void onVoiceChannelUpdatePosition(VoiceChannelUpdatePositionEvent event) {}
+    public void onVoiceChannelUpdateUserLimit(VoiceChannelUpdateUserLimitEvent event) {}
+    public void onVoiceChannelUpdateBitrate(VoiceChannelUpdateBitrateEvent event) {}
     public void onVoiceChannelUpdatePermissions(VoiceChannelUpdatePermissionsEvent event) {}
     public void onVoiceChannelCreate(VoiceChannelCreateEvent event) {}
 
@@ -153,6 +157,8 @@ public abstract class ListenerAdapter implements EventListener
             onDisconnect((DisconnectEvent) event);
         else if (event instanceof ShutdownEvent)
             onShutdown((ShutdownEvent) event);
+        else if (event instanceof StatusChangeEvent)
+            onStatusChange((StatusChangeEvent) event);
 
         //Message Events
         //Guild (TextChannel) Message Events
@@ -180,6 +186,8 @@ public abstract class ListenerAdapter implements EventListener
             onMessageUpdate((MessageUpdateEvent) event);
         else if (event instanceof MessageDeleteEvent)
             onMessageDelete((MessageDeleteEvent) event);
+        else if (event instanceof MessageBulkDeleteEvent)
+            onMessageBulkDelete((MessageBulkDeleteEvent) event);
         else if (event instanceof MessageEmbedEvent)
             onMessageEmbed((MessageEmbedEvent) event);
         //Invite Messages
@@ -221,6 +229,10 @@ public abstract class ListenerAdapter implements EventListener
             onVoiceChannelUpdateName((VoiceChannelUpdateNameEvent) event);
         else if (event instanceof VoiceChannelUpdatePositionEvent)
             onVoiceChannelUpdatePosition((VoiceChannelUpdatePositionEvent) event);
+        else if (event instanceof VoiceChannelUpdateUserLimitEvent)
+            onVoiceChannelUpdateUserLimit((VoiceChannelUpdateUserLimitEvent) event);
+        else if (event instanceof VoiceChannelUpdateBitrateEvent)
+            onVoiceChannelUpdateBitrate((VoiceChannelUpdateBitrateEvent) event);
         else if (event instanceof VoiceChannelUpdatePermissionsEvent)
             onVoiceChannelUpdatePermissions((VoiceChannelUpdatePermissionsEvent) event);
         else if (event instanceof VoiceChannelDeleteEvent)

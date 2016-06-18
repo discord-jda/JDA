@@ -20,7 +20,9 @@ import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.managers.RoleManager;
+import net.dv8tion.jda.utils.MiscUtil;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 public class RoleImpl implements net.dv8tion.jda.entities.Role
@@ -84,6 +86,23 @@ public class RoleImpl implements net.dv8tion.jda.entities.Role
 
     @Override
     public int getPosition()
+    {
+        if (this == guild.getPublicRole())
+            return -1;
+
+        //Subtract 1 to get into 0-index, and 1 to disregard the everyone role.
+        int i = guild.getRoles().size() - 2;
+        for (Role r : guild.getRoles())
+        {
+            if (r == this)
+                return i;
+            i--;
+        }
+        throw new RuntimeException("Somehow when determining position we never found the role in the Guild's roles? wtf?");
+    }
+
+    @Override
+    public int getPositionRaw()
     {
         return position;
     }
@@ -187,5 +206,26 @@ public class RoleImpl implements net.dv8tion.jda.entities.Role
     public String toString()
     {
         return "R:" + getName() + '(' + getId() + ')';
+    }
+
+    @Override
+    public int compareTo(Role r)
+    {
+        if (this == r)
+            return 0;
+
+        if (this.getGuild() != r.getGuild())
+            throw new IllegalArgumentException("Cannot compare roles that aren't from the same guild!");
+
+        if (this.getPositionRaw() != r.getPositionRaw())
+            return this.getPositionRaw() - r.getPositionRaw();
+
+        OffsetDateTime thisTime = MiscUtil.getCreationTime(this);
+        OffsetDateTime rTime = MiscUtil.getCreationTime(r);
+
+        //We compare the provided role's time to this's time instead of the reverse as one would expect due to how
+        // discord deals with hierarchy. The more recent a role was created, the lower its hierarchy ranking when
+        // it shares the same position as another role.
+        return rTime.compareTo(thisTime);
     }
 }

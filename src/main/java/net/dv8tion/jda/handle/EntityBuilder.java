@@ -277,7 +277,6 @@ public class EntityBuilder
                             "GuildId: " + guildObj.getId() + " UserId: " + user.getId() + " RoleId: " + roleId);
                 }
             }
-            Collections.sort(userRoles.get(user), (r2, r1) -> Integer.compare(r1.getPosition(), r2.getPosition()));
             VoiceStatusImpl voiceStatus = new VoiceStatusImpl(user, guildObj);
             voiceStatus.setServerDeaf(member.getBoolean("deaf"));
             voiceStatus.setServerMute(member.getBoolean("mute"));
@@ -308,7 +307,14 @@ public class EntityBuilder
                 JSONArray permissionOverwrites = channel.getJSONArray("permission_overwrites");
                 for (int j = 0; j < permissionOverwrites.length(); j++)
                 {
-                    createPermissionOverride(permissionOverwrites.getJSONObject(j), channelObj);
+                    try
+                    {
+                        createPermissionOverride(permissionOverwrites.getJSONObject(j), channelObj);
+                    }
+                    catch (IllegalArgumentException e)
+                    {
+                        WebSocketClient.LOG.warn(e.getMessage() + ". Ignoring PermissionOverride.");
+                    }
                 }
             }
             else
@@ -350,7 +356,9 @@ public class EntityBuilder
 
         return channel
                 .setName(json.getString("name"))
-                .setPosition(json.getInt("position"));
+                .setPosition(json.getInt("position"))
+                .setUserLimit(json.getInt("user_limit"))
+                .setBitrate(json.getInt("bitrate"));
     }
 
     public PrivateChannel createPrivateChannel(JSONObject privatechat)

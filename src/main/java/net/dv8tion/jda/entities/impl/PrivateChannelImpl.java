@@ -20,10 +20,13 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.body.MultipartBody;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.MessageBuilder;
+import net.dv8tion.jda.MessageHistory;
+import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.exceptions.BlockedException;
+import net.dv8tion.jda.exceptions.PermissionException;
 import net.dv8tion.jda.exceptions.RateLimitedException;
 import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.requests.Requester;
@@ -35,6 +38,7 @@ import java.util.function.Consumer;
 
 public class PrivateChannelImpl implements PrivateChannel
 {
+    public static final String RATE_LIMIT_IDENTIFIER = "GLOBAL_PRIV_CHANNEL_RATELIMIT";
     private final String id;
     private final User user;
     private final JDAImpl api;
@@ -73,9 +77,9 @@ public class PrivateChannelImpl implements PrivateChannel
     @Override
     public Message sendMessage(Message msg)
     {
-        if (api.getMessageLimit() != null)
+        if (api.getMessageLimit(RATE_LIMIT_IDENTIFIER) != null)
         {
-            throw new RateLimitedException(api.getMessageLimit() - System.currentTimeMillis());
+            throw new RateLimitedException(api.getMessageLimit(RATE_LIMIT_IDENTIFIER) - System.currentTimeMillis());
         }
         try
         {
@@ -84,7 +88,7 @@ public class PrivateChannelImpl implements PrivateChannel
             if (response.isRateLimit())
             {
                 long retry_after = response.getObject().getLong("retry_after");
-                api.setMessageTimeout(retry_after);
+                api.setMessageTimeout(RATE_LIMIT_IDENTIFIER, retry_after);
                 throw new RateLimitedException(retry_after);
             }
             if (!response.isOk())
@@ -110,8 +114,8 @@ public class PrivateChannelImpl implements PrivateChannel
     @Override
     public void sendMessageAsync(Message msg, Consumer<Message> callback)
     {
-        ((MessageImpl) msg).setChannelId(getId());
-        TextChannelImpl.AsyncMessageSender.getInstance(getJDA()).enqueue(msg, false, callback);
+        ((MessageImpl) msg).setChannelId(id);
+        TextChannelImpl.AsyncMessageSender.getInstance(getJDA(), RATE_LIMIT_IDENTIFIER).enqueue(msg, false, callback);
     }
 
     @Override
@@ -165,8 +169,41 @@ public class PrivateChannelImpl implements PrivateChannel
             if (callback != null)
                 callback.accept(message);
         });
+        thread.setName("PrivateChannelImpl SendFileAsync Channel: " + id);
         thread.setDaemon(true);
         thread.start();
+    }
+
+    @Override
+    public Message getMessageById(String messageId)
+    {
+        Requester.Response response = ((JDAImpl) getJDA()).getRequester().get(Requester.DISCORD_API_PREFIX + "channels/" + id + "/messages/" + messageId);
+
+        if (response.isOk())
+            return new EntityBuilder((JDAImpl) getJDA()).createMessage(response.getObject());
+
+        //Doesn't exist.
+        return null;
+    }
+
+    @Override
+    public boolean deleteMessageById(String messageId)
+    {
+        Requester.Response response = ((JDAImpl) getJDA()).getRequester().delete(Requester.DISCORD_API_PREFIX + "channels/" + id + "/messages/" + messageId);
+
+        if (response.isOk())
+            return true;
+        else if (response.code == 403)
+            throw new PermissionException("Cannot delete another User's messages in a PrivateChannel.");
+
+        //Doesn't exist. Either never existed, bad id, was deleted already, or not in this channel.
+        return false;
+    }
+
+    @Override
+    public MessageHistory getHistory()
+    {
+        return new MessageHistory(this);
     }
 
     @Override

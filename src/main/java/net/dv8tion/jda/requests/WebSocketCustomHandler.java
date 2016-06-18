@@ -21,7 +21,7 @@ public interface WebSocketCustomHandler
 {
     /**
      * Handles discord events passed to it. If this handler does not handle the event provided
-     * this should return true.
+     * this should return false.
      *
      * @param obj
      *          The Discord event which needs to be handled
