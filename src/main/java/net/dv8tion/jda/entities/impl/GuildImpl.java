@@ -134,6 +134,12 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    public boolean isMember(User user)
+    {
+        return getRolesForUser(user) != null;
+    }
+
+    @Override
     public List<TextChannel> getTextChannels()
     {
         ArrayList<TextChannel> textChannels = new ArrayList<>(this.textChannels.values());
@@ -270,7 +276,7 @@ public class GuildImpl implements Guild
     {
         List<Role> roles = userRoles.get(user);
         if (roles == null)
-            return new LinkedList<>();
+            return null;
 
         Collections.sort(roles, (r1, r2) -> r2.compareTo(r1));
         return Collections.unmodifiableList(roles);
