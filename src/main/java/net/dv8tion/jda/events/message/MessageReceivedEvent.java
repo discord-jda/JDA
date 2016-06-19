@@ -60,7 +60,7 @@ public class MessageReceivedEvent extends Event
      */
     public String getAuthorName()
     {
-        String nickname = getAuthorNick();
+        String nickname = isPrivate() ? getAuthor().getUsername() : getAuthorNick();
         return nickname == null ? getAuthor().getUsername() : nickname;
     }
 
