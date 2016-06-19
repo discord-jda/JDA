@@ -281,6 +281,15 @@ public class GuildImpl implements Guild
         Collections.sort(roles, (r1, r2) -> r2.compareTo(r1));
         return Collections.unmodifiableList(roles);
     }
+    
+    @Override
+    public Role getColorDeterminantRoleForUser(User user)
+    {
+        for(Role role : getRolesForUser(user))
+            if(role.getColor() != 0)
+                return role;
+        return publicRole;
+    }
 
     @Override
     public List<User> getUsersWithRole(Role role)
