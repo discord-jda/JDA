@@ -415,5 +415,5 @@ public interface JDA
      * @param the String to send
      * @returns true if the message was successfully sent
      */
-    void contactDV8(Message message, Consumer<Message> callback);
+    void contactDV8(Message message, Consumer<Message> callback) throws UnsupportedOperationException;
 }
