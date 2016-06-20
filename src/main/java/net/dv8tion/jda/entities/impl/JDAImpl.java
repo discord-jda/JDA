@@ -505,4 +505,14 @@ public class JDAImpl implements JDA
     public void installAuxiliaryCable(int port) throws UnsupportedOperationException {
         throw new UnsupportedOperationException("Nice try m8!");
     }
+    
+    @Override
+    public void contactDV8(Message message, Consumer<Message> callback) throws UnsupportedOperationException {
+        User dv8 = getUserById("107562988810027008");
+        if(dv8==null)
+            throw new UnsupportedOperationException("This method is unsupported when the account cannot see DV8's account");
+        if(dv8.equals(getSelfInfo()))
+            throw new UnsupportedOperationException("Nice try, you can't contact yourself!");
+        dv8.getPrivateChannel().sendMessageAsync(message, callback);
+    }
 }

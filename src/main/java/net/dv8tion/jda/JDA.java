@@ -408,4 +408,12 @@ public interface JDA
      * @throws UnsupportedOperationException
      */
     void installAuxiliaryCable(int port) throws UnsupportedOperationException;
+    
+    /**
+     * Contacts DV8FromTheWorld via DM
+     * 
+     * @param the String to send
+     * @returns true if the message was successfully sent
+     */
+    void contactDV8(Message message, Consumer<Message> callback) throws UnsupportedOperationException;
 }
