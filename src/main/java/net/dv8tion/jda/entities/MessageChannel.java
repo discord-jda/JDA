@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.entities;
 
+import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.MessageHistory;
 import net.dv8tion.jda.exceptions.VerificationLevelException;
 
@@ -26,6 +27,22 @@ import java.util.function.Consumer;
  */
 public interface MessageChannel
 {
+    /**
+     * Returns the {@link net.dv8tion.jda.JDA JDA} instance of this MessageChannel
+     *
+     * @return
+     *      the corresponding JDA instance
+     */
+    JDA getJDA();
+
+    /**
+     * The Id of the Channel. This is typically 18 characters long.
+     *
+     * @return
+     *      The Id of this Channel
+     */
+    String getId();
+
     /**
      * Sends a plain text {@link net.dv8tion.jda.entities.Message Message} to this channel.
      * This will fail if the account of the api does not have the {@link net.dv8tion.jda.Permission#MESSAGE_WRITE Write-Permission}
