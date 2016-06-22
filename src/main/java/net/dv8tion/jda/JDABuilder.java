@@ -310,7 +310,7 @@ public class JDABuilder
     public JDA buildBlocking() throws LoginException, IllegalArgumentException, InterruptedException
     {
         JDA jda = buildAsync();
-        while(jda.getStatus()!=Status.CONNECTED)
+        while(jda.getStatus() != Status.CONNECTED)
         {
             Thread.sleep(50);
         }
