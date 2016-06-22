@@ -99,7 +99,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     public void ready()
     {
-        api.setStatus(JDA.Status.CONNECTED);
         if (initiating)
         {
             initiating = false;
@@ -136,6 +135,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             JDAImpl.LOG.info("Successfully resumed Session!");
             api.getEventManager().handle(new ResumedEvent(api, api.getResponseTotal()));
         }
+        api.setStatus(JDA.Status.CONNECTED);
         LOG.debug("Resending " + cachedEvents.size() + " cached events...");
         handle(cachedEvents);
         LOG.debug("Sending of cached events finished.");
