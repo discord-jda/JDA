@@ -176,7 +176,7 @@ public class JDAImpl implements JDA
     @Override
     public Status getStatus()
     {
-        return null;
+        return status;
     }
 
     public void setStatus(Status status)
