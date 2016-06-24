@@ -273,7 +273,7 @@ public class TextChannelImpl implements TextChannel
         {
             Message messageReturn = sendFile(file, message);
             if (callback != null)
-                callback.accept(message);
+                callback.accept(messageReturn);
         });
         thread.setName("TextChannelImpl sendFileAsync Channel: " + id);
         thread.setDaemon(true);
