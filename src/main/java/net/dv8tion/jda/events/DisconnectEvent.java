@@ -21,6 +21,7 @@ import net.dv8tion.jda.entities.VoiceChannel;
 
 import java.time.OffsetDateTime;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 public class DisconnectEvent extends Event
@@ -39,7 +40,7 @@ public class DisconnectEvent extends Event
         this.clientCloseFrame = clientCloseFrame;
         this.closedByServer = closedByServer;
         this.disconnectTime = disconnectTime;
-        this.dcAudioConnections = Collections.unmodifiableList(dcAudioConnections);
+        this.dcAudioConnections = Collections.unmodifiableList(new LinkedList<>(dcAudioConnections));
     }
 
     public WebSocketFrame getServiceCloseFrame()

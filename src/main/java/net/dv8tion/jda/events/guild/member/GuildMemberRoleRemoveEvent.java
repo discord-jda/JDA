@@ -21,6 +21,7 @@ import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.entities.User;
 
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 public class GuildMemberRoleRemoveEvent extends GenericGuildMemberEvent
@@ -30,7 +31,7 @@ public class GuildMemberRoleRemoveEvent extends GenericGuildMemberEvent
     public GuildMemberRoleRemoveEvent(JDA api, int responseNumber, Guild guild, User user, List<Role> removedRoles)
     {
         super(api, responseNumber, guild, user);
-        this.removedRoles = removedRoles;
+        this.removedRoles = new LinkedList<>(removedRoles);
     }
 
     public List<Role> getRoles()
