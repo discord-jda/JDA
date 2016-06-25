@@ -18,6 +18,12 @@ package net.dv8tion.jda.events.channel.text;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.TextChannel;
 
+/**
+ * <b><u>TextChannelUpdateNameEvent</u></b><br>
+ * Fired if a {@link net.dv8tion.jda.entities.TextChannel TextChannel}'s name changes.<br>
+ * <br>
+ * Use: Detect when a TextChannel name changes and get it's previous name.
+ */
 public class TextChannelUpdateNameEvent extends GenericTextChannelUpdateEvent
 {
     private final String oldName;

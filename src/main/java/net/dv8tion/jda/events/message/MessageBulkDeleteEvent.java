@@ -22,6 +22,12 @@ import net.dv8tion.jda.events.Event;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * <b><u>MessageBulkDeleteEvent</u></b><br/>
+ * Fired if a bulk deletion is executed in a {@link net.dv8tion.jda.entities.TextChannel TextChannel}.<br/>
+ * <br/>
+ * Use: This event indicates that a large chunk of Messages is deleted in a TextChannel. Providing a list of Message IDs and the specific TextChannel.
+ */
 public class MessageBulkDeleteEvent extends Event
 {
     protected final TextChannel channel;

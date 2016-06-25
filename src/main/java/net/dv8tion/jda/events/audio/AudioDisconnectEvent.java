@@ -18,6 +18,12 @@ package net.dv8tion.jda.events.audio;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.VoiceChannel;
 
+/**
+ * <b><u>AudioDisconnectedEvent</u></b><br>
+ * Fired if we disconnected from a {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel}.<br>
+ * <br>
+ * Use: Retrieve the {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} we disconnected from.
+ */
 public class AudioDisconnectEvent extends GenericAudioEvent
 {
     protected final VoiceChannel disconnectedChannel;

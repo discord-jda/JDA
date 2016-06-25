@@ -18,6 +18,11 @@ package net.dv8tion.jda.events.voice;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.VoiceStatus;
 
+/**
+ * <b><u>VoiceSelfMuteEvent</u></b><br/>
+ * Fired if we (un-)mute us. <br/>
+ * This can indicate both mute and un-mute and can <u>only</u> be caused by us.
+ */
 public class VoiceSelfMuteEvent extends VoiceMuteEvent
 {
     public VoiceSelfMuteEvent(JDA api, int responseNumber, VoiceStatus voiceStatus)

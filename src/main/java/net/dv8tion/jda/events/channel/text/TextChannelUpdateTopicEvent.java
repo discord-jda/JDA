@@ -18,6 +18,12 @@ package net.dv8tion.jda.events.channel.text;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.TextChannel;
 
+/**
+ * <b><u>TextChannelUpdateTopicEvent</u></b><br>
+ * Fired if a {@link net.dv8tion.jda.entities.TextChannel TextChannel}'s topic changes.<br>
+ * <br>
+ * Use: Detect when a TextChannel topic changes and get it's previous topic.
+ */
 public class TextChannelUpdateTopicEvent extends GenericTextChannelUpdateEvent
 {
     private final String oldTopic;

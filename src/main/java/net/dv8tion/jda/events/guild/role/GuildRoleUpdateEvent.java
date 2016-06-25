@@ -19,6 +19,12 @@ import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.events.Event;
 
+/**
+ * <b><u>GuildRoleUpdateEvent</u></b><br/>
+ * Fired whenever a {@link net.dv8tion.jda.entities.Role Role} is updated.<br/>
+ * <br/>
+ * Use: Retrieve affected Role. <i>(No real use for JDA user)</i>
+ */
 public class GuildRoleUpdateEvent extends Event
 {
     protected final Role role;

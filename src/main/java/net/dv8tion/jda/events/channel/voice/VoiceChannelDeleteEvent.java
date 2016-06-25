@@ -18,6 +18,12 @@ package net.dv8tion.jda.events.channel.voice;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.VoiceChannel;
 
+/**
+ * <b><u>VoiceChannelDeleteEvent</u></b><br/>
+ * Fired if a {@link VoiceChannel VoiceChannel} is deleted.<br/>
+ * <br/>
+ * Use: Get affected VoiceChannel(likely to be null) or affected Guild.
+ */
 public class VoiceChannelDeleteEvent extends GenericVoiceChannelEvent
 {
     public VoiceChannelDeleteEvent(JDA api, int responseNumber, VoiceChannel channel)

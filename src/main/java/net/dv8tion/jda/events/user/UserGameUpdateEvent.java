@@ -19,6 +19,12 @@ import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Game;
 import net.dv8tion.jda.entities.User;
 
+/**
+ * <b><u>UserGameUpdateEvent</u></b><br/>
+ * Fired if the {@link net.dv8tion.jda.entities.Game Game} of a {@link net.dv8tion.jda.entities.User User} changes.<br/>
+ * <br/>
+ * Use: Retrieve the User who's Game changed and their previous Game.
+ */
 public class UserGameUpdateEvent extends GenericUserEvent
 {
     private final Game previousGame;

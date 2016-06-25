@@ -19,6 +19,13 @@ import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.events.Event;
 
+/**
+ * <b><u>GenericGuildRoleUpdateEvent</u></b><br>
+ * Fired whenever a {@link net.dv8tion.jda.entities.Guild Guild} role is updated/created/deleted.<br>
+ * Every GuildRoleEvent is an instance of this event and can be casted. (no exceptions)<br>
+ * <br>
+ * Use: Detect any GuildRoleEvent. <i>(No real use for the JDA user)</i>
+ */
 public class GenericGuildRoleUpdateEvent extends Event
 {
     protected final Role role;

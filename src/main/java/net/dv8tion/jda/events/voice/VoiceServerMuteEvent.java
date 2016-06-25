@@ -18,6 +18,11 @@ package net.dv8tion.jda.events.voice;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.VoiceStatus;
 
+/**
+ * <b><u>VoiceServerMuteEvent</u></b><br/>
+ * Fired if we are (un-)muted by the server. <br/>
+ * This can indicate both muted and un-muted and can <u>only</u> be caused by the server.
+ */
 public class VoiceServerMuteEvent extends VoiceMuteEvent
 {
     public VoiceServerMuteEvent(JDA api, int responseNumber, VoiceStatus voiceStatus)
