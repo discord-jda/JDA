@@ -17,7 +17,6 @@ package net.dv8tion.jda;
 
 import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.hooks.AnnotatedEventManager;
-import net.dv8tion.jda.hooks.EventListener;
 import net.dv8tion.jda.hooks.IEventManager;
 import net.dv8tion.jda.managers.AccountManager;
 import net.dv8tion.jda.managers.AudioManager;
@@ -42,20 +41,20 @@ public interface JDA
         INITIALIZED,
         /**JDA is currently attempting to log in.*/
         LOGGING_IN,
-        /**JDA is currently attempting to connect its websocket to Discord.*/
+        /**JDA is currently attempting to connect it's websocket to Discord.*/
         CONNECTING_TO_WEBSOCKET,
-        /**JDA has successfully connected its websocket to Discord and is populating internal objects.
+        /**JDA has successfully connected it's websocket to Discord and is populating internal objects.
          * This process often takes the longest of all Statuses (besides CONNECTED)*/
         LOADING_SUBSYSTEMS,
         /**JDA has finished loading everything, is receiving information from Discord and is firing events.*/
         CONNECTED,
-        /**JDA's main websocket has been disconnected. This <b>DOES NOT</b> mean JDA has shutdown permenantly.
+        /**JDA's main websocket has been disconnected. This <b>DOES NOT</b> mean JDA has shutdown permanently.
          * This is an in-between status. Most likely ATTEMPTING_TO_RECONNECT or SHUTTING_DOWN/SHUTDOWN will soon follow.*/
         DISCONNECTED,
-        /**When trying to reconnect to Discord JDA encounter an issue, most likely related to a lack of internet connection,
+        /**When trying to reconnect to Discord JDA encountered an issue, most likely related to a lack of internet connection,
          * and is waiting to try reconnecting again.*/
         WAITING_TO_RECONNECT,
-        /**JDA has been disconnected from Discord and is currently try to reestablish connection.*/
+        /**JDA has been disconnected from Discord and is currently trying to reestablish the connection.*/
         ATTEMPTING_TO_RECONNECT,
         /**JDA has received a shutdown request or has been disconnected from Discord and reconnect is disabled, thus,
          * JDA is in the process of shutting down*/

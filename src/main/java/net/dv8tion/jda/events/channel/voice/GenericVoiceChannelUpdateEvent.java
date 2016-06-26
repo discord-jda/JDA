@@ -19,6 +19,13 @@ package net.dv8tion.jda.events.channel.voice;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.VoiceChannel;
 
+/**
+ * <b><u>GenericVoiceChannelUpdateEvent</u></b><br>
+ * Fired whenever a {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} updates.<br>
+ * Every VoiceChannelUpdateEvent is an instance of this event and can be casted. (no exceptions)<br>
+ * <br>
+ * Use: Detect any VoiceChannelUpdateEvent.
+ */
 public class GenericVoiceChannelUpdateEvent extends GenericVoiceChannelEvent
 {
 

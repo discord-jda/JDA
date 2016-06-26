@@ -24,6 +24,12 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * <b><u>DisconnectEvent</u></b><br>
+ * Fired if our connection to the WebSocket was disrupted.<br>
+ * <br>
+ * Use: Reconnect manually or stop background threads that need fired events to function properly.
+ */
 public class DisconnectEvent extends Event
 {
     protected final WebSocketFrame serverCloseFrame;

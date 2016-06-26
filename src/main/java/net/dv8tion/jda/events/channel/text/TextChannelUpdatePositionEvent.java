@@ -18,6 +18,12 @@ package net.dv8tion.jda.events.channel.text;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.TextChannel;
 
+/**
+ * <b><u>TextChannelUpdatePositionEvent</u></b><br>
+ * Fired if a {@link net.dv8tion.jda.entities.TextChannel TextChannel}'s position changes.<br>
+ * <br>
+ * Use: Detect when a TextChannel position changes and get it's previous position.
+ */
 public class TextChannelUpdatePositionEvent extends GenericTextChannelUpdateEvent
 {
     private final int oldPosition;

@@ -23,6 +23,12 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * <b><u>ShutdownEvent</u></b><br>
+ * Fired if JDA successfully finished shutting down.<br>
+ *<br>
+ * Use: Confirmation of JDA#shutdown(boolean).
+ */
 public class ShutdownEvent extends Event
 {
     protected final OffsetDateTime shutdownTime;

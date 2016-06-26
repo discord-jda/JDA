@@ -18,6 +18,12 @@ package net.dv8tion.jda.events.guild.role;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Role;
 
+/**
+ * <b><u>GuildRoleUpdateNameEvent</u></b><br/>
+ * Fired if a {@link net.dv8tion.jda.entities.Role Role}'s name changes.<br/>
+ * <br/>
+ * Use: Retrieve affected Role.
+ */
 public class GuildRoleUpdateNameEvent extends GenericGuildRoleUpdateEvent
 {
     public GuildRoleUpdateNameEvent(JDA api, int responseNumber, Role role)

@@ -18,6 +18,13 @@ package net.dv8tion.jda.events.audio;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.events.Event;
 
+/**
+ * <b><u>GenericAudioEvent</u></b><br>
+ * Fired whenever an audio event is fired.<br>
+ * Any audio event is an instance of this event and can be casted.<br>
+ * <br>
+ * Use: Detect any AudioEvent.
+ */
 public class GenericAudioEvent extends Event
 {
     protected GenericAudioEvent(JDA api, int responseNumber)

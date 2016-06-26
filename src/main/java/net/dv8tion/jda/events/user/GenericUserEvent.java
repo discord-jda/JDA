@@ -19,6 +19,13 @@ import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.Event;
 
+/**
+ * <b><u>GenericUserEvent</u></b><br>
+ * Fired whenever a {@link net.dv8tion.jda.entities.User User} changes their presence. (like avatar/game)<br>
+ * Every UserEvent is an instance of this event and can be casted. (no exceptions)<br>
+ * <br>
+ * Use: Detect any UserEvent. <i>(No real use for the JDA user)</i>
+ */
 public class GenericUserEvent extends Event
 {
     private final User user;

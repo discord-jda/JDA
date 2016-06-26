@@ -20,6 +20,13 @@ import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.events.Event;
 
+/**
+ * <b><u>GenericVoiceChannelEvent</u></b><br>
+ * Fired whenever a {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} event is fired.<br>
+ * Every VoiceChannelEvent is an instance of this event and can be casted. (no exceptions)<br>
+ * <br>
+ * Use: Detect any VoiceChannelEvent.
+ */
 public abstract class GenericVoiceChannelEvent extends Event
 {
     private final VoiceChannel channel;

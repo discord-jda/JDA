@@ -22,6 +22,12 @@ import net.dv8tion.jda.entities.User;
 
 import java.util.List;
 
+/**
+ * <b><u>TextChannelUpdatePermissionsEvent</u></b><br>
+ * Fired if a {@link net.dv8tion.jda.entities.TextChannel TextChannel}'s permission overrides change.<br>
+ * <br>
+ * Use: Detect when a TextChannel's permission overrides change and get affected {@link net.dv8tion.jda.entities.Role Roles}/{@link net.dv8tion.jda.entities.User Users}.
+ */
 public class TextChannelUpdatePermissionsEvent extends GenericTextChannelUpdateEvent
 {
     private final List<Role> changedRoles;

@@ -19,6 +19,13 @@ import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.events.Event;
 
+/**
+ * <b><u>GenericGuildEvent</u></b><br>
+ * Fired whenever a {@link net.dv8tion.jda.entities.Guild Guild} event is fired.<br>
+ * Every GuildEvent is an instance of this event and can be casted. (no exceptions)<br>
+ * <br>
+ * Use: Detect any GuildEvent. <i>(No real use for the JDA user)</i>
+ */
 public abstract class GenericGuildEvent extends Event
 {
     private final Guild guild;

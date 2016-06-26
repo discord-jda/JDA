@@ -21,6 +21,13 @@ import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.VoiceStatus;
 import net.dv8tion.jda.events.Event;
 
+/**
+ * <b><u>GenericVoiceEvent</u></b><br>
+ * Fired whenever a {@link net.dv8tion.jda.entities.VoiceStatus VoiceStatus} of a {@link net.dv8tion.jda.entities.User User} changes. (like mute/deaf/leave)<br>
+ * Every VoiceEvent is an instance of this event and can be casted. (no exceptions)<br>
+ * <br>
+ * Use: Detect any VoiceEvent. <i>(No real use for the JDA user)</i>
+ */
 public abstract class GenericVoiceEvent extends Event
 {
     protected final VoiceStatus voiceStatus;

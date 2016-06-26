@@ -18,6 +18,12 @@ package net.dv8tion.jda.events.message.guild;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.TextChannel;
 
+/**
+ * <b><u>GuildMessageDeleteEvent</u></b><br/>
+ * Fired if a Guild Message was deleted.<br/>
+ * <br/>
+ * Use: Retrieve affected TextChannel and the id of the deleted Message.
+ */
 public class GuildMessageDeleteEvent extends GenericGuildMessageEvent
 {
     private final String messageId;

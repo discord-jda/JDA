@@ -18,6 +18,12 @@ package net.dv8tion.jda.events.channel.voice;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.VoiceChannel;
 
+/**
+ * <b><u>VoiceChannelUpdateNameEvent</u></b><br/>
+ * Fired if a {@link VoiceChannel VoiceChannel}'s name changes.<br/>
+ * <br/>
+ * Use: Get affected VoiceChannel, affected Guild and previous name.
+ */
 public class VoiceChannelUpdateNameEvent extends GenericVoiceChannelUpdateEvent
 {
     private final String oldName;

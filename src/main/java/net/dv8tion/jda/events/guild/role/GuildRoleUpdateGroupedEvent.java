@@ -18,6 +18,12 @@ package net.dv8tion.jda.events.guild.role;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Role;
 
+/**
+ * <b><u>GuildRoleUpdateGroupedEvent</u></b><br/>
+ * Fired if a {@link net.dv8tion.jda.entities.Role Role}'s grouped property changes.<br/>
+ * <br/>
+ * Use: Retrieve affected Role.
+ */
 public class GuildRoleUpdateGroupedEvent extends GenericGuildRoleUpdateEvent
 {
     public GuildRoleUpdateGroupedEvent(JDA api, int responseNumber, Role role)

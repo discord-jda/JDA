@@ -19,6 +19,12 @@ package net.dv8tion.jda.events.audio;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.VoiceChannel;
 
+/**
+ * <b><u>AudioConnectedEvent</u></b><br>
+ * Fired if we established an {@link net.dv8tion.jda.audio.AudioConnection AudioConnection} to a {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} successfully.<br>
+ * <br>
+ * Use: Retrieve newly connected {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel}.
+ */
 public class AudioConnectEvent extends GenericAudioEvent
 {
     protected final VoiceChannel connectedChannel;

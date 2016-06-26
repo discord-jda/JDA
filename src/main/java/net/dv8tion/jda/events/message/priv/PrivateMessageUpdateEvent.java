@@ -19,6 +19,12 @@ import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.PrivateChannel;
 
+/**
+ * <b><u>PrivateMessageUpdateEvent</u></b><br/>
+ * Fired if a Message is edited in a {@link net.dv8tion.jda.entities.PrivateChannel PrivateChannel}.<br/>
+ * <br/>
+ * Use: Retrieve affected PrivateChannel and edited Message.
+ */
 public class PrivateMessageUpdateEvent extends GenericPrivateMessageEvent
 {
     public PrivateMessageUpdateEvent(JDA api, int responseNumber, Message message, PrivateChannel channel)

@@ -18,6 +18,13 @@ package net.dv8tion.jda.events.channel.text;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.TextChannel;
 
+/**
+ * <b><u>GenericTextChannelUpdateEvent</u></b><br>
+ * Fired whenever a {@link net.dv8tion.jda.entities.TextChannel TextChannel} is updated.<br>
+ * Every TextChannelUpdateEvent is an instance of this event and can be casted. (no exceptions)<br>
+ * <br>
+ * Use: Detect any TextChannelUpdateEvent. <i>(No real use for JDA user)</i>
+ */
 public class GenericTextChannelUpdateEvent extends GenericTextChannelEvent
 {
 
