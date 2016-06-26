@@ -126,7 +126,7 @@ public class VoiceChannelImpl implements VoiceChannel
     @Override
     public List<User> getUsers()
     {
-        return Collections.unmodifiableList(connectedUsers);
+        return Collections.unmodifiableList(new LinkedList<>(connectedUsers));
     }
 
     @Override
