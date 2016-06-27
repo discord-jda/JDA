@@ -33,6 +33,7 @@ import net.dv8tion.jda.requests.Requester;
 import net.dv8tion.jda.utils.InviteUtil;
 import net.dv8tion.jda.utils.MiscUtil;
 import net.dv8tion.jda.utils.PermissionUtil;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -329,6 +330,57 @@ public class TextChannelImpl implements TextChannel
     public void sendTyping()
     {
         ((JDAImpl) getJDA()).getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + getId() + "/typing", new JSONObject());
+    }
+
+    @Override
+    public boolean pinMessageById(String messageId)
+    {
+        if (!checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_READ))
+            throw new PermissionException(Permission.MESSAGE_READ, "You cannot pin a message in a channel you can't access. (MESSAGE_READ)");
+        if (!checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_MANAGE))
+            throw new PermissionException(Permission.MESSAGE_MANAGE, "You need MESSAGE_MANAGE to pin or unpin messages.");
+        Requester.Response response = ((JDAImpl) getJDA()).getRequester().put(
+                Requester.DISCORD_API_PREFIX + "/channels/" + id + "/pins/" + messageId, new JSONObject());
+        if (response.isRateLimit())
+            throw new RateLimitedException(response.getObject().getInt("retry_after"));
+        return response.isOk();
+    }
+
+    @Override
+    public boolean unpinMessageById(String messageId)
+    {        if (!checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_READ))
+        throw new PermissionException(Permission.MESSAGE_READ, "You cannot unpin a message in a channel you can't access. (MESSAGE_READ)");
+        if (!checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_MANAGE))
+            throw new PermissionException(Permission.MESSAGE_MANAGE, "You need MESSAGE_MANAGE to pin or unpin messages.");
+        Requester.Response response = ((JDAImpl) getJDA()).getRequester().delete(
+                Requester.DISCORD_API_PREFIX + "/channels/" + id + "/pins/" + messageId);
+        if (response.isRateLimit())
+            throw new RateLimitedException(response.getObject().getInt("retry_after"));
+        return response.isOk();
+    }
+
+    @Override
+    public List<Message> getPinnedMessages()
+    {
+        if (!checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_READ))
+            new PermissionException(Permission.MESSAGE_READ, "Cannot get the pinned message of a channel without MESSAGE_READ access.");
+
+        List<Message> pinnedMessages = new LinkedList<>();
+        Requester.Response response = ((JDAImpl) getJDA()).getRequester().get(
+                Requester.DISCORD_API_PREFIX + "/channels/" + id + "/pins");
+        if (response.isOk())
+        {
+            JSONArray pins = response.getArray();
+            for (int i = 0; i < pins.length(); i++)
+            {
+                pinnedMessages.add(new EntityBuilder((JDAImpl) getJDA()).createMessage(pins.getJSONObject(i)));
+            }
+            return Collections.unmodifiableList(pinnedMessages);
+        }
+        else if (response.isRateLimit())
+            throw new RateLimitedException(response.getObject().getInt("retry_after"));
+        else
+            throw new RuntimeException("An unknown error occured attempting to get pinned messages. Ask devs for help.\n" + response);
     }
 
     @Override

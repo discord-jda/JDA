@@ -447,7 +447,8 @@ public class EntityBuilder
                 .setContent(content)
                 .setTime(OffsetDateTime.parse(jsonObject.getString("timestamp")))
                 .setMentionsEveryone(jsonObject.getBoolean("mention_everyone"))
-                .setTTS(jsonObject.getBoolean("tts"));
+                .setTTS(jsonObject.getBoolean("tts"))
+                .setPinned(jsonObject.getBoolean("pinned"));
 
         List<Message.Attachment> attachments = new LinkedList<>();
         JSONArray jsonAttachments = jsonObject.getJSONArray("attachments");

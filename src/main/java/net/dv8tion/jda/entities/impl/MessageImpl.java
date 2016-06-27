@@ -38,6 +38,7 @@ public class MessageImpl implements Message
     private boolean mentionsEveryone = false;
     private boolean isTTS = false;
     private boolean isPrivate;
+    private boolean pinned;
     private String channelId;
     private String content;
     private String subContent = null;
@@ -61,6 +62,36 @@ public class MessageImpl implements Message
     public JDA getJDA()
     {
         return api;
+    }
+
+    @Override
+    public boolean isPinned()
+    {
+        return pinned;
+    }
+
+    public MessageImpl setPinned(boolean pinned)
+    {
+        this.pinned = pinned;
+        return this;
+    }
+
+    @Override
+    public boolean pin()
+    {
+        boolean result = getChannel().pinMessageById(id);
+        if (result)
+            this.pinned = true;
+        return result;
+    }
+
+    @Override
+    public boolean unpin()
+    {
+        boolean result = getChannel().unpinMessageById(id);
+        if (result)
+            this.pinned = false;
+        return result;
     }
 
     @Override
