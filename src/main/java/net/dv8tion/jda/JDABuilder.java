@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda;
 
+import net.dv8tion.jda.JDA.Status;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.ReadyEvent;
 import net.dv8tion.jda.hooks.AnnotatedEventManager;
@@ -308,29 +309,11 @@ public class JDABuilder
      */
     public JDA buildBlocking() throws LoginException, IllegalArgumentException, InterruptedException
     {
-        //Create our ReadyListener and a thread safe Boolean.
-        AtomicBoolean ready = new AtomicBoolean(false);
-        ListenerAdapter readyListener = new ListenerAdapter()
-        {
-            @SubscribeEvent
-            @Override
-            public void onReady(ReadyEvent event)
-            {
-                ready.set(true);
-            }
-        };
-
-        //Add it to our list of listeners, start the login process, wait for the ReadyEvent.
-        listeners.add(readyListener);
         JDA jda = buildAsync();
-        while(!ready.get())
+        while(jda.getStatus() != Status.CONNECTED)
         {
             Thread.sleep(50);
         }
-
-        //We have logged in. Remove the temp ready listener from our local list and the jda listener list.
-        listeners.remove(readyListener);
-        jda.removeEventListener(readyListener);
         return jda;
     }
 }

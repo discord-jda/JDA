@@ -19,6 +19,7 @@ import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.exceptions.PermissionException;
+import net.dv8tion.jda.exceptions.RateLimitedException;
 import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.requests.Requester;
 import org.json.JSONException;
@@ -37,6 +38,7 @@ public class MessageImpl implements Message
     private boolean mentionsEveryone = false;
     private boolean isTTS = false;
     private boolean isPrivate;
+    private boolean pinned;
     private String channelId;
     private String content;
     private String subContent = null;
@@ -60,6 +62,36 @@ public class MessageImpl implements Message
     public JDA getJDA()
     {
         return api;
+    }
+
+    @Override
+    public boolean isPinned()
+    {
+        return pinned;
+    }
+
+    public MessageImpl setPinned(boolean pinned)
+    {
+        this.pinned = pinned;
+        return this;
+    }
+
+    @Override
+    public boolean pin()
+    {
+        boolean result = getChannel().pinMessageById(id);
+        if (result)
+            this.pinned = true;
+        return result;
+    }
+
+    @Override
+    public boolean unpin()
+    {
+        boolean result = getChannel().unpinMessageById(id);
+        if (result)
+            this.pinned = false;
+        return result;
     }
 
     @Override
@@ -241,7 +273,9 @@ public class MessageImpl implements Message
             else if (!api.getTextChannelById(getChannelId()).checkPermission(api.getSelfInfo(), Permission.MESSAGE_MANAGE))
                 throw new PermissionException(Permission.MESSAGE_MANAGE);
         }
-        api.getRequester().delete(Requester.DISCORD_API_PREFIX + "channels/" + channelId + "/messages/" + getId());
+        Requester.Response response = api.getRequester().delete(Requester.DISCORD_API_PREFIX + "channels/" + channelId + "/messages/" + getId());
+        if (response.isRateLimit())
+            throw new RateLimitedException(response.getObject().getInt("retry_after"));
     }
 
     public MessageImpl setMentionedUsers(List<User> mentionedUsers)

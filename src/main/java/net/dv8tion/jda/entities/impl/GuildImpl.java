@@ -257,7 +257,7 @@ public class GuildImpl implements Guild
         for (Permission perm : role.getPermissions())
         {
             if (!PermissionUtil.checkPermission(role.getJDA().getSelfInfo(), perm, role.getGuild()))
-                throw new PermissionException(perm);  
+                throw new PermissionException(perm);
         }
 
         RoleManager manager = createRole();
@@ -277,11 +277,12 @@ public class GuildImpl implements Guild
         List<Role> roles = userRoles.get(user);
         if (roles == null)
             return null;
+        roles = new ArrayList<>(roles);
 
         Collections.sort(roles, (r1, r2) -> r2.compareTo(r1));
         return Collections.unmodifiableList(roles);
     }
-    
+
     @Override
     public Role getColorDeterminantRoleForUser(User user)
     {

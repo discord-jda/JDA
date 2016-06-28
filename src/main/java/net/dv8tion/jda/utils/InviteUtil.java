@@ -305,10 +305,9 @@ public class InviteUtil
         private final int uses;
         //TODO what happens if the inviter left the server (and therefore is unknown for the api)?
         private final User inviter;
-        private final boolean revoked;
 
         private AdvancedInvite(String code, String humanCode, String guildName, String guildId, String channelName, String channelId, boolean isTextChannel, InviteDuration duration, String guildSplashHash, boolean temporary,
-                int maxUses, OffsetDateTime createdAt, int uses, User inviter, boolean revoked) {
+                int maxUses, OffsetDateTime createdAt, int uses, User inviter) {
             super(code, humanCode, guildName, guildId, channelName, channelId, isTextChannel);
             this.duration = duration;
             this.guildSplashHash = guildSplashHash;
@@ -317,7 +316,6 @@ public class InviteUtil
             this.createdAt = createdAt;
             this.uses = uses;
             this.inviter = inviter;
-            this.revoked = revoked;
         }
 
         public InviteDuration getDuration()
@@ -355,11 +353,6 @@ public class InviteUtil
             return inviter;
         }
 
-        public boolean isRevoked()
-        {
-            return revoked;
-        }
-
         private static AdvancedInvite fromJson(JSONObject object, JDA jda)
         {
             JSONObject guild = object.getJSONObject("guild");
@@ -380,8 +373,7 @@ public class InviteUtil
                     object.getInt("max_uses"),
                     OffsetDateTime.parse(object.getString("created_at")),
                     object.getInt("uses"),
-                    jda.getUserById(inviter.getString("id")),
-                    object.getBoolean("revoked"));
+                    jda.getUserById(inviter.getString("id")));
         }
     }
 

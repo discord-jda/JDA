@@ -235,6 +235,34 @@ public interface Message
     JDA getJDA();
 
     /**
+     * Whether or not this Message has been pinned in its parent channel.
+     *
+     * @return
+     *      True - if this message has been pinned.
+     */
+    boolean isPinned();
+
+    /**
+     * This is a shortcut method to {@link MessageChannel#pinMessageById(String)}.<br>
+     * If this method returns true, then the action was successful and this Message's
+     * {@link #isPinned()} will now return true.
+     *
+     * @return
+     *      True - if the action completed successfully and this message became pinned.
+     */
+    boolean pin();
+
+    /**
+     * This is a shortcut method to {@link MessageChannel#unpinMessageById(String)}.<br>
+     * If this method returns true, then the action was successful and this Message's
+     * {@link #isPinned()} will now return false.
+     *
+     * @return
+     *      True - if the action completed successfully and this message was unpinned.
+     */
+    boolean unpin();
+
+    /**
      * Represents a {@link net.dv8tion.jda.entities.Message Message} file attachment.
      */
     class Attachment

@@ -51,7 +51,7 @@ public class InterfacedEventManager implements IEventManager
     @Override
     public List<Object> getRegisteredListeners()
     {
-        return Collections.unmodifiableList(listeners);
+        return Collections.unmodifiableList(new LinkedList<>(listeners));
     }
 
     @Override
