@@ -67,11 +67,15 @@ public class URLPlayer extends Player
     /**
      * Creates a new {@link net.dv8tion.jda.audio.player.URLPlayer URLPlayer} with the given {@link java.net.URL URL} as resource. <br>
      * Same as {@link URLPlayer#URLPlayer(JDA, URL, int)} using the {@link #DEFAULT_BUFFER_SIZE} of {@value #DEFAULT_BUFFER_SIZE}.
-     * 
+     *
      * @param api
      *        The JDA instance
      * @param urlOfResource
      *        The URL of the resource
+     * @throws IOException
+     *          If the file is not available.
+     * @throws UnsupportedAudioFileException
+     *          If the file is not supported by the player.
      */
     public URLPlayer(JDA api, URL urlOfResource) throws IOException, UnsupportedAudioFileException
     {
@@ -81,13 +85,17 @@ public class URLPlayer extends Player
 
     /**
      * Creates a new {@link net.dv8tion.jda.audio.player.URLPlayer URLPlayer} with the given {@link java.net.URL URL} as resource and a buffer with the given size.
-     * 
+     *
      * @param api
      *        The JDA instance
      * @param urlOfResource
      *        The URL of the resource
      * @param bufferSize
      *        The buffer size in bytes
+     * @throws IOException
+     *          If the file is not available.
+     * @throws UnsupportedAudioFileException
+     *          If the file is not supported by the player.
      */
     public URLPlayer(JDA api, URL urlOfResource, int bufferSize) throws IOException, UnsupportedAudioFileException
     {
@@ -100,7 +108,9 @@ public class URLPlayer extends Player
      * @param urlOfResource
      *          A URL that links to a supported audio file.
      * @throws IOException
+     *          If the file is not available.
      * @throws UnsupportedAudioFileException
+     *          If the file is not supported by the player.
      */
     public void setAudioUrl(URL urlOfResource) throws IOException, UnsupportedAudioFileException
     {
@@ -114,7 +124,9 @@ public class URLPlayer extends Player
      * @param bufferSize
      *          Specifies the buffer size to use for the {@link java.io.BufferedInputStream BufferedInputStream}.
      * @throws IOException
+     *          If the file is not available.
      * @throws UnsupportedAudioFileException
+     *          If the file is not supported by the player.
      */
     public void setAudioUrl(URL urlOfResource, int bufferSize) throws IOException, UnsupportedAudioFileException
     {
