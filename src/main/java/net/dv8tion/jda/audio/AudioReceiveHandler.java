@@ -15,8 +15,15 @@
  */
 package net.dv8tion.jda.audio;
 
+import net.dv8tion.jda.entities.User;
+
 public interface AudioReceiveHandler
 {
     boolean canReceive();
+
     void handleReceivedAudio(AudioPacket packet);
+
+    void handleUserAudio(UserAudio userAudio);
+
+    void handleUserTalking(User user, boolean talking);
 }

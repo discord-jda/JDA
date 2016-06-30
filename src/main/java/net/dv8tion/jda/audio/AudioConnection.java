@@ -18,6 +18,7 @@ package net.dv8tion.jda.audio;
 import com.sun.jna.ptr.PointerByReference;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.audio.AudioConnectEvent;
@@ -30,6 +31,7 @@ import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
+import java.util.HashMap;
 
 public class AudioConnection
 {
@@ -39,6 +41,9 @@ public class AudioConnection
     public static final int OPUS_FRAME_TIME_AMOUNT = 20;//This is 20 milliseconds. We are only dealing with 20ms opus packets.
     public static final int OPUS_CHANNEL_COUNT = 2;     //We want to use stereo. If the audio given is mono, the encoder promotes it
                                                         // to Left and Right mono (stereo that is the same on both sides)
+    private volatile HashMap<Integer, String> ssrcMap = new HashMap<>();
+    private volatile HashMap<Integer, Decoder> opusDecoders = new HashMap<>();
+
     private final AudioWebSocket webSocket;
     private DatagramSocket udpSocket;
     private VoiceChannel channel;
@@ -46,7 +51,6 @@ public class AudioConnection
     private AudioReceiveHandler receiveHandler = null;
 
     private PointerByReference opusEncoder;
-    private PointerByReference opusDecoder;
 
     private Thread sendThread;
     private Thread receiveThread;
@@ -57,6 +61,7 @@ public class AudioConnection
     {
         this.channel = channel;
         this.webSocket = webSocket;
+        this.webSocket.audioConnection = this;
 
         IntBuffer error = IntBuffer.allocate(4);
         opusEncoder =
@@ -136,6 +141,29 @@ public class AudioConnection
     public Guild getGuild()
     {
         return channel.getGuild();
+    }
+
+    public void updateUserSSRC(int ssrc, String userId, boolean talking)
+    {
+        String previousId = ssrcMap.get(ssrc);
+        if (previousId != null)
+        {
+            //User already existed with this id?
+        }
+        else
+        {
+            ssrcMap.put(ssrc, userId);
+            opusDecoders.put(ssrc, new Decoder(ssrc));
+        }
+        if (receiveHandler != null)
+        {
+            User user = getJDA().getUserById(userId);
+            if (user != null)
+            {
+                receiveHandler.handleUserTalking(user, talking);
+            }
+        }
+
     }
 
     public void close(boolean regionChange)
@@ -236,6 +264,7 @@ public class AudioConnection
             @Override
             public void run()
             {
+//                int loss = 0;
                 try
                 {
                     udpSocket.setSoTimeout(100);
@@ -259,7 +288,35 @@ public class AudioConnection
                                 //2) decode from Opus -> raw PCM or another format as defined by the receiveHandler.
                             AudioPacket decryptedPacket = AudioPacket.decryptAudioPacket(receivedPacket, webSocket.getSecretKey());
 
-                            receiveHandler.handleReceivedAudio(decryptedPacket);
+                            String userId = ssrcMap.get(decryptedPacket.getSSRC());
+                            Decoder decoder = opusDecoders.get(decryptedPacket.getSSRC());
+                            if (userId == null)
+                                LOG.warn("Received audio data with an unknown SSRC id.");
+                            else if (decoder == null)
+                                LOG.warn("Received audio data with known SSRC, but opus decoder for this SSRC was null. uh..HOW?!");
+                            else if (!decoder.isInOrder(decryptedPacket.getSequence()))
+                                LOG.trace("Got out-of-order audio packet. Ignoring.");
+                            else
+                            {
+                                User user = getJDA().getUserById(userId);
+                                if (user == null)
+                                    LOG.warn("Received audio data with a known SSRC, but the userId associate with the SSRC is unknown to JDA!");
+                                else
+                                {
+//                                    loss++;
+                                    if (decoder.wasPacketLost(decryptedPacket.getSequence()))
+//                                    if (loss == 50)
+                                    {
+//                                        loss = 0;
+                                        LOG.debug("Packet(s) missed. Using Opus packetloss-compensation.");
+//                                        continue;
+                                        short[] decodedAudio = decoder.decodeFromOpus(null);
+                                        receiveHandler.handleUserAudio(new UserAudio(user, decodedAudio));
+                                    }
+                                    short[] decodedAudio = decoder.decodeFromOpus(decryptedPacket);
+                                    receiveHandler.handleUserAudio(new UserAudio(user, decodedAudio));
+                                }
+                            }
                         }
                     }
                     catch (SocketTimeoutException e)
@@ -307,11 +364,6 @@ public class AudioConnection
         byte[] audio = new byte[result];
         encoded.get(audio);
         return audio;
-    }
-
-    private byte[] decodeFromOpus(byte[] encodedAudio)
-    {
-        return null;
     }
 
     private void setSpeaking(boolean isSpeaking)

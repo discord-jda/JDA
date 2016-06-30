@@ -50,6 +50,8 @@ public class AudioWebSocket extends WebSocketAdapter
     public static final int CONNECTION_SETUP_TIMEOUT = -41;
     public static final int UDP_UNABLE_TO_CONNECT = -42;
 
+    protected AudioConnection audioConnection;
+
     private final JDAImpl api;
     private final Guild guild;
     private final HttpHost proxy;
@@ -65,6 +67,7 @@ public class AudioWebSocket extends WebSocketAdapter
     private String sessionId;
     private String token;
     private byte[] secretKey;
+
 
     private DatagramSocket udpSocket;
     private InetSocketAddress address;
@@ -212,6 +215,7 @@ public class AudioWebSocket extends WebSocketAdapter
                     return;
                 }
 
+                audioConnection.updateUserSSRC(ssrc, userId, speaking);
                 if (speaking)
                     LOG.trace(user.getUsername() + " started transmitting audio.");    //Replace with event.
                 else
