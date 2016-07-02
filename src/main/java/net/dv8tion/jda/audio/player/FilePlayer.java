@@ -22,6 +22,12 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * <p>This implementation of an {@link net.dv8tion.jda.audio.AudioSendHandler AudioSendHandler} is able to send audio to a {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} from a local file.
+ * <br/>For that the user has to provide a valid {@link java.io.File File} in a supported audio format.<br/>
+ * <p><b>To use external files that are uploaded to a service use: {@link URLPlayer URLPlayer}</b></p>
+ * </p>
+ */
 public class FilePlayer extends Player
 {
     private File audioFile = null;
@@ -30,12 +36,36 @@ public class FilePlayer extends Player
     private boolean paused = false;
     private boolean stopped = true;
 
+	/**
+     * Creates a new instance of a {@link FilePlayer}.
+     * <p>To directly set a source file: </br>
+     * <pre><code>   new {@link #FilePlayer(File)}</code></pre></p>
+     */
     public FilePlayer() {}
+
+	/**
+	 * Creates a new instance of a {@link FilePlayer} and sets the given File as audio source.
+     * @param file
+     *          An audio file to use as audio source.
+     * @throws IOException
+     *          If the file is not available.
+     * @throws UnsupportedAudioFileException
+     *          If the file is not supported by the player.
+     */
     public FilePlayer(File file) throws IOException, UnsupportedAudioFileException
     {
         setAudioFile(file);
     }
 
+	/**
+     * Sets the given file as the player's audio source if and only if it exists.
+     * @param file
+     *          An audio file to use as audio source.
+     * @throws IOException
+     *          If the file is not available.
+     * @throws UnsupportedAudioFileException
+     *          If the file is not supported by the player.
+     */
     public void setAudioFile(File file) throws IOException, UnsupportedAudioFileException
     {
         if (file == null)

@@ -31,7 +31,10 @@ import java.net.URL;
 import java.net.URLConnection;
 
 /**
- * Created by Austin on 1/24/2016.
+ * <p>This implementation of an {@link net.dv8tion.jda.audio.AudioSendHandler AudioSendHandler} is able to send audio to a {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} from an external source.
+ * <br/> For that the user has to provide a valid {@link java.net.URL URL} to an audio file (like an mp3 file on a cloud).<br/>
+ * <p><b>However, it is unable to process audio sources that come from websites like Youtube/Soundcloud.</b></p>
+ * </p>
  */
 public class URLPlayer extends Player
 {
@@ -51,8 +54,8 @@ public class URLPlayer extends Player
     protected boolean stopped = true;
 
     /**
-     * Creates a new {@link URLPlayer}.
-     * 
+     * Creates a new instance of {@link URLPlayer}.<br/>
+     * To directly set a source URL use <br/><pre><code>    new {@link #URLPlayer(JDA, URL)}</code></pre>
      * @param api
      *        The JDA instance
      */
@@ -64,11 +67,15 @@ public class URLPlayer extends Player
     /**
      * Creates a new {@link net.dv8tion.jda.audio.player.URLPlayer URLPlayer} with the given {@link java.net.URL URL} as resource. <br>
      * Same as {@link URLPlayer#URLPlayer(JDA, URL, int)} using the {@link #DEFAULT_BUFFER_SIZE} of {@value #DEFAULT_BUFFER_SIZE}.
-     * 
+     *
      * @param api
      *        The JDA instance
      * @param urlOfResource
      *        The URL of the resource
+     * @throws IOException
+     *          If the file is not available.
+     * @throws UnsupportedAudioFileException
+     *          If the file is not supported by the player.
      */
     public URLPlayer(JDA api, URL urlOfResource) throws IOException, UnsupportedAudioFileException
     {
@@ -78,13 +85,17 @@ public class URLPlayer extends Player
 
     /**
      * Creates a new {@link net.dv8tion.jda.audio.player.URLPlayer URLPlayer} with the given {@link java.net.URL URL} as resource and a buffer with the given size.
-     * 
+     *
      * @param api
      *        The JDA instance
      * @param urlOfResource
      *        The URL of the resource
      * @param bufferSize
      *        The buffer size in bytes
+     * @throws IOException
+     *          If the file is not available.
+     * @throws UnsupportedAudioFileException
+     *          If the file is not supported by the player.
      */
     public URLPlayer(JDA api, URL urlOfResource, int bufferSize) throws IOException, UnsupportedAudioFileException
     {
@@ -92,11 +103,31 @@ public class URLPlayer extends Player
         setAudioUrl(urlOfResource, bufferSize);
     }
 
+	/**
+     * Sets the audio source to the resource provided by the given {@link URL URL}.
+     * @param urlOfResource
+     *          A URL that links to a supported audio file.
+     * @throws IOException
+     *          If the file is not available.
+     * @throws UnsupportedAudioFileException
+     *          If the file is not supported by the player.
+     */
     public void setAudioUrl(URL urlOfResource) throws IOException, UnsupportedAudioFileException
     {
         setAudioUrl(urlOfResource, DEFAULT_BUFFER_SIZE);
     }
 
+    /**
+     * Sets the audio source to the resource provided by the given {@link URL URL}.
+     * @param urlOfResource
+     *          A URL that links to a supported audio file.
+     * @param bufferSize
+     *          Specifies the buffer size to use for the {@link java.io.BufferedInputStream BufferedInputStream}.
+     * @throws IOException
+     *          If the file is not available.
+     * @throws UnsupportedAudioFileException
+     *          If the file is not supported by the player.
+     */
     public void setAudioUrl(URL urlOfResource, int bufferSize) throws IOException, UnsupportedAudioFileException
     {
         if (urlOfResource == null)
