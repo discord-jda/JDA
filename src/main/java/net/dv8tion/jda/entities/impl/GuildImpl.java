@@ -363,6 +363,8 @@ public class GuildImpl implements Guild
     @Override
     public boolean checkVerification()
     {
+        if (api.getSelfInfo().isBot())
+            return true;
         if(canSendVerification)
             return true;
         switch (verificationLevel)
