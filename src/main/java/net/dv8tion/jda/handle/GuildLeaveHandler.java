@@ -87,6 +87,8 @@ public class GuildLeaveHandler extends SocketHandler
         }
 
         api.getGuildMap().remove(guild.getId());
+        guild.getTextChannels().forEach(chan -> api.getChannelMap().remove(chan.getId()));
+        guild.getVoiceChannels().forEach(chan -> api.getVoiceChannelMap().remove(chan.getId()));
         TextChannelImpl.AsyncMessageSender.stop(api, guild.getId());
         api.getEventManager().handle(
                 new GuildLeaveEvent(

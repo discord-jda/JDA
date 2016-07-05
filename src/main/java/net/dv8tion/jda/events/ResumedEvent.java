@@ -17,6 +17,13 @@ package net.dv8tion.jda.events;
 
 import net.dv8tion.jda.JDA;
 
+/**
+ * <b><u>ResumedEvent</u></b><br>
+ * Fired if JDA successfully re-established it's connection to the WebSocket.<br/>
+ * All Objects are still in place and events are replayed.<br/>
+ * <br/>
+ * Use: This marks the continuation of event flow stopped by the {@link net.dv8tion.jda.events.DisconnectEvent DisconnectEvent}.
+ */
 public class ResumedEvent extends Event
 {
     public ResumedEvent(JDA api, int responseNumber)

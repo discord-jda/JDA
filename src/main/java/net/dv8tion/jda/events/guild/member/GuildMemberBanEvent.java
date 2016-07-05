@@ -19,6 +19,12 @@ import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.User;
 
+/**
+ * <b><u>GuildMemberBanEvent</u></b><br/>
+ * Fired if a {@link net.dv8tion.jda.entities.User User} is banned from a {@link net.dv8tion.jda.entities.Guild Guild}.<br/>
+ * <br/>
+ * Use: Retrieve user who was banned (if available) and triggering guild.
+ */
 public class GuildMemberBanEvent extends GuildMemberLeaveEvent
 {
 

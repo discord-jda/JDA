@@ -20,6 +20,13 @@ import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.Event;
 
+/**
+ * <b><u>GenericMessageEvent</u></b><br>
+ * Fired whenever a {@link net.dv8tion.jda.entities.Message Message} event is fired.<br>
+ * Every MessageEvent is an instance of this event and can be casted. (no exceptions)<br>
+ * <br>
+ * Use: Detect any MessageEvent. <i>(No real use for the JDA user)</i>
+ */
 public abstract class GenericMessageEvent extends Event
 {
     protected final Message message;

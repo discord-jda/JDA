@@ -20,18 +20,25 @@ import net.dv8tion.jda.entities.VoiceChannel;
 
 import java.time.OffsetDateTime;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * <b><u>ShutdownEvent</u></b><br>
+ * Fired if JDA successfully finished shutting down.<br>
+ *<br>
+ * Use: Confirmation of JDA#shutdown(boolean).
+ */
 public class ShutdownEvent extends Event
 {
     protected final OffsetDateTime shutdownTime;
     protected final List<VoiceChannel> dcAudioConnections;
 
-    public ShutdownEvent(JDA api, OffsetDateTime shutdownTime, List<VoiceChannel> dcAudioConnectons)
+    public ShutdownEvent(JDA api, OffsetDateTime shutdownTime, List<VoiceChannel> dcAudioConnections)
     {
         super(api, -1);
         this.shutdownTime = shutdownTime;
-        this.dcAudioConnections = Collections.unmodifiableList(dcAudioConnectons);
+        this.dcAudioConnections = Collections.unmodifiableList(new LinkedList<>(dcAudioConnections));
     }
 
     public OffsetDateTime getShutdownTime()

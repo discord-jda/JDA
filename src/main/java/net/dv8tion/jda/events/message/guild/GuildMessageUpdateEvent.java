@@ -19,6 +19,12 @@ import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.TextChannel;
 
+/**
+ * <b><u>GuildMessageReceivedEvent</u></b><br/>
+ * Fired if a Message is edited in a {@link net.dv8tion.jda.entities.TextChannel TextChannel}.<br/>
+ * <br/>
+ * Use: Retrieve affected TextChannel and Message.
+ */
 public class GuildMessageUpdateEvent extends GenericGuildMessageEvent
 {
     public GuildMessageUpdateEvent(JDA api, int responseNumber, Message message, TextChannel channel)

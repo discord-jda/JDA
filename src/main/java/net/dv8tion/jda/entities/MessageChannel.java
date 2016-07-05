@@ -15,9 +15,12 @@
  */
 package net.dv8tion.jda.entities;
 
+import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.MessageHistory;
 import net.dv8tion.jda.exceptions.VerificationLevelException;
 
 import java.io.File;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -25,6 +28,22 @@ import java.util.function.Consumer;
  */
 public interface MessageChannel
 {
+    /**
+     * Returns the {@link net.dv8tion.jda.JDA JDA} instance of this MessageChannel
+     *
+     * @return
+     *      the corresponding JDA instance
+     */
+    JDA getJDA();
+
+    /**
+     * The Id of the Channel. This is typically 18 characters long.
+     *
+     * @return
+     *      The Id of this Channel
+     */
+    String getId();
+
     /**
      * Sends a plain text {@link net.dv8tion.jda.entities.Message Message} to this channel.
      * This will fail if the account of the api does not have the {@link net.dv8tion.jda.Permission#MESSAGE_WRITE Write-Permission}
@@ -177,9 +196,107 @@ public interface MessageChannel
     void sendFileAsync(File file, Message message, Consumer<Message> callback);
 
     /**
+     * Attempts to get a {@link net.dv8tion.jda.entities.Message Message} from the Discord servers that has
+     * the same id as the id provided.<br>
+     *
+     * @param messageId
+     *          The id of the sought after Message
+     * @return
+     *      The Message defined by the provided id. `Null` if the message doesn't exist.
+     * @throws net.dv8tion.jda.exceptions.PermissionException
+     *      Thrown if:
+     *      <ul>
+     *          <li>Attempt to get a message from a channel which this account doesn't have access to.
+     *              ({@link net.dv8tion.jda.Permission#MESSAGE_READ Permission.MESSAGE_READ})</li>
+     *          <li>Attempt to get a message from a channel that this account cannot read the history of.
+     *              ({@link net.dv8tion.jda.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY})</li>
+     *      </ul>
+     */
+    Message getMessageById(String messageId);
+
+    /**
+     * Attempts to delete a {@link net.dv8tion.jda.entities.Message Message} from the Discord servers
+     * that has the same id as the id provided.<br>
+     *
+     * @param messageId
+     *          The id of the Message which should be deleted
+     * @return
+     *      True if the message was successfully deleted. False if the message didn't exist.
+     * @throws net.dv8tion.jda.exceptions.PermissionException
+     *      Thrown if:
+     *      <ul>
+     *          <li>Attempt to get a message from a channel which this account doesn't have access to.
+     *              ({@link net.dv8tion.jda.Permission#MESSAGE_READ Permission.MESSAGE_READ})</li>
+     *          <li>Attempt to delete another user's message in a channel that this account doesn't have permission to manage.
+     *              ({@link net.dv8tion.jda.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE})</li>
+     *          <li>Attempt to delete another user's message in a PrivateChannel.</li>
+     *      </ul>
+     */
+    boolean deleteMessageById(String messageId);
+
+    /**
+     * Creates a new {@link net.dv8tion.jda.MessageHistory MessageHistory} object for each call of this method.<br>
+     * This is <b>NOT</b> and internal message cache, but rather it queries the Discord servers for old messages.
+     *
+     * @return
+     *      The MessageHistory for this channel.
+     */
+    MessageHistory getHistory();
+
+    /**
      * Sends the typing status to discord. This is what is used to make the message "X is typing..." appear.<br>
-     * The typing status only lasts for 10 seconds or until a message is sent.
+     * The typing status only lasts for 10 seconds or until a message is sent.<br>
      * So if you wish to show continuous typing you will need to call this method once every 10 seconds.
+     * <p>
+     * The official discord client sends this every 5 seconds even though the typing status lasts 10.
      */
     void sendTyping();
+
+    /**
+     * Used to pin a message.<br>
+     * If the provided messageId is invalid or not in this channel, this does nothing.
+     *
+     * @param messageId
+     *          The message to pin.
+     * @return
+     *      True - if the message was successfully unpinned. If false, the message id probably didn't exist or wasn't a message from this channel.
+     * @throws net.dv8tion.jda.exceptions.PermissionException
+     *          If this is a TextChannel and this account does not have both
+     *          {@link net.dv8tion.jda.Permission#MESSAGE_READ Permission.MESSAGE_READ} and
+     *          {@link net.dv8tion.jda.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
+     * @throws net.dv8tion.jda.exceptions.RateLimitedException
+     *          If Discord informs us that this account has accessed this endpoint too often, thus needs to be ratelimited.
+     */
+    boolean pinMessageById(String messageId);
+
+    /**
+     * Used to unpin a message.<br>
+     * If the provided messageId is invalid or not in this channel, this does nothing.
+     *
+     * @param messageId
+     *          The message to pin.
+     * @return
+     *      True - if the message was successfully unpinned. If false, the message id probably didn't exist or wasn't a message from this channel.
+     * @throws net.dv8tion.jda.exceptions.PermissionException
+     *          If this is a TextChannel and this account does not have both
+     *          {@link net.dv8tion.jda.Permission#MESSAGE_READ Permission.MESSAGE_READ} and
+     *          {@link net.dv8tion.jda.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
+     * @throws net.dv8tion.jda.exceptions.RateLimitedException
+     *          If Discord informs us that this account has accessed this endpoint too often, thus needs to be ratelimited.
+     */
+    boolean unpinMessageById(String messageId);
+
+    /**
+     * Gets a List of {@link net.dv8tion.jda.entities.Message Messages} that have been pinned in this channel.<br>
+     * If no messages have been pinned, this returns an empty List.
+     *
+     * @return
+     *      An unmodifiable List containing all pinned messages.
+     * @throws net.dv8tion.jda.exceptions.PermissionException
+     *          If this is a TextChannel and this account does not have
+     *          {@link net.dv8tion.jda.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     * @throws net.dv8tion.jda.exceptions.RateLimitedException
+     *          If Discord informs us that this account has accessed this endpoint too often, thus needs to be ratelimited.
+     */
+    List<Message> getPinnedMessages();
 }

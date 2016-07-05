@@ -17,6 +17,13 @@ package net.dv8tion.jda.events;
 
 import net.dv8tion.jda.JDA;
 
+/**
+ * <b><u>ReadyEvent</u></b><br>
+ * Fired if our connection finished loading the ready event.<br>
+ * Before this event was fired all entity related functions (like JDA#getUserById(String)) were not guaranteed to work as expected.<br>
+ * <br>
+ * Use: JDA finished populating internal objects and is now ready to be used. When this is fired all entities are cached and accessible.
+ */
 public class ReadyEvent extends Event
 {
     public ReadyEvent(JDA api, int responseNumber)

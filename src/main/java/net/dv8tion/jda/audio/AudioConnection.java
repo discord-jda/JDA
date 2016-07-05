@@ -148,7 +148,7 @@ public class AudioConnection
 
     private void setupSendThread()
     {
-        sendThread = new Thread()
+        sendThread = new Thread("AudioConnection SendThread Guild: " + channel.getGuild().getId())
         {
             @Override
             public void run()
@@ -231,7 +231,7 @@ public class AudioConnection
 
     private void setupReceiveThread()
     {
-        receiveThread = new Thread()
+        receiveThread = new Thread("AudioConnection ReceiveThread Guild: " + channel.getGuild().getId())
         {
             @Override
             public void run()

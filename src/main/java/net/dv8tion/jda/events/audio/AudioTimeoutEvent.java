@@ -18,6 +18,12 @@ package net.dv8tion.jda.events.audio;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.VoiceChannel;
 
+/**
+ * <b><u>AudioTimeoutEvent</u></b><br>
+ * Fired if an attempt to connect to a {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} failed due to a timeout.<br>
+ * <br>
+ * Use: Retrieve {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} which caused this event to fire.
+ */
 public class AudioTimeoutEvent extends GenericAudioEvent
 {
     protected final VoiceChannel attemptedConnectChannel;

@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda;
 
+import net.dv8tion.jda.JDA.Status;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.ReadyEvent;
 import net.dv8tion.jda.hooks.AnnotatedEventManager;
@@ -48,7 +49,7 @@ public class JDABuilder
     protected String token = null;
     protected boolean enableVoice = true;
     protected boolean enableShutdownHook = true;
-    protected boolean useAnnotatedManager = false;
+    protected boolean enableBulkDeleteSplitting = true;
     protected IEventManager eventManager = null;
     protected boolean reconnect = true;
     protected int[] sharding = null;
@@ -110,7 +111,7 @@ public class JDABuilder
      * Enables/Disables Voice functionality.<br>
      * This is useful, if your current system doesn't support Voice and you do not need it.
      * <p>
-     * Default: true
+     * Default: <b>true (enabled)</b>
      *
      * @param enabled
      *          True - enables voice support.
@@ -124,9 +125,29 @@ public class JDABuilder
     }
 
     /**
+     * If enabled, JDA will separate the bulk delete event into individual delete events, but this isn't as efficient as
+     * handling a single event would be. It is recommended that BulkDelete Splitting be disabled and that the developer
+     * should instead handle the {@link net.dv8tion.jda.events.message.MessageBulkDeleteEvent MessageBulkDeleteEvent}
+     * <p>
+     * Default: <b>true (enabled)</b>
+     *
+     * @param enabled
+     *          True - The MESSAGE_DELTE_BULK will be split into multiple individual MessageDeleteEvents.
+     * @return
+     *       Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public JDABuilder setBulkDeleteSplittingEnabled(boolean enabled)
+    {
+        this.enableBulkDeleteSplitting = enabled;
+        return this;
+    }
+
+    /**
      * Enables/Disables the use of a Shutdown hook to clean up JDA.<br>
      * When the Java program closes shutdown hooks are run. This is used as a last-second cleanup
      * attempt by JDA to properly severe connections.
+     * <p>
+     * Default: <b>true (enabled)</b>
      *
      * @param enable
      *          True (default) - use shutdown hook to clean up JDA if the Java program is closed.
@@ -180,7 +201,8 @@ public class JDABuilder
     /**
      * Adds a listener to the list of listeners that will be used to populate the {@link net.dv8tion.jda.JDA} object.
      * This uses the {@link net.dv8tion.jda.hooks.InterfacedEventManager InterfacedEventListener} by default.
-     * To switch to the {@link net.dv8tion.jda.hooks.AnnotatedEventManager AnnotatedEventManager}, use {@link #useAnnotatedEventManager(boolean)}.
+     * To switch to the {@link net.dv8tion.jda.hooks.AnnotatedEventManager AnnotatedEventManager},
+     * use {@link #setEventManager(net.dv8tion.jda.hooks.IEventManager) setEventManager(new AnnotatedEventManager())}.
      *
      * Note: when using the {@link net.dv8tion.jda.hooks.InterfacedEventManager InterfacedEventListener} (default),
      * given listener <b>must</b> be instance of {@link net.dv8tion.jda.hooks.EventListener EventListener}!
@@ -256,19 +278,16 @@ public class JDABuilder
         jdaCreated = true;
         JDAImpl jda;
         if (proxySet)
-            jda = new JDAImpl(proxyUrl, proxyPort, enableVoice, enableShutdownHook);
+            jda = new JDAImpl(proxyUrl, proxyPort, enableVoice, enableShutdownHook, enableBulkDeleteSplitting);
         else
-            jda = new JDAImpl(enableVoice, enableShutdownHook);
+            jda = new JDAImpl(enableVoice, enableShutdownHook, enableBulkDeleteSplitting);
         jda.setAutoReconnect(reconnect);
         if (eventManager != null)
         {
             jda.setEventManager(eventManager);
         }
-        else if (useAnnotatedManager)
-        {
-            jda.setEventManager(new AnnotatedEventManager());
-        }
         listeners.forEach(jda::addEventListener);
+        jda.setStatus(JDA.Status.INITIALIZED);  //This is already set by JDA internally, but this is to make sure the listeners catch it.
         jda.login(token, sharding);
         return jda;
     }
@@ -290,29 +309,11 @@ public class JDABuilder
      */
     public JDA buildBlocking() throws LoginException, IllegalArgumentException, InterruptedException
     {
-        //Create our ReadyListener and a thread safe Boolean.
-        AtomicBoolean ready = new AtomicBoolean(false);
-        ListenerAdapter readyListener = new ListenerAdapter()
-        {
-            @SubscribeEvent
-            @Override
-            public void onReady(ReadyEvent event)
-            {
-                ready.set(true);
-            }
-        };
-
-        //Add it to our list of listeners, start the login process, wait for the ReadyEvent.
-        listeners.add(readyListener);
         JDA jda = buildAsync();
-        while(!ready.get())
+        while(jda.getStatus() != Status.CONNECTED)
         {
             Thread.sleep(50);
         }
-
-        //We have logged in. Remove the temp ready listener from our local list and the jda listener list.
-        listeners.remove(readyListener);
-        jda.removeEventListener(readyListener);
         return jda;
     }
 }

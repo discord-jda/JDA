@@ -19,6 +19,12 @@ import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.events.Event;
 
+/**
+ * <b><u>MessageReceivedEvent</u></b><br/>
+ * Fired if a Message is sent in a {@link net.dv8tion.jda.entities.MessageChannel MessageChannel}.<br/>
+ * <br/>
+ * Use: This event indicates that a Message is sent in either a private or guild channel. Providing a MessageChannel and Message.
+ */
 public class MessageReceivedEvent extends Event
 {
     private final Message message;
@@ -60,7 +66,7 @@ public class MessageReceivedEvent extends Event
      */
     public String getAuthorName()
     {
-        String nickname = getAuthorNick();
+        String nickname = isPrivate() ? getAuthor().getUsername() : getAuthorNick();
         return nickname == null ? getAuthor().getUsername() : nickname;
     }
 

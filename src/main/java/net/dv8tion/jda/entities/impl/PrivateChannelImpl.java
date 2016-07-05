@@ -20,17 +20,24 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.body.MultipartBody;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.MessageBuilder;
+import net.dv8tion.jda.MessageHistory;
+import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.exceptions.BlockedException;
+import net.dv8tion.jda.exceptions.PermissionException;
 import net.dv8tion.jda.exceptions.RateLimitedException;
 import net.dv8tion.jda.handle.EntityBuilder;
 import net.dv8tion.jda.requests.Requester;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class PrivateChannelImpl implements PrivateChannel
@@ -164,16 +171,90 @@ public class PrivateChannelImpl implements PrivateChannel
         {
             Message messageReturn = sendFile(file, message);
             if (callback != null)
-                callback.accept(message);
+                callback.accept(messageReturn);
         });
+        thread.setName("PrivateChannelImpl SendFileAsync Channel: " + id);
         thread.setDaemon(true);
         thread.start();
+    }
+
+    @Override
+    public Message getMessageById(String messageId)
+    {
+        Requester.Response response = ((JDAImpl) getJDA()).getRequester().get(Requester.DISCORD_API_PREFIX + "channels/" + id + "/messages/" + messageId);
+
+        if (response.isOk())
+            return new EntityBuilder((JDAImpl) getJDA()).createMessage(response.getObject());
+
+        //Doesn't exist.
+        return null;
+    }
+
+    @Override
+    public boolean deleteMessageById(String messageId)
+    {
+        Requester.Response response = ((JDAImpl) getJDA()).getRequester().delete(Requester.DISCORD_API_PREFIX + "channels/" + id + "/messages/" + messageId);
+
+        if (response.isOk())
+            return true;
+        else if (response.code == 403)
+            throw new PermissionException("Cannot delete another User's messages in a PrivateChannel.");
+
+        //Doesn't exist. Either never existed, bad id, was deleted already, or not in this channel.
+        return false;
+    }
+
+    @Override
+    public MessageHistory getHistory()
+    {
+        return new MessageHistory(this);
     }
 
     @Override
     public void sendTyping()
     {
         api.getRequester().post(Requester.DISCORD_API_PREFIX + "channels/" + getId() + "/typing", new JSONObject());
+    }
+
+    @Override
+    public boolean pinMessageById(String messageId)
+    {
+        Requester.Response response = ((JDAImpl) getJDA()).getRequester().put(
+                Requester.DISCORD_API_PREFIX + "/channels/" + id + "/pins/" + messageId, new JSONObject());
+        if (response.isRateLimit())
+            throw new RateLimitedException(response.getObject().getInt("retry_after"));
+        return response.isOk();
+    }
+
+    @Override
+    public boolean unpinMessageById(String messageId)
+    {
+        Requester.Response response = ((JDAImpl) getJDA()).getRequester().delete(
+                Requester.DISCORD_API_PREFIX + "/channels/" + id + "/pins/" + messageId);
+        if (response.isRateLimit())
+            throw new RateLimitedException(response.getObject().getInt("retry_after"));
+        return response.isOk();
+    }
+
+    @Override
+    public List<Message> getPinnedMessages()
+    {
+        List<Message> pinnedMessages = new LinkedList<>();
+        Requester.Response response = ((JDAImpl) getJDA()).getRequester().get(
+                Requester.DISCORD_API_PREFIX + "/channels/" + id + "/pins");
+        if (response.isOk())
+        {
+            JSONArray pins = response.getArray();
+            for (int i = 0; i < pins.length(); i++)
+            {
+                pinnedMessages.add(new EntityBuilder((JDAImpl) getJDA()).createMessage(pins.getJSONObject(i)));
+            }
+            return Collections.unmodifiableList(pinnedMessages);
+        }
+        else if (response.isRateLimit())
+            throw new RateLimitedException(response.getObject().getInt("retry_after"));
+        else
+            throw new RuntimeException("An unknown error occured attempting to get pinned messages. Ask devs for help.\n" + response);
     }
 
     @Override

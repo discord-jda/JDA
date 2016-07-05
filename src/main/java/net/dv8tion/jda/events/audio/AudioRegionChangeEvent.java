@@ -19,6 +19,12 @@ import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.VoiceChannel;
 
+/**
+ * <b><u>AudioRegionChangeEvent</u></b><br>
+ * Fired if a {@link net.dv8tion.jda.entities.Guild Guild}'s voice region has been changed.<br>
+ * <br>
+ * Use: Know which {@link net.dv8tion.jda.entities.Guild Guild} changed it's region and what {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} we were connected to.
+ */
 public class AudioRegionChangeEvent extends GenericAudioEvent
 {
     protected final VoiceChannel channel;

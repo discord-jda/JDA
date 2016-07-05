@@ -18,6 +18,11 @@ package net.dv8tion.jda.events.voice;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.VoiceStatus;
 
+/**
+ * <b><u>VoiceServerDeafEvent</u></b><br/>
+ * Fired if we are (un-)deafened by the server. <br/>
+ * This can indicate both deafen and un-deafen and can <u>only</u> be caused by the server.
+ */
 public class VoiceServerDeafEvent extends VoiceDeafEvent
 {
     public VoiceServerDeafEvent(JDA api, int responseNumber, VoiceStatus voiceStatus)

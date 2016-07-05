@@ -17,6 +17,14 @@ package net.dv8tion.jda.events;
 
 import net.dv8tion.jda.JDA;
 
+/**
+ * <b><u>Event</u></b><br>
+ * Fired for every event.<br>
+ * All events JDA fires are based on an instance of this class.<br>
+ * <br>
+ * Use: Used in {@link net.dv8tion.jda.hooks.EventListener EventListener} implementations to distinguish what event is being fired.<br><br>
+ * Example implementation: {@link net.dv8tion.jda.hooks.ListenerAdapter ListenerAdapter}
+ */
 public abstract class Event
 {
     private final JDA api;

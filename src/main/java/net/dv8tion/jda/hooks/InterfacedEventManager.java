@@ -21,10 +21,11 @@ import net.dv8tion.jda.events.Event;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class InterfacedEventManager implements IEventManager
 {
-    private final List<EventListener> listeners = new LinkedList<>();
+    private final CopyOnWriteArrayList<EventListener> listeners = new CopyOnWriteArrayList<>();
 
     public InterfacedEventManager()
     {
@@ -50,14 +51,13 @@ public class InterfacedEventManager implements IEventManager
     @Override
     public List<Object> getRegisteredListeners()
     {
-        return Collections.unmodifiableList(listeners);
+        return Collections.unmodifiableList(new LinkedList<>(listeners));
     }
 
     @Override
     public void handle(Event event)
     {
-        List<EventListener> listenerCopy = new LinkedList<>(listeners);
-        for (EventListener listener : listenerCopy)
+        for (EventListener listener : listeners)
         {
             try
             {

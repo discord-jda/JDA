@@ -21,6 +21,13 @@ import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.events.message.GenericMessageEvent;
 
+/**
+ * <b><u>GenericGuildMessageEvent</u></b><br>
+ * Fired whenever a {@link net.dv8tion.jda.entities.Message Message} event is fired from a {@link net.dv8tion.jda.entities.TextChannel TextChannel}.<br>
+ * Every GuildMessageEvent is an instance of this event and can be casted. (no exceptions)<br>
+ * <br>
+ * Use: Detect any GuildMessageEvent. <i>(No real use for the JDA user)</i>
+ */
 public class GenericGuildMessageEvent extends GenericMessageEvent
 {
     protected TextChannel channel;

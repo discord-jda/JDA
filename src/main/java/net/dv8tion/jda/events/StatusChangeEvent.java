@@ -13,30 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package net.dv8tion.jda.events.audio;
+package net.dv8tion.jda.events;
 
 import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.entities.VoiceChannel;
 
 /**
- * <b><u>AudioConnectedEvent</u></b><br>
- * Fired if we established an {@link net.dv8tion.jda.audio.AudioConnection AudioConnection} to a {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} successfully.<br>
+ * <b><u>StatusChangedEvent</u></b><br>
+ * Fired if our {@link net.dv8tion.jda.JDA.Status Status} changed. (Example: SHUTTING_DOWN -> SHUTDOWN)<br>
  * <br>
- * Use: Retrieve newly connected {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel}.
+ * Use: Detect internal status changes. Possibly to log or forward on user's end.
  */
-public class AudioConnectEvent extends GenericAudioEvent
+public class StatusChangeEvent extends Event
 {
-    protected final VoiceChannel connectedChannel;
+    protected final JDA.Status newStatus;
+    protected final JDA.Status oldStatus;
 
-    public AudioConnectEvent(JDA api, VoiceChannel connectedChannel)
+    public StatusChangeEvent(JDA api, JDA.Status newStatus, JDA.Status oldStatus)
     {
         super(api, -1);
-        this.connectedChannel = connectedChannel;
+        this.newStatus = newStatus;
+        this.oldStatus = oldStatus;
     }
 
-    public VoiceChannel getConnectedChannel()
+    public JDA.Status getStatus()
     {
-        return connectedChannel;
+        return newStatus;
+    }
+
+    public JDA.Status getOldStatus()
+    {
+        return oldStatus;
     }
 }

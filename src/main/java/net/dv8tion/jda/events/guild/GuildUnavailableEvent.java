@@ -19,6 +19,13 @@ package net.dv8tion.jda.events.guild;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Guild;
 
+/**
+ * <b><u>GuildUnavailableEvent</u></b><br/>
+ * Fired if a {@link net.dv8tion.jda.entities.Guild Guild} becomes unavailable.<br/>
+ * Possibly due to a downtime.<br/>
+ * <br/>
+ * Use: This indicates that a Guild stopped responding.
+ */
 public class GuildUnavailableEvent extends GenericGuildEvent
 {
     public GuildUnavailableEvent(JDA api, int responseNumber, Guild guild)

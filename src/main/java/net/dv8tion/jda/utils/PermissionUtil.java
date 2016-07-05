@@ -49,6 +49,10 @@ public class PermissionUtil
             return false;
         List<Role> issuerRoles = guild.getRolesForUser(issuer);
         List<Role> targetRoles = guild.getRolesForUser(target);
+        if (issuerRoles == null)
+            throw new IllegalArgumentException("Issuer user is not in the provided guild!");
+        if (targetRoles == null)
+            throw new IllegalArgumentException("Target user is not in the provided guild!");
         return !issuerRoles.isEmpty() && (targetRoles.isEmpty() || canInteract(issuerRoles.get(0), targetRoles.get(0)));
     }
 
@@ -68,6 +72,8 @@ public class PermissionUtil
         if(target.getGuild().getOwner() == issuer)
             return true;
         List<Role> issuerRoles = target.getGuild().getRolesForUser(issuer);
+        if (issuerRoles == null)
+            throw new IllegalArgumentException("Issuer User is not in the guild that the target Role is a part of!");
         return !issuerRoles.isEmpty() && canInteract(issuerRoles.get(0), target);
     }
     
@@ -156,6 +162,8 @@ public class PermissionUtil
      */
     public static boolean checkPermission(User user, Permission perm, Guild guild)
     {
+        if (guild.getRolesForUser(user) == null)
+            throw new IllegalArgumentException("Provided user is not in the provided guild");
         return guild.getOwnerId().equals(user.getId())
                 || guild.getPublicRole().hasPermission(Permission.ADMINISTRATOR)
                 || guild.getPublicRole().hasPermission(perm)
@@ -212,6 +220,8 @@ public class PermissionUtil
         //Default to binary OR of all global permissions in this guild
         int permission = guild.getPublicRole().getPermissionsRaw();
         List<Role> rolesOfUser = guild.getRolesForUser(user);
+        if (rolesOfUser == null)
+            throw new IllegalArgumentException("Provided user is not in the provided guild");
         for (Role role : rolesOfUser)
         {
             permission = permission | role.getPermissionsRaw();

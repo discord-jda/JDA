@@ -22,6 +22,12 @@ import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.events.Event;
 
+/**
+ * <b><u>MessageDeleteEvent</u></b><br/>
+ * Fired if a Message was deleted in a {@link net.dv8tion.jda.entities.MessageChannel MessageChannel}.<br/>
+ * <br/>
+ * Use: Detect when a Message is deleted. No matter if private or guild.
+ */
 public class MessageDeleteEvent extends Event
 {
     private final boolean isPrivate;

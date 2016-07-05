@@ -18,6 +18,12 @@ package net.dv8tion.jda.events.channel.text;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.TextChannel;
 
+/**
+ * <b><u>TextChannelDeleteEvent</u></b><br>
+ * Fired if a {@link net.dv8tion.jda.entities.TextChannel TextChannel} has been deleted.<br>
+ * <br>
+ * Use: Detect when a TextChannel has been deleted.
+ */
 public class TextChannelDeleteEvent extends GenericTextChannelEvent
 {
     public TextChannelDeleteEvent(JDA api, int responseNumber, TextChannel channel)

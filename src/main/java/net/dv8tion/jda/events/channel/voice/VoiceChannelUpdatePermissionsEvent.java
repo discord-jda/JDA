@@ -22,6 +22,12 @@ import net.dv8tion.jda.entities.VoiceChannel;
 
 import java.util.List;
 
+/**
+ * <b><u>VoiceChannelUpdatePermissionsEvent</u></b><br/>
+ * Fired if a {@link VoiceChannel VoiceChannel}'s permission overrides change.<br/>
+ * <br/>
+ * Use: Get affected VoiceChannel, affected Guild and affected {@link net.dv8tion.jda.entities.Role Roles}/{@link net.dv8tion.jda.entities.User Users}.
+ */
 public class VoiceChannelUpdatePermissionsEvent extends GenericVoiceChannelUpdateEvent
 {
     private final List<Role> changedRoles;

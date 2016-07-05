@@ -18,6 +18,12 @@ package net.dv8tion.jda.events.channel.text;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.TextChannel;
 
+/**
+ * <b><u>TextChannelCreateEvent</u></b><br>
+ * Fired if a {@link net.dv8tion.jda.entities.TextChannel TextChannel} has been created.<br>
+ * <br>
+ * Use: Detect new TextChannel creation.
+ */
 public class TextChannelCreateEvent extends GenericTextChannelEvent
 {
     public TextChannelCreateEvent(JDA api, int responseNumber, TextChannel channel)

@@ -134,6 +134,12 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    public boolean isMember(User user)
+    {
+        return getRolesForUser(user) != null;
+    }
+
+    @Override
     public List<TextChannel> getTextChannels()
     {
         ArrayList<TextChannel> textChannels = new ArrayList<>(this.textChannels.values());
@@ -244,14 +250,46 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    public RoleManager createCopyOfRole(Role role)
+    {
+        if (!PermissionUtil.checkPermission(role.getJDA().getSelfInfo(), Permission.MANAGE_ROLES, role.getGuild()))
+            throw new PermissionException(Permission.MANAGE_ROLES);
+        for (Permission perm : role.getPermissions())
+        {
+            if (!PermissionUtil.checkPermission(role.getJDA().getSelfInfo(), perm, role.getGuild()))
+                throw new PermissionException(perm);
+        }
+
+        RoleManager manager = createRole();
+        manager.setPermissionsRaw(role.getPermissionsRaw());
+        manager.setName(role.getName());
+        manager.setColor(role.getColor());
+        manager.setGrouped(role.isGrouped());
+        manager.setMentionable(role.isMentionable());
+        manager.update();
+
+        return manager;
+    }
+
+    @Override
     public List<Role> getRolesForUser(User user)
     {
         List<Role> roles = userRoles.get(user);
         if (roles == null)
-            return new LinkedList<>();
+            return null;
+        roles = new ArrayList<>(roles);
 
         Collections.sort(roles, (r1, r2) -> r2.compareTo(r1));
         return Collections.unmodifiableList(roles);
+    }
+
+    @Override
+    public Role getColorDeterminantRoleForUser(User user)
+    {
+        for(Role role : getRolesForUser(user))
+            if(role.getColor() != 0)
+                return role;
+        return publicRole;
     }
 
     @Override
@@ -325,6 +363,8 @@ public class GuildImpl implements Guild
     @Override
     public boolean checkVerification()
     {
+        if (api.getSelfInfo().isBot())
+            return true;
         if(canSendVerification)
             return true;
         switch (verificationLevel)

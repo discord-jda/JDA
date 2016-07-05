@@ -17,7 +17,6 @@ package net.dv8tion.jda;
 
 import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.hooks.AnnotatedEventManager;
-import net.dv8tion.jda.hooks.EventListener;
 import net.dv8tion.jda.hooks.IEventManager;
 import net.dv8tion.jda.managers.AccountManager;
 import net.dv8tion.jda.managers.AudioManager;
@@ -31,6 +30,49 @@ import java.util.List;
  */
 public interface JDA
 {
+    /**
+     * The current status of the JDA instance.
+     */
+    enum Status
+    {
+        /**JDA is currently setting up supporting systems like the AudioSystem.*/
+        INITIALIZING,
+        /**JDA has finished setting up supporting systems and is ready to log in.*/
+        INITIALIZED,
+        /**JDA is currently attempting to log in.*/
+        LOGGING_IN,
+        /**JDA is currently attempting to connect it's websocket to Discord.*/
+        CONNECTING_TO_WEBSOCKET,
+        /**JDA has successfully connected it's websocket to Discord and is populating internal objects.
+         * This process often takes the longest of all Statuses (besides CONNECTED)*/
+        LOADING_SUBSYSTEMS,
+        /**JDA has finished loading everything, is receiving information from Discord and is firing events.*/
+        CONNECTED,
+        /**JDA's main websocket has been disconnected. This <b>DOES NOT</b> mean JDA has shutdown permanently.
+         * This is an in-between status. Most likely ATTEMPTING_TO_RECONNECT or SHUTTING_DOWN/SHUTDOWN will soon follow.*/
+        DISCONNECTED,
+        /**When trying to reconnect to Discord JDA encountered an issue, most likely related to a lack of internet connection,
+         * and is waiting to try reconnecting again.*/
+        WAITING_TO_RECONNECT,
+        /**JDA has been disconnected from Discord and is currently trying to reestablish the connection.*/
+        ATTEMPTING_TO_RECONNECT,
+        /**JDA has received a shutdown request or has been disconnected from Discord and reconnect is disabled, thus,
+         * JDA is in the process of shutting down*/
+        SHUTTING_DOWN,
+        /**JDA has finished shutting down and this instance can no longer be used to communicate with the Discord servers.*/
+        SHUTDOWN,
+        /**While attempting to authenticate, Discord reported that the provided authentication information was invalid.*/
+        FAILED_TO_LOGIN,
+    }
+
+    /**
+     * Gets the current status of the JDA instance.
+     *
+     * @return
+     *      Current JDA status.
+     */
+    Status getStatus();
+
     /**
      * Changes the internal EventManager.
      * The default EventManager is {@link net.dv8tion.jda.hooks.InterfacedEventManager InterfacedEventListener}.
@@ -321,6 +363,21 @@ public interface JDA
      *      True if JDA can currently utilize the audio system.
      */
     boolean isAudioEnabled();
+
+    /**
+     * Used to determine if JDA will process MESSAGE_DELETE_BULK messages received from Discord as a single
+     * {@link net.dv8tion.jda.events.message.MessageBulkDeleteEvent MessageBulkDeleteEvent} or split
+     * the deleted messages up and fire multiple {@link net.dv8tion.jda.events.message.MessageDeleteEvent MessageDeleteEvents},
+     * one for each deleted message.
+     * <p>
+     * By default, JDA will separate the bulk delete event into individual delete events, but this isn't as efficient as
+     * handling a single event would be. It is recommended that BulkDelete Splitting be disabled and that the developer
+     * should instead handle the {@link net.dv8tion.jda.events.message.MessageBulkDeleteEvent MessageBulkDeleteEvent}
+     *
+     * @return
+     *      Whether or not JDA currently handles the BULK_MESSAGE_DELETE event by splitting it into individual MessageDeleteEvents or not.
+     */
+    boolean isBulkDeleteSplittingEnabled();
 
     /**
      * Shuts down JDA, closing all its connections.

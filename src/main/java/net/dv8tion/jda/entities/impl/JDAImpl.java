@@ -19,6 +19,7 @@ import com.mashape.unirest.http.Unirest;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.events.Event;
+import net.dv8tion.jda.events.StatusChangeEvent;
 import net.dv8tion.jda.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.hooks.EventListener;
 import net.dv8tion.jda.hooks.IEventManager;
@@ -31,21 +32,14 @@ import net.dv8tion.jda.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.requests.Requester;
 import net.dv8tion.jda.requests.WebSocketClient;
 import net.dv8tion.jda.utils.SimpleLog;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-
 
 /**
  * Represents the core of the Discord API. All functionality is connected through this.
@@ -64,6 +58,8 @@ public class JDAImpl implements JDA
     protected final Map<Guild, AudioManager> audioManagers = new HashMap<>();
     protected final boolean audioEnabled;
     protected final boolean useShutdownHook;
+    protected final boolean bulkDeleteSplittingEnabled;
+    protected volatile Status status;
     protected IEventManager eventManager = new InterfacedEventManager();
     protected SelfInfo selfInfo = null;
     protected AccountManager accountManager;
@@ -73,18 +69,24 @@ public class JDAImpl implements JDA
     protected boolean reconnect;
     protected int responseTotal;
 
-    public JDAImpl(boolean enableAudio, boolean useShutdownHook)
+    public JDAImpl(boolean enableAudio, boolean useShutdownHook, boolean enableBulkDeleteSplitting)
     {
+        status = Status.INITIALIZING;
         proxy = null;
         if (enableAudio)
             this.audioEnabled = AudioManagerImpl.init();
         else
             this.audioEnabled = false;
         this.useShutdownHook = useShutdownHook;
+        this.bulkDeleteSplittingEnabled = enableBulkDeleteSplitting;
+        if (bulkDeleteSplittingEnabled)
+            LOG.warn("BulkDeleteSplitting is enabled. For best performance, please look at the javadoc for JDABuilder#setBulkDeleteEnabled(boolean).");
     }
 
-    public JDAImpl(String proxyUrl, int proxyPort, boolean enableAudio, boolean useShutdownHook)
+    public JDAImpl(String proxyUrl, int proxyPort, boolean enableAudio, boolean useShutdownHook,
+                   boolean enableBulkDeleteSplitting)
     {
+        status = Status.INITIALIZING;
         if (proxyUrl == null || proxyUrl.isEmpty() || proxyPort == -1)
             throw new IllegalArgumentException("The provided proxy settings cannot be used to make a proxy. Settings: URL: '" + proxyUrl + "'  Port: " + proxyPort);
         proxy = new HttpHost(proxyUrl, proxyPort);
@@ -94,6 +96,9 @@ public class JDAImpl implements JDA
         else
             this.audioEnabled = false;
         this.useShutdownHook = useShutdownHook;
+        this.bulkDeleteSplittingEnabled = enableBulkDeleteSplitting;
+        if (bulkDeleteSplittingEnabled)
+            LOG.warn("BulkDeleteSplitting is enabled. For best performance, please look at the javadoc for JDABuilder#setBulkDeleteEnabled(boolean).");
     }
 
     /**
@@ -113,6 +118,7 @@ public class JDAImpl implements JDA
      */
     public void login(String token, int[] sharding) throws IllegalArgumentException, LoginException
     {
+        setStatus(Status.LOGGING_IN);
         LOG.info("JDA starting...");
         if (token == null || token.isEmpty())
             throw new IllegalArgumentException("The provided botToken was empty / null.");
@@ -132,7 +138,7 @@ public class JDAImpl implements JDA
 
         if (useShutdownHook)
         {
-            Runtime.getRuntime().addShutdownHook(new Thread()
+            Runtime.getRuntime().addShutdownHook(new Thread("JDA Shutdown Hook")
             {
                 @Override
                 public void run()
@@ -165,6 +171,22 @@ public class JDAImpl implements JDA
     public void setAuthToken(String token)
     {
         this.authToken = token;
+    }
+
+    @Override
+    public Status getStatus()
+    {
+        return status;
+    }
+
+    public void setStatus(Status status)
+    {
+        synchronized (this.status)
+        {
+            Status oldStatus = this.status;
+            this.status = status;
+            eventManager.handle(new StatusChangeEvent(this, status, oldStatus));
+        }
     }
 
     @Override
@@ -394,6 +416,12 @@ public class JDAImpl implements JDA
     }
 
     @Override
+    public boolean isBulkDeleteSplittingEnabled()
+    {
+        return bulkDeleteSplittingEnabled;
+    }
+
+    @Override
     public void shutdown()
     {
         shutdown(true);
@@ -402,6 +430,7 @@ public class JDAImpl implements JDA
     @Override
     public void shutdown(boolean free)
     {
+        setStatus(Status.SHUTTING_DOWN);
         TextChannelImpl.AsyncMessageSender.stopAll(this);
         audioManagers.values().forEach(mng -> mng.closeAudioConnection());
         client.setAutoReconnect(false);
@@ -415,6 +444,7 @@ public class JDAImpl implements JDA
             }
             catch (IOException ignored) {}
         }
+        setStatus(Status.SHUTDOWN);
     }
 
     public void setMessageTimeout(String ratelimitIdentifier, long timeout)

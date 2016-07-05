@@ -114,6 +114,16 @@ public interface Guild
     List<User> getUsers();
 
     /**
+     * Used to determine the provided {@link net.dv8tion.jda.entities.User User} is a member of this Guild.
+     *
+     * @param user
+     *          The user to determine whether or not they are a member of this guild.
+     * @return
+     *      True - if this user is present in this guild.
+     */
+    boolean isMember(User user);
+
+    /**
      * The {@link net.dv8tion.jda.entities.TextChannel TextChannels} available on the {@link net.dv8tion.jda.entities.Guild Guild}.
      * The channels returned will be sorted according to their position.
      *
@@ -189,16 +199,41 @@ public interface Guild
     RoleManager createRole();
 
     /**
+     * Creates a new {@link net.dv8tion.jda.entities.Role Role} in this {@link net.dv8tion.jda.entities.Guild Guild} with the same settings as the given {@link net.dv8tion.jda.entities.Role Role}.
+     * It will be placed at the bottom (just over the @everyone role) to avoid permission hierarchy conflicts.
+     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.Permission#MANAGE_ROLES MANAGE_ROLES Permission}
+     * and all {@link net.dv8tion.jda.Permission Permissions} the given {@link net.dv8tion.jda.entities.Role Role} has.
+     *
+     * @param role 
+     *      The {@link net.dv8tion.jda.entities.Role Role} that should be copied 
+     * @return
+     *      the RoleManager for the created Role
+     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
+     * @throws net.dv8tion.jda.exceptions.PermissionException
+     *      if the bot doesn't has {@link net.dv8tion.jda.Permission#MANAGE_ROLES MANAGE_ROLES Permission} and every Permission the given Role has
+     */
+    RoleManager createCopyOfRole(Role role);
+
+    /**
      * Provides all of the {@link net.dv8tion.jda.entities.Role Roles} that the provided {@link net.dv8tion.jda.entities.User User}
-     *  has been assigned.
-     * The roles returned will be sorted according to their position.
+     *  has been assigned.<br>
+     * The roles returned will be sorted according to their position.<br>
+     * If this the provided user is not in this guild, the list returned will be null.
      *
      * @param user
      *          The {@link net.dv8tion.jda.entities.User User} that we wish to get the {@link net.dv8tion.jda.entities.Role Roles} related to.
      * @return
-     *      An Immutable List of {@link net.dv8tion.jda.entities.Role Roles}.
+     *      An Immutable List of {@link net.dv8tion.jda.entities.Role Roles} or null if the provided user isn't in this Guild.
      */
     List<Role> getRolesForUser(User user);
+
+    /**
+     * Provides the {@link net.dv8tion.jda.entities.Role Role} that determines the color for the provided {@link net.dv8tion.jda.entities.User User}
+     * 
+     * If the {@link net.dv8tion.jda.entities.User User} has the default color, this returns the same as getPublicRole();
+     */
+    Role getColorDeterminantRoleForUser(User user);
 
     /**
      * Provides all {@link net.dv8tion.jda.entities.User Users} that have the provided role.

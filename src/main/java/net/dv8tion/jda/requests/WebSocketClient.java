@@ -16,6 +16,7 @@
 package net.dv8tion.jda.requests;
 
 import com.neovisionaries.ws.client.*;
+import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.audio.AudioReceiveHandler;
 import net.dv8tion.jda.audio.AudioSendHandler;
 import net.dv8tion.jda.entities.Guild;
@@ -54,8 +55,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected String gatewayUrl = null;
 
     protected String sessionId = null;
+    protected Long lastHeartbeatReturn = null;
 
-    protected Thread keepAliveThread;
+    protected volatile Thread keepAliveThread;
     protected boolean connected;
 
     protected boolean initiating;             //cache all events?
@@ -133,6 +135,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             JDAImpl.LOG.info("Successfully resumed Session!");
             api.getEventManager().handle(new ResumedEvent(api, api.getResponseTotal()));
         }
+        api.setStatus(JDA.Status.CONNECTED);
         LOG.debug("Resending " + cachedEvents.size() + " cached events...");
         handle(cachedEvents);
         LOG.debug("Sending of cached events finished.");
@@ -166,6 +169,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected void connect()
     {
+        if (api.getStatus() != JDA.Status.ATTEMPTING_TO_RECONNECT)
+            api.setStatus(JDA.Status.CONNECTING_TO_WEBSOCKET);
         initiating = true;
         WebSocketFactory factory = new WebSocketFactory();
         if (proxy != null)
@@ -200,7 +205,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         try
         {
-            return api.getRequester().get(Requester.DISCORD_API_PREFIX + "gateway").getObject().getString("url") + "?encoding=json&v=4";
+            return api.getRequester().get(Requester.DISCORD_API_PREFIX + "gateway").getObject().getString("url") + "?encoding=json&v=5";
         }
         catch (Exception ex)
         {
@@ -211,6 +216,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     @Override
     public void onConnected(WebSocket websocket, Map<String, List<String>> headers)
     {
+        api.setStatus(JDA.Status.LOADING_SUBSYSTEMS);
         LOG.info("Connected to WebSocket");
         if (sessionId == null)
         {
@@ -227,6 +233,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer)
     {
         connected = false;
+        api.setStatus(JDA.Status.DISCONNECTED);
         if (keepAliveThread != null)
         {
             keepAliveThread.interrupt();
@@ -241,6 +248,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 LOG.info("Reason: " + serverCloseFrame.getCloseReason());
                 LOG.info("Close code: " + serverCloseFrame.getCloseCode());
             }
+            api.setStatus(JDA.Status.SHUTDOWN);
             api.getEventManager().handle(new ShutdownEvent(api, OffsetDateTime.now(), dcAudioConnections));
         }
         else
@@ -277,7 +285,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             try
             {
+                api.setStatus(JDA.Status.WAITING_TO_RECONNECT);
                 Thread.sleep(reconnectTimeoutS * 1000);
+                api.setStatus(JDA.Status.ATTEMPTING_TO_RECONNECT);
             }
             catch(InterruptedException ignored) {}
             LOG.warn("Attempting to reconnect!");
@@ -327,6 +337,14 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 invalidate();
                 sendIdentify();
                 break;
+            case 10:
+                LOG.debug("Got HELLO packet (OP 10). Initializing keep-alive.");
+                setupKeepAlive(content.getJSONObject("d").getLong("heartbeat_interval"));
+                break;
+            case 11:
+                LOG.trace("Got Heartbeat Ack (OP 11).");
+                lastHeartbeatReturn = System.currentTimeMillis();
+                break;
             default:
                 LOG.debug("Got unknown op-code: " + opCode + " with content: " + message);
         }
@@ -334,18 +352,40 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected void setupKeepAlive(long timeout)
     {
-        keepAliveThread = new Thread(() -> {
-            while (connected) {
-                try {
+        keepAliveThread = new Thread(() ->
+        {
+            while (connected)
+            {
+                try
+                {
+                    lastHeartbeatReturn = null;
                     sendKeepAlive();
-                    Thread.sleep(timeout);
-                } catch (InterruptedException ignored) {}
-                catch (Exception ex) {
+
+                    //Sleep half of the heartbeat interval
+                    Thread.sleep(timeout / 2);
+
+                    //We didn't receive a return heartbeat ack in a timely fashion. Kill the connection.
+                    if (lastHeartbeatReturn == null)
+                    {
+                        LOG.warn("Didn't receive Heartbeak Ack in a timely manner. Assuming disconnected...");
+                        close();
+                        break;
+                    }
+
+                    //Sleep the rest of the heartbeat interval
+                    Thread.sleep(timeout / 2);
+                }
+                catch (InterruptedException ignored) {}
+                catch (Exception ex)
+                {
                     //connection got cut... terminating keepAliveThread
                     break;
                 }
             }
         });
+        keepAliveThread.setName("JDA MainWS-KeepAlive" + (sharding != null
+                    ? " Shard [" + sharding[0] + " / " + sharding[1] + "]"
+                    : ""));
         keepAliveThread.setPriority(Thread.MAX_PRIORITY);
         keepAliveThread.setDaemon(true);
         keepAliveThread.start();
@@ -365,12 +405,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                         .put("token", api.getAuthToken())
                         .put("properties", new JSONObject()
                                 .put("$os", System.getProperty("os.name"))
-                                .put("$browser", "Java Discord API")
+                                .put("$browser", "JDA")
                                 .put("$device", "")
                                 .put("$referring_domain", "")
                                 .put("$referrer", "")
                         )
-                        .put("v", 4)
+                        .put("v", 5)
                         .put("large_threshold", 250)
                         .put("compress", true));
         if (sharding != null)
@@ -518,12 +558,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         String type = raw.getString("t");
         int responseTotal = api.getResponseTotal();
 
-        //special handling
-        if (type.equals("READY") || type.equals("RESUMED"))
-        {
-            setupKeepAlive(raw.getJSONObject("d").getLong("heartbeat_interval"));
-        }
-
         if (type.equals("GUILD_MEMBER_ADD"))
             GuildMembersChunkHandler.modifyExpectedGuildMember(api, raw.getJSONObject("d").getString("guild_id"), 1);
         if (type.equals("GUILD_MEMBER_REMOVE"))
@@ -584,6 +618,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     break;
                 case "MESSAGE_DELETE":
                     new MessageDeleteHandler(api, responseTotal).handle(raw);
+                    break;
+                case "MESSAGE_DELETE_BULK":
+                    new MessageBulkDeleteHandler(api, responseTotal).handle(raw);
                     break;
                 case "VOICE_STATE_UPDATE":
                     new VoiceChangeHandler(api, responseTotal).handle(raw);

@@ -20,6 +20,12 @@ import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.events.message.GenericMessageEvent;
 import net.dv8tion.jda.utils.InviteUtil;
 
+/**
+ * <b><u>InviteReceivedEvent</u></b><br>
+ * Fired if we received a message that contains an invite url. (Example: https://discord.gg/0hMr4ce0tIl3SLv5)<br>
+ * <br>
+ * Use: Detect messages containing an invite and providing an {@link net.dv8tion.jda.utils.InviteUtil.Invite Invite} instance.
+ */
 public class InviteReceivedEvent extends GenericMessageEvent
 {
     private final InviteUtil.Invite invite;

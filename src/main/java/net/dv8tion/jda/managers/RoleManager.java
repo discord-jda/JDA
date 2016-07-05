@@ -37,6 +37,7 @@ public class RoleManager
     private String name = null;
     private int color = -1;
     private Boolean grouped = null;
+    private Boolean mentionable;
     private int perms;
 
     public RoleManager(Role role)
@@ -78,6 +79,32 @@ public class RoleManager
         {
             this.name = name;
         }
+        return this;
+    }
+
+    /**
+     * Sets the <code>int</code> representation of the permissions for this {@link net.dv8tion.jda.entities.Role Role}.<br>
+     * This change will only be applied, if {@link #update()} is called.
+     * So multiple changes can be made at once.
+     *
+     * @param perms
+     *      int containing offset permissions of this role
+     * @return
+     *      this
+     * @see
+     *      <a href="https://discordapp.com/developers/docs/topics/permissions">Discord Permission Documentation</a>
+     */
+    public RoleManager setPermissionsRaw(int perms)
+    {
+        checkPermission(Permission.MANAGE_ROLES);
+        checkPosition();
+
+        for (Permission perm : Permission.getPermissions(perms))
+        {
+            checkPermission(perm);   
+        }
+
+        this.perms = perms;
         return this;
     }
 
@@ -146,6 +173,32 @@ public class RoleManager
         else
         {
             this.grouped = group;
+        }
+        return this;
+    }
+
+    /**
+     * Sets, whether this Role should be mentionable.
+     * This change will only be applied, if {@link #update()} is called.
+     * So multiple changes can be made at once.
+     *
+     * @param group
+     *      Whether or not this should be mentionable, or null to keep current grouping status
+     * @return
+     *      this
+     */
+    public RoleManager setMentionable(Boolean mention)
+    {
+        checkPermission(Permission.MANAGE_ROLES);
+        checkPosition();
+
+        if (mention == null || mention == role.isMentionable())
+        {
+            this.mentionable = null;
+        }
+        else
+        {
+            this.mentionable = mention;
         }
         return this;
     }
@@ -291,6 +344,8 @@ public class RoleManager
             frame.put("color", color);
         if(grouped != null)
             frame.put("hoist", grouped.booleanValue());
+        if(mentionable != null)
+            frame.put("mentionable", mentionable.booleanValue());
         update(frame);
     }
 

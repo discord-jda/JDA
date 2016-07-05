@@ -21,8 +21,15 @@ import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.entities.User;
 
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * <b><u>GuildMemberRoleRemoveEvent</u></b><br/>
+ * Fired if one or more {@link net.dv8tion.jda.entities.Role Roles} are removed from a {@link net.dv8tion.jda.entities.User User}.<br/>
+ * <br/>
+ * Use: Retrieve affected user and guild. Provides a list of removed roles.
+ */
 public class GuildMemberRoleRemoveEvent extends GenericGuildMemberEvent
 {
     private final List<Role> removedRoles;
@@ -30,7 +37,7 @@ public class GuildMemberRoleRemoveEvent extends GenericGuildMemberEvent
     public GuildMemberRoleRemoveEvent(JDA api, int responseNumber, Guild guild, User user, List<Role> removedRoles)
     {
         super(api, responseNumber, guild, user);
-        this.removedRoles = removedRoles;
+        this.removedRoles = new LinkedList<>(removedRoles);
     }
 
     public List<Role> getRoles()

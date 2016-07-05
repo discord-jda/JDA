@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.entities;
 
+import net.dv8tion.jda.Permission;
+
 /**
  * Represents the currently logged in account.
  */
@@ -29,4 +31,16 @@ public interface SelfInfo extends User
      *      boolean specifying whether or not this account is verified.
      */
     boolean isVerified();
+
+    /**
+     * Creates a OAuth invite-link used to invite bot-accounts.<br>
+     * This is literally just a shortcut to
+     * {@link net.dv8tion.jda.utils.ApplicationUtil#getAuthInvite(net.dv8tion.jda.JDA, net.dv8tion.jda.Permission...) ApplicationUtil.getAuthInvite(JDA, Permission...)}
+     *
+     * @param perms
+     *      Possibly empty list of Permissions that should be requested via invite
+     * @return
+     *      The link used to invite the bot
+     */
+    String getAuthUrl(Permission... perms);
 }
