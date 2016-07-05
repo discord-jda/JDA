@@ -61,9 +61,17 @@ public class MessageListener extends ListenerAdapter
     @Override
     public void onMessageReceived(MessageReceivedEvent event)
     {
-        System.out.printf("[%s][%s] %s: %s\n", event.getGuild().getName(),
-            event.getChannel().getName(), event.getAuthor().getUsername(),
-            event.getMessage().getContent());
+        if (event.isPrivate())
+        {
+            System.out.printf("[PM] %s: %s\n", event.getAuthor().getUsername(),
+                                    event.getMessage().getContent());
+        }
+        else
+        {
+            System.out.printf("[%s][%s] %s: %s\n", event.getGuild().getName(),
+                        event.getTextChannel().getName(), event.getAuthor().getUsername(),
+                        event.getMessage().getContent());
+        }
     }
 }
 ```
