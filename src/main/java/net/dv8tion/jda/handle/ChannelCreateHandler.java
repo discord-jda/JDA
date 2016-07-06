@@ -62,12 +62,12 @@ public class ChannelCreateHandler extends SocketHandler
         }
         else if (type.equalsIgnoreCase("private"))
         {
-            PrivateChannel pc = new EntityBuilder(api).createPrivateChannel(content);
+        	PrivateChannel pc = new EntityBuilder(api).createPrivateChannel(content);
         	if(pc != null) {
-				api.getEventManager().handle(new PrivateChannelCreateEvent(api, responseNumber, pc.getUser()));
-			} else {
-				JDAImpl.LOG.warn("Discord API sent us a private message for a user we can't see, ignoring event.");
-			}
+        		api.getEventManager().handle(new PrivateChannelCreateEvent(api, responseNumber, pc.getUser()));
+        	} else {
+        		JDAImpl.LOG.warn("Discord API sent us a private message for a user we can't see, ignoring event.");
+        	}
         }
         else
         {
