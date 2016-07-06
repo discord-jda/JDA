@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.handle;
 
+import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.channel.priv.PrivateChannelCreateEvent;
 import net.dv8tion.jda.events.channel.text.TextChannelCreateEvent;
@@ -61,10 +62,18 @@ public class ChannelCreateHandler extends SocketHandler
         }
         else if (type.equalsIgnoreCase("private"))
         {
-            api.getEventManager().handle(
-                    new PrivateChannelCreateEvent(
-                            api, responseNumber,
-                            new EntityBuilder(api).createPrivateChannel(content).getUser()));
+            PrivateChannel pc = new EntityBuilder(api).createPrivateChannel(content);
+            if (pc == null)
+            {
+                JDAImpl.LOG.warn("Discord API sent us a Private CREATE_CHANNEL for a user we can't see, ignoring event.");
+            }
+            else
+            {
+                api.getEventManager().handle(
+                        new PrivateChannelCreateEvent(
+                                api, responseNumber,
+                                pc.getUser()));
+            }
         }
         else
         {
