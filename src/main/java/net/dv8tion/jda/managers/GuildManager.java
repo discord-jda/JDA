@@ -723,7 +723,7 @@ public class GuildManager
         if (response.isOk())
             return;
         if (response.code == 404)
-            throw new IllegalArgumentException("User with id \"" + userId + "\" does not exit.");
+            throw new IllegalArgumentException("User with id \"" + userId + "\" does not exist.");
         JDAImpl.LOG.fatal("Something went wrong trying to ban a user by id: " + response.toString());
     }
 
