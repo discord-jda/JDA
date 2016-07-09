@@ -682,7 +682,9 @@ public class GuildManager
             throw new GuildUnavailableException();
         }
         checkPermission(Permission.BAN_MEMBERS);
-        checkPosition(user);
+
+	    if (guild.getUsers().contains(user)) // If user is in guild. Check if we are able to ban.
+            checkPosition(user);
 
         ((JDAImpl) guild.getJDA()).getRequester().put(Requester.DISCORD_API_PREFIX + "guilds/"
                 + guild.getId() + "/bans/" + user.getId() + (delDays > 0 ? "?delete-message-days=" + delDays : ""), new JSONObject());
@@ -703,18 +705,32 @@ public class GuildManager
      *          The history of messages, in days, that will be deleted.
      * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
      *      if the guild is temporarily unavailable
+     * @throws IllegalArgumentException
+     *      if user does not exist
      */
     public void ban(String userId, int delDays)
     {
         User user = guild.getJDA().getUserById(userId);
-        if(user != null)
+        if (user != null) // We have to check whether we are able to ban the user that is cached.
+        {
             ban(user, delDays);
+            return;
+        }
+        checkPermission(Permission.BAN_MEMBERS);
+
+        Requester.Response response = ((JDAImpl) guild.getJDA()).getRequester().put(Requester.DISCORD_API_PREFIX + "guilds/"
+                + guild.getId() + "/bans/" + userId + (delDays > 0 ? "?delete-message-days=" + delDays : ""), new JSONObject());
+        if (response.isOk())
+            return;
+        if (response.code == 404)
+            throw new IllegalArgumentException("User with id \"" + userId + "\" does not exit.");
+        JDAImpl.LOG.fatal("Something went wrong trying to ban a user by id: " + response.toString());
     }
 
     /**
      * Deafens a {@link net.dv8tion.jda.entities.User User} in this {@link net.dv8tion.jda.entities.Guild Guild}.
      * Requires the {@link net.dv8tion.jda.Permission#VOICE_DEAF_OTHERS VOICE_DEAF_OTHERS} permission.
-     * 
+     *
      * @param user
      *      The user who should be deafened.
      * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
@@ -729,7 +745,7 @@ public class GuildManager
     /**
      * Mutes a {@link net.dv8tion.jda.entities.User User} in this {@link net.dv8tion.jda.entities.Guild Guild}.
      * Requires the {@link net.dv8tion.jda.Permission#VOICE_MUTE_OTHERS VOICE_MUTE_OTHERS} permission.
-     * 
+     *
      * @param user
      *      The user who should be muted.
      * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
@@ -817,7 +833,7 @@ public class GuildManager
     /**
      * Undeafens a {@link net.dv8tion.jda.entities.User User} in this {@link net.dv8tion.jda.entities.Guild Guild}.
      * Requires the {@link net.dv8tion.jda.Permission#VOICE_DEAF_OTHERS VOICE_DEAF_OTHERS} permission.
-     * 
+     *
      * @param user
      *      The user who should be undeafened.
      * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
@@ -828,11 +844,11 @@ public class GuildManager
     {
         this.deafen(user, false);
     }
-    
+
     /**
      * Unmutes a {@link net.dv8tion.jda.entities.User User} in this {@link net.dv8tion.jda.entities.Guild Guild}.
      * Requires the {@link net.dv8tion.jda.Permission#VOICE_MUTE_OTHERS VOICE_MUTE_OTHERS} permission.
-     * 
+     *
      * @param user
      *      The user who should be unmuted.
      * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
@@ -882,7 +898,7 @@ public class GuildManager
         ((JDAImpl) guild.getJDA()).getRequester()
                 .patch(url, new JSONObject().put("deaf", deafen));
     }
-    
+
     private void mute(User user, boolean mute)
     {
         if (!guild.isAvailable())
