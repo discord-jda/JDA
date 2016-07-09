@@ -141,8 +141,10 @@ public class AudioConnection
     public void close(boolean regionChange)
     {
 //        setSpeaking(false);
-        sendThread.interrupt();
-        receiveThread.interrupt();
+        if (sendThread != null)
+            sendThread.interrupt();
+        if (receiveThread != null)
+            receiveThread.interrupt();
         webSocket.close(regionChange, -1);
     }
 
