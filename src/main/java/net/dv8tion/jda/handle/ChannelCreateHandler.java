@@ -33,51 +33,56 @@ public class ChannelCreateHandler extends SocketHandler
     @Override
     protected String handleInternally(JSONObject content)
     {
-        String type;
-        if (content.has("type"))
-            type = content.getString("type");
-        else if (content.has("recipient"))
-            type = "private";
-        else
-            throw new IllegalArgumentException("ChannelCreateEvent provided an unrecognized ChannelCreate format.  JSON: " + content);
+        String type = content.getString("type");
+        boolean isPrivate = content.getBoolean("is_private");
 
-        if (!type.equals("private") && GuildLock.get(api).isLocked(content.getString("guild_id")))
+        if (!isPrivate && GuildLock.get(api).isLocked(content.getString("guild_id")))
         {
             return content.getString("guild_id");
         }
 
-        if (type.equals("text"))
+        if (!isPrivate)
         {
-            api.getEventManager().handle(
-                    new TextChannelCreateEvent(
-                            api, responseNumber,
-                            new EntityBuilder(api).createTextChannel(content, content.getString("guild_id"))));
-        }
-        else if (type.equals("voice"))
-        {
-            api.getEventManager().handle(
-                    new VoiceChannelCreateEvent(
-                            api, responseNumber,
-                            new EntityBuilder(api).createVoiceChannel(content, content.getString("guild_id"))));
-        }
-        else if (type.equalsIgnoreCase("private"))
-        {
-            PrivateChannel pc = new EntityBuilder(api).createPrivateChannel(content);
-            if (pc == null)
-            {
-                JDAImpl.LOG.warn("Discord API sent us a Private CREATE_CHANNEL for a user we can't see, ignoring event.");
-            }
-            else
+            if (type.equals("text"))
             {
                 api.getEventManager().handle(
-                        new PrivateChannelCreateEvent(
+                        new TextChannelCreateEvent(
                                 api, responseNumber,
-                                pc.getUser()));
+                                new EntityBuilder(api).createTextChannel(content, content.getString("guild_id"))));
             }
+            else if (type.equals("voice"))
+            {
+                api.getEventManager().handle(
+                        new VoiceChannelCreateEvent(
+                                api, responseNumber,
+                                new EntityBuilder(api).createVoiceChannel(content, content.getString("guild_id"))));
+            }
+            else
+                throw new IllegalArgumentException("ChannelCreateEvent provided an unrecognized guild channel type.  JSON: " + content);
         }
         else
         {
-            throw new IllegalArgumentException("ChannelCreateEvent provided an unregonized channel type.  JSON: " + content);
+            if (type.equals("text"))
+            {
+                PrivateChannel pc = new EntityBuilder(api).createPrivateChannel(content);
+                if (pc == null)
+                {
+                    JDAImpl.LOG.warn("Discord API sent us a Private CREATE_CHANNEL for a user we can't see, ignoring event.");
+                }
+                else
+                {
+                    api.getEventManager().handle(
+                            new PrivateChannelCreateEvent(
+                                    api, responseNumber,
+                                    pc.getUser()));
+                }
+            }
+            else if (type.equals("voice"))
+            {
+                JDAImpl.LOG.warn("Received a CHANNEL_CREATE for a Private Voice channel. Currently, we don't support, so ignoring. Might explode though.. ?");
+            }
+            else
+                throw new IllegalArgumentException("ChannelCreateEvent provided an unrecognized private channel type.  JSON: " + content);
         }
         EventCache.get(api).playbackCache(EventCache.Type.CHANNEL, content.getString("id"));
         return null;
