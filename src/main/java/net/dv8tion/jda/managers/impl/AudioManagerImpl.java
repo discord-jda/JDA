@@ -47,6 +47,7 @@ public class AudioManagerImpl implements AudioManager
 
     protected AudioSendHandler sendHandler;
     protected AudioReceiveHandler receiveHandler;
+    protected long queueTimeout = 100;
 
     protected long timeout = DEFAULT_CONNECTION_TIMEOUT;
 
@@ -209,6 +210,7 @@ public class AudioManagerImpl implements AudioManager
         this.queuedAudioConnection = null;
         audioConnection.setSendingHandler(sendHandler);
         audioConnection.setReceivingHandler(receiveHandler);
+        audioConnection.setQueueTimeout(queueTimeout);
         audioConnection.ready(timeout);
     }
 
@@ -233,6 +235,13 @@ public class AudioManagerImpl implements AudioManager
     public VoiceChannel getUnexpectedDisconnectedChannel()
     {
         return unexpectedDisconnectedChannel;
+    }
+
+    public void setQueueTimeout(long queueTimeout)
+    {
+        this.queueTimeout = queueTimeout;
+        if (audioConnection != null)
+            audioConnection.setQueueTimeout(queueTimeout);
     }
 
     //Load the Opus library.
