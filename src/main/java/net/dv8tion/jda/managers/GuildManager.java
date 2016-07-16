@@ -710,6 +710,10 @@ public class GuildManager
      */
     public void ban(String userId, int delDays)
     {
+    	if (!guild.isAvailable())
+        {
+            throw new GuildUnavailableException();
+        }
         User user = guild.getJDA().getUserById(userId);
         if (user != null) // We have to check whether we are able to ban the user that is cached.
         {
