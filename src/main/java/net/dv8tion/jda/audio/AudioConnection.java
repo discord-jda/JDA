@@ -60,8 +60,13 @@ public class AudioConnection
 
     private Thread sendThread;
     private Thread receiveThread;
+    private long queueTimeout;
 
-    private volatile boolean speaking = false;
+    private volatile boolean couldReceive = false;
+    private volatile boolean speaking = false;      //Also acts as "couldProvide"
+
+    private volatile int silenceCounter = 0;
+    private final byte[] silenceBytes = new byte[] {(byte)0xF8, (byte)0xFF, (byte)0xFE};
 
     public AudioConnection(AudioWebSocket webSocket, VoiceChannel channel)
     {
@@ -128,6 +133,11 @@ public class AudioConnection
     public void setReceivingHandler(AudioReceiveHandler handler)
     {
         this.receiveHandler = handler;
+    }
+
+    public void setQueueTimeout(long queueTimeout)
+    {
+        this.queueTimeout = queueTimeout;
     }
 
     public VoiceChannel getChannel()
@@ -197,14 +207,16 @@ public class AudioConnection
                 char seq = 0;           //Sequence of audio packets. Used to determine the order of the packets.
                 int timestamp = 0;      //Used to sync up our packets within the same timeframe of other people talking.
                 long lastFrameSent = System.currentTimeMillis();
+                boolean sentSilenceOnConnect = false;
                 while (!udpSocket.isClosed() && !this.isInterrupted())
                 {
                     try
                     {
                         //WE NEED TO CONSIDER BUFFERING STUFF BECAUSE REASONS.
                         //Consider storing 40-60ms of encoded audio as a buffer.
-                        if (sendHandler != null && sendHandler.canProvide())
+                        if (sentSilenceOnConnect && sendHandler != null && sendHandler.canProvide())
                         {
+                            silenceCounter = -1;
                             byte[] rawAudio = sendHandler.provide20MsAudio();
                             if (rawAudio == null || rawAudio.length == 0)
                             {
@@ -227,6 +239,22 @@ public class AudioConnection
                                 else
                                     seq++;
 							}
+                        }
+                        else if (silenceCounter > -1)
+                        {
+                            AudioPacket packet = new AudioPacket(seq, timestamp, webSocket.getSSRC(), silenceBytes);
+                            udpSocket.send(packet.asEncryptedUdpPacket(webSocket.getAddress(), webSocket.getSecretKey()));
+
+                            if (seq + 1 > Character.MAX_VALUE)
+                                seq = 0;
+                            else
+                                seq++;
+
+                            if (++silenceCounter > 10)
+                            {
+                                silenceCounter = -1;
+                                sentSilenceOnConnect = true;
+                            }
                         }
                         else if (speaking && (System.currentTimeMillis() - lastFrameSent) > OPUS_FRAME_TIME_AMOUNT)
                             setSpeaking(false);
@@ -294,12 +322,21 @@ public class AudioConnection
 
                         if (receiveHandler != null && (receiveHandler.canReceiveUser() || receiveHandler.canReceiveCombined()) && webSocket.getSecretKey() != null)
                         {
+                            if (!couldReceive)
+                            {
+                                couldReceive = true;
+                                sendSilentPackets();
+                            }
                             AudioPacket decryptedPacket = AudioPacket.decryptAudioPacket(receivedPacket, webSocket.getSecretKey());
 
                             String userId = ssrcMap.get(decryptedPacket.getSSRC());
                             Decoder decoder = opusDecoders.get(decryptedPacket.getSSRC());
                             if (userId == null)
-                                LOG.warn("Received audio data with an unknown SSRC id.");
+                            {
+                                byte[] audio = decryptedPacket.getEncodedAudio();
+                                if (!Arrays.equals(audio, silenceBytes))
+                                    LOG.debug("Received audio data with an unknown SSRC id.");
+                            }
                             else if (decoder == null)
                                 LOG.warn("Received audio data with known SSRC, but opus decoder for this SSRC was null. uh..HOW?!");
                             else if (!decoder.isInOrder(decryptedPacket.getSequence()))
@@ -334,6 +371,11 @@ public class AudioConnection
                                     }
                                 }
                             }
+                        }
+                        else if (couldReceive)
+                        {
+                            couldReceive = false;
+                            sendSilentPackets();
                         }
                     }
                     catch (SocketTimeoutException e)
@@ -378,17 +420,18 @@ public class AudioConnection
 
                         Pair<Long, short[]> audioData = queue.poll();
                         //Make sure the audio packet is younger than 100ms
-                        while (audioData != null && currentTime - audioData.getLeft() > 100)
+                        while (audioData != null && currentTime - audioData.getLeft() > queueTimeout)
                         {
                             audioData = queue.poll();
                         }
 
                         //If none of the audio packets were younger than 100ms, then there is nothing to add.
                         if (audioData == null)
+                        {
                             continue;
+                        }
                         users.add(user);
                         audioParts.add(audioData.getRight());
-                        queue.poll();
                     }
 
                     if (!audioParts.isEmpty())
@@ -462,5 +505,13 @@ public class AudioConnection
                         .put("delay", 0)
                 );
         webSocket.send(obj.toString());
+        if (!isSpeaking)
+            sendSilentPackets();
+    }
+
+    //Actual logic for this is in the Sending Thread.
+    private void sendSilentPackets()
+    {
+        silenceCounter = 0;
     }
 }
