@@ -15,13 +15,15 @@
  */
 package net.dv8tion.jda.audio;
 
-import com.sun.jna.Pointer;
 import com.sun.jna.ptr.PointerByReference;
 import tomp2p.opuswrapper.Opus;
 
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
+/**
+ * Class that wraps functionality around the Opus decoder.
+ */
 public class Decoder
 {
     protected int ssrc;

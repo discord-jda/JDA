@@ -22,7 +22,6 @@ import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.audio.AudioDisconnectEvent;
 import net.dv8tion.jda.events.audio.AudioRegionChangeEvent;
-import net.dv8tion.jda.events.audio.AudioTimeoutEvent;
 import net.dv8tion.jda.events.audio.AudioUnableToConnectEvent;
 import net.dv8tion.jda.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.utils.SimpleLog;
@@ -217,9 +216,9 @@ public class AudioWebSocket extends WebSocketAdapter
 
                 audioConnection.updateUserSSRC(ssrc, userId, speaking);
                 if (speaking)
-                    LOG.trace(user.getUsername() + " started transmitting audio.");    //Replace with event.
+                    LOG.log(SimpleLog.Level.ALL, user.getUsername() + " started transmitting audio.");    //Replace with event.
                 else
-                    LOG.trace(user.getUsername() + " stopped transmitting audio.");    //Replace with event.
+                    LOG.log(SimpleLog.Level.ALL, user.getUsername() + " stopped transmitting audio.");    //Replace with event.
                 break;
             }
             default:

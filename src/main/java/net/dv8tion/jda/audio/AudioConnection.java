@@ -24,6 +24,7 @@ import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.audio.AudioConnectEvent;
 import net.dv8tion.jda.events.audio.AudioTimeoutEvent;
 import net.dv8tion.jda.utils.SimpleLog;
+import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONObject;
 import tomp2p.opuswrapper.Opus;
 
@@ -31,7 +32,11 @@ import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
-import java.util.HashMap;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class AudioConnection
 {
@@ -41,21 +46,22 @@ public class AudioConnection
     public static final int OPUS_FRAME_TIME_AMOUNT = 20;//This is 20 milliseconds. We are only dealing with 20ms opus packets.
     public static final int OPUS_CHANNEL_COUNT = 2;     //We want to use stereo. If the audio given is mono, the encoder promotes it
                                                         // to Left and Right mono (stereo that is the same on both sides)
-    private volatile HashMap<Integer, String> ssrcMap = new HashMap<>();
-    private volatile HashMap<Integer, Decoder> opusDecoders = new HashMap<>();
-
     private final AudioWebSocket webSocket;
     private DatagramSocket udpSocket;
     private VoiceChannel channel;
-    private AudioSendHandler sendHandler = null;
-    private AudioReceiveHandler receiveHandler = null;
+    private volatile AudioSendHandler sendHandler = null;
+    private volatile AudioReceiveHandler receiveHandler = null;
 
     private PointerByReference opusEncoder;
+    private volatile HashMap<Integer, String> ssrcMap = new HashMap<>();
+    private volatile HashMap<Integer, Decoder> opusDecoders = new HashMap<>();
+    private volatile HashMap<User, Queue<Pair<Long, short[]>>> combinedQueue = new HashMap<>();
+    private ScheduledExecutorService combinedAudioExecutor = Executors.newSingleThreadScheduledExecutor();
 
     private Thread sendThread;
     private Thread receiveThread;
 
-    private boolean speaking = false;
+    private volatile boolean speaking = false;
 
     public AudioConnection(AudioWebSocket webSocket, VoiceChannel channel)
     {
@@ -100,6 +106,7 @@ public class AudioConnection
                     AudioConnection.this.udpSocket = webSocket.getUdpSocket();
                     setupSendThread();
                     setupReceiveThread();
+                    setupCombinedExecutor();
                     api.getEventManager().handle(new AudioConnectEvent(api, AudioConnection.this.channel));
                 }
                 else
@@ -148,7 +155,13 @@ public class AudioConnection
         String previousId = ssrcMap.get(ssrc);
         if (previousId != null)
         {
-            //User already existed with this id?
+            if (!previousId.equals(userId))
+            {
+                //Different User already existed with this ssrc. What should we do? Just replace? Probably should nuke the old opusDecoder.
+                //Log for now and see if any user report the error.
+                LOG.fatal("Yeah.. So.. JDA received a UserSSRC update for an ssrc that already had a User set. Inform DV8FromTheWorld.\n" +
+                        "ChannelId: " + channel.getId() + " SSRC: " + ssrc + " oldId: " + previousId + " newId: " + userId);
+            }
         }
         else
         {
@@ -221,7 +234,7 @@ public class AudioConnection
                     catch (NoRouteToHostException e)
                     {
                         LOG.warn("Closing AudioConnection due to inability to send audio packets.");
-                        LOG.warn("Cannot send audio packet because JDA navigate the route to Discord.\n" +
+                        LOG.warn("Cannot send audio packet because JDA cannot navigate the route to Discord.\n" +
                                 "Are you sure you have internet connection? It is likely that you've lost connection.");
                         webSocket.close(true, -1);
                     }
@@ -264,7 +277,6 @@ public class AudioConnection
             @Override
             public void run()
             {
-//                int loss = 0;
                 try
                 {
                     udpSocket.setSoTimeout(100);
@@ -280,12 +292,8 @@ public class AudioConnection
                     {
                         udpSocket.receive(receivedPacket);
 
-                        if (receiveHandler != null && receiveHandler.canReceive() && webSocket.getSecretKey() != null)
+                        if (receiveHandler != null && (receiveHandler.canReceiveUser() || receiveHandler.canReceiveCombined()) && webSocket.getSecretKey() != null)
                         {
-                            //Currently just gives the raw packet with STILL ENCODED DATA
-                            //This needs to be changed to ->
-                                //1) possibly buffer by 40-60ms (configurable)
-                                //2) decode from Opus -> raw PCM or another format as defined by the receiveHandler.
                             AudioPacket decryptedPacket = AudioPacket.decryptAudioPacket(receivedPacket, webSocket.getSecretKey());
 
                             String userId = ssrcMap.get(decryptedPacket.getSSRC());
@@ -303,18 +311,27 @@ public class AudioConnection
                                     LOG.warn("Received audio data with a known SSRC, but the userId associate with the SSRC is unknown to JDA!");
                                 else
                                 {
-//                                    loss++;
-                                    if (decoder.wasPacketLost(decryptedPacket.getSequence()))
-//                                    if (loss == 50)
+//                                    if (decoder.wasPacketLost(decryptedPacket.getSequence()))
+//                                    {
+//                                        LOG.debug("Packet(s) missed. Using Opus packetloss-compensation.");
+//                                        short[] decodedAudio = decoder.decodeFromOpus(null);
+//                                        receiveHandler.handleUserAudio(new UserAudio(user, decodedAudio));
+//                                    }
+                                    short[] decodedAudio = decoder.decodeFromOpus(decryptedPacket);
+                                    if (receiveHandler.canReceiveUser())
                                     {
-//                                        loss = 0;
-                                        LOG.debug("Packet(s) missed. Using Opus packetloss-compensation.");
-//                                        continue;
-                                        short[] decodedAudio = decoder.decodeFromOpus(null);
                                         receiveHandler.handleUserAudio(new UserAudio(user, decodedAudio));
                                     }
-                                    short[] decodedAudio = decoder.decodeFromOpus(decryptedPacket);
-                                    receiveHandler.handleUserAudio(new UserAudio(user, decodedAudio));
+                                    if (receiveHandler.canReceiveCombined())
+                                    {
+                                        Queue<Pair<Long, short[]>> queue = combinedQueue.get(user);
+                                        if (queue == null)
+                                        {
+                                            queue = new ConcurrentLinkedQueue<>();
+                                            combinedQueue.put(user, queue);
+                                        }
+                                        queue.add(Pair.<Long, short[]>of(System.currentTimeMillis(), decodedAudio));
+                                    }
                                 }
                             }
                         }
@@ -338,6 +355,75 @@ public class AudioConnection
         };
         receiveThread.setDaemon(true);
         receiveThread.start();
+    }
+
+    private void setupCombinedExecutor()
+    {
+        combinedAudioExecutor.scheduleAtFixedRate(() ->
+        {
+            try
+            {
+                List<User> users = new LinkedList<>();
+                List<short[]> audioParts = new LinkedList<>();
+                if (receiveHandler != null && receiveHandler.canReceiveCombined())
+                {
+                    long currentTime = System.currentTimeMillis();
+                    for (Map.Entry<User, Queue<Pair<Long, short[]>>> entry : combinedQueue.entrySet())
+                    {
+                        User user = entry.getKey();
+                        Queue<Pair<Long, short[]>> queue = entry.getValue();
+
+                        if (queue.isEmpty())
+                            continue;
+
+                        Pair<Long, short[]> audioData = queue.poll();
+                        //Make sure the audio packet is younger than 100ms
+                        while (audioData != null && currentTime - audioData.getLeft() > 100)
+                        {
+                            audioData = queue.poll();
+                        }
+
+                        //If none of the audio packets were younger than 100ms, then there is nothing to add.
+                        if (audioData == null)
+                            continue;
+                        users.add(user);
+                        audioParts.add(audioData.getRight());
+                        queue.poll();
+                    }
+
+                    if (!audioParts.isEmpty())
+                    {
+                        int audioLength = audioParts.get(0).length;
+                        short[] mix = new short[1920];  //960 PCM samples for each channel
+                        int sample;
+                        for (int i = 0; i < audioLength; i++)
+                        {
+                            sample = 0;
+                            for (short[] audio : audioParts)
+                            {
+                                sample += audio[i];
+                            }
+                            if (sample > Short.MAX_VALUE)
+                                mix[i] = Short.MAX_VALUE;
+                            else if (sample < Short.MIN_VALUE)
+                                mix[i] = Short.MIN_VALUE;
+                            else
+                                mix[i] = (short) sample;
+                        }
+                        receiveHandler.handleCombinedAudio(new CombinedAudio(users, mix));
+                    }
+                    else
+                    {
+                        //No audio to mix, provide 20 MS of silence. (960 PCM samples for each channel)
+                        receiveHandler.handleCombinedAudio(new CombinedAudio(new LinkedList(), new short[1920]));
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                LOG.log(e);
+            }
+        }, 0, 20, TimeUnit.MILLISECONDS);
     }
 
     private byte[] encodeToOpus(byte[] rawAudio)

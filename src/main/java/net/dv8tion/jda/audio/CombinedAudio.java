@@ -17,29 +17,35 @@ package net.dv8tion.jda.audio;
 
 import net.dv8tion.jda.entities.User;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
- * Represents a packet of User specific audio.
+ * Represents a packet of combined audio data from 0 to n Users.
  */
-public class UserAudio
+public class CombinedAudio
 {
-    protected User user;
+    protected List<User> users;
     protected short[] audioData;
 
-    public UserAudio(User user, short[] audioData)
+    public CombinedAudio(List<User> users, short[] audioData)
     {
-        this.user = user;
+        this.users = Collections.unmodifiableList(users);
         this.audioData = audioData;
     }
 
     /**
-     * The {@link net.dv8tion.jda.entities.User User} that provided the audio data.
+     * An unmodifiable list of all {@link net.dv8tion.jda.entities.User Users} that provided audio that was combined.<br>
+     * Basically: This is a list of all users that can be heard in the data returned by {@link #getAudioData(double)}<p>
+     *
+     * <b>NOTE: If no users were speaking, this list is empty and {@link #getAudioData(double)} provides silent audio data.</b>
      *
      * @return
-     *      Never-null {@link net.dv8tion.jda.entities.User User} object.
+     *      Never-null list of all users that provided audio.
      */
-    public User getUser()
+    public List<User> getUsers()
     {
-        return user;
+        return users;
     }
 
     /**
@@ -48,6 +54,8 @@ public class UserAudio
      *
      * The output volume of the data can be modifed by the provided `volume` parameter. `1.0`is considered to be 100% volume.<br>
      * Going above `1.0` can increase the volume further, but you run the risk of audio distortion.<p>
+     *
+     * <b>NOTE: If no users were speaking, this provides silent audio and {@link #getUsers()} returns an empty list!</b>
      *
      * @param volume
      *          Value used to modify the "volume" of the returned audio data. 1.0 is normal volume.
