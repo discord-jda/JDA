@@ -10,7 +10,7 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 apply plugin: 'eclipse'
 
-def versionObj = new Version(major: 2, minor: 1, revision: 3)
+def versionObj = new Version(major: 2, minor: 2, revision: 0)
 group = "net.dv8tion"
 archivesBaseName = "JDA"
 version = "$versionObj"

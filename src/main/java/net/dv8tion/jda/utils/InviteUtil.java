@@ -59,15 +59,15 @@ public class InviteUtil
         {
             JSONObject guild = object.getJSONObject("guild");
             JSONObject channel = object.getJSONObject("channel");
-            return new Invite(object.getString("code"), object.isNull("xkcdpass") ? null : object.getString("xkcdpass"), guild.getString("name"), guild.getString("id"),
+            return new Invite(object.getString("code"), guild.getString("name"), guild.getString("id"),
                     channel.getString("name"), channel.getString("id"), channel.getString("type").equals("text"));
         }
         return null;
     }
 
     /**
-     * Creates a standard-invite (valid for 24hrs, infinite usages, permanent access and not human-readable).
-     * To create a customized Invite, use {@link #createInvite(Channel, InviteDuration, int, boolean, boolean)} instead.
+     * Creates a standard-invite (valid for 24hrs, infinite usages, permanent access).
+     * To create a customized Invite, use {@link #createInvite(Channel, InviteDuration, int, boolean)} instead.
      *
      * @param chan
      *      The channel to create the invite for.
@@ -79,7 +79,7 @@ public class InviteUtil
      */
     public static AdvancedInvite createInvite(Channel chan)
     {
-        return createInvite(chan, InviteDuration.ONE_DAY, 0, false, false);
+        return createInvite(chan, InviteDuration.ONE_DAY, 0, false);
     }
 
     /**
@@ -93,15 +93,13 @@ public class InviteUtil
      *      The maximum amount of usages of this invite. 0 means infinite usages.
      * @param temporary
      *      Whether or not the invite should only grant temporary access to the Guild (members will get removed after they log out, unless they get a role assigned).
-     * @param humanReadable
-     *      Wheter or not the invite should be in human-readable form.
      * @return
      *      The created AdvancedInvite object.
      * @throws net.dv8tion.jda.exceptions.PermissionException
      *      If the account connected to the provided JDA object does not have
      *      {@link net.dv8tion.jda.Permission#CREATE_INSTANT_INVITE Permission.CREATE_INSTANT_INVITE} for the provided channel.
      */
-    public static AdvancedInvite createInvite(Channel chan, InviteDuration duration, int maxUses, boolean temporary, boolean humanReadable)
+    public static AdvancedInvite createInvite(Channel chan, InviteDuration duration, int maxUses, boolean temporary)
     {
         JDA jda = chan.getJDA();
         if (!chan.checkPermission(jda.getSelfInfo(), Permission.CREATE_INSTANT_INVITE))
@@ -112,8 +110,7 @@ public class InviteUtil
                 new JSONObject()
                         .put("max_age", duration.getDuration())
                         .put("temporary", temporary)
-                        .put("max_uses", maxUses)
-                        .put("xkcdpass", humanReadable)).getObject();
+                        .put("max_uses", maxUses)).getObject();
         if (object != null && object.has("code"))
         {
             return AdvancedInvite.fromJson(object, jda);
@@ -238,15 +235,13 @@ public class InviteUtil
     public static class Invite
     {
         private final String code;
-        private final String humanCode;
         private final String guildName, guildId;
         private final String channelName, channelId;
         private final boolean isTextChannel;
 
-        private Invite(String code, String humanCode, String guildName, String guildId, String channelName, String channelId, boolean isTextChannel)
+        private Invite(String code, String guildName, String guildId, String channelName, String channelId, boolean isTextChannel)
         {
             this.code = code;
-            this.humanCode = humanCode;
             this.guildName = guildName;
             this.guildId = guildId;
             this.channelName = channelName;
@@ -257,16 +252,6 @@ public class InviteUtil
         public String getCode()
         {
             return code;
-        }
-
-        public String getHumanCode()
-        {
-            return humanCode;
-        }
-
-        public String getUrl()
-        {
-            return "https://discord.gg/" + (humanCode == null ? code : humanCode);
         }
 
         public String getGuildName()
@@ -306,9 +291,9 @@ public class InviteUtil
         //TODO what happens if the inviter left the server (and therefore is unknown for the api)?
         private final User inviter;
 
-        private AdvancedInvite(String code, String humanCode, String guildName, String guildId, String channelName, String channelId, boolean isTextChannel, InviteDuration duration, String guildSplashHash, boolean temporary,
+        private AdvancedInvite(String code, String guildName, String guildId, String channelName, String channelId, boolean isTextChannel, InviteDuration duration, String guildSplashHash, boolean temporary,
                 int maxUses, OffsetDateTime createdAt, int uses, User inviter) {
-            super(code, humanCode, guildName, guildId, channelName, channelId, isTextChannel);
+            super(code, guildName, guildId, channelName, channelId, isTextChannel);
             this.duration = duration;
             this.guildSplashHash = guildSplashHash;
             this.temporary = temporary;
@@ -361,7 +346,6 @@ public class InviteUtil
 
             return new AdvancedInvite(
                     object.getString("code"),
-                    object.isNull("xkcdpass") ? null : object.getString("xkcdpass"),
                     guild.getString("name"),
                     guild.getString("id"),
                     channel.getString("name"),

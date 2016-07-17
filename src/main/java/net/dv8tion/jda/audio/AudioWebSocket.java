@@ -22,7 +22,6 @@ import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.audio.AudioDisconnectEvent;
 import net.dv8tion.jda.events.audio.AudioRegionChangeEvent;
-import net.dv8tion.jda.events.audio.AudioTimeoutEvent;
 import net.dv8tion.jda.events.audio.AudioUnableToConnectEvent;
 import net.dv8tion.jda.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.utils.SimpleLog;
@@ -50,6 +49,8 @@ public class AudioWebSocket extends WebSocketAdapter
     public static final int CONNECTION_SETUP_TIMEOUT = -41;
     public static final int UDP_UNABLE_TO_CONNECT = -42;
 
+    protected AudioConnection audioConnection;
+
     private final JDAImpl api;
     private final Guild guild;
     private final HttpHost proxy;
@@ -65,6 +66,7 @@ public class AudioWebSocket extends WebSocketAdapter
     private String sessionId;
     private String token;
     private byte[] secretKey;
+
 
     private DatagramSocket udpSocket;
     private InetSocketAddress address;
@@ -212,10 +214,11 @@ public class AudioWebSocket extends WebSocketAdapter
                     return;
                 }
 
+                audioConnection.updateUserSSRC(ssrc, userId, speaking);
                 if (speaking)
-                    LOG.trace(user.getUsername() + " started transmitting audio.");    //Replace with event.
+                    LOG.log(SimpleLog.Level.ALL, user.getUsername() + " started transmitting audio.");    //Replace with event.
                 else
-                    LOG.trace(user.getUsername() + " stopped transmitting audio.");    //Replace with event.
+                    LOG.log(SimpleLog.Level.ALL, user.getUsername() + " stopped transmitting audio.");    //Replace with event.
                 break;
             }
             default:
