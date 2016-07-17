@@ -290,13 +290,13 @@ public class AudioConnection
                                 //We've been asked to stop. The next iteration will kill the loop. 
                             }
                         }
-                        if (System.currentTimeMillis() > lastFrameSent + 60) // If the sending didn't took longer than 60ms (3 times the time frame)
+                        if (System.currentTimeMillis() < lastFrameSent + 60) // If the sending didn't took longer than 60ms (3 times the time frame)
                         {
                             lastFrameSent += OPUS_FRAME_TIME_AMOUNT; // incrase lastFrameSent
                         }
                         else
                         {
-                            lastFrameSent=System.currentTimeMillis(); // else reset lastFrameSent to current time
+                            lastFrameSent = System.currentTimeMillis(); // else reset lastFrameSent to current time
                         }
                     }
                 }
