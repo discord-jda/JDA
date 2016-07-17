@@ -240,7 +240,7 @@ public class AudioConnection
                                     seq = 0;
                                 else
                                     seq++;
-							}
+                            }
                         }
                         else if (silenceCounter > -1)
                         {
@@ -290,7 +290,14 @@ public class AudioConnection
                                 //We've been asked to stop. The next iteration will kill the loop. 
                             }
                         }
-                        lastFrameSent += OPUS_FRAME_TIME_AMOUNT;
+                        if (System.currentTimeMillis() > lastFrameSent + 60) // If the sending didn't took longer than 60ms (3 times the time frame)
+                        {
+                            lastFrameSent += OPUS_FRAME_TIME_AMOUNT; // incrase lastFrameSent
+                        }
+                        else
+                        {
+                            lastFrameSent=System.currentTimeMillis(); // else reset lastFrameSent to current time
+                        }
                     }
                 }
             }
