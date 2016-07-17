@@ -17,6 +17,7 @@ package net.dv8tion.jda.hooks;
 
 import net.dv8tion.jda.events.Event;
 
+@FunctionalInterface
 public interface EventListener
 {
 
