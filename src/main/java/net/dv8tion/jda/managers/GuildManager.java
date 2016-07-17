@@ -683,7 +683,7 @@ public class GuildManager
         }
         checkPermission(Permission.BAN_MEMBERS);
 
-	    if (guild.getUsers().contains(user)) // If user is in guild. Check if we are able to ban.
+        if (guild.getUsers().contains(user)) // If user is in guild. Check if we are able to ban.
             checkPosition(user);
 
         ((JDAImpl) guild.getJDA()).getRequester().put(Requester.DISCORD_API_PREFIX + "guilds/"
