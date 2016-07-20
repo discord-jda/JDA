@@ -82,7 +82,7 @@ public class MessageEmbedHandler extends SocketHandler
         api.getEventManager().handle(
                 new MessageEmbedEvent(
                         api, responseNumber,
-                        messageId, channelId, embeds, channel != null));
+                        messageId, channelId, embeds, channel == null));
         return null;
     }
 }
