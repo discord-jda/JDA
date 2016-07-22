@@ -55,7 +55,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected String gatewayUrl = null;
 
     protected String sessionId = null;
-    protected Long lastHeartbeatReturn = null;
 
     protected volatile Thread keepAliveThread;
     protected boolean connected;
@@ -343,7 +342,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 break;
             case 11:
                 LOG.trace("Got Heartbeat Ack (OP 11).");
-                lastHeartbeatReturn = System.currentTimeMillis();
                 break;
             default:
                 LOG.debug("Got unknown op-code: " + opCode + " with content: " + message);
@@ -358,25 +356,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             {
                 try
                 {
-                    lastHeartbeatReturn = null;
                     sendKeepAlive();
 
-                    //Sleep half of the heartbeat interval
-                    Thread.sleep(timeout / 2);
-
-                    //We didn't receive a return heartbeat ack in a timely fashion. Kill the connection.
-                    if (lastHeartbeatReturn == null)
-                    {
-                        LOG.warn("Didn't receive Heartbeak Ack in a timely manner. Assuming disconnected...");
-                        close();
-                        break;
-                    }
-
-                    //Sleep the rest of the heartbeat interval
-                    Thread.sleep(timeout / 2);
+                    //Sleep for heartbeat interval
+                    Thread.sleep(timeout);
                 }
-                catch (InterruptedException ignored) {}
-                catch (Exception ex)
+                catch (InterruptedException ex)
                 {
                     //connection got cut... terminating keepAliveThread
                     break;
