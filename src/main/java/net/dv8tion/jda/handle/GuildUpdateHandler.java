@@ -17,10 +17,12 @@ package net.dv8tion.jda.handle;
 
 import net.dv8tion.jda.Region;
 import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.impl.GuildImpl;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.guild.GuildUpdateEvent;
 import net.dv8tion.jda.requests.GuildLock;
+import net.dv8tion.jda.requests.WebSocketClient;
 import org.json.JSONObject;
 
 public class GuildUpdateHandler extends SocketHandler
@@ -40,7 +42,7 @@ public class GuildUpdateHandler extends SocketHandler
         }
 
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("id"));
-        String ownerId = content.getString("owner_id");
+        User owner = api.getUserById(content.getString("owner_id"));
         String name = content.getString("name");
         String iconId = content.isNull("icon") ? null : content.getString("icon");
         String afkChannelId = content.isNull("afk_channel_id") ? null : content.getString("afk_channel_id");
@@ -48,8 +50,11 @@ public class GuildUpdateHandler extends SocketHandler
         int afkTimeout = content.getInt("afk_timeout");
         Guild.VerificationLevel verificationLevel = Guild.VerificationLevel.fromKey(content.getInt("verification_level"));
 
+        if (owner == null)
+            WebSocketClient.LOG.fatal("Attempted to update Guild but the ownerId provided referenced an unknown User! JSON: " + content.toString());
+
         guild.setName(name)
-                .setOwnerId(ownerId)
+                .setOwner(owner)
                 .setIconId(iconId)
                 .setAfkChannelId(afkChannelId)
                 .setRegion(region)

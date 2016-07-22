@@ -43,7 +43,7 @@ public class GuildImpl implements Guild
     private String name;
     private String iconId;
     private String afkChannelId;
-    private String ownerId;
+    private User owner;
     private int afkTimeout;
     private Region region;
     private final Map<String, TextChannel> textChannels = new HashMap<>();
@@ -106,13 +106,13 @@ public class GuildImpl implements Guild
     @Override
     public String getOwnerId()
     {
-        return ownerId;
+        return owner.getId();
     }
 
     @Override
     public User getOwner()
     {
-        return api.getUserById(ownerId);
+        return owner;
     }
 
     @Override
@@ -413,9 +413,9 @@ public class GuildImpl implements Guild
         return this;
     }
 
-    public GuildImpl setOwnerId(String ownerId)
+    public GuildImpl setOwner(User owner)
     {
-        this.ownerId = ownerId;
+        this.owner = owner;
         return this;
     }
 

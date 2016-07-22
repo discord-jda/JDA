@@ -82,7 +82,6 @@ public class EntityBuilder
             .setIconId(guild.isNull("icon") ? null : guild.getString("icon"))
             .setRegion(Region.fromKey(guild.getString("region")))
             .setName(guild.getString("name"))
-            .setOwnerId(guild.getString("owner_id"))
             .setAfkTimeout(guild.getInt("afk_timeout"))
             .setAfkChannelId(guild.isNull("afk_channel_id") ? null : guild.getString("afk_channel_id"))
             .setVerificationLevel(Guild.VerificationLevel.fromKey(guild.getInt("verification_level")));
@@ -102,6 +101,10 @@ public class EntityBuilder
             JSONArray members = guild.getJSONArray("members");
             createGuildMemberPass(guildObj, members);
         }
+
+        User owner = api.getUserById(guild.getString("owner_id"));
+        if (owner != null)
+            guildObj.setOwner(owner);
 
         if (guild.has("presences"))
         {
@@ -241,6 +244,13 @@ public class EntityBuilder
         {
             createGuildMemberPass(guildObj, chunk);
         }
+
+        User owner = api.getUserById(guildJson.getString("owner_id"));
+        if (owner != null)
+            guildObj.setOwner(owner);
+
+        if (guildObj.getOwner() == null)
+            JDAImpl.LOG.fatal("Never set the Owner of the Guild: " + guildObj.getId() + " because we don't have the owner User object! How?!");
 
         JSONArray channels = guildJson.getJSONArray("channels");
         createGuildChannelPass(guildObj, channels);
