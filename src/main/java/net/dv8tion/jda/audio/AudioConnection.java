@@ -372,19 +372,28 @@ public class AudioConnection
 //                                                receiveHandler.handleUserAudio(new UserAudio(user, decodedAudio));
 //                                            }
                                             short[] decodedAudio = decoder.decodeFromOpus(decryptedPacket);
-                                            if (receiveHandler.canReceiveUser())
+
+                                            //If decodedAudio is null, then the Opus decode failed, so throw away the packet.
+                                            if (decodedAudio == null)
                                             {
-                                                receiveHandler.handleUserAudio(new UserAudio(user, decodedAudio));
+                                                  LOG.trace("Received audio data but Opus failed to properly decode, instead it returned an error");
                                             }
-                                            if (receiveHandler.canReceiveCombined())
+                                            else
                                             {
-                                                Queue<Pair<Long, short[]>> queue = combinedQueue.get(user);
-                                                if (queue == null)
+                                                if (receiveHandler.canReceiveUser())
                                                 {
-                                                    queue = new ConcurrentLinkedQueue<>();
-                                                    combinedQueue.put(user, queue);
+                                                    receiveHandler.handleUserAudio(new UserAudio(user, decodedAudio));
                                                 }
-                                                queue.add(Pair.<Long, short[]>of(System.currentTimeMillis(), decodedAudio));
+                                                if (receiveHandler.canReceiveCombined())
+                                                {
+                                                    Queue<Pair<Long, short[]>> queue = combinedQueue.get(user);
+                                                    if (queue == null)
+                                                    {
+                                                        queue = new ConcurrentLinkedQueue<>();
+                                                        combinedQueue.put(user, queue);
+                                                    }
+                                                    queue.add(Pair.<Long, short[]>of(System.currentTimeMillis(), decodedAudio));
+                                                }
                                             }
                                         }
                                     }

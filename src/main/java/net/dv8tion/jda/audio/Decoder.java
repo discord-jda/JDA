@@ -76,6 +76,10 @@ public class Decoder
                     AudioConnection.OPUS_FRAME_SIZE, 0);
         }
 
+        //If we get a result that is less than 0, then there was an error. Return null as a signifier.
+        if (result < 0)
+            return null;
+
         short[] audio = new short[result * 2];
         decoded.get(audio);
         return audio;
