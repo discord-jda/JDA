@@ -138,17 +138,19 @@ public class EntityBuilder
             for (int i = 0; i < channels.length(); i++)
             {
                 JSONObject channel = channels.getJSONObject(i);
-                String type = channel.getString("type");
-                if (type.equalsIgnoreCase("text"))
+                ChannelType type = ChannelType.fromId(channel.getInt("type"));
+                if (type == ChannelType.TEXT)
                 {
                     TextChannel newChannel = createTextChannel(channel, guildObj.getId());
                     if (newChannel.getId().equals(guildObj.getId()))
                         guildObj.setPublicChannel(newChannel);
                 }
-                else if (type.equalsIgnoreCase("voice"))
+                else if (type == ChannelType.VOICE)
                 {
                     createVoiceChannel(channel, guildObj.getId());
                 }
+                else
+                    JDAImpl.LOG.fatal("Received a channel for a guild that isn't a text or voice channel. JSON: " + channel);
             }
         }
 
@@ -302,16 +304,19 @@ public class EntityBuilder
         for (int i = 0; i < channels.length(); i++)
         {
             JSONObject channel = channels.getJSONObject(i);
-            String type = channel.getString("type");
+            ChannelType type = ChannelType.fromId(channel.getInt("type"));
             Channel channelObj = null;
-            if (type.equalsIgnoreCase("text"))
+            if (type == ChannelType.TEXT)
             {
                 channelObj = api.getTextChannelById(channel.getString("id"));
             }
-            else if (type.equalsIgnoreCase("voice"))
+            else if (type == ChannelType.VOICE)
             {
                 channelObj = api.getVoiceChannelById(channel.getString("id"));
             }
+            else
+                JDAImpl.LOG.fatal("Received a channel for a guild that isn't a text or voice channel (ChannelPass). JSON: " + channel);
+
             if (channelObj != null)
             {
                 JSONArray permissionOverwrites = channel.getJSONArray("permission_overwrites");
@@ -373,10 +378,11 @@ public class EntityBuilder
 
     public PrivateChannel createPrivateChannel(JSONObject privatechat)
     {
-        UserImpl user = ((UserImpl) api.getUserMap().get(privatechat.getJSONObject("recipient").getString("id")));
+        JSONObject recipient = privatechat.getJSONArray("recipients").getJSONObject(0);
+        UserImpl user = ((UserImpl) api.getUserMap().get(recipient.getString("id")));
         if (user == null)
         {   //The API can give us private channels connected to Users that we can no longer communicate with.
-            api.getOffline_pms().put(privatechat.getJSONObject("recipient").getString("id"), privatechat.getString("id"));
+            api.getOffline_pms().put(recipient.getString("id"), privatechat.getString("id"));
             return null;
         }
 

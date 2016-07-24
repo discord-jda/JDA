@@ -17,6 +17,7 @@ package net.dv8tion.jda.handle;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.OnlineStatus;
+import net.dv8tion.jda.entities.ChannelType;
 import net.dv8tion.jda.entities.Game;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.impl.JDAImpl;
@@ -132,7 +133,15 @@ public class ReadyHandler extends SocketHandler
         JSONArray priv_chats = content.getJSONArray("private_channels");
         for (int i = 0; i < priv_chats.length(); i++)
         {
-            builder.createPrivateChannel(priv_chats.getJSONObject(i));
+            JSONObject privateChannel = priv_chats.getJSONObject(i);
+            ChannelType type = ChannelType.fromId(privateChannel.getInt("type"));
+
+            if (type == ChannelType.PRIVATE)
+                builder.createPrivateChannel(privateChannel);
+            else if (type == ChannelType.GROUP)
+                JDAImpl.LOG.debug("Received a group channel in the READY packet, but GROUPS aren't supported by JDA (JDA-Client only)");
+            else
+                JDAImpl.LOG.fatal("Received a private channel in the READY packet that is of an unknown type!");
         }
         api.getClient().ready();
     }

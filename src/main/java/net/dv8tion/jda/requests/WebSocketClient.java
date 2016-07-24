@@ -204,7 +204,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         try
         {
-            return api.getRequester().get(Requester.DISCORD_API_PREFIX + "gateway").getObject().getString("url") + "?encoding=json&v=5";
+            return api.getRequester().get(Requester.DISCORD_API_PREFIX + "gateway").getObject().getString("url") + "?encoding=json&v=6";
         }
         catch (Exception ex)
         {
