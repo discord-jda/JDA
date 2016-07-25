@@ -15,8 +15,14 @@
  */
 package net.dv8tion.jda.utils;
 
+import net.dv8tion.jda.entities.impl.JDAImpl;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
 import javax.swing.*;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -58,13 +64,19 @@ public class SimpleLog
     private static PrintStream origErr = null;
     private static FileOutputStream stdOut = null;
     private static FileOutputStream errOut = null;
+    private static Map<Level, Set<File>> fileLogs = new HashMap<>();
 
     /**
-     * Will duplicate the output-streams to a specified file
-     * @param std the file to use for System.out logging, or null to not LOG System.out to a file
-     * @param err the file to use for System.err logging, or null to not LOG System.err to a file
-     * @throws IOException If an IO error is encountered while dealing with the file. Most likely
-     *                     to be caused by a lack of permissions when creating the log folders or files.
+     * Will duplicate the output-streams to the specified Files.
+     * This will catch everything that is sent to sout and serr (even stuff not logged via SimpleLog).
+     *
+     * @param std
+     *      The file to use for System.out logging, or null to not LOG System.out to a file
+     * @param err
+     *      The file to use for System.err logging, or null to not LOG System.err to a file
+     * @throws IOException
+     *      If an IO error is encountered while dealing with the file. Most likely
+     *      to be caused by a lack of permissions when creating the log folders or files.
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void addFileLogs(File std, File err) throws IOException {
@@ -121,6 +133,101 @@ public class SimpleLog
             System.setErr(origErr);
             errOut.close();
             origErr = null;
+        }
+    }
+
+    /**
+     * Sets up a File to log all messages that are not visible via sout and serr and meet a given log-level criteria.
+     * All logs that would not be printed and are above given logLevel are printed to that File.
+     * If you want to log Logs printed to sout and serr to file(s), use {@link #addFileLogs(File, File)} instead.
+     *
+     * @param logLevel
+     *      The log-level criteria. Only logs equal or above this level are printed to the File
+     * @param file
+     *      The File where the logs should be printed
+     * @throws IOException
+     *      If the File can't be canonically resolved (access denied)
+     */
+    public static void addFileLog(Level logLevel, File file) throws IOException
+    {
+        File canonicalFile = file.getCanonicalFile();
+        if (!fileLogs.containsKey(logLevel))
+        {
+            fileLogs.put(logLevel, new HashSet<>());
+        }
+        fileLogs.get(logLevel).add(canonicalFile);
+    }
+
+    /**
+     * Removes all File-logs created via {@link #addFileLog(Level, File)} with given Level.
+     * To remove the sout and serr logs, call {@link #addFileLogs(File, File)} with null args.
+     *
+     * @param logLevel
+     *      The level for which all fileLogs should be removed
+     */
+    public static void removeFileLog(Level logLevel)
+    {
+        fileLogs.remove(logLevel);
+    }
+
+    /**
+     * Removes all File-logs created via {@link #addFileLog(Level, File)} with given File.
+     * To remove the sout and serr logs, call {@link #addFileLogs(File, File)} with null args.
+     *
+     * @param file
+     *      The file to remove from all FileLogs (except sout and serr logs)
+     * @throws IOException
+     *      If the File can't be canonically resolved (access denied)
+     */
+    public static void removeFileLog(File file) throws IOException
+    {
+        File canonicalFile = file.getCanonicalFile();
+        Iterator<Map.Entry<Level, Set<File>>> setIter = fileLogs.entrySet().iterator();
+        while (setIter.hasNext())
+        {
+            Map.Entry<Level, Set<File>> set = setIter.next();
+            Iterator<File> fileIter = set.getValue().iterator();
+            while (fileIter.hasNext())
+            {
+                File logFile = fileIter.next();
+                if(logFile.equals(canonicalFile))
+                {
+                    fileIter.remove();
+                    break;
+                }
+            }
+            if (set.getValue().isEmpty())
+            {
+                setIter.remove();
+            }
+        }
+    }
+
+    private static Set<File> collectFiles(Level level)
+    {
+        Set<File> out = new HashSet<>();
+        for (Map.Entry<Level, Set<File>> mapEntry : fileLogs.entrySet())
+        {
+            if(mapEntry.getKey().getPriority() <= level.getPriority())
+                out.addAll(mapEntry.getValue());
+        }
+        return out;
+    }
+
+    private static void logToFiles(String msg, Level level)
+    {
+        Set<File> files = collectFiles(level);
+        for (File file : files)
+        {
+            try
+            {
+                Files.write(file.toPath(), (msg + '\n').getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+            }
+            catch (IOException e)
+            {
+                JDAImpl.LOG.fatal("Could not write log to logFile...");
+                JDAImpl.LOG.log(e);
+            }
         }
     }
 
@@ -202,15 +309,15 @@ public class SimpleLog
                 listener.onLog(this, level, msg);
             }
         }
-        if(level.getPriority() < ((this.level == null) ? SimpleLog.LEVEL.getPriority() : this.level.getPriority())) {
-            return;
-        }
-        if(level == Level.OFF) {
-            return;
-        }
         String format = (ENABLE_GUI && !isConsolePresent()) ? MSGFORMAT : FORMAT;
         format = format.replace("%time%", DFORMAT.format(new Date())).replace("%level%", level.getTag()).replace("%name%", name).replace("%text%", String.valueOf(msg));
-        print(format, level);
+        if(level == Level.OFF || level.getPriority() < ((this.level == null) ? SimpleLog.LEVEL.getPriority() : this.level.getPriority())) {
+            logToFiles(format, level);
+        }
+        else
+        {
+            print(format, level);
+        }
     }
 
     public void log(Throwable ex)
@@ -223,7 +330,7 @@ public class SimpleLog
             }
         }
         log(Level.FATAL, "Encountered an exception:");
-        ex.printStackTrace();
+        log(Level.FATAL, ExceptionUtils.getStackTrace(ex));
     }
 
     /**
@@ -308,7 +415,7 @@ public class SimpleLog
     public interface LogListener
     {
         /**
-         * Called on any incoming log-messages (exception: Throwables).
+         * Called on any incoming log-messages (including stacktraces).
          * This is also called on log-messages that would normally not print to console due to log-level.
          * @param log
          *      the log this message was sent to
@@ -320,7 +427,9 @@ public class SimpleLog
         void onLog(SimpleLog log, Level logLevel, Object message);
 
         /**
-         * Called on any incoming error-message (Throwable)
+         * Called on any incoming error-message (Throwable).
+         * Note: Throwables are also logged with FATAL level.
+         * This is just a convenience Method to do special Throwable handling.
          * @param log
          *      the log this error was sent to
          * @param err
