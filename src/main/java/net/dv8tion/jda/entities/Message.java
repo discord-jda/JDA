@@ -263,6 +263,15 @@ public interface Message
     boolean unpin();
 
     /**
+     * This specifies the type of Message sent. Messages can represent more than just simple text sent by Users.<br>
+     * Messages can also be sent as special actions like Calls, GroupIcon changes and more.
+     *
+     * @return
+     *      The type of message this is.
+     */
+    MessageType getType();
+
+    /**
      * Represents a {@link net.dv8tion.jda.entities.Message Message} file attachment.
      */
     class Attachment

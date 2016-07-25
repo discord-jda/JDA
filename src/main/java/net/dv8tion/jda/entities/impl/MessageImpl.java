@@ -35,6 +35,7 @@ public class MessageImpl implements Message
 {
     private final JDAImpl api;
     private final String id;
+    private final MessageType type;
     private boolean mentionsEveryone = false;
     private boolean isTTS = false;
     private boolean isPrivate;
@@ -54,8 +55,14 @@ public class MessageImpl implements Message
 
     public MessageImpl(String id, JDAImpl api)
     {
+        this(id, api, MessageType.DEFAULT);
+    }
+
+    public MessageImpl(String id, JDAImpl api, MessageType type)
+    {
         this.id = id;
         this.api = api;
+        this.type = type;
     }
 
     @Override
@@ -92,6 +99,12 @@ public class MessageImpl implements Message
         if (result)
             this.pinned = false;
         return result;
+    }
+
+    @Override
+    public MessageType getType()
+    {
+        return type;
     }
 
     @Override
