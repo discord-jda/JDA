@@ -17,11 +17,7 @@
 package net.dv8tion.jda.core.requests;
 
 import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import com.mashape.unirest.request.BaseRequest;
-import com.mashape.unirest.request.GetRequest;
-import com.mashape.unirest.request.HttpRequest;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,16 +39,26 @@ public class Requester
     {
     }
 
+    public Response execute(Request req)
+    {
+        if(req.isAsync)
+            throw new UnsupportedOperationException("Async requests aren't supported yet (proof of concept requester)");
+        return exec(req);
+    }
+
     public Response post(String url, JSONObject body, String... buckets)
     {
-        return post(url, null, buckets);
+        return post(url, body,  null, buckets);
     }
 
     public Response post(String url, JSONObject body, Function<String, String> bucketTransform, String... buckets)
     {
-        return exec(new Request(
-                addHeaders(Unirest.post(url)).body(body.toString()),
-                false, bucketTransform, buckets));
+        return exec(new RequestBuilder(RequestBuilder.RequestType.POST)
+                .setUrl(url)
+                .setBody(body)
+                .setBucketTransform(bucketTransform)
+                .setBuckets(buckets)
+                .build());
     }
 
 
@@ -140,23 +146,6 @@ public class Requester
         }
     }
 
-    private <T extends HttpRequest> T addHeaders(T request)
-    {
-        //adding token to all requests to the discord api or cdn pages
-        //can't check for startsWith(DISCORD_API_PREFIX) due to cdn endpoints
-        if (authToken != null && request.getUrl().contains("discordapp.com"))
-        {
-            request.header("authorization", authToken);
-        }
-        if (!(request instanceof GetRequest))
-        {
-            request.header("Content-Type", "application/json");
-        }
-        request.header("user-agent", USER_AGENT);
-        request.header("Accept-Encoding", "gzip");
-        return request;
-    }
-
     public static class Response {
         public static final int connectionErrCode = -1;
         public final Exception exception;
@@ -215,22 +204,6 @@ public class Requester
         {
             return exception == null ? "HTTPResponse[" + code + ": " + responseText + ']'
                     : "HTTPException[" + exception.getMessage() + ']';
-        }
-    }
-
-    private static class Request
-    {
-        private final BaseRequest request;
-        private final boolean isAsync;
-        private final Function<String, String> bucketTransform;
-        private final String[] buckets;
-
-        public Request(BaseRequest request, boolean isAsync, Function<String, String> bucketTransform, String[] buckets)
-        {
-            this.request = request;
-            this.isAsync = isAsync;
-            this.bucketTransform = bucketTransform;
-            this.buckets = buckets;
         }
     }
 
