@@ -35,6 +35,7 @@ public enum Permission
     MESSAGE_ATTACH_FILES(15, true, true),
     MESSAGE_HISTORY(16, true, true),
     MESSAGE_MENTION_EVERYONE(17, true, true),
+    MESSAGE_EXT_EMOJI(18, true, true),
 
     VOICE_CONNECT(20, true, true),
     VOICE_SPEAK(21, true, true),
