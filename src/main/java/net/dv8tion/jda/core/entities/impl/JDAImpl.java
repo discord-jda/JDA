@@ -18,6 +18,10 @@ package net.dv8tion.jda.core.entities.impl;
 
 import net.dv8tion.jda.core.JDA;
 
-public abstract class JDAAbstract implements JDA
+import javax.security.auth.login.LoginException;
+
+public abstract class JDAImpl implements JDA
 {
+    public abstract void login(String token) throws LoginException;
+
 }
