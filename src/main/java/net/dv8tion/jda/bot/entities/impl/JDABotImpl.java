@@ -17,8 +17,48 @@
 package net.dv8tion.jda.bot.entities.impl;
 
 import net.dv8tion.jda.bot.JDABot;
-import net.dv8tion.jda.core.entities.impl.JDAAbstract;
+import net.dv8tion.jda.core.AccountType;
+import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import org.apache.http.HttpHost;
 
-public class JDABotImpl extends JDAAbstract implements JDABot
+import javax.security.auth.login.LoginException;
+
+public class JDABotImpl extends JDAImpl implements JDABot
 {
+    protected final HttpHost proxy;
+    protected final boolean audioEnabled;
+    protected final boolean useShutdownHook;
+    protected final boolean bulkDeleteSplittingEnabled;
+
+    public JDABotImpl(HttpHost proxy, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled)
+    {
+        this.proxy = proxy;
+        this.audioEnabled = audioEnabled;
+        this.useShutdownHook = useShutdownHook;
+        this.bulkDeleteSplittingEnabled = bulkDeleteSplittingEnabled;
+
+        if (audioEnabled)
+            ;   //TODO: setup audio system
+    }
+
+    @Override
+    public AccountType getAccountType()
+    {
+        return AccountType.BOT;
+    }
+
+    @Override
+    public JDABot asBot()
+    {
+        return this;
+    }
+
+    @Override
+    public void login(String token) throws LoginException
+    {
+        if (token == null || token.isEmpty())
+            throw new LoginException("Provided token was null or empty!");
+
+        verifyToken(token);
+    }
 }

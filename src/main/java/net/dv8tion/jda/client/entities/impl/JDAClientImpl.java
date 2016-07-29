@@ -17,8 +17,48 @@
 package net.dv8tion.jda.client.entities.impl;
 
 import net.dv8tion.jda.client.JDAClient;
-import net.dv8tion.jda.core.entities.impl.JDAAbstract;
+import net.dv8tion.jda.core.AccountType;
+import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import org.apache.http.HttpHost;
 
-public class JDAClientImpl extends JDAAbstract implements JDAClient
+import javax.security.auth.login.LoginException;
+
+public class JDAClientImpl extends JDAImpl implements JDAClient
 {
+    protected final HttpHost proxy;
+    protected final boolean audioEnabled;
+    protected final boolean useShutdownHook;
+    protected final boolean bulkDeleteSplittingEnabled;
+
+    public JDAClientImpl(HttpHost proxy, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled)
+    {
+        this.proxy = proxy;
+        this.audioEnabled = audioEnabled;
+        this.useShutdownHook = useShutdownHook;
+        this.bulkDeleteSplittingEnabled = bulkDeleteSplittingEnabled;
+
+        if (audioEnabled)
+            ;   //TODO: setup audio system
+    }
+
+    @Override
+    public AccountType getAccountType()
+    {
+        return AccountType.CLIENT;
+    }
+
+    @Override
+    public JDAClient asClient()
+    {
+        return this;
+    }
+
+    @Override
+    public void login(String token) throws LoginException
+    {
+        if (token == null || token.isEmpty())
+            throw new LoginException("Provided token was null or empty!");
+
+        verifyToken(token);
+    }
 }
