@@ -37,30 +37,85 @@ public class Requester
 
     public Requester()
     {
+
     }
 
-    public Response execute(Request req)
+    public Response get(String url)
+    {
+        Request request = new RequestBuilder(RequestBuilder.RequestType.GET)
+                .setUrl(url)
+                .build();
+        return exec(request);
+    }
+
+    public Response delete(String url)
+    {
+        Request request = new RequestBuilder(RequestBuilder.RequestType.DELETE)
+                .setUrl(url)
+                .build();
+        return exec(request);
+    }
+
+    public Response patch(String url, JSONObject body)
+    {
+        Request request = new RequestBuilder(RequestBuilder.RequestType.PATCH)
+                .setUrl(url)
+                .setBody(body)
+                .build();
+        return exec(request);
+    }
+
+    public Response patch(String url, JSONArray body)
+    {
+        Request request = new RequestBuilder(RequestBuilder.RequestType.PATCH)
+                .setUrl(url)
+                .setBody(body)
+                .build();
+        return exec(request);
+    }
+
+    public Response post(String url, JSONObject body)
+    {
+        Request request = new RequestBuilder(RequestBuilder.RequestType.POST)
+                .setUrl(url)
+                .setBody(body)
+                .build();
+        return exec(request);
+    }
+
+    public Response post(String url, JSONArray body)
+    {
+        Request request = new RequestBuilder(RequestBuilder.RequestType.POST)
+                .setUrl(url)
+                .setBody(body)
+                .build();
+        return exec(request);
+    }
+
+    public Response put(String url, JSONObject body)
+    {
+        Request request = new RequestBuilder(RequestBuilder.RequestType.PUT)
+                .setUrl(url)
+                .setBody(body)
+                .build();
+        return exec(request);
+    }
+
+    public Response put(String url, JSONArray body)
+    {
+        Request request = new RequestBuilder(RequestBuilder.RequestType.PUT)
+                    .setUrl(url)
+                    .setBody(body)
+                    .build();
+        return exec(request);
+    }
+
+    public Response handle(Request req)
     {
         if(req.isAsync)
             throw new UnsupportedOperationException("Async requests aren't supported yet (proof of concept requester)");
         return exec(req);
     }
-
-    public Response post(String url, JSONObject body, String... buckets)
-    {
-        return post(url, body,  null, buckets);
-    }
-
-    public Response post(String url, JSONObject body, Function<String, String> bucketTransform, String... buckets)
-    {
-        return exec(new RequestBuilder(RequestBuilder.RequestType.POST)
-                .setUrl(url)
-                .setBody(body)
-                .setBucketTransform(bucketTransform)
-                .setBuckets(buckets)
-                .build());
-    }
-
 
     //TODO: See blocks below
     /*
@@ -79,22 +134,22 @@ public class Requester
    private synchronized Response exec(Request request)
     {
         String bucket;
-        synchronized (ratelimits)
-        {
-            bucket = Arrays.stream(request.buckets).filter(b -> ratelimits.keySet().contains(b)).findAny().orElse(null);
-            if (bucket != null)
-            {
-                if (request.isAsync)
-                {
-                    ratelimits.get(bucket).queue.add(request);
-                    return null;
-                }
-                else
-                {
-                    throw new RateLimitedException(bucket);
-                }
-            }
-        }
+//        synchronized (ratelimits)
+//        {
+//            bucket = Arrays.stream(request.buckets).filter(b -> ratelimits.keySet().contains(b)).findAny().orElse(null);
+//            if (bucket != null)
+//            {
+//                if (request.isAsync)
+//                {
+//                    ratelimits.get(bucket).queue.add(request);
+//                    return null;
+//                }
+//                else
+//                {
+//                    throw new RateLimitedException(bucket);
+//                }
+//            }
+//        }
 
         HttpResponse<String> ret = null;
         try

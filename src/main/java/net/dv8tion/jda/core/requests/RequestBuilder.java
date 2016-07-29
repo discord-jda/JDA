@@ -31,7 +31,7 @@ public class RequestBuilder
 {
     public enum RequestType
     {
-        GET, POST, PUT, DELETE
+        GET, POST, PUT, DELETE, PATCH
     }
 
     private boolean isAsync = false;
