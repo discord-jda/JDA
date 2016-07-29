@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
+import net.dv8tion.jda.bot.JDABot;
+import net.dv8tion.jda.client.JDAClient;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
@@ -23,7 +25,6 @@ import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.RequestBuilder;
 import net.dv8tion.jda.core.requests.Requester;
-import org.apache.http.HttpHost;
 import org.json.JSONObject;
 
 import javax.security.auth.login.LoginException;
@@ -81,5 +82,17 @@ public abstract class JDAImpl implements JDA
                         response.toString());
             }
         }
+    }
+
+    @Override
+    public JDAClient asClient()
+    {
+        throw new AccountTypeException(AccountType.BOT);
+    }
+
+    @Override
+    public JDABot asBot()
+    {
+        throw new AccountTypeException(AccountType.CLIENT);
     }
 }

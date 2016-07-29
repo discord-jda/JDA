@@ -49,7 +49,7 @@ public class RequestBuilder
     private Map<String, String> customHeaders = new HashMap<>();
 
     private Function<String, String> bucketTransform = null;
-    private String[] buckets = null;
+    private String[] buckets = new String[0];
 
     public RequestBuilder(RequestType type)
     {
@@ -149,6 +149,9 @@ public class RequestBuilder
                 break;
             case DELETE:
                 request = addHeaders(Unirest.delete(url));
+                break;
+            case PATCH:
+                request = addHeaders(Unirest.patch(url)).body(body);
                 break;
         }
         return new Request(request, isAsync, bucketTransform, buckets);

@@ -18,7 +18,6 @@ package net.dv8tion.jda.core;
 
 import net.dv8tion.jda.bot.JDABot;
 import net.dv8tion.jda.client.JDAClient;
-import net.dv8tion.jda.core.exceptions.AccountTypeException;
 
 public interface JDA
 {
@@ -67,13 +66,7 @@ public interface JDA
 
     AccountType getAccountType();
 
-    default JDAClient asClient()
-    {
-        throw new AccountTypeException(AccountType.CLIENT);
-    }
+    JDAClient asClient();
 
-    default JDABot asBot()
-    {
-        throw new AccountTypeException(AccountType.BOT);
-    }
+    JDABot asBot();
 }

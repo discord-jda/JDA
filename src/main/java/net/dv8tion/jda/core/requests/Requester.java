@@ -18,18 +18,21 @@ package net.dv8tion.jda.core.requests;
 
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import net.dv8tion.jda.core.JDAInfo;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.*;
-import java.util.function.Function;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Queue;
 
 public class Requester
 {
-    //TODO: Readd log, set useragent from JDAVersion file, get token from JDA (in exec method)
-    public static String USER_AGENT = "JDA DiscordBot (https://github.com/DV8FromTheWorld/JDA, v3.0 BETA)";
+    //TODO: Re-add log, get token from JDA (in exec method)
+    public static String USER_AGENT = "JDA DiscordBot (" + JDAInfo.GITHUB + ", " + JDAInfo.VERSION + ")";
     public static final String DISCORD_API_PREFIX = "https://discordapp.com/api/";
     public static final String authToken = "";
 
