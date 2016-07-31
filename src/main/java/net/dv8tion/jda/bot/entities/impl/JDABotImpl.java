@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.bot.entities.impl;
 
+import com.mashape.unirest.http.Unirest;
 import net.dv8tion.jda.bot.JDABot;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
@@ -25,10 +26,6 @@ import javax.security.auth.login.LoginException;
 
 public class JDABotImpl extends JDAImpl implements JDABot
 {
-    protected final HttpHost proxy;
-    protected final boolean audioEnabled;
-    protected final boolean useShutdownHook;
-    protected final boolean bulkDeleteSplittingEnabled;
 
     public JDABotImpl(HttpHost proxy, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled)
     {
@@ -36,6 +33,9 @@ public class JDABotImpl extends JDAImpl implements JDABot
         this.audioEnabled = audioEnabled;
         this.useShutdownHook = useShutdownHook;
         this.bulkDeleteSplittingEnabled = bulkDeleteSplittingEnabled;
+
+        if (proxy != null)
+            Unirest.setProxy(proxy);
 
         if (audioEnabled)
             ;   //TODO: setup audio system
@@ -56,9 +56,6 @@ public class JDABotImpl extends JDAImpl implements JDABot
     @Override
     public void login(String token) throws LoginException
     {
-        if (token == null || token.isEmpty())
-            throw new LoginException("Provided token was null or empty!");
-
-        verifyToken(token);
+        super.login(token);
     }
 }

@@ -39,6 +39,8 @@ public class JDAClientImpl extends JDAImpl implements JDAClient
 
         if (audioEnabled)
             ;   //TODO: setup audio system
+
+
     }
 
     @Override
@@ -56,9 +58,6 @@ public class JDAClientImpl extends JDAImpl implements JDAClient
     @Override
     public void login(String token) throws LoginException
     {
-        if (token == null || token.isEmpty())
-            throw new LoginException("Provided token was null or empty!");
-
-        verifyToken(token);
+        super.login(token);
     }
 }

@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
+import com.mashape.unirest.http.Unirest;
 import net.dv8tion.jda.bot.JDABot;
 import net.dv8tion.jda.client.JDAClient;
 import net.dv8tion.jda.core.AccountType;
@@ -25,26 +26,62 @@ import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.RequestBuilder;
 import net.dv8tion.jda.core.requests.Requester;
+import org.apache.http.HttpHost;
 import org.json.JSONObject;
 
 import javax.security.auth.login.LoginException;
+import java.io.IOException;
 
 public abstract class JDAImpl implements JDA
 {
+    //Set by the JDAClientImpl and JDABotImpl constructors.
+    protected HttpHost proxy;
+    protected boolean audioEnabled;
+    protected boolean useShutdownHook;
+    protected boolean bulkDeleteSplittingEnabled;
+
     protected Requester requester = new Requester();
-    protected Status status;
+    protected Status status = Status.INITIALIZING;
+    protected String authToken = null;
+    protected boolean reconnect = true;
 
-    public abstract void login(String token) throws LoginException;
-
-    public Status getStatus()
+    public void login(String token) throws LoginException
     {
-        return status;
+        setStatus(Status.LOGGING_IN);
+        if (token == null || token.isEmpty())
+            throw new LoginException("Provided token was null or empty!");
+
+        verifyToken(token);
+        this.authToken = token;
+
+        if (useShutdownHook)
+        {
+            Runtime.getRuntime().addShutdownHook(new Thread("JDA Shutdown Hook")
+            {
+                @Override
+                public void run()
+                {
+                    JDAImpl.this.shutdown();
+                }
+            });
+        }
     }
 
     public void setStatus(Status status)
     {
-        //TODO: Fire status change event.
-        this.status = status;
+        synchronized (this.status)
+        {
+            Status oldStatus = this.status;
+            this.status = status;
+
+            //TODO: Fire status change event.
+//            eventManager.handle(new StatusChangeEvent(this, status, oldStatus));
+        }
+    }
+
+    public void setAuthToken(String token)
+    {
+        this.authToken = token;
     }
 
     public void verifyToken(String token) throws LoginException
@@ -78,10 +115,83 @@ public abstract class JDAImpl implements JDA
             }
             else
             {
-                throw new RuntimeException("When verifying the authenticity of the provided token, Discord returned an unknown response:\n" +
+                throw new LoginException("When verifying the authenticity of the provided token, Discord returned an unknown response:\n" +
                         response.toString());
             }
         }
+    }
+
+    @Override
+    public String getAuthToken()
+    {
+        return authToken;
+    }
+
+    @Override
+    public HttpHost getGlobalProxy()
+    {
+        return proxy;
+    }
+
+    @Override
+    public boolean isAudioEnabled()
+    {
+        return audioEnabled;
+    }
+
+    @Override
+    public boolean isBulkDeleteSplittingEnabled()
+    {
+        return bulkDeleteSplittingEnabled;
+    }
+
+    @Override
+    public void setAutoReconnect(boolean reconnect)
+    {
+        this.reconnect = reconnect;
+    }
+
+    @Override
+    public boolean isAutoReconnect()
+    {
+        return reconnect;
+    }
+
+    @Override
+    public Status getStatus()
+    {
+        return status;
+    }
+
+    @Override
+    public void shutdown()
+    {
+        shutdown(true);
+    }
+
+    @Override
+    public void shutdown(boolean free)
+    {
+        setStatus(Status.SHUTTING_DOWN);
+        //TODO: Shutdown ASYNC system
+        //TODO: Shutdown audio connections.
+        //TODO: Shutdown Main Websocket.
+
+        if (free)
+        {
+            try
+            {
+                Unirest.shutdown();
+            }
+            catch (IOException ignored) {}
+        }
+        setStatus(Status.SHUTTING_DOWN);
+    }
+
+    @Override
+    public void installAuxiliaryCable(int port) throws UnsupportedOperationException
+    {
+        throw new UnsupportedOperationException("Nice try m8!");
     }
 
     @Override
