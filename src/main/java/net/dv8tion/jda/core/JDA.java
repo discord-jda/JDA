@@ -71,8 +71,16 @@ public interface JDA
      * @return
      *      Never-null, 18 character length string containing the auth token.
      */
-    String getAuthToken();
+    String getToken();
 
+    /**
+     * This value is the total amount of JSON responses that discord has sent.<br>
+     * This value resets every time the websocket has to reconnect.
+     *
+     * @return
+     *      Never-negative int containing total response amount.
+     */
+    long getResponseTotal();
 
     /**
      * The proxy settings used by all JDA instances.

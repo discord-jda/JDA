@@ -26,6 +26,8 @@ import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.RequestBuilder;
 import net.dv8tion.jda.core.requests.Requester;
+import net.dv8tion.jda.core.requests.WebSocketClient;
+import net.dv8tion.jda.core.utils.SimpleLog;
 import org.apache.http.HttpHost;
 import org.json.JSONObject;
 
@@ -34,16 +36,20 @@ import java.io.IOException;
 
 public abstract class JDAImpl implements JDA
 {
+    public static final SimpleLog LOG = SimpleLog.getLog("JDA");
+
     //Set by the JDAClientImpl and JDABotImpl constructors.
     protected HttpHost proxy;
     protected boolean audioEnabled;
     protected boolean useShutdownHook;
     protected boolean bulkDeleteSplittingEnabled;
 
+    protected WebSocketClient client;
     protected Requester requester = new Requester();
     protected Status status = Status.INITIALIZING;
-    protected String authToken = null;
+    protected String token = null;
     protected boolean reconnect = true;
+    protected long responseTotal;
 
     public void login(String token) throws LoginException
     {
@@ -52,7 +58,12 @@ public abstract class JDAImpl implements JDA
             throw new LoginException("Provided token was null or empty!");
 
         verifyToken(token);
-        this.authToken = token;
+        this.token = token;
+        LOG.info("Login Successful!");
+
+        //TODO: Implement sharding
+        client = new WebSocketClient(this, proxy, null);
+        client.setAutoReconnect(reconnect);
 
         if (useShutdownHook)
         {
@@ -81,7 +92,7 @@ public abstract class JDAImpl implements JDA
 
     public void setAuthToken(String token)
     {
-        this.authToken = token;
+        this.token = token;
     }
 
     public void verifyToken(String token) throws LoginException
@@ -122,9 +133,9 @@ public abstract class JDAImpl implements JDA
     }
 
     @Override
-    public String getAuthToken()
+    public String getToken()
     {
-        return authToken;
+        return token;
     }
 
     @Override
@@ -149,6 +160,10 @@ public abstract class JDAImpl implements JDA
     public void setAutoReconnect(boolean reconnect)
     {
         this.reconnect = reconnect;
+        if (client != null)
+        {
+            client.setAutoReconnect(reconnect);
+        }
     }
 
     @Override
@@ -204,5 +219,21 @@ public abstract class JDAImpl implements JDA
     public JDABot asBot()
     {
         throw new AccountTypeException(AccountType.CLIENT);
+    }
+
+    @Override
+    public long getResponseTotal()
+    {
+        return responseTotal;
+    }
+
+    public void setResponseTotal(int responseTotal)
+    {
+        this.responseTotal = responseTotal;
+    }
+
+    public Requester getRequester()
+    {
+        return requester;
     }
 }
