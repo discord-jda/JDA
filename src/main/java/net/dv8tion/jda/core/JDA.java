@@ -58,6 +58,31 @@ public interface JDA
     }
 
     /**
+     * Represents the information used to create this shard.
+     */
+    class ShardInfo
+    {
+        int shardId;
+        int shardTotal;
+
+        ShardInfo(int shardId, int shardTotal)
+        {
+            this.shardId = shardId;
+            this.shardTotal = shardTotal;
+        }
+
+        public int getShardId()
+        {
+            return shardId;
+        }
+
+        public int getShardTotal()
+        {
+            return shardTotal;
+        }
+    }
+
+    /**
      * Gets the current {@link net.dv8tion.jda.core.JDA.Status Status} of the JDA instance.
      *
      * @return
@@ -166,4 +191,6 @@ public interface JDA
     JDAClient asClient();
 
     JDABot asBot();
+
+    ShardInfo getShardInfo();
 }

@@ -47,11 +47,12 @@ public abstract class JDAImpl implements JDA
     protected WebSocketClient client;
     protected Requester requester = new Requester();
     protected Status status = Status.INITIALIZING;
+    protected ShardInfo shardInfo;
     protected String token = null;
     protected boolean reconnect = true;
     protected long responseTotal;
 
-    public void login(String token) throws LoginException
+    public void login(String token, ShardInfo shardInfo) throws LoginException
     {
         setStatus(Status.LOGGING_IN);
         if (token == null || token.isEmpty())
@@ -59,10 +60,11 @@ public abstract class JDAImpl implements JDA
 
         verifyToken(token);
         this.token = token;
+        this.shardInfo = shardInfo;
         LOG.info("Login Successful!");
 
         //TODO: Implement sharding
-        client = new WebSocketClient(this, proxy, null);
+        client = new WebSocketClient(this);
         client.setAutoReconnect(reconnect);
 
         if (useShutdownHook)
@@ -225,6 +227,12 @@ public abstract class JDAImpl implements JDA
     public long getResponseTotal()
     {
         return responseTotal;
+    }
+
+    @Override
+    public ShardInfo getShardInfo()
+    {
+        return shardInfo;
     }
 
     public void setResponseTotal(int responseTotal)

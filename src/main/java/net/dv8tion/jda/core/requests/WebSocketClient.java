@@ -56,7 +56,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected final JDAImpl api;
 
-    protected final int[] sharding;
+    protected final JDA.ShardInfo shardInfo;
     protected final HttpHost proxy;
     protected WebSocket socket;
     protected String gatewayUrl = null;
@@ -78,11 +78,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected boolean firstInit = true;
 
-    public WebSocketClient(JDAImpl api, HttpHost proxy, int[] sharding)
+    public WebSocketClient(JDAImpl api)
     {
         this.api = api;
-        this.sharding = sharding;
-        this.proxy = proxy;
+        this.shardInfo = api.getShardInfo();
+        this.proxy = api.getGlobalProxy();
         connect();
     }
 
@@ -367,8 +367,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 }
             }
         });
-        keepAliveThread.setName("JDA MainWS-KeepAlive" + (sharding != null
-                ? " Shard [" + sharding[0] + " / " + sharding[1] + "]"
+        keepAliveThread.setName("JDA MainWS-KeepAlive" + (shardInfo != null
+                ? " Shard [" + shardInfo.getShardId() + " / " + shardInfo.getShardTotal() + "]"
                 : ""));
         keepAliveThread.setPriority(Thread.MAX_PRIORITY);
         keepAliveThread.setDaemon(true);
@@ -397,12 +397,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                         .put("v", DISCORD_GATEWAY_VERSION)
                         .put("large_threshold", 250)
                         .put("compress", true));    //Used to make the READY event be given as compressed binary data when over a certain size. TY @ShadowLordAlpha
-        if (sharding != null)
+        if (shardInfo != null)
         {
             identify.getJSONObject("d")
                     .put("shard", new JSONArray()
-                        .put(sharding[0])
-                        .put(sharding[1]));
+                        .put(shardInfo.getShardId())
+                        .put(shardInfo.getShardTotal()));
         }
         send(identify.toString());
     }

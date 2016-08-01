@@ -52,10 +52,4 @@ public class JDABotImpl extends JDAImpl implements JDABot
     {
         return this;
     }
-
-    @Override
-    public void login(String token) throws LoginException
-    {
-        super.login(token);
-    }
 }

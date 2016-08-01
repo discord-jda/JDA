@@ -48,7 +48,7 @@ public class JDABuilder
     protected boolean enableBulkDeleteSplitting = true;
 //    protected IEventManager eventManager = null;
     protected boolean reconnect = true;
-    protected int[] sharding = null;
+    protected JDA.ShardInfo shardInfo = null;
 
     /**
      * Creates a completely empty JDABuilder.<br>
@@ -250,7 +250,7 @@ public class JDABuilder
         {
             throw new RuntimeException("This configuration of shardId and numShards is not allowed! 0 <= shardId < numShards with numShards > 1");
         }
-        sharding = new int[] {shardId, numShards};
+        shardInfo = new JDA.ShardInfo(shardId, numShards);
         return this;
     }
 
@@ -291,7 +291,7 @@ public class JDABuilder
 //        listeners.forEach(jda::addEventListener);
         jda.setStatus(JDA.Status.INITIALIZED);  //This is already set by JDA internally, but this is to make sure the listeners catch it.
 //        jda.login(token, sharding);
-        jda.login(token);
+        jda.login(token, shardInfo);
         return jda;
     }
 
