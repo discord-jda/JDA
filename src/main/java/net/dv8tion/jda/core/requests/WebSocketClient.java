@@ -16,10 +16,26 @@
 
 package net.dv8tion.jda.core.requests;
 
-import com.neovisionaries.ws.client.WebSocketAdapter;
-
 import com.neovisionaries.ws.client.*;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.handle.ReadyHandler;
+import net.dv8tion.jda.core.handle.SocketHandler;
+import net.dv8tion.jda.core.utils.SimpleLog;
+import org.apache.http.HttpHost;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.DataFormatException;
+import java.util.zip.Inflater;
+
 //import net.dv8tion.jda.audio.AudioReceiveHandler;
 //import net.dv8tion.jda.audio.AudioSendHandler;
 //import net.dv8tion.jda.entities.Guild;
@@ -31,22 +47,6 @@ import net.dv8tion.jda.core.JDA;
 //import net.dv8tion.jda.managers.AudioManager;
 //import net.dv8tion.jda.managers.impl.AudioManagerImpl;
 //import net.dv8tion.jda.utils.SimpleLog;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.utils.SimpleLog;
-import org.apache.http.HttpHost;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.time.OffsetDateTime;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.zip.DataFormatException;
-import java.util.zip.Inflater;
 
 //TODO: reimplement events
 public class WebSocketClient extends WebSocketAdapter implements WebSocketListener
@@ -55,9 +55,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public static final int DISCORD_GATEWAY_VERSION = 6;
 
     protected final JDAImpl api;
-
     protected final JDA.ShardInfo shardInfo;
     protected final HttpHost proxy;
+    protected final HashMap<String, SocketHandler> handlers = new HashMap<>();
+
     protected WebSocket socket;
     protected String gatewayUrl = null;
 
@@ -84,6 +85,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         this.shardInfo = api.getShardInfo();
         this.proxy = api.getGlobalProxy();
         this.shouldReconnect = api.isAutoReconnect();
+        setupHandlers();
         connect();
     }
 
@@ -553,12 +555,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 //        if (type.equals("GUILD_MEMBER_REMOVE"))
 //            GuildMembersChunkHandler.modifyExpectedGuildMember(api, raw.getJSONObject("d").getString("guild_id"), -1);
 //
-//        if (initiating && !(type.equals("READY") || type.equals("GUILD_MEMBERS_CHUNK") || type.equals("GUILD_CREATE") || type.equals("RESUMED")))
-//        {
-//            LOG.debug("Caching " + type + " event during init!");
-//            cachedEvents.add(raw);
-//            return;
-//        }
+        if (initiating && !(type.equals("READY") || type.equals("GUILD_MEMBERS_CHUNK") || type.equals("GUILD_CREATE") || type.equals("RESUMED")))
+        {
+            LOG.debug("Caching " + type + " event during init!");
+            cachedEvents.add(raw);
+            return;
+        }
 //
 //        // Needs special handling due to content of "d" being an array
 //        if(type.equals("PRESENCE_REPLACE"))
@@ -577,15 +579,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         JSONObject content = raw.getJSONObject("d");
         LOG.trace(String.format("%s -> %s", type, content.toString()));
 
-//        try
-//        {
-//            switch (type)
-//            {
-//                //INIT types
-//                case "READY":
-//                    sessionId = content.getString("session_id");
-//                    new ReadyHandler(api, responseTotal).handle(raw);
-//                    break;
+        try
+        {
+            switch (type)
+            {
+                //INIT types
+                case "READY":
+                    sessionId = content.getString("session_id");
+                    handlers.get("READY").handle(responseTotal, raw);
+                    break;
 //                case "RESUMED":
 //                    initiating = false;
 //                    ready();
@@ -674,19 +676,23 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 //                //Events that Bots shouldn't care about.
 //                case "MESSAGE_ACK":
 //                    break;
-//                default:
-//                    LOG.debug("Unrecognized event:\n" + raw);
-//            }
-//        }
-//        catch (JSONException ex)
-//        {
-//            LOG.warn("Got an unexpected Json-parse error. Please redirect following message to the devs:\n\t"
-//                    + ex.getMessage() + "\n\t" + type + " -> " + content);
-//        }
-//        catch (Exception ex)
-//        {
-//            LOG.log(ex);
-//        }
+                default:
+                    SocketHandler handler = handlers.get(type);
+                    if (handler != null)
+                        handler.handle(responseTotal, raw);
+                    else
+                        LOG.debug("Unrecognized event:\n" + raw);
+            }
+        }
+        catch (JSONException ex)
+        {
+            LOG.warn("Got an unexpected Json-parse error. Please redirect following message to the devs:\n\t"
+                    + ex.getMessage() + "\n\t" + type + " -> " + content);
+        }
+        catch (Exception ex)
+        {
+            LOG.log(ex);
+        }
     }
 
     @Override
@@ -719,6 +725,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public void handleCallbackError(WebSocket websocket, Throwable cause)
     {
 //        LOG.log(cause);
+    }
+
+    private void setupHandlers()
+    {
+        handlers.put("READY", new ReadyHandler(api));
     }
 }
 
