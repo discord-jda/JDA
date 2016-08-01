@@ -30,57 +30,52 @@ import java.util.List;
 
 public class GuildEmojisUpdateHandler extends SocketHandler
 {
-	public GuildEmojisUpdateHandler(JDAImpl api, int responseNumber)
-	{
-		super(api, responseNumber);
-	}
+    public GuildEmojisUpdateHandler(JDAImpl api, int responseNumber)
+    {
+        super(api, responseNumber);
+    }
 
-	@Override
-	protected String handleInternally(JSONObject content)
-	{
-		if (GuildLock.get(api).isLocked(content.getString("guild_id")))
-		{
-			return content.getString("guild_id");
-		}
-		Guild guild = api.getGuildMap().get(content.getString("guild_id"));
-		if (guild == null)
-		{
-			JDAImpl.LOG.warn("Received Emojis Update for Guild we can't see. Ignoring event...");
-			return null;
-		}
-		List<Emote> oldEmotes = guild.getEmotes();
-		List<Emote> newEmotes = new LinkedList<>();
-		JSONArray array = content.getJSONArray("emojis");
+    @Override
+    protected String handleInternally(JSONObject content)
+    {
+        if (GuildLock.get(api).isLocked(content.getString("guild_id")))
+        {
+            return content.getString("guild_id");
+        }
+        Guild guild = api.getGuildMap().get(content.getString("guild_id"));
+        if (guild == null)
+        {
+            JDAImpl.LOG.warn("Received Emojis Update for Guild we can't see. Ignoring event...");
+            return null;
+        }
+        List<Emote> oldEmotes = new LinkedList<>(guild.getEmotes());
+        JSONArray array = content.getJSONArray("emojis");
 
-		for (int i = 0; i < array.length(); i++)
-		{
-			JSONObject obj = array.getJSONObject(i);
-			String id = obj.getString("id");
-			String name = obj.getString("name");
-			EmoteImpl emote = (EmoteImpl) api.getEmoteById(id);
-			if (emote == null)
-			{
-				emote = new EmoteImpl(name, id);
-				emote.addGuild(guild);
-				api.getEmoteMap().put(id, emote);
-			}
-			((GuildImpl) guild).getEmoteMap().put(id, emote);
-			newEmotes.add(emote);
-		}
+        for (int i = 0; i < array.length(); i++)
+        {
+            JSONObject obj = array.getJSONObject(i);
+            String id = obj.getString("id");
+            String name = obj.getString("name");
+            EmoteImpl emote = (EmoteImpl) api.getEmoteById(id);
+            if (emote == null)
+            {
+                emote = new EmoteImpl(name, id);
+                emote.addGuild(guild);
+                api.getEmoteMap().put(id, emote);
+            }
+            ((GuildImpl) guild).getEmoteMap().put(id, emote);
+            oldEmotes.remove(emote);
+        }
 
-		// Clean up emotes we can't see anymore
-		if (oldEmotes.size() > newEmotes.size())
-		{
-			for (Emote e : oldEmotes)
-			{
-				if (newEmotes.contains(e)) continue;
-				((EmoteImpl) e).removeGuild(guild);
-				if (e.getGuilds().isEmpty()) api.getEmoteMap().remove(e.getId());
-			}
-		}
+        // Clean up emotes we can't see anymore
+        for (Emote e : oldEmotes)
+        {
+            ((EmoteImpl) e).removeGuild(guild);
+            if (e.getGuilds().isEmpty()) api.getEmoteMap().remove(e.getId());
+        }
 
 
-		return null;
-	}
+        return null;
+    }
 
 }
