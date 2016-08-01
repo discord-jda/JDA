@@ -46,8 +46,8 @@ public class JDABuilder
     protected boolean enableVoice = true;
     protected boolean enableShutdownHook = true;
     protected boolean enableBulkDeleteSplitting = true;
+    protected boolean autoReconnect = true;
 //    protected IEventManager eventManager = null;
-    protected boolean reconnect = true;
     protected JDA.ShardInfo shardInfo = null;
 
     /**
@@ -163,14 +163,14 @@ public class JDABuilder
      *
      * Default is true.
      *
-     * @param reconnect
+     * @param autoReconnect
      *      If true - enables autoReconnect
      * @return
      *      Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
      */
-    public JDABuilder setAutoReconnect(boolean reconnect)
+    public JDABuilder setAutoReconnect(boolean autoReconnect)
     {
-        this.reconnect = reconnect;
+        this.autoReconnect = autoReconnect;
         return this;
     }
 
@@ -277,13 +277,12 @@ public class JDABuilder
         JDAImpl jda;
         if (accountType == AccountType.BOT)
         {
-            jda = new JDABotImpl(proxy, enableVoice, enableShutdownHook, enableBulkDeleteSplitting);
+            jda = new JDABotImpl(proxy, autoReconnect, enableVoice, enableShutdownHook, enableBulkDeleteSplitting);
         }
         else
         {
-            jda = new JDAClientImpl(proxy, enableVoice, enableShutdownHook, enableBulkDeleteSplitting);
+            jda = new JDAClientImpl(proxy, autoReconnect, enableVoice, enableShutdownHook, enableBulkDeleteSplitting);
         }
-//        jda.setAutoReconnect(reconnect);
 //        if (eventManager != null)
 //        {
 //            jda.setEventManager(eventManager);

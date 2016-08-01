@@ -38,19 +38,30 @@ public abstract class JDAImpl implements JDA
 {
     public static final SimpleLog LOG = SimpleLog.getLog("JDA");
 
-    //Set by the JDAClientImpl and JDABotImpl constructors.
     protected HttpHost proxy;
-    protected boolean audioEnabled;
-    protected boolean useShutdownHook;
-    protected boolean bulkDeleteSplittingEnabled;
 
     protected WebSocketClient client;
     protected Requester requester = new Requester();
     protected Status status = Status.INITIALIZING;
     protected ShardInfo shardInfo;
     protected String token = null;
-    protected boolean reconnect = true;
+    protected boolean audioEnabled;
+    protected boolean useShutdownHook;
+    protected boolean bulkDeleteSplittingEnabled;
+    protected boolean autoReconnect;
     protected long responseTotal;
+
+    public JDAImpl(HttpHost proxy, boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled)
+    {
+        this.proxy = proxy;
+        this.autoReconnect = autoReconnect;
+        this.audioEnabled = audioEnabled;
+        this.useShutdownHook = useShutdownHook;
+        this.bulkDeleteSplittingEnabled = bulkDeleteSplittingEnabled;
+
+        if (audioEnabled)
+            ;   //TODO: setup audio system
+    }
 
     public void login(String token, ShardInfo shardInfo) throws LoginException
     {
@@ -65,7 +76,6 @@ public abstract class JDAImpl implements JDA
 
         //TODO: Implement sharding
         client = new WebSocketClient(this);
-        client.setAutoReconnect(reconnect);
 
         if (useShutdownHook)
         {
@@ -159,19 +169,19 @@ public abstract class JDAImpl implements JDA
     }
 
     @Override
-    public void setAutoReconnect(boolean reconnect)
+    public void setAutoReconnect(boolean autoReconnect)
     {
-        this.reconnect = reconnect;
+        this.autoReconnect = autoReconnect;
         if (client != null)
         {
-            client.setAutoReconnect(reconnect);
+            client.setAutoReconnect(autoReconnect);
         }
     }
 
     @Override
     public boolean isAutoReconnect()
     {
-        return reconnect;
+        return autoReconnect;
     }
 
     @Override
@@ -243,5 +253,10 @@ public abstract class JDAImpl implements JDA
     public Requester getRequester()
     {
         return requester;
+    }
+
+    public WebSocketClient getClient()
+    {
+        return client;
     }
 }

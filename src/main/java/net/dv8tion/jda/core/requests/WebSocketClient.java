@@ -83,6 +83,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         this.api = api;
         this.shardInfo = api.getShardInfo();
         this.proxy = api.getGlobalProxy();
+        this.shouldReconnect = api.isAutoReconnect();
         connect();
     }
 

@@ -16,29 +16,17 @@
 
 package net.dv8tion.jda.bot.entities.impl;
 
-import com.mashape.unirest.http.Unirest;
 import net.dv8tion.jda.bot.JDABot;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import org.apache.http.HttpHost;
 
-import javax.security.auth.login.LoginException;
-
 public class JDABotImpl extends JDAImpl implements JDABot
 {
 
-    public JDABotImpl(HttpHost proxy, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled)
+    public JDABotImpl(HttpHost proxy, boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled)
     {
-        this.proxy = proxy;
-        this.audioEnabled = audioEnabled;
-        this.useShutdownHook = useShutdownHook;
-        this.bulkDeleteSplittingEnabled = bulkDeleteSplittingEnabled;
-
-        if (proxy != null)
-            Unirest.setProxy(proxy);
-
-        if (audioEnabled)
-            ;   //TODO: setup audio system
+        super(proxy, autoReconnect, audioEnabled, useShutdownHook, bulkDeleteSplittingEnabled);
     }
 
     @Override

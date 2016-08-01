@@ -21,24 +21,11 @@ import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import org.apache.http.HttpHost;
 
-import javax.security.auth.login.LoginException;
-
 public class JDAClientImpl extends JDAImpl implements JDAClient
 {
-    protected final HttpHost proxy;
-    protected final boolean audioEnabled;
-    protected final boolean useShutdownHook;
-    protected final boolean bulkDeleteSplittingEnabled;
-
-    public JDAClientImpl(HttpHost proxy, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled)
+    public JDAClientImpl(HttpHost proxy, boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled)
     {
-        this.proxy = proxy;
-        this.audioEnabled = audioEnabled;
-        this.useShutdownHook = useShutdownHook;
-        this.bulkDeleteSplittingEnabled = bulkDeleteSplittingEnabled;
-
-        if (audioEnabled)
-            ;   //TODO: setup audio system
+        super(proxy, autoReconnect, audioEnabled, useShutdownHook, bulkDeleteSplittingEnabled);
     }
 
     @Override
