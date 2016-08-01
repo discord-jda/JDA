@@ -52,6 +52,7 @@ public class MessageImpl implements Message
     private List<Role> mentionedRoles = new LinkedList<>();
     private List<Attachment> attachments = new LinkedList<>();
     private List<MessageEmbed> embeds = new LinkedList<>();
+    private List<Emote> emotes = new LinkedList<>();
 
     public MessageImpl(String id, JDAImpl api)
     {
@@ -198,6 +199,10 @@ public class MessageImpl implements Message
             {
                 tmp = tmp.replace("<@&" + mentionedRole.getId() + '>', '@' + mentionedRole.getName());
             }
+            for(Emote emote : emotes)
+            {
+            	tmp = tmp.replace(emote.toString(), ":" + emote.getName() + ":");
+            }
             subContent = tmp;
         }
         return subContent;
@@ -231,6 +236,12 @@ public class MessageImpl implements Message
     public List<MessageEmbed> getEmbeds()
     {
         return Collections.unmodifiableList(embeds);
+    }
+
+    @Override
+    public List<Emote> getEmotes()
+    {
+    	return Collections.unmodifiableList(emotes);
     }
 
     @Override
@@ -366,6 +377,12 @@ public class MessageImpl implements Message
     public MessageImpl setEmbeds(List<MessageEmbed> embeds)
     {
         this.embeds = embeds;
+        return this;
+    }
+
+    public MessageImpl setEmotes(List<Emote> emotes)
+    {
+    	this.emotes = emotes;
         return this;
     }
 

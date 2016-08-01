@@ -299,6 +299,23 @@ public interface JDA
      */
     SelfInfo getSelfInfo();
 
+	/**
+	 * Returns an unmodifiable list of all available {@link Emote Emotes} known to this instance.
+	 *
+	 * @return
+	 *      A list of available emotes.
+	 */
+	List<Emote> getAvailableEmotes();
+
+	/**
+	 * Returns the emote represented by given id, or null if none of the available emotes match given id.
+	 *
+	 * @param id
+	 *         ID to look for.
+	 * @return An {@link Emote}
+	 */
+	Emote getEmoteById(String id);
+
     /**
      * Returns the {@link net.dv8tion.jda.managers.AccountManager AccountManager} for the currently logged in account.<br>
      * Account settings <b>can only</b> be modified using this object. 

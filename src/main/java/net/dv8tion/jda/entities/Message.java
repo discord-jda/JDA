@@ -189,6 +189,14 @@ public interface Message
      */
     List<MessageEmbed> getEmbeds();
 
+	/**
+	 * An unmodifiable list of {@link net.dv8tion.jda.entities.Emote Emotes} that are available to this message.
+	 *
+	 * @return
+	 *      Unmodifiable list of all given emotes
+	 */
+	List<Emote> getEmotes();
+
     /**
      * Is this Message supposed to be TTS (Text-to-speach)
      *

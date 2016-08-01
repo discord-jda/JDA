@@ -41,6 +41,7 @@ public class EntityBuilder
     private static final HashMap<JDA, HashMap<String, JSONObject>> cachedJdaGuildJsons = new HashMap<>();
     private static final HashMap<JDA, HashMap<String, Consumer<Guild>>> cachedJdaGuildCallbacks = new HashMap<>();
     private static final Pattern channelMentionPattern = Pattern.compile("<#(\\d+)>");
+	private static final Pattern emotePatter = Pattern.compile("<:([^:]+):(\\d+)>");
     private final JDAImpl api;
 
     public EntityBuilder(JDAImpl api)
@@ -95,6 +96,22 @@ public class EntityBuilder
             if (role.getId().equals(guildObj.getId()))
                 guildObj.setPublicRole(role);
         }
+        if (guild.has("emojis"))
+        {
+        	JSONArray emojiArr = guild.getJSONArray("emojis");
+	        for (int i = 0; i< emojiArr.length(); i++)
+	        {
+	        	JSONObject obj = emojiArr.getJSONObject(i);
+		        String emojID = obj.getString("id");
+		        Emote emote = api.getEmoteById(emojID);
+		        if (emote == null)
+		        	emote = new EmoteImpl(obj.getString("name"), emojID);
+		        api.getEmoteMap().putIfAbsent(emojID, emote);
+		        guildObj.getEmoteMap().put(emojID, emote);
+		        ((EmoteImpl) emote).addGuild(guildObj);
+	        }
+        } else
+        	JDAImpl.LOG.warn("Guild Didn't have field called 'emojis'. Identifier: " + guildObj.getId());
 
         if (guild.has("members"))
         {
@@ -492,6 +509,14 @@ public class EntityBuilder
         }
         message.setEmbeds(embeds);
 
+	    Matcher matcher = emotePatter.matcher(content);
+	    List<Emote> emoteList = new LinkedList<>();
+	    while (matcher.find())
+		    emoteList.add(api.getEmoteById(matcher.group(2)) == null
+		                ? new EmoteImpl(matcher.group(1), matcher.group(2))
+		                : api.getEmoteById(matcher.group(2)));
+	    message.setEmotes(emoteList);
+
         if (!jsonObject.isNull("edited_timestamp"))
             message.setEditedTime(OffsetDateTime.parse(jsonObject.getString("edited_timestamp")));
 
@@ -532,7 +557,7 @@ public class EntityBuilder
 
             List<TextChannel> mentionedChannels = new LinkedList<>();
             Map<String, TextChannel> chanMap = ((GuildImpl) textChannel.getGuild()).getTextChannelsMap();
-            Matcher matcher = channelMentionPattern.matcher(content);
+            matcher = channelMentionPattern.matcher(content);
             while (matcher.find())
             {
                 TextChannel channel = chanMap.get(matcher.group(1));

@@ -15,10 +15,7 @@
  */
 package net.dv8tion.jda;
 
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.Role;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.entities.impl.MessageImpl;
 
 import java.util.*;
@@ -36,6 +33,7 @@ public class MessageBuilder
     protected final List<User> mentioned = new LinkedList<>();
     protected final List<TextChannel> mentionedTextChannels = new LinkedList<>();
     protected final List<Role> mentionedRoles = new LinkedList<>();
+	protected final List<Emote> emotes = new LinkedList<>();
     protected boolean mentionEveryone = false;
     protected boolean isTTS = false;
     protected Pattern formatPattern;
@@ -324,6 +322,20 @@ public class MessageBuilder
         return this;
     }
 
+	/**
+	 * Appends an {@link Emote Emote} to the Message.
+	 * For this to work, the given Emote has to be available to this account.
+	 *
+	 * @param emote the {@link Emote Emote} to append
+	 * @return this instance
+	 */
+    public MessageBuilder appendEmote(Emote emote)
+    {
+    	builder.append(emote);
+	    if (!emotes.contains(emote)) emotes.add(emote);
+	    return this;
+    }
+
     /**
      * Returns the current length of the content that will be built into a {@link net.dv8tion.jda.entities.Message Message}
      * when {@link #build()} is called.<br>
@@ -358,7 +370,7 @@ public class MessageBuilder
             throw new UnsupportedOperationException("Cannot build a Message with more than 2000 characters. Please limit your input.");
 
         return new MessageImpl("", null).setContent(message).setTTS(isTTS).setMentionedUsers(mentioned)
-                .setMentionedChannels(mentionedTextChannels).setMentionedRoles(mentionedRoles).setMentionsEveryone(mentionEveryone);
+                .setMentionedChannels(mentionedTextChannels).setMentionedRoles(mentionedRoles).setMentionsEveryone(mentionEveryone).setEmotes(emotes);
     }
 
     /**

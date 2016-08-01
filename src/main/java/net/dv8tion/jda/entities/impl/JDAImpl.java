@@ -56,6 +56,7 @@ public class JDAImpl implements JDA
     protected final Map<String, Long> messageRatelimitTimeouts = new HashMap<>(); //(GuildId or GlobalPrivateChannel) - Timeout.
     protected final Map<String, String> offline_pms = new HashMap<>();    //Userid -> channelid
     protected final Map<Guild, AudioManager> audioManagers = new HashMap<>();
+	protected final Map<String, Emote> emoteMap = new HashMap<>();
     protected final boolean audioEnabled;
     protected final boolean useShutdownHook;
     protected final boolean bulkDeleteSplittingEnabled;
@@ -228,6 +229,11 @@ public class JDAImpl implements JDA
         return userMap;
     }
 
+    public Map<String, Emote> getEmoteMap()
+    {
+    	return emoteMap;
+    }
+
     @Override
     public List<User> getUsers()
     {
@@ -360,7 +366,19 @@ public class JDAImpl implements JDA
         return selfInfo;
     }
 
-    public void setSelfInfo(SelfInfo selfInfo)
+	@Override
+	public List<Emote> getAvailableEmotes()
+	{
+		return Collections.unmodifiableList(new LinkedList<>(emoteMap.values()));
+	}
+
+	@Override
+	public Emote getEmoteById(String id)
+	{
+		return getEmoteMap().get(id);
+	}
+
+	public void setSelfInfo(SelfInfo selfInfo)
     {
         this.selfInfo = selfInfo;
     }

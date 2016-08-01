@@ -26,11 +26,8 @@ import net.dv8tion.jda.utils.PermissionUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -222,8 +219,8 @@ public class ChannelManager
         Map<Integer, Channel> currentPositions  = (channel instanceof TextChannel
                 ? channel.getGuild().getTextChannels()
                 : channel.getGuild().getVoiceChannels())
-                .stream().collect(Collectors.toMap(
-                        chan -> chan.getPosition(),
+                .stream().map(Channel.class::cast).collect(Collectors.toMap(
+				        chan -> chan.getPosition(),
                         chan -> chan));
 
         //We create a search index to make sure we insert at the right place. If the position we are inserting at

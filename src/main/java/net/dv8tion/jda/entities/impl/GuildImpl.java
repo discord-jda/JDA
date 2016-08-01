@@ -53,6 +53,7 @@ public class GuildImpl implements Guild
     private final Map<User, VoiceStatus> voiceStatusMap = new HashMap<>();
     private final Map<User, OffsetDateTime> joinedAtMap = new HashMap<>();
     private final Map<User, String> nickMap = new HashMap<>();
+	private final Map<String, Emote> emoteMap = new HashMap<>();
     private Role publicRole;
     private TextChannel publicChannel;
     private final JDAImpl api;
@@ -127,7 +128,13 @@ public class GuildImpl implements Guild
         return region;
     }
 
-    @Override
+	@Override
+	public List<Emote> getEmotes()
+	{
+		return Collections.unmodifiableList(new LinkedList<>(getEmoteMap().values()));
+	}
+
+	@Override
     public List<User> getUsers()
     {
         return Collections.unmodifiableList(new ArrayList<>(userRoles.keySet()));
@@ -447,6 +454,11 @@ public class GuildImpl implements Guild
     {
         this.publicChannel = channel;
         return this;
+    }
+
+    public Map<String, Emote> getEmoteMap()
+    {
+    	return emoteMap;
     }
 
     public Map<String, TextChannel> getTextChannelsMap()
