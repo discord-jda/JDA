@@ -84,13 +84,13 @@ public class GuildLeaveHandler extends SocketHandler
         }
 
         //cleaning up all emotes that we do not share a guild with anymore
-	    List<Emote> emotes = guild.getEmotes();
-	    for (Emote e : emotes)
-	    {
-		    ((EmoteImpl) e).removeGuild(guild);
-		    if (e.getGuilds().isEmpty())
-			    api.getEmoteMap().remove(e.getId());
-	    }
+        List<Emote> emotes = guild.getEmotes();
+        for (Emote e : emotes)
+        {
+            ((EmoteImpl) e).removeGuild(guild);
+            if (e.getGuilds().isEmpty())
+                api.getEmoteMap().remove(e.getId());
+        }
 
         api.getGuildMap().remove(guild.getId());
         guild.getTextChannels().forEach(chan -> api.getChannelMap().remove(chan.getId()));

@@ -53,7 +53,7 @@ public class GuildImpl implements Guild
     private final Map<User, VoiceStatus> voiceStatusMap = new HashMap<>();
     private final Map<User, OffsetDateTime> joinedAtMap = new HashMap<>();
     private final Map<User, String> nickMap = new HashMap<>();
-	private final Map<String, Emote> emoteMap = new HashMap<>();
+    private final Map<String, Emote> emoteMap = new HashMap<>();
     private Role publicRole;
     private TextChannel publicChannel;
     private final JDAImpl api;
@@ -128,13 +128,13 @@ public class GuildImpl implements Guild
         return region;
     }
 
-	@Override
-	public List<Emote> getEmotes()
-	{
-		return Collections.unmodifiableList(new LinkedList<>(getEmoteMap().values()));
-	}
+    @Override
+    public List<Emote> getEmotes()
+    {
+        return Collections.unmodifiableList(new LinkedList<>(getEmoteMap().values()));
+    }
 
-	@Override
+    @Override
     public List<User> getUsers()
     {
         return Collections.unmodifiableList(new ArrayList<>(userRoles.keySet()));
@@ -293,8 +293,8 @@ public class GuildImpl implements Guild
     @Override
     public Role getColorDeterminantRoleForUser(User user)
     {
-        for(Role role : getRolesForUser(user))
-            if(role.getColor() != 0)
+        for (Role role : getRolesForUser(user))
+            if (role.getColor() != 0)
                 return role;
         return publicRole;
     }
@@ -372,18 +372,18 @@ public class GuildImpl implements Guild
     {
         if (api.getSelfInfo().isBot())
             return true;
-        if(canSendVerification)
+        if (canSendVerification)
             return true;
         switch (verificationLevel)
         {
             case HIGH:
-                if(ChronoUnit.MINUTES.between(getJoinDateForUser(api.getSelfInfo()), OffsetDateTime.now()) < 10)
+                if (ChronoUnit.MINUTES.between(getJoinDateForUser(api.getSelfInfo()), OffsetDateTime.now()) < 10)
                     break;
             case MEDIUM:
-                if(ChronoUnit.MINUTES.between(MiscUtil.getCreationTime(api.getSelfInfo()), OffsetDateTime.now()) < 5)
+                if (ChronoUnit.MINUTES.between(MiscUtil.getCreationTime(api.getSelfInfo()), OffsetDateTime.now()) < 5)
                     break;
             case LOW:
-                if(!api.getSelfInfo().isVerified())
+                if (!api.getSelfInfo().isVerified())
                     break;
             case NONE:
                 canSendVerification = true;
@@ -458,7 +458,7 @@ public class GuildImpl implements Guild
 
     public Map<String, Emote> getEmoteMap()
     {
-    	return emoteMap;
+        return emoteMap;
     }
 
     public Map<String, TextChannel> getTextChannelsMap()

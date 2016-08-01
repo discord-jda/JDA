@@ -18,7 +18,10 @@ package net.dv8tion.jda;
 import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.entities.impl.MessageImpl;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.MissingFormatArgumentException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,7 +36,7 @@ public class MessageBuilder
     protected final List<User> mentioned = new LinkedList<>();
     protected final List<TextChannel> mentionedTextChannels = new LinkedList<>();
     protected final List<Role> mentionedRoles = new LinkedList<>();
-	protected final List<Emote> emotes = new LinkedList<>();
+    protected final List<Emote> emotes = new LinkedList<>();
     protected boolean mentionEveryone = false;
     protected boolean isTTS = false;
     protected Pattern formatPattern;
@@ -109,38 +112,35 @@ public class MessageBuilder
      * <p>
      * Current tokens:
      * <ul>
-     *     <li><b>%U%</b> - Used to mention a {@link net.dv8tion.jda.entities.User User}.
-     *          Same as {@link #appendMention(net.dv8tion.jda.entities.User)}</li>
-     *     <li><b>%R%</b> - Used to mention a {@link net.dv8tion.jda.entities.Role Role}.
-     *          Same as {@link #appendMention(net.dv8tion.jda.entities.Role)}</li>
-     *     <li><b>%TC%</b> - Used to mention a {@link net.dv8tion.jda.entities.TextChannel TextChannel}.
-     *          Same as {@link #appendMention(net.dv8tion.jda.entities.TextChannel)}</li>
-     *     <li><b>%E%</b> - Used to mention @everyone. Same as {@link #appendEveryoneMention()}</li>
-     *     <li><b>%H%</b> - Used to mention @here. Same as {@link #appendHereMention()}</li>
+     * <li><b>%U%</b> - Used to mention a {@link net.dv8tion.jda.entities.User User}.
+     * Same as {@link #appendMention(net.dv8tion.jda.entities.User)}</li>
+     * <li><b>%R%</b> - Used to mention a {@link net.dv8tion.jda.entities.Role Role}.
+     * Same as {@link #appendMention(net.dv8tion.jda.entities.Role)}</li>
+     * <li><b>%TC%</b> - Used to mention a {@link net.dv8tion.jda.entities.TextChannel TextChannel}.
+     * Same as {@link #appendMention(net.dv8tion.jda.entities.TextChannel)}</li>
+     * <li><b>%E%</b> - Used to mention @everyone. Same as {@link #appendEveryoneMention()}</li>
+     * <li><b>%H%</b> - Used to mention @here. Same as {@link #appendHereMention()}</li>
      * </ul>
      * <p>
      * Example: <br>
      * If you placed the following code in an method handling a
      * {@link net.dv8tion.jda.events.message.MessageReceivedEvent MessageReceivedEvent}<br>
-     *
+     * <p>
      * <pre>{@code
      * User user = event.getAuthor();
      * MessageBuilder builder = new MessageBuilder();
      * builder.appendFormat("%U% is really cool!", user);
      * builder.build();
      * }</pre>
-     *
+     * <p>
      * It would build a message that mentions the author and says that he is really cool!. If the user's
      * name was "Bob", it would say:<br>
      * <pre>  "Bob is really cool!"</pre>
      *
-     * @param format
-     *          A format string.
-     * @param args
-     *          An array objects that will be used to replace the tokens.
-     *          They must be provided in the order that the tokens appear in the provided format string.
-     * @return
-     *      this instance of the MessageBuilder. Useful for chaining.
+     * @param format A format string.
+     * @param args   An array objects that will be used to replace the tokens.
+     *               They must be provided in the order that the tokens appear in the provided format string.
+     * @return this instance of the MessageBuilder. Useful for chaining.
      */
     public MessageBuilder appendFormat(String format, Object... args)
     {
@@ -281,7 +281,7 @@ public class MessageBuilder
         mentionEveryone = true;
         return this;
     }
-    
+
     /**
      * Appends a @here mention to the Message
      *
@@ -322,18 +322,18 @@ public class MessageBuilder
         return this;
     }
 
-	/**
-	 * Appends an {@link Emote Emote} to the Message.
-	 * For this to work, the given Emote has to be available to this account.
-	 *
-	 * @param emote the {@link Emote Emote} to append
-	 * @return this instance
-	 */
+    /**
+     * Appends an {@link net.dv8tion.jda.entities.Emote Emote} to the Message.
+     * For this to work, the given Emote has to be available to this account.
+     *
+     * @param emote the {@link net.dv8tion.jda.entities.Emote Emote} to append
+     * @return this instance
+     */
     public MessageBuilder appendEmote(Emote emote)
     {
-    	builder.append(emote.getAsEmote());
-	    if (!emotes.contains(emote)) emotes.add(emote);
-	    return this;
+        builder.append(emote.getAsEmote());
+        if (!emotes.contains(emote)) emotes.add(emote);
+        return this;
     }
 
     /**
@@ -342,8 +342,7 @@ public class MessageBuilder
      * If this value is <code>0</code> or greater than <code>2000</code> when {@link #build()} is called, an exception
      * will be raised.
      *
-     * @return
-     *      The currently length of the content that will be built into a Message.
+     * @return The currently length of the content that will be built into a Message.
      */
     public int getLength()
     {
@@ -354,12 +353,10 @@ public class MessageBuilder
      * Creates a {@link net.dv8tion.jda.entities.Message Message} object from this Builder
      *
      * @return the created {@link net.dv8tion.jda.entities.Message Message}
-     *
-     * @throws java.lang.UnsupportedOperationException
-     *      <ul>
-     *          <li>If you attempt to build() an empty Message (no content added to the Message)</li>
-     *          <li>If you attempt to build() a Message with more than 2000 characters of content.</li>
-     *      </ul>
+     * @throws java.lang.UnsupportedOperationException <ul>
+     *                                                 <li>If you attempt to build() an empty Message (no content added to the Message)</li>
+     *                                                 <li>If you attempt to build() a Message with more than 2000 characters of content.</li>
+     *                                                 </ul>
      */
     public Message build()
     {

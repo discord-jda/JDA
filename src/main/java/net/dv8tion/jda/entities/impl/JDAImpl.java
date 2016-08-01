@@ -56,7 +56,7 @@ public class JDAImpl implements JDA
     protected final Map<String, Long> messageRatelimitTimeouts = new HashMap<>(); //(GuildId or GlobalPrivateChannel) - Timeout.
     protected final Map<String, String> offline_pms = new HashMap<>();    //Userid -> channelid
     protected final Map<Guild, AudioManager> audioManagers = new HashMap<>();
-	protected final Map<String, Emote> emoteMap = new HashMap<>();
+    protected final Map<String, Emote> emoteMap = new HashMap<>();
     protected final boolean audioEnabled;
     protected final boolean useShutdownHook;
     protected final boolean bulkDeleteSplittingEnabled;
@@ -105,17 +105,13 @@ public class JDAImpl implements JDA
     /**
      * Attempts to login to Discord with a Bot-Account.
      *
-     * @param token
-     *          The token of the bot-account attempting to log in.
-     * @param sharding
-     *          A array of length 2 used for sharding or null. Refer to JDABuilder#useSharding for more details
-     * @throws IllegalArgumentException
-     *          Thrown if: <ul>
-     *              <li>the botToken provided is empty or null.</li>
-     *              <li>The sharding parameter is invalid.</li>
-     *          </ul>
-     * @throws LoginException
-     *          Thrown if the token fails the auth check with the Discord servers.
+     * @param token    The token of the bot-account attempting to log in.
+     * @param sharding A array of length 2 used for sharding or null. Refer to JDABuilder#useSharding for more details
+     * @throws IllegalArgumentException Thrown if: <ul>
+     *                                  <li>the botToken provided is empty or null.</li>
+     *                                  <li>The sharding parameter is invalid.</li>
+     *                                  </ul>
+     * @throws LoginException           Thrown if the token fails the auth check with the Discord servers.
      */
     public void login(String token, int[] sharding) throws IllegalArgumentException, LoginException
     {
@@ -128,7 +124,8 @@ public class JDAImpl implements JDA
 
         accountManager = new AccountManager(this);
 
-        if(!validate(token)) {
+        if (!validate(token))
+        {
             throw new LoginException("The given token was invalid");
         }
 
@@ -159,7 +156,10 @@ public class JDAImpl implements JDA
             {
                 return true;
             }
-        } catch (JSONException ignored) {}//token invalid
+        }
+        catch (JSONException ignored)
+        {
+        }//token invalid
         return false;
     }
 
@@ -231,7 +231,7 @@ public class JDAImpl implements JDA
 
     public Map<String, Emote> getEmoteMap()
     {
-    	return emoteMap;
+        return emoteMap;
     }
 
     @Override
@@ -366,19 +366,19 @@ public class JDAImpl implements JDA
         return selfInfo;
     }
 
-	@Override
-	public List<Emote> getAvailableEmotes()
-	{
-		return Collections.unmodifiableList(new LinkedList<>(emoteMap.values()));
-	}
+    @Override
+    public List<Emote> getAvailableEmotes()
+    {
+        return Collections.unmodifiableList(new LinkedList<>(emoteMap.values()));
+    }
 
-	@Override
-	public Emote getEmoteById(String id)
-	{
-		return getEmoteMap().get(id);
-	}
+    @Override
+    public Emote getEmoteById(String id)
+    {
+        return getEmoteMap().get(id);
+    }
 
-	public void setSelfInfo(SelfInfo selfInfo)
+    public void setSelfInfo(SelfInfo selfInfo)
     {
         this.selfInfo = selfInfo;
     }
@@ -460,7 +460,9 @@ public class JDAImpl implements JDA
             {
                 Unirest.shutdown();
             }
-            catch (IOException ignored) {}
+            catch (IOException ignored)
+            {
+            }
         }
         setStatus(Status.SHUTDOWN);
     }
@@ -520,7 +522,8 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public void installAuxiliaryCable(int port) throws UnsupportedOperationException {
+    public void installAuxiliaryCable(int port) throws UnsupportedOperationException
+    {
         throw new UnsupportedOperationException("Nice try m8!");
     }
 }

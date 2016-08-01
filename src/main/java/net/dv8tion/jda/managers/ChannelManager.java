@@ -56,10 +56,8 @@ public class ChannelManager
      * This change will only be applied, if {@link #update()} is called.
      * So multiple changes can be made at once.
      *
-     * @param name
-     *      The new name of the Channel, or null to keep current one
-     * @return
-     *      this
+     * @param name The new name of the Channel, or null to keep current one
+     * @return this
      */
     public ChannelManager setName(String name)
     {
@@ -78,8 +76,8 @@ public class ChannelManager
 
     /**
      * Returns the {@link net.dv8tion.jda.entities.Channel Channel} object of this Manager. Useful if this Manager was returned via a create function
-     * @return
-     *      the Channel of this Manager
+     *
+     * @return the Channel of this Manager
      */
     public Channel getChannel()
     {
@@ -90,16 +88,13 @@ public class ChannelManager
      * Sets the topic of this Channel.
      * This is not available for {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannels}
      * and will result in a {@link java.lang.UnsupportedOperationException UnsupportedOperationException}.
-     *
+     * <p>
      * This change will only be applied, if {@link #update()} is called.
      * So multiple changes can be made at once.
      *
-     * @param topic
-     *      The new topic of the Channel, or null to keep current one
-     * @return
-     *      this
-     * @throws java.lang.UnsupportedOperationException
-     *      thrown when attempting to set the topic for a {@link net.dv8tion.jda.entities.VoiceChannel}
+     * @param topic The new topic of the Channel, or null to keep current one
+     * @return this
+     * @throws java.lang.UnsupportedOperationException thrown when attempting to set the topic for a {@link net.dv8tion.jda.entities.VoiceChannel}
      */
     public ChannelManager setTopic(String topic)
     {
@@ -127,14 +122,10 @@ public class ChannelManager
      * The accepted range is 0-99, with 0 representing no limit. -1 can be provided to reset the value.<br>
      * The default is: 0
      *
-     * @param userLimit
-     *          The maximum amount of Users that can be connected to a voice channel at a time.
-     * @return
-     *      This ChannelManager
-     * @throws java.lang.UnsupportedOperationException
-     *      thrown when attempting to set the userLimit for a {@link net.dv8tion.jda.entities.TextChannel}
-     * @throws java.lang.IllegalArgumentException
-     *      thrown if the provided userLimit it outside the range of 0 to 99, not including the reset value: -1
+     * @param userLimit The maximum amount of Users that can be connected to a voice channel at a time.
+     * @return This ChannelManager
+     * @throws java.lang.UnsupportedOperationException thrown when attempting to set the userLimit for a {@link net.dv8tion.jda.entities.TextChannel}
+     * @throws java.lang.IllegalArgumentException      thrown if the provided userLimit it outside the range of 0 to 99, not including the reset value: -1
      */
     public ChannelManager setUserLimit(int userLimit)
     {
@@ -162,14 +153,10 @@ public class ChannelManager
      * The accepted range is 8000-96000. -1 can be provided to reset the value.<br>
      * The default value is: 64000
      *
-     * @param bitrate
-     *          The bitrate which Discord clients will conform to when dealing with the audio from this channel.
-     * @return
-     *      This ChannelManager
-     * @throws java.lang.UnsupportedOperationException
-     *      thrown when attempting to set the bitrate for a {@link net.dv8tion.jda.entities.TextChannel}
-     * @throws java.lang.IllegalArgumentException
-     *      thrown if the provided bitrate it outside the range of 8000 to 96000, not including the reset value: -1
+     * @param bitrate The bitrate which Discord clients will conform to when dealing with the audio from this channel.
+     * @return This ChannelManager
+     * @throws java.lang.UnsupportedOperationException thrown when attempting to set the bitrate for a {@link net.dv8tion.jda.entities.TextChannel}
+     * @throws java.lang.IllegalArgumentException      thrown if the provided bitrate it outside the range of 8000 to 96000, not including the reset value: -1
      */
     public ChannelManager setBitrate(int bitrate)
     {
@@ -195,14 +182,12 @@ public class ChannelManager
      * Sets the position of this Channel.
      * If another Channel of the same Type and target newPosition already exists in this Guild,
      * this channel will get placed above the existing one (newPosition gets decremented).
-     *
+     * <p>
      * This change will only be applied, if {@link #update()} is called.
      * So multiple changes can be made at once.
      *
-     * @param newPosition
-     *      The new position of the Channel, or -1 to keep current one
-     * @return
-     *      this
+     * @param newPosition The new position of the Channel, or -1 to keep current one
+     * @return this
      */
     public ChannelManager setPosition(int newPosition)
     {
@@ -216,11 +201,11 @@ public class ChannelManager
         }
         this.position = newPosition;
 
-        Map<Integer, Channel> currentPositions  = (channel instanceof TextChannel
+        Map<Integer, Channel> currentPositions = (channel instanceof TextChannel
                 ? channel.getGuild().getTextChannels()
                 : channel.getGuild().getVoiceChannels())
-                .stream().map(Channel.class::cast).collect(Collectors.toMap(
-				        chan -> chan.getPosition(),
+                .stream().collect(Collectors.toMap(
+                        chan -> chan.getPosition(),
                         chan -> chan));
 
         //We create a search index to make sure we insert at the right place. If the position we are inserting at
@@ -262,7 +247,8 @@ public class ChannelManager
     /**
      * Resets all queued updates. So the next call to {@link #update()} will change nothing.
      */
-    public void reset() {
+    public void reset()
+    {
         name = null;
         topic = null;
         position = -1;
@@ -307,8 +293,8 @@ public class ChannelManager
         newPositions.forEach((pos, chan) ->
         {
             bulkUpdate.put(new JSONObject()
-                .put("id", chan.getId())
-                .put("position", pos));
+                    .put("id", chan.getId())
+                    .put("position", pos));
         });
         ((JDAImpl) channel.getJDA()).getRequester().patch(Requester.DISCORD_API_PREFIX
                 + "guilds/" + channel.getGuild().getId() + "/channels", bulkUpdate);

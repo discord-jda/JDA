@@ -25,72 +25,72 @@ import java.util.List;
 
 public class EmoteImpl implements Emote
 {
-	private static final String EMOTE_URL_PREFIX = "https://discordcdn.com/emojis/";
-	private final String id;
-	private final String name;
-	private List<Guild> guilds = new LinkedList<>();
+    private static final String EMOTE_URL_PREFIX = "https://discordcdn.com/emojis/";
+    private final String id;
+    private final String name;
+    private List<Guild> guilds = new LinkedList<>();
 
-	public EmoteImpl(String name, String id)
-	{
-		this.id = id;
-		this.name = name;
-	}
+    public EmoteImpl(String name, String id)
+    {
+        this.id = id;
+        this.name = name;
+    }
 
-	public EmoteImpl addGuild(Guild... guilds)
-	{
-		for (Guild g : guilds)
-		{
-			if (!this.guilds.contains(g)) this.guilds.add(g);
-		}
-		return this;
-	}
+    public EmoteImpl addGuild(Guild... guilds)
+    {
+        for (Guild g : guilds)
+        {
+            if (!this.guilds.contains(g)) this.guilds.add(g);
+        }
+        return this;
+    }
 
-	public EmoteImpl removeGuild(Guild guild)
-	{
-		if (this.guilds.contains(guild)) this.guilds.remove(guild);
-		return this;
-	}
+    public EmoteImpl removeGuild(Guild guild)
+    {
+        if (this.guilds.contains(guild)) this.guilds.remove(guild);
+        return this;
+    }
 
-	@Override
-	public String getId()
-	{
-		return this.id;
-	}
+    @Override
+    public String getId()
+    {
+        return this.id;
+    }
 
-	@Override
-	public String getName()
-	{
-		return this.name;
-	}
+    @Override
+    public String getName()
+    {
+        return this.name;
+    }
 
-	@Override
-	public boolean isAvailable()
-	{
-		return !guilds.isEmpty();
-	}
+    @Override
+    public boolean isAvailable()
+    {
+        return !guilds.isEmpty();
+    }
 
-	@Override
-	public List<Guild> getGuilds()
-	{
-		return Collections.unmodifiableList(guilds);
-	}
+    @Override
+    public List<Guild> getGuilds()
+    {
+        return Collections.unmodifiableList(guilds);
+    }
 
-	@Override
-	public String getImageUrl()
-	{
-		return EMOTE_URL_PREFIX + getId() + ".png";
-	}
+    @Override
+    public String getImageUrl()
+    {
+        return EMOTE_URL_PREFIX + getId() + ".png";
+    }
 
-	@Override
-	public String getAsEmote()
-	{
-		return "<:" + getName() + ":" + getId() + ">";
-	}
+    @Override
+    public String getAsEmote()
+    {
+        return "<:" + getName() + ":" + getId() + ">";
+    }
 
-	@Override
-	public String toString()
-	{
-		return "E:" + (isAvailable() ? getAsEmote() : getName()) + "(" + getId() + ")";
-	}
+    @Override
+    public String toString()
+    {
+        return "E:" + (isAvailable() ? getAsEmote() : getName()) + "(" + getId() + ")";
+    }
 
 }

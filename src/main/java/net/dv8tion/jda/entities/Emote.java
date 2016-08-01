@@ -21,52 +21,46 @@ import java.util.List;
 public interface Emote
 {
 
-	/**
-	 * The Id of this Emote
-	 *
-	 * @return
-	 *      The emote ID associated with this emote.
-	 */
-	String getId();
+    /**
+     * The Id of this Emote
+     *
+     * @return The emote ID associated with this emote.
+     */
+    String getId();
 
-	/**
-	 * The name of this emote
-	 *
-	 * @return
-	 *      The name associated with this emote
-	 */
-	String getName();
+    /**
+     * The name of this emote
+     *
+     * @return The name associated with this emote
+     */
+    String getName();
 
-	/**
-	 * Some emotes are not available to the user because they do not share a server with that emote.
-	 *
-	 * @return
-	 *      Whether the emote is available or not.
-	 */
-	boolean isAvailable();
+    /**
+     * Some emotes are not available to the user because they do not share a server with that emote.
+     *
+     * @return Whether the emote is available or not.
+     */
+    boolean isAvailable();
 
-	/**
-	 * Returns an unmodifiable list for guilds this emote is used on.
-	 *
-	 * @return
-	 *      A list of guilds that use this emote.
-	 */
-	List<Guild> getGuilds();
+    /**
+     * Returns an unmodifiable list for guilds this emote is used on.
+     *
+     * @return A list of guilds that use this emote.
+     */
+    List<Guild> getGuilds();
 
-	/**
-	 * Returns a URL as String that leads to the image displayed by this emote.
-	 *
-	 * @return
-	 *      A URL to this emote's image.
-	 */
-	String getImageUrl();
+    /**
+     * Returns a URL as String that leads to the image displayed by this emote.
+     *
+     * @return A URL to this emote's image.
+     */
+    String getImageUrl();
 
-	/**
-	 * Return a formatted usable version of this emote (<:name:id>)
-	 *
-	 * @return
-	 *      A formatted version of this emote.
-	 */
-	String getAsEmote();
+    /**
+     * Return a formatted usable version of this emote (<:name:id>)
+     *
+     * @return A formatted version of this emote.
+     */
+    String getAsEmote();
 
 }

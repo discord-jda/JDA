@@ -199,9 +199,9 @@ public class MessageImpl implements Message
             {
                 tmp = tmp.replace("<@&" + mentionedRole.getId() + '>', '@' + mentionedRole.getName());
             }
-            for(Emote emote : emotes)
+            for (Emote emote : emotes)
             {
-            	tmp = tmp.replace(emote.getAsEmote(), ":" + emote.getName() + ":");
+                tmp = tmp.replace(emote.getAsEmote(), ":" + emote.getName() + ":");
             }
             subContent = tmp;
         }
@@ -241,7 +241,7 @@ public class MessageImpl implements Message
     @Override
     public List<Emote> getEmotes()
     {
-    	return Collections.unmodifiableList(emotes);
+        return Collections.unmodifiableList(emotes);
     }
 
     @Override
@@ -264,7 +264,7 @@ public class MessageImpl implements Message
         try
         {
             JSONObject response = api.getRequester().patch(Requester.DISCORD_API_PREFIX + "channels/" + channelId + "/messages/" + getId(), new JSONObject().put("content", newContent)).getObject();
-            if(response == null || !response.has("id"))         //updating failed (dunno why)
+            if (response == null || !response.has("id"))         //updating failed (dunno why)
                 return null;
             return new EntityBuilder(api).createMessage(response);
         }
@@ -382,7 +382,7 @@ public class MessageImpl implements Message
 
     public MessageImpl setEmotes(List<Emote> emotes)
     {
-    	this.emotes = emotes;
+        this.emotes = emotes;
         return this;
     }
 
@@ -419,7 +419,7 @@ public class MessageImpl implements Message
         {
             String tmp = getContent();
             //all the formatting keys to keep track of
-            String[] keys = new String[] {"*", "_", "`", "~~"};
+            String[] keys = new String[]{"*", "_", "`", "~~"};
 
             //find all tokens (formatting strings described above)
             TreeSet<FormatToken> tokens = new TreeSet<>((t1, t2) -> Integer.compare(t1.start, t2.start));
@@ -493,11 +493,13 @@ public class MessageImpl implements Message
         return strippedContent;
     }
 
-    private static class FormatToken {
+    private static class FormatToken
+    {
         public final String format;
         public final int start;
 
-        public FormatToken(String format, int start) {
+        public FormatToken(String format, int start)
+        {
             this.format = format;
             this.start = start;
         }
