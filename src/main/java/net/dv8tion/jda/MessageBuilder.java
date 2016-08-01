@@ -331,7 +331,7 @@ public class MessageBuilder
 	 */
     public MessageBuilder appendEmote(Emote emote)
     {
-    	builder.append(emote);
+    	builder.append(emote.getAsEmote());
 	    if (!emotes.contains(emote)) emotes.add(emote);
 	    return this;
     }

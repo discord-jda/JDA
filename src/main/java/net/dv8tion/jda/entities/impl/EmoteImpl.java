@@ -82,9 +82,15 @@ public class EmoteImpl implements Emote
 	}
 
 	@Override
-	public String toString()
+	public String getAsEmote()
 	{
 		return "<:" + getName() + ":" + getId() + ">";
+	}
+
+	@Override
+	public String toString()
+	{
+		return "E:" + (isAvailable() ? getAsEmote() : getName()) + "(" + getId() + ")";
 	}
 
 }

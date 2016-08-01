@@ -61,4 +61,12 @@ public interface Emote
 	 */
 	String getImageUrl();
 
+	/**
+	 * Return a formatted usable version of this emote (<:name:id>)
+	 *
+	 * @return
+	 *      A formatted version of this emote.
+	 */
+	String getAsEmote();
+
 }

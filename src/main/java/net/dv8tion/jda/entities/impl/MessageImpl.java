@@ -201,7 +201,7 @@ public class MessageImpl implements Message
             }
             for(Emote emote : emotes)
             {
-            	tmp = tmp.replace(emote.toString(), ":" + emote.getName() + ":");
+            	tmp = tmp.replace(emote.getAsEmote(), ":" + emote.getName() + ":");
             }
             subContent = tmp;
         }
