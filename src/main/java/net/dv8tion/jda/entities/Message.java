@@ -56,10 +56,8 @@ public interface Message
     /**
      * Checks if given user was mentioned in this message in any way (@User, @everyone, @here).
      *
-     * @param user
-     *      The user to check on.
-     * @return
-     *      True if the given user was mentioned in this message.
+     * @param user The user to check on.
+     * @return True if the given user was mentioned in this message.
      */
     boolean isMentioned(User user);
 
@@ -136,7 +134,7 @@ public interface Message
     /**
      * The content, with all its formatting characters stripped.
      * All remaining characters used in formatting (the ones that did not have a matching partner) are getting escaped.
-     *
+     * <p>
      * Mentioned users will get returned as @Username
      *
      * @return message-text with stripped formatting
@@ -147,8 +145,7 @@ public interface Message
      * Checks, whether this Message was sent in a {@link net.dv8tion.jda.entities.PrivateChannel PrivateChannel} (Private Message),
      * or in a {@link net.dv8tion.jda.entities.TextChannel TextChannel} (sent in Guild channel)
      *
-     * @return
-     *      true, if this Message is from a PrivateChannel, false if it is from a TextChannel
+     * @return true, if this Message is from a PrivateChannel, false if it is from a TextChannel
      */
     boolean isPrivate();
 
@@ -159,16 +156,14 @@ public interface Message
      * or if you just want to reply, you can also use {@link #getChannel()}.
      * (Hint: {@link #isPrivate()} could be helpful!)
      *
-     * @return
-     *      The Id of the Channel this was sent in
+     * @return The Id of the Channel this was sent in
      */
     String getChannelId();
 
     /**
      * Returns the {@link net.dv8tion.jda.entities.MessageChannel MessageChannel} that this message was sent in
      *
-     * @return
-     *      The MessageChannel of this Message
+     * @return The MessageChannel of this Message
      */
     MessageChannel getChannel();
 
@@ -176,18 +171,23 @@ public interface Message
      * An unmodifiable list of {@link net.dv8tion.jda.entities.Message.Attachment Attachment} that are attached to this message.<br>
      * Most likely this will only ever be 1 {@link net.dv8tion.jda.entities.Message.Attachment Attachment} at most.
      *
-     * @return
-     *      Unmodifiable list of {@link net.dv8tion.jda.entities.Message.Attachment Attachments}.
+     * @return Unmodifiable list of {@link net.dv8tion.jda.entities.Message.Attachment Attachments}.
      */
     List<Attachment> getAttachments();
 
     /**
      * An unmodifiable list of {@link net.dv8tion.jda.entities.MessageEmbed MessageEmbeds} that are available to this message.
      *
-     * @return
-     *      Unmodifiable list of all given embeds
+     * @return Unmodifiable list of all given embeds
      */
     List<MessageEmbed> getEmbeds();
+
+    /**
+     * An unmodifiable list of {@link net.dv8tion.jda.entities.Emote Emotes} that are available to this message.
+     *
+     * @return Unmodifiable list of all given emotes
+     */
+    List<Emote> getEmotes();
 
     /**
      * Is this Message supposed to be TTS (Text-to-speach)
@@ -212,11 +212,9 @@ public interface Message
      * After the message has been edited, the corresponding new {@link net.dv8tion.jda.entities.Message Message} object is passed to the callback-function
      * This method will wait, and update later, if a Rate-Limit occurs.
      *
-     * @param newContent
-     *      the new content of the Message
-     * @param callback
-     *      the Callback-function that is called upon successful edit with the Message-object of the edited message or null, if editing failed.
-     *      You can pass null as callback, if you do not need the updated Message-object.
+     * @param newContent the new content of the Message
+     * @param callback   the Callback-function that is called upon successful edit with the Message-object of the edited message or null, if editing failed.
+     *                   You can pass null as callback, if you do not need the updated Message-object.
      */
     void updateMessageAsync(String newContent, Consumer<Message> callback);
 
@@ -229,16 +227,15 @@ public interface Message
 
     /**
      * Returns the {@link net.dv8tion.jda.JDA JDA} instance of this Message
-     * @return
-     *      the corresponding JDA instance
+     *
+     * @return the corresponding JDA instance
      */
     JDA getJDA();
 
     /**
      * Whether or not this Message has been pinned in its parent channel.
      *
-     * @return
-     *      True - if this message has been pinned.
+     * @return True - if this message has been pinned.
      */
     boolean isPinned();
 
@@ -247,8 +244,7 @@ public interface Message
      * If this method returns true, then the action was successful and this Message's
      * {@link #isPinned()} will now return true.
      *
-     * @return
-     *      True - if the action completed successfully and this message became pinned.
+     * @return True - if the action completed successfully and this message became pinned.
      */
     boolean pin();
 
@@ -257,8 +253,7 @@ public interface Message
      * If this method returns true, then the action was successful and this Message's
      * {@link #isPinned()} will now return false.
      *
-     * @return
-     *      True - if the action completed successfully and this message was unpinned.
+     * @return True - if the action completed successfully and this message was unpinned.
      */
     boolean unpin();
 
@@ -266,8 +261,7 @@ public interface Message
      * This specifies the type of Message sent. Messages can represent more than just simple text sent by Users.<br>
      * Messages can also be sent as special actions like Calls, GroupIcon changes and more.
      *
-     * @return
-     *      The type of message this is.
+     * @return The type of message this is.
      */
     MessageType getType();
 
@@ -300,8 +294,7 @@ public interface Message
         /**
          * The id of the attachment. This is not the id of the message that the attachment was attached to.
          *
-         * @return
-         *      Non-null String containing the Attachment ID.
+         * @return Non-null String containing the Attachment ID.
          */
         public String getId()
         {
@@ -311,8 +304,7 @@ public interface Message
         /**
          * The url of the Attachment, most likely on the Discord servers.
          *
-         * @return
-         *      Non-null String containing the Attachment URL.
+         * @return Non-null String containing the Attachment URL.
          */
         public String getUrl()
         {
@@ -322,8 +314,7 @@ public interface Message
         /**
          * The url of the Attachment, proxied by Discord.
          *
-         * @return
-         *      Non-null String containing the proxied Attachment url.
+         * @return Non-null String containing the proxied Attachment url.
          */
         public String getProxyUrl()
         {
@@ -333,8 +324,7 @@ public interface Message
         /**
          * The file name of the Attachment when it was first uploaded.
          *
-         * @return
-         *      Non-null String containing the Attachment file name.
+         * @return Non-null String containing the Attachment file name.
          */
         public String getFileName()
         {
@@ -344,10 +334,8 @@ public interface Message
         /**
          * Downloads this attachment to given File
          *
-         * @param file
-         *      The file, where the attachment will get downloaded to
-         * @return
-         *      boolean true, if successful, otherwise false
+         * @param file The file, where the attachment will get downloaded to
+         * @return boolean true, if successful, otherwise false
          */
         public boolean download(File file)
         {
@@ -378,7 +366,13 @@ public interface Message
             {
                 if (in != null)
                 {
-                    try {in.close();} catch(Exception ignored) {}
+                    try
+                    {
+                        in.close();
+                    }
+                    catch (Exception ignored)
+                    {
+                    }
                 }
             }
             return false;
@@ -388,8 +382,7 @@ public interface Message
          * The size of the attachment in bytes.<br>
          * Example: if {@link #getSize() getSize()} returns 1024, then the attachment is 1024 bytes, or 1KB, in size.
          *
-         * @return
-         *      Positive int containing the size of the Attachment.
+         * @return Positive int containing the size of the Attachment.
          */
         public int getSize()
         {
@@ -400,8 +393,7 @@ public interface Message
          * The height of the Attachment if this Attachment is an image.<br>
          * If this Attachment is not an image, this returns 0.
          *
-         * @return
-         *      Never-negative int containing image Attachment height.
+         * @return Never-negative int containing image Attachment height.
          */
         public int getHeight()
         {
@@ -412,8 +404,7 @@ public interface Message
          * The width of the Attachment if this Attachment is an image.<br>
          * If this Attachment is not an image, this returns 0.
          *
-         * @return
-         *      Never-negative int containing image Attachment width.
+         * @return Never-negative int containing image Attachment width.
          */
         public int getWidth()
         {
@@ -423,8 +414,7 @@ public interface Message
         /**
          * Based on the values of getHeight and getWidth being larger than zero.
          *
-         * @return
-         *      True if width and height are greater than zero.
+         * @return True if width and height are greater than zero.
          */
         public boolean isImage()
         {

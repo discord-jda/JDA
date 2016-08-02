@@ -658,6 +658,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 case "GUILD_ROLE_DELETE":
                     new GuildRoleDeleteHandler(api, responseTotal).handle(raw);
                     break;
+                case "GUILD_EMOJIS_UPDATE":
+                    new GuildEmojisUpdateHandler(api, responseTotal).handle(raw);
+                    break;
                 case "USER_UPDATE":
                     new UserUpdateHandler(api, responseTotal).handle(raw);
                     break;

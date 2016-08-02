@@ -105,6 +105,14 @@ public interface Guild
      */
     Region getRegion();
 
+	/**
+	 * Returns an unmodifiable list of emotes used be this guild.
+	 *
+	 * @return
+	 *      A list of emotes used by this guild.
+	 */
+	List<Emote> getEmotes();
+
     /**
      * The {@link net.dv8tion.jda.entities.User Users} that are part of this {@link net.dv8tion.jda.entities.Guild Guild}.
      *

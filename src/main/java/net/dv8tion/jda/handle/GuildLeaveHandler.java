@@ -15,13 +15,10 @@
  */
 package net.dv8tion.jda.handle;
 
+import net.dv8tion.jda.entities.Emote;
 import net.dv8tion.jda.entities.Guild;
-import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.entities.impl.GuildImpl;
-import net.dv8tion.jda.entities.impl.JDAImpl;
-import net.dv8tion.jda.entities.impl.TextChannelImpl;
-import net.dv8tion.jda.entities.impl.UserImpl;
+import net.dv8tion.jda.entities.impl.*;
 import net.dv8tion.jda.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.events.guild.GuildUnavailableEvent;
 import net.dv8tion.jda.managers.AudioManager;
@@ -84,6 +81,15 @@ public class GuildLeaveHandler extends SocketHandler
                 }
                 api.getUserMap().remove(user.getId());
             }
+        }
+
+        //cleaning up all emotes that we do not share a guild with anymore
+        List<Emote> emotes = guild.getEmotes();
+        for (Emote e : emotes)
+        {
+            ((EmoteImpl) e).removeGuild(guild);
+            if (e.getGuilds().isEmpty())
+                api.getEmoteMap().remove(e.getId());
         }
 
         api.getGuildMap().remove(guild.getId());
