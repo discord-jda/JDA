@@ -33,6 +33,8 @@ public abstract class Player implements AudioSendHandler
 
     protected float amplitude = 1.0F;
 
+    protected Runnable callback = null;
+
     public abstract void play();
     public abstract void pause();
     public abstract void stop();
@@ -96,6 +98,11 @@ public abstract class Player implements AudioSendHandler
         }
     }
 
+    public void setCallback(Runnable callback)
+    {
+        this.callback = callback;
+    }
+
     @Override
     public boolean canProvide()
     {
@@ -121,6 +128,8 @@ public abstract class Player implements AudioSendHandler
             {
                 stop();
                 audioSource.close();
+                if (callback != null)
+                    callback.run();
                 return null;
             }
         }
