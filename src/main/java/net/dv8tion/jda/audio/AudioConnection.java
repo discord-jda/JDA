@@ -126,14 +126,14 @@ public class AudioConnection
 
     public void setSendingHandler(AudioSendHandler handler)
     {
-        setupSendThread();
         this.sendHandler = handler;
+        setupSendThread();
     }
 
     public void setReceivingHandler(AudioReceiveHandler handler)
     {
-        setupReceiveThread();
         this.receiveHandler = handler;
+        setupReceiveThread();
     }
 
     public void setQueueTimeout(long queueTimeout)
