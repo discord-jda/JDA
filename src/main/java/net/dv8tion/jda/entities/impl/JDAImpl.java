@@ -21,6 +21,7 @@ import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.events.Event;
 import net.dv8tion.jda.events.StatusChangeEvent;
 import net.dv8tion.jda.events.guild.GuildJoinEvent;
+import net.dv8tion.jda.exceptions.RateLimitedException;
 import net.dv8tion.jda.hooks.EventListener;
 import net.dv8tion.jda.hooks.IEventManager;
 import net.dv8tion.jda.hooks.InterfacedEventManager;
@@ -34,6 +35,7 @@ import net.dv8tion.jda.requests.WebSocketClient;
 import net.dv8tion.jda.utils.SimpleLog;
 import org.apache.http.HttpHost;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
@@ -124,10 +126,7 @@ public class JDAImpl implements JDA
 
         accountManager = new AccountManager(this);
 
-        if (!validate(token))
-        {
-            throw new LoginException("The given token was invalid");
-        }
+        verifyToken(token);
 
         LOG.info("Login Successful!");
         client = new WebSocketClient(this, proxy, sharding);
@@ -147,20 +146,32 @@ public class JDAImpl implements JDA
         }
     }
 
-    protected boolean validate(String authToken)
+    //Code backported from JDAImpl#verifyToken(String) in the JDA 3.0 branch
+    public void verifyToken(String token) throws LoginException
     {
-        this.authToken = authToken;
-        try
+        this.authToken = token;
+        Requester.Response response = getRequester().get(Requester.DISCORD_API_PREFIX + "users/@me");
+
+        if (response.isOk())
         {
-            if (getRequester().get(Requester.DISCORD_API_PREFIX + "users/@me/guilds").isOk())
+            JSONObject json = response.getObject();
+            if (!json.has("bot") || !json.getBoolean("bot"))
+                throw new RuntimeException("Attempted to login as a BOT with a CLIENT token!");
+        }
+        else if (response.isRateLimit())
+            throw new RateLimitedException(response.getObject().getInt("retry_after"));
+        else
+        {
+            if (response.code == 401)
             {
-                return true;
+                throw new LoginException("The provided token was invalid!");
+            }
+            else
+            {
+                throw new LoginException("When verifying the authenticity of the provided token, Discord returned an unknown response:\n" +
+                        response.toString());
             }
         }
-        catch (JSONException ignored)
-        {
-        }//token invalid
-        return false;
     }
 
     @Override
