@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.utils;
 
+import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.entities.impl.GuildImpl;
@@ -107,6 +108,33 @@ public class PermissionUtil
             }
         }
         return override.setAllow(allow).setDeny(deny);
+    }
+
+    /**
+     * Convenience method for calling {@link PermissionUtil#canTalk(User, TextChannel)} with {@link TextChannel#getJDA() channel.getJDA()}{@link JDA#getSelfInfo() .getSelfInfo()}
+     *
+     * @param channel
+     *          The {@link net.dv8tion.jda.entities.TextChannel TextChannel} being checked.
+     * @return True - if {@link TextChannel#getJDA() channel.getJDA()}{@link JDA#getSelfInfo() .getSelfInfo()} can read and write messages in the {@link net.dv8tion.jda.entities.TextChannel TextChannel}
+     */
+    public static boolean canTalk(TextChannel channel)
+    {
+        return canTalk(channel.getJDA().getSelfInfo(), channel);
+    }
+
+    /**
+     * Checks to see if the {@link net.dv8tion.jda.entities.User User} can send and receive messages in the
+     * {@link net.dv8tion.jda.entities.TextChannel TextChannel}
+     *
+     * @param user
+     *          The {@link net.dv8tion.jda.entities.User User} whose permissions are being checked
+     * @param channel
+     *          The {@link net.dv8tion.jda.entities.TextChannel TextChannel} being checked.
+     * @return True - if the {@link net.dv8tion.jda.entities.User User} can read and write messages in the {@link net.dv8tion.jda.entities.TextChannel TextChannel}
+     */
+    public static boolean canTalk(User user, TextChannel channel)
+    {
+        return checkPermission(user, Permission.MESSAGE_READ, channel) && checkPermission(user, Permission.MESSAGE_WRITE, channel);
     }
 
     /**
