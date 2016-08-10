@@ -88,6 +88,33 @@ public class ApplicationUtil
         String applicationId = getApplicationId(jda);
         return applicationId == null ? null : getAuthInvite(applicationId, perms);
     }
+    
+    /**
+     * Creates an OAuth invite link for requesting permissions.
+     * It requires a guild for the invite to request permissions for, and permissions to add.
+     * Only adds permissions.
+     * 
+     * @param guild
+     *      The guild to request permissions in
+     * @param perms
+     *      List of permissions to request
+     * @return
+     *      A String used to change permissions
+     */
+    public static String getPermissionLink(Guild guild, Permission... perms)
+	{
+		User self = guild.getJDA().getSelfInfo();
+		List<Permission> p = Permission.getPermissions(PermissionUtil.getEffectivePermission(self, guild)); // Our current permissions
+		
+		for(Permission req : perms) {
+			if(!p.contains(req))
+				p.add(req); // Only add what we don't already have.
+		}
+		
+		String link = ApplicationUtil.getAuthInvite(guild.getJDA(), p.toArray(new Permission[0])); // Get the link sans guildid
+		
+		return link += "&guild_id="+ guild.getId(); // Start the dropdown on our guild
+	}
 
 
     private final JDAImpl api;
