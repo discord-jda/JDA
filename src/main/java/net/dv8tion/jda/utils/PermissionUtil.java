@@ -110,6 +110,8 @@ public class PermissionUtil
     }
 
     /**
+     * <b><u>This method is deprecated and going to be removed. Please use {@link #checkPermission(Channel, User, Permission...)} instead!</u></b>
+     * <p>
      * Checks to see if the {@link net.dv8tion.jda.entities.User User} has the specified {@link net.dv8tion.jda.Permission Permission}
      * in the specified {@link net.dv8tion.jda.entities.Channel Channel}. This method properly deals with
      * {@link net.dv8tion.jda.entities.PermissionOverride PermissionOverrides} and Owner status.
@@ -128,6 +130,7 @@ public class PermissionUtil
      * @return
      *      True - if the {@link net.dv8tion.jda.entities.User User} effectively has the specified {@link net.dv8tion.jda.Permission Permission}.
      */
+    @Deprecated
     public static boolean checkPermission(User user, Permission perm, Channel channel)
     {
         if (channel instanceof TextChannel)
@@ -143,6 +146,8 @@ public class PermissionUtil
     }
 
     /**
+     * <b><u>This method is deprecated and going to be removed. Please use {@link #checkPermission(Guild, User, Permission...)} instead!</u></b>
+     * <p>
      * Checks to see if the {@link net.dv8tion.jda.entities.User User} has the specified {@link net.dv8tion.jda.Permission Permission}
      * in the specified {@link net.dv8tion.jda.entities.Guild Guild}. This method properly deals with Owner status.
      * <p>
@@ -160,6 +165,7 @@ public class PermissionUtil
      * @return
      *      True - if the {@link net.dv8tion.jda.entities.User User} effectively has the specified {@link net.dv8tion.jda.Permission Permission}.
      */
+    @Deprecated
     public static boolean checkPermission(User user, Permission perm, Guild guild)
     {
         if (guild.getRolesForUser(user) == null)
@@ -170,6 +176,87 @@ public class PermissionUtil
                 || guild.getRolesForUser(user).stream().anyMatch(role ->
                             role.hasPermission(Permission.ADMINISTRATOR)
                             || role.hasPermission(perm));
+    }
+
+    /**
+     * Checks to see if the {@link net.dv8tion.jda.entities.User User} has the specified {@link net.dv8tion.jda.Permission Permissions}
+     * in the specified {@link net.dv8tion.jda.entities.Channel Channel}. This method properly deals with
+     * {@link net.dv8tion.jda.entities.PermissionOverride PermissionOverrides} and Owner status.
+     * <p>
+     * <b>Note:</b> this is based on effective permissions, not literal permissions. If a user has permissions that would
+     * enable them to do something without the literal permission to do it, this will still return true.<br>
+     * Example: If a user has the {@link net.dv8tion.jda.Permission#ADMINISTRATOR} permission, they will be able to
+     * {@link net.dv8tion.jda.Permission#MESSAGE_WRITE} in every channel.
+     *
+     * @param user
+     *          The {@link net.dv8tion.jda.entities.User User} whose permissions are being checked.
+     * @param permissions
+     *          The {@link net.dv8tion.jda.Permission Permissions} being checked for.
+     * @param channel
+     *          The {@link net.dv8tion.jda.entities.Channel Channel} being checked.
+     * @return
+     *      True - if the {@link net.dv8tion.jda.entities.User User} effectively has the specified {@link net.dv8tion.jda.Permission Permissions}.
+     */
+    public static boolean checkPermission(Channel channel, User user, Permission... permissions)
+    {
+        if (channel.getGuild().getOwnerId().equals(user.getId()) // Admin or owner? If yes: no need to iterate
+                || channel.getGuild().getPublicRole().hasPermission(Permission.ADMINISTRATOR)
+                || channel.getGuild().getRolesForUser(user).stream().anyMatch(role -> role.hasPermission(Permission.ADMINISTRATOR)))
+            return true;
+        if (channel instanceof TextChannel)
+        {
+            for (Permission perm : permissions)
+            {
+                if (!checkPermission(user, perm, ((GuildImpl) channel.getGuild()),
+                    ((TextChannelImpl) channel).getRolePermissionOverridesMap(), ((TextChannelImpl) channel).getUserPermissionOverridesMap()))
+                    return false;
+            }
+        }
+        else
+        {
+            for (Permission perm : permissions)
+            {
+                if (!checkPermission(user, perm, ((GuildImpl) channel.getGuild()),
+                        ((VoiceChannelImpl) channel).getRolePermissionOverridesMap(), ((VoiceChannelImpl) channel).getUserPermissionOverridesMap()))
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Checks to see if the {@link net.dv8tion.jda.entities.User User} has the specified {@link net.dv8tion.jda.Permission Permissions}
+     * in the specified {@link net.dv8tion.jda.entities.Guild Guild}. This method properly deals with Owner status.
+     * <p>
+     * <b>Note:</b> this is based on effective permissions, not literal permissions. If a user has permissions that would
+     * enable them to do something without the literal permission to do it, this will still return true.<br>
+     * Example: If a user has the {@link net.dv8tion.jda.Permission#ADMINISTRATOR} permission, they will be able to
+     * {@link net.dv8tion.jda.Permission#MANAGE_SERVER} as well, even without the literal permissions.
+     *
+     * @param user
+     *          The {@link net.dv8tion.jda.entities.User User} whose permissions are being checked.
+     * @param permissions
+     *          The {@link net.dv8tion.jda.Permission Permissions} being checked for.
+     * @param guild
+     *          The {@link net.dv8tion.jda.entities.Guild Guild} being checked.
+     * @return
+     *      True - if the {@link net.dv8tion.jda.entities.User User} effectively has the specified {@link net.dv8tion.jda.Permission Permissions}.
+     */
+    public static boolean checkPermission(Guild guild, User user, Permission... permissions)
+    {
+        if (guild.getRolesForUser(user) == null)
+            throw new IllegalArgumentException("Provided user is not in the provided guild");
+        if (guild.getOwnerId().equals(user.getId()) // Admin or owner? If yes: no need to iterate
+                || guild.getPublicRole().hasPermission(Permission.ADMINISTRATOR)
+                || guild.getRolesForUser(user).stream().anyMatch(role -> role.hasPermission(Permission.ADMINISTRATOR)))
+            return true;
+        for (Permission perm : permissions)
+        {
+            if (!guild.getPublicRole().hasPermission(perm)
+                    && !guild.getRolesForUser(user).parallelStream().anyMatch(role -> role.hasPermission(perm)))
+                return false;
+        }
+        return true;
     }
 
     /**
