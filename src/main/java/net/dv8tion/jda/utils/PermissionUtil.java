@@ -109,7 +109,8 @@ public class PermissionUtil
         }
         return override.setAllow(allow).setDeny(deny);
     }
-
+    
+    
     /**
      * Convenience method for calling {@link PermissionUtil#canTalk(User, TextChannel)} with {@link TextChannel#getJDA() channel.getJDA()}{@link JDA#getSelfInfo() .getSelfInfo()}
      *
