@@ -108,7 +108,8 @@ public class PermissionUtil
         }
         return override.setAllow(allow).setDeny(deny);
     }
-
+    
+    
     /**
      * Convenience method for calling {@link #canTalk(User, TextChannel)} with JDA's own {@link net.dv8tion.jda.entities.User User}
      *
