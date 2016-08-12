@@ -110,6 +110,33 @@ public class PermissionUtil
     }
 
     /**
+     * Convenience method for calling {@link #canTalk(User, TextChannel)} with JDA's own {@link net.dv8tion.jda.entities.User User}
+     *
+     * @param channel
+     *          The {@link net.dv8tion.jda.entities.TextChannel TextChannel} being checked.
+     * @return True - if JDA's {@link net.dv8tion.jda.entities.User User} can read and write messages in the {@link net.dv8tion.jda.entities.TextChannel TextChannel}
+     */
+    public static boolean canTalk(TextChannel channel)
+    {
+        return canTalk(channel.getJDA().getSelfInfo(), channel);
+    }
+
+    /**
+     * Checks to see if the {@link net.dv8tion.jda.entities.User User} can send and receive messages in the
+     * {@link net.dv8tion.jda.entities.TextChannel TextChannel}
+     *
+     * @param user
+     *          The {@link net.dv8tion.jda.entities.User User} whose permissions are being checked
+     * @param channel
+     *          The {@link net.dv8tion.jda.entities.TextChannel TextChannel} being checked.
+     * @return True - if the {@link net.dv8tion.jda.entities.User User} can read and write messages in the {@link net.dv8tion.jda.entities.TextChannel TextChannel}
+     */
+    public static boolean canTalk(User user, TextChannel channel)
+    {
+        return checkPermission(channel, user, Permission.MESSAGE_READ, Permission.MESSAGE_WRITE);
+    }
+
+    /**
      * <b><u>This method is deprecated and going to be removed. Please use {@link #checkPermission(Channel, User, Permission...)} instead!</u></b>
      * <p>
      * Checks to see if the {@link net.dv8tion.jda.entities.User User} has the specified {@link net.dv8tion.jda.Permission Permission}
