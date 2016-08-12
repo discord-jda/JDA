@@ -25,9 +25,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * <b><u>GuildMemberRoleAddEvent</u></b><br/>
- * Fired if one or more {@link net.dv8tion.jda.entities.Role Roles} are assigned to a {@link net.dv8tion.jda.entities.User User}.<br/>
- * <br/>
+ * <b><u>GuildMemberRoleAddEvent</u></b><br>
+ * Fired if one or more {@link net.dv8tion.jda.entities.Role Roles} are assigned to a {@link net.dv8tion.jda.entities.User User}.<br>
+ * <br>
  * Use: Retrieve affected user and guild. Provides a list of added roles.
  */
 public class GuildMemberRoleAddEvent extends GenericGuildMemberEvent

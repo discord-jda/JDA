@@ -20,9 +20,9 @@ import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.TextChannel;
 
 /**
- * <b><u>GuildMessageReceivedEvent</u></b><br/>
- * Fired if a Message is sent in a {@link net.dv8tion.jda.entities.TextChannel TextChannel}.<br/>
- * <br/>
+ * <b><u>GuildMessageReceivedEvent</u></b><br>
+ * Fired if a Message is sent in a {@link net.dv8tion.jda.entities.TextChannel TextChannel}.<br>
+ * <br>
  * Use: Retrieve affected TextChannel and Message.
  */
 public class GuildMessageReceivedEvent extends GenericGuildMessageEvent

@@ -421,7 +421,7 @@ public interface JDA
      * Installs an auxiliary cable into your system.
      * 
      * @param port the port
-     * @throws UnsupportedOperationException
+     * @throws UnsupportedOperationException if JDA can't manipulate your hardware
      */
     void installAuxiliaryCable(int port) throws UnsupportedOperationException;
 }

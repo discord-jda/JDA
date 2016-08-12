@@ -19,9 +19,9 @@ import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Guild;
 
 /**
- * <b><u>GuildLeaveEvent</u></b><br/>
- * Fired if a you leave a {@link net.dv8tion.jda.entities.Guild Guild}.<br/>
- * <br/>
+ * <b><u>GuildLeaveEvent</u></b><br>
+ * Fired if a you leave a {@link net.dv8tion.jda.entities.Guild Guild}.<br>
+ * <br>
  * Use: Detect when you leave a Guild.
  */
 public class GuildLeaveEvent extends GenericGuildEvent

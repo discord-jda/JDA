@@ -23,10 +23,9 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * <p>This implementation of an {@link net.dv8tion.jda.audio.AudioSendHandler AudioSendHandler} is able to send audio to a {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} from a local file.
- * <br/>For that the user has to provide a valid {@link java.io.File File} in a supported audio format.<br/>
+ * This implementation of an {@link net.dv8tion.jda.audio.AudioSendHandler AudioSendHandler} is able to send audio to a {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} from a local file.
+ * <br>For that the user has to provide a valid {@link java.io.File File} in a supported audio format.<br>
  * <p><b>To use external files that are uploaded to a service use: {@link URLPlayer URLPlayer}</b></p>
- * </p>
  */
 public class FilePlayer extends Player
 {
@@ -38,7 +37,7 @@ public class FilePlayer extends Player
 
 	/**
      * Creates a new instance of a {@link FilePlayer}.
-     * <p>To directly set a source file: </br>
+     * <p>To directly set a source file: <br>
      * <pre><code>   new {@link #FilePlayer(File)}</code></pre></p>
      */
     public FilePlayer() {}

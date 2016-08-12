@@ -22,9 +22,9 @@ import net.dv8tion.jda.events.Event;
 import java.util.List;
 
 /**
- * <b><u>MessageEmbedEvent</u></b><br/>
- * Fired if a Message contains an {@link net.dv8tion.jda.entities.MessageEmbed Embed} in a {@link net.dv8tion.jda.entities.MessageChannel MessageChannel}.<br/>
- * <br/>
+ * <b><u>MessageEmbedEvent</u></b><br>
+ * Fired if a Message contains an {@link net.dv8tion.jda.entities.MessageEmbed Embed} in a {@link net.dv8tion.jda.entities.MessageChannel MessageChannel}.<br>
+ * <br>
  * Use: Grab MessageEmbeds from any message. No matter if private or guild.
  */
 public class MessageEmbedEvent extends Event

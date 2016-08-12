@@ -20,9 +20,9 @@ import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.User;
 
 /**
- * <b><u>GuildMemberJoinEvent</u></b><br/>
- * Fired if a {@link net.dv8tion.jda.entities.User User} joins a {@link net.dv8tion.jda.entities.Guild Guild}.<br/>
- * <br/>
+ * <b><u>GuildMemberJoinEvent</u></b><br>
+ * Fired if a {@link net.dv8tion.jda.entities.User User} joins a {@link net.dv8tion.jda.entities.Guild Guild}.<br>
+ * <br>
  * Use: Retrieve user who joined (if available) and affected guild.
  */
 public class GuildMemberJoinEvent extends GenericGuildMemberEvent

@@ -19,9 +19,9 @@ import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.VoiceStatus;
 
 /**
- * <b><u>VoiceMuteEvent</u></b><br/>
- * Fired if we are (un-)muted. <br/>
- * This can indicate both mute and un-mute and can be caused by both us or the server.<br/>
+ * <b><u>VoiceMuteEvent</u></b><br>
+ * Fired if we are (un-)muted. <br>
+ * This can indicate both mute and un-mute and can be caused by both us or the server.<br>
  * {@link net.dv8tion.jda.events.voice.VoiceSelfMuteEvent} and {@link net.dv8tion.jda.events.voice.VoiceServerMuteEvent} are specifications of this event.
  */
 public class VoiceMuteEvent extends GenericVoiceEvent

@@ -20,9 +20,9 @@ import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.entities.VoiceStatus;
 
 /**
- * <b><u>VoiceLeaveEvent</u></b><br/>
- * Fired if we successfully left a VoiceChannel.<br/>
- * <br/>
+ * <b><u>VoiceLeaveEvent</u></b><br>
+ * Fired if we successfully left a VoiceChannel.<br>
+ * <br>
  * Use: Retrieve previous VoiceChannel.
  */
 public class VoiceLeaveEvent extends GenericVoiceEvent

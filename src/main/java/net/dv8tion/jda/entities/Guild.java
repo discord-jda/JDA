@@ -240,6 +240,12 @@ public interface Guild
      * Provides the {@link net.dv8tion.jda.entities.Role Role} that determines the color for the provided {@link net.dv8tion.jda.entities.User User}
      * 
      * If the {@link net.dv8tion.jda.entities.User User} has the default color, this returns the same as getPublicRole();
+     *
+     * @param user
+     *      The user for which the coloring Role should be determined
+     *
+     * @return
+     *      The {@link net.dv8tion.jda.entities.Role Role}, which determines the {@link net.dv8tion.jda.entities.User User's} name-coloring
      */
     Role getColorDeterminantRoleForUser(User user);
 

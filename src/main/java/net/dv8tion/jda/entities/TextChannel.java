@@ -63,7 +63,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
     void deleteMessages(Collection<Message> messages);
 
     /**
-     * Bulk deletes a list of messages. <b>This is not the same as calling {@link net.dv8tion.jda.entities.MessageChannel#deleteMessageById(String) in a loop.</b> <br>
+     * Bulk deletes a list of messages. <b>This is not the same as calling {@link net.dv8tion.jda.entities.MessageChannel#deleteMessageById(String)} in a loop.</b> <br>
      * This is much more efficient, but it has a different ratelimit. You may call this once per second per Guild.
      * <p>
      * Must be at least 2 messages and not be more than 100 messages at a time.<br>

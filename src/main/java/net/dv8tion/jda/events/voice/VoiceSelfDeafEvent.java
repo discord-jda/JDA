@@ -19,8 +19,8 @@ import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.VoiceStatus;
 
 /**
- * <b><u>VoiceSelfDeafEvent</u></b><br/>
- * Fired if we (un-)deafen us. <br/>
+ * <b><u>VoiceSelfDeafEvent</u></b><br>
+ * Fired if we (un-)deafen us. <br>
  * This can indicate both deafen and un-deafen and can <u>only</u> be caused by us.
  */
 public class VoiceSelfDeafEvent extends VoiceDeafEvent

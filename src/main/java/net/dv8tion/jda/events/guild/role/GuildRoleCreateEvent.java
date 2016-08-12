@@ -22,9 +22,9 @@ import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.events.guild.GenericGuildEvent;
 
 /**
- * <b><u>GuildRoleCreateEvent</u></b><br/>
- * Fired if a {@link net.dv8tion.jda.entities.Role Role} is created.<br/>
- * <br/>
+ * <b><u>GuildRoleCreateEvent</u></b><br>
+ * Fired if a {@link net.dv8tion.jda.entities.Role Role} is created.<br>
+ * <br>
  * Use: Retrieve created Role and it's Guild.
  */
 public class GuildRoleCreateEvent extends GenericGuildEvent

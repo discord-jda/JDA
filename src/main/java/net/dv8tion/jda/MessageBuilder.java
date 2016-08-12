@@ -125,14 +125,14 @@ public class MessageBuilder
      * Example: <br>
      * If you placed the following code in an method handling a
      * {@link net.dv8tion.jda.events.message.MessageReceivedEvent MessageReceivedEvent}<br>
-     * <p>
+     *
      * <pre>{@code
      * User user = event.getAuthor();
      * MessageBuilder builder = new MessageBuilder();
      * builder.appendFormat("%U% is really cool!", user);
      * builder.build();
      * }</pre>
-     * <p>
+     *
      * It would build a message that mentions the author and says that he is really cool!. If the user's
      * name was "Bob", it would say:<br>
      * <pre>  "Bob is really cool!"</pre>
