@@ -530,19 +530,19 @@ public class GuildImpl implements Guild
     @Override
     public User getUserById(String id)
     {
-        return userRoles.keySet().contains(api.getUserById(id)) ? api.getUserById(id) : null;
+        return userRoles.containsKey(api.getUserById(id)) ? api.getUserById(id) : null;
     }
 
     @Override
     public List<User> getUsersByName(String username)
     {
-        return Collections.unmodifiableList(getUsers().parallelStream().filter(user -> user.getUsername().equals(username)).collect(Collectors.toList()));
+        return Collections.unmodifiableList(userRoles.keySet().parallelStream().filter(user -> user.getUsername().equals(username)).collect(Collectors.toList()));
     }
 
     @Override
     public List<Role> getRolesByName(String roleName)
     {
-        return Collections.unmodifiableList(getRoles().parallelStream().filter(role -> role.getName().equals(roleName)).collect(Collectors.toList()));
+        return Collections.unmodifiableList(roles.values().parallelStream().filter(role -> role.getName().equals(roleName)).collect(Collectors.toList()));
     }
 
     @Override
