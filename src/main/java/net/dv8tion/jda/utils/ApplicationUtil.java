@@ -90,7 +90,7 @@ public class ApplicationUtil
     }
     
     /**
-     * Creates an OAuth invite link for requesting permissions.
+     * Creates an OAuth invite link for requesting permissions and preselecting a guild
      * It requires a guild for the invite to request permissions for, and permissions to add.
      * Only adds permissions.
      * 
@@ -101,9 +101,9 @@ public class ApplicationUtil
      * @return
      *      A String used to change permissions
      */
-    public static String getPermissionLink(Guild guild, Permission... perms)
+    public static String getAuthInvite(JDA jda, Guild guild, Permission... perms)
 	{
-		User self = guild.getJDA().getSelfInfo();
+		User self = jda.getSelfInfo();
 		List<Permission> p = Permission.getPermissions(PermissionUtil.getEffectivePermission(self, guild)); // Our current permissions
 		
 		for(Permission req : perms) {
@@ -111,7 +111,7 @@ public class ApplicationUtil
 				p.add(req); // Only add what we don't already have.
 		}
 		
-		String link = ApplicationUtil.getAuthInvite(guild.getJDA(), p.toArray(new Permission[0])); // Get the link sans guildid
+		String link = ApplicationUtil.getAuthInvite(jda, p.toArray(new Permission[0])); // Get the link sans guildid
 		
 		return link += "&guild_id="+ guild.getId(); // Start the dropdown on our guild
 	}
