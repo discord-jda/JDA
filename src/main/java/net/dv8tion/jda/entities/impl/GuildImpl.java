@@ -548,6 +548,6 @@ public class GuildImpl implements Guild
     @Override
     public String getEffectiveNameForUser(User user)
     {
-        return nickMap.get(user) == null ? user.getUsername() : nickMap.get(user);
+        return nickMap.containsKey(user) ? nickMap.get(user) : user.getUsername();
     }
 }
