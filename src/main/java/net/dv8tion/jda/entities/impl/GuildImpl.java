@@ -36,6 +36,7 @@ import org.json.JSONObject;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class GuildImpl implements Guild
 {
@@ -524,5 +525,29 @@ public class GuildImpl implements Guild
     public List<AdvancedInvite> getInvites()
     {
         return InviteUtil.getInvites(this);
+    }
+
+    @Override
+    public User getUserById(String id)
+    {
+        return userRoles.containsKey(api.getUserById(id)) ? api.getUserById(id) : null;
+    }
+
+    @Override
+    public List<User> getUsersByName(String username)
+    {
+        return Collections.unmodifiableList(userRoles.keySet().parallelStream().filter(user -> user.getUsername().equals(username)).collect(Collectors.toList()));
+    }
+
+    @Override
+    public List<Role> getRolesByName(String roleName)
+    {
+        return Collections.unmodifiableList(roles.values().parallelStream().filter(role -> role.getName().equals(roleName)).collect(Collectors.toList()));
+    }
+
+    @Override
+    public String getEffectiveNameForUser(User user)
+    {
+        return nickMap.containsKey(user) ? nickMap.get(user) : user.getUsername();
     }
 }
