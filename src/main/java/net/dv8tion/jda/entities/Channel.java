@@ -95,22 +95,6 @@ public interface Channel
     int getPositionRaw();
 
     /**
-     * <b><u>This method is deprecated and going to be removed. Please use {@link #checkPermission(User, Permission...)} instead!</u></b>
-     * <p>
-     * Checks if the given {@link net.dv8tion.jda.entities.User User} has the given {@link net.dv8tion.jda.Permission Permission}
-     * in this Channel
-     *
-     * @param user
-     *          the User to check the Permission against
-     * @param permission
-     *          the Permission to check for
-     * @return
-     *      if the given User has the given Permission in this Channel
-     */
-    @Deprecated
-    boolean checkPermission(User user, Permission permission);
-
-    /**
      * Checks if the given {@link net.dv8tion.jda.entities.User User} has the given {@link net.dv8tion.jda.Permission Permissions}
      * in this Channel
      *

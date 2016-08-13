@@ -390,7 +390,7 @@ public class TextChannelImpl implements TextChannel
     public List<Message> getPinnedMessages()
     {
         if (!checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_READ))
-            new PermissionException(Permission.MESSAGE_READ, "Cannot get the pinned message of a channel without MESSAGE_READ access.");
+            throw new PermissionException(Permission.MESSAGE_READ, "Cannot get the pinned message of a channel without MESSAGE_READ access.");
 
         List<Message> pinnedMessages = new LinkedList<>();
         Requester.Response response = ((JDAImpl) getJDA()).getRequester().get(
@@ -408,13 +408,6 @@ public class TextChannelImpl implements TextChannel
             throw new RateLimitedException(response.getObject().getInt("retry_after"));
         else
             throw new RuntimeException("An unknown error occured attempting to get pinned messages. Ask devs for help.\n" + response);
-    }
-
-    @Override
-    @Deprecated
-    public boolean checkPermission(User user, Permission perm)
-    {
-        return PermissionUtil.checkPermission(user, perm, this);
     }
 
     @Override
