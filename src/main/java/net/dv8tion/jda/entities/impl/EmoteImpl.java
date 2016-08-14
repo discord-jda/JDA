@@ -12,23 +12,20 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 package net.dv8tion.jda.entities.impl;
 
 import net.dv8tion.jda.entities.Emote;
 import net.dv8tion.jda.entities.Guild;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class EmoteImpl implements Emote
 {
-    private static final String EMOTE_URL_PREFIX = "https://discordcdn.com/emojis/";
+    private final static String EMOTE_URL_PREFIX = "https://discordcdn.com/emojis/";
     private final String id;
     private final String name;
-    private List<Guild> guilds = new LinkedList<>();
+    private final Set<Guild> guilds = new HashSet<>();
 
     public EmoteImpl(String name, String id)
     {
@@ -38,16 +35,13 @@ public class EmoteImpl implements Emote
 
     public EmoteImpl addGuild(Guild... guilds)
     {
-        for (Guild g : guilds)
-        {
-            if (!this.guilds.contains(g)) this.guilds.add(g);
-        }
+        Collections.addAll(this.guilds, guilds);
         return this;
     }
 
     public EmoteImpl removeGuild(Guild guild)
     {
-        if (this.guilds.contains(guild)) this.guilds.remove(guild);
+        this.guilds.remove(guild);
         return this;
     }
 
@@ -72,7 +66,7 @@ public class EmoteImpl implements Emote
     @Override
     public List<Guild> getGuilds()
     {
-        return Collections.unmodifiableList(guilds);
+        return Collections.unmodifiableList(new LinkedList<>(guilds));
     }
 
     @Override
