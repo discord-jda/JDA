@@ -147,7 +147,7 @@ public class ApplicationUtil
 
     /**
      * Creates a new Application with given name.<br>
-     * Note that an account can have a max of 5 Applications assigned.
+     * Note that an account can have a max of 10 Applications assigned.
      *
      * @param appName
      *      The name of the new Application
