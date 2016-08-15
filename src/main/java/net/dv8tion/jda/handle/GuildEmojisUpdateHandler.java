@@ -56,20 +56,18 @@ public class GuildEmojisUpdateHandler extends SocketHandler
             EmoteImpl emote = (EmoteImpl) api.getEmoteById(id);
             if (emote == null)
             {
-                emote = new EmoteImpl(name, id);
-                emote.addGuild(guild);
-                api.getEmoteMap().putIfAbsent(id, emote);
+                emote = new EmoteImpl(name, id, guild);
+                api.getEmoteMap().put(id, emote);
             }
-            ((GuildImpl) guild).getEmoteMap().putIfAbsent(id, emote);
+            ((GuildImpl) guild).getEmoteMap().put(id, emote);
             oldEmotes.remove(emote);
         }
 
         // Clean up emotes we can't see anymore
         for (Emote e : oldEmotes)
         {
-            ((EmoteImpl) e).removeGuild(guild);
             ((GuildImpl) guild).getEmoteMap().remove(e.getId());
-            if (e.getGuilds().isEmpty()) api.getEmoteMap().remove(e.getId());
+            api.getEmoteMap().remove(e.getId());
         }
 
         return null;

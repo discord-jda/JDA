@@ -105,10 +105,9 @@ public class EntityBuilder
                 String emojID = obj.getString("id");
                 Emote emote = api.getEmoteById(emojID);
                 if (emote == null)
-                    emote = new EmoteImpl(obj.getString("name"), emojID);
+                    emote = new EmoteImpl(obj.getString("name"), emojID, guildObj);
                 api.getEmoteMap().putIfAbsent(emojID, emote);
                 guildObj.getEmoteMap().put(emojID, emote);
-                ((EmoteImpl) emote).addGuild(guildObj);
             }
         }
         else

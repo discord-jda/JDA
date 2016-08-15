@@ -25,24 +25,18 @@ public class EmoteImpl implements Emote
     private final static String EMOTE_URL_PREFIX = "https://discordcdn.com/emojis/";
     private final String id;
     private final String name;
-    private final Set<Guild> guilds = new HashSet<>();
+    private final Guild guild;
 
     public EmoteImpl(String name, String id)
     {
+        this(name, id, null);
+    }
+
+    public EmoteImpl(String id, String name, Guild guild)
+    {
         this.id = id;
         this.name = name;
-    }
-
-    public EmoteImpl addGuild(Guild... guilds)
-    {
-        Collections.addAll(this.guilds, guilds);
-        return this;
-    }
-
-    public EmoteImpl removeGuild(Guild guild)
-    {
-        this.guilds.remove(guild);
-        return this;
+        this.guild = guild;
     }
 
     @Override
@@ -60,13 +54,20 @@ public class EmoteImpl implements Emote
     @Override
     public boolean isAvailable()
     {
-        return !guilds.isEmpty();
+        return guild != null;
     }
 
     @Override
+    public Guild getGuild()
+    {
+        return guild;
+    }
+
+    @Override
+    @Deprecated
     public List<Guild> getGuilds()
     {
-        return Collections.unmodifiableList(new LinkedList<>(guilds));
+        return Collections.singletonList(guild);
     }
 
     @Override
