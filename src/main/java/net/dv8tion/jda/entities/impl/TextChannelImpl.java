@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.entities.impl;
 
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.body.MultipartBody;
@@ -240,17 +242,32 @@ public class TextChannelImpl implements TextChannel
             String dbg = String.format("Requesting %s -> %s\n\tPayload: file: %s, message: %s, tts: %s\n\tResponse: ",
                     body.getHttpRequest().getHttpMethod().name(), body.getHttpRequest().getUrl(),
                     file.getAbsolutePath(), message == null ? "null" : message.getRawContent(), message == null ? "N/A" : message.isTTS());
-            String requestBody = body.asString().getBody();
+            HttpResponse<JsonNode> response = body.asJson();
             Requester.LOG.trace(dbg + body);
 
             try
             {
-                JSONObject messageJson = new JSONObject(requestBody);
-                return new EntityBuilder(api).createMessage(messageJson);
+                int status = response.getStatus();
+
+                if (status >= 200 && status < 300)
+                {
+                    return new EntityBuilder(api).createMessage(response.getBody().getObject());
+                }
+                else if (response.getStatus() == 429)
+                {
+                    long retryAfter = response.getBody().getObject().getLong("retry_after");
+                    api.setMessageTimeout(guild.getId(), retryAfter);
+                    throw new RateLimitedException(retryAfter);
+                }
+                else
+                {
+                    throw new RuntimeException("An unknown status code was returned when attempting to upload file. Status: " + status + " JSON: " + response.getBody().toString());
+                }
+
             }
             catch (JSONException e)
             {
-                Requester.LOG.fatal("Following json caused an exception: " + requestBody);
+                Requester.LOG.fatal("Following json caused an exception: " + response.getBody().toString());
                 Requester.LOG.log(e);
             }
         }
@@ -272,7 +289,17 @@ public class TextChannelImpl implements TextChannel
 
         Thread thread = new Thread(() ->
         {
-            Message messageReturn = sendFile(file, message);
+            Message messageReturn;
+            try
+            {
+                messageReturn = sendFile(file, message);
+            }
+            catch (RateLimitedException e)
+            {
+                JDAImpl.LOG.warn("Got ratelimited when trying to upload file. Providing null to callback.");
+                messageReturn = null;
+            }
+
             if (callback != null)
                 callback.accept(messageReturn);
         });
@@ -363,7 +390,7 @@ public class TextChannelImpl implements TextChannel
     public List<Message> getPinnedMessages()
     {
         if (!checkPermission(getJDA().getSelfInfo(), Permission.MESSAGE_READ))
-            new PermissionException(Permission.MESSAGE_READ, "Cannot get the pinned message of a channel without MESSAGE_READ access.");
+            throw new PermissionException(Permission.MESSAGE_READ, "Cannot get the pinned message of a channel without MESSAGE_READ access.");
 
         List<Message> pinnedMessages = new LinkedList<>();
         Requester.Response response = ((JDAImpl) getJDA()).getRequester().get(
@@ -384,9 +411,9 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
-    public boolean checkPermission(User user, Permission perm)
+    public boolean checkPermission(User user, Permission... permissions)
     {
-        return PermissionUtil.checkPermission(user, perm, this);
+        return PermissionUtil.checkPermission(this, user, permissions);
     }
 
     @Override

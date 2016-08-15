@@ -19,9 +19,9 @@ import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.PrivateChannel;
 
 /**
- * <b><u>PrivateMessageDeleteEvent</u></b><br/>
- * Fired if a Message is deleted in a {@link net.dv8tion.jda.entities.PrivateChannel PrivateChannel}.<br/>
- * <br/>
+ * <b><u>PrivateMessageDeleteEvent</u></b><br>
+ * Fired if a Message is deleted in a {@link net.dv8tion.jda.entities.PrivateChannel PrivateChannel}.<br>
+ * <br>
  * Use: Retrieve affected PrivateChannel and the ID of the deleted Message.
  */
 public class PrivateMessageDeleteEvent extends GenericPrivateMessageEvent

@@ -19,9 +19,9 @@ import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Guild;
 
 /**
- * <b><u>GuildUpdateEvent</u></b><br/>
- * Fired whenever a {@link net.dv8tion.jda.entities.Guild Guild} updates.<br/>
- * <br/>
+ * <b><u>GuildUpdateEvent</u></b><br>
+ * Fired whenever a {@link net.dv8tion.jda.entities.Guild Guild} updates.<br>
+ * <br>
  * Use: Detect what Guild updated.
  */
 public class GuildUpdateEvent extends GenericGuildEvent

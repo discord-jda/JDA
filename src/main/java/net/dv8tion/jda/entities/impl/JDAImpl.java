@@ -21,6 +21,7 @@ import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.events.Event;
 import net.dv8tion.jda.events.StatusChangeEvent;
 import net.dv8tion.jda.events.guild.GuildJoinEvent;
+import net.dv8tion.jda.exceptions.RateLimitedException;
 import net.dv8tion.jda.hooks.EventListener;
 import net.dv8tion.jda.hooks.IEventManager;
 import net.dv8tion.jda.hooks.InterfacedEventManager;
@@ -34,6 +35,7 @@ import net.dv8tion.jda.requests.WebSocketClient;
 import net.dv8tion.jda.utils.SimpleLog;
 import org.apache.http.HttpHost;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
@@ -56,6 +58,7 @@ public class JDAImpl implements JDA
     protected final Map<String, Long> messageRatelimitTimeouts = new HashMap<>(); //(GuildId or GlobalPrivateChannel) - Timeout.
     protected final Map<String, String> offline_pms = new HashMap<>();    //Userid -> channelid
     protected final Map<Guild, AudioManager> audioManagers = new HashMap<>();
+    protected final Map<String, Emote> emoteMap = new HashMap<>();
     protected final boolean audioEnabled;
     protected final boolean useShutdownHook;
     protected final boolean bulkDeleteSplittingEnabled;
@@ -104,17 +107,13 @@ public class JDAImpl implements JDA
     /**
      * Attempts to login to Discord with a Bot-Account.
      *
-     * @param token
-     *          The token of the bot-account attempting to log in.
-     * @param sharding
-     *          A array of length 2 used for sharding or null. Refer to JDABuilder#useSharding for more details
-     * @throws IllegalArgumentException
-     *          Thrown if: <ul>
-     *              <li>the botToken provided is empty or null.</li>
-     *              <li>The sharding parameter is invalid.</li>
-     *          </ul>
-     * @throws LoginException
-     *          Thrown if the token fails the auth check with the Discord servers.
+     * @param token    The token of the bot-account attempting to log in.
+     * @param sharding A array of length 2 used for sharding or null. Refer to JDABuilder#useSharding for more details
+     * @throws IllegalArgumentException Thrown if: <ul>
+     *                                  <li>the botToken provided is empty or null.</li>
+     *                                  <li>The sharding parameter is invalid.</li>
+     *                                  </ul>
+     * @throws LoginException           Thrown if the token fails the auth check with the Discord servers.
      */
     public void login(String token, int[] sharding) throws IllegalArgumentException, LoginException
     {
@@ -127,9 +126,7 @@ public class JDAImpl implements JDA
 
         accountManager = new AccountManager(this);
 
-        if(!validate(token)) {
-            throw new LoginException("The given token was invalid");
-        }
+        verifyToken(token);
 
         LOG.info("Login Successful!");
         client = new WebSocketClient(this, proxy, sharding);
@@ -149,17 +146,32 @@ public class JDAImpl implements JDA
         }
     }
 
-    protected boolean validate(String authToken)
+    //Code backported from JDAImpl#verifyToken(String) in the JDA 3.0 branch
+    public void verifyToken(String token) throws LoginException
     {
-        this.authToken = authToken;
-        try
+        this.authToken = token;
+        Requester.Response response = getRequester().get(Requester.DISCORD_API_PREFIX + "users/@me");
+
+        if (response.isOk())
         {
-            if (getRequester().get(Requester.DISCORD_API_PREFIX + "users/@me/guilds").isOk())
+            JSONObject json = response.getObject();
+            if (!json.has("bot") || !json.getBoolean("bot"))
+                throw new RuntimeException("Attempted to login as a BOT with a CLIENT token!");
+        }
+        else if (response.isRateLimit())
+            throw new RateLimitedException(response.getObject().getInt("retry_after"));
+        else
+        {
+            if (response.code == 401)
             {
-                return true;
+                throw new LoginException("The provided token was invalid!");
             }
-        } catch (JSONException ignored) {}//token invalid
-        return false;
+            else
+            {
+                throw new LoginException("When verifying the authenticity of the provided token, Discord returned an unknown response:\n" +
+                        response.toString());
+            }
+        }
     }
 
     @Override
@@ -226,6 +238,11 @@ public class JDAImpl implements JDA
     public Map<String, User> getUserMap()
     {
         return userMap;
+    }
+
+    public Map<String, Emote> getEmoteMap()
+    {
+        return emoteMap;
     }
 
     @Override
@@ -360,6 +377,18 @@ public class JDAImpl implements JDA
         return selfInfo;
     }
 
+    @Override
+    public List<Emote> getAvailableEmotes()
+    {
+        return Collections.unmodifiableList(new LinkedList<>(emoteMap.values()));
+    }
+
+    @Override
+    public Emote getEmoteById(String id)
+    {
+        return getEmoteMap().get(id);
+    }
+
     public void setSelfInfo(SelfInfo selfInfo)
     {
         this.selfInfo = selfInfo;
@@ -442,7 +471,9 @@ public class JDAImpl implements JDA
             {
                 Unirest.shutdown();
             }
-            catch (IOException ignored) {}
+            catch (IOException ignored)
+            {
+            }
         }
         setStatus(Status.SHUTDOWN);
     }
@@ -502,7 +533,8 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public void installAuxiliaryCable(int port) throws UnsupportedOperationException {
+    public void installAuxiliaryCable(int port) throws UnsupportedOperationException
+    {
         throw new UnsupportedOperationException("Nice try m8!");
     }
 }

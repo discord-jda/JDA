@@ -13,30 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.events.channel.priv;
+package net.dv8tion.jda.entities;
 
-import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.events.Event;
-
-/**
- * <b><u>PrivateChannelDeleteEvent</u></b><br>
- * Fired if a {@link net.dv8tion.jda.entities.PrivateChannel Private Channel} was deleted.<br>
- * <br>
- * Use: Retrieve the issuing {@link net.dv8tion.jda.entities.User User}.
- */
-public class PrivateChannelDeleteEvent extends Event
+public enum MessageType
 {
-    protected final User user;
+    DEFAULT(0),
+    RECIPIENT_ADD(1),
+    RECIPIENT_REMOVE(2),
+    CALL(3),
+    CHANNEL_ICON_CHANGE(4),
+    CHANNEL_NAME_CHANGE(5),
+    UNKNOWN(-1);
 
-    public PrivateChannelDeleteEvent(JDA api, int responseNumber, User user)
+    protected final int id;
+    MessageType(int id)
     {
-        super(api, responseNumber);
-        this.user = user;
+        this.id = id;
     }
 
-    public User getUser()
+    public int getId()
     {
-        return user;
+        return id;
+    }
+
+    public static MessageType fromId(int id)
+    {
+        for (MessageType type : values())
+        {
+            if (type.id == id)
+                return type;
+        }
+        return UNKNOWN;
     }
 }

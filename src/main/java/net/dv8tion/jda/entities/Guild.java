@@ -105,6 +105,14 @@ public interface Guild
      */
     Region getRegion();
 
+	/**
+	 * Returns an unmodifiable list of emotes used be this guild.
+	 *
+	 * @return
+	 *      A list of emotes used by this guild.
+	 */
+	List<Emote> getEmotes();
+
     /**
      * The {@link net.dv8tion.jda.entities.User Users} that are part of this {@link net.dv8tion.jda.entities.Guild Guild}.
      *
@@ -232,6 +240,12 @@ public interface Guild
      * Provides the {@link net.dv8tion.jda.entities.Role Role} that determines the color for the provided {@link net.dv8tion.jda.entities.User User}
      * 
      * If the {@link net.dv8tion.jda.entities.User User} has the default color, this returns the same as getPublicRole();
+     *
+     * @param user
+     *      The user for which the coloring Role should be determined
+     *
+     * @return
+     *      The {@link net.dv8tion.jda.entities.Role Role}, which determines the {@link net.dv8tion.jda.entities.User User's} name-coloring
      */
     Role getColorDeterminantRoleForUser(User user);
 
@@ -368,6 +382,46 @@ public interface Guild
      *      An Immutable List of {@link net.dv8tion.jda.utils.InviteUtil.AdvancedInvite Invites} for this guild.
      */
     List<AdvancedInvite> getInvites();
+
+    /**
+     * Provides a {@link net.dv8tion.jda.entities.User User} with the provided ID
+     *
+     * @param id
+     *      The id of the user
+     * @return
+     *      the {@link net.dv8tion.jda.entities.User User} with the provided ID, or null if the user isn't in the {@link net.dv8tion.jda.entities.Guild Guild}.
+     */
+    User getUserById(String id);
+
+    /**
+     * Provides an immutable list of all {@link net.dv8tion.jda.entities.User Users} with the provided username
+     *
+     * @param username
+     *      The username that is being checked
+     * @return
+     *      Never-null list of all users with the provided username
+     */
+    List<User> getUsersByName(String username);
+
+    /**
+     * Provides an immutable list of all {@link net.dv8tion.jda.entities.Role Roles} with the provided name
+     *
+     * @param roleName
+     *      The name of the roles to be returned
+     * @return
+     *      A never null list of all roles with the provided name
+     */
+    List<Role> getRolesByName(String roleName);
+
+    /**
+     * Returns the user's nickname in this guild, or their username if they don't have one
+     *
+     * @param user
+     *      The user whose name will be retrieved
+     * @return
+     *      The nickname for the user, or the user's username if they have no nickname
+     */
+    String getEffectiveNameForUser(User user);
 
     /**
      * Represents the Verification-Level of the Guild.

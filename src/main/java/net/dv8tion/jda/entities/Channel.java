@@ -95,17 +95,17 @@ public interface Channel
     int getPositionRaw();
 
     /**
-     * Checks if the given {@link net.dv8tion.jda.entities.User User} has the given {@link net.dv8tion.jda.Permission Permission}
+     * Checks if the given {@link net.dv8tion.jda.entities.User User} has the given {@link net.dv8tion.jda.Permission Permissions}
      * in this Channel
      *
      * @param user
      *          the User to check the Permission against
-     * @param permission
-     *          the Permission to check for
+     * @param permissions
+     *          the varargs Permissions to check for
      * @return
-     *      if the given User has the given Permission in this Channel
+     *      if the given User has the given Permissions in this Channel
      */
-    boolean checkPermission(User user, Permission permission);
+    boolean checkPermission(User user, Permission... permissions);
 
     /**
      * Returns the {@link net.dv8tion.jda.managers.ChannelManager ChannelManager} for this Channel.

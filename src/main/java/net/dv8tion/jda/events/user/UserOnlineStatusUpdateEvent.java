@@ -20,9 +20,9 @@ import net.dv8tion.jda.OnlineStatus;
 import net.dv8tion.jda.entities.User;
 
 /**
- * <b><u>UserOnlineStatusUpdateEvent</u></b><br/>
- * Fired if the {@link OnlineStatus OnlineStatus} of a {@link net.dv8tion.jda.entities.User User} changes.<br/>
- * <br/>
+ * <b><u>UserOnlineStatusUpdateEvent</u></b><br>
+ * Fired if the {@link OnlineStatus OnlineStatus} of a {@link net.dv8tion.jda.entities.User User} changes.<br>
+ * <br>
  * Use: Retrieve the User who's status changed and their previous status.
  */
 public class UserOnlineStatusUpdateEvent extends GenericUserEvent

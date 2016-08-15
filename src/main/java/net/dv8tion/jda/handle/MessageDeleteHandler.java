@@ -64,7 +64,7 @@ public class MessageDeleteHandler extends SocketHandler
         api.getEventManager().handle(
                 new MessageDeleteEvent(
                         api, responseNumber,
-                        messageId, channelId, channel != null));
+                        messageId, channelId, channel == null));
         return null;
     }
 }

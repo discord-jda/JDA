@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.handle;
 
+import net.dv8tion.jda.entities.ChannelType;
 import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.channel.priv.PrivateChannelCreateEvent;
@@ -33,36 +34,32 @@ public class ChannelCreateHandler extends SocketHandler
     @Override
     protected String handleInternally(JSONObject content)
     {
-        String type = content.getString("type");
-        boolean isPrivate = content.getBoolean("is_private");
+        ChannelType type = ChannelType.fromId(content.getInt("type"));
 
-        if (!isPrivate && GuildLock.get(api).isLocked(content.getString("guild_id")))
+        if ((type == ChannelType.TEXT || type == ChannelType.VOICE ) && GuildLock.get(api).isLocked(content.getString("guild_id")))
         {
             return content.getString("guild_id");
         }
 
-        if (!isPrivate)
+        switch (type)
         {
-            if (type.equals("text"))
+            case TEXT:
             {
                 api.getEventManager().handle(
                         new TextChannelCreateEvent(
                                 api, responseNumber,
                                 new EntityBuilder(api).createTextChannel(content, content.getString("guild_id"))));
+                break;
             }
-            else if (type.equals("voice"))
+            case VOICE:
             {
                 api.getEventManager().handle(
                         new VoiceChannelCreateEvent(
                                 api, responseNumber,
                                 new EntityBuilder(api).createVoiceChannel(content, content.getString("guild_id"))));
+                break;
             }
-            else
-                throw new IllegalArgumentException("ChannelCreateEvent provided an unrecognized guild channel type.  JSON: " + content);
-        }
-        else
-        {
-            if (type.equals("text"))
+            case PRIVATE:
             {
                 PrivateChannel pc = new EntityBuilder(api).createPrivateChannel(content);
                 if (pc == null)
@@ -76,13 +73,15 @@ public class ChannelCreateHandler extends SocketHandler
                                     api, responseNumber,
                                     pc.getUser()));
                 }
+                break;
             }
-            else if (type.equals("voice"))
+            case GROUP:
             {
-                JDAImpl.LOG.warn("Received a CHANNEL_CREATE for a Private Voice channel. Currently, we don't support, so ignoring. Might explode though.. ?");
+                JDAImpl.LOG.debug("Received GROUP channel create. Ignoring because JDA doesn't support groups. (Use JDA-Client)");
+                break;
             }
-            else
-                throw new IllegalArgumentException("ChannelCreateEvent provided an unrecognized private channel type.  JSON: " + content);
+            default:
+                throw new IllegalArgumentException("Discord provided an CREATE_CHANNEL event with an unknown channel type! JSON: " + content);
         }
         EventCache.get(api).playbackCache(EventCache.Type.CHANNEL, content.getString("id"));
         return null;

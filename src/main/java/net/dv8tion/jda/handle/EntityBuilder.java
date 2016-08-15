@@ -41,14 +41,15 @@ public class EntityBuilder
     private static final HashMap<JDA, HashMap<String, JSONObject>> cachedJdaGuildJsons = new HashMap<>();
     private static final HashMap<JDA, HashMap<String, Consumer<Guild>>> cachedJdaGuildCallbacks = new HashMap<>();
     private static final Pattern channelMentionPattern = Pattern.compile("<#(\\d+)>");
+    private static final Pattern emotePatter = Pattern.compile("<:([^:]+):(\\d+)>");
     private final JDAImpl api;
 
     public EntityBuilder(JDAImpl api)
     {
         this.api = api;
-        if(!cachedJdaGuildCallbacks.containsKey(api))
+        if (!cachedJdaGuildCallbacks.containsKey(api))
             cachedJdaGuildCallbacks.put(api, new HashMap<>());
-        if(!cachedJdaGuildJsons.containsKey(api))
+        if (!cachedJdaGuildJsons.containsKey(api))
             cachedJdaGuildJsons.put(api, new HashMap<>());
     }
 
@@ -78,14 +79,13 @@ public class EntityBuilder
             return guildObj;
         }
         guildObj
-            .setAvailable(true)
-            .setIconId(guild.isNull("icon") ? null : guild.getString("icon"))
-            .setRegion(Region.fromKey(guild.getString("region")))
-            .setName(guild.getString("name"))
-            .setOwnerId(guild.getString("owner_id"))
-            .setAfkTimeout(guild.getInt("afk_timeout"))
-            .setAfkChannelId(guild.isNull("afk_channel_id") ? null : guild.getString("afk_channel_id"))
-            .setVerificationLevel(Guild.VerificationLevel.fromKey(guild.getInt("verification_level")));
+                .setAvailable(true)
+                .setIconId(guild.isNull("icon") ? null : guild.getString("icon"))
+                .setRegion(Region.fromKey(guild.getString("region")))
+                .setName(guild.getString("name"))
+                .setAfkTimeout(guild.getInt("afk_timeout"))
+                .setAfkChannelId(guild.isNull("afk_channel_id") ? null : guild.getString("afk_channel_id"))
+                .setVerificationLevel(Guild.VerificationLevel.fromKey(guild.getInt("verification_level")));
 
 
         JSONArray roles = guild.getJSONArray("roles");
@@ -96,12 +96,33 @@ public class EntityBuilder
             if (role.getId().equals(guildObj.getId()))
                 guildObj.setPublicRole(role);
         }
+        if (guild.has("emojis"))
+        {
+            JSONArray emojiArr = guild.getJSONArray("emojis");
+            for (int i = 0; i < emojiArr.length(); i++)
+            {
+                JSONObject obj = emojiArr.getJSONObject(i);
+                String emojID = obj.getString("id");
+                Emote emote = api.getEmoteById(emojID);
+                if (emote == null)
+                    emote = new EmoteImpl(obj.getString("name"), emojID);
+                api.getEmoteMap().putIfAbsent(emojID, emote);
+                guildObj.getEmoteMap().put(emojID, emote);
+                ((EmoteImpl) emote).addGuild(guildObj);
+            }
+        }
+        else
+            JDAImpl.LOG.warn("Guild Didn't have field called 'emojis'. Identifier: " + guildObj.getId());
 
         if (guild.has("members"))
         {
             JSONArray members = guild.getJSONArray("members");
             createGuildMemberPass(guildObj, members);
         }
+
+        User owner = api.getUserById(guild.getString("owner_id"));
+        if (owner != null)
+            guildObj.setOwner(owner);
 
         if (guild.has("presences"))
         {
@@ -116,15 +137,15 @@ public class EntityBuilder
                     continue;
                 }
                 Game presenceGame = null;
-                if( !presence.isNull("game") && !presence.getJSONObject("game").isNull("name") )
+                if (!presence.isNull("game") && !presence.getJSONObject("game").isNull("name"))
                 {
                     presenceGame = new GameImpl(presence.getJSONObject("game").get("name").toString(),
                             presence.getJSONObject("game").isNull("url") ? null : presence.getJSONObject("game").get("url").toString(),
-                            presence.getJSONObject("game").isNull("type") ? Game.GameType.DEFAULT : Game.GameType.fromKey((int) presence.getJSONObject("game").get("type")) );
+                            presence.getJSONObject("game").isNull("type") ? Game.GameType.DEFAULT : Game.GameType.fromKey((int) presence.getJSONObject("game").get("type")));
                 }
                 user
-                    .setCurrentGame(presenceGame)
-                    .setOnlineStatus(OnlineStatus.fromKey(presence.getString("status")));
+                        .setCurrentGame(presenceGame)
+                        .setOnlineStatus(OnlineStatus.fromKey(presence.getString("status")));
             }
         }
 
@@ -135,17 +156,19 @@ public class EntityBuilder
             for (int i = 0; i < channels.length(); i++)
             {
                 JSONObject channel = channels.getJSONObject(i);
-                String type = channel.getString("type");
-                if (type.equalsIgnoreCase("text"))
+                ChannelType type = ChannelType.fromId(channel.getInt("type"));
+                if (type == ChannelType.TEXT)
                 {
                     TextChannel newChannel = createTextChannel(channel, guildObj.getId());
                     if (newChannel.getId().equals(guildObj.getId()))
                         guildObj.setPublicChannel(newChannel);
                 }
-                else if (type.equalsIgnoreCase("voice"))
+                else if (type == ChannelType.VOICE)
                 {
                     createVoiceChannel(channel, guildObj.getId());
                 }
+                else
+                    JDAImpl.LOG.fatal("Received a channel for a guild that isn't a text or voice channel. JSON: " + channel);
             }
         }
 
@@ -166,8 +189,7 @@ public class EntityBuilder
                 {
                     VoiceStatus voiceStatus = createVoiceStatus(voiceState, guildObj, user);
                     ((VoiceChannelImpl) voiceStatus.getChannel()).getUsersModifiable().add(user);
-                }
-                catch (IllegalArgumentException ignored)
+                } catch (IllegalArgumentException ignored)
                 {
                     //Ignore this: weird behaviour of Discord itself gives us presences to vc that were deleted
                 }
@@ -192,7 +214,7 @@ public class EntityBuilder
                         .put("op", 8)
                         .put("d", new JSONObject()
                                 .put("guild_id", id)
-                                .put("query","")
+                                .put("query", "")
                                 .put("limit", 0)
                         );
                 api.getClient().send(obj.toString());
@@ -242,6 +264,13 @@ public class EntityBuilder
             createGuildMemberPass(guildObj, chunk);
         }
 
+        User owner = api.getUserById(guildJson.getString("owner_id"));
+        if (owner != null)
+            guildObj.setOwner(owner);
+
+        if (guildObj.getOwner() == null)
+            JDAImpl.LOG.fatal("Never set the Owner of the Guild: " + guildObj.getId() + " because we don't have the owner User object! How?!");
+
         JSONArray channels = guildJson.getJSONArray("channels");
         createGuildChannelPass(guildObj, channels);
 
@@ -282,7 +311,7 @@ public class EntityBuilder
             voiceStatus.setServerMute(member.getBoolean("mute"));
             voiceStatusMap.put(user, voiceStatus);
             joinedAtMap.put(user, OffsetDateTime.parse(member.getString("joined_at")));
-            if(member.has("nick") && !member.isNull("nick"))
+            if (member.has("nick") && !member.isNull("nick"))
                 nickMap.put(user, member.getString("nick"));
         }
     }
@@ -292,16 +321,19 @@ public class EntityBuilder
         for (int i = 0; i < channels.length(); i++)
         {
             JSONObject channel = channels.getJSONObject(i);
-            String type = channel.getString("type");
+            ChannelType type = ChannelType.fromId(channel.getInt("type"));
             Channel channelObj = null;
-            if (type.equalsIgnoreCase("text"))
+            if (type == ChannelType.TEXT)
             {
                 channelObj = api.getTextChannelById(channel.getString("id"));
             }
-            else if (type.equalsIgnoreCase("voice"))
+            else if (type == ChannelType.VOICE)
             {
                 channelObj = api.getVoiceChannelById(channel.getString("id"));
             }
+            else
+                JDAImpl.LOG.fatal("Received a channel for a guild that isn't a text or voice channel (ChannelPass). JSON: " + channel);
+
             if (channelObj != null)
             {
                 JSONArray permissionOverwrites = channel.getJSONArray("permission_overwrites");
@@ -310,8 +342,7 @@ public class EntityBuilder
                     try
                     {
                         createPermissionOverride(permissionOverwrites.getJSONObject(j), channelObj);
-                    }
-                    catch (IllegalArgumentException e)
+                    } catch (IllegalArgumentException e)
                     {
                         WebSocketClient.LOG.warn(e.getMessage() + ". Ignoring PermissionOverride.");
                     }
@@ -363,10 +394,13 @@ public class EntityBuilder
 
     public PrivateChannel createPrivateChannel(JSONObject privatechat)
     {
-        UserImpl user = ((UserImpl) api.getUserMap().get(privatechat.getJSONObject("recipient").getString("id")));
+        JSONObject recipient = privatechat.has("recipients") ? 
+            privatechat.getJSONArray("recipients").getJSONObject(0) :
+            privatechat.getJSONObject("recipient");
+        UserImpl user = ((UserImpl) api.getUserMap().get(recipient.getString("id")));
         if (user == null)
         {   //The API can give us private channels connected to Users that we can no longer communicate with.
-            api.getOffline_pms().put(privatechat.getJSONObject("recipient").getString("id"), privatechat.getString("id"));
+            api.getOffline_pms().put(recipient.getString("id"), privatechat.getString("id"));
             return null;
         }
 
@@ -394,8 +428,7 @@ public class EntityBuilder
         try
         {
             role.setColor(roleJson.getInt("color"));
-        }
-        catch (JSONException ex)
+        } catch (JSONException ex)
         {
             role.setColor(0);
         }
@@ -476,6 +509,14 @@ public class EntityBuilder
         }
         message.setEmbeds(embeds);
 
+        Matcher matcher = emotePatter.matcher(content);
+        List<Emote> emoteList = new LinkedList<>();
+        while (matcher.find())
+            emoteList.add(api.getEmoteById(matcher.group(2)) == null
+                    ? new EmoteImpl(matcher.group(1), matcher.group(2))
+                    : api.getEmoteById(matcher.group(2)));
+        message.setEmotes(emoteList);
+
         if (!jsonObject.isNull("edited_timestamp"))
             message.setEditedTime(OffsetDateTime.parse(jsonObject.getString("edited_timestamp")));
 
@@ -516,11 +557,11 @@ public class EntityBuilder
 
             List<TextChannel> mentionedChannels = new LinkedList<>();
             Map<String, TextChannel> chanMap = ((GuildImpl) textChannel.getGuild()).getTextChannelsMap();
-            Matcher matcher = channelMentionPattern.matcher(content);
+            matcher = channelMentionPattern.matcher(content);
             while (matcher.find())
             {
                 TextChannel channel = chanMap.get(matcher.group(1));
-                if(channel != null && !mentionedChannels.contains(channel))
+                if (channel != null && !mentionedChannels.contains(channel))
                 {
                     mentionedChannels.add(channel);
                 }
@@ -547,9 +588,9 @@ public class EntityBuilder
     protected MessageEmbed createMessageEmbed(JSONObject messageEmbed)
     {
         MessageEmbedImpl embed = new MessageEmbedImpl()
-            .setUrl(messageEmbed.getString("url"))
-            .setTitle(messageEmbed.isNull("title") ? null : messageEmbed.getString("title"))
-            .setDescription(messageEmbed.isNull("description") ? null : messageEmbed.getString("description"));
+                .setUrl(messageEmbed.getString("url"))
+                .setTitle(messageEmbed.isNull("title") ? null : messageEmbed.getString("title"))
+                .setDescription(messageEmbed.isNull("description") ? null : messageEmbed.getString("description"));
 
         EmbedType type = EmbedType.fromKey(messageEmbed.getString("type"));
 //        if (type.equals(EmbedType.UNKNOWN))

@@ -21,9 +21,9 @@ import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.User;
 
 /**
- * <b><u>GuildMemberNickChangeEvent</u></b><br/>
- * Fired if a {@link net.dv8tion.jda.entities.User User} updates their {@link net.dv8tion.jda.entities.Guild Guild} nickname.<br/>
- * <br/>
+ * <b><u>GuildMemberNickChangeEvent</u></b><br>
+ * Fired if a {@link net.dv8tion.jda.entities.User User} updates their {@link net.dv8tion.jda.entities.Guild Guild} nickname.<br>
+ * <br>
  * Use: Retrieve user who changed their nickname, triggering guild, the old nick and the new nick.
  */
 public class GuildMemberNickChangeEvent extends GenericGuildMemberEvent

@@ -19,9 +19,9 @@ import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Role;
 
 /**
- * <b><u>GuildRoleUpdatePermissionEvent</u></b><br/>
- * Fired if a {@link net.dv8tion.jda.entities.Role Role}'s permissions change.<br/>
- * <br/>
+ * <b><u>GuildRoleUpdatePermissionEvent</u></b><br>
+ * Fired if a {@link net.dv8tion.jda.entities.Role Role}'s permissions change.<br>
+ * <br>
  * Use: Retrieve affected Role.
  */
 public class GuildRoleUpdatePermissionEvent extends GenericGuildRoleUpdateEvent

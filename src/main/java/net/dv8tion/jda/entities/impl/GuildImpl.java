@@ -36,6 +36,7 @@ import org.json.JSONObject;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class GuildImpl implements Guild
 {
@@ -43,7 +44,7 @@ public class GuildImpl implements Guild
     private String name;
     private String iconId;
     private String afkChannelId;
-    private String ownerId;
+    private User owner;
     private int afkTimeout;
     private Region region;
     private final Map<String, TextChannel> textChannels = new HashMap<>();
@@ -53,6 +54,7 @@ public class GuildImpl implements Guild
     private final Map<User, VoiceStatus> voiceStatusMap = new HashMap<>();
     private final Map<User, OffsetDateTime> joinedAtMap = new HashMap<>();
     private final Map<User, String> nickMap = new HashMap<>();
+    private final Map<String, Emote> emoteMap = new HashMap<>();
     private Role publicRole;
     private TextChannel publicChannel;
     private final JDAImpl api;
@@ -106,13 +108,13 @@ public class GuildImpl implements Guild
     @Override
     public String getOwnerId()
     {
-        return ownerId;
+        return owner.getId();
     }
 
     @Override
     public User getOwner()
     {
-        return api.getUserById(ownerId);
+        return owner;
     }
 
     @Override
@@ -125,6 +127,12 @@ public class GuildImpl implements Guild
     public Region getRegion()
     {
         return region;
+    }
+
+    @Override
+    public List<Emote> getEmotes()
+    {
+        return Collections.unmodifiableList(new LinkedList<>(getEmoteMap().values()));
     }
 
     @Override
@@ -286,8 +294,8 @@ public class GuildImpl implements Guild
     @Override
     public Role getColorDeterminantRoleForUser(User user)
     {
-        for(Role role : getRolesForUser(user))
-            if(role.getColor() != 0)
+        for (Role role : getRolesForUser(user))
+            if (role.getColor() != 0)
                 return role;
         return publicRole;
     }
@@ -365,18 +373,18 @@ public class GuildImpl implements Guild
     {
         if (api.getSelfInfo().isBot())
             return true;
-        if(canSendVerification)
+        if (canSendVerification)
             return true;
         switch (verificationLevel)
         {
             case HIGH:
-                if(ChronoUnit.MINUTES.between(getJoinDateForUser(api.getSelfInfo()), OffsetDateTime.now()) < 10)
+                if (ChronoUnit.MINUTES.between(getJoinDateForUser(api.getSelfInfo()), OffsetDateTime.now()) < 10)
                     break;
             case MEDIUM:
-                if(ChronoUnit.MINUTES.between(MiscUtil.getCreationTime(api.getSelfInfo()), OffsetDateTime.now()) < 5)
+                if (ChronoUnit.MINUTES.between(MiscUtil.getCreationTime(api.getSelfInfo()), OffsetDateTime.now()) < 5)
                     break;
             case LOW:
-                if(!api.getSelfInfo().isVerified())
+                if (!api.getSelfInfo().isVerified())
                     break;
             case NONE:
                 canSendVerification = true;
@@ -413,9 +421,9 @@ public class GuildImpl implements Guild
         return this;
     }
 
-    public GuildImpl setOwnerId(String ownerId)
+    public GuildImpl setOwner(User owner)
     {
-        this.ownerId = ownerId;
+        this.owner = owner;
         return this;
     }
 
@@ -447,6 +455,11 @@ public class GuildImpl implements Guild
     {
         this.publicChannel = channel;
         return this;
+    }
+
+    public Map<String, Emote> getEmoteMap()
+    {
+        return emoteMap;
     }
 
     public Map<String, TextChannel> getTextChannelsMap()
@@ -512,5 +525,29 @@ public class GuildImpl implements Guild
     public List<AdvancedInvite> getInvites()
     {
         return InviteUtil.getInvites(this);
+    }
+
+    @Override
+    public User getUserById(String id)
+    {
+        return userRoles.containsKey(api.getUserById(id)) ? api.getUserById(id) : null;
+    }
+
+    @Override
+    public List<User> getUsersByName(String username)
+    {
+        return Collections.unmodifiableList(userRoles.keySet().parallelStream().filter(user -> user.getUsername().equals(username)).collect(Collectors.toList()));
+    }
+
+    @Override
+    public List<Role> getRolesByName(String roleName)
+    {
+        return Collections.unmodifiableList(roles.values().parallelStream().filter(role -> role.getName().equals(roleName)).collect(Collectors.toList()));
+    }
+
+    @Override
+    public String getEffectiveNameForUser(User user)
+    {
+        return nickMap.containsKey(user) ? nickMap.get(user) : user.getUsername();
     }
 }

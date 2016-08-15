@@ -20,9 +20,9 @@ import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Guild;
 
 /**
- * <b><u>GuildAvailableEvent</u></b><br/>
- * Fired if a {@link net.dv8tion.jda.entities.Guild Guild} becomes available.<br/>
- * <br/>
+ * <b><u>GuildAvailableEvent</u></b><br>
+ * Fired if a {@link net.dv8tion.jda.entities.Guild Guild} becomes available.<br>
+ * <br>
  * Use: This indicates that a Guild will now start sending events and can be interacted with.
  */
 public class GuildAvailableEvent extends GenericGuildEvent

@@ -19,9 +19,9 @@ import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.VoiceChannel;
 
 /**
- * <b><u>VoiceChannelUpdateUserLimitEvent</u></b><br/>
- * Fired if a {@link VoiceChannel VoiceChannel}'s user limit changes.<br/>
- * <br/>
+ * <b><u>VoiceChannelUpdateUserLimitEvent</u></b><br>
+ * Fired if a {@link VoiceChannel VoiceChannel}'s user limit changes.<br>
+ * <br>
  * Use: Get affected VoiceChannel, affected Guild and previous user limit.
  */
 public class VoiceChannelUpdateUserLimitEvent extends GenericVoiceChannelUpdateEvent

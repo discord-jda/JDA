@@ -20,9 +20,9 @@ import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.User;
 
 /**
- * <b><u>GuildMemberBanEvent</u></b><br/>
- * Fired if a {@link net.dv8tion.jda.entities.User User} is unbanned from a {@link net.dv8tion.jda.entities.Guild Guild}.<br/>
- * <br/>
+ * <b><u>GuildMemberBanEvent</u></b><br>
+ * Fired if a {@link net.dv8tion.jda.entities.User User} is unbanned from a {@link net.dv8tion.jda.entities.Guild Guild}.<br>
+ * <br>
  * Use: Retrieve user who was unbanned (if available) and the guild which they were unbanned from.
  */
 public class GuildMemberUnbanEvent extends GenericGuildMemberEvent

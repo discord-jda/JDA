@@ -54,9 +54,10 @@ public class ChannelUpdateHandler extends SocketHandler
         String name = content.getString("name");
         int position = content.getInt("position");
         JSONArray permOverwrites = content.getJSONArray("permission_overwrites");
-        switch (content.getString("type"))
+        ChannelType type = ChannelType.fromId(content.getInt("type"));
+        switch (type)
         {
-            case "text":
+            case TEXT:
             {
                 String topic = content.isNull("topic") ? null : content.getString("topic");
                 TextChannelImpl channel = (TextChannelImpl) api.getChannelMap().get(content.getString("id"));
@@ -133,7 +134,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 }
                 break;  //Finish the TextChannelUpdate case
             }
-            case "voice":
+            case VOICE:
             {
                 VoiceChannelImpl channel = (VoiceChannelImpl) api.getVoiceChannelMap().get(content.getString("id"));
                 int userLimit = content.getInt("user_limit");

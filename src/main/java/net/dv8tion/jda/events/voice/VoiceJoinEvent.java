@@ -20,8 +20,8 @@ import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.entities.VoiceStatus;
 
 /**
- * <b><u>VoiceJoinEvent</u></b><br/>
- * Fired if we successfully joined a VoiceChannel.<br/><br/>
+ * <b><u>VoiceJoinEvent</u></b><br>
+ * Fired if we successfully joined a VoiceChannel.<br><br>
  * Use: Retrieve VoiceChannel we connected to.
  */
 public class VoiceJoinEvent extends GenericVoiceEvent

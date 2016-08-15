@@ -182,7 +182,7 @@ public class RoleManager
      * This change will only be applied, if {@link #update()} is called.
      * So multiple changes can be made at once.
      *
-     * @param group
+     * @param mention
      *      Whether or not this should be mentionable, or null to keep current grouping status
      * @return
      *      this

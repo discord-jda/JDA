@@ -94,20 +94,18 @@ public class ApplicationUtil
 
     /**
      * Creates a new instance of the ApplicationUtil class.
-     * This requires login-informations of the person owning the application(s).
-     * <b>Do not use login-informations of a account you use as bot here.</b>
+     * This requires login-information of the person owning the application(s).
+     * <b>Do not use login-information of a account you use as bot here.</b>
      *
-     * @param email
-     *      The email of the owner of the application(s)
-     * @param password
-     *      The email of the owner of the application(s)
+     * @param token
+     *      The token of the owner of the application(s)
      * @throws LoginException
-     *      When the login-informations were incorrect
+     *      When the token was invalid
      */
-    public ApplicationUtil(String email, String password) throws LoginException
+    public ApplicationUtil(String token) throws LoginException
     {
         api = new JDAImpl(false, false, false);
-        api.setAuthToken(login(email, password));
+        api.verifyToken(token);
     }
 
     /**
@@ -165,24 +163,6 @@ public class ApplicationUtil
             return new Application(response.getObject());
         }
         throw new RuntimeException("Error creating a new Application: " + response.toString());
-    }
-
-    private String login(String email, String password) throws LoginException
-    {
-        Requester.Response response = api.getRequester().post(Requester.DISCORD_API_PREFIX + "auth/login", new JSONObject().put("email", email).put("password", password));
-
-        if (response.isRateLimit())
-        {
-            try {
-                Thread.sleep(response.getObject().getLong("retry_after"));
-            }
-            catch(InterruptedException ignored) {}
-            return login(email, password);
-        }
-
-        if (!response.isOk())
-            throw new LoginException("The provided email / password combination was incorrect. Please provide valid details.");
-        return response.getObject().getString("token");
     }
 
     /**

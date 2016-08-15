@@ -22,9 +22,9 @@ import net.dv8tion.jda.entities.User;
 import java.time.OffsetDateTime;
 
 /**
- * <b><u>UserTypingUpdateEvent</u></b><br/>
- * Fired if a {@link net.dv8tion.jda.entities.User User} starts typing. (Similar to the typing indicator in the Discord client)<br/>
- * <br/>
+ * <b><u>UserTypingUpdateEvent</u></b><br>
+ * Fired if a {@link net.dv8tion.jda.entities.User User} starts typing. (Similar to the typing indicator in the Discord client)<br>
+ * <br>
  * Use: Retrieve the User who started typing and when and in which MessageChannel they started typing.
  */
 public class UserTypingEvent extends GenericUserEvent

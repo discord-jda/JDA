@@ -31,10 +31,9 @@ import java.net.URL;
 import java.net.URLConnection;
 
 /**
- * <p>This implementation of an {@link net.dv8tion.jda.audio.AudioSendHandler AudioSendHandler} is able to send audio to a {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} from an external source.
- * <br/> For that the user has to provide a valid {@link java.net.URL URL} to an audio file (like an mp3 file on a cloud).<br/>
+ * This implementation of an {@link net.dv8tion.jda.audio.AudioSendHandler AudioSendHandler} is able to send audio to a {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} from an external source.
+ * <br> For that the user has to provide a valid {@link java.net.URL URL} to an audio file (like an mp3 file on a cloud).<br>
  * <p><b>However, it is unable to process audio sources that come from websites like Youtube/Soundcloud.</b></p>
- * </p>
  */
 public class URLPlayer extends Player
 {
@@ -54,8 +53,8 @@ public class URLPlayer extends Player
     protected boolean stopped = true;
 
     /**
-     * Creates a new instance of {@link URLPlayer}.<br/>
-     * To directly set a source URL use <br/><pre><code>    new {@link #URLPlayer(JDA, URL)}</code></pre>
+     * Creates a new instance of {@link URLPlayer}.<br>
+     * To directly set a source URL use <br><pre><code>    new {@link #URLPlayer(JDA, URL)}</code></pre>
      * @param api
      *        The JDA instance
      */

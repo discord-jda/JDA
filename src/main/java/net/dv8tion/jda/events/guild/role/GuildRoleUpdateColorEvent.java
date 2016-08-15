@@ -19,9 +19,9 @@ import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Role;
 
 /**
- * <b><u>GuildRoleUpdateColorEvent</u></b><br/>
- * Fired if a {@link net.dv8tion.jda.entities.Role Role}'s color changes.<br/>
- * <br/>
+ * <b><u>GuildRoleUpdateColorEvent</u></b><br>
+ * Fired if a {@link net.dv8tion.jda.entities.Role Role}'s color changes.<br>
+ * <br>
  * Use: Retrieve affected Role and Guild.
  */
 public class GuildRoleUpdateColorEvent extends GenericGuildRoleUpdateEvent

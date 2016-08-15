@@ -16,6 +16,7 @@
 package net.dv8tion.jda.handle;
 
 import net.dv8tion.jda.entities.Message;
+import net.dv8tion.jda.entities.MessageType;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.events.InviteReceivedEvent;
@@ -40,6 +41,20 @@ public class MessageReceivedHandler extends SocketHandler
 
     @Override
     protected String handleInternally(JSONObject content)
+    {
+        MessageType type = MessageType.fromId(content.getInt("type"));
+
+        switch (type)
+        {
+            case DEFAULT:
+                return handleDefaultMessage(content);
+            default:
+                JDAImpl.LOG.debug("JDA received a message of unknown type. Type: " + type + "  JSON: " + content);
+        }
+        return null;
+    }
+
+    private String handleDefaultMessage(JSONObject content)
     {
         Message message;
         try

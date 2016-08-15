@@ -130,9 +130,9 @@ public class VoiceChannelImpl implements VoiceChannel
     }
 
     @Override
-    public boolean checkPermission(User user, Permission perm)
+    public boolean checkPermission(User user, Permission... permissions)
     {
-        return PermissionUtil.checkPermission(user, perm, this);
+        return PermissionUtil.checkPermission(this, user, permissions);
     }
 
     @Override

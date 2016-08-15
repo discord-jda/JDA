@@ -19,9 +19,9 @@ import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Guild;
 
 /**
- * <b><u>GuildJoinEvent</u></b><br/>
- * Fired if a you join a {@link net.dv8tion.jda.entities.Guild Guild}.<br/>
- * <br/>
+ * <b><u>GuildJoinEvent</u></b><br>
+ * Fired if a you join a {@link net.dv8tion.jda.entities.Guild Guild}.<br>
+ * <br>
  * Warning: Discord already triggered a mass amount of these events due to a downtime. Be careful!
  */
 public class GuildJoinEvent extends GenericGuildEvent

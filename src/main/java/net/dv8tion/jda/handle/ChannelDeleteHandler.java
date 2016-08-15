@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.handle;
 
+import net.dv8tion.jda.entities.ChannelType;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.VoiceChannel;
@@ -39,36 +40,20 @@ public class ChannelDeleteHandler extends SocketHandler
     @Override
     protected String handleInternally(JSONObject content)
     {
-        if (content.has("is_private") && content.getBoolean("is_private"))
+        ChannelType type = ChannelType.fromId(content.getInt("type"));
+        if (type == ChannelType.TEXT || type == ChannelType.VOICE)
         {
-            String userid = content.getJSONObject("recipient").getString("id");
-            if (api.getOffline_pms().containsKey(userid))
+            if (GuildLock.get(api).isLocked(content.getString("guild_id")))
             {
-                api.getOffline_pms().remove(userid);
+                return content.getString("guild_id");
             }
-            User user = api.getUserById(userid);
-            if (user != null)
-            {
-                ((UserImpl) user).setPrivateChannel(null);
-            }
-            api.getPmChannelMap().remove(content.getString("id"));
-            api.getEventManager().handle(
-                    new PrivateChannelDeleteEvent(
-                            api, responseNumber,
-                            user));
-            return null;
         }
 
-        if (GuildLock.get(api).isLocked(content.getString("guild_id")))
+        switch (type)
         {
-            return content.getString("guild_id");
-        }
-
-        GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("guild_id"));
-        switch (content.getString("type"))
-        {
-            case "text":
+            case TEXT:
             {
+                GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("guild_id"));
                 TextChannel channel = api.getChannelMap().remove(content.getString("id"));
                 if (channel == null)
                 {
@@ -87,8 +72,9 @@ public class ChannelDeleteHandler extends SocketHandler
                                 channel));
                 break;
             }
-            case "voice":
+            case VOICE:
             {
+                GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("guild_id"));
                 VoiceChannel channel = guild.getVoiceChannelsMap().remove(content.getString("id"));
                 if (channel == null)
                 {
@@ -111,6 +97,30 @@ public class ChannelDeleteHandler extends SocketHandler
                         new VoiceChannelDeleteEvent(
                                 api, responseNumber,
                                 channel));
+                break;
+            }
+            case PRIVATE:
+            {
+                String userid = content.getJSONArray("recipients").getJSONObject(0).getString("id");
+                if (api.getOffline_pms().containsKey(userid))
+                {
+                    api.getOffline_pms().remove(userid);
+                }
+                User user = api.getUserById(userid);
+                if (user != null)
+                {
+                    ((UserImpl) user).setPrivateChannel(null);
+                }
+                api.getPmChannelMap().remove(content.getString("id"));
+                api.getEventManager().handle(
+                        new PrivateChannelDeleteEvent(
+                                api, responseNumber,
+                                user));
+                break;
+            }
+            case GROUP:
+            {
+                JDAImpl.LOG.debug("Received CHANNEL_DELETE for a group, but JDA doesn't support groups. (Use JDA-Client)");
                 break;
             }
             default:
