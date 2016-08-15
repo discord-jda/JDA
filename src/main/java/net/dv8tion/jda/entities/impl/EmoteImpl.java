@@ -32,7 +32,7 @@ public class EmoteImpl implements Emote
         this(name, id, null);
     }
 
-    public EmoteImpl(String id, String name, Guild guild)
+    public EmoteImpl(String name, String id, Guild guild)
     {
         this.id = id;
         this.name = name;
