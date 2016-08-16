@@ -106,7 +106,7 @@ public class ApplicationUtil
     public static String getAuthInvite(JDA jda, String guild, Permission... perms)
     {
         String link = ApplicationUtil.getAuthInvite(jda, perms); // Get the link sans guildid
-        return link == null ? null : link +"&guild_id="+ guild.getId(); // Start the dropdown on our guild
+        return link == null ? null : link +"&guild_id="+ guild; // Start the dropdown on our guild
     }
 
     private final JDAImpl api;
