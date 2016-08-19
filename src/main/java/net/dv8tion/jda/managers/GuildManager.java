@@ -677,8 +677,6 @@ public class GuildManager
      */
     public void ban(User user, int delDays)
     {
-        if (delDays < 0 || delDays > 7)
-            throw new IllegalArgumentException("The provided delDays value is either negative or greater than 7!");
         if (!guild.isAvailable())
         {
             throw new GuildUnavailableException();
