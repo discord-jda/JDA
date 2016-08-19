@@ -661,7 +661,7 @@ public class GuildManager
 
     /**
      * Bans a {@link net.dv8tion.jda.entities.User User} and deletes messages sent by the user
-     * based on the amount of delDays.<br>
+     * based on the amount of delDays which will be adjusted to the next legal value (0-7).<br>
      * If you wish to ban a user without deleting any messages, provide delDays with a value of 0.
      * This change will be applied immediately.
      * <p>
@@ -677,6 +677,8 @@ public class GuildManager
      */
     public void ban(User user, int delDays)
     {
+        if (delDays < 0 || delDays > 7)
+            throw new IllegalArgumentException("The provided delDays value is either negative or greater than 7!");
         if (!guild.isAvailable())
         {
             throw new GuildUnavailableException();
@@ -687,12 +689,12 @@ public class GuildManager
             checkPosition(user);
 
         ((JDAImpl) guild.getJDA()).getRequester().put(Requester.DISCORD_API_PREFIX + "guilds/"
-                + guild.getId() + "/bans/" + user.getId() + (delDays > 0 ? "?delete-message-days=" + delDays : ""), new JSONObject());
+                + guild.getId() + "/bans/" + user.getId() + (delDays > 0 ? "?delete-message-days=" + Math.min(delDays, 7) : ""), new JSONObject());
     }
 
     /**
      * Bans the {@link net.dv8tion.jda.entities.User User} specified by the userId and deletes messages sent by the user
-     * based on the amount of delDays.<br>
+     * based on the amount of delDays which will be adjusted to the next legal value (0-7).<br>
      * If you wish to ban a user without deleting any messages, provide delDays with a value of 0.
      * This change will be applied immediately.
      * <p>
@@ -710,7 +712,7 @@ public class GuildManager
      */
     public void ban(String userId, int delDays)
     {
-    	if (!guild.isAvailable())
+        if (!guild.isAvailable())
         {
             throw new GuildUnavailableException();
         }
@@ -723,7 +725,7 @@ public class GuildManager
         checkPermission(Permission.BAN_MEMBERS);
 
         Requester.Response response = ((JDAImpl) guild.getJDA()).getRequester().put(Requester.DISCORD_API_PREFIX + "guilds/"
-                + guild.getId() + "/bans/" + userId + (delDays > 0 ? "?delete-message-days=" + delDays : ""), new JSONObject());
+                + guild.getId() + "/bans/" + userId + (delDays > 0 ? "?delete-message-days=" + Math.min(delDays, 7) : ""), new JSONObject());
         if (response.isOk())
             return;
         if (response.code == 404)
