@@ -43,10 +43,17 @@ public interface Emote
     boolean isAvailable();
 
     /**
-     * Returns an unmodifiable list for guilds this emote is used on.
+     * The {@link net.dv8tion.jda.entities.Guild Guild} using this emote.
      *
-     * @return A list of guilds that use this emote.
+     * @return The guild using this emote or null if none of the to us known guilds use it.
      */
+    Guild getGuild();
+
+    /**
+     * <b><u>This method is deprecated and will be removed soon. Use {@link #getGuild()} instead.</u></b>
+     * @return List
+     */
+    @Deprecated
     List<Guild> getGuilds();
 
     /**

@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 package net.dv8tion.jda.handle;
 
@@ -39,9 +38,7 @@ public class GuildEmojisUpdateHandler extends SocketHandler
     protected String handleInternally(JSONObject content)
     {
         if (GuildLock.get(api).isLocked(content.getString("guild_id")))
-        {
             return content.getString("guild_id");
-        }
         Guild guild = api.getGuildMap().get(content.getString("guild_id"));
         if (guild == null)
         {
@@ -59,8 +56,7 @@ public class GuildEmojisUpdateHandler extends SocketHandler
             EmoteImpl emote = (EmoteImpl) api.getEmoteById(id);
             if (emote == null)
             {
-                emote = new EmoteImpl(name, id);
-                emote.addGuild(guild);
+                emote = new EmoteImpl(name, id, guild);
                 api.getEmoteMap().put(id, emote);
             }
             ((GuildImpl) guild).getEmoteMap().put(id, emote);
@@ -70,10 +66,9 @@ public class GuildEmojisUpdateHandler extends SocketHandler
         // Clean up emotes we can't see anymore
         for (Emote e : oldEmotes)
         {
-            ((EmoteImpl) e).removeGuild(guild);
-            if (e.getGuilds().isEmpty()) api.getEmoteMap().remove(e.getId());
+            ((GuildImpl) guild).getEmoteMap().remove(e.getId());
+            api.getEmoteMap().remove(e.getId());
         }
-
 
         return null;
     }
