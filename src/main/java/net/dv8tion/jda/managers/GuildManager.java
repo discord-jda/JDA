@@ -88,6 +88,7 @@ public class GuildManager
     private Guild.VerificationLevel verificationLevel = null;
     private String afkChannelId;
 
+    private final Object rolesLock = new Object();
     private final Map<User, Set<Role>> addedRoles = new HashMap<>();
     private final Map<User, Set<Role>> removedRoles = new HashMap<>();
 
@@ -302,27 +303,30 @@ public class GuildManager
             checkPosition(role);
         }
 
-        Set<Role> addRoles = addedRoles.get(user);
-        if (addRoles == null)
+        synchronized (rolesLock)
         {
-            addRoles = new HashSet<>();
-            addedRoles.put(user, addRoles);
-        }
-        Set<Role> removeRoles = removedRoles.get(user);
-        if (removeRoles == null)
-        {
-            removeRoles = new HashSet<>();
-            removedRoles.put(user, removeRoles);
-        }
-        for (Role role : roles)
-        {
-            if(guild.getPublicRole().equals(role))
-                return this;
+            Set<Role> addRoles = addedRoles.get(user);
+            if (addRoles == null)
+            {
+                addRoles = new HashSet<>();
+                addedRoles.put(user, addRoles);
+            }
+            Set<Role> removeRoles = removedRoles.get(user);
+            if (removeRoles == null)
+            {
+                removeRoles = new HashSet<>();
+                removedRoles.put(user, removeRoles);
+            }
+            for (Role role : roles)
+            {
+                if (guild.getPublicRole().equals(role))
+                    return this;
 
-            if (removeRoles.contains(role))
-                removeRoles.remove(role);
+                if (removeRoles.contains(role))
+                    removeRoles.remove(role);
 
-            addRoles.add(role);
+                addRoles.add(role);
+            }
         }
         return this;
     }
@@ -363,27 +367,30 @@ public class GuildManager
             checkPosition(role);
         }
 
-        Set<Role> addRoles = addedRoles.get(user);
-        if (addRoles == null)
+        synchronized (rolesLock)
         {
-            addRoles = new HashSet<>();
-            addedRoles.put(user, addRoles);
-        }
-        Set<Role> removeRoles = removedRoles.get(user);
-        if (removeRoles == null)
-        {
-            removeRoles = new HashSet<>();
-            removedRoles.put(user, removeRoles);
-        }
-        for (Role role : roles)
-        {
-            if(guild.getPublicRole().equals(role))
-                return this;
+            Set<Role> addRoles = addedRoles.get(user);
+            if (addRoles == null)
+            {
+                addRoles = new HashSet<>();
+                addedRoles.put(user, addRoles);
+            }
+            Set<Role> removeRoles = removedRoles.get(user);
+            if (removeRoles == null)
+            {
+                removeRoles = new HashSet<>();
+                removedRoles.put(user, removeRoles);
+            }
+            for (Role role : roles)
+            {
+                if (guild.getPublicRole().equals(role))
+                    return this;
 
-            if (addRoles.contains(role))
-                addRoles.remove(role);
+                if (addRoles.contains(role))
+                    addRoles.remove(role);
 
-            removeRoles.add(role);
+                removeRoles.add(role);
+            }
         }
         return this;
     }
@@ -429,8 +436,11 @@ public class GuildManager
         icon = null;
         verificationLevel = null;
         afkChannelId = guild.getAfkChannelId();
-        addedRoles.clear();
-        removedRoles.clear();
+        synchronized (rolesLock)
+        {
+            addedRoles.clear();
+            removedRoles.clear();
+        }
     }
 
     /**
@@ -466,26 +476,29 @@ public class GuildManager
             update(frame);
         }
 
-        if (addedRoles.size() > 0)
+        synchronized (rolesLock)
         {
-            checkPermission(Permission.MANAGE_ROLES);
-
-            for (User user : addedRoles.keySet())
+            if (addedRoles.size() > 0)
             {
-                List<Role> roles = guild.getRolesForUser(user);
-                List<String> roleIds = new LinkedList<>();
-                roles.forEach(r -> roleIds.add(r.getId()));
+                checkPermission(Permission.MANAGE_ROLES);
 
-                addedRoles.get(user).stream().filter(role -> !roleIds.contains(role.getId())).forEach(role -> roleIds.add(role.getId()));
-                removedRoles.get(user).stream().filter(role -> roleIds.contains(role.getId())).forEach(role -> roleIds.remove(role.getId()));
+                for (User user : addedRoles.keySet())
+                {
+                    List<Role> roles = guild.getRolesForUser(user);
+                    List<String> roleIds = new LinkedList<>();
+                    roles.forEach(r -> roleIds.add(r.getId()));
 
-                ((JDAImpl) guild.getJDA()).getRequester().patch(
-                        Requester.DISCORD_API_PREFIX + "guilds/" + guild.getId() + "/members/" + user.getId(),
-                        new JSONObject().put("roles", roleIds));
+                    addedRoles.get(user).stream().filter(role -> !roleIds.contains(role.getId())).forEach(role -> roleIds.add(role.getId()));
+                    removedRoles.get(user).stream().filter(role -> roleIds.contains(role.getId())).forEach(role -> roleIds.remove(role.getId()));
 
+                    ((JDAImpl) guild.getJDA()).getRequester().patch(
+                            Requester.DISCORD_API_PREFIX + "guilds/" + guild.getId() + "/members/" + user.getId(),
+                            new JSONObject().put("roles", roleIds));
+
+                }
+                addedRoles.clear();
+                removedRoles.clear();
             }
-            addedRoles.clear();
-            removedRoles.clear();
         }
     }
 
