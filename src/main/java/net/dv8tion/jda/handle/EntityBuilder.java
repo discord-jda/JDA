@@ -535,6 +535,8 @@ public class EntityBuilder
                 {
                     //We do this to properly order the mentions. The array given by discord is out of order sometimes.
                     int index = content.indexOf("<@" + mention.getString("id") + ">");
+                    if(index < 0)
+                        index = content.indexOf("<@!" + mention.getString("id") + ">");
                     mentionedUsers.put(index, u);
                 }
             }
