@@ -88,7 +88,26 @@ public class ApplicationUtil
         String applicationId = getApplicationId(jda);
         return applicationId == null ? null : getAuthInvite(applicationId, perms);
     }
-
+    
+    /**
+    * Creates an OAuth invite link for requesting permissions and preselecting a guild
+    * It requires a guild for the invite to request permissions for, and permissions to add.
+    * Only adds permissions.
+    * 
+    * @param jda
+    *      The JDA instance of the bot-account.
+    * @param guild
+    *      The guild ID to start the dropdown on.
+    * @param perms
+    *      List of permissions to start with.
+    * @return
+    *      The link used to invite the bot or null on failure
+    */
+    public static String getAuthInvite(JDA jda, String guild, Permission... perms)
+    {
+        String link = ApplicationUtil.getAuthInvite(jda, perms); // Get the link sans guildid
+        return link == null ? null : link +"&guild_id="+ guild; // Start the dropdown on our guild
+    }
 
     private final JDAImpl api;
 
