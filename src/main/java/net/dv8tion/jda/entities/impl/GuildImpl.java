@@ -325,6 +325,26 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    public TextChannel getTextChannelById(String id)
+    {
+        return getJDA().getTextChannelById(id) == null 
+            ? null 
+            : getTextChannels().contains(getJDA().getTextChannelById(id)) 
+                ? getJDA().getTextChannelById(id) 
+                : null;
+    }
+    
+    @Override
+    public VoiceChannel getVoiceChannelById(String id)
+    {
+        return getJDA().getVoiceChannelById(id) == null 
+            ? null 
+            : getVoiceChannels().contains(getJDA().getVoiceChannelById(id)) 
+                ? getJDA().getVoiceChannelById(id) 
+                : null;
+    }
+
+    @Override
     public OffsetDateTime getJoinDateForUser(User user)
     {
         return joinedAtMap.get(user);
