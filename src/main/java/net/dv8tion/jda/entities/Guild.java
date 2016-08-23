@@ -105,13 +105,13 @@ public interface Guild
      */
     Region getRegion();
 
-	/**
-	 * Returns an unmodifiable list of emotes used be this guild.
-	 *
-	 * @return
-	 *      A list of emotes used by this guild.
-	 */
-	List<Emote> getEmotes();
+    /**
+     * Returns an unmodifiable list of emotes used be this guild.
+     *
+     * @return
+     *      A list of emotes used by this guild.
+     */
+    List<Emote> getEmotes();
 
     /**
      * The {@link net.dv8tion.jda.entities.User Users} that are part of this {@link net.dv8tion.jda.entities.Guild Guild}.
@@ -275,6 +275,26 @@ public interface Guild
      *      The {@link net.dv8tion.jda.entities.TextChannel TextChannel} representing the public channel for this guild.
      */
     TextChannel getPublicChannel();
+
+    /**
+     * Retrieves the {@link net.dv8tion.jda.entities.TextChannel TextChannel} to the given id, or null if this Guild does not have one matching it.
+     *
+     * @param id
+     *      The id of the TextChannel
+     * @return
+     *      The TextChannel matching this id or null.
+     */
+    TextChannel getTextChannelById(String id);
+    
+    /**
+     * Retrieves the {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} to the given id, or null if this Guild does not have one matching it.
+     *
+     * @param id
+     *      The id of the VoiceChannel
+     * @return
+     *      The VoiceChannel matching this id or null.
+     */
+    VoiceChannel getVoiceChannelById(String id);
 
     /**
      * Provides the join-date for a given {@link net.dv8tion.jda.entities.User User}.
