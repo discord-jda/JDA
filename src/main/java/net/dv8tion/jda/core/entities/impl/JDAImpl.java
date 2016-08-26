@@ -21,6 +21,9 @@ import net.dv8tion.jda.bot.JDABot;
 import net.dv8tion.jda.client.JDAClient;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.SelfInfo;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.requests.Request;
@@ -33,16 +36,20 @@ import org.json.JSONObject;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
+import java.util.HashMap;
 
 public abstract class JDAImpl implements JDA
 {
     public static final SimpleLog LOG = SimpleLog.getLog("JDA");
 
-    protected HttpHost proxy;
+    protected final HashMap<String, User> userMap = new HashMap<>(200);
+    protected final HashMap<String, Guild> guildMap = new HashMap<>(10);
 
+    protected HttpHost proxy;
     protected WebSocketClient client;
     protected Requester requester = new Requester();
     protected Status status = Status.INITIALIZING;
+    protected SelfInfo selfInfo;
     protected ShardInfo shardInfo;
     protected String token = null;
     protected boolean audioEnabled;
@@ -216,12 +223,6 @@ public abstract class JDAImpl implements JDA
     }
 
     @Override
-    public void installAuxiliaryCable(int port) throws UnsupportedOperationException
-    {
-        throw new UnsupportedOperationException("Nice try m8!");
-    }
-
-    @Override
     public JDAClient asClient()
     {
         throw new AccountTypeException(AccountType.BOT);
@@ -245,6 +246,12 @@ public abstract class JDAImpl implements JDA
         return shardInfo;
     }
 
+    @Override
+    public void installAuxiliaryCable(int port) throws UnsupportedOperationException
+    {
+        throw new UnsupportedOperationException("Nice try m8!");
+    }
+
     public void setResponseTotal(int responseTotal)
     {
         this.responseTotal = responseTotal;
@@ -258,5 +265,26 @@ public abstract class JDAImpl implements JDA
     public WebSocketClient getClient()
     {
         return client;
+    }
+
+    public HashMap<String, User> getUserMap()
+    {
+        return userMap;
+    }
+
+    public HashMap<String, Guild> getGuildMap()
+    {
+        return guildMap;
+    }
+
+    @Override
+    public SelfInfo getSelfInfo()
+    {
+        return selfInfo;
+    }
+
+    public void setSelfInfo(SelfInfo selfInfo)
+    {
+        this.selfInfo = selfInfo;
     }
 }

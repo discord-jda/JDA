@@ -18,6 +18,7 @@ package net.dv8tion.jda.core;
 
 import net.dv8tion.jda.bot.JDABot;
 import net.dv8tion.jda.client.JDAClient;
+import net.dv8tion.jda.core.entities.SelfInfo;
 import org.apache.http.HttpHost;
 
 public interface JDA
@@ -89,6 +90,16 @@ public interface JDA
      *      Current JDA status.
      */
     Status getStatus();
+
+    /**
+     * Returns the currently logged in account represented by {@link net.dv8tion.jda.core.entities.SelfInfo SelfInfo}.<br>
+     * Account settings <b>cannot</b> be modified using this object. If you wish to modify account settings please
+     *   use the AccountManager.
+     *
+     * @return
+     *      The currently logged in account.
+     */
+    SelfInfo getSelfInfo();
 
     /**
      * The login token that is currently being used for Discord authentication.
