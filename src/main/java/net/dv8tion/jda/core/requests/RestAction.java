@@ -14,37 +14,10 @@
  *  limitations under the License.
  */
 
-package net.dv8tion.jda.core.entities;
+package net.dv8tion.jda.core.requests;
 
-import net.dv8tion.jda.core.JDA;
-
-import java.awt.Color;
-import java.time.OffsetDateTime;
-import java.util.List;
-
-public interface Member
+public class RestAction
 {
-    User getUser();
-
-    Guild getGuild();
-
-    JDA getJDA();
-
-    OffsetDateTime getJoinDate();
-
-    VoiceStatus getVoiceStatus();
-
-    /**
-     * Returns the current nickname of this Member for the parent Guild.
-     *
-     * @return
-     *      The nickname or null, if no nickname is set.
-     */
-    String getNickname();
-
-    String getEffectiveName();
-
-    List<Role> getRoles();
-
-    Color getColor();
+    public void queue() {}
+    public void block() {}
 }

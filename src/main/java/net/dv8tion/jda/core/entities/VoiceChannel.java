@@ -17,16 +17,16 @@ package net.dv8tion.jda.core.entities;
 
 /**
  * Represents a Discord Voice Channel.
- * As a VoiceChannel has no extra functionality as its {@link net.dv8tion.jda.entities.Channel Channel} parent,
+ * As a VoiceChannel has no extra functionality as its {@link net.dv8tion.jda.core.entities.Channel Channel} parent,
  * this interface is empty.
- * This interface only exists to distinct {@link net.dv8tion.jda.entities.Channel Channels} into
- * VoiceChannels and {@link net.dv8tion.jda.entities.TextChannel TextChannels}.
+ * This interface only exists to distinct {@link net.dv8tion.jda.core.entities.Channel Channels} into
+ * VoiceChannels and {@link net.dv8tion.jda.core.entities.TextChannel TextChannels}.
  */
 public interface VoiceChannel extends Channel, Comparable<VoiceChannel>
 {
     /**
-     * The maximum amount of {@link net.dv8tion.jda.entities.User Users} that can be in this
-     * {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannel} at one time.
+     * The maximum amount of {@link net.dv8tion.jda.core.entities.User Users} that can be in this
+     * {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} at one time.
      * <br>
      * 0 - No limit <br>
      *

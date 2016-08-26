@@ -15,11 +15,11 @@
  */
 package net.dv8tion.jda.core.entities;
 
-import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.Permission;
-import net.dv8tion.jda.managers.ChannelManager;
-import net.dv8tion.jda.managers.PermissionOverrideManager;
-import net.dv8tion.jda.utils.InviteUtil;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.Permission;
+//import net.dv8tion.jda.core.managers.ChannelManager;
+//import net.dv8tion.jda.core.managers.PermissionOverrideManager;
+//import net.dv8tion.jda.core.utils.InviteUtil;
 
 import java.util.List;
 
@@ -63,13 +63,15 @@ public interface Channel
 
     /**
      * A List of all {@link net.dv8tion.jda.core.entities.User Users} that are in this Channel
-     * For {@link net.dv8tion.jda.core.entities.TextChannel TextChannels}, this returns all Users with the {@link net.dv8tion.jda.Permission#MESSAGE_READ} Permission.
+     * For {@link net.dv8tion.jda.core.entities.TextChannel TextChannels}, this returns all Users with the {@link net.dv8tion.jda.core.Permission#MESSAGE_READ} Permission.
      * In {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels}, this returns all Users that joined that VoiceChannel.
      *
      * @return
      *      A List of {@link net.dv8tion.jda.core.entities.User Users} that are in this Channel.
      */
     List<User> getUsers();
+
+    List<Member> getMembers();
 
     /**
      * The position this Channel is displayed at.<br>
@@ -95,7 +97,7 @@ public interface Channel
     int getPositionRaw();
 
     /**
-     * Checks if the given {@link net.dv8tion.jda.core.entities.User User} has the given {@link net.dv8tion.jda.Permission Permission}
+     * Checks if the given {@link net.dv8tion.jda.core.entities.User User} has the given {@link net.dv8tion.jda.core.Permission Permission}
      * in this Channel
      *
      * @param user
@@ -107,17 +109,17 @@ public interface Channel
      */
     boolean checkPermission(User user, Permission permission);
 
-    /**
-     * Returns the {@link net.dv8tion.jda.managers.ChannelManager ChannelManager} for this Channel.
-     * In the ChannelManager, you can modify the name, topic and position of this Channel.
-     *
-     * @return
-     *      The ChannelManager of this Channel
-     */
-    ChannelManager getManager();
+//    /**
+//     * Returns the {@link net.dv8tion.jda.managers.ChannelManager ChannelManager} for this Channel.
+//     * In the ChannelManager, you can modify the name, topic and position of this Channel.
+//     *
+//     * @return
+//     *      The ChannelManager of this Channel
+//     */
+//    ChannelManager getManager();
 
     /**
-     * Returns the {@link net.dv8tion.jda.JDA JDA} instance of this Channel
+     * Returns the {@link net.dv8tion.jda.core.JDA JDA} instance of this Channel
      * @return
      *      the corresponding JDA instance
      */
@@ -179,33 +181,33 @@ public interface Channel
      */
     List<PermissionOverride> getRolePermissionOverrides();
 
-    /**
-     * Creates a new {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride} for a given {@link net.dv8tion.jda.core.entities.User User}.
-     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS Permission}
-     *
-     * @param user
-     *      the User to create an Override for
-     * @return
-     *      the PermissionOverrideManager for the created PermissionOverride
-     */
-    PermissionOverrideManager createPermissionOverride(User user);
-
-    /**
-     * Creates a new {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride} for a given {@link net.dv8tion.jda.core.entities.Role Role}.
-     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS Permission}
-     *
-     * @param role
-     *      the Role to create an Override for
-     * @return
-     *      the PermissionOverrideManager for the created PermissionOverride
-     */
-    PermissionOverrideManager createPermissionOverride(Role role);
-
-    /**
-     * Provides a list of all {@link net.dv8tion.jda.utils.InviteUtil.AdvancedInvite Invites} for this Channel.
-     *
-     * @return
-     *      An Immutable List of {@link net.dv8tion.jda.utils.InviteUtil.AdvancedInvite Invites} for this channel.
-     */
-    List<InviteUtil.AdvancedInvite> getInvites();
+//    /**
+//     * Creates a new {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride} for a given {@link net.dv8tion.jda.core.entities.User User}.
+//     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS Permission}
+//     *
+//     * @param user
+//     *      the User to create an Override for
+//     * @return
+//     *      the PermissionOverrideManager for the created PermissionOverride
+//     */
+//    PermissionOverrideManager createPermissionOverride(User user);
+//
+//    /**
+//     * Creates a new {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride} for a given {@link net.dv8tion.jda.core.entities.Role Role}.
+//     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS Permission}
+//     *
+//     * @param role
+//     *      the Role to create an Override for
+//     * @return
+//     *      the PermissionOverrideManager for the created PermissionOverride
+//     */
+//    PermissionOverrideManager createPermissionOverride(Role role);
+//
+//    /**
+//     * Provides a list of all {@link net.dv8tion.jda.utils.InviteUtil.AdvancedInvite Invites} for this Channel.
+//     *
+//     * @return
+//     *      An Immutable List of {@link net.dv8tion.jda.utils.InviteUtil.AdvancedInvite Invites} for this channel.
+//     */
+//    List<InviteUtil.AdvancedInvite> getInvites();
 }

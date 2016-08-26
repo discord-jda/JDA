@@ -132,14 +132,14 @@ public interface Guild
 //     */
 //    ChannelManager createTextChannel(String name);
 //
-//    /**
-//     * The {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels} available on the {@link net.dv8tion.jda.core.entities.Guild Guild}.
-//     * The channels returned will be sorted according to their position.
-//     *
-//     * @return
-//     *      An Immutable List of {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels}.
-//     */
-//    List<VoiceChannel> getVoiceChannels();
+    /**
+     * The {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels} available on the {@link net.dv8tion.jda.core.entities.Guild Guild}.
+     * The channels returned will be sorted according to their position.
+     *
+     * @return
+     *      An Immutable List of {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels}.
+     */
+    List<VoiceChannel> getVoiceChannels();
 //
 //    /**
 //     * Creates a new {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} in this Guild.
@@ -153,26 +153,26 @@ public interface Guild
 //     *      if the guild is temporarily unavailable
 //     */
 //    ChannelManager createVoiceChannel(String name);
-//
-//    /**
-//     * The {@link net.dv8tion.jda.core.entities.Role Roles} of this {@link net.dv8tion.jda.core.entities.Guild Guild}.
-//     * The roles returned will be sorted according to their position.
-//     *
-//     * @return
-//     *      An Immutable List of {@link net.dv8tion.jda.core.entities.Role Roles}.
-//     */
-//    List<Role> getRoles();
-//
-//    /**
-//     * This returns the {@link net.dv8tion.jda.core.entities.Role Role} which has the same id as the one provided.<br>
-//     * If there is no {@link net.dv8tion.jda.core.entities.Role Role} that matches the requested id, <code>null</code> is returned.
-//     *
-//     * @param id
-//     *      The id of the {@link net.dv8tion.jda.core.entities.Role Role}.
-//     * @return
-//     *      Possibly-null Role with matching id.
-//     */
-//    Role getRoleById(String id);
+
+    /**
+     * The {@link net.dv8tion.jda.core.entities.Role Roles} of this {@link net.dv8tion.jda.core.entities.Guild Guild}.
+     * The roles returned will be sorted according to their position.
+     *
+     * @return
+     *      An Immutable List of {@link net.dv8tion.jda.core.entities.Role Roles}.
+     */
+    List<Role> getRoles();
+
+    /**
+     * This returns the {@link net.dv8tion.jda.core.entities.Role Role} which has the same id as the one provided.<br>
+     * If there is no {@link net.dv8tion.jda.core.entities.Role Role} that matches the requested id, <code>null</code> is returned.
+     *
+     * @param id
+     *      The id of the {@link net.dv8tion.jda.core.entities.Role Role}.
+     * @return
+     *      Possibly-null Role with matching id.
+     */
+    Role getRoleById(String id);
 //
 //    /**
 //     * Creates a new {@link net.dv8tion.jda.core.entities.Role Role} in this Guild.
@@ -201,19 +201,19 @@ public interface Guild
 //     *      if the bot doesn't has {@link net.dv8tion.jda.Permission#MANAGE_ROLES MANAGE_ROLES Permission} and every Permission the given Role has
 //     */
 //    RoleManager createCopyOfRole(Role role);
-//
-//    /**
-//     * Provides all of the {@link net.dv8tion.jda.core.entities.Role Roles} that the provided {@link net.dv8tion.jda.core.entities.User User}
-//     *  has been assigned.<br>
-//     * The roles returned will be sorted according to their position.<br>
-//     * If this the provided user is not in this guild, the list returned will be null.
-//     *
-//     * @param user
-//     *          The {@link net.dv8tion.jda.core.entities.User User} that we wish to get the {@link net.dv8tion.jda.core.entities.Role Roles} related to.
-//     * @return
-//     *      An Immutable List of {@link net.dv8tion.jda.core.entities.Role Roles} or null if the provided user isn't in this Guild.
-//     */
-//    List<Role> getRolesForUser(User user);
+
+    /**
+     * Provides all of the {@link net.dv8tion.jda.core.entities.Role Roles} that the provided {@link net.dv8tion.jda.core.entities.User User}
+     *  has been assigned.<br>
+     * The roles returned will be sorted according to their position.<br>
+     * If this the provided user is not in this guild, the list returned will be null.
+     *
+     * @param user
+     *          The {@link net.dv8tion.jda.core.entities.User User} that we wish to get the {@link net.dv8tion.jda.core.entities.Role Roles} related to.
+     * @return
+     *      An Immutable List of {@link net.dv8tion.jda.core.entities.Role Roles} or null if the provided user isn't in this Guild.
+     */
+    List<Role> getRolesForUser(User user);
 //
 //    /**
 //     * Provides the {@link net.dv8tion.jda.core.entities.Role Role} that determines the color for the provided {@link net.dv8tion.jda.core.entities.User User}
@@ -221,7 +221,7 @@ public interface Guild
 //     * If the {@link net.dv8tion.jda.core.entities.User User} has the default color, this returns the same as getPublicRole();
 //     */
 //    Role getColorDeterminantRoleForUser(User user);
-//
+
 //    /**
 //     * Provides all {@link net.dv8tion.jda.core.entities.User Users} that have the provided role.
 //     *
@@ -231,23 +231,25 @@ public interface Guild
 //     *      An Immutable List of {@link net.dv8tion.jda.core.entities.User Users}.
 //     */
 //    List<User> getUsersWithRole(Role role);
-//
-//    /**
-//     * The @everyone {@link net.dv8tion.jda.core.entities.Role Role} of this {@link net.dv8tion.jda.core.entities.Guild Guild}
-//     *
-//     * @return The @everyone {@link net.dv8tion.jda.core.entities.Role Role}
-//     */
-//    Role getPublicRole();
-//
-//    /**
-//     * The default {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} for a {@link net.dv8tion.jda.core.entities.Guild Guild}.
-//     * This channel cannot be deleted and the {@link #getPublicRole() Public Role} always has the ability to
-//     * {@link net.dv8tion.jda.Permission#MESSAGE_READ Permission.MESSAGE_READ} this channel.
-//     *
-//     * @return
-//     *      The {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} representing the public channel for this guild.
-//     */
-//    TextChannel getPublicChannel();
+
+    List<Member> getMembersWithRole(Role role);
+
+    /**
+     * The @everyone {@link net.dv8tion.jda.core.entities.Role Role} of this {@link net.dv8tion.jda.core.entities.Guild Guild}
+     *
+     * @return The @everyone {@link net.dv8tion.jda.core.entities.Role Role}
+     */
+    Role getPublicRole();
+
+    /**
+     * The default {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} for a {@link net.dv8tion.jda.core.entities.Guild Guild}.
+     * This channel cannot be deleted and the {@link #getPublicRole() Public Role} always has the ability to
+     * {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ} this channel.
+     *
+     * @return
+     *      The {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} representing the public channel for this guild.
+     */
+    TextChannel getPublicChannel();
 
 //    /**
 //     * Returns the {@link net.dv8tion.jda.managers.GuildManager GuildManager} for this Guild.

@@ -59,13 +59,13 @@ public interface VoiceStatus
     boolean isSuppressed();
 
     /**
-//     * Returns the current {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} of the {@link net.dv8tion.jda.core.entities.User User}
-//     * If the {@link net.dv8tion.jda.core.entities.User User} is currently not in a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}, this returns null
-//     *
-//     * @return
-//     *      the User's VoiceChannel or null
-//     */
-//    VoiceChannel getChannel();
+     * Returns the current {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} of the {@link net.dv8tion.jda.core.entities.User User}
+     * If the {@link net.dv8tion.jda.core.entities.User User} is currently not in a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}, this returns null
+     *
+     * @return
+     *      the User's VoiceChannel or null
+     */
+    VoiceChannel getChannel();
 
     /**
      * Returns the current {@link net.dv8tion.jda.core.entities.Guild Guild} of the {@link net.dv8tion.jda.core.entities.User User's} {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
