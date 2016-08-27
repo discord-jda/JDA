@@ -17,14 +17,10 @@
 package net.dv8tion.jda.core.handle;
 
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.Region;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.SelfInfo;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.entities.impl.GuildImpl;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.entities.impl.SelfInfoImpl;
-import net.dv8tion.jda.core.entities.impl.UserImpl;
+import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.impl.*;
 import net.dv8tion.jda.core.requests.GuildLock;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -102,7 +98,6 @@ public class EntityBuilder
                 .setRegion(Region.fromKey(guild.getString("region")))
                 .setName(guild.getString("name"))
                 .setAfkTimeout(guild.getInt("afk_timeout"))
-                .setAfkChannelId(guild.isNull("afk_channel_id") ? null : guild.getString("afk_channel_id"))
                 .setVerificationLevel(Guild.VerificationLevel.fromKey(guild.getInt("verification_level")));
 
 
@@ -166,7 +161,9 @@ public class EntityBuilder
                 }
                 else if (type == ChannelType.VOICE)
                 {
-                    createVoiceChannel(channel, guildObj.getId());
+                    VoiceChannel newChannel = createVoiceChannel(channel, guildObj.getId());
+                    if (newChannel.getId().equals(guild.getString("afk_channel_id")))
+                        guildObj.setAfkChannel(newChannel);
                 }
                 else
                     JDAImpl.LOG.fatal("Received a channel for a guild that isn't a text or voice channel. JSON: " + channel);

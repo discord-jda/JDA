@@ -21,9 +21,7 @@ import net.dv8tion.jda.bot.JDABot;
 import net.dv8tion.jda.client.JDAClient;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.SelfInfo;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.requests.Request;
@@ -36,14 +34,21 @@ import org.json.JSONObject;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class JDAImpl implements JDA
 {
     public static final SimpleLog LOG = SimpleLog.getLog("JDA");
 
-    protected final HashMap<String, User> userMap = new HashMap<>(200);
-    protected final HashMap<String, Guild> guildMap = new HashMap<>(10);
+    protected final HashMap<String, User> users = new HashMap<>(200);
+    protected final HashMap<String, Guild> guilds = new HashMap<>(10);
+    protected final HashMap<String, TextChannel> textChannels = new HashMap<>();
+    protected final HashMap<String, VoiceChannel> voiceChannels = new HashMap<>();
+    protected final HashMap<String, PrivateChannel> privateChannels = new HashMap<>();
 
     protected HttpHost proxy;
     protected WebSocketClient client;
@@ -198,6 +203,112 @@ public abstract class JDAImpl implements JDA
     }
 
     @Override
+    public List<User> getUsers()
+    {
+        return Collections.unmodifiableList(new ArrayList<>(users.values()));
+    }
+
+    @Override
+    public User getUserById(String id)
+    {
+        return users.get(id);
+    }
+
+    @Override
+    public List<User> getUsersByName(String name, boolean ignoreCase)
+    {
+        return users.values().stream().filter(u ->
+            ignoreCase
+            ? name.equalsIgnoreCase(u.getName())
+            : name.equals(u.getName()))
+        .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Guild> getGuilds()
+    {
+        return Collections.unmodifiableList(new ArrayList<>(guilds.values()));
+    }
+
+    @Override
+    public Guild getGuildById(String id)
+    {
+        return guilds.get(id);
+    }
+
+    @Override
+    public List<Guild> getGuildsByName(String name, boolean ignoreCase)
+    {
+        return guilds.values().stream().filter(g ->
+                ignoreCase
+                        ? name.equalsIgnoreCase(g.getName())
+                        : name.equals(g.getName()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<TextChannel> getTextChannels()
+    {
+        return Collections.unmodifiableList(new ArrayList<>(textChannels.values()));
+    }
+
+    @Override
+    public TextChannel getTextChannelById(String id)
+    {
+        return textChannels.get(id);
+    }
+
+    @Override
+    public List<TextChannel> getTextChannelsByName(String name, boolean ignoreCase)
+    {
+        return textChannels.values().stream().filter(tc ->
+                ignoreCase
+                        ? name.equalsIgnoreCase(tc.getName())
+                        : name.equals(tc.getName()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<VoiceChannel> getVoiceChannels()
+    {
+        return Collections.unmodifiableList(new ArrayList<>(voiceChannels.values()));
+    }
+
+    @Override
+    public VoiceChannel getVoiceChannelById(String id)
+    {
+        return voiceChannels.get(id);
+    }
+
+    @Override
+    public List<VoiceChannel> getVoiceChannelByName(String name, boolean ignoreCase)
+    {
+        return voiceChannels.values().stream().filter(vc ->
+                ignoreCase
+                        ? name.equalsIgnoreCase(vc.getName())
+                        : name.equals(vc.getName()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PrivateChannel> getPrivateChannels()
+    {
+        return Collections.unmodifiableList(new ArrayList<>(privateChannels.values()));
+    }
+
+    @Override
+    public PrivateChannel getPrivateChannelById(String id)
+    {
+        return privateChannels.get(id);
+    }
+
+    @Override
+    public SelfInfo getSelfInfo()
+    {
+        return selfInfo;
+    }
+
+    @Override
     public void shutdown()
     {
         shutdown(true);
@@ -269,18 +380,27 @@ public abstract class JDAImpl implements JDA
 
     public HashMap<String, User> getUserMap()
     {
-        return userMap;
+        return users;
     }
 
     public HashMap<String, Guild> getGuildMap()
     {
-        return guildMap;
+        return guilds;
     }
 
-    @Override
-    public SelfInfo getSelfInfo()
+    public HashMap<String, TextChannel> getTextChannelMap()
     {
-        return selfInfo;
+        return textChannels;
+    }
+
+    public HashMap<String, VoiceChannel> getVoiceChannelMap()
+    {
+        return voiceChannels;
+    }
+
+    public HashMap<String, PrivateChannel> getPrivateChannelMap()
+    {
+        return privateChannels;
     }
 
     public void setSelfInfo(SelfInfo selfInfo)

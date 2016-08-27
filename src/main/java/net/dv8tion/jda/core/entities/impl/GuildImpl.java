@@ -240,54 +240,64 @@ public class GuildImpl implements Guild
 
     // ---- Impl functional below -----
 
-    public void setAvailable(boolean available)
+    public GuildImpl setAvailable(boolean available)
     {
         this.available = available;
+        return this;
     }
 
-    public void setOwner(Member owner)
+    public GuildImpl setOwner(Member owner)
     {
         this.owner = owner;
+        return this;
     }
 
-    public void setName(String name)
+    public GuildImpl setName(String name)
     {
         this.name = name;
+        return this;
     }
 
-    public void setIconId(String iconId)
+    public GuildImpl setIconId(String iconId)
     {
         this.iconId = iconId;
+        return this;
     }
 
-    public void setRegion(Region region)
+    public GuildImpl setRegion(Region region)
     {
         this.region = region;
+        return this;
     }
 
-    public void setPublicChannel(TextChannel publicChannel)
+    public GuildImpl setPublicChannel(TextChannel publicChannel)
     {
         this.publicChannel = publicChannel;
+        return this;
     }
 
-    public void setAfkChannel(VoiceChannel afkChannel)
+    public GuildImpl setAfkChannel(VoiceChannel afkChannel)
     {
         this.afkChannel = afkChannel;
+        return this;
     }
 
-    public void setPublicRole(Role publicRole)
+    public GuildImpl setPublicRole(Role publicRole)
     {
         this.publicRole = publicRole;
+        return this;
     }
 
-    public void setVerificationLevel(VerificationLevel verificationLevel)
+    public GuildImpl setVerificationLevel(VerificationLevel verificationLevel)
     {
         this.verificationLevel = verificationLevel;
+        return this;
     }
 
-    public void setAfkTimeout(int afkTimeout)
+    public GuildImpl setAfkTimeout(int afkTimeout)
     {
         this.afkTimeout = afkTimeout;
+        return this;
     }
 
     // -- Map getters --
