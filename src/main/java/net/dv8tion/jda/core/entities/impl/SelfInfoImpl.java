@@ -34,7 +34,7 @@ public class SelfInfoImpl extends UserImpl implements SelfInfo
     }
 
     @Override
-    public boolean mfaEnabled()
+    public boolean isMfaEnabled()
     {
         return mfaEnabled;
     }

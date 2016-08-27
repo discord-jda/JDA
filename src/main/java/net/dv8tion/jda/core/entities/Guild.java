@@ -18,6 +18,7 @@ package net.dv8tion.jda.core.entities;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Region;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -92,12 +93,12 @@ public interface Guild extends ISnowflake
     List<Member> getMembersByName(String name, boolean ignoreCase);
     List<Member> getMembersByNickname(String nickname, boolean ignoreCase);
     List<Member> getMembersByEffectiveName(String name, boolean ignoreCase);
+    List<Member> getMembersWithRoles(Role... roles);
+    List<Member> getMembersWithRoles(Collection<Role> roles);
 
     Member getMember(User user);
 
     List<Member> getMembers();
-
-    List<User> getUsers();
 
     /**
      * The {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} available on the {@link net.dv8tion.jda.core.entities.Guild Guild}.
@@ -198,18 +199,6 @@ public interface Guild extends ISnowflake
 //     * If the {@link net.dv8tion.jda.core.entities.User User} has the default color, this returns the same as getPublicRole();
 //     */
 //    Role getColorDeterminantRoleForUser(User user);
-
-//    /**
-//     * Provides all {@link net.dv8tion.jda.core.entities.User Users} that have the provided role.
-//     *
-//     * @param role
-//     *          The {@link net.dv8tion.jda.core.entities.Role Role} that we are checking which users have.
-//     * @return
-//     *      An Immutable List of {@link net.dv8tion.jda.core.entities.User Users}.
-//     */
-//    List<User> getUsersWithRole(Role role);
-
-    List<Member> getMembersWithRole(Role role);
 
     /**
      * The @everyone {@link net.dv8tion.jda.core.entities.Role Role} of this {@link net.dv8tion.jda.core.entities.Guild Guild}

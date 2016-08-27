@@ -38,7 +38,7 @@ public interface SelfInfo extends User
      * @return
      *      boolean specifying whether or not this account has MFA protecting it.
      */
-    boolean mfaEnabled();
+    boolean isMfaEnabled();
 
 //    /**
 //     * Creates a OAuth invite-link used to invite bot-accounts.<br>

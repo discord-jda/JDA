@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.core.entities;
 
+import net.dv8tion.jda.core.requests.RestAction;
+
 import java.util.Collection;
 
 /**
@@ -52,7 +54,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * @throws net.dv8tion.jda.exceptions.RateLimitedException
      *      If the a ratelimit is encountered. Ratelimit for bulk_delete is 1 call / second / guild.
      */
-    void deleteMessages(Collection<Message> messages);
+    RestAction deleteMessages(Collection<Message> messages);
 
     /**
      * Bulk deletes a list of messages. <b>This is not the same as calling {@link net.dv8tion.jda.core.entities.MessageChannel#deleteMessageById(String) in a loop.</b> <br>
@@ -77,5 +79,5 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * @throws net.dv8tion.jda.exceptions.RateLimitedException
      *      If the a ratelimit is encountered. Ratelimit for bulk_delete is 1 call / second / guild.
      */
-    void deleteMessagesByIds(Collection<String> messageIds);
+    RestAction deleteMessagesByIds(Collection<String> messageIds);
 }

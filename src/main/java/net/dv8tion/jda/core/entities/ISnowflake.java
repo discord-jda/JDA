@@ -16,6 +16,10 @@
 
 package net.dv8tion.jda.core.entities;
 
+import net.dv8tion.jda.core.utils.MiscUtil;
+
+import java.time.OffsetDateTime;
+
 public interface ISnowflake
 {
     /**
@@ -25,4 +29,9 @@ public interface ISnowflake
      *      Never-null String containing the Id.
      */
     String getId();
+
+    default OffsetDateTime getCreationTime()
+    {
+        return MiscUtil.getCreationTime(getId());
+    }
 }

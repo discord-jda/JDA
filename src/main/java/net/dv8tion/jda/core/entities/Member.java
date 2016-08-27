@@ -17,12 +17,13 @@
 package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.Permission;
 
 import java.awt.Color;
 import java.time.OffsetDateTime;
 import java.util.List;
 
-public interface Member
+public interface Member extends IMentionable
 {
     User getUser();
 
@@ -47,4 +48,7 @@ public interface Member
     List<Role> getRoles();
 
     Color getColor();
+
+    List<Permission> getPermissions();
+    List<Permission> getPermissions(Channel channel);
 }

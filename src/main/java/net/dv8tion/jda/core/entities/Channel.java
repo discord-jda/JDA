@@ -30,7 +30,7 @@ public interface Channel extends ISnowflake
 {
 
     /**
-     * The human readable name of the  Channel.<br>
+     * The human readable name of the  Channel.<br />
      * If no name has been set, this returns null.
      *
      * @return
@@ -56,15 +56,13 @@ public interface Channel extends ISnowflake
     Guild getGuild();
 
     /**
-     * A List of all {@link net.dv8tion.jda.core.entities.User Users} that are in this Channel
-     * For {@link net.dv8tion.jda.core.entities.TextChannel TextChannels}, this returns all Users with the {@link net.dv8tion.jda.core.Permission#MESSAGE_READ} Permission.
-     * In {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels}, this returns all Users that joined that VoiceChannel.
+     * A List of all {@link net.dv8tion.jda.core.entities.Member Members} that are in this Channel
+     * For {@link net.dv8tion.jda.core.entities.TextChannel TextChannels}, this returns all Members with the {@link net.dv8tion.jda.core.Permission#MESSAGE_READ} Permission.
+     * In {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels}, this returns all Members that joined that VoiceChannel.
      *
      * @return
-     *      A List of {@link net.dv8tion.jda.core.entities.User Users} that are in this Channel.
+     *      A List of {@link net.dv8tion.jda.core.entities.Member Members} that are in this Channel.
      */
-    List<User> getUsers();
-
     List<Member> getMembers();
 
     /**
@@ -129,7 +127,7 @@ public interface Channel extends ISnowflake
      * @return
      *      Possibly-null {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride} relating to the provided {@link net.dv8tion.jda.core.entities.User User}.
      */
-    PermissionOverride getOverrideForUser(User user);
+    PermissionOverride getOverrideForMember(Member member);
 
     /**
      * The {@link PermissionOverride} relating to the specified {@link net.dv8tion.jda.core.entities.Role Role}.
@@ -156,14 +154,14 @@ public interface Channel extends ISnowflake
     List<PermissionOverride> getPermissionOverrides();
 
     /**
-     * Gets all of the {@link net.dv8tion.jda.core.entities.User User} {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides}
+     * Gets all of the {@link net.dv8tion.jda.core.entities.Member Member} {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides}
      * that are part of this {@link net.dv8tion.jda.core.entities.Channel Channel}.
      *
      * @return
-     *      Possibly-empty list of all {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides} for {@link net.dv8tion.jda.core.entities.User Users}
+     *      Possibly-empty list of all {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides} for {@link net.dv8tion.jda.core.entities.Member Member}
      *      for this {@link net.dv8tion.jda.core.entities.Channel Channel}.
      */
-    List<PermissionOverride> getUserPermissionOverrides();
+    List<PermissionOverride> getMemberPermissionOverrides();
 
     /**
      * Gets all of the {@link net.dv8tion.jda.core.entities.Role Role} {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides}
@@ -176,15 +174,15 @@ public interface Channel extends ISnowflake
     List<PermissionOverride> getRolePermissionOverrides();
 
 //    /**
-//     * Creates a new {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride} for a given {@link net.dv8tion.jda.core.entities.User User}.
+//     * Creates a new {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride} for a given {@link net.dv8tion.jda.core.entities.Member Member}.
 //     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS Permission}
 //     *
-//     * @param user
-//     *      the User to create an Override for
+//     * @param member
+//     *      the Member to create an Override for
 //     * @return
 //     *      the PermissionOverrideManager for the created PermissionOverride
 //     */
-//    PermissionOverrideManager createPermissionOverride(User user);
+//    PermissionOverrideManager createPermissionOverride(Member member);
 //
 //    /**
 //     * Creates a new {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride} for a given {@link net.dv8tion.jda.core.entities.Role Role}.

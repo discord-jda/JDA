@@ -20,10 +20,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class GuildImpl implements Guild
@@ -140,6 +137,21 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    public List<Member> getMembersWithRoles(Role... roles)
+    {
+        return getMembersWithRoles(Arrays.asList(roles));
+    }
+
+    @Override
+    public List<Member> getMembersWithRoles(Collection<Role> roles)
+    {
+        return Collections.unmodifiableList(
+                members.values().stream()
+                        .filter(m -> m.getRoles().containsAll(roles))
+                        .collect(Collectors.toList()));
+    }
+
+    @Override
     public Member getMember(User user)
     {
         return getMemberById(user.getId());
@@ -149,13 +161,6 @@ public class GuildImpl implements Guild
     public List<Member> getMembers()
     {
         return Collections.unmodifiableList(new ArrayList<>(members.values()));
-    }
-
-    @Override
-    public List<User> getUsers()
-    {
-        return Collections.unmodifiableList(
-                members.values().stream().<User>map(Member::getUser).collect(Collectors.toList()));
     }
 
     @Override
@@ -180,13 +185,6 @@ public class GuildImpl implements Guild
     public Role getRoleById(String id)
     {
         return roles.get(id);
-    }
-
-    @Override
-    public List<Member> getMembersWithRole(Role role)
-    {
-        return Collections.unmodifiableList(
-                members.values().stream().filter(m -> m.getRoles().contains(role)).collect(Collectors.toList()));
     }
 
     @Override
@@ -238,7 +236,7 @@ public class GuildImpl implements Guild
         return id;
     }
 
-    // ---- Impl functional below -----
+    // ---- Setters -----
 
     public GuildImpl setAvailable(boolean available)
     {
@@ -320,5 +318,28 @@ public class GuildImpl implements Guild
     public HashMap<String, Role> getRolesMap()
     {
         return roles;
+    }
+
+    // -- Object overrides --
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof Guild))
+            return false;
+        Guild oGuild = (Guild) o;
+        return this == oGuild || this.getId().equals(oGuild.getId());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return getId().hashCode();
+    }
+
+    @Override
+    public String toString()
+    {
+        return "G:" + getName() + '(' + getId() + ')';
     }
 }
