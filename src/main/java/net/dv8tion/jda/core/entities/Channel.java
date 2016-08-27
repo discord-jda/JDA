@@ -26,14 +26,8 @@ import java.util.List;
 /**
  * Represents a {@link net.dv8tion.jda.core.entities.Guild Guild} channel.
  */
-public interface Channel
+public interface Channel extends ISnowflake
 {
-    /**
-     * The Id of the Channel. This is typically 18 characters long.
-     * @return
-     *      The Id of this Channel
-     */
-    String getId();
 
     /**
      * The human readable name of the  Channel.<br>

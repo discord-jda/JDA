@@ -30,21 +30,14 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * Represents a Text message received from Discord.<br>
  * This repsents message received from both {@link net.dv8tion.jda.core.entities.TextChannel TextChannels}
  * and from {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannels}.
  */
-public interface Message
+public interface Message extends ISnowflake
 {
-    /**
-     * The Id of this Message
-     *
-     * @return String Id
-     */
-    String getId();
 
     /**
      * A immutable list of all mentioned users. if noone was mentioned, this list is empty

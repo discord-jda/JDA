@@ -25,7 +25,7 @@ import java.io.File;
 /**
  * Represents a Discord channel that can have messages and files sent to it.
  */
-public interface MessageChannel
+public interface MessageChannel extends ISnowflake
 {
     /**
      * Returns the {@link net.dv8tion.jda.core.JDA JDA} instance of this MessageChannel
@@ -34,14 +34,6 @@ public interface MessageChannel
      *      the corresponding JDA instance
      */
     JDA getJDA();
-
-    /**
-     * The Id of the Channel. This is typically 18 characters long.
-     *
-     * @return
-     *      The Id of this Channel
-     */
-    String getId();
 
     /**
      * Sends a plain text {@link net.dv8tion.jda.core.entities.Message Message} to this channel.

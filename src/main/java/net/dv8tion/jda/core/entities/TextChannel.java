@@ -21,21 +21,13 @@ import java.util.Collection;
  * Represents a Discord Text Channel. See {@link net.dv8tion.jda.core.entities.Channel Channel} and
  * {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel} for more information.
  */
-public interface TextChannel extends Channel, MessageChannel, Comparable<TextChannel>
+public interface TextChannel extends Channel, MessageChannel, Comparable<TextChannel>, IMentionable
 {
     /**
      * Internal implementation of this class is available at
      * {@link net.dv8tion.jda.core.entities.impl.TextChannelImpl TextChannelImpl}.<br>
      * Note: Internal implementation should not be used directly.
      */
-
-    /**
-     * Returns the String needed to mention this TextChannel in a {@link net.dv8tion.jda.core.entities.Message Message}.
-     *
-     * @return
-     *      The String needed to mention this Channel
-     */
-    String getAsMention();
     
     /**
      * Bulk deletes a list of messages. <b>This is not the same as calling {@link net.dv8tion.jda.core.entities.Message#deleteMessage()} in a loop.</b><br>

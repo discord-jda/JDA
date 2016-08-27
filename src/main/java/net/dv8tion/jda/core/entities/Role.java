@@ -21,7 +21,7 @@ import net.dv8tion.jda.core.Permission;
 import java.awt.*;
 import java.util.List;
 
-public interface Role extends Comparable<Role>
+public interface Role extends ISnowflake, Comparable<Role>
 {
     /**
      * The hierarchical position of this {@link net.dv8tion.jda.core.entities.Role Role} in the {@link net.dv8tion.jda.core.entities.Guild Guild} hierarchy.<br>
@@ -87,14 +87,6 @@ public interface Role extends Comparable<Role>
      *      The String needed to mention this Role
      */
     String getAsMention();
-
-    /**
-     * The ID of this {@link net.dv8tion.jda.core.entities.Role Role}.
-     *
-     * @return
-     *      Never-null String containing the id of this {@link net.dv8tion.jda.core.entities.Role Role}.
-     */
-    String getId();
 
     /**
      * The <code>int</code> representation of the literal permissions that this {@link net.dv8tion.jda.core.entities.Role Role} has.<br>

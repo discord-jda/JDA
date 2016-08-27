@@ -18,22 +18,13 @@ package net.dv8tion.jda.core.entities;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Region;
 
-import java.time.OffsetDateTime;
 import java.util.List;
 
 /**
  * Represents a Discord {@link net.dv8tion.jda.core.entities.Guild Guild}. This should contain all information provided from Discord about a Guild.
  */
-public interface Guild
+public interface Guild extends ISnowflake
 {
-    /**
-     * The Id of the {@link net.dv8tion.jda.core.entities.Guild Guild}. This is typically 18 characters long.
-     *
-     * @return
-     *      Never-null String containing the Id.
-     */
-    String getId();
-
     /**
      * The human readable name of the {@link net.dv8tion.jda.core.entities.Guild Guild}. If no name has been set, this returns null.
      *
@@ -58,13 +49,7 @@ public interface Guild
      */
     String getIconUrl();
 
-    /**
-     * The Id of the AFK Voice Channel.
-     *
-     * @return
-     *      Never-null String containing the AFK Voice Channel id.
-     */
-    String getAfkChannelId();
+    VoiceChannel getAfkChannel();
 
     /**
      * The {@link net.dv8tion.jda.core.entities.Member Member} object of the owner of this {@link net.dv8tion.jda.core.entities.Guild Guild}.
@@ -103,6 +88,10 @@ public interface Guild
     boolean isMember(User user);
 
     Member getMemberById(String userId);
+
+    List<Member> getMembersByName(String name, boolean ignoreCase);
+    List<Member> getMembersByNickname(String nickname, boolean ignoreCase);
+    List<Member> getMembersByEffectiveName(String name, boolean ignoreCase);
 
     Member getMember(User user);
 
@@ -202,18 +191,6 @@ public interface Guild
 //     */
 //    RoleManager createCopyOfRole(Role role);
 
-    /**
-     * Provides all of the {@link net.dv8tion.jda.core.entities.Role Roles} that the provided {@link net.dv8tion.jda.core.entities.User User}
-     *  has been assigned.<br>
-     * The roles returned will be sorted according to their position.<br>
-     * If this the provided user is not in this guild, the list returned will be null.
-     *
-     * @param user
-     *          The {@link net.dv8tion.jda.core.entities.User User} that we wish to get the {@link net.dv8tion.jda.core.entities.Role Roles} related to.
-     * @return
-     *      An Immutable List of {@link net.dv8tion.jda.core.entities.Role Roles} or null if the provided user isn't in this Guild.
-     */
-    List<Role> getRolesForUser(User user);
 //
 //    /**
 //     * Provides the {@link net.dv8tion.jda.core.entities.Role Role} that determines the color for the provided {@link net.dv8tion.jda.core.entities.User User}

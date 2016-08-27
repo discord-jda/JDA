@@ -23,15 +23,8 @@ import net.dv8tion.jda.core.OnlineStatus;
  * Represents a Discord User.
  * Contains all publicly available information about a specific Discord User.
  */
-public interface User
+public interface User extends ISnowflake, IMentionable
 {
-    /**
-     * The Discord ID of the {@link net.dv8tion.jda.core.entities.User User}. This is typically 18 characters long.
-     *
-     * @return
-     *      Never-null String containing the {@link net.dv8tion.jda.core.entities.User User} id.
-     */
-    String getId();
 
     /**
      * The username of the {@link net.dv8tion.jda.core.entities.User User}. Length is between 2 and 32 characters (inclusive).
@@ -50,14 +43,6 @@ public interface User
      *      Never-null String containing the {@link net.dv8tion.jda.core.entities.User User} discriminator.
      */
     String getDiscriminator();
-
-    /**
-     * Returns the String needed to mention this User in a {@link net.dv8tion.jda.core.entities.Message Message}.
-     *
-     * @return
-     *      The String needed to mention this User
-     */
-    String getAsMention();
 
     /**
      * The Discord Id for this user's avatar image.

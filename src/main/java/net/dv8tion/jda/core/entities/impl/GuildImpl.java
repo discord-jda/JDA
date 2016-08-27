@@ -18,118 +18,206 @@ package net.dv8tion.jda.core.entities.impl;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Region;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.entities.VoiceStatus;
+import net.dv8tion.jda.core.entities.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GuildImpl implements Guild
 {
     private final String id;
     private final JDAImpl api;
-    private HashMap<String, Member> memberMap = new HashMap<>();
+    private final HashMap<String, TextChannel> textChannels = new HashMap<>();
+    private final HashMap<String, VoiceChannel> voiceChannels = new HashMap<>();
+    private final HashMap<String, Member> members = new HashMap<>();
+    private final HashMap<String, Role> roles = new HashMap<>();
 
+    private Member owner;
     private String name;
     private String iconId;
-    private Member owner;
+    private Region region;
+    private TextChannel publicChannel;
+    private VoiceChannel afkChannel;
+    private Role publicRole;
+    private VerificationLevel verificationLevel;
+    private int afkTimeout;
+    private boolean available;
 
     public GuildImpl(JDAImpl api, String id)
     {
-        this.api = api;
         this.id = id;
-    }
-
-    @Override
-    public String getId()
-    {
-        return null;
+        this.api = api;
     }
 
     @Override
     public String getName()
     {
-        return null;
+        return name;
     }
 
     @Override
     public String getIconId()
     {
-        return null;
+        return iconId;
     }
 
     @Override
     public String getIconUrl()
     {
-        return null;
+        return iconId == null ? null : "https://cdn.discordapp.com/icons/" + id + "/" + iconId + ".jpg";
     }
 
     @Override
-    public String getAfkChannelId()
+    public VoiceChannel getAfkChannel()
     {
-        return null;
+        return afkChannel;
     }
 
     @Override
     public Member getOwner()
     {
-        return null;
+        return owner;
     }
 
     @Override
     public int getAfkTimeout()
     {
-        return 0;
+        return afkTimeout;
     }
 
     @Override
     public Region getRegion()
     {
-        return null;
+        return region;
     }
 
     @Override
     public boolean isMember(User user)
     {
-        return false;
+        return members.containsKey(user.getId());
     }
 
     @Override
     public Member getMemberById(String userId)
     {
-        return null;
+        return members.get(userId);
+    }
+
+    @Override
+    public List<Member> getMembersByName(String name, boolean ignoreCase)
+    {
+        return Collections.unmodifiableList(
+                members.values().stream().filter(m ->
+                    ignoreCase
+                    ? name.equalsIgnoreCase(m.getUser().getName())
+                    : name.equals(m.getUser().getName()))
+                .collect(Collectors.toList()));
+    }
+
+    @Override
+    public List<Member> getMembersByNickname(String nickname, boolean ignoreCase)
+    {
+        return Collections.unmodifiableList(
+            members.values().stream().filter(m ->
+                ignoreCase
+                ? nickname.equalsIgnoreCase(m.getNickname())
+                : nickname.equals(m.getNickname()))
+            .collect(Collectors.toList()));
+    }
+
+    @Override
+    public List<Member> getMembersByEffectiveName(String name, boolean ignoreCase)
+    {
+        return Collections.unmodifiableList(
+            members.values().stream().filter(m ->
+                ignoreCase
+                ? name.equalsIgnoreCase(m.getEffectiveName())
+                : name.equals(m.getEffectiveName()))
+            .collect(Collectors.toList()));
     }
 
     @Override
     public Member getMember(User user)
     {
-        return null;
+        return getMemberById(user.getId());
     }
 
     @Override
     public List<Member> getMembers()
     {
-        return null;
+        return Collections.unmodifiableList(new ArrayList<>(members.values()));
+    }
+
+    @Override
+    public List<User> getUsers()
+    {
+        return Collections.unmodifiableList(
+                members.values().stream().<User>map(Member::getUser).collect(Collectors.toList()));
+    }
+
+    @Override
+    public List<TextChannel> getTextChannels()
+    {
+        return Collections.unmodifiableList(new ArrayList<>(textChannels.values()));
+    }
+
+    @Override
+    public List<VoiceChannel> getVoiceChannels()
+    {
+        return Collections.unmodifiableList(new ArrayList<>(voiceChannels.values()));
+    }
+
+    @Override
+    public List<Role> getRoles()
+    {
+        return Collections.unmodifiableList(new ArrayList<>(roles.values()));
+    }
+
+    @Override
+    public Role getRoleById(String id)
+    {
+        return roles.get(id);
+    }
+
+    @Override
+    public List<Member> getMembersWithRole(Role role)
+    {
+        return Collections.unmodifiableList(
+                members.values().stream().filter(m -> m.getRoles().contains(role)).collect(Collectors.toList()));
+    }
+
+    @Override
+    public Role getPublicRole()
+    {
+        return publicRole;
+    }
+
+    @Override
+    public TextChannel getPublicChannel()
+    {
+        return publicChannel;
     }
 
     @Override
     public JDA getJDA()
     {
-        return null;
+        return api;
     }
 
     @Override
     public List<VoiceStatus> getVoiceStatuses()
     {
-        return null;
+        return Collections.unmodifiableList(
+                members.values().stream().<VoiceStatus>map(Member::getVoiceStatus).collect(Collectors.toList()));
     }
 
     @Override
     public VerificationLevel getVerificationLevel()
     {
-        return null;
+        return verificationLevel;
     }
 
     @Override
@@ -141,6 +229,86 @@ public class GuildImpl implements Guild
     @Override
     public boolean isAvailable()
     {
-        return false;
+        return available;
+    }
+
+    @Override
+    public String getId()
+    {
+        return id;
+    }
+
+    // ---- Impl functional below -----
+
+    public void setAvailable(boolean available)
+    {
+        this.available = available;
+    }
+
+    public void setOwner(Member owner)
+    {
+        this.owner = owner;
+    }
+
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
+    public void setIconId(String iconId)
+    {
+        this.iconId = iconId;
+    }
+
+    public void setRegion(Region region)
+    {
+        this.region = region;
+    }
+
+    public void setPublicChannel(TextChannel publicChannel)
+    {
+        this.publicChannel = publicChannel;
+    }
+
+    public void setAfkChannel(VoiceChannel afkChannel)
+    {
+        this.afkChannel = afkChannel;
+    }
+
+    public void setPublicRole(Role publicRole)
+    {
+        this.publicRole = publicRole;
+    }
+
+    public void setVerificationLevel(VerificationLevel verificationLevel)
+    {
+        this.verificationLevel = verificationLevel;
+    }
+
+    public void setAfkTimeout(int afkTimeout)
+    {
+        this.afkTimeout = afkTimeout;
+    }
+
+    // -- Map getters --
+
+    public HashMap<String, TextChannel> getTextChannelsMap()
+    {
+        return textChannels;
+    }
+
+    public HashMap<String, VoiceChannel> getVoiceChannelMap()
+    {
+        return voiceChannels;
+    }
+
+    public HashMap<String, Member> getMembersMap()
+    {
+        return members;
+    }
+
+    public HashMap<String, Role> getRolesMap()
+    {
+        return roles;
     }
 }
