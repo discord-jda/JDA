@@ -31,8 +31,8 @@ public interface SelfInfo extends User
     boolean isVerified();
 
     /**
-     * If true, this account is protected by Multi-Factor authorizaiton.<br />
-     * If this is a Client account, then this describes the MFA status of the Client account.<br />
+     * If true, this account is protected by Multi-Factor authorizaiton.<br>
+     * If this is a Client account, then this describes the MFA status of the Client account.<br>
      * If this is a Bot account, then this describes the MFA status of the Client account that owns this Bot.
      *
      * @return

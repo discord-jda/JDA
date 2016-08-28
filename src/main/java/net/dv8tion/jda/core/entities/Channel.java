@@ -30,7 +30,7 @@ public interface Channel extends ISnowflake
 {
 
     /**
-     * The human readable name of the  Channel.<br />
+     * The human readable name of the  Channel.<br>
      * If no name has been set, this returns null.
      *
      * @return
