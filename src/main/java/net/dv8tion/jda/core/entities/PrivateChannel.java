@@ -24,14 +24,6 @@ import net.dv8tion.jda.core.requests.RestAction;
 public interface PrivateChannel extends MessageChannel
 {
     /**
-     * The Id of the {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}. This is typically 18 characters long.
-     *
-     * @return
-     *      String containing Id.
-     */
-    String getId();
-
-    /**
      * The {@link net.dv8tion.jda.core.entities.User User} that this {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} communicates with.
      *
      * @return

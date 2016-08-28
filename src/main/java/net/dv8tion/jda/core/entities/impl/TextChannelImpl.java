@@ -98,6 +98,8 @@ public class TextChannelImpl implements TextChannel
     @Override
     public int getPosition()
     {
+        //We call getTextChannels instead of directly accessing the GuildImpl.getTextChannelMap because
+        // getTextChannels does the sorting logic.
         List<TextChannel> channels = guild.getTextChannels();
         for (int i = 0; i < channels.size(); i++)
         {
@@ -200,7 +202,7 @@ public class TextChannelImpl implements TextChannel
     @Override
     public List<PermissionOverride> getPermissionOverrides()
     {
-        List<PermissionOverride> overrides = new ArrayList<>();
+        List<PermissionOverride> overrides = new ArrayList<>(memberOverrides.size() + roleOverrides.size());
         overrides.addAll(memberOverrides.values());
         overrides.addAll(roleOverrides.values());
         return Collections.unmodifiableList(overrides);

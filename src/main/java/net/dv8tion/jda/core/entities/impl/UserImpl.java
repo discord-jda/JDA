@@ -13,26 +13,27 @@
  * See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+
 package net.dv8tion.jda.core.entities.impl;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.User;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class UserImpl implements User
 {
     private final String id;
     private final JDAImpl api;
-    private String username;
+
+    private String name;
     private String discriminator;
     private String avatarId;
-    private Game game = null;
-    private OnlineStatus onlineStatus = OnlineStatus.OFFLINE;
-//    private PrivateChannel privateChannel = null;
-    private boolean isBot = false;
+    private Game currentGame;
+    private OnlineStatus onlineStatus;
+    private PrivateChannel privateChannel;
+    private boolean bot;
 
     public UserImpl(String id, JDAImpl api)
     {
@@ -41,33 +42,15 @@ public class UserImpl implements User
     }
 
     @Override
-    public JDA getJDA()
-    {
-        return api;
-    }
-
-    @Override
-    public String getId()
-    {
-        return id;
-    }
-
-    @Override
     public String getName()
     {
-        return username;
+        return name;
     }
 
     @Override
     public String getDiscriminator()
     {
         return discriminator;
-    }
-
-    @Override
-    public String getAsMention()
-    {
-        return "<@" + getId() + '>';
     }
 
     @Override
@@ -97,7 +80,7 @@ public class UserImpl implements User
     @Override
     public Game getCurrentGame()
     {
-        return game;
+        return currentGame;
     }
 
     @Override
@@ -106,37 +89,44 @@ public class UserImpl implements User
         return onlineStatus;
     }
 
-//    @Override
-//    public PrivateChannel getPrivateChannel()
-//    {
-//        if (privateChannel == null)
-//        {
-//            try
-//            {
-//                Requester.Response response = api.getRequester().post(Requester.DISCORD_API_PREFIX + "users/@me/channels",
-//                        new JSONObject().put("recipient_id", getId()));
-//                if(response.isOk())
-//                    new EntityBuilder(api).createPrivateChannel(response.getObject());
-//                else
-//                    throw new RuntimeException("Could not get Private-channel for user: " + getName() + "... Error: " + response.toString());
-//            }
-//            catch (JSONException ex)
-//            {
-//                JDAImpl.LOG.log(ex);
-//            }
-//        }
-//        return privateChannel;
-//    }
+    @Override
+    public PrivateChannel getPrivateChannel()
+    {
+        if (privateChannel != null)
+            return privateChannel;
+        //else, create a new one.
+        return null;
+    }
 
     @Override
     public boolean isBot()
     {
-        return isBot;
+        return bot;
     }
 
-    public UserImpl setUserName(String username)
+    @Override
+    public JDA getJDA()
     {
-        this.username = username;
+        return api;
+    }
+
+    @Override
+    public String getAsMention()
+    {
+        return "<@" + getId() + '>';
+    }
+
+    @Override
+    public String getId()
+    {
+        return id;
+    }
+
+    // -- Setters --
+
+    public UserImpl setName(String name)
+    {
+        this.name = name;
         return this;
     }
 
@@ -152,9 +142,9 @@ public class UserImpl implements User
         return this;
     }
 
-    public UserImpl setCurrentGame(Game game)
+    public UserImpl setCurrentGame(Game currentGame)
     {
-        this.game = game;
+        this.currentGame = currentGame;
         return this;
     }
 
@@ -164,46 +154,16 @@ public class UserImpl implements User
         return this;
     }
 
-//    public UserImpl setPrivateChannel(PrivateChannel channel)
-//    {
-//        this.privateChannel = channel;
-//        if (channel != null)
-//        {
-//            api.getPmChannelMap().put(channel.getId(), channel);
-//        }
-//        return this;
-//    }
-
-    public UserImpl setIsBot(boolean isBot)
+    public UserImpl setPrivateChannel(PrivateChannel privateChannel)
     {
-        this.isBot = isBot;
+        this.privateChannel = privateChannel;
         return this;
     }
 
-//    public boolean hasPrivateChannel()
-//    {
-//        return privateChannel != null;
-//    }
-
-    @Override
-    public boolean equals(Object o)
+    public UserImpl setBot(boolean bot)
     {
-        if (!(o instanceof User))
-            return false;
-        User oUser = (User) o;
-        return this == oUser || this.getId().equals(oUser.getId());
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return getId().hashCode();
-    }
-
-    @Override
-    public String toString()
-    {
-        return "U:" + getName() + '(' + getId() + ')';
+        this.bot = bot;
+        return this;
     }
 
     private enum DefaultAvatar

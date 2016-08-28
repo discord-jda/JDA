@@ -21,7 +21,7 @@ import net.dv8tion.jda.core.Permission;
 import java.awt.*;
 import java.util.List;
 
-public interface Role extends ISnowflake, Comparable<Role>
+public interface Role extends ISnowflake, IMentionable, Comparable<Role>
 {
     /**
      * The hierarchical position of this {@link net.dv8tion.jda.core.entities.Role Role} in the {@link net.dv8tion.jda.core.entities.Guild Guild} hierarchy.<br>
@@ -79,14 +79,6 @@ public interface Role extends ISnowflake, Comparable<Role>
      *      True if Role is mentionable.
      */
     boolean isMentionable();
-
-    /**
-     * Returns the String needed to mention this Role in a {@link net.dv8tion.jda.core.entities.Message Message}.
-     *
-     * @return
-     *      The String needed to mention this Role
-     */
-    String getAsMention();
 
     /**
      * The <code>int</code> representation of the literal permissions that this {@link net.dv8tion.jda.core.entities.Role Role} has.<br>

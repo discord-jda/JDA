@@ -96,14 +96,14 @@ public interface User extends ISnowflake, IMentionable
      */
     OnlineStatus getOnlineStatus();
 
-//    /**
-//     * Gets the {@link net.dv8tion.jda.entities.PrivateChannel PrivateChannel} of this
-//     * {@link net.dv8tion.jda.core.entities.User User} for use in sending direct messages.
-//     *
-//     * @return
-//     *      Never-null {@link net.dv8tion.jda.entities.PrivateChannel PrivateChannel} that is associated with this {@link net.dv8tion.jda.core.entities.User User}.
-//     */
-//    PrivateChannel getPrivateChannel();
+    /**
+     * Gets the {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} of this
+     * {@link net.dv8tion.jda.core.entities.User User} for use in sending direct messages.
+     *
+     * @return
+     *      Never-null {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} that is associated with this {@link net.dv8tion.jda.core.entities.User User}.
+     */
+    PrivateChannel getPrivateChannel();
 
     /**
      * Returns whether or not the given user is a Bot-Account (special badge in client, some different behaviour)
