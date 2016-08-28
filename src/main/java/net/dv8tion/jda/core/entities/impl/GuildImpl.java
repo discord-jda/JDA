@@ -166,19 +166,25 @@ public class GuildImpl implements Guild
     @Override
     public List<TextChannel> getTextChannels()
     {
-        return Collections.unmodifiableList(new ArrayList<>(textChannels.values()));
+        ArrayList<TextChannel> channels = new ArrayList<>(textChannels.values());
+        Collections.sort(channels, (c1, c2) -> c2.compareTo(c1));
+        return Collections.unmodifiableList(channels);
     }
 
     @Override
     public List<VoiceChannel> getVoiceChannels()
     {
-        return Collections.unmodifiableList(new ArrayList<>(voiceChannels.values()));
+        List<VoiceChannel> channels = new ArrayList<>(voiceChannels.values());
+        Collections.sort(channels, (v1, v2) -> v2.compareTo(v1));
+        return Collections.unmodifiableList(channels);
     }
 
     @Override
     public List<Role> getRoles()
     {
-        return Collections.unmodifiableList(new ArrayList<>(roles.values()));
+        List<Role> list = new ArrayList<>(roles.values());
+        Collections.sort(list, (r1, r2) -> r2.compareTo(r1));
+        return Collections.unmodifiableList(list);
     }
 
     @Override
