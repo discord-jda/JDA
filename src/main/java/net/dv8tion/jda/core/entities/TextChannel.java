@@ -30,7 +30,16 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * {@link net.dv8tion.jda.core.entities.impl.TextChannelImpl TextChannelImpl}.<br>
      * Note: Internal implementation should not be used directly.
      */
-    
+
+    /**
+     * The topic set for this TextChannel.
+     * If no topic has been set, this returns null.
+     *
+     * @return
+     *      Possibly-null String containing the topic of this TextChannel.
+     */
+    String getTopic();
+
     /**
      * Bulk deletes a list of messages. <b>This is not the same as calling {@link net.dv8tion.jda.core.entities.Message#deleteMessage()} in a loop.</b><br>
      * This is much more efficient, but it has a different ratelimit. You may call this once per second per Guild.

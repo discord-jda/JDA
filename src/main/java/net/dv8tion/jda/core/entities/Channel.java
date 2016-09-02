@@ -39,15 +39,6 @@ public interface Channel extends ISnowflake
     String getName();
 
     /**
-     * The topic set for this Channel.
-     * If no topic has been set, this returns null.
-     *
-     * @return
-     *      Possibly-null String containing the topic of this Channel.
-     */
-    String getTopic();
-
-    /**
      * Returns the {@link net.dv8tion.jda.core.entities.Guild Guild} that this Channel is part of.
      *
      * @return
