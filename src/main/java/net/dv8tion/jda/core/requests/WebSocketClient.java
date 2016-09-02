@@ -19,8 +19,7 @@ package net.dv8tion.jda.core.requests;
 import com.neovisionaries.ws.client.*;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.handle.ReadyHandler;
-import net.dv8tion.jda.core.handle.SocketHandler;
+import net.dv8tion.jda.core.handle.*;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import org.apache.http.HttpHost;
 import org.json.JSONArray;
@@ -35,18 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
-
-//import net.dv8tion.jda.audio.AudioReceiveHandler;
-//import net.dv8tion.jda.audio.AudioSendHandler;
-//import net.dv8tion.jda.entities.Guild;
-//import net.dv8tion.jda.entities.VoiceChannel;
-//import net.dv8tion.jda.entities.impl.JDAImpl;
-//import net.dv8tion.jda.entities.impl.TextChannelImpl;
-//import net.dv8tion.jda.events.*;
-//import net.dv8tion.jda.handle.*;
-//import net.dv8tion.jda.managers.AudioManager;
-//import net.dv8tion.jda.managers.impl.AudioManagerImpl;
-//import net.dv8tion.jda.utils.SimpleLog;
 
 //TODO: reimplement events
 public class WebSocketClient extends WebSocketAdapter implements WebSocketListener
@@ -426,7 +413,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         sessionId = null;
 
-        //TODO: Reimplement audio handler preservation
+//        TODO: Reimplement audio handler preservation
 //        //Preserve the audio handlers through registry invalidation
 //        api.getAudioManagersMap().values().forEach(
 //                mng ->
@@ -438,20 +425,20 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 //                        audioReceivedHandlers.put(guildId, mng.getReceiveHandler());
 //                }
 //        );
-
-        //TODO: Reimplement registry clearing
+//
+//        TODO: Reimplement registry clearing
 //        //clearing the registry...
 //        api.getAudioManagersMap().clear();
-//        api.getChannelMap().clear();
-//        api.getVoiceChannelMap().clear();
-//        api.getGuildMap().clear();
-//        api.getUserMap().clear();
+        api.getTextChannelMap().clear();
+        api.getVoiceChannelMap().clear();
+        api.getGuildMap().clear();
+        api.getUserMap().clear();
 //        api.getPmChannelMap().clear();
 //        api.getOffline_pms().clear();
 //        new EntityBuilder(api).clearCache();
 //        new ReadyHandler(api, 0).clearCache();
 //        EventCache.get(api).clear();
-//        GuildLock.get(api).clear();
+        GuildLock.get(api).clear();
 //        TextChannelImpl.AsyncMessageSender.stopAll(api);
     }
 
@@ -555,7 +542,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 //        if (type.equals("GUILD_MEMBER_REMOVE"))
 //            GuildMembersChunkHandler.modifyExpectedGuildMember(api, raw.getJSONObject("d").getString("guild_id"), -1);
 //
-        if (initiating && !(type.equals("READY") || type.equals("GUILD_MEMBERS_CHUNK") || type.equals("GUILD_CREATE") || type.equals("RESUMED")))
+        if (initiating && !(type.equals("READY") || type.equals("GUILD_MEMBERS_CHUNK") || type.equals("GUILD_CREATE") || type.equals("RESUMED") || type.equals("GUILD_SYNC")))
         {
             LOG.debug("Caching " + type + " event during init!");
             cachedEvents.add(raw);
@@ -591,9 +578,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 //                case "RESUMED":
 //                    initiating = false;
 //                    ready();
-//                    break;
-//                case "GUILD_MEMBERS_CHUNK":
-//                    new GuildMembersChunkHandler(api, responseTotal).handle(raw);
 //                    break;
 //                case "PRESENCE_UPDATE":
 //                    new PresenceUpdateHandler(api, responseTotal).handle(raw);
@@ -727,8 +711,21 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 //        LOG.log(cause);
     }
 
+    public HashMap<String, SocketHandler> getHandlers()
+    {
+        return handlers;
+    }
+
+    public <T> T getHandler(String type)
+    {
+        return (T) handlers.get(type);
+    }
+
     private void setupHandlers()
     {
+        handlers.put("GUILD_CREATE", new GuildCreateHandler(api));
+        handlers.put("GUILD_MEMBERS_CHUNK", new GuildMembersChunkHandler(api));
+        handlers.put("GUILD_SYNC", new GuildSyncHandler(api));
         handlers.put("READY", new ReadyHandler(api));
     }
 }

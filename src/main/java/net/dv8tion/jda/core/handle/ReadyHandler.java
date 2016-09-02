@@ -16,16 +16,22 @@
 
 package net.dv8tion.jda.core.handle;
 
+import net.dv8tion.jda.core.AccountType;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
 public class ReadyHandler extends SocketHandler
 {
-    private final Set<String> expectedGuilds = new HashSet<>();
+    private final Set<String> incompleteGuilds = new HashSet<>();
+    private final Set<String> guildsRequiringChunking = new HashSet<>();
 
     public ReadyHandler(JDAImpl api)
     {
@@ -36,39 +42,40 @@ public class ReadyHandler extends SocketHandler
     protected String handleInternally(JSONObject content)
     {
         EntityBuilder builder = new EntityBuilder(api);
-        System.out.println(content.toString(4));
+//        System.out.println(content.toString(4));
 
         //Core
         JSONArray guilds = content.getJSONArray("guilds");
         JSONObject selfJson = content.getJSONObject("user");
 
-        //Client
-        JSONArray presences = content.getJSONArray("presences");
-        JSONArray relationships = content.has("relationships") ? content.getJSONArray("relationships") : null;
-        JSONObject notes = content.has("notes") ? content.getJSONObject("notes") : null;
-
         builder.createSelfInfo(selfJson);
 
-        if (guilds.length() == 0)
-        {
-            guildLoadComplete(content);
-            return null;
-        }
-
+        //Keep a list of all guilds in incompleteGuilds that need to be setup (GuildMemberChunk / GuildSync)
+        //Send all guilds to the EntityBuilder's first pass to setup caching for when GUILD_CREATE comes
+        // or, for Client accounts, to start the setup process (since we already have guild info)
+        //Callback points to guildSetupComplete so that when MemberChunking and GuildSync processes are done, we can
+        // "check off" the completed guild from the set of guilds in incompleteGuilds.
         for (int i = 0; i < guilds.length(); i++)
         {
             JSONObject guild = guilds.getJSONObject(i);
-            expectedGuilds.add(guild.getString("id"));
+            incompleteGuilds.add(guild.getString("id"));
+            builder.createGuildFirstPass(guild, null);
+        }
+        sendMemberChunkRequests();
 
-            if (guild.has("unavailable") && guild.getBoolean("unavailable"))
-            {
+        if (api.getAccountType() == AccountType.BOT)
+        {
 
-            }
-            else
-            {
+        }
+        else
+        {
+            //GuildSync
+            //GuildMemberChunk
 
-            }
-            //TODO: send to EntityBuilder
+            //Client
+            JSONArray presences = content.getJSONArray("presences");
+            JSONArray relationships = content.getJSONArray("relationships");
+            JSONObject notes = content.getJSONObject("notes");
         }
 
         return null;
@@ -80,15 +87,63 @@ public class ReadyHandler extends SocketHandler
 
         JSONArray readstates = content.has("read_state") ? content.getJSONArray("read_state") : null;
         JSONArray guildSettings = content.has("user_guild_settings") ? content.getJSONArray("user_guild_settings") : null;
+        api.getClient().ready();
     }
 
-    public void finish()
+    public void queueMemberChunkRequest(Guild guild)
     {
-        api.getClient().ready();
+        guildsRequiringChunking.add(guild.getId());
+    }
+
+    public void guildSetupComplete(Guild guild)
+    {
+        incompleteGuilds.remove(guild.getId());
+        System.out.println("Completed guild: " + guild.getId());
+        if (incompleteGuilds.size() == 0)
+        {
+            guildLoadComplete(allContent.getJSONObject("d"));
+        }
     }
 
     public void clearCache()
     {
-        expectedGuilds.clear();
+        incompleteGuilds.clear();
+        guildsRequiringChunking.clear();
+    }
+
+    private void sendMemberChunkRequests()
+    {
+        JSONArray guildIds = new JSONArray();
+        for (String guildId : guildsRequiringChunking)
+        {
+            guildIds.put(guildId);
+
+            //We can only request 50 guilds in a single request, so after we've reached 50, send them
+            // and reset the
+            if (guildIds.length() == 50)
+            {
+                api.getClient().send(new JSONObject()
+                    .put("op", 8)
+                    .put("d", new JSONObject()
+                        .put("guild_id", guildIds)
+                        .put("query", "")
+                        .put("limit", 0)
+                    ).toString());
+                guildIds = new JSONArray();
+            }
+        }
+
+        //Send the remaining guilds that need to be sent
+        if (guildIds.length() > 0)
+        {
+            api.getClient().send(new JSONObject()
+                .put("op", 8)
+                .put("d", new JSONObject()
+                        .put("guild_id", guildIds)
+                        .put("query", "")
+                        .put("limit", 0)
+                ).toString());
+        }
+        guildsRequiringChunking.clear();
     }
 }
