@@ -25,14 +25,12 @@ import net.dv8tion.jda.core.entities.impl.*;
 import net.dv8tion.jda.core.requests.GuildLock;
 import net.dv8tion.jda.core.requests.WebSocketClient;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.awt.Color;
+import java.awt.*;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
 public class EntityBuilder
@@ -748,39 +746,5 @@ public class EntityBuilder
 //        }
 //        return permOverride.setAllow(allow)
 //                .setDeny(deny);
-//    }
-//
-//    public VoiceStatus createVoiceStatus(JSONObject status, Guild guildObj, User user)
-//    {
-//        GuildImpl guild = (GuildImpl) guildObj;
-//        VoiceStatusImpl voiceStatus = (VoiceStatusImpl) guild.getVoiceStatusMap().get(user);
-//        if (voiceStatus == null)
-//        {
-//            voiceStatus = new VoiceStatusImpl(user, guild);
-//            guild.getVoiceStatusMap().put(user, voiceStatus);
-//        }
-//
-//        if (!status.isNull("channel_id"))
-//        {
-//            VoiceChannel channel = guild.getVoiceChannelsMap().get(status.getString("channel_id"));
-//            if (channel == null)
-//                throw new IllegalArgumentException("Attempted to create a VoiceStatus using a non-existant channel! JSON: " + status);
-//
-//            voiceStatus.setChannel(channel);
-//        }
-//        else
-//            voiceStatus.setChannel(null);
-//
-//        if (!status.isNull("session_id"))
-//            voiceStatus.setSessionId(status.getString("session_id"));
-//        else
-//            voiceStatus.setSessionId(null);
-//
-//        return voiceStatus
-//                .setMute(status.getBoolean("self_mute"))
-//                .setDeaf(status.getBoolean("self_deaf"))
-//                .setServerMute(status.getBoolean("mute"))
-//                .setServerDeaf(status.getBoolean("deaf"))
-//                .setSuppressed(status.getBoolean("suppress"));
 //    }
 }
