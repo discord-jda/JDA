@@ -16,7 +16,9 @@
 
 package net.dv8tion.jda.core.handle;
 
+import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class GuildSyncHandler extends SocketHandler
@@ -29,6 +31,18 @@ public class GuildSyncHandler extends SocketHandler
     @Override
     protected String handleInternally(JSONObject content)
     {
+        String guildId = content.getString("id");
+        if (!api.getGuildMap().containsKey(guildId))
+        {
+            JDAImpl.LOG.fatal("Received a GUILD_SYNC for a Guild that does not yet exist in JDA's guild cache. This is a BAD ERROR FOR CLIENTS!");
+            return null;
+        }
+
+        GuildImpl guild = (GuildImpl) api.getGuildMap().get(guildId);
+        JSONArray members = content.getJSONArray("members");
+        JSONArray presences = content.getJSONArray("presences");
+        new EntityBuilder(api).handleGuildSync(guild, members, presences);
+
         return null;
     }
 }

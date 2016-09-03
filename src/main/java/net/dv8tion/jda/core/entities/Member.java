@@ -33,7 +33,7 @@ public interface Member extends IMentionable
 
     OffsetDateTime getJoinDate();
 
-    VoiceStatus getVoiceStatus();
+    VoiceState getVoiceState();
 
     /**
      * Returns the current nickname of this Member for the parent Guild.

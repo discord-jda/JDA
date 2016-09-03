@@ -21,7 +21,7 @@ package net.dv8tion.jda.core;
 public enum OnlineStatus
 {
     ONLINE("online"),
-    AWAY("idle"),
+    IDLE("idle"),
     OFFLINE("offline"),
     UNKNOWN("");
 

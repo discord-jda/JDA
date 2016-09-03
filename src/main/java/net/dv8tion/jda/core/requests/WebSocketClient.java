@@ -54,6 +54,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected volatile Thread keepAliveThread;
     protected boolean connected;
 
+    protected volatile boolean chunkingAndSyncing = false;
     protected boolean initiating;             //cache all events?
     protected final List<JSONObject> cachedEvents = new LinkedList<>();
 
@@ -537,12 +538,19 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         String type = raw.getString("t");
         long responseTotal = api.getResponseTotal();
 
-//        if (type.equals("GUILD_MEMBER_ADD"))
-//            GuildMembersChunkHandler.modifyExpectedGuildMember(api, raw.getJSONObject("d").getString("guild_id"), 1);
-//        if (type.equals("GUILD_MEMBER_REMOVE"))
-//            GuildMembersChunkHandler.modifyExpectedGuildMember(api, raw.getJSONObject("d").getString("guild_id"), -1);
-//
-        if (initiating && !(type.equals("READY") || type.equals("GUILD_MEMBERS_CHUNK") || type.equals("GUILD_CREATE") || type.equals("RESUMED") || type.equals("GUILD_SYNC")))
+        if (type.equals("GUILD_MEMBER_ADD"))
+            ((GuildMembersChunkHandler) getHandler("GUILD_MEMBERS_CHUNK")).modifyExpectedGuildMember(raw.getJSONObject("d").getString("guild_id"), 1);
+        if (type.equals("GUILD_MEMBER_REMOVE"))
+            ((GuildMembersChunkHandler) getHandler("GUILD_MEMBERS_CHUNK")).modifyExpectedGuildMember(raw.getJSONObject("d").getString("guild_id"), -1);
+
+        //If initiating, only allows READY, RESUMED, GUILD_MEMBERS_CHUNK, GUILD_SYNC, and GUILD_CREATE through.
+        // If we are currently chunking, we don't allow GUILD_CREATE through anymore.
+        if (initiating
+                &&  !(type.equals("READY")
+                || type.equals("GUILD_MEMBERS_CHUNK")
+                || type.equals("RESUMED")
+                || type.equals("GUILD_SYNC")
+                || (chunkingAndSyncing && type.equals("GUILD_CREATE"))))
         {
             LOG.debug("Caching " + type + " event during init!");
             cachedEvents.add(raw);
@@ -709,6 +717,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public void handleCallbackError(WebSocket websocket, Throwable cause)
     {
 //        LOG.log(cause);
+    }
+
+    public void setChunkingAndSyncing()
+    {
+        chunkingAndSyncing = true;
     }
 
     public HashMap<String, SocketHandler> getHandlers()

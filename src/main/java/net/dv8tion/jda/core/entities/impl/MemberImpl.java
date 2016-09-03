@@ -35,12 +35,13 @@ public class MemberImpl implements Member
 
     private String nickname;
     private OffsetDateTime joinDate;
-    private VoiceStatus voiceStatus;
+    private VoiceState voiceState;
 
     public MemberImpl(Guild guild, User user)
     {
         this.guild = guild;
         this.user = user;
+        voiceState = new VoiceStateImpl(guild, this);
     }
 
     @Override
@@ -67,10 +68,9 @@ public class MemberImpl implements Member
         return joinDate;
     }
 
-    @Override
-    public VoiceStatus getVoiceStatus()
+    public VoiceState getVoiceState()
     {
-        return voiceStatus;
+        return voiceState;
     }
 
     @Override
@@ -118,12 +118,6 @@ public class MemberImpl implements Member
     public MemberImpl setJoinDate(OffsetDateTime joinDate)
     {
         this.joinDate = joinDate;
-        return this;
-    }
-
-    public MemberImpl setVoiceStatus(VoiceStatus voiceStatus)
-    {
-        this.voiceStatus = voiceStatus;
         return this;
     }
 

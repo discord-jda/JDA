@@ -64,10 +64,17 @@ public class GuildCreateHandler extends SocketHandler
             }
             else
             {
-                //Proper GuildJoinedEvent is fired when guild was populated
+                if (!api.getClient().isReady())
+                {
+                    api.getClient().<ReadyHandler>getHandler("READY").acknowledgeGuild(guild, false, false, false);
+                }
+                else
+                {
+                    //Proper GuildJoinedEvent is fired when guild was populated
 //                api.getEventManager().handle(
 //                        new UnavailableGuildJoinedEvent(api, responseNumber, guild.getId())
 //                );
+                }
             }
         });
         return null;

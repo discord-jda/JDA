@@ -31,7 +31,7 @@ public class UserImpl implements User
     private String discriminator;
     private String avatarId;
     private Game currentGame;
-    private OnlineStatus onlineStatus;
+    private OnlineStatus onlineStatus = OnlineStatus.OFFLINE;
     private PrivateChannel privateChannel;
     private boolean bot;
 
@@ -120,6 +120,28 @@ public class UserImpl implements User
     public String getId()
     {
         return id;
+    }
+
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof User))
+            return false;
+        User oUser = (User) o;
+        return this == oUser || this.getId().equals(oUser.getId());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return getId().hashCode();
+    }
+
+    @Override
+    public String toString()
+    {
+        return "U:" + getName() + '(' + getId() + ')';
     }
 
     // -- Setters --

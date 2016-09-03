@@ -245,16 +245,16 @@ public interface Guild extends ISnowflake
     JDA getJDA();
 
     /**
-     * A list containing the {@link net.dv8tion.jda.core.entities.VoiceStatus VoiceStatus} of every {@link net.dv8tion.jda.core.entities.User User}
+     * A list containing the {@link net.dv8tion.jda.core.entities.VoiceState VoiceState} of every {@link net.dv8tion.jda.core.entities.Member Member}
      * in this {@link net.dv8tion.jda.core.entities.Guild Guild}.<br>
      * This will never return an empty list because if it were empty, that would imply that there are no
-     * {@link net.dv8tion.jda.core.entities.User Users} in this {@link net.dv8tion.jda.core.entities.Guild Guild}, which is
+     * {@link net.dv8tion.jda.core.entities.Member Members} in this {@link net.dv8tion.jda.core.entities.Guild Guild}, which is
      * impossible.
      *
      * @return
-     *      Never-empty list containing all the {@link net.dv8tion.jda.core.entities.VoiceStatus VoiceStatuses} on this {@link net.dv8tion.jda.core.entities.Guild Guild}.
+     *      Never-empty list containing all the {@link VoiceState VoiceStates} on this {@link net.dv8tion.jda.core.entities.Guild Guild}.
      */
-    List<VoiceStatus> getVoiceStatuses();
+    List<VoiceState> getVoiceStates();
 
     /**
      * Returns the verification-Level of this Guild. For a short description of the different values, see {@link net.dv8tion.jda.core.entities.Guild.VerificationLevel}.
