@@ -26,14 +26,21 @@ import net.dv8tion.jda.entities.VoiceStatus;
  */
 public class VoiceJoinEvent extends GenericVoiceEvent
 {
+    protected final VoiceChannel channel;
 
-    public VoiceJoinEvent(JDA api, int responseNumber, VoiceStatus voiceStatus)
+    public VoiceJoinEvent(JDA api, int responseNumber, VoiceStatus voiceStatus, VoiceChannel oldChannel)
     {
         super(api, responseNumber, voiceStatus);
+        this.channel = channel;
     }
 
     public VoiceChannel getChannel()
     {
         return voiceStatus.getChannel();
+    }
+    
+    public VoiceChannel getOldChannel()
+    {
+        return channel;
     }
 }
