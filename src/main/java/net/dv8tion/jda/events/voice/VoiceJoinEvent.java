@@ -31,7 +31,7 @@ public class VoiceJoinEvent extends GenericVoiceEvent
     public VoiceJoinEvent(JDA api, int responseNumber, VoiceStatus voiceStatus, VoiceChannel oldChannel)
     {
         super(api, responseNumber, voiceStatus);
-        this.channel = channel;
+        this.channel = oldChannel;
     }
 
     public VoiceChannel getChannel()
