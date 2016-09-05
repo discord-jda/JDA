@@ -114,7 +114,7 @@ public class VoiceChangeHandler extends SocketHandler
                     api.getEventManager().handle(new VoiceLeaveEvent(api, responseNumber, status, oldChannel));
                 }
                 ((VoiceChannelImpl) newChannel).getUsersModifiable().add(user);
-                api.getEventManager().handle(new VoiceJoinEvent(api, responseNumber, status));
+                api.getEventManager().handle(new VoiceJoinEvent(api, responseNumber, status, oldChannel));
             }
         }
 
