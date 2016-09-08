@@ -28,11 +28,11 @@ import java.util.List;
  * <br>
  * Use: Retrieve user who was banned (if available) and triggering guild.
  */
-public class GuildMemberBanEvent extends GuildMemberLeaveEvent
+public class GuildMemberBanEvent extends GuildMemberLeaveEvent // Rethink this hierarchy
 {
 
-    public GuildMemberBanEvent(JDA api, int responseNumber, Guild guild, User user, List<Role> oldRoles)
+    public GuildMemberBanEvent(JDA api, int responseNumber, Guild guild, User user, List<Role> oldRoles, String oldNick)
     {
-        super(api, responseNumber, guild, user, oldRoles);
+        super(api, responseNumber, guild, user, oldRoles, oldNick);
     }
 }
