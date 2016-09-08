@@ -59,10 +59,11 @@ public class GuildMemberBanHandler extends SocketHandler
         if (banned)
         {
             List<Role> oldRoles = guild.getRolesForUser(user);
+            String oldNick = guild.getNicknameForUser(user);
             api.getEventManager().handle(
                     new GuildMemberBanEvent(
                             api, responseNumber,
-                            guild, user, oldRoles));
+                            guild, user, oldRoles, oldNick));
         }
         else
         {

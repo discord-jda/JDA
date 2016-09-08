@@ -61,6 +61,8 @@ public class GuildMemberRemoveHandler extends SocketHandler
         }
         guild.getVoiceStatusMap().remove(user);
         List<Role> oldRoles = guild.getRolesForUser(user);
+        String oldNick = guild.getNicknameForUser(user);
+        guild.getNickMap().remove(user);
         guild.getUserRoles().remove(user);
         guild.getJoinedAtMap().remove(user);
         if (!api.getGuildMap().values().stream().anyMatch(g -> ((GuildImpl) g).getUserRoles().containsKey(user)))
@@ -74,7 +76,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
         api.getEventManager().handle(
                 new GuildMemberLeaveEvent(
                         api, responseNumber,
-                        guild, user, oldRoles));
+                        guild, user, oldRoles, oldNick));
         return null;
     }
 }
