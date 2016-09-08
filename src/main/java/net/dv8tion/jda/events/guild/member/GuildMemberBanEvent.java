@@ -17,7 +17,10 @@ package net.dv8tion.jda.events.guild.member;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.entities.User;
+
+import java.util.List;
 
 /**
  * <b><u>GuildMemberBanEvent</u></b><br>
@@ -28,8 +31,8 @@ import net.dv8tion.jda.entities.User;
 public class GuildMemberBanEvent extends GuildMemberLeaveEvent
 {
 
-    public GuildMemberBanEvent(JDA api, int responseNumber, Guild guild, User user)
+    public GuildMemberBanEvent(JDA api, int responseNumber, Guild guild, User user, List<Role> oldRoles)
     {
-        super(api, responseNumber, guild, user);
+        super(api, responseNumber, guild, user, oldRoles);
     }
 }
