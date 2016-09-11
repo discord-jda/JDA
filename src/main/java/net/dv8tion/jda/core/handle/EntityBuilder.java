@@ -21,6 +21,9 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.MessageEmbed.Provider;
+import net.dv8tion.jda.core.entities.MessageEmbed.Thumbnail;
+import net.dv8tion.jda.core.entities.MessageEmbed.VideoInfo;
 import net.dv8tion.jda.core.entities.impl.*;
 import net.dv8tion.jda.core.requests.GuildLock;
 import net.dv8tion.jda.core.requests.WebSocketClient;
@@ -29,24 +32,35 @@ import org.json.JSONObject;
 
 import java.awt.*;
 import java.time.OffsetDateTime;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class EntityBuilder
 {
-    private static final HashMap<JDA, HashMap<String, JSONObject>> cachedJdaGuildJsons = new HashMap<>();
-    private static final HashMap<JDA, HashMap<String, Consumer<Guild>>> cachedJdaGuildCallbacks = new HashMap<>();
+    private static final HashMap<JDA, EntityBuilder> builders = new HashMap<>();
+    private static final Pattern channelMentionPattern = Pattern.compile("<#(\\d+)>");
 
     protected final JDAImpl api;
+    protected final HashMap<String, JSONObject> cachedGuildJsons = new HashMap<>();
+    protected final HashMap<String, Consumer<Guild>> cachedGuildCallbacks = new HashMap<>();
 
-    public EntityBuilder(JDA api)
+    public static EntityBuilder get(JDA api)
+    {
+        EntityBuilder builder = builders.get(api);
+        if (builder == null)
+        {
+            builder = new EntityBuilder(api);
+            builders.put(api, builder);
+        }
+        return builder;
+    }
+
+    private EntityBuilder(JDA api)
     {
         this.api = (JDAImpl) api;
-        if(!cachedJdaGuildCallbacks.containsKey(api))
-            cachedJdaGuildCallbacks.put(api, new HashMap<>());
-        if(!cachedJdaGuildJsons.containsKey(api))
-            cachedJdaGuildJsons.put(api, new HashMap<>());
     }
 
     public SelfInfo createSelfInfo(JSONObject self)
@@ -143,21 +157,15 @@ public class EntityBuilder
             for (int i = 0; i < presences.length(); i++)
             {
                 JSONObject presence = presences.getJSONObject(i);
-                UserImpl user = ((UserImpl) api.getUserMap().get(presence.getJSONObject("user").getString("id")));
-                if (user == null)
-                {
-                    //corresponding user to presence not found... ignoring
-                    continue;
-                }
-                Game presenceGame = null;
-                if( !presence.isNull("game") && !presence.getJSONObject("game").isNull("name") )
-                {
-                    presenceGame = new GameImpl(presence.getJSONObject("game").get("name").toString(),
-                            presence.getJSONObject("game").isNull("url") ? null : presence.getJSONObject("game").get("url").toString(),
-                            presence.getJSONObject("game").isNull("type") ? Game.GameType.DEFAULT : Game.GameType.fromKey((int) presence.getJSONObject("game").get("type")) );
-                }
-                user.setCurrentGame(presenceGame)
-                    .setOnlineStatus(OnlineStatus.fromKey(presence.getString("status")));
+                MemberImpl member = (MemberImpl) guildObj.getMembersMap().get(presence.getJSONObject("user").getString("id"));
+//                if (member == null)
+//                {
+//                    //corresponding user to presence not found... ignoring
+//                    continue;
+//                }
+                if (member == null)
+                    WebSocketClient.LOG.fatal("Received a Presence for a non-existent Member when dealing with GuildFirstPass!");
+                createPresence(member, presence);
             }
         }
 
@@ -207,8 +215,6 @@ public class EntityBuilder
         // needed to guild the Guild. We will skip
         if (guild.getJSONArray("members").length() != guild.getInt("member_count"))
         {
-            HashMap<String, JSONObject> cachedGuildJsons = cachedJdaGuildJsons.get(api);
-            HashMap<String, Consumer<Guild>> cachedGuildCallbacks = cachedJdaGuildCallbacks.get(api);
             cachedGuildJsons.put(id, guild);
             cachedGuildCallbacks.put(id, secondPassCallback);
 
@@ -263,9 +269,6 @@ public class EntityBuilder
 
     public void createGuildSecondPass(String guildId, List<JSONArray> memberChunks)
     {
-        HashMap<String, JSONObject> cachedGuildJsons = cachedJdaGuildJsons.get(api);
-        HashMap<String, Consumer<Guild>> cachedGuildCallbacks = cachedJdaGuildCallbacks.get(api);
-
         JSONObject guildJson = cachedGuildJsons.remove(guildId);
         Consumer<Guild> secondPassCallback = cachedGuildCallbacks.remove(guildId);
         GuildImpl guildObj = (GuildImpl) api.getGuildMap().get(guildId);
@@ -314,11 +317,11 @@ public class EntityBuilder
             JSONObject presenceJson = presences.getJSONObject(i);
             String userId = presenceJson.getJSONObject("user").getString("id");
 
-            UserImpl user = (UserImpl) api.getUserMap().get(userId);
-            if (user == null)
-                WebSocketClient.LOG.fatal("Received a Presence for a non-existent User when dealing with GuildSync!");
+            MemberImpl member = (MemberImpl) guild.getMembersMap().get(userId);
+            if (member == null)
+                WebSocketClient.LOG.fatal("Received a Presence for a non-existent Member when dealing with GuildSync!");
             else
-                this.createPresence(user, presenceJson);
+                this.createPresence(member, presenceJson);
         }
     }
 
@@ -453,10 +456,10 @@ public class EntityBuilder
         return member;
     }
 
-    public void createPresence(UserImpl user, JSONObject presenceJson)
+    public void createPresence(MemberImpl member, JSONObject presenceJson)
     {
         JSONObject gameJson = presenceJson.isNull("game") ? null: presenceJson.getJSONObject("game");
-        user.setOnlineStatus(OnlineStatus.fromKey(presenceJson.getString("status")));
+        member.setOnlineStatus(OnlineStatus.fromKey(presenceJson.getString("status")));
 
         if (gameJson != null && !gameJson.isNull("name"))
         {
@@ -468,7 +471,7 @@ public class EntityBuilder
                     ? Game.GameType.DEFAULT
                     : Game.GameType.fromKey(gameJson.getInt("type"));
 
-            user.setCurrentGame(new GameImpl(gameName, url, gameType));
+            member.setGame(new GameImpl(gameName, url, gameType));
         }
 
     }
@@ -510,20 +513,26 @@ public class EntityBuilder
                 .setBitrate(json.getInt("bitrate"));
     }
 
-//    public PrivateChannel createPrivateChannel(JSONObject privatechat)
-//    {
-//        JSONObject recipient = privatechat.getJSONArray("recipients").getJSONObject(0);
-//        UserImpl user = ((UserImpl) api.getUserMap().get(recipient.getString("id")));
-//        if (user == null)
-//        {   //The API can give us private channels connected to Users that we can no longer communicate with.
-//            api.getOffline_pms().put(recipient.getString("id"), privatechat.getString("id"));
-//            return null;
-//        }
-//
-//        PrivateChannelImpl priv = new PrivateChannelImpl(privatechat.getString("id"), user, api);
-//        user.setPrivateChannel(priv);
-//        return priv;
-//    }
+    public PrivateChannel createPrivateChannel(JSONObject privatechat)
+    {
+        JSONObject recipient = privatechat.getJSONArray("recipients").getJSONObject(0);
+        UserImpl user = ((UserImpl) api.getUserMap().get(recipient.getString("id")));
+        if (user == null)
+        {   //The API can give us private channels connected to Users that we can no longer communicate with.
+            // As such, make a fake user and fake private channel.
+            user = (UserImpl) createUser(recipient);
+            api.getFakeUserMap().put(user.getId(), user);
+            System.out.println("MADE A FAKE USER! " + user);
+        }
+
+        PrivateChannelImpl priv = new PrivateChannelImpl(privatechat.getString("id"), user);
+        user.setPrivateChannel(priv);
+        api.getPrivateChannelMap().put(priv.getId(), priv);
+
+        if (user.isFake())
+            api.getFakePrivateChannelMap().put(priv.getId(), priv);
+        return priv;
+    }
 
     public Role createRole(JSONObject roleJson, String guildId)
     {
@@ -544,164 +553,164 @@ public class EntityBuilder
                 .setMentionable(roleJson.has("mentionable") && roleJson.getBoolean("mentionable"));
     }
 
-//    public Message createMessage(JSONObject jsonObject)
-//    {
-//        String id = jsonObject.getString("id");
-//        String content = jsonObject.getString("content");
-//        MessageImpl message = new MessageImpl(id, api)
-//                .setAuthor(api.getUserMap().get(jsonObject.getJSONObject("author").getString("id")))
-//                .setContent(content)
-//                .setTime(OffsetDateTime.parse(jsonObject.getString("timestamp")))
-//                .setMentionsEveryone(jsonObject.getBoolean("mention_everyone"))
-//                .setTTS(jsonObject.getBoolean("tts"))
-//                .setPinned(jsonObject.getBoolean("pinned"));
-//
-//        List<Message.Attachment> attachments = new LinkedList<>();
-//        JSONArray jsonAttachments = jsonObject.getJSONArray("attachments");
-//        for (int i = 0; i < jsonAttachments.length(); i++)
-//        {
-//            JSONObject jsonAttachment = jsonAttachments.getJSONObject(i);
-//            attachments.add(new Message.Attachment(
-//                    jsonAttachment.getString("id"),
-//                    jsonAttachment.getString("url"),
-//                    jsonAttachment.getString("proxy_url"),
-//                    jsonAttachment.getString("filename"),
-//                    jsonAttachment.getInt("size"),
-//                    jsonAttachment.has("height") ? jsonAttachment.getInt("height") : 0,
-//                    jsonAttachment.has("width") ? jsonAttachment.getInt("width") : 0,
-//                    api
-//            ));
-//        }
-//        message.setAttachments(attachments);
-//
-//        List<MessageEmbed> embeds = new LinkedList<>();
-//        JSONArray jsonEmbeds = jsonObject.getJSONArray("embeds");
-//        for (int i = 0; i < jsonEmbeds.length(); i++)
-//        {
-//            embeds.add(createMessageEmbed(jsonEmbeds.getJSONObject(i)));
-//        }
-//        message.setEmbeds(embeds);
-//
-//        if (!jsonObject.isNull("edited_timestamp"))
-//            message.setEditedTime(OffsetDateTime.parse(jsonObject.getString("edited_timestamp")));
-//
-//        String channelId = jsonObject.getString("channel_id");
-//        TextChannel textChannel = api.getChannelMap().get(channelId);
-//        if (textChannel != null)
-//        {
-//            message.setChannelId(textChannel.getId());
-//            message.setIsPrivate(false);
-//            TreeMap<Integer, User> mentionedUsers = new TreeMap<>();
-//            JSONArray mentions = jsonObject.getJSONArray("mentions");
-//            for (int i = 0; i < mentions.length(); i++)
-//            {
-//                JSONObject mention = mentions.getJSONObject(i);
-//                User u = api.getUserMap().get(mention.getString("id"));
-//                if (u != null)
-//                {
-//                    //We do this to properly order the mentions. The array given by discord is out of order sometimes.
-//                    int index = content.indexOf("<@" + mention.getString("id") + ">");
-//                    mentionedUsers.put(index, u);
-//                }
-//            }
-//            message.setMentionedUsers(new LinkedList<User>(mentionedUsers.values()));
-//
-//            TreeMap<Integer, Role> mentionedRoles = new TreeMap<>();
-//            JSONArray roleMentions = jsonObject.getJSONArray("mention_roles");
-//            for (int i = 0; i < roleMentions.length(); i++)
-//            {
-//                String roleId = roleMentions.getString(i);
-//                Role r = textChannel.getGuild().getRoleById(roleId);
-//                if (r != null)
-//                {
-//                    int index = content.indexOf("<@&" + roleId + ">");
-//                    mentionedRoles.put(index, r);
-//                }
-//            }
-//            message.setMentionedRoles(new LinkedList<Role>(mentionedRoles.values()));
-//
-//            List<TextChannel> mentionedChannels = new LinkedList<>();
-//            Map<String, TextChannel> chanMap = ((GuildImpl) textChannel.getGuild()).getTextChannelsMap();
-//            Matcher matcher = channelMentionPattern.matcher(content);
-//            while (matcher.find())
-//            {
-//                TextChannel channel = chanMap.get(matcher.group(1));
-//                if(channel != null && !mentionedChannels.contains(channel))
-//                {
-//                    mentionedChannels.add(channel);
-//                }
-//            }
-//            message.setMentionedChannels(mentionedChannels);
-//        }
-//        else
-//        {
-//            message.setIsPrivate(true);
-//            PrivateChannel privateChannel = api.getPmChannelMap().get(channelId);
-//            if (privateChannel != null)
-//            {
-//                message.setChannelId(privateChannel.getId());
-//            }
-//            else
-//            {
-//                throw new IllegalArgumentException("Could not find Private/Text Channel of id " + channelId);
-//            }
-//        }
-//
-//        return message;
-//    }
-//
-//    protected MessageEmbed createMessageEmbed(JSONObject messageEmbed)
-//    {
-//        MessageEmbedImpl embed = new MessageEmbedImpl()
-//                .setUrl(messageEmbed.getString("url"))
-//                .setTitle(messageEmbed.isNull("title") ? null : messageEmbed.getString("title"))
-//                .setDescription(messageEmbed.isNull("description") ? null : messageEmbed.getString("description"));
-//
-//        EmbedType type = EmbedType.fromKey(messageEmbed.getString("type"));
-////        if (type.equals(EmbedType.UNKNOWN))
-////            throw new IllegalArgumentException("Discord provided us an unknown embed type.  Json: " + messageEmbed);
-//        embed.setType(type);
-//
-//        if (messageEmbed.has("thumbnail"))
-//        {
-//            JSONObject thumbnailJson = messageEmbed.getJSONObject("thumbnail");
-//            embed.setThumbnail(new Thumbnail(
-//                    thumbnailJson.getString("url"),
-//                    thumbnailJson.getString("proxy_url"),
-//                    thumbnailJson.getInt("width"),
-//                    thumbnailJson.getInt("height")));
-//        }
-//        else embed.setThumbnail(null);
-//
-//        if (messageEmbed.has("provider"))
-//        {
-//            JSONObject providerJson = messageEmbed.getJSONObject("provider");
-//            embed.setSiteProvider(new Provider(
-//                    providerJson.isNull("name") ? null : providerJson.getString("name"),
-//                    providerJson.isNull("url") ? null : providerJson.getString("url")));
-//        }
-//        else embed.setSiteProvider(null);
-//
-//        if (messageEmbed.has("author"))
-//        {
-//            JSONObject authorJson = messageEmbed.getJSONObject("author");
-//            embed.setAuthor(new Provider(
-//                    authorJson.isNull("name") ? null : authorJson.getString("name"),
-//                    authorJson.isNull("url") ? null : authorJson.getString("url")));
-//        }
-//        else embed.setAuthor(null);
-//
-//        if (messageEmbed.has("video"))
-//        {
-//            JSONObject videoJson = messageEmbed.getJSONObject("video");
-//            embed.setVideoInfo(new VideoInfo(
-//                    videoJson.getString("url"),
-//                    videoJson.isNull("width") ? -1 : videoJson.getInt("width"),
-//                    videoJson.isNull("height") ? -1 : videoJson.getInt("height")));
-//        }
-//        return embed;
-//    }
-//
+    public Message createMessage(JSONObject jsonObject)
+    {
+        String id = jsonObject.getString("id");
+        String content = jsonObject.getString("content");
+        MessageImpl message = new MessageImpl(id, api)
+                .setAuthor(api.getUserMap().get(jsonObject.getJSONObject("author").getString("id")))
+                .setContent(content)
+                .setTime(OffsetDateTime.parse(jsonObject.getString("timestamp")))
+                .setMentionsEveryone(jsonObject.getBoolean("mention_everyone"))
+                .setTTS(jsonObject.getBoolean("tts"))
+                .setPinned(jsonObject.getBoolean("pinned"));
+
+        List<Message.Attachment> attachments = new LinkedList<>();
+        JSONArray jsonAttachments = jsonObject.getJSONArray("attachments");
+        for (int i = 0; i < jsonAttachments.length(); i++)
+        {
+            JSONObject jsonAttachment = jsonAttachments.getJSONObject(i);
+            attachments.add(new Message.Attachment(
+                    jsonAttachment.getString("id"),
+                    jsonAttachment.getString("url"),
+                    jsonAttachment.getString("proxy_url"),
+                    jsonAttachment.getString("filename"),
+                    jsonAttachment.getInt("size"),
+                    jsonAttachment.has("height") ? jsonAttachment.getInt("height") : 0,
+                    jsonAttachment.has("width") ? jsonAttachment.getInt("width") : 0,
+                    api
+            ));
+        }
+        message.setAttachments(attachments);
+
+        List<MessageEmbed> embeds = new LinkedList<>();
+        JSONArray jsonEmbeds = jsonObject.getJSONArray("embeds");
+        for (int i = 0; i < jsonEmbeds.length(); i++)
+        {
+            embeds.add(createMessageEmbed(jsonEmbeds.getJSONObject(i)));
+        }
+        message.setEmbeds(embeds);
+
+        if (!jsonObject.isNull("edited_timestamp"))
+            message.setEditedTime(OffsetDateTime.parse(jsonObject.getString("edited_timestamp")));
+
+        String channelId = jsonObject.getString("channel_id");
+        TextChannel textChannel = api.getTextChannelMap().get(channelId);
+        if (textChannel != null)
+        {
+            message.setChannelId(textChannel.getId());
+            message.setIsPrivate(false);
+            TreeMap<Integer, User> mentionedUsers = new TreeMap<>();
+            JSONArray mentions = jsonObject.getJSONArray("mentions");
+            for (int i = 0; i < mentions.length(); i++)
+            {
+                JSONObject mention = mentions.getJSONObject(i);
+                User u = api.getUserMap().get(mention.getString("id"));
+                if (u != null)
+                {
+                    //We do this to properly order the mentions. The array given by discord is out of order sometimes.
+                    int index = content.indexOf("<@" + mention.getString("id") + ">");
+                    mentionedUsers.put(index, u);
+                }
+            }
+            message.setMentionedUsers(new LinkedList<User>(mentionedUsers.values()));
+
+            TreeMap<Integer, Role> mentionedRoles = new TreeMap<>();
+            JSONArray roleMentions = jsonObject.getJSONArray("mention_roles");
+            for (int i = 0; i < roleMentions.length(); i++)
+            {
+                String roleId = roleMentions.getString(i);
+                Role r = textChannel.getGuild().getRoleById(roleId);
+                if (r != null)
+                {
+                    int index = content.indexOf("<@&" + roleId + ">");
+                    mentionedRoles.put(index, r);
+                }
+            }
+            message.setMentionedRoles(new LinkedList<Role>(mentionedRoles.values()));
+
+            List<TextChannel> mentionedChannels = new LinkedList<>();
+            Map<String, TextChannel> chanMap = ((GuildImpl) textChannel.getGuild()).getTextChannelsMap();
+            Matcher matcher = channelMentionPattern.matcher(content);
+            while (matcher.find())
+            {
+                TextChannel channel = chanMap.get(matcher.group(1));
+                if(channel != null && !mentionedChannels.contains(channel))
+                {
+                    mentionedChannels.add(channel);
+                }
+            }
+            message.setMentionedChannels(mentionedChannels);
+        }
+        else
+        {
+            message.setIsPrivate(true);
+            PrivateChannel privateChannel = api.getPrivateChannelMap().get(channelId);
+            if (privateChannel != null)
+            {
+                message.setChannelId(privateChannel.getId());
+            }
+            else
+            {
+                throw new IllegalArgumentException("Could not find Private/Text Channel of id " + channelId);
+            }
+        }
+
+        return message;
+    }
+
+    protected MessageEmbed createMessageEmbed(JSONObject messageEmbed)
+    {
+        MessageEmbedImpl embed = new MessageEmbedImpl()
+                .setUrl(messageEmbed.getString("url"))
+                .setTitle(messageEmbed.isNull("title") ? null : messageEmbed.getString("title"))
+                .setDescription(messageEmbed.isNull("description") ? null : messageEmbed.getString("description"));
+
+        EmbedType type = EmbedType.fromKey(messageEmbed.getString("type"));
+//        if (type.equals(EmbedType.UNKNOWN))
+//            throw new IllegalArgumentException("Discord provided us an unknown embed type.  Json: " + messageEmbed);
+        embed.setType(type);
+
+        if (messageEmbed.has("thumbnail"))
+        {
+            JSONObject thumbnailJson = messageEmbed.getJSONObject("thumbnail");
+            embed.setThumbnail(new Thumbnail(
+                    thumbnailJson.getString("url"),
+                    thumbnailJson.getString("proxy_url"),
+                    thumbnailJson.getInt("width"),
+                    thumbnailJson.getInt("height")));
+        }
+        else embed.setThumbnail(null);
+
+        if (messageEmbed.has("provider"))
+        {
+            JSONObject providerJson = messageEmbed.getJSONObject("provider");
+            embed.setSiteProvider(new Provider(
+                    providerJson.isNull("name") ? null : providerJson.getString("name"),
+                    providerJson.isNull("url") ? null : providerJson.getString("url")));
+        }
+        else embed.setSiteProvider(null);
+
+        if (messageEmbed.has("author"))
+        {
+            JSONObject authorJson = messageEmbed.getJSONObject("author");
+            embed.setAuthor(new Provider(
+                    authorJson.isNull("name") ? null : authorJson.getString("name"),
+                    authorJson.isNull("url") ? null : authorJson.getString("url")));
+        }
+        else embed.setAuthor(null);
+
+        if (messageEmbed.has("video"))
+        {
+            JSONObject videoJson = messageEmbed.getJSONObject("video");
+            embed.setVideoInfo(new MessageEmbed.VideoInfo(
+                    videoJson.getString("url"),
+                    videoJson.isNull("width") ? -1 : videoJson.getInt("width"),
+                    videoJson.isNull("height") ? -1 : videoJson.getInt("height")));
+        }
+        return embed;
+    }
+
     public PermissionOverride createPermissionOverride(JSONObject override, Channel chan)
     {
         PermissionOverrideImpl permOverride = null;
@@ -746,5 +755,11 @@ public class EntityBuilder
         }
         return permOverride.setAllow(allow)
                 .setDeny(deny);
+    }
+
+    public void clearCache()
+    {
+        cachedGuildJsons.clear();
+        cachedGuildCallbacks.clear();
     }
 }

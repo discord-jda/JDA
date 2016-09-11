@@ -19,6 +19,7 @@ package net.dv8tion.jda.core;
 import net.dv8tion.jda.bot.JDABot;
 import net.dv8tion.jda.client.JDAClient;
 import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.hooks.IEventManager;
 import org.apache.http.HttpHost;
 
 import java.util.List;
@@ -92,6 +93,45 @@ public interface JDA
      *      Current JDA status.
      */
     Status getStatus();
+
+    /**
+     * Changes the internal EventManager.
+     * The default EventManager is {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventListener}.
+     * There is also an {@link net.dv8tion.jda.core.hooks.AnnotatedEventManager AnnotatedEventManager} available.
+     *
+     * @param manager
+     *          The new EventManager to use
+     */
+    void setEventManager(IEventManager manager);
+
+    /**
+     * Adds an Object to the event-listeners that will be used to handle events.
+     * This uses the {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventListener} by default.
+     * To switch to the {@link net.dv8tion.jda.core.hooks.AnnotatedEventManager AnnotatedEventManager}, use {@link #setEventManager(IEventManager)}.
+     *
+     * Note: when using the {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventListener} (default),
+     * given listener <b>must</b> be instance of {@link net.dv8tion.jda.core.hooks.EventListener EventListener}!
+     *
+     * @param listener
+     *          The listener
+     */
+    void addEventListener(Object listener);
+
+    /**
+     * Removes the provided Object from the event-listeners and no longer uses it to handle events.
+     *
+     * @param listener
+     *          The listener to be removed.
+     */
+    void removeEventListener(Object listener);
+
+    /**
+     * Returns an unmodifiable List of Objects that have been registered as EventListeners.
+     *
+     * @return
+     *      List of currently registered Objects acting as EventListeners.
+     */
+    List<Object> getRegisteredListeners();
 
     /**
      * An unmodifiable list of all known {@link net.dv8tion.jda.core.entities.User Users}.<br>

@@ -95,7 +95,7 @@ public class MessageHistory
         }
         int toQueue;
         LinkedList<Message> out = new LinkedList<>();
-        EntityBuilder builder = new EntityBuilder(api);
+        EntityBuilder builder = EntityBuilder.get(api);
         while(amount > 0)
         {
             toQueue = Math.min(amount, 100);

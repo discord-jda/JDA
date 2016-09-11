@@ -44,7 +44,7 @@ public class ReadyHandler extends SocketHandler
     @Override
     protected String handleInternally(JSONObject content)
     {
-        EntityBuilder builder = new EntityBuilder(api);
+        EntityBuilder builder = EntityBuilder.get(api);
 
         //Core
         JSONArray guilds = content.getJSONArray("guilds");
@@ -99,6 +99,8 @@ public class ReadyHandler extends SocketHandler
             JSONArray relationships = content.getJSONArray("relationships");
             JSONObject notes = content.getJSONObject("notes");
         }
+        if (guilds.length() == 0)
+            guildLoadComplete(content);
 
         return null;
     }
@@ -106,6 +108,12 @@ public class ReadyHandler extends SocketHandler
     public void guildLoadComplete(JSONObject content)
     {
         JSONArray privateChannels = content.getJSONArray("private_channels");
+
+        EntityBuilder builder = EntityBuilder.get(api);
+        for (int i = 0; i < privateChannels.length(); i++)
+        {
+            builder.createPrivateChannel(privateChannels.getJSONObject(i));
+        }
 
         JSONArray readstates = content.has("read_state") ? content.getJSONArray("read_state") : null;
         JSONArray guildSettings = content.has("user_guild_settings") ? content.getJSONArray("user_guild_settings") : null;

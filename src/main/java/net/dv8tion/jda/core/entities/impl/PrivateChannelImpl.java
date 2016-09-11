@@ -30,6 +30,8 @@ public class PrivateChannelImpl implements PrivateChannel
     private final String id;
     private final User user;
 
+    private boolean fake = false;
+
     public PrivateChannelImpl(String id, User user)
     {
         this.id = id;
@@ -118,5 +120,17 @@ public class PrivateChannelImpl implements PrivateChannel
     public String getId()
     {
         return id;
+    }
+
+    @Override
+    public boolean isFake()
+    {
+        return fake;
+    }
+
+    public PrivateChannelImpl setFake(boolean fake)
+    {
+        this.fake = fake;
+        return this;
     }
 }

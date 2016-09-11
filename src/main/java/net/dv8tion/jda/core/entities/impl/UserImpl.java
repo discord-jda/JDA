@@ -30,10 +30,9 @@ public class UserImpl implements User
     private String name;
     private String discriminator;
     private String avatarId;
-    private Game currentGame;
-    private OnlineStatus onlineStatus = OnlineStatus.OFFLINE;
     private PrivateChannel privateChannel;
     private boolean bot;
+    private boolean fake = false;
 
     public UserImpl(String id, JDAImpl api)
     {
@@ -75,18 +74,6 @@ public class UserImpl implements User
     public String getDefaultAvatarUrl()
     {
         return "https://discordapp.com/assets/" + getDefaultAvatarId() + ".png";
-    }
-
-    @Override
-    public Game getCurrentGame()
-    {
-        return currentGame;
-    }
-
-    @Override
-    public OnlineStatus getOnlineStatus()
-    {
-        return onlineStatus;
     }
 
     @Override
@@ -164,18 +151,6 @@ public class UserImpl implements User
         return this;
     }
 
-    public UserImpl setCurrentGame(Game currentGame)
-    {
-        this.currentGame = currentGame;
-        return this;
-    }
-
-    public UserImpl setOnlineStatus(OnlineStatus onlineStatus)
-    {
-        this.onlineStatus = onlineStatus;
-        return this;
-    }
-
     public UserImpl setPrivateChannel(PrivateChannel privateChannel)
     {
         this.privateChannel = privateChannel;
@@ -186,6 +161,12 @@ public class UserImpl implements User
     {
         this.bot = bot;
         return this;
+    }
+
+    @Override
+    public boolean isFake()
+    {
+        return fake;
     }
 
     private enum DefaultAvatar

@@ -17,6 +17,7 @@
 package net.dv8tion.jda.core.entities.impl;
 
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 
@@ -31,11 +32,14 @@ public class MemberImpl implements Member
 {
     private final Guild guild;
     private final User user;
+    private final VoiceState voiceState;
     private final TreeSet<Role> roles = new TreeSet<>((r1, r2) -> r2.compareTo(r1));
+
 
     private String nickname;
     private OffsetDateTime joinDate;
-    private VoiceState voiceState;
+    private Game game;
+    private OnlineStatus onlineStatus = OnlineStatus.OFFLINE;
 
     public MemberImpl(Guild guild, User user)
     {
@@ -68,9 +72,22 @@ public class MemberImpl implements Member
         return joinDate;
     }
 
+    @Override
     public VoiceState getVoiceState()
     {
         return voiceState;
+    }
+
+    @Override
+    public Game getGame()
+    {
+        return game;
+    }
+
+    @Override
+    public OnlineStatus getOnlineStatus()
+    {
+        return onlineStatus;
     }
 
     @Override
@@ -118,6 +135,18 @@ public class MemberImpl implements Member
     public MemberImpl setJoinDate(OffsetDateTime joinDate)
     {
         this.joinDate = joinDate;
+        return this;
+    }
+
+    public MemberImpl setGame(Game game)
+    {
+        this.game = game;
+        return this;
+    }
+
+    public MemberImpl setOnlineStatus(OnlineStatus onlineStatus)
+    {
+        this.onlineStatus = onlineStatus;
         return this;
     }
 

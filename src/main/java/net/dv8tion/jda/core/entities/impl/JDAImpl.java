@@ -24,6 +24,8 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
+import net.dv8tion.jda.core.hooks.IEventManager;
+import net.dv8tion.jda.core.hooks.InterfacedEventManager;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.RequestBuilder;
 import net.dv8tion.jda.core.requests.Requester;
@@ -50,9 +52,13 @@ public abstract class JDAImpl implements JDA
     protected final HashMap<String, VoiceChannel> voiceChannels = new HashMap<>();
     protected final HashMap<String, PrivateChannel> privateChannels = new HashMap<>();
 
+    protected final HashMap<String, User> fakeUsers = new HashMap<>();
+    protected final HashMap<String, PrivateChannel> fakePrivateChannels = new HashMap<>();
+
     protected HttpHost proxy;
     protected WebSocketClient client;
     protected Requester requester = new Requester();
+    protected IEventManager eventManager = new InterfacedEventManager();
     protected Status status = Status.INITIALIZING;
     protected SelfInfo selfInfo;
     protected ShardInfo shardInfo;
@@ -81,8 +87,8 @@ public abstract class JDAImpl implements JDA
         if (token == null || token.isEmpty())
             throw new LoginException("Provided token was null or empty!");
 
-        verifyToken(token);
-        this.token = token;
+        setToken(token);
+        verifyToken(getToken(), 1);
         this.shardInfo = shardInfo;
         LOG.info("Login Successful!");
 
@@ -114,12 +120,15 @@ public abstract class JDAImpl implements JDA
         }
     }
 
-    public void setAuthToken(String token)
+    public void setToken(String token)
     {
-        this.token = token;
+        if (getAccountType() == AccountType.BOT)
+            this.token = "Bot " + token;
+        else
+            this.token = token;
     }
 
-    public void verifyToken(String token) throws LoginException
+    public void verifyToken(String token, int attempt) throws LoginException
     {
         Request request = new RequestBuilder(RequestBuilder.RequestType.GET)
                 .setUrl(Requester.DISCORD_API_PREFIX + "users/@me")
@@ -128,31 +137,44 @@ public abstract class JDAImpl implements JDA
         Requester.Response response = requester.handle(request);
         if (response.isOk())
         {
-            JSONObject json = response.getObject();
-            if (getAccountType() == AccountType.BOT)
-            {
-                if (!json.has("bot") || !json.getBoolean("bot"))
-                    throw new AccountTypeException(AccountType.BOT, "Attempted to login as a BOT with a CLIENT token!");
-            }
-            else
-            {
-                if (json.has("bot") && json.getBoolean("bot"))
-                    throw new AccountTypeException(AccountType.CLIENT, "Attempted to login as a CLIENT with a BOT token!");
-            }
+            verifyToken(response.getObject());
         }
         else if (response.isRateLimit())
-            throw new RateLimitedException("auth/login");//TODO: Do more here somehow.
-        else
+            throw new RateLimitedException("users/@me");//TODO: Do more here somehow.
+        else if (response.code == 401)
         {
-            if (response.code == 401)
+            //Perhaps we were provided with token for the wrong account type. Use a second attempt to try and
+            // figure out if that is the case.
+            if (attempt < 2)
             {
-                throw new LoginException("The provided token was invalid!");
+                String newToken;
+                if (getAccountType() == AccountType.BOT)
+                    newToken = token.replace("Bot ", "");
+                else
+                    newToken = "Bot " + token;
+                verifyToken(newToken, 2);
             }
             else
-            {
-                throw new LoginException("When verifying the authenticity of the provided token, Discord returned an unknown response:\n" +
-                        response.toString());
-            }
+                throw new LoginException("The provided token was invalid!");
+        }
+        else
+        {
+            throw new LoginException("When verifying the authenticity of the provided token, Discord returned an unknown response:\n" +
+                    response.toString());
+        }
+    }
+
+    private void verifyToken(JSONObject userResponse)
+    {
+        if (getAccountType() == AccountType.BOT)
+        {
+            if (!userResponse.has("bot") || !userResponse.getBoolean("bot"))
+                throw new AccountTypeException(AccountType.BOT, "Attempted to login as a BOT with a CLIENT token!");
+        }
+        else
+        {
+            if (userResponse.has("bot") && userResponse.getBoolean("bot"))
+                throw new AccountTypeException(AccountType.CLIENT, "Attempted to login as a CLIENT with a BOT token!");
         }
     }
 
@@ -363,14 +385,38 @@ public abstract class JDAImpl implements JDA
         throw new UnsupportedOperationException("Nice try m8!");
     }
 
-    public void setResponseTotal(int responseTotal)
+    @Override
+    public void setEventManager(IEventManager eventManager)
     {
-        this.responseTotal = responseTotal;
+        this.eventManager = eventManager;
+    }
+
+    @Override
+    public void addEventListener(Object listener)
+    {
+        eventManager.register(listener);
+    }
+
+    @Override
+    public void removeEventListener(Object listener)
+    {
+        eventManager.unregister(listener);
+    }
+
+    @Override
+    public List<Object> getRegisteredListeners()
+    {
+        return Collections.unmodifiableList(eventManager.getRegisteredListeners());
     }
 
     public Requester getRequester()
     {
         return requester;
+    }
+
+    public IEventManager getEventManager()
+    {
+        return eventManager;
     }
 
     public WebSocketClient getClient()
@@ -403,8 +449,24 @@ public abstract class JDAImpl implements JDA
         return privateChannels;
     }
 
+    public HashMap<String, User> getFakeUserMap()
+    {
+        return fakeUsers;
+    }
+
+    public HashMap<String, PrivateChannel> getFakePrivateChannelMap()
+    {
+        return fakePrivateChannels;
+    }
+
     public void setSelfInfo(SelfInfo selfInfo)
     {
         this.selfInfo = selfInfo;
     }
+
+    public void setResponseTotal(int responseTotal)
+    {
+        this.responseTotal = responseTotal;
+    }
+
 }

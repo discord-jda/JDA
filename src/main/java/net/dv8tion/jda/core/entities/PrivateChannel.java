@@ -21,7 +21,7 @@ import net.dv8tion.jda.core.requests.RestAction;
 /**
  * Represents the connection used for direct messaging.
  */
-public interface PrivateChannel extends MessageChannel
+public interface PrivateChannel extends MessageChannel, IFakeable
 {
     /**
      * The {@link net.dv8tion.jda.core.entities.User User} that this {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} communicates with.

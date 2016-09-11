@@ -19,6 +19,7 @@ package net.dv8tion.jda.core.entities.impl;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.*;
+import org.json.JSONObject;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,6 +32,8 @@ public class GuildImpl implements Guild
     private final HashMap<String, VoiceChannel> voiceChannels = new HashMap<>();
     private final HashMap<String, Member> members = new HashMap<>();
     private final HashMap<String, Role> roles = new HashMap<>();
+
+    private final HashMap<String, JSONObject> cachedPresences = new HashMap<>();
 
     private Member owner;
     private String name;
@@ -324,6 +327,11 @@ public class GuildImpl implements Guild
     public HashMap<String, Role> getRolesMap()
     {
         return roles;
+    }
+
+    public HashMap<String, JSONObject> getCachedPresenceMap()
+    {
+        return cachedPresences;
     }
 
     // -- Object overrides --

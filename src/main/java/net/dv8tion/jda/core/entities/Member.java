@@ -17,6 +17,7 @@
 package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.Permission;
 
 import java.awt.Color;
@@ -34,6 +35,24 @@ public interface Member extends IMentionable
     OffsetDateTime getJoinDate();
 
     VoiceState getVoiceState();
+
+    /**
+     * The game that the user is currently playing.
+     * If the user is not currently playing a game, this will return null.
+     *
+     * @return
+     *      Possibly-null {@link net.dv8tion.jda.core.entities.Game Game} containing the game that the {@link net.dv8tion.jda.core.entities.User User} is currently playing.
+     */
+    Game getGame();
+
+    /**
+     * Returns the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} of the User.<br>
+     * If the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} is unrecognized, will return {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}.
+     *
+     * @return
+     *      The current {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} of the {@link net.dv8tion.jda.core.entities.User User}.
+     */
+    OnlineStatus getOnlineStatus();
 
     /**
      * Returns the current nickname of this Member for the parent Guild.

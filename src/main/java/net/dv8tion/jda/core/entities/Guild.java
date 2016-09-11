@@ -88,6 +88,8 @@ public interface Guild extends ISnowflake
      */
     boolean isMember(User user);
 
+    Member getMember(User user);
+
     Member getMemberById(String userId);
 
     List<Member> getMembersByName(String name, boolean ignoreCase);
@@ -96,7 +98,6 @@ public interface Guild extends ISnowflake
     List<Member> getMembersWithRoles(Role... roles);
     List<Member> getMembersWithRoles(Collection<Role> roles);
 
-    Member getMember(User user);
 
     List<Member> getMembers();
 

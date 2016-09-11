@@ -32,7 +32,7 @@ public class GuildCreateHandler extends SocketHandler
     {
         Guild g = api.getGuildById(content.getString("id"));
         Boolean wasAvail = (g == null || g.getName() == null) ? null : g.isAvailable();
-        new EntityBuilder(api).createGuildFirstPass(content, guild ->
+        EntityBuilder.get(api).createGuildFirstPass(content, guild ->
         {
             if (guild.isAvailable())
             {

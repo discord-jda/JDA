@@ -22,7 +22,7 @@ import org.json.JSONObject;
 public abstract class SocketHandler
 {
     protected final JDAImpl api;
-    protected long responseTotal;
+    protected long responseNumber;
     protected JSONObject allContent;
 
     public SocketHandler(JDAImpl api)
@@ -34,7 +34,7 @@ public abstract class SocketHandler
     public final void handle(long responseTotal, JSONObject o)
     {
         this.allContent = o;
-        this.responseTotal = responseTotal;
+        this.responseNumber = responseTotal;
         String guildId = handleInternally(o.getJSONObject("d"));
         if (guildId != null)
         {

@@ -23,7 +23,7 @@ import net.dv8tion.jda.core.OnlineStatus;
  * Represents a Discord User.
  * Contains all publicly available information about a specific Discord User.
  */
-public interface User extends ISnowflake, IMentionable
+public interface User extends ISnowflake, IMentionable, IFakeable
 {
 
     /**
@@ -77,24 +77,6 @@ public interface User extends ISnowflake, IMentionable
      *      Never-null String containing the {@link net.dv8tion.jda.core.entities.User User} default avatar url.
      */
     String getDefaultAvatarUrl();
-
-    /**
-     * The game that the user is currently playing.
-     * If the user is not currently playing a game, this will return null.
-     *
-     * @return
-     *      Possibly-null {@link net.dv8tion.jda.core.entities.Game Game} containing the game that the {@link net.dv8tion.jda.core.entities.User User} is currently playing.
-     */
-    Game getCurrentGame();
-
-    /**
-     * Returns the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} of the User.<br>
-     * If the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} is unrecognized, will return {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}.
-     *
-     * @return
-     *      The current {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} of the {@link net.dv8tion.jda.core.entities.User User}.
-     */
-    OnlineStatus getOnlineStatus();
 
     /**
      * Gets the {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} of this
