@@ -436,7 +436,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         api.getUserMap().clear();
 //        api.getPmChannelMap().clear();
 //        api.getOffline_pms().clear();
-//        new EntityBuilder(api).clearCache();
+//        EntityBuilder.get(api).clearCache();
 //        new ReadyHandler(api, 0).clearCache();
 //        EventCache.get(api).clear();
         GuildLock.get(api).clear();
@@ -550,7 +550,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 || type.equals("GUILD_MEMBERS_CHUNK")
                 || type.equals("RESUMED")
                 || type.equals("GUILD_SYNC")
-                || (chunkingAndSyncing && type.equals("GUILD_CREATE"))))
+                || (!chunkingAndSyncing && type.equals("GUILD_CREATE"))))
         {
             LOG.debug("Caching " + type + " event during init!");
             cachedEvents.add(raw);
@@ -580,6 +580,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             {
                 //INIT types
                 case "READY":
+                    LOG.debug(String.format("%s -> %s", type, content.toString()));
                     sessionId = content.getString("session_id");
                     handlers.get("READY").handle(responseTotal, raw);
                     break;
@@ -739,6 +740,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         handlers.put("GUILD_CREATE", new GuildCreateHandler(api));
         handlers.put("GUILD_MEMBERS_CHUNK", new GuildMembersChunkHandler(api));
         handlers.put("GUILD_SYNC", new GuildSyncHandler(api));
+        handlers.put("MESSAGE_CREATE", new MessageCreateHandler(api));
+        handlers.put("PRESENCE_UPDATE", new PresenceUpdateHandler(api));
         handlers.put("READY", new ReadyHandler(api));
     }
 }
