@@ -82,13 +82,6 @@ public interface Message extends ISnowflake
     boolean mentionsEveryone();
 
     /**
-     * Gives a copy of the Object holding the time this message was originally sent
-     *
-     * @return time of Message
-     */
-    OffsetDateTime getTime();
-
-    /**
      * Returns true, if this Message was edited as least once
      *
      * @return if edited
@@ -101,7 +94,7 @@ public interface Message extends ISnowflake
      *
      * @return time of most recent update
      */
-    OffsetDateTime getEditedTimestamp();
+    OffsetDateTime getEditedTime();
 
     /**
      * The author of this Message
@@ -149,7 +142,7 @@ public interface Message extends ISnowflake
     /**
      * Returns the Id of the Channel this Message was sent in.
      * This can be the id of either a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} or a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}
-     * To get the corresponding channel, you can use {@link net.dv8tion.jda.JDA#getTextChannelById(String)} or {@link net.dv8tion.jda.JDA#getPrivateChannelById(String)}
+     * To get the corresponding channel, you can use {@link net.dv8tion.jda.core.JDA#getTextChannelById(String)} or {@link net.dv8tion.jda.core.JDA#getPrivateChannelById(String)}
      * or if you just want to reply, you can also use {@link #getChannel()}.
      * (Hint: {@link #isPrivate()} could be helpful!)
      *
@@ -192,13 +185,23 @@ public interface Message extends ISnowflake
 
     /**
      * Edits this Messages content to the provided String.
-     * If The Message was not created by this account, this does not have any effect
+     * If The Message was not created by this account, this will result in a PermissionException.
      * If this method failed, null gets returned
      *
      * @param newContent the new content of the Message
      * @return a new Message-Object for the edited message
      */
     RestAction editMessage(String newContent);
+
+    /**
+     * Edits this Messages content to be the content of the provide message.
+     * If The Message was not created by this account, this will result in a PermissionException.
+     * If this method failed, null gets returned
+     *
+     * @param newContent the new content of the Message
+     * @return a new Message-Object for the edited message
+     */
+    RestAction editMessage(Message newContent);
 
     /**
      * Deletes this Message from the server.
