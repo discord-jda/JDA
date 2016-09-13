@@ -186,14 +186,14 @@ public class Route
         return "Route(" + method + ": " + route + ")";
     }
 
-    private class CompiledRoute
+    public class CompiledRoute
     {
         public final String route;
         public final String ratelimitRoute;
         public final String compiledRoute;
         public final HttpMethod method;
 
-        public CompiledRoute(String route, String ratelimitRoute, String compiledRoute, HttpMethod method)
+        private CompiledRoute(String route, String ratelimitRoute, String compiledRoute, HttpMethod method)
         {
             this.route = route;
             this.ratelimitRoute = ratelimitRoute;
