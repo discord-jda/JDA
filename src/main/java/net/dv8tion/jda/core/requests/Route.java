@@ -26,41 +26,94 @@ import java.util.regex.Pattern;
 
 import static com.mashape.unirest.http.HttpMethod.DELETE;
 import static com.mashape.unirest.http.HttpMethod.GET;
+import static com.mashape.unirest.http.HttpMethod.PATCH;
+import static com.mashape.unirest.http.HttpMethod.POST;
+import static com.mashape.unirest.http.HttpMethod.PUT;
 
 public class Route
 {
     public static class Self
     {
-        public static final Route ALL_GUILDS  = new Route(GET, "guilds");
+        public static final Route GET_SELF =    new Route(GET,    "users/@me");
+        public static final Route UPDATE_SELF = new Route(PATCH,  "users/@me");
+        public static final Route GET_GUILDS  = new Route(GET,    "users/@me/guilds");
+        public static final Route LEAVE_GUILD = new Route(DELETE, "users/@me/guilds/{guild_id}");
+        public static final Route GET_PRIVATE_CHANNELS =   new Route(GET,  "users/@me/channels");
+        public static final Route CREATE_PRIVATE_CHANNEL = new Route(POST, "users/@me/channels");
 
     }
 
     public static class Users
     {
-
+        public static final Route GET_USER = new Route(GET, "users/{user_id}");
     }
 
     public static class Guilds
     {
-        public static final Route GET_GUILD = new Route(GET, "guilds/{guild_id}", "guild_id");
-        public static final Route GET_CHANNELS = new Route(GET, "guilds/{guild_id}/channels", "guild_id");
+        public static final Route GET_GUILD =       new Route(GET,    "guilds/{guild_id}",                   "guild_id");
+        public static final Route MODIFY_GUILD =    new Route(PATCH,  "guilds/{guild_id}",                   "guild_id");
+        public static final Route GET_CHANNELS =    new Route(GET,    "guilds/{guild_id}/channels",          "guild_id");
+        public static final Route MODIFY_CHANNELS = new Route(PATCH,  "guilds/{guild_id}/channels",          "guild_id");
+        public static final Route GET_BANS =        new Route(GET,    "guilds/{guild_id}/bans",              "guild_id");
+        public static final Route CREATE_BAN =      new Route(PUT,    "guilds/{guild_id}/bans/{user_id}",    "guild_id");
+        public static final Route REMOVE_BAN =      new Route(DELETE, "guilds/{guild_id}/bans/{user_id}",    "guild_id");
+        public static final Route KICK_MEMBER =     new Route(DELETE, "guilds/{guild_id}/members/{user_id}", "guild_id");
+        public static final Route MODIFY_MEMBER =   new Route(PATCH,  "guilds/{guild_id}/members/{user_id}", "guild_id");
+        public static final Route MODIFY_NICKNAME = new Route(PATCH,  "guilds/{guild_id}/members/{user_id}/nick", "guild_id");
 
-        public static final Route KICK_MEMBER = new Route(DELETE, "guilds/{guild_id}/members/{user_id}", "guild_id");
+        //Client Only
+        public static final Route CREATE_GUILD =    new Route(POST,   "guilds");
+        public static final Route DELETE_GUILD =    new Route(DELETE, "guilds/{guild_id}"); //Surely this doesn't need a major parameter.. right?
     }
 
     public static class Roles
     {
-
+        public static final Route GET_ROLES =   new Route(GET,    "guilds/{guild_id}/roles",           "guild_id");
+        public static final Route CREATE_ROLE = new Route(POST,   "guilds/{guild_id}/roles",           "guild_id");
+        public static final Route GET_ROLE =    new Route(GET,    "guilds/{guild_id}/roles/{role_id}", "guild_id");
+        public static final Route MODIFY_ROLE = new Route(PATCH,  "guilds/{guild_id}/roles/{role_id}", "guild_id");
+        public static final Route DELETE_ROLE = new Route(DELETE, "guilds/{guild_id}/roles/{role_id}", "guild_id");
     }
 
     public static class Channels
     {
-
+        public static final Route DELETE_CHANNEL = new Route(DELETE, "channels/{channel_id}",        "channel_id");
+        public static final Route MODIFY_CHANNEL = new Route(PATCH,  "channels/{channel_id}",        "channel_id");
+        public static final Route SEND_TYPING =    new Route(POST,   "channels/{channel_id}/typing", "channel_id");
+        public static final Route GET_PERMISSIONS =      new Route(GET,    "channels/{channel_id}/permissions",                   "channel_id");
+        public static final Route GET_PERM_OVERRIDE =    new Route(GET,    "channels/{channel_id}/permissions/{permoverride_id}", "channel_id");
+        public static final Route CREATE_PERM_OVERRIDE = new Route(PUT,    "channels/{channel_id}/permissions/{permoverride_id}", "channel_id");
+        public static final Route MODIFY_PERM_OVERRIDE = new Route(PATCH,  "channels/{channel_id}/permissions/{permoverride_id}", "channel_id");
+        public static final Route DELETE_PERM_OVERRIDE = new Route(DELETE, "channels/{channel_id}/permissions/{permoverride_id}", "channel_id");
     }
 
     public static class Messages
     {
+        public static final Route GET_MESSAGES =    new Route(GET,      "channels/{channel_id}/messages",              "channel_id");
+        public static final Route SEND_MESSAGE =    new Route(POST,     "channels/{channel_id}/messages",              "channel_id");
+        public static final Route MODIFY_MESSAGE =  new Route(PATCH,    "channels/{channel_id}/messages/{message_id}", "channel_id");
+        public static final Route DELETE_MESSAGE =  new Route(DELETE,   "channels/{channel_id}/messages/{message_id}", "channel_id");
+        public static final Route GET_PINNED_MESSAGES = new Route(GET,  "channels/{channel_id}/pins",                  "channel_id");
+        public static final Route ADD_PINNED_MESSAGE =  new Route(PUT,  "channels/{channel_id}/pins/{message_id}",     "channel_id");
+        public static final Route REMOVE_PINNED_MESSAGE = new Route(DELETE, "channels/{channel_id}/pins/{message_id}", "channel_id");
 
+
+        //Bot only
+        public static final Route GET_MESSAGE =     new Route(GET, "channels/{channel_id}/messages/{message_id}", "channel_id");
+        public static final Route DELETE_MESSAGES = new Route(PUT, "channels/{channel_id}/messages/bulk_delete",  "channel_id");
+    }
+
+    public static class Invites
+    {
+        public static final Route GET_INVITE =            new Route(GET,    "invites/{code}");
+        public static final Route DELETE_INVITE =         new Route(DELETE, "invites/{code}");
+        public static final Route GET_GUILD_INVITES =     new Route(GET,    "guilds/{guild_id}/invites",     "guild_id");
+        public static final Route CREATE_GUILD_INVITE =   new Route(POST,   "guilds/{guild_id}/invites",     "guild_id");
+        public static final Route GET_CHANNEL_INVITES =   new Route(GET,    "channels/{channel_id}/invites", "channel_id");
+        public static final Route CREATE_CHANNEL_INVITE = new Route(POST,   "channels/{channel_id}/invites", "channel_id");
+
+        //Client Only
+        public static final Route ACCEPT_INVITE =         new Route(POST,   "invites/{code}");
     }
 
     private final String route;
@@ -75,6 +128,9 @@ public class Route
         this.method = method;
         this.route = route;
         this.paramCount = StringUtils.countMatches(route, '{'); //All parameters start with {
+
+        if (paramCount != StringUtils.countMatches(route, '}'))
+            throw new IllegalArgumentException("An argument does not have both {}'s for route: " + method + "  " + route);
 
         //Create a String.format compilable route for parameter compiling.
         compilableRoute = route.replaceAll("\\{.*?\\}","%s");
@@ -223,5 +279,20 @@ public class Route
         {
             return "CompiledRoute(" + method + ": " + compiledRoute + ")";
         }
+    }
+
+    //TODO: Remove once all Routes have been implemented.
+    public static void main(String[] args)
+    {
+        System.out.println("Forcing static load to test for invalid {} parameters!");
+        Route r;
+        r = Self.CREATE_PRIVATE_CHANNEL;
+        r = Users.GET_USER;
+        r = Guilds.CREATE_BAN;
+        r = Roles.CREATE_ROLE;
+        r = Channels.CREATE_PERM_OVERRIDE;
+        r = Messages.ADD_PINNED_MESSAGE;
+        r = Invites.ACCEPT_INVITE;
+        System.out.println("Done!");
     }
 }
