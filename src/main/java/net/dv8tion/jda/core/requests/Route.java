@@ -105,12 +105,11 @@ public class Route
 
     public static class Invites
     {
-        public static final Route GET_INVITE =            new Route(GET,    "invites/{code}");
-        public static final Route DELETE_INVITE =         new Route(DELETE, "invites/{code}");
-        public static final Route GET_GUILD_INVITES =     new Route(GET,    "guilds/{guild_id}/invites",     "guild_id");
-        public static final Route CREATE_GUILD_INVITE =   new Route(POST,   "guilds/{guild_id}/invites",     "guild_id");
-        public static final Route GET_CHANNEL_INVITES =   new Route(GET,    "channels/{channel_id}/invites", "channel_id");
-        public static final Route CREATE_CHANNEL_INVITE = new Route(POST,   "channels/{channel_id}/invites", "channel_id");
+        public static final Route GET_INVITE =          new Route(GET,    "invites/{code}");
+        public static final Route DELETE_INVITE =       new Route(DELETE, "invites/{code}");
+        public static final Route GET_GUILD_INVITES =   new Route(GET,    "guilds/{guild_id}/invites",     "guild_id");
+        public static final Route GET_CHANNEL_INVITES = new Route(GET,    "channels/{channel_id}/invites", "channel_id");
+        public static final Route CREATE_INVITE =       new Route(POST,   "channels/{channel_id}/invites", "channel_id");
 
         //Client Only
         public static final Route ACCEPT_INVITE =         new Route(POST,   "invites/{code}");
