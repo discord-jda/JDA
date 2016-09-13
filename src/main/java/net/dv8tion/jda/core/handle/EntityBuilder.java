@@ -522,7 +522,6 @@ public class EntityBuilder
             // As such, make a fake user and fake private channel.
             user = (UserImpl) createUser(recipient);
             api.getFakeUserMap().put(user.getId(), user);
-            System.out.println("MADE A FAKE USER! " + user);
         }
 
         PrivateChannelImpl priv = new PrivateChannelImpl(privatechat.getString("id"), user);

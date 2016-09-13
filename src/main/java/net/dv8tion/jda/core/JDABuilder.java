@@ -19,6 +19,7 @@ import net.dv8tion.jda.bot.entities.impl.JDABotImpl;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.core.JDA.Status;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.hooks.IEventManager;
 import org.apache.http.HttpHost;
 
 import javax.security.auth.login.LoginException;
@@ -47,7 +48,7 @@ public class JDABuilder
     protected boolean enableShutdownHook = true;
     protected boolean enableBulkDeleteSplitting = true;
     protected boolean autoReconnect = true;
-//    protected IEventManager eventManager = null;
+    protected IEventManager eventManager = null;
     protected JDA.ShardInfo shardInfo = null;
 
     /**
@@ -189,11 +190,11 @@ public class JDABuilder
      * @return
      *      Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
      */
-//    public JDABuilder setEventManager(IEventManager manager)
-//    {
-//        this.eventManager = manager;
-//        return this;
-//    }
+    public JDABuilder setEventManager(IEventManager manager)
+    {
+        this.eventManager = manager;
+        return this;
+    }
 
     /**
      * Adds a listener to the list of listeners that will be used to populate the {@link net.dv8tion.jda.core.JDA} object.
@@ -283,11 +284,11 @@ public class JDABuilder
         {
             jda = new JDAClientImpl(proxy, autoReconnect, enableVoice, enableShutdownHook, enableBulkDeleteSplitting);
         }
-//        if (eventManager != null)
-//        {
-//            jda.setEventManager(eventManager);
-//        }
-//        listeners.forEach(jda::addEventListener);
+        if (eventManager != null)
+        {
+            jda.setEventManager(eventManager);
+        }
+        listeners.forEach(jda::addEventListener);
         jda.setStatus(JDA.Status.INITIALIZED);  //This is already set by JDA internally, but this is to make sure the listeners catch it.
 //        jda.login(token, sharding);
         jda.login(token, shardInfo);
