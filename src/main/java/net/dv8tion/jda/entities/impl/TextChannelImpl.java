@@ -612,18 +612,17 @@ public class TextChannelImpl implements TextChannel
             Map<String, AsyncMessageSender> senders = instances.get(api);
             if (senders != null && !senders.isEmpty())
             {
-                AsyncMessageSender sender = senders.get(ratelimitIdentifier);
+                AsyncMessageSender sender = senders.remove(ratelimitIdentifier);
                 if (sender != null)
                 {
                     sender.kill();
-                    senders.remove(ratelimitIdentifier);
                 }
             }
         }
 
         public synchronized static void stopAll(JDA api)
         {
-            Map<String, AsyncMessageSender> senders = instances.get(api);
+            Map<String, AsyncMessageSender> senders = instances.remove(api);
             if (senders != null && !senders.isEmpty())
             {
                 senders.values().forEach(sender ->
@@ -641,18 +640,21 @@ public class TextChannelImpl implements TextChannel
 
         public synchronized void enqueue(Task task)
         {
-            queue.add(task);
-            if (runner == null)
+            synchronized (runner)
             {
-                runnerRunning = true;
-                runner = new Runner(this);
-                runner.setDaemon(true);
-                runner.start();
-            }
-            else if (!runnerRunning)
-            {
-                runnerRunning = true;
-                notifyAll();
+                queue.add(task);
+                if (runner == null || !runner.isAlive())
+                {
+                    runnerRunning = true;
+                    runner = new Runner(this);
+                    runner.setDaemon(true);
+                    runner.start();
+                }
+                else if (!runnerRunning)
+                {
+                    runnerRunning = true;
+                    notifyAll();
+                }
             }
         }
 
@@ -670,6 +672,14 @@ public class TextChannelImpl implements TextChannel
             while(!runnerRunning) {
                 try {
                     wait();
+                    if (!runnerRunning) {
+                        synchronized (runner)
+                        {
+                            runner = null;
+                            kill();
+                            return;
+                        }
+                     }
                 } catch(InterruptedException ignored) {}
             }
         }

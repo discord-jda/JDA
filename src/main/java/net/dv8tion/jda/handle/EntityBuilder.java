@@ -41,7 +41,7 @@ public class EntityBuilder
     private static final HashMap<JDA, HashMap<String, JSONObject>> cachedJdaGuildJsons = new HashMap<>();
     private static final HashMap<JDA, HashMap<String, Consumer<Guild>>> cachedJdaGuildCallbacks = new HashMap<>();
     private static final Pattern channelMentionPattern = Pattern.compile("<#(\\d+)>");
-    private static final Pattern emotePatter = Pattern.compile("<:([^:]+):(\\d+)>");
+    private static final Pattern emotePattern = Pattern.compile("<:([^:]+):(\\d+)>");
     private final JDAImpl api;
 
     public EntityBuilder(JDAImpl api)
@@ -508,7 +508,7 @@ public class EntityBuilder
         }
         message.setEmbeds(embeds);
 
-        Matcher matcher = emotePatter.matcher(content);
+        Matcher matcher = emotePattern.matcher(content);
         List<Emote> emoteList = new LinkedList<>();
         while (matcher.find())
             emoteList.add(api.getEmoteById(matcher.group(2)) == null
