@@ -322,8 +322,6 @@ public class PermissionUtil
         }
         else
         {
-            if (o.getAllowed().contains(Permission.ADMINISTRATOR))
-                return true;
             for (Permission p : permissions)
             {
                 if (o.getDenied().contains(p) || (!o.getAllowed().contains(p) && !role.hasPermission(p)))
