@@ -20,6 +20,7 @@ import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.managers.ChannelManager;
 import net.dv8tion.jda.managers.PermissionOverrideManager;
 import net.dv8tion.jda.utils.InviteUtil;
+import net.dv8tion.jda.utils.PermissionUtil;
 
 import java.util.List;
 
@@ -96,16 +97,35 @@ public interface Channel
 
     /**
      * Checks if the given {@link net.dv8tion.jda.entities.User User} has the given {@link net.dv8tion.jda.Permission Permissions}
-     * in this Channel
+     * in this Channel.
      *
      * @param user
-     *          the User to check the Permission against
+     *          the User to check the Permissions against
      * @param permissions
-     *          the varargs Permissions to check for
+     *          the varargs Permissions to check
      * @return
      *      if the given User has the given Permissions in this Channel
      */
-    boolean checkPermission(User user, Permission... permissions);
+    default boolean checkPermission(User user, Permission... permissions)
+    {
+        return PermissionUtil.checkPermission(this, user, permissions);
+    }
+
+    /**
+     * Checks if the specified {@link net.dv8tion.jda.entities.Role Role} has the specified {@link net.dv8tion.jda.Permission Permissions}
+     * in this Channel.
+     *
+     * @param role
+     *          the Role to check the Permissions against
+     * @param permissions
+     *          the varargs Permissions to check
+     * @return
+     *      if the given Role has the specified Permissions in this Channel
+     */
+    default boolean checkPermission(Role role, Permission... permissions)
+    {
+        return PermissionUtil.checkPermission(this, role, permissions);
+    }
 
     /**
      * Returns the {@link net.dv8tion.jda.managers.ChannelManager ChannelManager} for this Channel.

@@ -23,7 +23,6 @@ import net.dv8tion.jda.managers.ChannelManager;
 import net.dv8tion.jda.managers.PermissionOverrideManager;
 import net.dv8tion.jda.utils.InviteUtil;
 import net.dv8tion.jda.utils.MiscUtil;
-import net.dv8tion.jda.utils.PermissionUtil;
 
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -127,12 +126,6 @@ public class VoiceChannelImpl implements VoiceChannel
     public List<User> getUsers()
     {
         return Collections.unmodifiableList(new LinkedList<>(connectedUsers));
-    }
-
-    @Override
-    public boolean checkPermission(User user, Permission... permissions)
-    {
-        return PermissionUtil.checkPermission(this, user, permissions);
     }
 
     @Override
