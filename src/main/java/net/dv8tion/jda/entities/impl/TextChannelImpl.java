@@ -42,6 +42,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -577,11 +578,12 @@ public class TextChannelImpl implements TextChannel
     {
         private static final Map<JDA, Map<String, AsyncMessageSender>> instances = new HashMap<>();
         private final JDAImpl api;
-        private final String ratelimitIdentifier; //GuildId or GlobalPrivateChannel
+        private final String ratelimitIdentifier; // GuildId or GlobalPrivateChannel
         private Runner runner = null;
         private boolean runnerRunning = false;
         private boolean alive = true;
         private final Queue<Task> queue = new LinkedList<>();
+        private final ReentrantLock lock = new ReentrantLock();
 
         private AsyncMessageSender(JDAImpl api, String ratelimitIdentifier)
         {
@@ -640,22 +642,22 @@ public class TextChannelImpl implements TextChannel
 
         public synchronized void enqueue(Task task)
         {
-            synchronized (runner)
+            lock.lock();
+            queue.add(task);
+            if (runner == null)
             {
-                queue.add(task);
-                if (runner == null || !runner.isAlive())
-                {
-                    runnerRunning = true;
-                    runner = new Runner(this);
-                    runner.setDaemon(true);
-                    runner.start();
-                }
-                else if (!runnerRunning)
-                {
-                    runnerRunning = true;
-                    notifyAll();
-                }
+                alive = true;
+                runnerRunning = true;
+                runner = new Runner(this);
+                runner.setDaemon(true);
+                runner.start();
             }
+            else if (!runnerRunning)
+            {
+                runnerRunning = true;
+                notifyAll();
+            }
+            lock.unlock();
         }
 
         public synchronized void kill()
@@ -668,19 +670,28 @@ public class TextChannelImpl implements TextChannel
         {
             if (!queue.isEmpty())
                 return;
+            
+            lock.lock();
             runnerRunning = false;
-            while(!runnerRunning) {
-                try {
+            lock.unlock();
+
+            while (!runnerRunning)
+            {
+                try
+                {
                     wait();
-                    if (!runnerRunning) {
-                        synchronized (runner)
-                        {
-                            runner = null;
-                            kill();
-                            return;
-                        }
-                     }
-                } catch(InterruptedException ignored) {}
+                    lock.lock();
+                    if (!runnerRunning)
+                    {
+                        runner = null;
+                        kill();
+                        return;
+                    }
+                    lock.unlock();
+                }
+                catch (InterruptedException ignored)
+                {
+                }
             }
         }
 
