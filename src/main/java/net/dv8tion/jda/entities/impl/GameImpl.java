@@ -59,9 +59,9 @@ public class GameImpl implements Game
         Game other = (Game) obj;
         if(other.getType() != type)
             return false;
-        if(name==null && other.getName()!=null)
+        if(name == null && other.getName() != null)
             return false;
-        if(url==null && other.getUrl()!=null)
+        if(url == null && other.getUrl() != null)
             return false;
         return name.equals(other.getName()) && url.equals(other.getUrl());
     }
