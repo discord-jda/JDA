@@ -57,21 +57,16 @@ public class GameImpl implements Game
         if(!( obj instanceof Game ))
             return false;
         Game other = (Game) obj;
-        if(other.getType() != type)
-            return false;
-        if(name == null && other.getName() != null)
-            return false;
-        if(url == null && other.getUrl() != null)
-            return false;
-        return name.equals(other.getName()) && url.equals(other.getUrl());
+        return ( other.getType() == type ) && 
+               ( (name == null && other.getName() == null) || (name != null && name.equals(other.getName())) ) && 
+               ( (url == null && other.getUrl() == null) || (url != null && url.equals(other.getUrl())) );
     }
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 53 * hash + Objects.hashCode(this.name);
-        hash = 53 * hash + Objects.hashCode(this.url);
-        hash = 53 * hash + Objects.hashCode(this.type);
+        int hash = Objects.hashCode(this.name);
+        hash = 31 * hash + Objects.hashCode(this.url);
+        hash = 31 * hash + Objects.hashCode(this.type);
         return hash;
     }
 
