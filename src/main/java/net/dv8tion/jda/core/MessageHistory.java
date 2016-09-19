@@ -22,7 +22,6 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.handle.EntityBuilder;
-import net.dv8tion.jda.core.requests.Requester;
 import org.json.JSONArray;
 
 import java.util.LinkedList;
@@ -38,11 +37,11 @@ public class MessageHistory
 
     public MessageHistory(MessageChannel channel)
     {
-        this.api = (channel instanceof TextChannel) ? (JDAImpl) ((TextChannel) channel).getJDA() : (JDAImpl) ((PrivateChannel) channel).getJDA();
+        this.api = (JDAImpl) channel.getJDA();
         if (channel instanceof TextChannel && !((TextChannel) channel).checkPermission(api.getSelfInfo(), Permission.MESSAGE_HISTORY))
             throw new PermissionException(Permission.MESSAGE_HISTORY);
 
-        this.channelId = (channel instanceof TextChannel) ? ((TextChannel) channel).getId() : ((PrivateChannel) channel).getId();
+        this.channelId = channel.getId();
     }
 
     /**
@@ -101,25 +100,25 @@ public class MessageHistory
             toQueue = Math.min(amount, 100);
             try
             {
-                Requester.Response response = api.getRequester().get(Requester.DISCORD_API_PREFIX + "channels/" + channelId
-                        + "/messages?limit=" + toQueue + (lastId != null ? "&before=" + lastId : ""));
-                if(!response.isOk())
-                    throw new RuntimeException("Error fetching message-history for channel with id " + channelId + "... Error: " + response.toString());
+//                Requester2.Response response = api.getRequester2().get(Requester2.DISCORD_API_PREFIX + "channels/" + channelId
+//                        + "/messages?limit=" + toQueue + (lastId != null ? "&before=" + lastId : ""));
+//                if(!response.isOk())
+//                    throw new RuntimeException("Error fetching message-history for channel with id " + channelId + "... Error: " + response.toString());
+//
+//                JSONArray array = response.getArray();
 
-                JSONArray array = response.getArray();
-
-                for (int i = 0; i < array.length(); i++)
-                {
-                    out.add(builder.createMessage(array.getJSONObject(i)));
-                }
-                if(array.length() < toQueue) {
-                    atEnd = true;
-                    break;
-                }
-                else
-                {
-                    lastId = out.getLast().getId();
-                }
+//                for (int i = 0; i < array.length(); i++)
+//                {
+//                    out.add(builder.createMessage(array.getJSONObject(i)));
+//                }
+//                if(array.length() < toQueue) {
+//                    atEnd = true;
+//                    break;
+//                }
+//                else
+//                {
+//                    lastId = out.getLast().getId();
+//                }
             }
             catch (Exception ex)
             {

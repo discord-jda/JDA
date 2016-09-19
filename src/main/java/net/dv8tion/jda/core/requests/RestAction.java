@@ -16,8 +16,101 @@
 
 package net.dv8tion.jda.core.requests;
 
-public class RestAction
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.exceptions.RateLimitedException;
+
+import java.util.concurrent.*;
+import java.util.function.Consumer;
+
+public abstract class RestAction<T>
 {
-    public void queue() {}
-    public void block() {}
+    public static final Consumer DEFAULT_SUCCESS = o -> {};
+    public static final Consumer DEFAULT_FAILURE = o -> {};
+
+    protected final JDAImpl api;
+    protected final Route.CompiledRoute route;
+    protected final Object data;
+    protected boolean queue;
+
+    public RestAction(JDA api, Route.CompiledRoute route, Object data)
+    {
+        this.api = (JDAImpl) api;
+        this.route = route;
+        this.data = data;
+    }
+
+    public void queue()
+    {
+        queue(DEFAULT_SUCCESS, DEFAULT_FAILURE);
+    }
+
+    public void queue(Consumer<T> success)
+    {
+        queue(success, DEFAULT_FAILURE);
+    }
+
+    public void queue(Consumer<T> success, Consumer<Throwable> error)
+    {
+        api.getRequester().request(new Request<T>(this, success, error, true));
+    }
+
+
+    public T block() throws RateLimitedException
+    {
+        CompletableFuture<T> future = new CompletableFuture<T>();
+        api.getRequester().request(new Request<T>(this,
+                successReturn -> future.complete(successReturn),
+                failThrowable -> future.completeExceptionally(failThrowable),
+                false));
+        try
+        {
+            return future.get();
+        }
+        catch (Exception e)
+        {
+            if (e instanceof ExecutionException)
+            {
+                Throwable t = e.getCause();
+                if (t instanceof RateLimitedException)
+                    throw (RateLimitedException) t;
+                else if (t instanceof  PermissionException)
+                    throw (PermissionException) t;
+            }
+            throw new RuntimeException(e);
+        }
+    }
+
+    public T block(long timeout, TimeUnit timeUnit) throws RateLimitedException, TimeoutException
+    {
+        CompletableFuture<T> future = new CompletableFuture<T>();
+        api.getRequester().request(new Request<T>(this,
+                successReturn -> future.complete(successReturn),
+                failThrowable -> future.completeExceptionally(failThrowable),
+                false));
+
+        try
+        {
+            return future.get(timeout, timeUnit);
+        }
+        catch (Exception e)
+        {
+            if (e instanceof ExecutionException)
+            {
+                Throwable t = e.getCause();
+                if (t instanceof RateLimitedException)
+                    throw (RateLimitedException) t;
+                else if (t instanceof PermissionException)
+                    throw (PermissionException) t;
+            }
+            else if (e instanceof TimeoutException)
+            {
+                throw (TimeoutException) e;
+            }
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected abstract void handleResponse(Response response, Request request);
 }

@@ -19,6 +19,7 @@ import net.dv8tion.jda.bot.entities.impl.JDABotImpl;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.core.JDA.Status;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import org.apache.http.HttpHost;
 
@@ -271,7 +272,7 @@ public class JDABuilder
      * @throws IllegalArgumentException
      *          If the provided token is empty or null.
      */
-    public JDA buildAsync() throws LoginException, IllegalArgumentException
+    public JDA buildAsync() throws LoginException, IllegalArgumentException, RateLimitedException
     {
         jdaCreated = true;
 
@@ -310,7 +311,7 @@ public class JDABuilder
      *          If an interrupt request is received while waiting for {@link net.dv8tion.jda.core.JDA} to finish logging in.
      *          This would most likely be caused by a JVM shutdown request.
      */
-    public JDA buildBlocking() throws LoginException, IllegalArgumentException, InterruptedException
+    public JDA buildBlocking() throws LoginException, IllegalArgumentException, InterruptedException, RateLimitedException
     {
         JDA jda = buildAsync();
         while(jda.getStatus() != Status.CONNECTED)

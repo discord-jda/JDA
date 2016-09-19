@@ -34,13 +34,13 @@ public class Route
 {
     public static class Self
     {
-        public static final Route GET_SELF =    new Route(GET,    "users/@me");
-        public static final Route UPDATE_SELF = new Route(PATCH,  "users/@me");
-        public static final Route GET_GUILDS  = new Route(GET,    "users/@me/guilds");
-        public static final Route LEAVE_GUILD = new Route(DELETE, "users/@me/guilds/{guild_id}");
-        public static final Route GET_PRIVATE_CHANNELS =   new Route(GET,  "users/@me/channels");
-        public static final Route CREATE_PRIVATE_CHANNEL = new Route(POST, "users/@me/channels");
-
+        public static final Route GET_SELF =               new Route(GET,    "users/@me");
+        public static final Route UPDATE_SELF =            new Route(PATCH,  "users/@me");
+        public static final Route GET_GUILDS  =            new Route(GET,    "users/@me/guilds");
+        public static final Route LEAVE_GUILD =            new Route(DELETE, "users/@me/guilds/{guild_id}");
+        public static final Route GET_PRIVATE_CHANNELS =   new Route(GET,    "users/@me/channels");
+        public static final Route CREATE_PRIVATE_CHANNEL = new Route(POST,   "users/@me/channels");
+        public static final Route GATEWAY =                new Route(GET,    "gateway");
     }
 
     public static class Users
@@ -63,7 +63,7 @@ public class Route
 
         //Client Only
         public static final Route CREATE_GUILD =    new Route(POST,   "guilds");
-        public static final Route DELETE_GUILD =    new Route(DELETE, "guilds/{guild_id}"); //Surely this doesn't need a major parameter.. right?
+        public static final Route DELETE_GUILD =    new Route(POST,   "guilds/{guild_id}/delete");
     }
 
     public static class Roles
@@ -112,7 +112,7 @@ public class Route
         public static final Route CREATE_INVITE =       new Route(POST,   "channels/{channel_id}/invites", "channel_id");
 
         //Client Only
-        public static final Route ACCEPT_INVITE =         new Route(POST,   "invites/{code}");
+        public static final Route ACCEPT_INVITE =       new Route(POST,   "invites/{code}");
     }
 
     private final String route;
@@ -201,22 +201,23 @@ public class Route
         }
 
         //Compile the route for interfacing with discord.
-        String compiledRoute = String.format(compilableRoute, params);
+        String compiledRoute = String.format(compilableRoute, (Object[]) params);
         String compiledRatelimitRoute = ratelimitRoute;
 
         //If this route has major parameters which help to uniquely distinguish it from others of this route type then
         // compile it using the major parameter indexes we discovered in the constructor.
         if (!majorParamIndexes.isEmpty())
         {
+
             String[] majorParams = new String[majorParamIndexes.size()];
             for (int i = 0; i < majorParams.length; i++)
             {
                 majorParams[i] = params[majorParamIndexes.get(i)];
             }
-            compiledRatelimitRoute = String.format(compiledRatelimitRoute, majorParams);
+            compiledRatelimitRoute = String.format(compiledRatelimitRoute, (Object[]) majorParams);
         }
 
-        return new CompiledRoute(route, compiledRatelimitRoute, compiledRoute, method);
+        return new CompiledRoute(this, compiledRatelimitRoute, compiledRoute);
     }
 
     @Override
@@ -243,17 +244,35 @@ public class Route
 
     public class CompiledRoute
     {
-        public final String route;
-        public final String ratelimitRoute;
-        public final String compiledRoute;
-        public final HttpMethod method;
+        private final Route baseRoute;
+        private final String ratelimitRoute;
+        private final String compiledRoute;
 
-        private CompiledRoute(String route, String ratelimitRoute, String compiledRoute, HttpMethod method)
+        private CompiledRoute(Route baseRoute, String ratelimitRoute, String compiledRoute)
         {
-            this.route = route;
+            this.baseRoute = baseRoute;
             this.ratelimitRoute = ratelimitRoute;
             this.compiledRoute = compiledRoute;
-            this.method = method;
+        }
+
+        public String getRatelimitRoute()
+        {
+            return ratelimitRoute;
+        }
+
+        public String getCompiledRoute()
+        {
+            return compiledRoute;
+        }
+
+        public Route getBaseRoute()
+        {
+            return baseRoute;
+        }
+
+        public HttpMethod getMethod()
+        {
+            return baseRoute.method;
         }
 
         @Override
@@ -270,7 +289,7 @@ public class Route
 
             CompiledRoute oCompiled = (CompiledRoute) o;
 
-            return method.equals(oCompiled.method) && compiledRoute.equals(oCompiled.compiledRoute);
+            return baseRoute.equals(oCompiled.getBaseRoute()) && compiledRoute.equals(oCompiled.compiledRoute);
         }
 
         @Override

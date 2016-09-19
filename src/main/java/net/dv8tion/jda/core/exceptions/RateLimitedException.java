@@ -16,18 +16,32 @@
 
 package net.dv8tion.jda.core.exceptions;
 
-public class RateLimitedException extends RuntimeException
-{
-    private final String bucket;
+import net.dv8tion.jda.core.requests.Route.CompiledRoute;
 
-    public RateLimitedException(String bucket)
+public class RateLimitedException extends Exception
+{
+    private final String rateLimitedRoute;
+    private final long retryAfter;
+
+    public RateLimitedException(CompiledRoute route, long retryAfter)
     {
-        super("The request got rate-limited. The bucket that hit the limit was: "+bucket);
-        this.bucket = bucket;
+        this(route.getRatelimitRoute(), retryAfter);
     }
 
-    public String getBucket()
+    public RateLimitedException(String route, long retryAfter)
     {
-        return bucket;
+        super(String.format("The request was ratelimited! Retry-After: %d  Route: %s", retryAfter, route));
+        this.rateLimitedRoute = route;
+        this.retryAfter = retryAfter;
+    }
+
+    public String getRateLimitedRoute()
+    {
+        return rateLimitedRoute;
+    }
+
+    public long getRetryAfter()
+    {
+        return retryAfter;
     }
 }

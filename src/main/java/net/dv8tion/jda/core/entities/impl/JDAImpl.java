@@ -26,10 +26,7 @@ import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.hooks.InterfacedEventManager;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.RequestBuilder;
-import net.dv8tion.jda.core.requests.Requester;
-import net.dv8tion.jda.core.requests.WebSocketClient;
+import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import org.apache.http.HttpHost;
 import org.json.JSONObject;
@@ -57,7 +54,7 @@ public abstract class JDAImpl implements JDA
 
     protected HttpHost proxy;
     protected WebSocketClient client;
-    protected Requester requester = new Requester();
+    protected Requester requester = new Requester(this);
     protected IEventManager eventManager = new InterfacedEventManager();
     protected Status status = Status.INITIALIZING;
     protected SelfInfo selfInfo;
@@ -81,14 +78,14 @@ public abstract class JDAImpl implements JDA
             ;   //TODO: setup audio system
     }
 
-    public void login(String token, ShardInfo shardInfo) throws LoginException
+    public void login(String token, ShardInfo shardInfo) throws LoginException, RateLimitedException
     {
         setStatus(Status.LOGGING_IN);
         if (token == null || token.isEmpty())
             throw new LoginException("Provided token was null or empty!");
 
         setToken(token);
-        verifyToken(getToken(), 1);
+        verifyToken();
         this.shardInfo = shardInfo;
         LOG.info("Login Successful!");
 
@@ -128,39 +125,86 @@ public abstract class JDAImpl implements JDA
             this.token = token;
     }
 
-    public void verifyToken(String token, int attempt) throws LoginException
+    public void verifyToken() throws LoginException, RateLimitedException
     {
-        Request request = new RequestBuilder(RequestBuilder.RequestType.GET)
-                .setUrl(Requester.DISCORD_API_PREFIX + "users/@me")
-                .addHeader("authorization", token)
-                .build();
-        Requester.Response response = requester.handle(request);
-        if (response.isOk())
+        RestAction<JSONObject> login = new RestAction<JSONObject>(this, Route.Self.GET_SELF.compile(), null)
         {
-            verifyToken(response.getObject());
-        }
-        else if (response.isRateLimit())
-            throw new RateLimitedException("users/@me");//TODO: Do more here somehow.
-        else if (response.code == 401)
-        {
-            //Perhaps we were provided with token for the wrong account type. Use a second attempt to try and
-            // figure out if that is the case.
-            if (attempt < 2)
+            @Override
+            protected void handleResponse(Response response, Request request)
             {
-                String newToken;
-                if (getAccountType() == AccountType.BOT)
-                    newToken = token.replace("Bot ", "");
+                if (response.isOk())
+                    request.getOnSuccess().accept(response.getObject());
+                else if (response.isRateLimit())
+                    request.getOnFailure().accept(new RateLimitedException(request.getRoute(), response.retryAfter));
+                else if (response.code == 401)
+                    request.getOnSuccess().accept(null);
                 else
-                    newToken = "Bot " + token;
-                verifyToken(newToken, 2);
+                    request.getOnFailure().accept(new LoginException("When verifying the authenticity of the provided token, Discord returned an unknown response:\n" +
+                        response.toString()));
             }
+        };
+
+        JSONObject userResponse = null;
+        try
+        {
+            userResponse = login.block();
+        }
+        catch (RuntimeException e)
+        {
+            //We check if the LoginException is masked inside of a ExecutionException which is masked inside of the RuntimeException
+            Throwable ex = e.getCause() != null ? e.getCause().getCause() : null;
+            if (ex instanceof LoginException)
+                throw (LoginException) ex;
             else
-                throw new LoginException("The provided token was invalid!");
+                throw e;
+        }
+
+        if (userResponse != null)
+        {
+            verifyToken(userResponse);
         }
         else
         {
-            throw new LoginException("When verifying the authenticity of the provided token, Discord returned an unknown response:\n" +
-                    response.toString());
+            //If we received a null return for userResponse, then that means we hit a 401.
+            // 401 occurs we attempt to access the users/@me endpoint with the wrong token prefix.
+            // e.g: If we use a Client token and prefix it with "Bot ", or use a bot token and don't prefix it.
+            // It also occurs when we attempt to access the endpoint with an invalid token.
+            //The code below already knows that something is wrong with the token. We want to determine if it is invalid
+            // or if the developer attempted to login with a token using the wrong AccountType.
+
+            //If we attempted to login as a Bot, remove the "Bot " prefix and set the Requester to be a client.
+            if (getAccountType() == AccountType.BOT)
+            {
+                token = token.replace("Bot ", "");
+                requester = new Requester(this, AccountType.CLIENT);
+            }
+            else    //If we attempted to login as a Client, prepend the "Bot " prefix and set the Requester to be a Bot
+            {
+                token = "Bot " + token;
+                requester = new Requester(this, AccountType.BOT);
+            }
+
+            try
+            {
+                //Now that we have reversed the AccountTypes, attempt to get User info again.
+                userResponse = login.block();
+            }
+            catch (RuntimeException e)
+            {
+                //We check if the LoginException is masked inside of a ExecutionException which is masked inside of the RuntimeException
+                Throwable ex = e.getCause() != null ? e.getCause().getCause() : null;
+                if (ex instanceof LoginException)
+                    throw (LoginException) ex;
+                else
+                    throw e;
+            }
+
+            //If the response isn't null (thus it didn't 401) send it to the secondary verify method to determine
+            // which account type the developer wrongly attempted to login as
+            if (userResponse != null)
+                verifyToken(userResponse);
+            else    //We 401'd again. This is an invalid token
+                throw new LoginException("The provided token is invalid!");
         }
     }
 
