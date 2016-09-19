@@ -412,12 +412,6 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
-    public boolean checkPermission(User user, Permission... permissions)
-    {
-        return PermissionUtil.checkPermission(this, user, permissions);
-    }
-
-    @Override
     public synchronized ChannelManager getManager()
     {
         if (manager == null)

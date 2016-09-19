@@ -287,6 +287,51 @@ public class PermissionUtil
     }
 
     /**
+     * Checks whether the given {@link net.dv8tion.jda.entities.Role Role} has all specified {@link net.dv8tion.jda.Permission Permissions}
+     * in the specified {@link net.dv8tion.jda.entities.Channel Channel}.
+     * @param channel
+     *          The {@link net.dv8tion.jda.entities.Channel Channel} in which to check Permissions.
+     * @param role
+     *          The {@link net.dv8tion.jda.entities.Role Role} to check Permissions for.
+     * @param permissions
+     *          The {@link net.dv8tion.jda.Permission Permissions} to check.
+     * @return
+     *      True - if the Role Override of the Channel has the Permissions <b>granted</b> or are <b>not denied</b> and given by the Role itself
+     *      (Always true for {@link net.dv8tion.jda.Permission#ADMINISTRATOR Administrators}).<p>
+     *      False - if any of the specified Permissions are neither <b>granted</b> or given by the Role itself (or simply denied).
+     *
+     *  @throws NullPointerException
+     *          if Role or Channel is null.
+     *  @throws IllegalArgumentException
+     *          if Role is not in the same Guild as the channel.
+     */
+    public static boolean checkPermission(Channel channel, Role role, Permission... permissions)
+    {
+        if (!channel.getGuild().getRoles().contains(role))
+            throw new IllegalArgumentException("Specified Role is not in the same Guild as the Channel!");
+        if (permissions.length < 1 || role.hasPermission(Permission.ADMINISTRATOR))
+            return true;
+        PermissionOverride o = channel.getOverrideForRole(role);
+        if (o == null)
+        {
+            for (Permission p : permissions)
+            {
+                if (!role.hasPermission(p))
+                    return false;
+            }
+        }
+        else
+        {
+            for (Permission p : permissions)
+            {
+                if (o.getDenied().contains(p) || (!o.getAllowed().contains(p) && !role.hasPermission(p)))
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Gets the <code>int</code> representation of the effective permissions allowed for this {@link net.dv8tion.jda.entities.User User}
      * in this {@link net.dv8tion.jda.entities.Channel Channel}. This can be used in conjunction with
      * {@link net.dv8tion.jda.Permission#getPermissions(int) Permission.getPermissions(int)} to easily get a list of all
