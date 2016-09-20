@@ -203,13 +203,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     try
                     {
                         if (response.isOk())
-                            request.getOnSuccess().accept(response.getObject().getString("url"));
+                            request.onSuccess(response.getObject().getString("url"));
                         else
-                            request.getOnFailure().accept(new Exception("Failed to get gateway url"));
+                            request.onFailure(new Exception("Failed to get gateway url"));
                     }
                     catch (Exception e)
                     {
-                        request.getOnFailure().accept(e);
+                        request.onFailure(e);
                     }
                 }
             };

@@ -20,12 +20,15 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
+import net.dv8tion.jda.core.utils.SimpleLog;
 
 import java.util.concurrent.*;
 import java.util.function.Consumer;
 
 public abstract class RestAction<T>
 {
+    public static final SimpleLog LOG = SimpleLog.getLog("RestAction");
+
     public static final Consumer DEFAULT_SUCCESS = o -> {};
     public static final Consumer DEFAULT_FAILURE = o -> {};
 
@@ -38,22 +41,26 @@ public abstract class RestAction<T>
     {
         this.api = (JDAImpl) api;
         this.route = route;
-        this.data = data;
+        this.data = data != null ? data : "";
     }
 
     public void queue()
     {
-        queue(DEFAULT_SUCCESS, DEFAULT_FAILURE);
+        queue(null, null);
     }
 
     public void queue(Consumer<T> success)
     {
-        queue(success, DEFAULT_FAILURE);
+        queue(success, null);
     }
 
-    public void queue(Consumer<T> success, Consumer<Throwable> error)
+    public void queue(Consumer<T> success, Consumer<Throwable> failure)
     {
-        api.getRequester().request(new Request<T>(this, success, error, true));
+        if (success == null)
+            success = DEFAULT_SUCCESS;
+        if (failure == null)
+            failure = DEFAULT_FAILURE;
+        api.getRequester().request(new Request<T>(this, success, failure, true));
     }
 
 

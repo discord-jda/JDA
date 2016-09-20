@@ -16,30 +16,27 @@
 
 package net.dv8tion.jda.core.requests.ratelimit;
 
-import com.mashape.unirest.http.Headers;
 import com.mashape.unirest.http.HttpResponse;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Requester;
-import net.dv8tion.jda.core.requests.Route.CompiledRoute;
+import net.dv8tion.jda.core.requests.Route;
+import org.json.JSONObject;
 
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class BotRateLimiter implements IRateLimiter
+public class ClientRateLimiter implements IRateLimiter
 {
-    final Requester requester;
+    private final Requester requester;
     ExecutorService pool = Executors.newFixedThreadPool(5);
-    volatile Long timeOffset = null;
-    volatile Long globalCooldown = null;
     volatile ConcurrentHashMap<String, Bucket> buckets = new ConcurrentHashMap<>();
     volatile ConcurrentLinkedQueue<Bucket> submittedBuckets = new ConcurrentLinkedQueue<>();
+    volatile Long globalCooldown = null;
 
-    public BotRateLimiter(Requester requester)
+    public ClientRateLimiter(Requester requester)
     {
         this.requester = requester;
     }
@@ -47,7 +44,7 @@ public class BotRateLimiter implements IRateLimiter
     @Override
     public void queueRequest(Request request)
     {
-        Bucket bucket = getBucket(request.getRoute().getRatelimitRoute());
+        Bucket bucket = getBucket(request.getRoute().getBaseRoute().getRoute());
         synchronized (bucket)
         {
             bucket.addToQueue(request);
@@ -55,14 +52,14 @@ public class BotRateLimiter implements IRateLimiter
     }
 
     @Override
-    public Long getRateLimit(CompiledRoute route)
+    public Long getRateLimit(Route.CompiledRoute route)
     {
-        Bucket bucket = getBucket(route.getRatelimitRoute());
+        Bucket bucket = getBucket(route.getBaseRoute().getRoute());
         synchronized (bucket)
         {
+            long now = System.currentTimeMillis();
             if (globalCooldown != null) //Are we on global cooldown?
             {
-                long now = getNow();
                 if (now > globalCooldown)   //Verify that we should still be on cooldown.
                 {
                     globalCooldown = null;  //If we are done cooling down, reset the globalCooldown and continue.
@@ -71,54 +68,44 @@ public class BotRateLimiter implements IRateLimiter
                     return globalCooldown - now;    //If we should still be on cooldown, return when we can go again.
                 }
             }
-            if (bucket.routeUsageRemaining <= 0)
+            if (bucket.retryAfter > now)
             {
-                if (getNow() > bucket.resetTime)
-                {
-                    bucket.routeUsageRemaining = bucket.routeUsageLimit;
-                    bucket.resetTime = 0;
-                }
+                return bucket.retryAfter - now;
             }
-            if (bucket.routeUsageRemaining > 0)
-                return null;
             else
-                return bucket.resetTime - getNow();
+            {
+                return null;
+            }
         }
     }
 
     @Override
-    public Long handleResponse(CompiledRoute route, HttpResponse<String> response)
+    public Long handleResponse(Route.CompiledRoute route, HttpResponse<String> response)
     {
-        Bucket bucket = getBucket(route.getRatelimitRoute());
+        Bucket bucket = getBucket(route.getBaseRoute().getRoute());
         synchronized (bucket)
         {
-            Headers headers = response.getHeaders();
+            long now = System.currentTimeMillis();
             int code = response.getStatus();
-            if (timeOffset == null)
-                setTimeOffset(headers);
-
             if (code == 429)
             {
-                String global = headers.getFirst("x-ratelimit-global");
-                long retryAfter = Long.parseLong(headers.getFirst("retry-after"));
-                if (!Boolean.parseBoolean(global))  //Not global ratelimit
+                JSONObject limitObj = new JSONObject(response.getBody());
+                long retryAfter = limitObj.getLong("retry_after");
+                if (limitObj.has("global") && limitObj.getBoolean("global"))    //Global ratelimit
                 {
-                    updateBucket(bucket, headers);
+                    globalCooldown = now + retryAfter;
                 }
                 else
                 {
-                    //If it is global, lock down the threads.
-                    globalCooldown = getNow() + retryAfter;
+                    bucket.retryAfter = now + retryAfter;
                 }
                 return retryAfter;
             }
             else
             {
-                updateBucket(bucket, headers);
                 return null;
             }
         }
-
     }
 
     private Bucket getBucket(String route)
@@ -139,52 +126,10 @@ public class BotRateLimiter implements IRateLimiter
         return bucket;
     }
 
-    public long getNow()
-    {
-        return System.currentTimeMillis() + getTimeOffset();
-    }
-
-    public long getTimeOffset()
-    {
-        return timeOffset == null ? 0 : timeOffset;
-    }
-
-    private void setTimeOffset(Headers headers)
-    {
-        //Store as soon as possible to get the most accurate time difference;
-        long time = System.currentTimeMillis();
-        if (timeOffset == null)
-        {
-            //Get the date header provided by Discord.
-            //Format:  "date" : "Fri, 16 Sep 2016 05:49:36 GMT"
-            String date = headers.getFirst("date");
-            if (date != null)
-            {
-                OffsetDateTime tDate = OffsetDateTime.parse(date, DateTimeFormatter.RFC_1123_DATE_TIME);
-                long lDate = tDate.toEpochSecond() * 1000;             //We want to work in milliseconds, not seconds
-                timeOffset = Math.floorDiv(lDate - time, 1000) * 1000; //Get offset, convert to seconds, round it down, convert to milliseconds.
-            }
-        }
-    }
-
-    private void updateBucket(Bucket bucket, Headers headers)
-    {
-        try
-        {
-            bucket.resetTime = Long.parseLong(headers.getFirst("x-ratelimit-reset")) * 1000; //Seconds to milliseconds
-            bucket.routeUsageLimit = Integer.parseInt(headers.getFirst("x-ratelimit-limit"));
-            bucket.routeUsageRemaining = Integer.parseInt(headers.getFirst("x-ratelimit-remaining"));
-
-        }
-        catch (NumberFormatException ignored) {}
-    }
-
     private class Bucket implements Runnable
     {
         final String route;
-        volatile long resetTime = 0;
-        volatile int routeUsageRemaining = 1;    //These are default values to only allow 1 request until we have properly
-        volatile int routeUsageLimit = 1;        // ratelimit information.
+        volatile long retryAfter = 0;
         volatile ConcurrentLinkedQueue<Request> requests = new ConcurrentLinkedQueue<>();
 
         public Bucket(String route)

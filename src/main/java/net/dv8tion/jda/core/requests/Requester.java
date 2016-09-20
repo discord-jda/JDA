@@ -27,6 +27,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDAInfo;
 import net.dv8tion.jda.core.requests.Route.CompiledRoute;
 import net.dv8tion.jda.core.requests.ratelimit.BotRateLimiter;
+import net.dv8tion.jda.core.requests.ratelimit.ClientRateLimiter;
 import net.dv8tion.jda.core.requests.ratelimit.IRateLimiter;
 import net.dv8tion.jda.core.utils.SimpleLog;
 
@@ -50,13 +51,13 @@ public class Requester
         if (accountType == AccountType.BOT)
             ratelimiter = new BotRateLimiter(this);
         else
-            ratelimiter = null;
+            ratelimiter = new ClientRateLimiter(this);
 
     }
 
     public void request(Request apiRequest)
     {
-        if (apiRequest.shouldQueue)
+        if (apiRequest.shouldQueue())
         {
             ratelimiter.queueRequest(apiRequest);
         }

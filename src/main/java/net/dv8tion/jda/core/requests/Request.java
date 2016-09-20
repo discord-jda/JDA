@@ -16,16 +16,14 @@
 
 package net.dv8tion.jda.core.requests;
 
-import com.mashape.unirest.http.HttpMethod;
-
 import java.util.function.Consumer;
 
 public class Request<T>
 {
-    final RestAction<T> restAction;
-    final Consumer<T> onSuccess;
-    final Consumer<Throwable> onFailure;
-    final boolean shouldQueue;
+    private final RestAction<T> restAction;
+    private final Consumer<T> onSuccess;
+    private final Consumer<Throwable> onFailure;
+    private final boolean shouldQueue;
 
     Request(RestAction<T> restAction, Consumer<T> onSuccess, Consumer<Throwable> onFailure, boolean shouldQueue)
     {
@@ -33,6 +31,32 @@ public class Request<T>
         this.onSuccess = onSuccess;
         this.onFailure = onFailure;
         this.shouldQueue = shouldQueue;
+    }
+
+    public void onSuccess(T successObj)
+    {
+        try
+        {
+            onSuccess.accept(successObj);
+        }
+        catch (Throwable t)
+        {
+            RestAction.LOG.fatal("Encountered error while processing success consumer");
+            RestAction.LOG.log(t);
+        }
+    }
+
+    public void onFailure(Throwable failException)
+    {
+        try
+        {
+            onFailure.accept(failException);
+        }
+        catch (Throwable t)
+        {
+            RestAction.LOG.fatal("Encountered error while processing failure consumer");
+            RestAction.LOG.log(t);
+        }
     }
 
     public RestAction<T> getRestAction()

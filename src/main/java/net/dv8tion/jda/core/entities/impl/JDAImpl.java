@@ -133,13 +133,13 @@ public abstract class JDAImpl implements JDA
             protected void handleResponse(Response response, Request request)
             {
                 if (response.isOk())
-                    request.getOnSuccess().accept(response.getObject());
+                    request.onSuccess(response.getObject());
                 else if (response.isRateLimit())
-                    request.getOnFailure().accept(new RateLimitedException(request.getRoute(), response.retryAfter));
+                    request.onFailure(new RateLimitedException(request.getRoute(), response.retryAfter));
                 else if (response.code == 401)
-                    request.getOnSuccess().accept(null);
+                    request.onSuccess(null);
                 else
-                    request.getOnFailure().accept(new LoginException("When verifying the authenticity of the provided token, Discord returned an unknown response:\n" +
+                    request.onFailure(new LoginException("When verifying the authenticity of the provided token, Discord returned an unknown response:\n" +
                         response.toString()));
             }
         };
