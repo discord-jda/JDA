@@ -16,7 +16,6 @@
 package net.dv8tion.jda.core.hooks;
 
 import net.dv8tion.jda.core.events.*;
-import net.dv8tion.jda.core.events.guild.GenericGuildEvent;
 import net.dv8tion.jda.core.events.message.GenericMessageEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.*;
