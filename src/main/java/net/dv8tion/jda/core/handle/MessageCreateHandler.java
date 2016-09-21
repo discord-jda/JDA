@@ -75,7 +75,7 @@ public class MessageCreateHandler extends SocketHandler
 
         if (!message.isPrivate())
         {
-            TextChannel channel = api.getTextChannelMap().get(message.getChannelId());
+            TextChannel channel = message.getTextChannel();
             if (GuildLock.get(api).isLocked(channel.getGuild().getId()))
             {
                 return channel.getGuild().getId();
@@ -90,7 +90,7 @@ public class MessageCreateHandler extends SocketHandler
             api.getEventManager().handle(
                     new PrivateMessageReceivedEvent(
                             api, responseNumber,
-                            message, api.getPrivateChannelMap().get(message.getChannelId())));
+                            message, message.getPrivateChannel()));
         }
         //Combo event
         api.getEventManager().handle(

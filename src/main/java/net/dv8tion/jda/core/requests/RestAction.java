@@ -18,6 +18,7 @@ package net.dv8tion.jda.core.requests;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.utils.SimpleLog;
@@ -30,12 +31,21 @@ public abstract class RestAction<T>
     public static final SimpleLog LOG = SimpleLog.getLog("RestAction");
 
     public static final Consumer DEFAULT_SUCCESS = o -> {};
-    public static final Consumer DEFAULT_FAILURE = o -> {};
+    public static final Consumer<Throwable> DEFAULT_FAILURE = t ->
+    {
+        LOG.fatal("RestAction queue returned failure: [" + t.getClass().getSimpleName() + "] " + t.getMessage());
+        if (LOG.getEffectiveLevel().getPriority() <= SimpleLog.Level.DEBUG.getPriority())
+            LOG.log(t);
+        if (t instanceof ErrorResponseException)
+        {
+            ErrorResponseException ex = (ErrorResponseException) t;
+            LOG.fatal(ex.getResponse().getString());
+        }
+    };
 
     protected final JDAImpl api;
     protected final Route.CompiledRoute route;
     protected final Object data;
-    protected boolean queue;
 
     public RestAction(JDA api, Route.CompiledRoute route, Object data)
     {
@@ -84,6 +94,8 @@ public abstract class RestAction<T>
                     throw (RateLimitedException) t;
                 else if (t instanceof  PermissionException)
                     throw (PermissionException) t;
+                else if (t instanceof ErrorResponseException)
+                    throw (ErrorResponseException) t;
             }
             throw new RuntimeException(e);
         }
@@ -110,6 +122,8 @@ public abstract class RestAction<T>
                     throw (RateLimitedException) t;
                 else if (t instanceof PermissionException)
                     throw (PermissionException) t;
+                else if (t instanceof ErrorResponseException)
+                    throw (ErrorResponseException) t;
             }
             else if (e instanceof TimeoutException)
             {

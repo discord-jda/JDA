@@ -451,13 +451,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         api.getVoiceChannelMap().clear();
         api.getGuildMap().clear();
         api.getUserMap().clear();
-//        api.getPmChannelMap().clear();
-//        api.getOffline_pms().clear();
-//        EntityBuilder.get(api).clearCache();
+        api.getPrivateChannelMap().clear();
+        api.getFakeUserMap().clear();
+        api.getFakePrivateChannelMap().clear();
+        EntityBuilder.get(api).clearCache();
 //        new ReadyHandler(api, 0).clearCache();
-//        EventCache.get(api).clear();
+        EventCache.get(api).clear();
         GuildLock.get(api).clear();
-//        TextChannelImpl.AsyncMessageSender.stopAll(api);
     }
 
     protected void restoreAudioHandlers()
@@ -601,18 +601,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     sessionId = content.getString("session_id");
                     handlers.get("READY").handle(responseTotal, raw);
                     break;
-//                case "RESUMED":
-//                    initiating = false;
-//                    ready();
-//                    break;
+                case "RESUMED":
+                    initiating = false;
+                    ready();
+                    break;
 //                case "PRESENCE_UPDATE":
 //                    new PresenceUpdateHandler(api, responseTotal).handle(raw);
 //                    break;
 //                case "TYPING_START":
 //                    new UserTypingHandler(api, responseTotal).handle(raw);
-//                    break;
-//                case "MESSAGE_CREATE":
-//                    new MessageReceivedHandler(api, responseTotal).handle(raw);
 //                    break;
 //                case "MESSAGE_UPDATE":
 //                    if (content.has("author"))

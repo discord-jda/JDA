@@ -70,4 +70,7 @@ public interface Member extends IMentionable
 
     List<Permission> getPermissions();
     List<Permission> getPermissions(Channel channel);
+
+    boolean hasPermission(Permission... permissions);
+    boolean hasPermission(Channel channel, Permission... permission);
 }

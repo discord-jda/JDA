@@ -140,24 +140,18 @@ public interface Message extends ISnowflake
     boolean isPrivate();
 
     /**
-     * Returns the Id of the Channel this Message was sent in.
-     * This can be the id of either a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} or a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}
-     * To get the corresponding channel, you can use {@link net.dv8tion.jda.core.JDA#getTextChannelById(String)} or {@link net.dv8tion.jda.core.JDA#getPrivateChannelById(String)}
-     * or if you just want to reply, you can also use {@link #getChannel()}.
-     * (Hint: {@link #isPrivate()} could be helpful!)
-     *
-     * @return
-     *      The Id of the Channel this was sent in
-     */
-    String getChannelId();
-
-    /**
      * Returns the {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel} that this message was sent in
      *
      * @return
      *      The MessageChannel of this Message
      */
     MessageChannel getChannel();
+
+    PrivateChannel getPrivateChannel();
+
+    TextChannel getTextChannel();
+
+    Guild getGuild();
 
     /**
      * An unmodifiable list of {@link net.dv8tion.jda.core.entities.Message.Attachment Attachment} that are attached to this message.<br>
@@ -191,7 +185,7 @@ public interface Message extends ISnowflake
      * @param newContent the new content of the Message
      * @return a new Message-Object for the edited message
      */
-    RestAction editMessage(String newContent);
+    RestAction<Message> editMessage(String newContent);
 
     /**
      * Edits this Messages content to be the content of the provide message.
@@ -201,14 +195,14 @@ public interface Message extends ISnowflake
      * @param newContent the new content of the Message
      * @return a new Message-Object for the edited message
      */
-    RestAction editMessage(Message newContent);
+    RestAction<Message> editMessage(Message newContent);
 
     /**
      * Deletes this Message from the server.
      * Calling this function on a Message created by another User while not having the
      * {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE MESSAGE_MANAGE Permission} will have no effect
      */
-    RestAction deleteMessage();
+    RestAction<Void> deleteMessage();
 
     /**
      * Returns the {@link net.dv8tion.jda.core.JDA JDA} instance of this Message
@@ -233,7 +227,7 @@ public interface Message extends ISnowflake
      * @return
      *      True - if the action completed successfully and this message became pinned.
      */
-    RestAction pin();
+    RestAction<Void> pin();
 
     /**
      * This is a shortcut method to {@link MessageChannel#unpinMessageById(String)}.<br>
@@ -243,7 +237,7 @@ public interface Message extends ISnowflake
      * @return
      *      True - if the action completed successfully and this message was unpinned.
      */
-    RestAction unpin();
+    RestAction<Void> unpin();
 
     /**
      * This specifies the type of Message sent. Messages can represent more than just simple text sent by Users.<br>

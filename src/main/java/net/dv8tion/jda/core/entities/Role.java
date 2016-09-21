@@ -98,6 +98,8 @@ public interface Role extends ISnowflake, IMentionable, Comparable<Role>
      */
     List<Permission> getPermissions();
 
+    List<Permission> getPermissions(Channel channel);
+
     /**
      * The color this {@link net.dv8tion.jda.core.entities.Role Role} is displayed in.
      *
@@ -107,16 +109,18 @@ public interface Role extends ISnowflake, IMentionable, Comparable<Role>
     Color getColor();
 
     /**
-     * Checks if this {@link net.dv8tion.jda.core.entities.Role Role} has a
-     * {@link net.dv8tion.jda.core.entities.Guild Guild} level {@link net.dv8tion.jda.core.Permission Permission}.<br>
-     * This does not check the Channel-specific override {@link net.dv8tion.jda.core.Permission Permission}.
+     * Checks if this {@link net.dv8tion.jda.core.entities.Role Role} has the provided
+     * {@link net.dv8tion.jda.core.entities.Guild Guild} level {@link net.dv8tion.jda.core.Permission Permissions}.<br>
+     * This does not check the Channel-specific override {@link net.dv8tion.jda.core.Permission Permissions}.
      *
-     * @param perm
-     *          The {@link net.dv8tion.jda.core.Permission Permission} to check for
+     * @param permissions
+     *          The {@link net.dv8tion.jda.core.Permission Permissions} to check for
      * @return
      *      If the given {@link net.dv8tion.jda.core.Permission Permission} is available to this {@link net.dv8tion.jda.core.entities.Role Role}
      */
-    boolean hasPermission(Permission perm);
+    boolean hasPermission(Permission... permissions);
+
+    boolean hasPermission(Channel chanel, Permission... permissions);
 
     /**
      * Returns the {@link net.dv8tion.jda.core.entities.Guild Guild} this Role exists in

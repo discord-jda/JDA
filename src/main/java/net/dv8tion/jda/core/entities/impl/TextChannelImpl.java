@@ -16,11 +16,17 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.MessageHistory;
-import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.client.exceptions.VerificationLevelException;
+import net.dv8tion.jda.core.*;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.exceptions.AccountTypeException;
+import net.dv8tion.jda.core.exceptions.ErrorResponseException;
+import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.exceptions.RateLimitedException;
+import net.dv8tion.jda.core.handle.EntityBuilder;
+import net.dv8tion.jda.core.requests.*;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.time.OffsetDateTime;
@@ -30,7 +36,7 @@ import java.util.stream.Collectors;
 public class TextChannelImpl implements TextChannel
 {
     private final String id;
-    private final Guild guild;
+    private final GuildImpl guild;
     private final HashMap<Member, PermissionOverride> memberOverrides = new HashMap<>();
     private final HashMap<Role, PermissionOverride> roleOverrides = new HashMap<>();
 
@@ -41,7 +47,7 @@ public class TextChannelImpl implements TextChannel
     public TextChannelImpl(String id, Guild guild)
     {
         this.id = id;
-        this.guild = guild;
+        this.guild = (GuildImpl) guild;
     }
 
     @Override
@@ -116,45 +122,115 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
-    public boolean checkPermission(User user, Permission permission)
-    {
-        return false;
-    }
-
-    @Override
     public JDA getJDA()
     {
         return guild.getJDA();
     }
 
     @Override
-    public RestAction sendMessage(String text)
+    public RestAction<Message> sendMessage(String text)
+    {
+        return sendMessage(new MessageBuilder().appendString(text).build());
+    }
+
+    @Override
+    public RestAction<Message> sendMessage(Message msg)
+    {
+        checkVerification();
+        checkPermission(Permission.MESSAGE_READ);
+        checkPermission(Permission.MESSAGE_WRITE);
+
+        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
+        JSONObject json = new JSONObject().put("content", msg.getRawContent()).put("tts", msg.isTTS());
+        return new RestAction<Message>(getJDA(), route, json)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                {
+                    Message m = EntityBuilder.get(getJDA()).createMessage(response.getObject());
+                    request.onSuccess(m);
+                }
+                else
+                {
+                    request.onFailure(
+                            new ErrorResponseException(
+                                    ErrorResponse.fromJSON(response.getObject()), response));
+                }
+            }
+        };
+    }
+
+    @Override
+    public RestAction<Message> sendFile(File file, Message message)
     {
         return null;
     }
 
     @Override
-    public RestAction sendMessage(Message msg)
+    public RestAction<Message> getMessageById(String messageId)
     {
-        return null;
+        if (getJDA().getAccountType() != AccountType.BOT)
+            throw new AccountTypeException(AccountType.BOT);
+        checkNull(messageId, "messageId");
+        checkPermission(Permission.MESSAGE_READ);
+        checkPermission(Permission.MESSAGE_HISTORY);
+
+        Route.CompiledRoute route = Route.Messages.GET_MESSAGE.compile(getId(), messageId);
+        return new RestAction<Message>(getJDA(), route, null) {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                {
+                    Message m = EntityBuilder.get(getJDA()).createMessage(response.getObject());
+                    request.onSuccess(m);
+                }
+                else
+                {
+                    ErrorResponse error = ErrorResponse.fromJSON(response.getObject());
+                    if (error == ErrorResponse.MISSING_PERMISSIONS)
+                    {
+                        //Double check to make sure we still have permission to read.
+                        if (!guild.getSelfMember().hasPermission(Permission.MESSAGE_READ))
+                            request.onFailure(new PermissionException(Permission.MESSAGE_READ));
+                        else
+                            request.onFailure(new PermissionException(Permission.MESSAGE_MANAGE,
+                                    "You need MESSAGE_MANAGE permission to delete another users Messages"));
+                    }
+                    else
+                    {
+                        request.onFailure(new ErrorResponseException(error, response));
+                    }
+                }
+            }
+        };
     }
 
     @Override
-    public RestAction sendFile(File file, Message message)
+    public RestAction<Void> deleteMessageById(String messageId)
     {
-        return null;
-    }
+        checkNull(messageId, "messageId");
+        checkPermission(Permission.MESSAGE_READ);
 
-    @Override
-    public RestAction getMessageById(String messageId)
-    {
-        return null;
-    }
-
-    @Override
-    public RestAction deleteMessageById(String messageId)
-    {
-        return null;
+        Route.CompiledRoute route = Route.Messages.DELETE_MESSAGE.compile(getId(), messageId);
+        return new RestAction<Void>(getJDA(), route, null) {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                {
+                    request.onSuccess(null);
+                }
+                else
+                {
+                    request.onFailure(
+                            new ErrorResponseException(
+                                    ErrorResponse.fromJSON(response.getObject()), response));
+                }
+            }
+        };
     }
 
     @Override
@@ -170,21 +246,91 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
-    public RestAction pinMessageById(String messageId)
+    public RestAction<Void> pinMessageById(String messageId)
     {
-        return null;
+        checkNull(messageId, "messageId");
+        checkPermission(Permission.MESSAGE_READ, "You cannot pin a message in a channel you can't access. (MESSAGE_READ)");
+        checkPermission(Permission.MESSAGE_MANAGE, "You need MESSAGE_MANAGE to pin or unpin messages.");
+
+        Route.CompiledRoute route = Route.Messages.ADD_PINNED_MESSAGE.compile(getId(), messageId);
+        return new RestAction<Void>(getJDA(), route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                {
+
+                    request.onSuccess(null);
+                }
+                else
+                {
+                    request.onFailure(
+                            new ErrorResponseException(
+                                    ErrorResponse.fromJSON(response.getObject()), response));
+                }
+            }
+        };
     }
 
     @Override
-    public RestAction unpinMessageById(String messageId)
+    public RestAction<Void> unpinMessageById(String messageId)
     {
-        return null;
+        checkNull(messageId, "messageId");
+        checkPermission(Permission.MESSAGE_READ, "You cannot unpin a message in a channel you can't access. (MESSAGE_READ)");
+        checkPermission(Permission.MESSAGE_MANAGE, "You need MESSAGE_MANAGE to pin or unpin messages.");
+
+        Route.CompiledRoute route = Route.Messages.REMOVE_PINNED_MESSAGE.compile(getId(), messageId);
+        return new RestAction<Void>(getJDA(), route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                {
+                    request.onSuccess(null);
+                }
+                else
+                {
+                    request.onFailure(
+                            new ErrorResponseException(
+                                    ErrorResponse.fromJSON(response.getObject()), response));
+                }
+            }
+        };
     }
 
     @Override
-    public RestAction getPinnedMessages()
+    public RestAction<List<Message>> getPinnedMessages()
     {
-        return null;
+        checkPermission(Permission.MESSAGE_READ, "Cannot get the pinned message of a channel without MESSAGE_READ access.");
+
+        Route.CompiledRoute route = Route.Messages.GET_PINNED_MESSAGES.compile(getId());
+        return new RestAction<List<Message>>(getJDA(), route, null) {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                {
+                    LinkedList<Message> pinnedMessages = new LinkedList<>();
+                    EntityBuilder builder = EntityBuilder.get(getJDA());
+                    JSONArray pins = response.getArray();
+
+                    for (int i = 0; i < pins.length(); i++)
+                    {
+                        pinnedMessages.add(builder.createMessage(pins.getJSONObject(i)));
+                    }
+
+                    request.onSuccess(Collections.unmodifiableList(pinnedMessages));
+                }
+                else
+                {
+                    request.onFailure(
+                            new ErrorResponseException(
+                                    ErrorResponse.fromJSON(response.getObject()), response));
+                }
+            }
+        };
     }
 
     @Override
@@ -292,5 +438,31 @@ public class TextChannelImpl implements TextChannel
     public HashMap<Role, PermissionOverride> getRoleOverrideMap()
     {
         return roleOverrides;
+    }
+
+    // -- internal --
+
+    private void checkVerification()
+    {
+        if (!guild.checkVerification())
+            throw new VerificationLevelException(guild.getVerificationLevel());
+    }
+
+    private void checkPermission(Permission permission) {checkPermission(permission, null);}
+    private void checkPermission(Permission permission, String message)
+    {
+        if (!guild.getSelfMember().hasPermission(this, permission))
+        {
+            if (message != null)
+                throw new PermissionException(permission, message);
+            else
+                throw new PermissionException(permission);
+        }
+    }
+
+    private void checkNull(Object obj, String name)
+    {
+        if (obj == null)
+            throw new NullPointerException("Provided " + name + " was null!");
     }
 }

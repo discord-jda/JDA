@@ -556,7 +556,14 @@ public class EntityBuilder
     {
         String id = jsonObject.getString("id");
         String content = jsonObject.getString("content");
-        MessageImpl message = new MessageImpl(id, api)
+        String channelId = jsonObject.getString("channel_id");
+        MessageChannel chan = api.getTextChannelById(channelId);
+        if (chan == null)
+            chan = api.getPrivateChannelById(channelId);
+        if (chan == null)
+            throw new IllegalArgumentException("ChannelId provided to createMessage was neither a TextChannel or PrivateChannel");
+
+        MessageImpl message = new MessageImpl(id, chan)
                 .setAuthor(api.getUserMap().get(jsonObject.getJSONObject("author").getString("id")))
                 .setContent(content)
                 .setTime(OffsetDateTime.parse(jsonObject.getString("timestamp")))
@@ -593,12 +600,9 @@ public class EntityBuilder
         if (!jsonObject.isNull("edited_timestamp"))
             message.setEditedTime(OffsetDateTime.parse(jsonObject.getString("edited_timestamp")));
 
-        String channelId = jsonObject.getString("channel_id");
-        TextChannel textChannel = api.getTextChannelMap().get(channelId);
-        if (textChannel != null)
+        if (!message.isPrivate())
         {
-            message.setChannelId(textChannel.getId());
-            message.setIsPrivate(false);
+            TextChannel textChannel = message.getTextChannel();
             TreeMap<Integer, User> mentionedUsers = new TreeMap<>();
             JSONArray mentions = jsonObject.getJSONArray("mentions");
             for (int i = 0; i < mentions.length(); i++)
@@ -641,20 +645,6 @@ public class EntityBuilder
             }
             message.setMentionedChannels(mentionedChannels);
         }
-        else
-        {
-            message.setIsPrivate(true);
-            PrivateChannel privateChannel = api.getPrivateChannelMap().get(channelId);
-            if (privateChannel != null)
-            {
-                message.setChannelId(privateChannel.getId());
-            }
-            else
-            {
-                throw new IllegalArgumentException("Could not find Private/Text Channel of id " + channelId);
-            }
-        }
-
         return message;
     }
 

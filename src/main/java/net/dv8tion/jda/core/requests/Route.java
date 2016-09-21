@@ -91,7 +91,7 @@ public class Route
     {
         public static final Route GET_MESSAGES =    new Route(GET,      "channels/{channel_id}/messages",              "channel_id");
         public static final Route SEND_MESSAGE =    new Route(POST,     "channels/{channel_id}/messages",              "channel_id");
-        public static final Route MODIFY_MESSAGE =  new Route(PATCH,    "channels/{channel_id}/messages/{message_id}", "channel_id");
+        public static final Route EDIT_MESSAGE =  new Route(PATCH,    "channels/{channel_id}/messages/{message_id}", "channel_id");
         public static final Route DELETE_MESSAGE =  new Route(DELETE,   "channels/{channel_id}/messages/{message_id}", "channel_id");
         public static final Route GET_PINNED_MESSAGES = new Route(GET,  "channels/{channel_id}/pins",                  "channel_id");
         public static final Route ADD_PINNED_MESSAGE =  new Route(PUT,  "channels/{channel_id}/pins/{message_id}",     "channel_id");
@@ -233,7 +233,7 @@ public class Route
             return false;
 
         Route oRoute = (Route) o;
-        return method.equals(oRoute.method) && route.equals(oRoute);
+        return method.equals(oRoute.method) && route.equals(oRoute.route);
     }
 
     @Override

@@ -30,7 +30,7 @@ import java.util.List;
 public class VoiceChannelImpl implements VoiceChannel
 {
     private final String id;
-    private final Guild guild;
+    private final GuildImpl guild;
 
     private final HashMap<Member, PermissionOverride> memberOverrides = new HashMap<>();
     private final HashMap<Role, PermissionOverride> roleOverrides = new HashMap<>();
@@ -44,7 +44,7 @@ public class VoiceChannelImpl implements VoiceChannel
     public VoiceChannelImpl(String id, Guild guild)
     {
         this.id = id;
-        this.guild = guild;
+        this.guild = (GuildImpl) guild;
     }
 
     @Override
@@ -96,12 +96,6 @@ public class VoiceChannelImpl implements VoiceChannel
     }
 
     @Override
-    public boolean checkPermission(User user, Permission permission)
-    {
-        return false;
-    }
-
-    @Override
     public JDA getJDA()
     {
         return guild.getJDA();
@@ -110,13 +104,13 @@ public class VoiceChannelImpl implements VoiceChannel
     @Override
     public PermissionOverride getOverrideForMember(Member member)
     {
-        return null;
+        return memberOverrides.get(member);
     }
 
     @Override
     public PermissionOverride getOverrideForRole(Role role)
     {
-        return null;
+        return roleOverrides.get(role);
     }
 
     @Override

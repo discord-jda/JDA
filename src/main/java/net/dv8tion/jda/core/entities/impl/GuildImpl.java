@@ -16,11 +16,15 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
+import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.utils.MiscUtil;
 import org.json.JSONObject;
 
+import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -45,6 +49,7 @@ public class GuildImpl implements Guild
     private VerificationLevel verificationLevel;
     private int afkTimeout;
     private boolean available;
+    private boolean canSendVerification = false;
 
     public GuildImpl(JDAImpl api, String id)
     {
@@ -230,6 +235,25 @@ public class GuildImpl implements Guild
     @Override
     public boolean checkVerification()
     {
+        if (api.getAccountType() == AccountType.BOT)
+            return true;
+        if(canSendVerification)
+            return true;
+        switch (verificationLevel)
+        {
+            case HIGH:
+                if(ChronoUnit.MINUTES.between(getSelfMember().getJoinDate(), OffsetDateTime.now()) < 10)
+                    break;
+            case MEDIUM:
+                if(ChronoUnit.MINUTES.between(MiscUtil.getCreationTime(api.getSelfInfo()), OffsetDateTime.now()) < 5)
+                    break;
+            case LOW:
+                if(!api.getSelfInfo().isVerified())
+                    break;
+            case NONE:
+                canSendVerification = true;
+                return true;
+        }
         return false;
     }
 
@@ -295,9 +319,10 @@ public class GuildImpl implements Guild
         return this;
     }
 
-    public GuildImpl setVerificationLevel(VerificationLevel verificationLevel)
+    public GuildImpl setVerificationLevel(VerificationLevel level)
     {
-        this.verificationLevel = verificationLevel;
+        this.verificationLevel = level;
+        this.canSendVerification = false;   //recalc on next send
         return this;
     }
 
@@ -355,5 +380,12 @@ public class GuildImpl implements Guild
     public String toString()
     {
         return "G:" + getName() + '(' + getId() + ')';
+    }
+
+    // -- internal --
+
+    public Member getSelfMember()
+    {
+        return getMember(getJDA().getSelfInfo());
     }
 }

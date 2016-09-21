@@ -79,19 +79,6 @@ public interface Channel extends ISnowflake
      */
     int getPositionRaw();
 
-    /**
-     * Checks if the given {@link net.dv8tion.jda.core.entities.User User} has the given {@link net.dv8tion.jda.core.Permission Permission}
-     * in this Channel
-     *
-     * @param user
-     *          the User to check the Permission against
-     * @param permission
-     *          the Permission to check for
-     * @return
-     *      if the given User has the given Permission in this Channel
-     */
-    boolean checkPermission(User user, Permission permission);
-
 //    /**
 //     * Returns the {@link net.dv8tion.jda.managers.ChannelManager ChannelManager} for this Channel.
 //     * In the ChannelManager, you can modify the name, topic and position of this Channel.

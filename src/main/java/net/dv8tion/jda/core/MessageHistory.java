@@ -38,7 +38,8 @@ public class MessageHistory
     public MessageHistory(MessageChannel channel)
     {
         this.api = (JDAImpl) channel.getJDA();
-        if (channel instanceof TextChannel && !((TextChannel) channel).checkPermission(api.getSelfInfo(), Permission.MESSAGE_HISTORY))
+        if (channel instanceof TextChannel &&
+                !((TextChannel) channel).getGuild().getMember(api.getSelfInfo()).hasPermission(Permission.MESSAGE_HISTORY))
             throw new PermissionException(Permission.MESSAGE_HISTORY);
 
         this.channelId = channel.getId();

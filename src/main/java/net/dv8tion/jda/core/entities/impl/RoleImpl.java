@@ -18,12 +18,15 @@ package net.dv8tion.jda.core.entities.impl;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.core.utils.PermissionUtil;
 
 import java.awt.*;
 import java.time.OffsetDateTime;
+import java.util.Collections;
 import java.util.List;
 
 public class RoleImpl implements Role
@@ -101,6 +104,13 @@ public class RoleImpl implements Role
     @Override
     public List<Permission> getPermissions()
     {
+        return Collections.unmodifiableList(
+                Permission.getPermissions(rawPermissions));
+    }
+
+    @Override
+    public List<Permission> getPermissions(Channel channel)
+    {
         return null;
     }
 
@@ -111,7 +121,18 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public boolean hasPermission(Permission perm)
+    public boolean hasPermission(Permission... permissions)
+    {
+        for (Permission perm : permissions)
+        {
+            if ((rawPermissions & perm.getOffset()) != perm.getOffset())
+                return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean hasPermission(Channel chanel, Permission... permissions)
     {
         return false;
     }

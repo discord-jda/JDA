@@ -53,19 +53,6 @@ public class MessageReceivedEvent extends Event
         return getGuild().getMember(getAuthor());
     }
 
-//    /**
-//     * Returns the Author's effective name in the guild the message was sent in.
-//     * This returns the nickname if set or the author's username if no nick is set.
-//     *
-//     * @return
-//     *      Author's effective name.
-//     */
-//    public String getAuthorName()
-//    {
-//        String nickname = isPrivate() ? getAuthor().getUsername() : getAuthorNick();
-//        return nickname == null ? getAuthor().getUsername() : nickname;
-//    }
-
     public boolean isPrivate()
     {
         return message.isPrivate();
@@ -73,21 +60,21 @@ public class MessageReceivedEvent extends Event
 
     public TextChannel getTextChannel()
     {
-        return getJDA().getTextChannelById(message.getChannelId());
+        return message.getTextChannel();
     }
 
     public PrivateChannel getPrivateChannel()
     {
-        return getJDA().getPrivateChannelById(message.getChannelId());
+        return message.getPrivateChannel();
     }
 
     public MessageChannel getChannel()
     {
-        return isPrivate() ? getPrivateChannel() : getTextChannel();
+        return message.getChannel();
     }
 
     public Guild getGuild()
     {
-        return isPrivate() ? null : getTextChannel().getGuild();
+        return message.getGuild();
     }
 }

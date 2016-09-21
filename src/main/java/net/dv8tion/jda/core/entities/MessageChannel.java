@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.requests.RestAction;
 //import net.dv8tion.jda.core.exceptions.VerificationLevelException;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Represents a Discord channel that can have messages and files sent to it.
@@ -58,7 +59,7 @@ public interface MessageChannel extends ISnowflake
      *      If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      *      and you do not meet the required verification-level of the guild.
      */
-    RestAction sendMessage(String text);
+    RestAction<Message> sendMessage(String text);
 
     /**
      * Sends a given {@link net.dv8tion.jda.core.entities.Message Message} to this Channel
@@ -83,7 +84,7 @@ public interface MessageChannel extends ISnowflake
      *      If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      *      and you do not meet the required verification-level of the guild.
      */
-    RestAction sendMessage(Message msg);
+    RestAction<Message> sendMessage(Message msg);
 
     /**
      * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
@@ -112,7 +113,7 @@ public interface MessageChannel extends ISnowflake
      *      If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      *      and you do not meet the required verification-level of the guild.
      */
-    RestAction sendFile(File file, Message message);
+    RestAction<Message> sendFile(File file, Message message);
 
     /**
      * Attempts to get a {@link net.dv8tion.jda.core.entities.Message Message} from the Discord servers that has
@@ -131,7 +132,7 @@ public interface MessageChannel extends ISnowflake
      *              ({@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY})</li>
      *      </ul>
      */
-    RestAction getMessageById(String messageId);
+    RestAction<Message> getMessageById(String messageId);
 
     /**
      * Attempts to delete a {@link net.dv8tion.jda.core.entities.Message Message} from the Discord servers
@@ -151,7 +152,7 @@ public interface MessageChannel extends ISnowflake
      *          <li>Attempt to delete another user's message in a PrivateChannel.</li>
      *      </ul>
      */
-    RestAction deleteMessageById(String messageId);
+    RestAction<Void> deleteMessageById(String messageId);
 
     /**
      * Creates a new {@link net.dv8tion.jda.core.MessageHistory MessageHistory} object for each call of this method.<br>
@@ -186,7 +187,7 @@ public interface MessageChannel extends ISnowflake
      * @throws net.dv8tion.jda.core.exceptions.RateLimitedException
      *          If Discord informs us that this account has accessed this endpoint too often, thus needs to be ratelimited.
      */
-    RestAction pinMessageById(String messageId);
+    RestAction<Void> pinMessageById(String messageId);
 
     /**
      * Used to unpin a message.<br>
@@ -203,7 +204,7 @@ public interface MessageChannel extends ISnowflake
      * @throws net.dv8tion.jda.core.exceptions.RateLimitedException
      *          If Discord informs us that this account has accessed this endpoint too often, thus needs to be ratelimited.
      */
-    RestAction unpinMessageById(String messageId);
+    RestAction<Void> unpinMessageById(String messageId);
 
     /**
      * Gets a List of {@link net.dv8tion.jda.core.entities.Message Messages} that have been pinned in this channel.<br>
@@ -217,5 +218,5 @@ public interface MessageChannel extends ISnowflake
      * @throws net.dv8tion.jda.core.exceptions.RateLimitedException
      *          If Discord informs us that this account has accessed this endpoint too often, thus needs to be ratelimited.
      */
-    RestAction getPinnedMessages();
+    RestAction<List<Message>> getPinnedMessages();
 }

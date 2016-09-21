@@ -17,8 +17,14 @@
 package net.dv8tion.jda.core.entities.impl;
 
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.MessageBuilder;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.exceptions.ErrorResponseException;
+import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.handle.EntityBuilder;
+import net.dv8tion.jda.core.requests.*;
+import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -30,11 +36,11 @@ public class MessageImpl implements Message
     private final JDAImpl api;
     private final String id;
     private final MessageType type;
+    private final MessageChannel channel;
+    private final boolean isPrivate;
     private boolean mentionsEveryone = false;
     private boolean isTTS = false;
-    private boolean isPrivate;
     private boolean pinned;
-    private String channelId;
     private String content;
     private String subContent = null;
     private String strippedContent = null;
@@ -47,16 +53,19 @@ public class MessageImpl implements Message
     private List<Attachment> attachments = new LinkedList<>();
     private List<MessageEmbed> embeds = new LinkedList<>();
 
-    public MessageImpl(String id, JDAImpl api)
+    public MessageImpl(String id, MessageChannel channel)
     {
-        this(id, api, MessageType.DEFAULT);
+        this(id, channel, MessageType.DEFAULT);
     }
 
-    public MessageImpl(String id, JDAImpl api, MessageType type)
+
+    public MessageImpl(String id, MessageChannel channel, MessageType type)
     {
         this.id = id;
-        this.api = api;
+        this.channel = channel;
+        this.api = (JDAImpl) channel.getJDA();
         this.type = type;
+        this.isPrivate = channel instanceof PrivateChannel;
     }
 
     @Override
@@ -72,15 +81,15 @@ public class MessageImpl implements Message
     }
 
     @Override
-    public RestAction pin()
+    public RestAction<Void> pin()
     {
-        return null;
+        return channel.pinMessageById(getId());
     }
 
     @Override
-    public RestAction unpin()
+    public RestAction<Void> unpin()
     {
-        return null;
+        return channel.unpinMessageById(getId());
     }
 
     public MessageImpl setPinned(boolean pinned)
@@ -88,24 +97,6 @@ public class MessageImpl implements Message
         this.pinned = pinned;
         return this;
     }
-
-//    @Override
-//    public boolean pin()
-//    {
-//        boolean result = getChannel().pinMessageById(id);
-//        if (result)
-//            this.pinned = true;
-//        return result;
-//    }
-
-//    @Override
-//    public boolean unpin()
-//    {
-//        boolean result = getChannel().unpinMessageById(id);
-//        if (result)
-//            this.pinned = false;
-//        return result;
-//    }
 
     @Override
     public MessageType getType()
@@ -172,7 +163,6 @@ public class MessageImpl implements Message
     {
         if (subContent == null)
         {
-            Guild g = isPrivate ? null : api.getTextChannelById(channelId).getGuild();
             String tmp = content;
             for (User user : mentionedUsers)
             {
@@ -183,7 +173,7 @@ public class MessageImpl implements Message
                 }
                 else
                 {
-                    String name = g.getMember(author).getEffectiveName();
+                    String name = getGuild().getMember(author).getEffectiveName();
                     tmp = tmp.replace("<@" + user.getId() + '>', '@' + name)
                             .replace("<@!" + user.getId() + '>', '@' + name);
                 }
@@ -208,15 +198,27 @@ public class MessageImpl implements Message
     }
 
     @Override
-    public String getChannelId()
+    public MessageChannel getChannel()
     {
-        return channelId;
+        return channel;
     }
 
     @Override
-    public MessageChannel getChannel()
+    public PrivateChannel getPrivateChannel()
     {
-        return isPrivate() ? api.getPrivateChannelById(channelId) : api.getTextChannelById(channelId);
+        return isPrivate ? (PrivateChannel) channel : null;
+    }
+
+    @Override
+    public TextChannel getTextChannel()
+    {
+        return !isPrivate ? (TextChannel) channel : null;
+    }
+
+    @Override
+    public Guild getGuild()
+    {
+        return !isPrivate ? getTextChannel().getGuild() : null;
     }
 
     @Override
@@ -244,68 +246,60 @@ public class MessageImpl implements Message
     }
 
     @Override
-    public RestAction editMessage(String newContent)
+    public RestAction<Message> editMessage(String newContent)
     {
-        return null;
+        return editMessage(new MessageBuilder().appendString(newContent).build());
     }
 
     @Override
-    public RestAction editMessage(Message newContent)
+    public RestAction<Message> editMessage(Message newContent)
     {
-        return null;
+        if (!api.getSelfInfo().equals(getAuthor()))
+            throw new UnsupportedOperationException("Attempted to update message that was not sent by this account. You cannot modify other User's messages!");
+
+
+        JSONObject json = new JSONObject().put("content", newContent.getRawContent()).put("tts", newContent.isTTS());
+        Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getChannel().getId(), getId());
+        return new RestAction<Message>(api, route, json)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                {
+                    try
+                    {
+                        Message m = EntityBuilder.get(api).createMessage(response.getObject());
+                        request.onSuccess(m);
+                    }
+                    catch (IllegalArgumentException e)
+                    {
+                        request.onFailure(e);
+                    }
+                }
+                else
+                {
+                    request.onFailure(
+                            new ErrorResponseException(
+                                    ErrorResponse.fromJSON(response.getObject()), response));
+                }
+            }
+        };
     }
 
     @Override
-    public RestAction deleteMessage()
+    public RestAction<Void> deleteMessage()
     {
-        return null;
+        if (!getJDA().getSelfInfo().equals(getAuthor()))
+        {
+            if (isPrivate)
+                throw new PermissionException("Cannot delete another User's messages in a PrivateChannel.");
+            else if (!getGuild().getMember(getJDA().getSelfInfo())
+                    .hasPermission((TextChannel) getChannel(), Permission.MESSAGE_MANAGE))
+                throw new PermissionException(Permission.MESSAGE_MANAGE);
+        }
+        return channel.deleteMessageById(getId());
     }
-
-//    @Override
-//    public Message updateMessage(String newContent)
-//    {
-//        if (api.getSelfInfo() != getAuthor())
-//            throw new UnsupportedOperationException("Attempted to update message that was not sent by this account. You cannot modify other User's messages!");
-//        try
-//        {
-//            JSONObject response = api.getRequester().patch(Requester.DISCORD_API_PREFIX + "channels/" + channelId + "/messages/" + getId(), new JSONObject().put("content", newContent)).getObject();
-//            if(response == null || !response.has("id"))         //updating failed (dunno why)
-//                return null;
-//            return EntityBuilder.get(api).createMessage(response);
-//        }
-//        catch (JSONException ex)
-//        {
-//            JDAImpl.LOG.log(ex);
-//            return null;
-//        }
-//    }
-
-//    @Override
-//    public void updateMessageAsync(String newContent, Consumer<Message> callback)
-//    {
-//        if (api.getSelfInfo() != getAuthor())
-//            throw new UnsupportedOperationException("Attempted to update message that was not sent by this account. You cannot modify other User's messages!");
-//        Message newMessage = new MessageImpl(getId(), api).setContent(newContent).setChannelId(getChannelId());
-//        String ratelimitIdentifier = isPrivate
-//                ? PrivateChannelImpl.RATE_LIMIT_IDENTIFIER
-//                : api.getTextChannelById(channelId).getGuild().getId();
-//        TextChannelImpl.AsyncMessageSender.getInstance(api, ratelimitIdentifier).enqueue(newMessage, true, callback);
-//    }
-//
-//    @Override
-//    public void deleteMessage()
-//    {
-//        if (api.getSelfInfo() != getAuthor())
-//        {
-//            if (isPrivate())
-//                throw new PermissionException("Cannot delete another User's messages in a PrivateChannel.");
-//            else if (!api.getTextChannelById(getChannelId()).checkPermission(api.getSelfInfo(), Permission.MESSAGE_MANAGE))
-//                throw new PermissionException(Permission.MESSAGE_MANAGE);
-//        }
-//        Requester.Response response = api.getRequester().delete(Requester.DISCORD_API_PREFIX + "channels/" + channelId + "/messages/" + getId());
-//        if (response.isRateLimit())
-//            throw new RateLimitedException(response.getObject().getInt("retry_after"));
-//    }
 
     public MessageImpl setMentionedUsers(List<User> mentionedUsers)
     {
@@ -352,18 +346,6 @@ public class MessageImpl implements Message
     public MessageImpl setAuthor(User author)
     {
         this.author = author;
-        return this;
-    }
-
-    public MessageImpl setIsPrivate(boolean isPrivate)
-    {
-        this.isPrivate = isPrivate;
-        return this;
-    }
-
-    public MessageImpl setChannelId(String channelId)
-    {
-        this.channelId = channelId;
         return this;
     }
 

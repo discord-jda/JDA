@@ -20,13 +20,12 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.utils.PermissionUtil;
 
 import java.awt.*;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
-import java.util.TreeSet;
 
 public class MemberImpl implements Member
 {
@@ -111,19 +110,43 @@ public class MemberImpl implements Member
     @Override
     public Color getColor()
     {
+        for (Role r : getRoles())
+        {
+            if (r.getColor() != null)
+                return r.getColor();
+        }
         return null;
     }
 
     @Override
     public List<Permission> getPermissions()
     {
-        return null;
+        return Collections.unmodifiableList(
+                Permission.getPermissions(
+                        PermissionUtil.getEffectivePermission(guild, this)));
     }
 
     @Override
     public List<Permission> getPermissions(Channel channel)
     {
-        return null;
+        if (!guild.equals(channel.getGuild()))
+            throw new IllegalArgumentException("Provided channel is not in the same guild as this member!");
+
+        return Collections.unmodifiableList(
+                Permission.getPermissions(
+                        PermissionUtil.getEffectivePermission(channel, this)));
+    }
+
+    @Override
+    public boolean hasPermission(Permission... permissions)
+    {
+        return PermissionUtil.checkPermission(guild, this, permissions);
+    }
+
+    @Override
+    public boolean hasPermission(Channel channel, Permission... permissions)
+    {
+        return PermissionUtil.checkPermission(channel, this, permissions);
     }
 
     public MemberImpl setNickname(String nickname)
