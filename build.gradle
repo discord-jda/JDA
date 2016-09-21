@@ -10,7 +10,7 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 apply plugin: 'eclipse'
 
-def versionObj = new Version(major: 3, minor: 0, revision: 0)
+def versionObj = new Version(major: 3, minor: 0, revision: "ALPHA")
 group = "net.dv8tion"
 archivesBaseName = "JDA"
 version = "$versionObj"
@@ -160,7 +160,7 @@ dependencies {
 }
 
 class Version {
-    int major, minor, revision
+    String major, minor, revision
 
     String getBuild() {
         System.getenv("BUILD_NUMBER") ?: System.getProperty("BUILD_NUMBER") ?: "DEV"
