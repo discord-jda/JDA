@@ -36,7 +36,7 @@ public class ReadyListener implements EventListener
 {
     public static void main(String[] args)
     {
-        JDA jda = new JDABuilder().setBotToken("token").addListener(new ReadyListener()).buildBlocking();
+        JDA jda = new JDABuilder(AccountType.BOT).setToken("token").addListener(new ReadyListener()).buildBlocking();
     }
 
     @Override
@@ -53,7 +53,7 @@ public class MessageListener extends ListenerAdapter
 {
     public static void main(String[] args)
     {
-        JDA jda = new JDABuilder().setBotToken("token").buildBlocking();
+        JDA jda = new JDABuilder(AccountType.BOT).setToken("token").buildBlocking();
         jda.addEventListener(new MessageListener());
     }
 
@@ -68,7 +68,7 @@ public class MessageListener extends ListenerAdapter
         else
         {
             System.out.printf("[%s][%s] %s: %s\n", event.getGuild().getName(),
-                        event.getTextChannel().getName(), event.getAuthor().getUsername(),
+                        event.getTextChannel().getName(), event.getMember().getEffectiveName(),
                         event.getMessage().getContent());
         }
     }
