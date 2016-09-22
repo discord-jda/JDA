@@ -1,27 +1,26 @@
 # JDA (Java Discord API)
 JDA strives to provide a clean and full wrapping of the Discord REST api and its Websocket-Events for Java.<br>
 
-## JDA 2.x
-After the release of the official Discord API, we decided to split JDA into 2 seperate libraries.
-
-JDA will be continued with version 2.x and will only have Bot-features (for bot-accounts).
-Please see the [Discord docs](https://discordapp.com/developers/docs/reference) for more information about bot accounts.
+## JDA 3.x
+JDA will be continued with version 3.x and will support Bot-features (for bot-accounts) and Client-features (for user-accounts).
+_Please see the [Discord docs](https://discordapp.com/developers/docs/reference) for more information about bot accounts._
 
 
-We are also creating a new library called JDA-Client, which extends the functionality of JDA 2.x
-and add some client-only features like friends-list, acks, creating/owning Guilds,...<br/>
-You can find JDA-Client [Here](https://github.com/DV8FromTheWorld/JDA-Client)
+This officially makes [JDA-Client](https://github.com/DV8FromTheWorld/JDA-Client) deprecated.
+Please do not continue using it, and instead switch to the promoted 3.x version listed further below.
 
 ## Creating the JDA Object
-Creating the JDA Object is done via the JDABuilder class.
-After setting the bot-token via setter,
+Creating the JDA Object is done via the JDABuilder class by providing an AccountType (Bot/Client).
+After setting the token via setter,
 the JDA Object is then created by calling the `.buildBlocking()` or the `.buildAsync()` (non-blocking login) method.
 
 Example:
 
 ```java
-JDA jda = new JDABuilder().setBotToken("token").buildBlocking();
+JDA jda = new JDABuilder(AccountType.BOT).setToken("token").buildBlocking();
 ```
+
+**Note**: It is important to set the correct AccountType because Bot-accounts require a token prefix to login.
 
 ## Events
 There a TON of events in JDA that you can listen to.<br>
