@@ -63,7 +63,7 @@ public class MessageImpl implements Message
     {
         this.id = id;
         this.channel = channel;
-        this.api = (JDAImpl) channel.getJDA();
+        this.api = (channel != null) ? (JDAImpl) channel.getJDA() : null;
         this.type = type;
         this.isPrivate = channel instanceof PrivateChannel;
     }
