@@ -556,7 +556,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
 
         // Needs special handling due to content of "d" being an array
-        if(type.equals("PRESENCES_REPLACE"))
+        if (type.equals("PRESENCES_REPLACE"))
         {
             JSONArray presences = raw.getJSONArray("d");
             LOG.trace(String.format("%s -> %s", type, presences.toString()));
