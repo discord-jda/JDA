@@ -18,5 +18,11 @@ package net.dv8tion.jda.core.entities;
 
 public interface IMentionable
 {
+    /**
+     * Retrieve a Mention for this Entity.
+     *
+     * @return
+     *      A resolvable mention.
+     */
     String getAsMention();
 }
