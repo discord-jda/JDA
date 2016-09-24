@@ -89,10 +89,8 @@ public class JDABuilder
      * After a JDA instance as been created, this method can never be called again, even if you are creating a new JDA object.<br>
      * <b>Note:</b> currently this only supports HTTP proxies.
      *
-     * @param proxyUrl
-     *          The url of the proxy.
-     * @param proxyPort
-     *          The port of the proxy.  Usually this is 8080.
+     * @param proxy
+     *          The proxy to use.
      * @return
      *      Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
      * @throws UnsupportedOperationException

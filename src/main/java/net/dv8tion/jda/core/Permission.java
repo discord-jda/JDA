@@ -67,7 +67,7 @@ public enum Permission
      * <a href="https://discordapi.readthedocs.org/en/latest/reference/channels/permissions.html#permissions-number">Discord Permission Numbers</a>.
      *
      * @return
-     *      The offset that represents this {@link net.dv8tion.jda.Permission Permission}.
+     *      The offset that represents this {@link net.dv8tion.jda.core.Permission Permission}.
      */
     public int getOffset()
     {
@@ -75,14 +75,14 @@ public enum Permission
     }
 
     /**
-     * Gets the {@link net.dv8tion.jda.Permission Permission} relating to the provided offset.<br>
-     * If there is no {@link net.dv8tion.jda.Permission Permssions} that matches the provided
-     * offset, {@link net.dv8tion.jda.Permission#UNKNOWN Permission.UNKNOWN} is returned.
+     * Gets the {@link net.dv8tion.jda.core.Permission Permission} relating to the provided offset.<br>
+     * If there is no {@link net.dv8tion.jda.core.Permission Permssions} that matches the provided
+     * offset, {@link net.dv8tion.jda.core.Permission#UNKNOWN Permission.UNKNOWN} is returned.
      *
      * @param offset
-     *          The offset to match a {@link net.dv8tion.jda.Permission Permission} to.
+     *          The offset to match a {@link net.dv8tion.jda.core.Permission Permission} to.
      * @return
-     *      {@link net.dv8tion.jda.Permission Permission} relating to the provided offset.
+     *      {@link net.dv8tion.jda.core.Permission Permission} relating to the provided offset.
      */
     public static Permission getFromOffset(int offset)
     {
@@ -117,19 +117,19 @@ public enum Permission
     }
 
     /**
-     * A list of all {@link net.dv8tion.jda.Permission Permissions} that are specified by this raw int representation of
-     * permissions. The is best used with the getRaw methods in {@link net.dv8tion.jda.entities.Role Role},
-     * {@link net.dv8tion.jda.entities.PermissionOverride PermissionOverride} or {@link net.dv8tion.jda.utils.PermissionUtil}.
+     * A list of all {@link net.dv8tion.jda.core.Permission Permissions} that are specified by this raw int representation of
+     * permissions. The is best used with the getRaw methods in {@link net.dv8tion.jda.core.entities.Role Role},
+     * {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride} or {@link net.dv8tion.jda.core.utils.PermissionUtil}.
      * <p>
      * Examples:<br>
-     * {@link net.dv8tion.jda.utils.PermissionUtil#getEffectivePermission(net.dv8tion.jda.entities.User, net.dv8tion.jda.entities.Channel) PermissionUtil.getEffectivePermission(user, channel)}<br>
-     * {@link net.dv8tion.jda.entities.PermissionOverride#getAllowedRaw() PermissionOverride.getAllowedRaw()}<br>
-     * {@link net.dv8tion.jda.entities.Role#getPermissionsRaw() Role.getPermissionsRaw()}
+     * {@link net.dv8tion.jda.core.utils.PermissionUtil#getEffectivePermission(net.dv8tion.jda.core.entities.Channel, net.dv8tion.jda.core.entities.Member) PermissionUtil.getEffectivePermission(channel, member)}<br>
+     * {@link net.dv8tion.jda.core.entities.PermissionOverride#getAllowedRaw() PermissionOverride.getAllowedRaw()}<br>
+     * {@link net.dv8tion.jda.core.entities.Role#getPermissionsRaw() Role.getPermissionsRaw()}
      *
      * @param permissions
      *          The raw <code>int</code> representation of permissions.
      * @return
-     *      Possibly-empty list of {@link net.dv8tion.jda.Permission Permissions}.
+     *      Possibly-empty list of {@link net.dv8tion.jda.core.Permission Permissions}.
      */
     public static List<Permission> getPermissions(int permissions)
     {
