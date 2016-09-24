@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * Represents a Guild-specific User.
  * <p>
- * Used to get data about this user's presence within a {@link net.dv8tion.jda.core.entities.Guild Guild}.
+ * Contains all guild-specific information about a User. (Roles, Nickname, VoiceStatus etc.)
  */
 public interface Member extends IMentionable
 {
@@ -115,8 +115,10 @@ public interface Member extends IMentionable
     List<Role> getRoles();
 
     /**
-     * An {@link java.awt.Color Color} this Member is displayed with.<br>
-     * Retrieved by the color determining Role this Member has.
+     * The {@link java.awt.Color Color} of this Member's name in a Guild.
+     * <p>
+     * This is determined by the color of the highest role assigned to them that does not have the default color.<br>
+     * If all roles have default color, this returns null.
      *
      * @return
      *      The display Color for this Member.
@@ -132,7 +134,8 @@ public interface Member extends IMentionable
     List<Permission> getPermissions();
 
     /**
-     * The Permissions this Member holds in the specified {@link net.dv8tion.jda.core.entities.Channel Channel}.
+     * The Permissions this Member holds in the specified {@link net.dv8tion.jda.core.entities.Channel Channel}.<br>
+     * Permissions returned by this may be different from {@link #getPermissions()} due to the Channel's {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides }.
      *
      * @return
      *      An immutable List of Permissions granted to this Member.

@@ -19,7 +19,7 @@ import net.dv8tion.jda.core.events.Event;
 
 /**
  * JDA pushes {@link net.dv8tion.jda.core.events.Event Events} to the registered EventListeners.<p>
- * Register an EventListener at either a {@link net.dv8tion.jda.core.JDA JDA} object<br>
+ * Register an EventListener with either a {@link net.dv8tion.jda.core.JDA JDA} object<br>
  * or the {@link net.dv8tion.jda.core.JDABuilder JDABuilder}.<br>
  * <br><b>Examples: </b><br>
  * <code>
