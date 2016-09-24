@@ -19,7 +19,7 @@ import net.dv8tion.jda.core.JDA;
 
 /**
  * <b><u>StatusChangedEvent</u></b><br>
- * Fired if our {@link net.dv8tion.jda.core.JDA.Status Status} changed. (Example: SHUTTING_DOWN -> SHUTDOWN)<br>
+ * Fired if our {@link net.dv8tion.jda.core.JDA.Status Status} changed. (Example: SHUTTING_DOWN -&gt; SHUTDOWN)<br>
  * <br>
  * Use: Detect internal status changes. Possibly to log or forward on user's end.
  */

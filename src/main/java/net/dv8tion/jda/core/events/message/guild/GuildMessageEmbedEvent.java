@@ -22,9 +22,9 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import java.util.List;
 
 /**
- * <b><u>GuildMessageEmbedEvent</u></b><br/>
- * Fired if a Guild Message contains one or more {@link net.dv8tion.jda.core.entities.MessageEmbed Embeds}.<br/>
- * <br/>
+ * <b><u>GuildMessageEmbedEvent</u></b><br>
+ * Fired if a Guild Message contains one or more {@link net.dv8tion.jda.core.entities.MessageEmbed Embeds}.<br>
+ * <br>
  * Use: Retrieve affected TextChannel, the id of the affected Message and a list of MessageEmbeds.
  */
 public class GuildMessageEmbedEvent extends GenericGuildMessageEvent

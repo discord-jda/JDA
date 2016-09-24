@@ -169,6 +169,9 @@ public interface MessageChannel extends ISnowflake
      * So if you wish to show continuous typing you will need to call this method once every 10 seconds.
      * <p>
      * The official discord client sends this every 5 seconds even though the typing status lasts 10.
+     *
+     * @return
+     *          {@link net.dv8tion.jda.core.requests.RestAction RestAction}.
      */
     RestAction sendTyping();
 
@@ -179,13 +182,11 @@ public interface MessageChannel extends ISnowflake
      * @param messageId
      *          The message to pin.
      * @return
-     *      True - if the message was successfully unpinned. If false, the message id probably didn't exist or wasn't a message from this channel.
+     *      {@link net.dv8tion.jda.core.requests.RestAction RestAction}&lt;{@link Void}&gt;
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *          If this is a TextChannel and this account does not have both
      *          {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ} and
      *          {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
-     * @throws net.dv8tion.jda.core.exceptions.RateLimitedException
-     *          If Discord informs us that this account has accessed this endpoint too often, thus needs to be ratelimited.
      */
     RestAction<Void> pinMessageById(String messageId);
 
@@ -201,8 +202,6 @@ public interface MessageChannel extends ISnowflake
      *          If this is a TextChannel and this account does not have both
      *          {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ} and
      *          {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
-     * @throws net.dv8tion.jda.core.exceptions.RateLimitedException
-     *          If Discord informs us that this account has accessed this endpoint too often, thus needs to be ratelimited.
      */
     RestAction<Void> unpinMessageById(String messageId);
 
@@ -211,12 +210,10 @@ public interface MessageChannel extends ISnowflake
      * If no messages have been pinned, this returns an empty List.
      *
      * @return
-     *      An unmodifiable List containing all pinned messages.
+     *      {@link net.dv8tion.jda.core.requests.RestAction RestAction&lt;List&lt;Message&gt;&gt;}
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *          If this is a TextChannel and this account does not have
      *          {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
-     * @throws net.dv8tion.jda.core.exceptions.RateLimitedException
-     *          If Discord informs us that this account has accessed this endpoint too often, thus needs to be ratelimited.
      */
     RestAction<List<Message>> getPinnedMessages();
 }

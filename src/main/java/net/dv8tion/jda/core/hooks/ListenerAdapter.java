@@ -27,21 +27,20 @@ import net.dv8tion.jda.core.events.user.*;
  * for the you.<p>
  * <b>Example:</b><br>
  * <pre><code>
- *     public class MyReadyListener extends ListenerAdapter
+ * public class MyReadyListener extends ListenerAdapter
+ * {
+ *    &nbsp;@Override
+ *     public void onReady(ReadyEvent event)
  *     {
- *        &nbsp;@Override
- *         public void onReady(ReadyEvent event)
- *         {
- *             System.out.println("I am ready to go!");
- *         }
- *
- *        &nbsp;@Override
- *         public void onMessageReceived(MessageReceivedEvent event)
- *         {
- *             System.out.printf("[%s]: %s", event.getAuthor().getUsername(), event.getMessage().getContent());
- *         }
+ *         System.out.println("I am ready to go!");
  *     }
- * </code></pre>
+ *
+ *    &nbsp;@Override
+ *     public void onMessageReceived(MessageReceivedEvent event)
+ *     {
+ *         System.out.printf("[%s]: %s\n", event.getAuthor().getUsername(), event.getMessage().getContent());
+ *     }
+ * }</code></pre>
  * @see net.dv8tion.jda.core.hooks.EventListener
  */
 public abstract class ListenerAdapter implements EventListener

@@ -21,16 +21,13 @@ import java.util.Collection;
 
 /**
  * Represents a Discord Text Channel. See {@link net.dv8tion.jda.core.entities.Channel Channel} and
- * {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel} for more information.
+ * {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel} for more information.<p>
+ * Internal implementation of this class is available at
+ * {@link net.dv8tion.jda.core.entities.impl.TextChannelImpl TextChannelImpl}.<br>
+ * Note: Internal implementation should not be used directly.
  */
 public interface TextChannel extends Channel, MessageChannel, Comparable<TextChannel>, IMentionable
 {
-    /**
-     * Internal implementation of this class is available at
-     * {@link net.dv8tion.jda.core.entities.impl.TextChannelImpl TextChannelImpl}.<br>
-     * Note: Internal implementation should not be used directly.
-     */
-
     /**
      * The topic set for this TextChannel.
      * If no topic has been set, this returns null.
@@ -56,21 +53,21 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *
      * @param messages
      *      The messages to delete.
+     * @return
+     *          {@link net.dv8tion.jda.core.requests.RestAction RestAction}
      * @throws IllegalArgumentException
      *      If the size of the list less than 2 or more than 100 messages.
-     * @throws net.dv8tion.jda.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *      If this account does not have MANAGE_MESSAGES
-     * @throws net.dv8tion.jda.exceptions.RateLimitedException
-     *      If the a ratelimit is encountered. Ratelimit for bulk_delete is 1 call / second / guild.
      */
     RestAction deleteMessages(Collection<Message> messages);
 
     /**
-     * Bulk deletes a list of messages. <b>This is not the same as calling {@link net.dv8tion.jda.core.entities.MessageChannel#deleteMessageById(String) in a loop.</b> <br>
+     * Bulk deletes a list of messages. <b>This is not the same as calling {@link net.dv8tion.jda.core.entities.MessageChannel#deleteMessageById(String)} in a loop.</b> <br>
      * This is much more efficient, but it has a different ratelimit. You may call this once per second per Guild.
      * <p>
      * Must be at least 2 messages and not be more than 100 messages at a time.<br>
-     * If you only have 1 message, use the {@link Message#deleteMessage()} method.<br>
+     * If you only have 1 message, use the {@link net.dv8tion.jda.core.entities.Message#deleteMessage()} method.<br>
      * <p>
      * You must have {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in this channel to use
      * this function.
@@ -81,12 +78,12 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *
      * @param messageIds
      *      The messages to delete.
+     * @return
+     *          {@link net.dv8tion.jda.core.requests.RestAction RestAction}
      * @throws java.lang.IllegalArgumentException
      *      If the size of the list less than 2 or more than 100 messages.
-     * @throws net.dv8tion.jda.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *      If this account does not have MANAGE_MESSAGES
-     * @throws net.dv8tion.jda.exceptions.RateLimitedException
-     *      If the a ratelimit is encountered. Ratelimit for bulk_delete is 1 call / second / guild.
      */
     RestAction deleteMessagesByIds(Collection<String> messageIds);
 }

@@ -20,9 +20,9 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 
 /**
- * <b><u>PrivateMessageReceivedEvent</u></b><br/>
- * Fired if a Message is sent in a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}.<br/>
- * <br/>
+ * <b><u>PrivateMessageReceivedEvent</u></b><br>
+ * Fired if a Message is sent in a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}.<br>
+ * <br>
  * Use: Retrieve affected PrivateChannel and Message.
  */
 public class PrivateMessageReceivedEvent extends GenericPrivateMessageEvent

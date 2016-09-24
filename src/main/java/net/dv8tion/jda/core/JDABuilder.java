@@ -58,6 +58,9 @@ public class JDABuilder
      * {@link net.dv8tion.jda.core.JDABuilder#setToken(String) setBotToken(String)}
      * before calling {@link net.dv8tion.jda.core.JDABuilder#buildAsync() buildAsync()}
      * or {@link net.dv8tion.jda.core.JDABuilder#buildBlocking() buildBlocking()}
+     *
+     * @param accountType
+     *          The {@link net.dv8tion.jda.core.AccountType AccountType}.
      */
     public JDABuilder(AccountType accountType)
     {
@@ -269,6 +272,8 @@ public class JDABuilder
      *          If the provided token is invalid.
      * @throws IllegalArgumentException
      *          If the provided token is empty or null.
+     * @throws RateLimitedException
+     *          If we are being Rate limited.
      */
     public JDA buildAsync() throws LoginException, IllegalArgumentException, RateLimitedException
     {
@@ -308,6 +313,8 @@ public class JDABuilder
      * @throws InterruptedException
      *          If an interrupt request is received while waiting for {@link net.dv8tion.jda.core.JDA} to finish logging in.
      *          This would most likely be caused by a JVM shutdown request.
+     * @throws RateLimitedException
+     *          If we are being Rate limited.
      */
     public JDA buildBlocking() throws LoginException, IllegalArgumentException, InterruptedException, RateLimitedException
     {

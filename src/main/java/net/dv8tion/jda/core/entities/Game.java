@@ -48,6 +48,11 @@ public interface Game
 
     /**
      * Checks if a given String is a valid Twitch url (ie, one that will display "Streaming" on the Discord client.
+     *
+     * @param url
+     *      The url to check.
+     * @return
+     *          boolean
      */
     static boolean isValidStreamingUrl(String url)
     {
