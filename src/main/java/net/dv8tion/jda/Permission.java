@@ -49,6 +49,7 @@ public enum Permission
 
     MANAGE_ROLES(28, true, false),
     MANAGE_PERMISSIONS(28, false, true),
+    MANAGE_EMOTES(30, true, false),
 
     UNKNOWN(-1, false, false);
 
