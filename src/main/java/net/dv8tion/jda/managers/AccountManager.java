@@ -35,6 +35,7 @@ public class AccountManager
 
     protected AvatarUtil.Avatar avatar = null;
     protected String username = null;
+    protected boolean idle = false;
 
     protected final JDAImpl api;
 
@@ -113,15 +114,31 @@ public class AccountManager
     }
 
     /**
-     * Set status of the connected account.
+     * Set the status of the connected account.<br>
+     * This sets the displayed status (idle/dnd/online/invisible).<br>
+     * To change the actual status to idle use {@link #setIdle(boolean)}<p>
+     * this change will be applied <b>immediately</b>
+     *
+     * @param status
+     *      The {@link net.dv8tion.jda.OnlineStatus OnlineStatus}
+     */
+    public void setStatus(OnlineStatus status)
+    {
+        ((SelfInfoImpl) api.getSelfInfo()).setOnlineStatus(status == OnlineStatus.OFFLINE ? OnlineStatus.INVISIBLE : status);
+        updateStatusAndGame();
+    }
+
+    /**
+     * Set whether the connected account is idle or not.<br>
+     * <i>This is only relevant for client accounts now and does not change the displayed online status</i><br>
      * This change will be applied <b>immediately</b>
      *
      * @param idle
-     *      whether the account should be displayed as idle or not
+     *      whether the account should be idle or not
      */
     public void setIdle(boolean idle)
     {
-        ((SelfInfoImpl) api.getSelfInfo()).setOnlineStatus(idle ? OnlineStatus.AWAY : OnlineStatus.ONLINE);
+        this.idle = idle;
         updateStatusAndGame();
     }
 
@@ -195,7 +212,9 @@ public class AccountManager
         }
         JSONObject content = new JSONObject()
                 .put("game", game == null ? JSONObject.NULL : game)
-                .put("idle_since", selfInfo.getOnlineStatus() == OnlineStatus.AWAY ? System.currentTimeMillis() : JSONObject.NULL);
+                .put("status", selfInfo.getOnlineStatus().getKey())
+                .put("since", System.currentTimeMillis())
+                .put("afk", idle);
         api.getClient().send(new JSONObject().put("op", 3).put("d", content).toString());
     }
 }

@@ -54,4 +54,9 @@ public enum OnlineStatus
         }
         return UNKNOWN;
     }
+
+    public String getKey()
+    {
+        return key;
+    }
 }
