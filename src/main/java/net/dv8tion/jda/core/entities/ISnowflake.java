@@ -30,6 +30,12 @@ public interface ISnowflake
      */
     String getId();
 
+    /**
+     * The time this entity was created. Calculated through the Snowflake in {@link #getId}.
+     *
+     * @return
+     *      OffsetDateTime - Time this entity was created at.
+     */
     default OffsetDateTime getCreationTime()
     {
         return MiscUtil.getCreationTime(getId());

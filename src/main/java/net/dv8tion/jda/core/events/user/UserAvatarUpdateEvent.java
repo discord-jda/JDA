@@ -19,9 +19,9 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.User;
 
 /**
- * <b><u>UserAvatarUpdateEvent</u></b><br/>
- * Fired if the Avatar of a {@link net.dv8tion.jda.core.entities.User User} changes.<br/>
- * <br/>
+ * <b><u>UserAvatarUpdateEvent</u></b><br>
+ * Fired if the Avatar of a {@link net.dv8tion.jda.core.entities.User User} changes.<br>
+ * <br>
  * Use: Retrieve the User who's Avatar changed and their previous Avatar ID/URL.
  */
 public class UserAvatarUpdateEvent extends GenericUserEvent

@@ -201,6 +201,9 @@ public interface Message extends ISnowflake
      * Deletes this Message from the server.
      * Calling this function on a Message created by another User while not having the
      * {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE MESSAGE_MANAGE Permission} will have no effect
+     *
+     * @return
+     *          {@link net.dv8tion.jda.core.requests.RestAction RestAction}
      */
     RestAction<Void> deleteMessage();
 

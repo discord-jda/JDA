@@ -160,6 +160,8 @@ public interface JDA
      *
      * @param name
      *          The name of the requested {@link net.dv8tion.jda.core.entities.User Users}.
+     * @param ignoreCase
+     *          Whether to ignore case or not.
      * @return
      *      Possibly-empty list of {@link net.dv8tion.jda.core.entities.User Users} that all have the same name as the provided name.
      */
@@ -192,6 +194,8 @@ public interface JDA
      *
      * @param name
      *          The name of the requested {@link net.dv8tion.jda.core.entities.Guild Guilds}.
+     * @param ignoreCase
+     *          Whether to ignore case or not.
      * @return
      *      Possibly-empty list of all the {@link net.dv8tion.jda.core.entities.Guild Guilds} that all have the same name as
      *      the provided name.
@@ -243,6 +247,8 @@ public interface JDA
      *
      * @param name
      *          The name of the requested {@link net.dv8tion.jda.core.entities.TextChannel TextChannels}.
+     * @param ignoreCase
+     *          Whether to ignore case or not.
      * @return
      *      Possibly-empty list of all the {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} that all have the
      *      same name as the provided name.
@@ -276,6 +282,8 @@ public interface JDA
      *
      * @param name
      *          The name of the requested {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels}.
+     * @param ignoreCase
+     *          Whether to ignore case or not.
      * @return
      *      Possibly-empty list of all the {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels} that all have the
      *      same name as the provided name.

@@ -22,6 +22,27 @@ import net.dv8tion.jda.core.events.message.guild.*;
 import net.dv8tion.jda.core.events.message.priv.*;
 import net.dv8tion.jda.core.events.user.*;
 
+/**
+ * An abstract implementation of {@link net.dv8tion.jda.core.hooks.EventListener EventListener} which divides {@link net.dv8tion.jda.core.events.Event Events}
+ * for the you.<p>
+ * <b>Example:</b><br>
+ * <pre><code>
+ * public class MyReadyListener extends ListenerAdapter
+ * {
+ *    &nbsp;@Override
+ *     public void onReady(ReadyEvent event)
+ *     {
+ *         System.out.println("I am ready to go!");
+ *     }
+ *
+ *    &nbsp;@Override
+ *     public void onMessageReceived(MessageReceivedEvent event)
+ *     {
+ *         System.out.printf("[%s]: %s\n", event.getAuthor().getUsername(), event.getMessage().getContent());
+ *     }
+ * }</code></pre>
+ * @see net.dv8tion.jda.core.hooks.EventListener
+ */
 public abstract class ListenerAdapter implements EventListener
 {
 //    //JDA Events

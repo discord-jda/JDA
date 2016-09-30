@@ -18,5 +18,11 @@ package net.dv8tion.jda.core.entities;
 
 public interface IFakeable
 {
+    /**
+     * Describes whether an entity is fake or not.
+     *
+     * @return
+     *      False - if this is an actual JDA entity.
+     */
     boolean isFake();
 }

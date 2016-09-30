@@ -24,16 +24,52 @@ import java.awt.Color;
 import java.time.OffsetDateTime;
 import java.util.List;
 
+/**
+ * Represents a Guild-specific User.
+ * <p>
+ * Contains all guild-specific information about a User. (Roles, Nickname, VoiceStatus etc.)
+ */
 public interface Member extends IMentionable
 {
+    /**
+     * The user wrapped by this Entity.
+     *
+     * @return
+     *      {@link net.dv8tion.jda.core.entities.User User}
+     */
     User getUser();
 
+    /**
+     * The Guild in which this Member is represented.
+     *
+     * @return
+     *      {@link net.dv8tion.jda.core.entities.Guild Guild}
+     */
     Guild getGuild();
 
+    /**
+     * The JDA instance.
+     *
+     * @return
+     *      The current JDA instance.
+     */
     JDA getJDA();
 
+    /**
+     * The {@link java.time.OffsetDateTime Time} this Member joined the Guild.
+     *
+     * @return
+     *      The Join Date.
+     */
     OffsetDateTime getJoinDate();
 
+    /**
+     * The {@link net.dv8tion.jda.core.entities.VoiceState VoiceStatus} of this Member.<p>
+     * This can be used to get the Member's VoiceChannel.
+     *
+     * @return
+     *      {@link net.dv8tion.jda.core.entities.VoiceState VoiceStatus}
+     */
     VoiceState getVoiceState();
 
     /**
@@ -62,15 +98,69 @@ public interface Member extends IMentionable
      */
     String getNickname();
 
+    /**
+     * Retrieves the Name displayed in the official Discord Client.
+     *
+     * @return
+     *      The Nickname of this Member or the Username if no Nickname is present.
+     */
     String getEffectiveName();
 
+    /**
+     * The roles applied to this Member.
+     *
+     * @return
+     *      An immutable List of {@link net.dv8tion.jda.core.entities.Role Roles} for this Member.
+     */
     List<Role> getRoles();
 
+    /**
+     * The {@link java.awt.Color Color} of this Member's name in a Guild.
+     * <p>
+     * This is determined by the color of the highest role assigned to them that does not have the default color.<br>
+     * If all roles have default color, this returns null.
+     *
+     * @return
+     *      The display Color for this Member.
+     */
     Color getColor();
 
+    /**
+     * The Guild-Wide Permissions this Member holds.
+     *
+     * @return
+     *      An immutable List of Permissions granted to this Member.
+     */
     List<Permission> getPermissions();
+
+    /**
+     * The Permissions this Member holds in the specified {@link net.dv8tion.jda.core.entities.Channel Channel}.<br>
+     * Permissions returned by this may be different from {@link #getPermissions()} due to the Channel's {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides }.
+     *
+     * @return
+     *      An immutable List of Permissions granted to this Member.
+     */
     List<Permission> getPermissions(Channel channel);
 
+    /**
+     * Checks whether or not this Member has the given {@link net.dv8tion.jda.core.Permission Permissions} in the Guild.
+     *
+     * @param permissions
+     *          Permissions to look for.
+     * @return
+     *      True - if all of the specified Permissions are granted.
+     */
     boolean hasPermission(Permission... permissions);
+
+    /**
+     * Checks whether or not this Member has the given {@link net.dv8tion.jda.core.Permission Permissions} in the specified Channel.
+     *
+     * @param channel
+     *          The {@link net.dv8tion.jda.core.entities.Channel Channel} in which to check.
+     * @param permission
+     *          Permissions to look for.
+     * @return
+     *      True - if all of the specified Permissions are granted.
+     */
     boolean hasPermission(Channel channel, Permission... permission);
 }

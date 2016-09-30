@@ -100,8 +100,8 @@ public interface Channel extends ISnowflake
      * If there is no {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride} for this {@link net.dv8tion.jda.core.entities.Channel Channel}
      * relating to the provided {@link net.dv8tion.jda.core.entities.User User}, then this returns <code>null</code>.
      *
-     * @param user
-     *          The {@link net.dv8tion.jda.core.entities.User User} whose {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride} is requested.
+     * @param member
+     *          The {@link net.dv8tion.jda.core.entities.Member Member} whose {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride} is requested.
      * @return
      *      Possibly-null {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride} relating to the provided {@link net.dv8tion.jda.core.entities.User User}.
      */

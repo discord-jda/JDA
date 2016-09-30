@@ -20,9 +20,9 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.Event;
 
 /**
- * <b><u>MessageReceivedEvent</u></b><br/>
- * Fired if a Message is sent in a {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.<br/>
- * <br/>
+ * <b><u>MessageReceivedEvent</u></b><br>
+ * Fired if a Message is sent in a {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.<br>
+ * <br>
  * Use: This event indicates that a Message is sent in either a private or guild channel. Providing a MessageChannel and Message.
  */
 public class MessageReceivedEvent extends Event

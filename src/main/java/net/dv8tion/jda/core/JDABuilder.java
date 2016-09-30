@@ -58,6 +58,9 @@ public class JDABuilder
      * {@link net.dv8tion.jda.core.JDABuilder#setToken(String) setBotToken(String)}
      * before calling {@link net.dv8tion.jda.core.JDABuilder#buildAsync() buildAsync()}
      * or {@link net.dv8tion.jda.core.JDABuilder#buildBlocking() buildBlocking()}
+     *
+     * @param accountType
+     *          The {@link net.dv8tion.jda.core.AccountType AccountType}.
      */
     public JDABuilder(AccountType accountType)
     {
@@ -89,10 +92,8 @@ public class JDABuilder
      * After a JDA instance as been created, this method can never be called again, even if you are creating a new JDA object.<br>
      * <b>Note:</b> currently this only supports HTTP proxies.
      *
-     * @param proxyUrl
-     *          The url of the proxy.
-     * @param proxyPort
-     *          The port of the proxy.  Usually this is 8080.
+     * @param proxy
+     *          The proxy to use.
      * @return
      *      Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
      * @throws UnsupportedOperationException
@@ -271,6 +272,8 @@ public class JDABuilder
      *          If the provided token is invalid.
      * @throws IllegalArgumentException
      *          If the provided token is empty or null.
+     * @throws RateLimitedException
+     *          If we are being Rate limited.
      */
     public JDA buildAsync() throws LoginException, IllegalArgumentException, RateLimitedException
     {
@@ -310,6 +313,8 @@ public class JDABuilder
      * @throws InterruptedException
      *          If an interrupt request is received while waiting for {@link net.dv8tion.jda.core.JDA} to finish logging in.
      *          This would most likely be caused by a JVM shutdown request.
+     * @throws RateLimitedException
+     *          If we are being Rate limited.
      */
     public JDA buildBlocking() throws LoginException, IllegalArgumentException, InterruptedException, RateLimitedException
     {
