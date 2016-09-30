@@ -17,16 +17,12 @@ package net.dv8tion.jda;
 
 import net.dv8tion.jda.JDA.Status;
 import net.dv8tion.jda.entities.impl.JDAImpl;
-import net.dv8tion.jda.events.ReadyEvent;
-import net.dv8tion.jda.hooks.AnnotatedEventManager;
 import net.dv8tion.jda.hooks.IEventManager;
-import net.dv8tion.jda.hooks.ListenerAdapter;
-import net.dv8tion.jda.hooks.SubscribeEvent;
 
 import javax.security.auth.login.LoginException;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Used to create a new {@link net.dv8tion.jda.JDA} instance. This is useful for making sure all of
@@ -199,7 +195,7 @@ public class JDABuilder
     }
 
     /**
-     * Adds a listener to the list of listeners that will be used to populate the {@link net.dv8tion.jda.JDA} object.
+     * Adds all provided listeners to the list of listeners that will be used to populate the {@link net.dv8tion.jda.JDA} object.
      * This uses the {@link net.dv8tion.jda.hooks.InterfacedEventManager InterfacedEventListener} by default.
      * To switch to the {@link net.dv8tion.jda.hooks.AnnotatedEventManager AnnotatedEventManager},
      * use {@link #setEventManager(net.dv8tion.jda.hooks.IEventManager) setEventManager(new AnnotatedEventManager())}.
@@ -207,28 +203,28 @@ public class JDABuilder
      * Note: when using the {@link net.dv8tion.jda.hooks.InterfacedEventManager InterfacedEventListener} (default),
      * given listener <b>must</b> be instance of {@link net.dv8tion.jda.hooks.EventListener EventListener}!
      *
-     * @param listener
-     *          The listener to add to the list.
+     * @param listeners
+     *          The listeners to add to the list.
      * @return
      *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
      */
     public JDABuilder addListener(Object... listeners)
     {
-        listeners.addAll(Arrays.asList(listeners));
+        Collections.addAll(this.listeners, listeners);
         return this;
     }
 
     /**
-     * Removes a listener from the list of listeners.
+     * Removes all provided listeners from the list of listeners.
      *
-     * @param listener
-     *          The listener to remove from the list.
+     * @param listeners
+     *          The listeners to remove from the list.
      * @return
      *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
      */
     public JDABuilder removeListener(Object... listeners)
     {
-        listeners.removeAll(Arrays.asList(listeners));
+        Collections.addAll(this.listeners, listeners);
         return this;
     }
     
