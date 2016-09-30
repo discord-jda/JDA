@@ -109,6 +109,11 @@ public class UserImpl implements User
         return id;
     }
 
+    @Override
+    public boolean isFake()
+    {
+        return fake;
+    }
 
     @Override
     public boolean equals(Object o)
@@ -163,10 +168,10 @@ public class UserImpl implements User
         return this;
     }
 
-    @Override
-    public boolean isFake()
+    public UserImpl setFake(boolean fake)
     {
-        return fake;
+        this.fake = fake;
+        return this;
     }
 
     private enum DefaultAvatar

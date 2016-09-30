@@ -402,20 +402,30 @@ public class EntityBuilder
         }
     }
 
-    public User createUser(JSONObject user)
+    public User createFakeUser(JSONObject user) { return createUser(user, false); }
+    public User createUser(JSONObject user)     { return createUser(user, true); }
+    private User createUser(JSONObject user, boolean useCache)
     {
         String id = user.getString("id");
-        UserImpl userObj = ((UserImpl) api.getUserMap().get(id));
-        if (userObj == null)
+        UserImpl userObj;
+        if (useCache)
         {
-            userObj = new UserImpl(id, api);
-            api.getUserMap().put(id, userObj);
+            userObj = ((UserImpl) api.getUserMap().get(id));
+            if (userObj == null)
+            {
+                userObj = new UserImpl(id, api);
+                api.getUserMap().put(id, userObj);
+            }
         }
+        else
+            userObj = new UserImpl(id, api);
+
         return userObj
                 .setName(user.getString("username"))
                 .setDiscriminator(user.get("discriminator").toString())
                 .setAvatarId(user.isNull("avatar") ? null : user.getString("avatar"))
-                .setBot(user.has("bot") && user.getBoolean("bot"));
+                .setBot(user.has("bot") && user.getBoolean("bot"))
+                .setFake(!useCache);
     }
 
     public Member createMember(GuildImpl guild, JSONObject memberJson)
@@ -473,7 +483,6 @@ public class EntityBuilder
 
             member.setGame(new GameImpl(gameName, url, gameType));
         }
-
     }
 
     public TextChannel createTextChannel(JSONObject json, String guildId)
@@ -520,16 +529,20 @@ public class EntityBuilder
         if (user == null)
         {   //The API can give us private channels connected to Users that we can no longer communicate with.
             // As such, make a fake user and fake private channel.
-            user = (UserImpl) createUser(recipient);
+            user = (UserImpl) createFakeUser(recipient);
             api.getFakeUserMap().put(user.getId(), user);
         }
 
         PrivateChannelImpl priv = new PrivateChannelImpl(privatechat.getString("id"), user);
         user.setPrivateChannel(priv);
-        api.getPrivateChannelMap().put(priv.getId(), priv);
 
         if (user.isFake())
+        {
+            priv.setFake(true);
             api.getFakePrivateChannelMap().put(priv.getId(), priv);
+        }
+        else
+            api.getPrivateChannelMap().put(priv.getId(), priv);
         return priv;
     }
 
@@ -557,19 +570,41 @@ public class EntityBuilder
         String id = jsonObject.getString("id");
         String content = jsonObject.getString("content");
         String channelId = jsonObject.getString("channel_id");
+        JSONObject author = jsonObject.getJSONObject("author");
         MessageChannel chan = api.getTextChannelById(channelId);
         if (chan == null)
             chan = api.getPrivateChannelById(channelId);
         if (chan == null)
-            throw new IllegalArgumentException("ChannelId provided to createMessage was neither a TextChannel or PrivateChannel");
+            chan = api.getFakePrivateChannelMap().get(channelId);
+        if (chan != null)
+        {
+            //If message is from a private channel from a different shard, use the information provided to use
+            // from the json to update the User info.
+            UserImpl user = (UserImpl) ((PrivateChannel) chan).getUser();
+            user.setName(author.getString("username"))
+                    .setDiscriminator(author.get("discriminator").toString())
+                    .setAvatarId(author.isNull("avatar") ? null : author.getString("avatar"))
+                    .setBot(author.has("bot") && author.getBoolean("bot"));
+        }
+        else
+            throw new IllegalArgumentException("ChannelId provided to createMessage was for a channel that isn't yet cached!");
 
         MessageImpl message = new MessageImpl(id, chan)
-                .setAuthor(api.getUserMap().get(jsonObject.getJSONObject("author").getString("id")))
                 .setContent(content)
                 .setTime(OffsetDateTime.parse(jsonObject.getString("timestamp")))
                 .setMentionsEveryone(jsonObject.getBoolean("mention_everyone"))
                 .setTTS(jsonObject.getBoolean("tts"))
                 .setPinned(jsonObject.getBoolean("pinned"));
+        if (chan instanceof PrivateChannel)
+            message.setAuthor(((PrivateChannel) chan).getUser());
+        else
+        {
+            User user = api.getUserMap().get(author.getString("id"));
+            if (user != null)
+                message.setAuthor(user);
+            else
+                message.setAuthor(createFakeUser(author));
+        }
 
         List<Message.Attachment> attachments = new LinkedList<>();
         JSONArray jsonAttachments = jsonObject.getJSONArray("attachments");
