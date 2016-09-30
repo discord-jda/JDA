@@ -212,9 +212,9 @@ public class JDABuilder
      * @return
      *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
      */
-    public JDABuilder addListener(Object listener)
+    public JDABuilder addListener(Object... listeners)
     {
-        listeners.add(listener);
+        listeners.addAll(Arrays.asList(listeners));
         return this;
     }
 
@@ -226,12 +226,12 @@ public class JDABuilder
      * @return
      *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
      */
-    public JDABuilder removeListener(Object listener)
+    public JDABuilder removeListener(Object... listeners)
     {
-        listeners.remove(listener);
+        listeners.removeAll(Arrays.asList(listeners));
         return this;
     }
-
+    
     /**
      * This will enable sharding mode for JDA.
      * In sharding mode, guilds are split up and assigned one of multiple shards (clients).
