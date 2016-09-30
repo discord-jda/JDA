@@ -212,9 +212,9 @@ public class JDABuilder
      * @return
      *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
      */
-    public JDABuilder addListener(Object listener)
+    public JDABuilder addListener(Object... listeners)
     {
-        listeners.add(listener);
+        listeners.addAll(Arrays.asList(listeners));
         return this;
     }
 
@@ -226,41 +226,7 @@ public class JDABuilder
      * @return
      *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
      */
-    public JDABuilder removeListener(Object listener)
-    {
-        listeners.remove(listener);
-        return this;
-    }
-    
-    /**
-     * Add multiple listeners to the list of listeners that will be used to populate the {@link net.dv8tion.jda.JDA} object.
-     * This uses the {@link net.dv8tion.jda.hooks.InterfacedEventManager InterfacedEventListener} by default.
-     * To switch to the {@link net.dv8tion.jda.hooks.AnnotatedEventManager AnnotatedEventManager},
-     * use {@link #setEventManager(net.dv8tion.jda.hooks.IEventManager) setEventManager(new AnnotatedEventManager())}.
-     *
-     * Note: when using the {@link net.dv8tion.jda.hooks.InterfacedEventManager InterfacedEventListener} (default),
-     * given listener <b>must</b> be instance of {@link net.dv8tion.jda.hooks.EventListener EventListener}!
-     *
-     * @param listener
-     *          The listener to add to the list.
-     * @return
-     *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
-     */
-    public JDABuilder addListeners(Object... listeners)
-    {
-        listeners.addAll(Arrays.asList(listeners));
-        return this;
-    }
-    
-    /**
-     * Removes multiple listeners from the list of listeners.
-     *
-     * @param listeners
-     *          The listeners to remove from the list.
-     * @return
-     *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
-     */
-    public JDABuilder removeListeners(Object... listeners)
+    public JDABuilder removeListener(Object... listeners)
     {
         listeners.removeAll(Arrays.asList(listeners));
         return this;
