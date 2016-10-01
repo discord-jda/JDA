@@ -16,8 +16,7 @@
 package net.dv8tion.jda.core.events.user;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.*;
 
 import java.time.OffsetDateTime;
 
@@ -39,13 +38,38 @@ public class UserTypingEvent extends GenericUserEvent
         this.timestamp = timestamp;
     }
 
+    public OffsetDateTime getTimestamp()
+    {
+        return timestamp;
+    }
+
     public MessageChannel getChannel()
     {
         return channel;
     }
 
-    public OffsetDateTime getTimestamp()
+    public boolean isPrivate()
     {
-        return timestamp;
+        return channel instanceof PrivateChannel;
+    }
+
+    public PrivateChannel getPrivateChannel()
+    {
+        return isPrivate() ? (PrivateChannel) channel : null;
+    }
+
+    public TextChannel getTextChannel()
+    {
+        return !isPrivate() ? (TextChannel) channel : null;
+    }
+
+    public Guild getGuild()
+    {
+        return !isPrivate() ? getTextChannel().getGuild() : null;
+    }
+
+    public Member getMember()
+    {
+        return !isPrivate() ? getGuild().getMember(getUser()) : null;
     }
 }
