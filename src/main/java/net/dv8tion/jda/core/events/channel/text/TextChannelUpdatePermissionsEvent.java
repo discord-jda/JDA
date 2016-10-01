@@ -16,6 +16,7 @@
 package net.dv8tion.jda.core.events.channel.text;
 
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
@@ -31,12 +32,12 @@ import java.util.List;
 public class TextChannelUpdatePermissionsEvent extends GenericTextChannelUpdateEvent
 {
     private final List<Role> changedRoles;
-    private final List<User> changedUserRoles;
-    public TextChannelUpdatePermissionsEvent(JDA api, long responseNumber, TextChannel channel, List<Role> changedRoles, List<User> changedUserRoles)
+    private final List<Member> changedMemberRoles;
+    public TextChannelUpdatePermissionsEvent(JDA api, long responseNumber, TextChannel channel, List<Role> changedRoles, List<Member> changedMemberRoles)
     {
         super(api, responseNumber, channel);
         this.changedRoles = changedRoles;
-        this.changedUserRoles = changedUserRoles;
+        this.changedMemberRoles = changedMemberRoles;
     }
 
     public List<Role> getChangedRoles()
@@ -44,8 +45,8 @@ public class TextChannelUpdatePermissionsEvent extends GenericTextChannelUpdateE
         return changedRoles;
     }
 
-    public List<User> getUsersWithPermissionChanges()
+    public List<Member> getMembersWithPermissionChanges()
     {
-        return changedUserRoles;
+        return changedMemberRoles;
     }
 }

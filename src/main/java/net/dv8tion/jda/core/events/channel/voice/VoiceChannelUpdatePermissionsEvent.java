@@ -16,6 +16,7 @@
 package net.dv8tion.jda.core.events.channel.voice;
 
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.VoiceChannel;
@@ -31,12 +32,12 @@ import java.util.List;
 public class VoiceChannelUpdatePermissionsEvent extends GenericVoiceChannelUpdateEvent
 {
     private final List<Role> changedRoles;
-    private final List<User> changedUserRoles;
-    public VoiceChannelUpdatePermissionsEvent(JDA api, long responseNumber, VoiceChannel channel, List<Role> changedRoles, List<User> changedUserRoles)
+    private final List<Member> changedMemberRoles;
+    public VoiceChannelUpdatePermissionsEvent(JDA api, long responseNumber, VoiceChannel channel, List<Role> changedRoles, List<Member> changedMemberRoles)
     {
         super(api, responseNumber, channel);
         this.changedRoles = changedRoles;
-        this.changedUserRoles = changedUserRoles;
+        this.changedMemberRoles = changedMemberRoles;
     }
 
     public List<Role> getChangedRoles()
@@ -44,8 +45,8 @@ public class VoiceChannelUpdatePermissionsEvent extends GenericVoiceChannelUpdat
         return changedRoles;
     }
 
-    public List<User> getUsersWithPermissionChanges()
+    public List<Member> getMemberWithPermissionChanges()
     {
-        return changedUserRoles;
+        return changedMemberRoles;
     }
 }
