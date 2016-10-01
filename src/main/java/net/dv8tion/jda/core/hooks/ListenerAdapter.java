@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.events.channel.priv.PrivateChannelDeleteEvent;
 import net.dv8tion.jda.core.events.channel.text.*;
 import net.dv8tion.jda.core.events.channel.voice.*;
 import net.dv8tion.jda.core.events.guild.*;
+import net.dv8tion.jda.core.events.guild.member.*;
 import net.dv8tion.jda.core.events.message.GenericMessageEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.*;
@@ -116,13 +117,13 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildLeave(GuildLeaveEvent event) {}
     public void onGuildAvailable(GuildAvailableEvent event) {}
     public void onGuildUnavailable(GuildUnavailableEvent event) {}
-//    public void onGuildMemberJoin(GuildMemberJoinEvent event) {}
-//    public void onGuildMemberLeave(GuildMemberLeaveEvent event) {}
-//    public void onGuildMemberBan(GuildMemberBanEvent event) {}
-//    public void onGuildMemberUnban(GuildMemberUnbanEvent event) {}
-//    public void onGuildMemberRoleAdd(GuildMemberRoleAddEvent event) {}
-//    public void onGuildMemberRoleRemove(GuildMemberRoleRemoveEvent event) {}
-//    public void onGuildMemberNickChange(GuildMemberNickChangeEvent event) {}
+    public void onGuildMemberJoin(GuildMemberJoinEvent event) {}
+    public void onGuildMemberLeave(GuildMemberLeaveEvent event) {}
+    public void onGuildMemberBan(GuildMemberBanEvent event) {}
+    public void onGuildMemberUnban(GuildMemberUnbanEvent event) {}
+    public void onGuildMemberRoleAdd(GuildMemberRoleAddEvent event) {}
+    public void onGuildMemberRoleRemove(GuildMemberRoleRemoveEvent event) {}
+    public void onGuildMemberNickChange(GuildMemberNickChangeEvent event) {}
 //    public void onGuildRoleCreate(GuildRoleCreateEvent event) {}
 //    public void onGuildRoleDelete(GuildRoleDeleteEvent event) {}
 //
@@ -161,7 +162,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericVoiceChannel(GenericVoiceChannelEvent event) {}
     public void onGenericVoiceChannelUpdate(GenericVoiceChannelUpdateEvent event) {}
     public void onGenericGuild(GenericGuildEvent event) {}
-//    public void onGenericGuildMember(GenericGuildMemberEvent event) {}
+    public void onGenericGuildMember(GenericGuildMemberEvent event) {}
 //    public void onGenericGuildRoleUpdate(GenericGuildRoleUpdateEvent event) {}
 //    public void onGenericVoice(GenericVoiceEvent event) {}
 //    public void onGenericAudio(GenericAudioEvent event) {}
@@ -279,21 +280,21 @@ public abstract class ListenerAdapter implements EventListener
         else if (event instanceof GuildAvailableEvent)
             onGuildAvailable((GuildAvailableEvent) event);
         else if (event instanceof GuildUnavailableEvent)
-//            onGuildUnavailable((GuildUnavailableEvent) event);
-//        else if (event instanceof GuildMemberJoinEvent)
-//            onGuildMemberJoin((GuildMemberJoinEvent) event);
-//        else if (event instanceof GuildMemberBanEvent)
-//            onGuildMemberBan((GuildMemberBanEvent) event);
-//        else if (event instanceof GuildMemberUnbanEvent)
-//            onGuildMemberUnban((GuildMemberUnbanEvent) event);
-//        else if (event instanceof GuildMemberLeaveEvent)
-//            onGuildMemberLeave((GuildMemberLeaveEvent) event);
-//        else if (event instanceof GuildMemberRoleAddEvent)
-//            onGuildMemberRoleAdd((GuildMemberRoleAddEvent) event);
-//        else if (event instanceof GuildMemberRoleRemoveEvent)
-//            onGuildMemberRoleRemove((GuildMemberRoleRemoveEvent) event);
-//        else if (event instanceof GuildMemberNickChangeEvent)
-//            onGuildMemberNickChange((GuildMemberNickChangeEvent) event);
+            onGuildUnavailable((GuildUnavailableEvent) event);
+        else if (event instanceof GuildMemberJoinEvent)
+            onGuildMemberJoin((GuildMemberJoinEvent) event);
+        else if (event instanceof GuildMemberBanEvent)
+            onGuildMemberBan((GuildMemberBanEvent) event);
+        else if (event instanceof GuildMemberUnbanEvent)
+            onGuildMemberUnban((GuildMemberUnbanEvent) event);
+        else if (event instanceof GuildMemberLeaveEvent)
+            onGuildMemberLeave((GuildMemberLeaveEvent) event);
+        else if (event instanceof GuildMemberRoleAddEvent)
+            onGuildMemberRoleAdd((GuildMemberRoleAddEvent) event);
+        else if (event instanceof GuildMemberRoleRemoveEvent)
+            onGuildMemberRoleRemove((GuildMemberRoleRemoveEvent) event);
+        else if (event instanceof GuildMemberNickChangeEvent)
+            onGuildMemberNickChange((GuildMemberNickChangeEvent) event);
 //        else if (event instanceof GuildRoleCreateEvent)
 //            onGuildRoleCreate((GuildRoleCreateEvent) event);
 //        else if (event instanceof GuildRoleDeleteEvent)
@@ -357,12 +358,12 @@ public abstract class ListenerAdapter implements EventListener
             onGenericTextChannelUpdate((GenericTextChannelUpdateEvent) event);
         else if (event instanceof GenericVoiceChannelUpdateEvent)
             onGenericVoiceChannelUpdate((GenericVoiceChannelUpdateEvent) event);
-//        else if (event instanceof GenericGuildMemberEvent)
-//            onGenericGuildMember((GenericGuildMemberEvent) event);
-//        else if (event instanceof GenericVoiceEvent)
-//            onGenericVoice((GenericVoiceEvent) event);
+        else if (event instanceof GenericGuildMemberEvent)
+            onGenericGuildMember((GenericGuildMemberEvent) event);
 //        else if (event instanceof GenericGuildRoleUpdateEvent)
 //            onGenericGuildRoleUpdate(((GenericGuildRoleUpdateEvent) event));
+//        else if (event instanceof GenericVoiceEvent)
+//            onGenericVoice((GenericVoiceEvent) event);
 //        else if (event instanceof GenericAudioEvent)
 //            onGenericAudio((GenericAudioEvent) event);
 //
