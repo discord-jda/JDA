@@ -751,6 +751,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     private void setupHandlers()
     {
+        handlers.put("CHANNEL_CREATE", new ChannelCreateHandler(api));
+        handlers.put("CHANNEL_DELETE", new ChannelDeleteHandler(api));
         handlers.put("GUILD_CREATE", new GuildCreateHandler(api));
         handlers.put("GUILD_MEMBERS_CHUNK", new GuildMembersChunkHandler(api));
         handlers.put("GUILD_SYNC", new GuildSyncHandler(api));

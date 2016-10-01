@@ -575,18 +575,20 @@ public class EntityBuilder
         if (chan == null)
             chan = api.getPrivateChannelById(channelId);
         if (chan == null)
-            chan = api.getFakePrivateChannelMap().get(channelId);
-        if (chan != null)
         {
-            //If message is from a private channel from a different shard, use the information provided to use
-            // from the json to update the User info.
-            UserImpl user = (UserImpl) ((PrivateChannel) chan).getUser();
-            user.setName(author.getString("username"))
-                    .setDiscriminator(author.get("discriminator").toString())
-                    .setAvatarId(author.isNull("avatar") ? null : author.getString("avatar"))
-                    .setBot(author.has("bot") && author.getBoolean("bot"));
+            chan = api.getFakePrivateChannelMap().get(channelId);
+            if (chan != null)
+            {
+                //If message is from a private channel from a different shard, use the information provided to use
+                // from the json to update the User info.
+                UserImpl user = (UserImpl) ((PrivateChannel) chan).getUser();
+                user.setName(author.getString("username"))
+                        .setDiscriminator(author.get("discriminator").toString())
+                        .setAvatarId(author.isNull("avatar") ? null : author.getString("avatar"))
+                        .setBot(author.has("bot") && author.getBoolean("bot"));
+            }
         }
-        else
+        if (chan == null)
             throw new IllegalArgumentException("ChannelId provided to createMessage was for a channel that isn't yet cached!");
 
         MessageImpl message = new MessageImpl(id, chan)

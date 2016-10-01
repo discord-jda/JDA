@@ -16,6 +16,10 @@
 package net.dv8tion.jda.core.hooks;
 
 import net.dv8tion.jda.core.events.*;
+import net.dv8tion.jda.core.events.channel.priv.PrivateChannelCreateEvent;
+import net.dv8tion.jda.core.events.channel.priv.PrivateChannelDeleteEvent;
+import net.dv8tion.jda.core.events.channel.text.*;
+import net.dv8tion.jda.core.events.channel.voice.*;
 import net.dv8tion.jda.core.events.message.GenericMessageEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.*;
@@ -81,24 +85,26 @@ public abstract class ListenerAdapter implements EventListener
 //    public void onInviteReceived(InviteReceivedEvent event) {}
 //
 //    //TextChannel Events
-//    public void onTextChannelDelete(TextChannelDeleteEvent event) {}
-//    public void onTextChannelUpdateName(TextChannelUpdateNameEvent event) {}
-//    public void onTextChannelUpdateTopic(TextChannelUpdateTopicEvent event) {}
-//    public void onTextChannelUpdatePosition(TextChannelUpdatePositionEvent event) {}
-//    public void onTextChannelUpdatePermissions(TextChannelUpdatePermissionsEvent event) {}
-//    public void onTextChannelCreate(TextChannelCreateEvent event) {}
+    public void onTextChannelDelete(TextChannelDeleteEvent event) {}
+    public void onTextChannelUpdateName(TextChannelUpdateNameEvent event) {}
+    public void onTextChannelUpdateTopic(TextChannelUpdateTopicEvent event) {}
+    public void onTextChannelUpdatePosition(TextChannelUpdatePositionEvent event) {}
+    public void onTextChannelUpdatePermissions(TextChannelUpdatePermissionsEvent event) {}
+    public void onTextChannelCreate(TextChannelCreateEvent event) {}
 //
 //    //VoiceChannel Events
-//    public void onVoiceChannelDelete(VoiceChannelDeleteEvent event) {}
-//    public void onVoiceChannelUpdateName(VoiceChannelUpdateNameEvent event) {}
-//    public void onVoiceChannelUpdatePosition(VoiceChannelUpdatePositionEvent event) {}
-//    public void onVoiceChannelUpdateUserLimit(VoiceChannelUpdateUserLimitEvent event) {}
-//    public void onVoiceChannelUpdateBitrate(VoiceChannelUpdateBitrateEvent event) {}
-//    public void onVoiceChannelUpdatePermissions(VoiceChannelUpdatePermissionsEvent event) {}
-//    public void onVoiceChannelCreate(VoiceChannelCreateEvent event) {}
+    public void onVoiceChannelDelete(VoiceChannelDeleteEvent event) {}
+    public void onVoiceChannelUpdateName(VoiceChannelUpdateNameEvent event) {}
+    public void onVoiceChannelUpdatePosition(VoiceChannelUpdatePositionEvent event) {}
+    public void onVoiceChannelUpdateUserLimit(VoiceChannelUpdateUserLimitEvent event) {}
+    public void onVoiceChannelUpdateBitrate(VoiceChannelUpdateBitrateEvent event) {}
+    public void onVoiceChannelUpdatePermissions(VoiceChannelUpdatePermissionsEvent event) {}
+    public void onVoiceChannelCreate(VoiceChannelCreateEvent event) {}
 //
 //    //PrivateChannel Events
-//    public void onPrivateChannelCreate(PrivateChannelCreateEvent event) {}
+    public void onPrivateChannelCreate(PrivateChannelCreateEvent event) {}
+    public void onPrivateChannelDelete(PrivateChannelDeleteEvent event) {}
+
 //
 //    //Guild Events
 //    public void onGuildJoin(GuildJoinEvent event) {}
@@ -223,38 +229,40 @@ public abstract class ListenerAdapter implements EventListener
             onGenericUserEvent((GenericUserEvent) event);   //Must be after all the others because they are subclasses of the Generic.
 
         //TextChannel Events
-//        else if (event instanceof TextChannelCreateEvent)
-//            onTextChannelCreate((TextChannelCreateEvent) event);
-//        else if (event instanceof TextChannelUpdateNameEvent)
-//            onTextChannelUpdateName((TextChannelUpdateNameEvent) event);
-//        else if (event instanceof TextChannelUpdateTopicEvent)
-//            onTextChannelUpdateTopic((TextChannelUpdateTopicEvent) event);
-//        else if (event instanceof TextChannelUpdatePositionEvent)
-//            onTextChannelUpdatePosition((TextChannelUpdatePositionEvent) event);
-//        else if (event instanceof TextChannelDeleteEvent)
-//            onTextChannelDelete((TextChannelDeleteEvent) event);
-//        else if (event instanceof TextChannelUpdatePermissionsEvent)
-//            onTextChannelUpdatePermissions((TextChannelUpdatePermissionsEvent) event);
+        else if (event instanceof TextChannelCreateEvent)
+            onTextChannelCreate((TextChannelCreateEvent) event);
+        else if (event instanceof TextChannelUpdateNameEvent)
+            onTextChannelUpdateName((TextChannelUpdateNameEvent) event);
+        else if (event instanceof TextChannelUpdateTopicEvent)
+            onTextChannelUpdateTopic((TextChannelUpdateTopicEvent) event);
+        else if (event instanceof TextChannelUpdatePositionEvent)
+            onTextChannelUpdatePosition((TextChannelUpdatePositionEvent) event);
+        else if (event instanceof TextChannelDeleteEvent)
+            onTextChannelDelete((TextChannelDeleteEvent) event);
+        else if (event instanceof TextChannelUpdatePermissionsEvent)
+            onTextChannelUpdatePermissions((TextChannelUpdatePermissionsEvent) event);
 //
 //        //VoiceChannel Events
-//        else if (event instanceof VoiceChannelCreateEvent)
-//            onVoiceChannelCreate((VoiceChannelCreateEvent) event);
-//        else if (event instanceof VoiceChannelUpdateNameEvent)
-//            onVoiceChannelUpdateName((VoiceChannelUpdateNameEvent) event);
-//        else if (event instanceof VoiceChannelUpdatePositionEvent)
-//            onVoiceChannelUpdatePosition((VoiceChannelUpdatePositionEvent) event);
-//        else if (event instanceof VoiceChannelUpdateUserLimitEvent)
-//            onVoiceChannelUpdateUserLimit((VoiceChannelUpdateUserLimitEvent) event);
-//        else if (event instanceof VoiceChannelUpdateBitrateEvent)
-//            onVoiceChannelUpdateBitrate((VoiceChannelUpdateBitrateEvent) event);
-//        else if (event instanceof VoiceChannelUpdatePermissionsEvent)
-//            onVoiceChannelUpdatePermissions((VoiceChannelUpdatePermissionsEvent) event);
-//        else if (event instanceof VoiceChannelDeleteEvent)
-//            onVoiceChannelDelete((VoiceChannelDeleteEvent) event);
+        else if (event instanceof VoiceChannelCreateEvent)
+            onVoiceChannelCreate((VoiceChannelCreateEvent) event);
+        else if (event instanceof VoiceChannelUpdateNameEvent)
+            onVoiceChannelUpdateName((VoiceChannelUpdateNameEvent) event);
+        else if (event instanceof VoiceChannelUpdatePositionEvent)
+            onVoiceChannelUpdatePosition((VoiceChannelUpdatePositionEvent) event);
+        else if (event instanceof VoiceChannelUpdateUserLimitEvent)
+            onVoiceChannelUpdateUserLimit((VoiceChannelUpdateUserLimitEvent) event);
+        else if (event instanceof VoiceChannelUpdateBitrateEvent)
+            onVoiceChannelUpdateBitrate((VoiceChannelUpdateBitrateEvent) event);
+        else if (event instanceof VoiceChannelUpdatePermissionsEvent)
+            onVoiceChannelUpdatePermissions((VoiceChannelUpdatePermissionsEvent) event);
+        else if (event instanceof VoiceChannelDeleteEvent)
+            onVoiceChannelDelete((VoiceChannelDeleteEvent) event);
 //
 //        //PrivateChannel Events
-//        else if (event instanceof PrivateChannelCreateEvent)
-//            onPrivateChannelCreate((PrivateChannelCreateEvent) event);
+        else if (event instanceof PrivateChannelCreateEvent)
+            onPrivateChannelCreate((PrivateChannelCreateEvent) event);
+        else if (event instanceof PrivateChannelDeleteEvent)
+            onPrivateChannelDelete((PrivateChannelDeleteEvent) event);
 //
 //        //Guild Events
 //        else if (event instanceof GuildJoinEvent)
