@@ -19,6 +19,9 @@ package net.dv8tion.jda.core.requests;
 import com.neovisionaries.ws.client.*;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.events.ReadyEvent;
+import net.dv8tion.jda.core.events.ReconnectedEvent;
+import net.dv8tion.jda.core.events.ResumedEvent;
 import net.dv8tion.jda.core.handle.*;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import org.apache.http.HttpHost;
@@ -97,33 +100,33 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             {
                 firstInit = false;
                 JDAImpl.LOG.info("Finished Loading!");
-//                if (api.getGuilds().size() >= 2500) //Show large warning when connected to >2500 guilds
-//                {
-//                    JDAImpl.LOG.warn(" __      __ _    ___  _  _  ___  _  _   ___  _ ");
-//                    JDAImpl.LOG.warn(" \\ \\    / //_\\  | _ \\| \\| ||_ _|| \\| | / __|| |");
-//                    JDAImpl.LOG.warn("  \\ \\/\\/ // _ \\ |   /| .` | | | | .` || (_ ||_|");
-//                    JDAImpl.LOG.warn("   \\_/\\_//_/ \\_\\|_|_\\|_|\\_||___||_|\\_| \\___|(_)");
-//                    JDAImpl.LOG.warn("You're running a session with over 2500 connected");
-//                    JDAImpl.LOG.warn("guilds. You should shard the connection in order");
-//                    JDAImpl.LOG.warn("to split the load or things like resuming");
-//                    JDAImpl.LOG.warn("connection might not work as expected.");
-//                    JDAImpl.LOG.warn("For more info see https://git.io/vrFWP");
-//                }
-//                api.getEventManager().handle(new ReadyEvent(api, api.getResponseTotal()));
+                if (api.getGuilds().size() >= 2500) //Show large warning when connected to >2500 guilds
+                {
+                    JDAImpl.LOG.warn(" __      __ _    ___  _  _  ___  _  _   ___  _ ");
+                    JDAImpl.LOG.warn(" \\ \\    / //_\\  | _ \\| \\| ||_ _|| \\| | / __|| |");
+                    JDAImpl.LOG.warn("  \\ \\/\\/ // _ \\ |   /| .` | | | | .` || (_ ||_|");
+                    JDAImpl.LOG.warn("   \\_/\\_//_/ \\_\\|_|_\\|_|\\_||___||_|\\_| \\___|(_)");
+                    JDAImpl.LOG.warn("You're running a session with over 2500 connected");
+                    JDAImpl.LOG.warn("guilds. You should shard the connection in order");
+                    JDAImpl.LOG.warn("to split the load or things like resuming");
+                    JDAImpl.LOG.warn("connection might not work as expected.");
+                    JDAImpl.LOG.warn("For more info see https://git.io/vrFWP");
+                }
+                api.getEventManager().handle(new ReadyEvent(api, api.getResponseTotal()));
             }
             else
             {
                 restoreAudioHandlers();
                 reconnectAudioConnections();
                 JDAImpl.LOG.info("Finished (Re)Loading!");
-//                api.getEventManager().handle(new ReconnectedEvent(api, api.getResponseTotal()));
+                api.getEventManager().handle(new ReconnectedEvent(api, api.getResponseTotal()));
             }
         }
         else
         {
             reconnectAudioConnections();
             JDAImpl.LOG.info("Successfully resumed Session!");
-//            api.getEventManager().handle(new ResumedEvent(api, api.getResponseTotal()));
+            api.getEventManager().handle(new ResumedEvent(api, api.getResponseTotal()));
         }
         api.setStatus(JDA.Status.CONNECTED);
         LOG.debug("Resending " + cachedEvents.size() + " cached events...");
@@ -759,6 +762,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         handlers.put("MESSAGE_CREATE", new MessageCreateHandler(api));
         handlers.put("PRESENCE_UPDATE", new PresenceUpdateHandler(api));
         handlers.put("READY", new ReadyHandler(api));
+        handlers.put("TYPING_START", new SocketHandler(api) {
+            @Override
+            protected String handleInternally(JSONObject content)
+            {
+                return null;
+            }
+        });
     }
 }
 

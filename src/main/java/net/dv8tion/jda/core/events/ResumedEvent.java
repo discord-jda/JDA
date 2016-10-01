@@ -26,7 +26,7 @@ import net.dv8tion.jda.core.JDA;
  */
 public class ResumedEvent extends Event
 {
-    public ResumedEvent(JDA api, int responseNumber)
+    public ResumedEvent(JDA api, long responseNumber)
     {
         super(api, responseNumber);
     }
