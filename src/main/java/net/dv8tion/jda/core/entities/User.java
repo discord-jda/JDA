@@ -79,6 +79,15 @@ public interface User extends ISnowflake, IMentionable, IFakeable
     String getDefaultAvatarUrl();
 
     /**
+     * Whether or not the currently logged in user and this user have a currently open
+     * {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} or not.
+     *
+     * @return
+     *      True if the logged in account shares a PrivateChannel with this user.
+     */
+    boolean hasPrivateChannel();
+
+    /**
      * Gets the {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} of this
      * {@link net.dv8tion.jda.core.entities.User User} for use in sending direct messages.
      *

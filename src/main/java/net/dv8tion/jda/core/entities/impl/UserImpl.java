@@ -77,6 +77,12 @@ public class UserImpl implements User
     }
 
     @Override
+    public boolean hasPrivateChannel()
+    {
+        return privateChannel != null;
+    }
+
+    @Override
     public PrivateChannel getPrivateChannel()
     {
         if (privateChannel != null)
