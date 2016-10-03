@@ -65,12 +65,29 @@ public class MessageCreateHandler extends SocketHandler
         }
         catch (IllegalArgumentException e)
         {
-            EventCache.get(api).cache(EventCache.Type.CHANNEL, content.getString("channel_id"), () ->
+            switch (e.getMessage())
             {
-                handle(this.responseNumber, allContent);
-            });
-            EventCache.LOG.debug(e.getMessage());
-            return null;
+                case EntityBuilder.MISSING_CHANNEL:
+                {
+                    EventCache.get(api).cache(EventCache.Type.CHANNEL, content.getString("channel_id"), () ->
+                    {
+                        handle(responseNumber, allContent);
+                    });
+                    EventCache.LOG.debug("Received a message for a channel that JDA does not currently have cached");
+                    return null;
+                }
+                case EntityBuilder.MISSING_USER:
+                {
+                    EventCache.get(api).cache(EventCache.Type.USER, content.getJSONObject("user").getString("id"), () ->
+                    {
+                        handle(responseNumber, allContent);
+                    });
+                    EventCache.LOG.debug("Received a message for a user that JDA does not currently have cached");
+                    return null;
+                }
+                default:
+                    throw e;
+            }
         }
 
         if (!message.isPrivate())
@@ -83,14 +100,14 @@ public class MessageCreateHandler extends SocketHandler
             api.getEventManager().handle(
                     new GuildMessageReceivedEvent(
                             api, responseNumber,
-                            message, channel));
+                            message));
         }
         else
         {
             api.getEventManager().handle(
                     new PrivateMessageReceivedEvent(
                             api, responseNumber,
-                            message, message.getPrivateChannel()));
+                            message));
         }
         //Combo event
         api.getEventManager().handle(

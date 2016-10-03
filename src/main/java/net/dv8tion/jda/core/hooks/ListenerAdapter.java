@@ -22,8 +22,7 @@ import net.dv8tion.jda.core.events.channel.text.*;
 import net.dv8tion.jda.core.events.channel.voice.*;
 import net.dv8tion.jda.core.events.guild.*;
 import net.dv8tion.jda.core.events.guild.member.*;
-import net.dv8tion.jda.core.events.message.GenericMessageEvent;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.*;
 import net.dv8tion.jda.core.events.message.guild.*;
 import net.dv8tion.jda.core.events.message.priv.*;
 import net.dv8tion.jda.core.events.user.*;
@@ -81,10 +80,10 @@ public abstract class ListenerAdapter implements EventListener
 
     //Combined Message Events (Combines Guild and Private message into 1 event)
     public void onMessageReceived(MessageReceivedEvent event) {}
-//    public void onMessageUpdate(MessageUpdateEvent event) {}
-//    public void onMessageDelete(MessageDeleteEvent event) {}
-//    public void onMessageBulkDelete(MessageBulkDeleteEvent event) {}
-//    public void onMessageEmbed(MessageEmbedEvent event) {}
+    public void onMessageUpdate(MessageUpdateEvent event) {}
+    public void onMessageDelete(MessageDeleteEvent event) {}
+    public void onMessageBulkDelete(MessageBulkDeleteEvent event) {}
+    public void onMessageEmbed(MessageEmbedEvent event) {}
 //
 //    public void onInviteReceived(InviteReceivedEvent event) {}
 //
@@ -206,14 +205,14 @@ public abstract class ListenerAdapter implements EventListener
         //Combined Message Events (Combines Guild and Private message into 1 event)
         else if (event instanceof MessageReceivedEvent)
             onMessageReceived((MessageReceivedEvent) event);
-//        else if (event instanceof MessageUpdateEvent)
-//            onMessageUpdate((MessageUpdateEvent) event);
-//        else if (event instanceof MessageDeleteEvent)
-//            onMessageDelete((MessageDeleteEvent) event);
-//        else if (event instanceof MessageBulkDeleteEvent)
-//            onMessageBulkDelete((MessageBulkDeleteEvent) event);
-//        else if (event instanceof MessageEmbedEvent)
-//            onMessageEmbed((MessageEmbedEvent) event);
+        else if (event instanceof MessageUpdateEvent)
+            onMessageUpdate((MessageUpdateEvent) event);
+        else if (event instanceof MessageDeleteEvent)
+            onMessageDelete((MessageDeleteEvent) event);
+        else if (event instanceof MessageBulkDeleteEvent)
+            onMessageBulkDelete((MessageBulkDeleteEvent) event);
+        else if (event instanceof MessageEmbedEvent)
+            onMessageEmbed((MessageEmbedEvent) event);
 //        //Invite Messages
 //        else if (event instanceof InviteReceivedEvent)
 //            onInviteReceived(((InviteReceivedEvent) event));

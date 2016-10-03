@@ -40,6 +40,9 @@ import java.util.regex.Pattern;
 
 public class EntityBuilder
 {
+    public static final String MISSING_CHANNEL = "MISSING_CHANNEL";
+    public static final String MISSING_USER = "MISSING_USER";
+
     private static final HashMap<JDA, EntityBuilder> builders = new HashMap<>();
     private static final Pattern channelMentionPattern = Pattern.compile("<#(\\d+)>");
 
@@ -571,6 +574,7 @@ public class EntityBuilder
         String content = jsonObject.getString("content");
         String channelId = jsonObject.getString("channel_id");
         JSONObject author = jsonObject.getJSONObject("author");
+        boolean fromWebhook = jsonObject.has("webhook_id");
         MessageChannel chan = api.getTextChannelById(channelId);
         if (chan == null)
             chan = api.getPrivateChannelById(channelId);
@@ -589,9 +593,9 @@ public class EntityBuilder
             }
         }
         if (chan == null)
-            throw new IllegalArgumentException("ChannelId provided to createMessage was for a channel that isn't yet cached!");
+            throw new IllegalArgumentException(MISSING_CHANNEL);
 
-        MessageImpl message = new MessageImpl(id, chan)
+        MessageImpl message = new MessageImpl(id, chan, fromWebhook)
                 .setContent(content)
                 .setTime(OffsetDateTime.parse(jsonObject.getString("timestamp")))
                 .setMentionsEveryone(jsonObject.getBoolean("mention_everyone"))
@@ -601,11 +605,14 @@ public class EntityBuilder
             message.setAuthor(((PrivateChannel) chan).getUser());
         else
         {
+            GuildImpl guild = (GuildImpl) ((TextChannel) chan).getGuild();
             User user = api.getUserMap().get(author.getString("id"));
             if (user != null)
                 message.setAuthor(user);
-            else
+            else if (fromWebhook)
                 message.setAuthor(createFakeUser(author));
+            else
+                throw new IllegalArgumentException(MISSING_USER);
         }
 
         List<Message.Attachment> attachments = new LinkedList<>();
@@ -685,7 +692,7 @@ public class EntityBuilder
         return message;
     }
 
-    protected MessageEmbed createMessageEmbed(JSONObject messageEmbed)
+    public MessageEmbed createMessageEmbed(JSONObject messageEmbed)
     {
         MessageEmbedImpl embed = new MessageEmbedImpl()
                 .setUrl(messageEmbed.getString("url"))

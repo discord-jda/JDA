@@ -357,7 +357,7 @@ public class MessageBuilder
         if (message.length() > 2000)
             throw new UnsupportedOperationException("Cannot build a Message with more than 2000 characters. Please limit your input.");
 
-        return new MessageImpl("", null).setContent(message).setTTS(isTTS).setMentionedUsers(mentioned)
+        return new MessageImpl("", null, false).setContent(message).setTTS(isTTS).setMentionedUsers(mentioned)
                 .setMentionedChannels(mentionedTextChannels).setMentionedRoles(mentionedRoles).setMentionsEveryone(mentionEveryone);
     }
 

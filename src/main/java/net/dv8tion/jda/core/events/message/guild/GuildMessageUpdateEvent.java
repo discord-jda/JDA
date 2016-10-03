@@ -27,8 +27,8 @@ import net.dv8tion.jda.core.entities.TextChannel;
  */
 public class GuildMessageUpdateEvent extends GenericGuildMessageEvent
 {
-    public GuildMessageUpdateEvent(JDA api, long responseNumber, Message message, TextChannel channel)
+    public GuildMessageUpdateEvent(JDA api, long responseNumber, Message message)
     {
-        super(api, responseNumber, message, channel);
+        super(api, responseNumber, message, message.getTextChannel());
     }
 }

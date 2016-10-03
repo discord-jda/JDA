@@ -139,6 +139,8 @@ public interface Message extends ISnowflake
      */
     boolean isPrivate();
 
+    boolean isWebhookMessage();
+
     /**
      * Returns the {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel} that this message was sent in
      *

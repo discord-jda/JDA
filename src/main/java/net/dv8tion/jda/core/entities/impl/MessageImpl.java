@@ -38,6 +38,7 @@ public class MessageImpl implements Message
     private final MessageType type;
     private final MessageChannel channel;
     private final boolean isPrivate;
+    private final boolean fromWebhook;
     private boolean mentionsEveryone = false;
     private boolean isTTS = false;
     private boolean pinned;
@@ -53,17 +54,17 @@ public class MessageImpl implements Message
     private List<Attachment> attachments = new LinkedList<>();
     private List<MessageEmbed> embeds = new LinkedList<>();
 
-    public MessageImpl(String id, MessageChannel channel)
+    public MessageImpl(String id, MessageChannel channel, boolean fromWebhook)
     {
-        this(id, channel, MessageType.DEFAULT);
+        this(id, channel, fromWebhook, MessageType.DEFAULT);
     }
 
-
-    public MessageImpl(String id, MessageChannel channel, MessageType type)
+    public MessageImpl(String id, MessageChannel channel, boolean fromWebhook, MessageType type)
     {
         this.id = id;
         this.channel = channel;
         this.api = (channel != null) ? (JDAImpl) channel.getJDA() : null;
+        this.fromWebhook = fromWebhook;
         this.type = type;
         this.isPrivate = channel instanceof PrivateChannel;
     }
@@ -237,6 +238,12 @@ public class MessageImpl implements Message
     public boolean isPrivate()
     {
         return isPrivate;
+    }
+
+    @Override
+    public boolean isWebhookMessage()
+    {
+        return fromWebhook;
     }
 
     @Override

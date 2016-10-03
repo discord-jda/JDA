@@ -27,8 +27,8 @@ import net.dv8tion.jda.core.entities.PrivateChannel;
  */
 public class PrivateMessageUpdateEvent extends GenericPrivateMessageEvent
 {
-    public PrivateMessageUpdateEvent(JDA api, long responseNumber, Message message, PrivateChannel channel)
+    public PrivateMessageUpdateEvent(JDA api, long responseNumber, Message message)
     {
-        super(api, responseNumber, message, channel);
+        super(api, responseNumber, message, message.getPrivateChannel());
     }
 }
