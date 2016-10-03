@@ -609,21 +609,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     initiating = false;
                     ready();
                     break;
-//                case "PRESENCE_UPDATE":
-//                    new PresenceUpdateHandler(api, responseTotal).handle(raw);
-//                    break;
-//                case "TYPING_START":
-//                    new UserTypingHandler(api, responseTotal).handle(raw);
-//                    break;
-//                case "MESSAGE_UPDATE":
-//                    if (content.has("author"))
-//                        new MessageUpdateHandler(api, responseTotal).handle(raw);
-//                    else
-//                        new MessageEmbedHandler(api, responseTotal).handle(raw);
-//                    break;
-//                case "MESSAGE_DELETE":
-//                    new MessageDeleteHandler(api, responseTotal).handle(raw);
-//                    break;
 //                case "MESSAGE_DELETE_BULK":
 //                    new MessageBulkDeleteHandler(api, responseTotal).handle(raw);
 //                    break;
@@ -636,38 +621,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 //                    else
 //                        LOG.debug("Received VOICE_SERVER_UPDATE event but ignoring due to audio being disabled/not supported.");
 //                    break;
-//                case "CHANNEL_CREATE":
-//                    new ChannelCreateHandler(api, responseTotal).handle(raw);
-//                    break;
-//                case "CHANNEL_UPDATE":
-//                    new ChannelUpdateHandler(api, responseTotal).handle(raw);
-//                    break;
-//                case "CHANNEL_DELETE":
-//                    new ChannelDeleteHandler(api, responseTotal).handle(raw);
-//                    break;
-//                case "GUILD_CREATE":
-//                    new GuildJoinHandler(api, responseTotal).handle(raw);
-//                    break;
 //                case "GUILD_UPDATE":
 //                    new GuildUpdateHandler(api, responseTotal).handle(raw);
-//                    break;
-//                case "GUILD_DELETE":
-//                    new GuildLeaveHandler(api, responseTotal).handle(raw);
-//                    break;
-//                case "GUILD_MEMBER_ADD":
-//                    new GuildMemberAddHandler(api, responseTotal).handle(raw);
-//                    break;
-//                case "GUILD_MEMBER_UPDATE":
-//                    new GuildMemberUpdateHandler(api, responseTotal).handle(raw);
-//                    break;
-//                case "GUILD_MEMBER_REMOVE":
-//                    new GuildMemberRemoveHandler(api, responseTotal).handle(raw);
-//                    break;
-//                case "GUILD_BAN_ADD":
-//                    new GuildMemberBanHandler(api, responseTotal, true).handle(raw);
-//                    break;
-//                case "GUILD_BAN_REMOVE":
-//                    new GuildMemberBanHandler(api, responseTotal, false).handle(raw);
 //                    break;
 //                case "GUILD_ROLE_CREATE":
 //                    new GuildRoleCreateHandler(api, responseTotal).handle(raw);
@@ -755,22 +710,24 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     private void setupHandlers()
     {
-        handlers.put("CHANNEL_CREATE", new ChannelCreateHandler(api));
-        handlers.put("CHANNEL_DELETE", new ChannelDeleteHandler(api));
-        handlers.put("CHANNEL_UPDATE", new ChannelUpdateHandler(api));
-        handlers.put("GUILD_CREATE", new GuildCreateHandler(api));
-        handlers.put("GUILD_DELETE", new GuildDeleteHandler(api));
-        handlers.put("GUILD_MEMBER_ADD", new GuildMemberAddHandler(api));
+        handlers.put("CHANNEL_CREATE",      new ChannelCreateHandler(api));
+        handlers.put("CHANNEL_DELETE",      new ChannelDeleteHandler(api));
+        handlers.put("CHANNEL_UPDATE",      new ChannelUpdateHandler(api));
+        handlers.put("GUILD_BAN_ADD",       new GuildBanHandler(api, true));
+        handlers.put("GUILD_BAN_REMOVE",    new GuildBanHandler(api, false));
+        handlers.put("GUILD_CREATE",        new GuildCreateHandler(api));
+        handlers.put("GUILD_DELETE",        new GuildDeleteHandler(api));
+        handlers.put("GUILD_MEMBER_ADD",    new GuildMemberAddHandler(api));
         handlers.put("GUILD_MEMBER_REMOVE", new GuildMemberRemoveHandler(api));
         handlers.put("GUILD_MEMBER_UPDATE", new GuildMemberUpdateHandler(api));
         handlers.put("GUILD_MEMBERS_CHUNK", new GuildMembersChunkHandler(api));
-        handlers.put("GUILD_SYNC", new GuildSyncHandler(api));
-        handlers.put("MESSAGE_CREATE", new MessageCreateHandler(api));
-        handlers.put("MESSAGE_DELETE", new MessageDeleteHandler(api));
-        handlers.put("MESSAGE_UPDATE", new MessageUpdateHandler(api));
-        handlers.put("PRESENCE_UPDATE", new PresenceUpdateHandler(api));
-        handlers.put("READY", new ReadyHandler(api));
-        handlers.put("TYPING_START", new TypingStartHandler(api));
+        handlers.put("GUILD_SYNC",          new GuildSyncHandler(api));
+        handlers.put("MESSAGE_CREATE",      new MessageCreateHandler(api));
+        handlers.put("MESSAGE_DELETE",      new MessageDeleteHandler(api));
+        handlers.put("MESSAGE_UPDATE",      new MessageUpdateHandler(api));
+        handlers.put("PRESENCE_UPDATE",     new PresenceUpdateHandler(api));
+        handlers.put("READY",               new ReadyHandler(api));
+        handlers.put("TYPING_START",        new TypingStartHandler(api));
     }
 }
 

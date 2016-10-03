@@ -13,23 +13,32 @@
  * See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package net.dv8tion.jda.core.events.guild.member;
+package net.dv8tion.jda.core.events.guild;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.events.guild.member.GenericGuildMemberEvent;
 
 /**
- * <b><u>GuildMemberBanEvent</u></b><br/>
- * Fired if a {@link net.dv8tion.jda.core.entities.Member Member} is unbanned from a {@link net.dv8tion.jda.core.entities.Guild Guild}.<br/>
+ * <b><u>GuildBanEvent</u></b><br/>
+ * Fired if a {@link net.dv8tion.jda.core.entities.User User} is unbanned from a {@link net.dv8tion.jda.core.entities.Guild Guild}.<br/>
  * <br/>
- * Use: Retrieve member who was unbanned (if available) and the guild which they were unbanned from.
+ * Use: Retrieve user who was unbanned (if available) and the guild which they were unbanned from.
  */
-public class GuildMemberUnbanEvent extends GenericGuildMemberEvent
+public class GuildUnbanEvent extends GenericGuildEvent
 {
+    private final User user;
 
-    public GuildMemberUnbanEvent(JDA api, long responseNumber, Guild guild, Member member)
+    public GuildUnbanEvent(JDA api, long responseNumber, Guild guild, User user)
     {
-        super(api, responseNumber, guild, member);
+        super(api, responseNumber, guild);
+        this.user = user;
+    }
+
+    public User getUser()
+    {
+        return user;
     }
 }

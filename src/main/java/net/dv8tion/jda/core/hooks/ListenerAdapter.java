@@ -116,10 +116,10 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildLeave(GuildLeaveEvent event) {}
     public void onGuildAvailable(GuildAvailableEvent event) {}
     public void onGuildUnavailable(GuildUnavailableEvent event) {}
+    public void onGuildBan(GuildBanEvent event) {}
+    public void onGuildUnban(GuildUnbanEvent event) {}
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {}
     public void onGuildMemberLeave(GuildMemberLeaveEvent event) {}
-    public void onGuildMemberBan(GuildMemberBanEvent event) {}
-    public void onGuildMemberUnban(GuildMemberUnbanEvent event) {}
     public void onGuildMemberRoleAdd(GuildMemberRoleAddEvent event) {}
     public void onGuildMemberRoleRemove(GuildMemberRoleRemoveEvent event) {}
     public void onGuildMemberNickChange(GuildMemberNickChangeEvent event) {}
@@ -227,7 +227,7 @@ public abstract class ListenerAdapter implements EventListener
         else if (event instanceof UserOnlineStatusUpdateEvent)
             onUserOnlineStatusUpdate((UserOnlineStatusUpdateEvent) event);
         else if (event instanceof UserTypingEvent)
-            onUserTyping((UserTypingEvent) event);
+            onUserTyping((UserTypingEvent) event);          //TODO: 3.x question, is the below valid? Does it really need to be here?
         else if (event instanceof GenericUserEvent)         //We check this here so that we don't catch 4 different update events.
             onGenericUserEvent((GenericUserEvent) event);   //Must be after all the others because they are subclasses of the Generic.
 
@@ -280,12 +280,12 @@ public abstract class ListenerAdapter implements EventListener
             onGuildAvailable((GuildAvailableEvent) event);
         else if (event instanceof GuildUnavailableEvent)
             onGuildUnavailable((GuildUnavailableEvent) event);
+        else if (event instanceof GuildBanEvent)
+            onGuildBan((GuildBanEvent) event);
+        else if (event instanceof GuildUnbanEvent)
+            onGuildUnban((GuildUnbanEvent) event);
         else if (event instanceof GuildMemberJoinEvent)
             onGuildMemberJoin((GuildMemberJoinEvent) event);
-        else if (event instanceof GuildMemberBanEvent)
-            onGuildMemberBan((GuildMemberBanEvent) event);
-        else if (event instanceof GuildMemberUnbanEvent)
-            onGuildMemberUnban((GuildMemberUnbanEvent) event);
         else if (event instanceof GuildMemberLeaveEvent)
             onGuildMemberLeave((GuildMemberLeaveEvent) event);
         else if (event instanceof GuildMemberRoleAddEvent)
