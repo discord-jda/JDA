@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.core.handle;
 
+import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageType;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -29,7 +30,6 @@ import net.dv8tion.jda.core.requests.GuildLock;
 //import net.dv8tion.jda.core.utils.InviteUtil;
 import org.json.JSONObject;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MessageCreateHandler extends SocketHandler

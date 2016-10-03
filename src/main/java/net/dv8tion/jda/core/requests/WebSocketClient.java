@@ -18,6 +18,7 @@ package net.dv8tion.jda.core.requests;
 
 import com.neovisionaries.ws.client.*;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.ReconnectedEvent;

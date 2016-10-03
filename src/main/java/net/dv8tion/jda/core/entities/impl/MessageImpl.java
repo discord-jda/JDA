@@ -22,7 +22,7 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
-import net.dv8tion.jda.core.handle.EntityBuilder;
+import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.requests.*;
 import org.json.JSONObject;
 

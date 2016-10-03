@@ -17,12 +17,10 @@ package net.dv8tion.jda.core;
 
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.PermissionException;
-import net.dv8tion.jda.core.handle.EntityBuilder;
-import org.json.JSONArray;
+import net.dv8tion.jda.core.entities.EntityBuilder;
 
 import java.util.LinkedList;
 import java.util.List;

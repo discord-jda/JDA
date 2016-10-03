@@ -14,17 +14,17 @@
  *  limitations under the License.
  */
 
-package net.dv8tion.jda.core.handle;
+package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.Region;
-import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.MessageEmbed.Provider;
 import net.dv8tion.jda.core.entities.MessageEmbed.Thumbnail;
-import net.dv8tion.jda.core.entities.MessageEmbed.VideoInfo;
 import net.dv8tion.jda.core.entities.impl.*;
+import net.dv8tion.jda.core.handle.GuildMembersChunkHandler;
+import net.dv8tion.jda.core.handle.ReadyHandler;
 import net.dv8tion.jda.core.requests.GuildLock;
 import net.dv8tion.jda.core.requests.WebSocketClient;
 import org.json.JSONArray;
