@@ -567,7 +567,7 @@ public class EntityBuilder
                 .setRawPermissions(roleJson.getInt("permissions"))
                 .setManaged(roleJson.getBoolean("managed"))
                 .setHoisted(roleJson.getBoolean("hoist"))
-                .setColor(roleJson.has("color") ? new Color(roleJson.getInt("color")) : null)
+                .setColor(roleJson.getInt("color") != 0 ? new Color(roleJson.getInt("color")) : null)
                 .setMentionable(roleJson.has("mentionable") && roleJson.getBoolean("mentionable"));
     }
 

@@ -14,30 +14,25 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.events.role;
+package net.dv8tion.jda.core.events.role.update;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.events.Event;
 
-public abstract class GenericRoleEvent extends Event
+import java.awt.*;
+
+public class RoleUpdateColorEvent extends GenericRoleUpdateEvent
 {
-    protected final Role role;
+    private final Color oldColor;
 
-    public GenericRoleEvent(JDA api, long responseNumber, Role role)
+    public RoleUpdateColorEvent(JDA api, long responseNumber, Role role, Color oldColor)
     {
-        super(api, responseNumber);
-        this.role = role;
+        super(api, responseNumber, role);
+        this.oldColor = oldColor;
     }
 
-    public Role getRole()
+    public Color getOldColor()
     {
-        return role;
-    }
-
-    public Guild getGuild()
-    {
-        return role.getGuild();
+        return oldColor;
     }
 }

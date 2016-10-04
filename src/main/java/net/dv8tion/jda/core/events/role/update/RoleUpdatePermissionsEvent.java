@@ -14,30 +14,33 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.events.role;
+package net.dv8tion.jda.core.events.role.update;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.events.Event;
 
-public abstract class GenericRoleEvent extends Event
+import java.util.Collections;
+import java.util.List;
+
+public class RoleUpdatePermissionsEvent extends GenericRoleUpdateEvent
 {
-    protected final Role role;
+    private final int oldPermissionsRaw;
 
-    public GenericRoleEvent(JDA api, long responseNumber, Role role)
+    public RoleUpdatePermissionsEvent(JDA api, long responseNumber, Role role, int oldPermissionsRaw)
     {
-        super(api, responseNumber);
-        this.role = role;
+        super(api, responseNumber, role);
+        this.oldPermissionsRaw = oldPermissionsRaw;
     }
 
-    public Role getRole()
+    public List<Permission> getOldPermissions()
     {
-        return role;
+        return Collections.unmodifiableList(
+                Permission.getPermissions(oldPermissionsRaw));
     }
 
-    public Guild getGuild()
+    public int getOldPermissionsRaw()
     {
-        return role.getGuild();
+        return oldPermissionsRaw;
     }
 }
