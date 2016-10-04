@@ -24,7 +24,7 @@ import net.dv8tion.jda.core.events.channel.voice.*;
 import net.dv8tion.jda.core.events.channel.voice.update.*;
 import net.dv8tion.jda.core.events.guild.*;
 import net.dv8tion.jda.core.events.guild.member.*;
-import net.dv8tion.jda.core.events.guild.update.GenericGuildUpdateEvent;
+import net.dv8tion.jda.core.events.guild.update.*;
 import net.dv8tion.jda.core.events.message.*;
 import net.dv8tion.jda.core.events.message.guild.*;
 import net.dv8tion.jda.core.events.message.priv.*;
@@ -53,7 +53,7 @@ import net.dv8tion.jda.core.events.user.*;
  */
 public abstract class ListenerAdapter implements EventListener
 {
-//    //JDA Events
+    //JDA Events
     public void onReady(ReadyEvent event) {}
     public void onResume(ResumedEvent event) {}
     public void onReconnect(ReconnectedEvent event) {}
@@ -87,18 +87,18 @@ public abstract class ListenerAdapter implements EventListener
     public void onMessageDelete(MessageDeleteEvent event) {}
     public void onMessageBulkDelete(MessageBulkDeleteEvent event) {}
     public void onMessageEmbed(MessageEmbedEvent event) {}
-//
+
 //    public void onInviteReceived(InviteReceivedEvent event) {}
-//
-//    //TextChannel Events
+
+    //TextChannel Events
     public void onTextChannelDelete(TextChannelDeleteEvent event) {}
     public void onTextChannelUpdateName(TextChannelUpdateNameEvent event) {}
     public void onTextChannelUpdateTopic(TextChannelUpdateTopicEvent event) {}
     public void onTextChannelUpdatePosition(TextChannelUpdatePositionEvent event) {}
     public void onTextChannelUpdatePermissions(TextChannelUpdatePermissionsEvent event) {}
     public void onTextChannelCreate(TextChannelCreateEvent event) {}
-//
-//    //VoiceChannel Events
+
+    //VoiceChannel Events
     public void onVoiceChannelDelete(VoiceChannelDeleteEvent event) {}
     public void onVoiceChannelUpdateName(VoiceChannelUpdateNameEvent event) {}
     public void onVoiceChannelUpdatePosition(VoiceChannelUpdatePositionEvent event) {}
@@ -106,13 +106,12 @@ public abstract class ListenerAdapter implements EventListener
     public void onVoiceChannelUpdateBitrate(VoiceChannelUpdateBitrateEvent event) {}
     public void onVoiceChannelUpdatePermissions(VoiceChannelUpdatePermissionsEvent event) {}
     public void onVoiceChannelCreate(VoiceChannelCreateEvent event) {}
-//
-//    //PrivateChannel Events
+
+    //PrivateChannel Events
     public void onPrivateChannelCreate(PrivateChannelCreateEvent event) {}
     public void onPrivateChannelDelete(PrivateChannelDeleteEvent event) {}
 
-//
-//    //Guild Events
+    //Guild Events
     public void onGuildJoin(GuildJoinEvent event) {}
     public void onUnavailableGuildJoined(UnavailableGuildJoinedEvent event) {}
     public void onGuildLeave(GuildLeaveEvent event) {}
@@ -120,6 +119,20 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildUnavailable(GuildUnavailableEvent event) {}
     public void onGuildBan(GuildBanEvent event) {}
     public void onGuildUnban(GuildUnbanEvent event) {}
+
+    //Guild Update Events
+    public void onGuildUpdateAfkChannel(GuildUpdateAfkChannelEvent event) {}
+    public void onGuildUpdateAfkTimeout(GuildUpdateAfkTimeoutEvent event) {}
+    public void onGuildUpdateIcon(GuildUpdateIconEvent event) {}
+    public void onGuildUpdateMFALevel(GuildUpdateMFALevelEvent event) {}
+    public void onGuildUpdateName(GuildUpdateNameEvent event){}
+    public void onGuildUpdateNotificationLevel(GuildUpdateNotificationLevelEvent event) {}
+    public void onGuildUpdateOwner(GuildUpdateOwnerEvent event) {}
+    public void onGuildUpdateRegion(GuildUpdateRegionEvent event) {}
+    public void onGuildUpdateSplash(GuildUpdateSplashEvent event) {}
+    public void onGuildUpdateVerificationLevel(GuildUpdateVerificationLevelEvent event) {}
+
+    //Guild Member Events
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {}
     public void onGuildMemberLeave(GuildMemberLeaveEvent event) {}
     public void onGuildMemberRoleAdd(GuildMemberRoleAddEvent event) {}
@@ -245,8 +258,8 @@ public abstract class ListenerAdapter implements EventListener
             onTextChannelDelete((TextChannelDeleteEvent) event);
         else if (event instanceof TextChannelUpdatePermissionsEvent)
             onTextChannelUpdatePermissions((TextChannelUpdatePermissionsEvent) event);
-//
-//        //VoiceChannel Events
+
+        //VoiceChannel Events
         else if (event instanceof VoiceChannelCreateEvent)
             onVoiceChannelCreate((VoiceChannelCreateEvent) event);
         else if (event instanceof VoiceChannelUpdateNameEvent)
@@ -261,14 +274,14 @@ public abstract class ListenerAdapter implements EventListener
             onVoiceChannelUpdatePermissions((VoiceChannelUpdatePermissionsEvent) event);
         else if (event instanceof VoiceChannelDeleteEvent)
             onVoiceChannelDelete((VoiceChannelDeleteEvent) event);
-//
-//        //PrivateChannel Events
+
+        //PrivateChannel Events
         else if (event instanceof PrivateChannelCreateEvent)
             onPrivateChannelCreate((PrivateChannelCreateEvent) event);
         else if (event instanceof PrivateChannelDeleteEvent)
             onPrivateChannelDelete((PrivateChannelDeleteEvent) event);
-//
-//        //Guild Events
+
+        //Guild Events
         else if (event instanceof GuildJoinEvent)
             onGuildJoin((GuildJoinEvent) event);
         else if (event instanceof UnavailableGuildJoinedEvent)
@@ -283,6 +296,30 @@ public abstract class ListenerAdapter implements EventListener
             onGuildBan((GuildBanEvent) event);
         else if (event instanceof GuildUnbanEvent)
             onGuildUnban((GuildUnbanEvent) event);
+
+        //Guild Update Events
+        else if (event instanceof GuildUpdateAfkChannelEvent)
+            onGuildUpdateAfkChannel((GuildUpdateAfkChannelEvent) event);
+        else if (event instanceof GuildUpdateAfkTimeoutEvent)
+            onGuildUpdateAfkTimeout((GuildUpdateAfkTimeoutEvent) event);
+        else if (event instanceof GuildUpdateIconEvent)
+            onGuildUpdateIcon((GuildUpdateIconEvent) event);
+        else if (event instanceof GuildUpdateMFALevelEvent)
+            onGuildUpdateMFALevel((GuildUpdateMFALevelEvent) event);
+        else if (event instanceof GuildUpdateNameEvent)
+            onGuildUpdateName((GuildUpdateNameEvent) event);
+        else if (event instanceof GuildUpdateNotificationLevelEvent)
+            onGuildUpdateNotificationLevel((GuildUpdateNotificationLevelEvent) event);
+        else if (event instanceof GuildUpdateOwnerEvent)
+            onGuildUpdateOwner((GuildUpdateOwnerEvent) event);
+        else if (event instanceof GuildUpdateRegionEvent)
+            onGuildUpdateRegion((GuildUpdateRegionEvent) event);
+        else if (event instanceof GuildUpdateSplashEvent)
+            onGuildUpdateSplash((GuildUpdateSplashEvent) event);
+        else if (event instanceof GuildUpdateVerificationLevelEvent)
+            onGuildUpdateVerificationLevel((GuildUpdateVerificationLevelEvent) event);
+
+        //Guild Member Events
         else if (event instanceof GuildMemberJoinEvent)
             onGuildMemberJoin((GuildMemberJoinEvent) event);
         else if (event instanceof GuildMemberLeaveEvent)
@@ -293,12 +330,14 @@ public abstract class ListenerAdapter implements EventListener
             onGuildMemberRoleRemove((GuildMemberRoleRemoveEvent) event);
         else if (event instanceof GuildMemberNickChangeEvent)
             onGuildMemberNickChange((GuildMemberNickChangeEvent) event);
+
+        //Role Events
 //        else if (event instanceof GuildRoleCreateEvent)
 //            onGuildRoleCreate((GuildRoleCreateEvent) event);
 //        else if (event instanceof GuildRoleDeleteEvent)
 //            onGuildRoleDelete((GuildRoleDeleteEvent) event);
 //
-//        //GuildRoleUpdateEvents
+        //Role Update Events
 //        else if (event instanceof GuildRoleUpdateNameEvent)
 //            onGuildRoleUpdateName(((GuildRoleUpdateNameEvent) event));
 //        else if (event instanceof GuildRoleUpdateColorEvent)
@@ -367,7 +406,7 @@ public abstract class ListenerAdapter implements EventListener
 //        else if (event instanceof GenericAudioEvent)
 //            onGenericAudio((GenericAudioEvent) event);
 //
-//      //Generic events that have generic subclasses (the subclasses as above).
+        //Generic events that have generic subclasses (the subclasses as above).
         if (event instanceof GenericUserEvent)
             onGenericUserEvent((GenericUserEvent) event);
         else if (event instanceof GenericGuildEvent)

@@ -13,31 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.core.events.guild;
+
+package net.dv8tion.jda.core.events.guild.update;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.core.entities.Member;
 
-/**
- * <b><u>GenericGuildEvent</u></b><br>
- * Fired whenever a {@link net.dv8tion.jda.core.entities.Guild Guild} event is fired.<br>
- * Every GuildEvent is an instance of this event and can be casted. (no exceptions)<br>
- * <br>
- * Use: Detect any GuildEvent. <i>(No real use for the JDA user)</i>
- */
-public abstract class GenericGuildEvent extends Event
+public class GuildUpdateOwnerEvent extends GenericGuildUpdateEvent
 {
-    protected final Guild guild;
+    private final Member oldOwner;
 
-    public GenericGuildEvent(JDA api, long responseNumber, Guild guild)
+    public GuildUpdateOwnerEvent(JDA api, long responseNumber, Guild guild, Member oldOwner)
     {
-        super(api, responseNumber);
-        this.guild = guild;
+        super(api, responseNumber, guild);
+        this.oldOwner = oldOwner;
     }
 
-    public Guild getGuild()
+    public Member getOldOwner()
     {
-        return guild;
+        return oldOwner;
     }
 }
