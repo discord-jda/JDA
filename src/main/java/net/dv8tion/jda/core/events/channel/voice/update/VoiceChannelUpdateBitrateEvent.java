@@ -13,21 +13,29 @@
  * See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package net.dv8tion.jda.core.events.guild;
+package net.dv8tion.jda.core.events.channel.voice.update;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.VoiceChannel;
 
 /**
- * <b><u>GuildUpdateEvent</u></b><br/>
- * Fired whenever a {@link net.dv8tion.jda.core.entities.Guild Guild} updates.<br/>
+ * <b><u>VoiceChannelUpdateBitrateEvent</u></b><br/>
+ * Fired if a {@link VoiceChannel VoiceChannel}'s bitrate changes.<br/>
  * <br/>
- * Use: Detect what Guild updated.
+ * Use: Get affected VoiceChannel, affected Guild and previous bitrate.
  */
-public class GuildUpdateEvent extends GenericGuildEvent
+public class VoiceChannelUpdateBitrateEvent extends GenericVoiceChannelUpdateEvent
 {
-    public GuildUpdateEvent(JDA api, long responseNumber, Guild guild)
+    protected final int oldBitrate;
+
+    public VoiceChannelUpdateBitrateEvent(JDA api, long responseNumber, VoiceChannel channel, int oldBitrate)
     {
-        super(api, responseNumber, guild);
+        super(api, responseNumber, channel);
+        this.oldBitrate = oldBitrate;
+    }
+
+    public int getOldBitrate()
+    {
+        return oldBitrate;
     }
 }

@@ -13,29 +13,29 @@
  * See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package net.dv8tion.jda.core.events.channel.voice;
+package net.dv8tion.jda.core.events.channel.text.update;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.entities.TextChannel;
 
 /**
- * <b><u>VoiceChannelUpdateBitrateEvent</u></b><br/>
- * Fired if a {@link VoiceChannel VoiceChannel}'s bitrate changes.<br/>
- * <br/>
- * Use: Get affected VoiceChannel, affected Guild and previous bitrate.
+ * <b><u>TextChannelUpdatePositionEvent</u></b><br>
+ * Fired if a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}'s position changes.<br>
+ * <br>
+ * Use: Detect when a TextChannel position changes and get it's previous position.
  */
-public class VoiceChannelUpdateBitrateEvent extends GenericVoiceChannelUpdateEvent
+public class TextChannelUpdatePositionEvent extends GenericTextChannelUpdateEvent
 {
-    protected final int oldBitrate;
+    private final int oldPosition;
 
-    public VoiceChannelUpdateBitrateEvent(JDA api, long responseNumber, VoiceChannel channel, int oldBitrate)
+    public TextChannelUpdatePositionEvent(JDA api, long responseNumber, TextChannel channel, int oldPosition)
     {
         super(api, responseNumber, channel);
-        this.oldBitrate = oldBitrate;
+        this.oldPosition = oldPosition;
     }
 
-    public int getOldBitrate()
+    public int getOldPosition()
     {
-        return oldBitrate;
+        return oldPosition;
     }
 }

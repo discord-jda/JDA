@@ -18,11 +18,11 @@ package net.dv8tion.jda.core.handle;
 
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.*;
-import net.dv8tion.jda.core.events.channel.text.TextChannelUpdateNameEvent;
-import net.dv8tion.jda.core.events.channel.text.TextChannelUpdatePermissionsEvent;
-import net.dv8tion.jda.core.events.channel.text.TextChannelUpdatePositionEvent;
-import net.dv8tion.jda.core.events.channel.text.TextChannelUpdateTopicEvent;
-import net.dv8tion.jda.core.events.channel.voice.*;
+import net.dv8tion.jda.core.events.channel.text.update.TextChannelUpdateNameEvent;
+import net.dv8tion.jda.core.events.channel.text.update.TextChannelUpdatePermissionsEvent;
+import net.dv8tion.jda.core.events.channel.text.update.TextChannelUpdatePositionEvent;
+import net.dv8tion.jda.core.events.channel.text.update.TextChannelUpdateTopicEvent;
+import net.dv8tion.jda.core.events.channel.voice.update.*;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;

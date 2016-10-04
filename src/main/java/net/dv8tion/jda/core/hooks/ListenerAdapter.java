@@ -19,9 +19,12 @@ import net.dv8tion.jda.core.events.*;
 import net.dv8tion.jda.core.events.channel.priv.PrivateChannelCreateEvent;
 import net.dv8tion.jda.core.events.channel.priv.PrivateChannelDeleteEvent;
 import net.dv8tion.jda.core.events.channel.text.*;
+import net.dv8tion.jda.core.events.channel.text.update.*;
 import net.dv8tion.jda.core.events.channel.voice.*;
+import net.dv8tion.jda.core.events.channel.voice.update.*;
 import net.dv8tion.jda.core.events.guild.*;
 import net.dv8tion.jda.core.events.guild.member.*;
+import net.dv8tion.jda.core.events.guild.update.GenericGuildUpdateEvent;
 import net.dv8tion.jda.core.events.message.*;
 import net.dv8tion.jda.core.events.message.guild.*;
 import net.dv8tion.jda.core.events.message.priv.*;
@@ -112,7 +115,6 @@ public abstract class ListenerAdapter implements EventListener
 //    //Guild Events
     public void onGuildJoin(GuildJoinEvent event) {}
     public void onUnavailGuildJoined(UnavailableGuildJoinedEvent event) {}
-    public void onGuildUpdate(GuildUpdateEvent event) {}
     public void onGuildLeave(GuildLeaveEvent event) {}
     public void onGuildAvailable(GuildAvailableEvent event) {}
     public void onGuildUnavailable(GuildUnavailableEvent event) {}
@@ -161,6 +163,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericVoiceChannel(GenericVoiceChannelEvent event) {}
     public void onGenericVoiceChannelUpdate(GenericVoiceChannelUpdateEvent event) {}
     public void onGenericGuild(GenericGuildEvent event) {}
+    public void onGenericGuildUpdate(GenericGuildUpdateEvent event) {}
     public void onGenericGuildMember(GenericGuildMemberEvent event) {}
 //    public void onGenericGuildRoleUpdate(GenericGuildRoleUpdateEvent event) {}
 //    public void onGenericVoice(GenericVoiceEvent event) {}
@@ -272,8 +275,6 @@ public abstract class ListenerAdapter implements EventListener
             onGuildJoin((GuildJoinEvent) event);
         else if (event instanceof UnavailableGuildJoinedEvent)
             onUnavailGuildJoined((UnavailableGuildJoinedEvent) event);
-        else if (event instanceof GuildUpdateEvent)
-            onGuildUpdate((GuildUpdateEvent) event);
         else if (event instanceof GuildLeaveEvent)
             onGuildLeave((GuildLeaveEvent) event);
         else if (event instanceof GuildAvailableEvent)
@@ -357,6 +358,8 @@ public abstract class ListenerAdapter implements EventListener
             onGenericTextChannelUpdate((GenericTextChannelUpdateEvent) event);
         else if (event instanceof GenericVoiceChannelUpdateEvent)
             onGenericVoiceChannelUpdate((GenericVoiceChannelUpdateEvent) event);
+        else if (event instanceof GenericGuildUpdateEvent)
+            onGenericGuildUpdate((GenericGuildUpdateEvent) event);
         else if (event instanceof GenericGuildMemberEvent)
             onGenericGuildMember((GenericGuildMemberEvent) event);
 //        else if (event instanceof GenericGuildRoleUpdateEvent)

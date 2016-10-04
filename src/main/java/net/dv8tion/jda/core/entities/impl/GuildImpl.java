@@ -42,11 +42,14 @@ public class GuildImpl implements Guild
     private Member owner;
     private String name;
     private String iconId;
+    private String splashId;
     private Region region;
     private TextChannel publicChannel;
     private VoiceChannel afkChannel;
     private Role publicRole;
     private VerificationLevel verificationLevel;
+    private NotificationLevel defaultNotificationLevel;
+    private MFALevel mfaLevel;
     private int afkTimeout;
     private boolean available;
     private boolean canSendVerification = false;
@@ -73,6 +76,18 @@ public class GuildImpl implements Guild
     public String getIconUrl()
     {
         return iconId == null ? null : "https://cdn.discordapp.com/icons/" + id + "/" + iconId + ".jpg";
+    }
+
+    @Override
+    public String getSplashId()
+    {
+        return splashId;
+    }
+
+    @Override
+    public String getSplashUrl()
+    {
+        return splashId == null ? null : "https://cdn.discordapp.com/splashes/" + id + "/" + splashId + ".jpg";
     }
 
     @Override
@@ -233,6 +248,18 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    public NotificationLevel getDefaultNotificationLevel()
+    {
+        return defaultNotificationLevel;
+    }
+
+    @Override
+    public MFALevel getRequiredMFALevel()
+    {
+        return mfaLevel;
+    }
+
+    @Override
     public boolean checkVerification()
     {
         if (api.getAccountType() == AccountType.BOT)
@@ -295,6 +322,12 @@ public class GuildImpl implements Guild
         return this;
     }
 
+    public GuildImpl setSplashId(String splashId)
+    {
+        this.splashId = splashId;
+        return this;
+    }
+
     public GuildImpl setRegion(Region region)
     {
         this.region = region;
@@ -323,6 +356,18 @@ public class GuildImpl implements Guild
     {
         this.verificationLevel = level;
         this.canSendVerification = false;   //recalc on next send
+        return this;
+    }
+
+    public GuildImpl setDefaultNotificationLevel(NotificationLevel level)
+    {
+        this.defaultNotificationLevel = level;
+        return this;
+    }
+
+    public GuildImpl setRequiredMFALevel(MFALevel level)
+    {
+        this.mfaLevel = level;
         return this;
     }
 

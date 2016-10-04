@@ -13,22 +13,21 @@
  * See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package net.dv8tion.jda.core.events.channel.voice;
+package net.dv8tion.jda.core.events.channel.text.update;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.entities.TextChannel;
 
 /**
- * <b><u>VoiceChannelUpdateNameEvent</u></b><br/>
- * Fired if a {@link VoiceChannel VoiceChannel}'s name changes.<br/>
- * <br/>
- * Use: Get affected VoiceChannel, affected Guild and previous name.
+ * <b><u>TextChannelUpdateNameEvent</u></b><br>
+ * Fired if a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}'s name changes.<br>
+ * <br>
+ * Use: Detect when a TextChannel name changes and get it's previous name.
  */
-public class VoiceChannelUpdateNameEvent extends GenericVoiceChannelUpdateEvent
+public class TextChannelUpdateNameEvent extends GenericTextChannelUpdateEvent
 {
     private final String oldName;
-
-    public VoiceChannelUpdateNameEvent(JDA api, long responseNumber, VoiceChannel channel, String oldName)
+    public TextChannelUpdateNameEvent(JDA api, long responseNumber, TextChannel channel, String oldName)
     {
         super(api, responseNumber, channel);
         this.oldName = oldName;

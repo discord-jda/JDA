@@ -13,29 +13,25 @@
  * See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package net.dv8tion.jda.core.events.channel.text;
+package net.dv8tion.jda.core.events.channel.text.update;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.events.channel.text.GenericTextChannelEvent;
 
 /**
- * <b><u>TextChannelUpdatePositionEvent</u></b><br>
- * Fired if a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}'s position changes.<br>
+ * <b><u>GenericTextChannelUpdateEvent</u></b><br>
+ * Fired whenever a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} is updated.<br>
+ * Every TextChannelUpdateEvent is an instance of this event and can be casted. (no exceptions)<br>
  * <br>
- * Use: Detect when a TextChannel position changes and get it's previous position.
+ * Use: Detect any TextChannelUpdateEvent. <i>(No real use for JDA user)</i>
  */
-public class TextChannelUpdatePositionEvent extends GenericTextChannelUpdateEvent
+public class GenericTextChannelUpdateEvent extends GenericTextChannelEvent
 {
-    private final int oldPosition;
 
-    public TextChannelUpdatePositionEvent(JDA api, long responseNumber, TextChannel channel, int oldPosition)
+    public GenericTextChannelUpdateEvent(JDA api, long responseNumber, TextChannel channel)
     {
         super(api, responseNumber, channel);
-        this.oldPosition = oldPosition;
     }
 
-    public int getOldPosition()
-    {
-        return oldPosition;
-    }
 }

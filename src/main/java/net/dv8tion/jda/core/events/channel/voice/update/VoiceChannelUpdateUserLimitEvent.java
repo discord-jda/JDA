@@ -13,29 +13,29 @@
  * See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package net.dv8tion.jda.core.events.channel.text;
+package net.dv8tion.jda.core.events.channel.voice.update;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.VoiceChannel;
 
 /**
- * <b><u>TextChannelUpdateTopicEvent</u></b><br>
- * Fired if a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}'s topic changes.<br>
- * <br>
- * Use: Detect when a TextChannel topic changes and get it's previous topic.
+ * <b><u>VoiceChannelUpdateUserLimitEvent</u></b><br/>
+ * Fired if a {@link VoiceChannel VoiceChannel}'s user limit changes.<br/>
+ * <br/>
+ * Use: Get affected VoiceChannel, affected Guild and previous user limit.
  */
-public class TextChannelUpdateTopicEvent extends GenericTextChannelUpdateEvent
+public class VoiceChannelUpdateUserLimitEvent extends GenericVoiceChannelUpdateEvent
 {
-    private final String oldTopic;
+    protected final int oldUserLimit;
 
-    public TextChannelUpdateTopicEvent(JDA api, long responseNumber, TextChannel channel, String oldTopic)
+    public VoiceChannelUpdateUserLimitEvent(JDA api, long responseNumber, VoiceChannel channel, int oldUserLimit)
     {
         super(api, responseNumber, channel);
-        this.oldTopic = oldTopic;
+        this.oldUserLimit = oldUserLimit;
     }
 
-    public String getOldTopic()
+    public int getOldUserLimit()
     {
-        return oldTopic;
+        return oldUserLimit;
     }
 }

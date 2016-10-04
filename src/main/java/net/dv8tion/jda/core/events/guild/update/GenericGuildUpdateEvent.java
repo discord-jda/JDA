@@ -13,24 +13,22 @@
  * See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
-package net.dv8tion.jda.core.events.channel.voice;
+package net.dv8tion.jda.core.events.guild.update;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.events.guild.GenericGuildEvent;
 
 /**
- * <b><u>GenericVoiceChannelUpdateEvent</u></b><br>
- * Fired whenever a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} updates.<br>
- * Every VoiceChannelUpdateEvent is an instance of this event and can be casted. (no exceptions)<br>
- * <br>
- * Use: Detect any VoiceChannelUpdateEvent.
+ * <b><u>GuildUpdateEvent</u></b><br/>
+ * Fired whenever a {@link net.dv8tion.jda.core.entities.Guild Guild} updates.<br/>
+ * <br/>
+ * Use: Detect what Guild updated.
  */
-public class GenericVoiceChannelUpdateEvent extends GenericVoiceChannelEvent
+public class GenericGuildUpdateEvent extends GenericGuildEvent
 {
-
-    public GenericVoiceChannelUpdateEvent(JDA api, long responseNumber, VoiceChannel channel)
+    public GenericGuildUpdateEvent(JDA api, long responseNumber, Guild guild)
     {
-        super(api, responseNumber, channel);
+        super(api, responseNumber, guild);
     }
 }

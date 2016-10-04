@@ -13,24 +13,25 @@
  * See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package net.dv8tion.jda.core.events.channel.text;
+
+package net.dv8tion.jda.core.events.channel.voice.update;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.events.channel.voice.GenericVoiceChannelEvent;
 
 /**
- * <b><u>GenericTextChannelUpdateEvent</u></b><br>
- * Fired whenever a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} is updated.<br>
- * Every TextChannelUpdateEvent is an instance of this event and can be casted. (no exceptions)<br>
+ * <b><u>GenericVoiceChannelUpdateEvent</u></b><br>
+ * Fired whenever a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} updates.<br>
+ * Every VoiceChannelUpdateEvent is an instance of this event and can be casted. (no exceptions)<br>
  * <br>
- * Use: Detect any TextChannelUpdateEvent. <i>(No real use for JDA user)</i>
+ * Use: Detect any VoiceChannelUpdateEvent.
  */
-public class GenericTextChannelUpdateEvent extends GenericTextChannelEvent
+public class GenericVoiceChannelUpdateEvent extends GenericVoiceChannelEvent
 {
 
-    public GenericTextChannelUpdateEvent(JDA api, long responseNumber, TextChannel channel)
+    public GenericVoiceChannelUpdateEvent(JDA api, long responseNumber, VoiceChannel channel)
     {
         super(api, responseNumber, channel);
     }
-
 }
