@@ -28,6 +28,9 @@ import net.dv8tion.jda.core.events.guild.update.*;
 import net.dv8tion.jda.core.events.message.*;
 import net.dv8tion.jda.core.events.message.guild.*;
 import net.dv8tion.jda.core.events.message.priv.*;
+import net.dv8tion.jda.core.events.role.GenericRoleEvent;
+import net.dv8tion.jda.core.events.role.RoleCreateEvent;
+import net.dv8tion.jda.core.events.role.RoleDeleteEvent;
 import net.dv8tion.jda.core.events.user.*;
 
 /**
@@ -138,10 +141,12 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildMemberRoleAdd(GuildMemberRoleAddEvent event) {}
     public void onGuildMemberRoleRemove(GuildMemberRoleRemoveEvent event) {}
     public void onGuildMemberNickChange(GuildMemberNickChangeEvent event) {}
-//    public void onGuildRoleCreate(GuildRoleCreateEvent event) {}
-//    public void onGuildRoleDelete(GuildRoleDeleteEvent event) {}
-//
-//    //Guild Role Update Events
+
+    //Role events
+    public void onRoleCreate(RoleCreateEvent event) {}
+    public void onRoleDelete(RoleDeleteEvent event) {}
+
+    //Role Update Events
 //    public void onGuildRoleUpdate(GuildRoleUpdateEvent event) {}
 //    public void onGuildRoleUpdateName(GuildRoleUpdateNameEvent event) {}
 //    public void onGuildRoleUpdateColor(GuildRoleUpdateColorEvent event) {}
@@ -178,12 +183,13 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericGuild(GenericGuildEvent event) {}
     public void onGenericGuildUpdate(GenericGuildUpdateEvent event) {}
     public void onGenericGuildMember(GenericGuildMemberEvent event) {}
-//    public void onGenericGuildRoleUpdate(GenericGuildRoleUpdateEvent event) {}
+    public void onGenericRoleEvent(GenericRoleEvent event) {}
+//    public void onGenericRoleUpdate(GenericRoleUpdateEvent event) {}
 //    public void onGenericVoice(GenericVoiceEvent event) {}
 //    public void onGenericAudio(GenericAudioEvent event) {}
 
     @Override
-    public void onEvent(Event event)
+    public final void onEvent(Event event)
     {
         //JDA Events
         if (event instanceof ReadyEvent)
@@ -332,10 +338,10 @@ public abstract class ListenerAdapter implements EventListener
             onGuildMemberNickChange((GuildMemberNickChangeEvent) event);
 
         //Role Events
-//        else if (event instanceof GuildRoleCreateEvent)
-//            onGuildRoleCreate((GuildRoleCreateEvent) event);
-//        else if (event instanceof GuildRoleDeleteEvent)
-//            onGuildRoleDelete((GuildRoleDeleteEvent) event);
+        else if (event instanceof RoleCreateEvent)
+            onRoleCreate((RoleCreateEvent) event);
+        else if (event instanceof RoleDeleteEvent)
+            onRoleDelete((RoleDeleteEvent) event);
 //
         //Role Update Events
 //        else if (event instanceof GuildRoleUpdateNameEvent)
@@ -409,13 +415,15 @@ public abstract class ListenerAdapter implements EventListener
         //Generic events that have generic subclasses (the subclasses as above).
         if (event instanceof GenericUserEvent)
             onGenericUserEvent((GenericUserEvent) event);
-        else if (event instanceof GenericGuildEvent)
-            onGenericGuild((GenericGuildEvent) event);
+        else if (event instanceof GenericMessageEvent)
+            onGenericMessage((GenericMessageEvent) event);
         else if (event instanceof GenericTextChannelEvent)
             onGenericTextChannel((GenericTextChannelEvent) event);
         else if (event instanceof GenericVoiceChannelEvent)
             onGenericVoiceChannel((GenericVoiceChannelEvent) event);
-        else if (event instanceof GenericMessageEvent)
-            onGenericMessage((GenericMessageEvent) event);
+        else if (event instanceof GenericGuildEvent)
+            onGenericGuild((GenericGuildEvent) event);
+        else if (event instanceof GenericRoleEvent)
+            onGenericRoleEvent((GenericRoleEvent) event);
     }
 }
