@@ -37,7 +37,7 @@ public class RoleImpl implements Role
     private String name;
     private Color color;
     private boolean managed;
-    private boolean grouped;
+    private boolean hoisted;
     private boolean mentionable;
     private int rawPermissions;
     private int rawPosition;
@@ -84,9 +84,9 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public boolean isGrouped()
+    public boolean isHoisted()
     {
-        return grouped;
+        return hoisted;
     }
 
     @Override
@@ -223,9 +223,9 @@ public class RoleImpl implements Role
         return this;
     }
 
-    public RoleImpl setGrouped(boolean grouped)
+    public RoleImpl setHoisted(boolean hoisted)
     {
-        this.grouped = grouped;
+        this.hoisted = hoisted;
         return this;
     }
 

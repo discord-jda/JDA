@@ -64,13 +64,13 @@ public interface Role extends ISnowflake, IMentionable, Comparable<Role>
     boolean isManaged();
 
     /**
-     * Is this {@link net.dv8tion.jda.core.entities.Role Role} grouped?<br>
-     * (Users with this Role are grouped in the online-list)
+     * Is this {@link net.dv8tion.jda.core.entities.Role Role} hoisted?<br>
+     * Members in a hoisted role are displayed in their own grouping on the user-list
      *
      * @return
-     *      If this {@link net.dv8tion.jda.core.entities.Role Role} is grouped.
+     *      If this {@link net.dv8tion.jda.core.entities.Role Role} is hoisted.
      */
-    boolean isGrouped();
+    boolean isHoisted();
 
     /**
      * Returns wheter or not this Role is mentionable
