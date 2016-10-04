@@ -129,10 +129,13 @@ public class EntityBuilder
 
         guildObj.setAvailable(true)
                 .setIconId(guild.isNull("icon") ? null : guild.getString("icon"))
+                .setSplashId(guild.isNull("splash") ? null : guild.getString("splash"))
                 .setRegion(Region.fromKey(guild.getString("region")))
                 .setName(guild.getString("name"))
                 .setAfkTimeout(guild.getInt("afk_timeout"))
-                .setVerificationLevel(Guild.VerificationLevel.fromKey(guild.getInt("verification_level")));
+                .setVerificationLevel(Guild.VerificationLevel.fromKey(guild.getInt("verification_level")))
+                .setDefaultNotificationLevel(Guild.NotificationLevel.fromKey(guild.getInt("default_message_notifications")))
+                .setRequiredMFALevel(Guild.MFALevel.fromKey(guild.getInt("mfa_level")));
 
         JSONArray roles = guild.getJSONArray("roles");
         for (int i = 0; i < roles.length(); i++)

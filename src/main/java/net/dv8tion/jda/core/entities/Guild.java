@@ -50,6 +50,10 @@ public interface Guild extends ISnowflake
      */
     String getIconUrl();
 
+    String getSplashId();
+
+    String getSplashUrl();
+
     VoiceChannel getAfkChannel();
 
     /**
@@ -265,6 +269,23 @@ public interface Guild extends ISnowflake
     VerificationLevel getVerificationLevel();
 
     /**
+     * Returns the default message Notification-Level of this Guild. For a short description of the different values,
+     * see {@link net.dv8tion.jda.core.entities.Guild.NotificationLevel NotificationLevel}.
+     * @return
+     *      The default message Notification-Level of this Guild.
+     */
+    NotificationLevel getDefaultNotificationLevel();
+
+    /**
+     * Returns the level of multifactor authentication required to execute administrator restricted functions in this guild.
+     * For a short description of the different values,
+     * see {@link net.dv8tion.jda.core.entities.Guild.MFALevel MFALevel}.
+     * @return
+     *      The MFA-Level required by this Guild.
+     */
+    MFALevel getRequiredMFALevel();
+
+    /**
      * Checks if the current Verification-level of this guild allows JDA to send messages to it.
      *
      * @return
@@ -301,7 +322,11 @@ public interface Guild extends ISnowflake
      */
     enum VerificationLevel
     {
-        NONE(0), LOW(1), MEDIUM(2), HIGH(3);
+        NONE(0),
+        LOW(1),
+        MEDIUM(2),
+        HIGH(3),
+        UNKNOWN(-1);
 
         private final int key;
 
@@ -322,7 +347,77 @@ public interface Guild extends ISnowflake
                 if(level.getKey() == key)
                     return level;
             }
-            return NONE;
+            return UNKNOWN;
+        }
+    }
+
+    /**
+     * Represents the Notification-level of the Guild.
+     * The Verification-Level determines what messages you receive pings for.<br>
+     * All_Messages   -&gt; Every message sent in this guild will result in a message ping.<br>
+     * Mentions_Only  -&gt; Only messages that specifically mention will result in a ping.<br>
+     */
+    enum NotificationLevel
+    {
+        ALL_MESSAGES(0),
+        MENTIONS_ONLY(1),
+        UNKNOWN(-1);
+
+        private final int key;
+
+        NotificationLevel(int key)
+        {
+            this.key = key;
+        }
+
+        public int getKey()
+        {
+            return key;
+        }
+
+        public static NotificationLevel fromKey(int key)
+        {
+            for (NotificationLevel level : values())
+            {
+                if (level.getKey() == key)
+                    return level;
+            }
+            return UNKNOWN;
+        }
+    }
+
+    /**
+     * Represents the Multifactor Authentication level required by the Guild.
+     * The MFA Level restricts administrator functions to account with MFA Level equal to or higher than that set by the guild.<br>
+     * None             -&gt; There is no MFA level restriction on administrator functions in this guild.<br>
+     * Two_Factor_Auth  -&gt; Users must have 2FA enabled on their account to perform administrator functions.<br>
+     */
+    enum MFALevel
+    {
+        NONE(0),
+        TWO_FACTOR_AUTH(1),
+        UNKNOWN(-1);
+
+        private final int key;
+
+        MFALevel(int key)
+        {
+            this.key = key;
+        }
+
+        public int getKey()
+        {
+            return key;
+        }
+
+        public static MFALevel fromKey(int key)
+        {
+            for (MFALevel level : values())
+            {
+                if (level.getKey() == key)
+                    return level;
+            }
+            return UNKNOWN;
         }
     }
 }
