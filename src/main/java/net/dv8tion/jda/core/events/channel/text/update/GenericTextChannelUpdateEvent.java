@@ -26,7 +26,7 @@ import net.dv8tion.jda.core.events.channel.text.GenericTextChannelEvent;
  * <br>
  * Use: Detect any TextChannelUpdateEvent. <i>(No real use for JDA user)</i>
  */
-public class GenericTextChannelUpdateEvent extends GenericTextChannelEvent
+public abstract class GenericTextChannelUpdateEvent extends GenericTextChannelEvent
 {
 
     public GenericTextChannelUpdateEvent(JDA api, long responseNumber, TextChannel channel)

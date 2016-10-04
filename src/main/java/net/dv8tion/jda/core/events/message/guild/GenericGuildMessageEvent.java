@@ -29,7 +29,7 @@ import net.dv8tion.jda.core.events.message.GenericMessageEvent;
  * <br>
  * Use: Detect any GuildMessageEvent. <i>(No real use for the JDA user)</i>
  */
-public class GenericGuildMessageEvent extends GenericMessageEvent
+public abstract class GenericGuildMessageEvent extends GenericMessageEvent
 {
     protected TextChannel channel;
 

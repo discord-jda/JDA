@@ -26,7 +26,7 @@ import net.dv8tion.jda.core.events.Event;
  * <br>
  * Use: Detect any UserEvent. <i>(No real use for the JDA user)</i>
  */
-public class GenericUserEvent extends Event
+public abstract class GenericUserEvent extends Event
 {
     private final User user;
 

@@ -114,7 +114,7 @@ public abstract class ListenerAdapter implements EventListener
 //
 //    //Guild Events
     public void onGuildJoin(GuildJoinEvent event) {}
-    public void onUnavailGuildJoined(UnavailableGuildJoinedEvent event) {}
+    public void onUnavailableGuildJoined(UnavailableGuildJoinedEvent event) {}
     public void onGuildLeave(GuildLeaveEvent event) {}
     public void onGuildAvailable(GuildAvailableEvent event) {}
     public void onGuildUnavailable(GuildUnavailableEvent event) {}
@@ -230,9 +230,7 @@ public abstract class ListenerAdapter implements EventListener
         else if (event instanceof UserOnlineStatusUpdateEvent)
             onUserOnlineStatusUpdate((UserOnlineStatusUpdateEvent) event);
         else if (event instanceof UserTypingEvent)
-            onUserTyping((UserTypingEvent) event);          //TODO: 3.x question, is the below valid? Does it really need to be here?
-        else if (event instanceof GenericUserEvent)         //We check this here so that we don't catch 4 different update events.
-            onGenericUserEvent((GenericUserEvent) event);   //Must be after all the others because they are subclasses of the Generic.
+            onUserTyping((UserTypingEvent) event);
 
         //TextChannel Events
         else if (event instanceof TextChannelCreateEvent)
@@ -274,7 +272,7 @@ public abstract class ListenerAdapter implements EventListener
         else if (event instanceof GuildJoinEvent)
             onGuildJoin((GuildJoinEvent) event);
         else if (event instanceof UnavailableGuildJoinedEvent)
-            onUnavailGuildJoined((UnavailableGuildJoinedEvent) event);
+            onUnavailableGuildJoined((UnavailableGuildJoinedEvent) event);
         else if (event instanceof GuildLeaveEvent)
             onGuildLeave((GuildLeaveEvent) event);
         else if (event instanceof GuildAvailableEvent)
@@ -369,8 +367,10 @@ public abstract class ListenerAdapter implements EventListener
 //        else if (event instanceof GenericAudioEvent)
 //            onGenericAudio((GenericAudioEvent) event);
 //
-//        //Generic events that have generic subclasses (the subclasses as above).
-        if (event instanceof GenericGuildEvent)
+//      //Generic events that have generic subclasses (the subclasses as above).
+        if (event instanceof GenericUserEvent)
+            onGenericUserEvent((GenericUserEvent) event);
+        else if (event instanceof GenericGuildEvent)
             onGenericGuild((GenericGuildEvent) event);
         else if (event instanceof GenericTextChannelEvent)
             onGenericTextChannel((GenericTextChannelEvent) event);

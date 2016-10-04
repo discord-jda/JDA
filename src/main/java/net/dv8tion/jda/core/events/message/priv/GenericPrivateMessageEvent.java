@@ -27,7 +27,7 @@ import net.dv8tion.jda.core.events.message.GenericMessageEvent;
  * <br>
  * Use: Detect any PrivateMessageEvent. <i>(No real use for the JDA user)</i>
  */
-public class GenericPrivateMessageEvent extends GenericMessageEvent
+public abstract class GenericPrivateMessageEvent extends GenericMessageEvent
 {
     protected PrivateChannel channel;
 

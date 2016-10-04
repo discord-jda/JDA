@@ -183,11 +183,6 @@ public class PresenceUpdateHandler extends SocketHandler
                 //cache in relationship stuff
             }
         }
-
-        api.getEventManager().handle(
-                new GenericUserEvent(
-                        api, responseNumber,
-                        user));
         return null;
     }
 }
