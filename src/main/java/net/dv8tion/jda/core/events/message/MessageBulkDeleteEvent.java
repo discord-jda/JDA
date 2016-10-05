@@ -16,6 +16,7 @@
 package net.dv8tion.jda.core.events.message;
 
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.Event;
 
@@ -43,6 +44,11 @@ public class MessageBulkDeleteEvent extends Event
     public TextChannel getChannel()
     {
         return channel;
+    }
+
+    public Guild getGuild()
+    {
+        return channel.getGuild();
     }
 
     public List<String> getMessageIds()
