@@ -81,6 +81,7 @@ public class EntityBuilder
         return (SelfInfo) selfInfo
                 .setVerified(self.getBoolean("verified"))
                 .setMfaEnabled(self.getBoolean("mfa_enabled"))
+                .setEmail(self.has("email") ? self.getString("email") : null)
                 .setName(self.getString("username"))
                 .setDiscriminator(self.getString("discriminator"))
                 .setAvatarId(self.isNull("avatar") ? null : self.getString("avatar"))

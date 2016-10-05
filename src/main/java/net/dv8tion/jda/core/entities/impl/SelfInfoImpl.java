@@ -15,12 +15,17 @@
  */
 package net.dv8tion.jda.core.entities.impl;
 
+import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.entities.SelfInfo;
+import net.dv8tion.jda.core.exceptions.AccountTypeException;
 
 public class SelfInfoImpl extends UserImpl implements SelfInfo
 {
     private boolean verified;
     private boolean mfaEnabled;
+
+    //Client only
+    private String email;
 
     public SelfInfoImpl(String id, JDAImpl api)
     {
@@ -39,6 +44,14 @@ public class SelfInfoImpl extends UserImpl implements SelfInfo
         return mfaEnabled;
     }
 
+    @Override
+    public String getEmail() throws AccountTypeException
+    {
+        if (api.getAccountType() != AccountType.CLIENT)
+            throw new AccountTypeException(AccountType.CLIENT, "Email retrieval can only be done on CLIENT accounts!");
+        return email;
+    }
+
 //    @Override
 //    public String getAuthUrl(Permission... perms)
 //    {
@@ -54,6 +67,12 @@ public class SelfInfoImpl extends UserImpl implements SelfInfo
     public SelfInfoImpl setMfaEnabled(boolean enabled)
     {
         this.mfaEnabled = enabled;
+        return this;
+    }
+
+    public SelfInfoImpl setEmail(String email)
+    {
+        this.email = email;
         return this;
     }
 }

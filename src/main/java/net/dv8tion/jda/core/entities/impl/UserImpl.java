@@ -24,15 +24,15 @@ import net.dv8tion.jda.core.entities.User;
 
 public class UserImpl implements User
 {
-    private final String id;
-    private final JDAImpl api;
+    protected final String id;
+    protected final JDAImpl api;
 
-    private String name;
-    private String discriminator;
-    private String avatarId;
-    private PrivateChannel privateChannel;
-    private boolean bot;
-    private boolean fake = false;
+    protected String name;
+    protected String discriminator;
+    protected String avatarId;
+    protected PrivateChannel privateChannel;
+    protected boolean bot;
+    protected boolean fake = false;
 
     public UserImpl(String id, JDAImpl api)
     {

@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.core.entities;
 
+import net.dv8tion.jda.core.exceptions.AccountTypeException;
+
 /**
  * Represents the currently logged in account.
  */
@@ -39,6 +41,18 @@ public interface SelfInfo extends User
      *      boolean specifying whether or not this account has MFA protecting it.
      */
     boolean isMfaEnabled();
+
+    /**
+     * Used to get the email of the currently logged in account.<br>
+     * <b>NOTE:</b> this is a {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT} method only!
+     *
+     * @return
+     *      The email of the currently logged in account.
+     * @throws AccountTypeException
+     *      If this method is called when {@link net.dv8tion.jda.core.JDA#getAccountType() JDA#getAccountType()} does not return
+     *      {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}. E.g: If the logged in account isn't a Client account!
+     */
+    String getEmail() throws AccountTypeException;
 
 //    /**
 //     * Creates a OAuth invite-link used to invite bot-accounts.<br>

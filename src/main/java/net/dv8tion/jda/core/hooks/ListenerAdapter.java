@@ -32,6 +32,7 @@ import net.dv8tion.jda.core.events.role.GenericRoleEvent;
 import net.dv8tion.jda.core.events.role.RoleCreateEvent;
 import net.dv8tion.jda.core.events.role.RoleDeleteEvent;
 import net.dv8tion.jda.core.events.role.update.*;
+import net.dv8tion.jda.core.events.self.*;
 import net.dv8tion.jda.core.events.user.*;
 
 /**
@@ -71,6 +72,13 @@ public abstract class ListenerAdapter implements EventListener
     public void onUserOnlineStatusUpdate(UserOnlineStatusUpdateEvent event) {}
     public void onUserGameUpdate(UserGameUpdateEvent event) {}
     public void onUserTyping(UserTypingEvent event) {}
+
+    //Self Events. Fires only in relation to the currently logged in account.
+    public void onSelfUpdateAvatar(SelfUpdateAvatarEvent event) {}
+    public void onSelfUpdateEmail(SelfUpdateEmailEvent event) {}
+    public void onSelfUpdateMFA(SelfUpdateMFAEvent event) {}
+    public void onSelfUpdateName(SelfUpdateNameEvent event) {}
+    public void onSelfUpdateVerified(SelfUpdateVerifiedEvent event) {}
 
     //Message Events
     //Guild (TextChannel) Message Events
@@ -173,7 +181,8 @@ public abstract class ListenerAdapter implements EventListener
 //    public void onAudioRegionChange(AudioRegionChangeEvent event) {}
 
     //Generic Events
-    public void onGenericUserEvent(GenericUserEvent event) {}
+    public void onGenericSelfUpdate(GenericSelfUpdateEvent event) {}
+    public void onGenericUser(GenericUserEvent event) {}
     public void onGenericMessage(GenericMessageEvent event) {}
     public void onGenericGuildMessage(GenericGuildMessageEvent event) {}
     public void onGenericPrivateMessage(GenericPrivateMessageEvent event) {}
@@ -205,6 +214,29 @@ public abstract class ListenerAdapter implements EventListener
             onShutdown((ShutdownEvent) event);
         else if (event instanceof StatusChangeEvent)
             onStatusChange((StatusChangeEvent) event);
+
+        //User Events
+        else if (event instanceof UserNameUpdateEvent)
+            onUserNameUpdate((UserNameUpdateEvent) event);
+        else if (event instanceof UserAvatarUpdateEvent)
+            onUserAvatarUpdate((UserAvatarUpdateEvent) event);
+        else if (event instanceof UserGameUpdateEvent)
+            onUserGameUpdate((UserGameUpdateEvent) event);
+        else if (event instanceof UserOnlineStatusUpdateEvent)
+            onUserOnlineStatusUpdate((UserOnlineStatusUpdateEvent) event);
+        else if (event instanceof UserTypingEvent)
+            onUserTyping((UserTypingEvent) event);
+
+        else if (event instanceof SelfUpdateAvatarEvent)
+            onSelfUpdateAvatar((SelfUpdateAvatarEvent) event);
+        else if (event instanceof SelfUpdateEmailEvent)
+            onSelfUpdateEmail((SelfUpdateEmailEvent) event);
+        else if (event instanceof SelfUpdateMFAEvent)
+            onSelfUpdateMFA((SelfUpdateMFAEvent) event);
+        else if (event instanceof SelfUpdateNameEvent)
+            onSelfUpdateName((SelfUpdateNameEvent) event);
+        else if (event instanceof SelfUpdateVerifiedEvent)
+            onSelfUpdateVerified((SelfUpdateVerifiedEvent) event);
 
         //Message Events
         //Guild (TextChannel) Message Events
@@ -239,18 +271,6 @@ public abstract class ListenerAdapter implements EventListener
 //        //Invite Messages
 //        else if (event instanceof InviteReceivedEvent)
 //            onInviteReceived(((InviteReceivedEvent) event));
-
-        //User Events
-        else if (event instanceof UserNameUpdateEvent)
-            onUserNameUpdate((UserNameUpdateEvent) event);
-        else if (event instanceof UserAvatarUpdateEvent)
-            onUserAvatarUpdate((UserAvatarUpdateEvent) event);
-        else if (event instanceof UserGameUpdateEvent)
-            onUserGameUpdate((UserGameUpdateEvent) event);
-        else if (event instanceof UserOnlineStatusUpdateEvent)
-            onUserOnlineStatusUpdate((UserOnlineStatusUpdateEvent) event);
-        else if (event instanceof UserTypingEvent)
-            onUserTyping((UserTypingEvent) event);
 
         //TextChannel Events
         else if (event instanceof TextChannelCreateEvent)
@@ -413,7 +433,9 @@ public abstract class ListenerAdapter implements EventListener
 //
         //Generic events that have generic subclasses (the subclasses as above).
         if (event instanceof GenericUserEvent)
-            onGenericUserEvent((GenericUserEvent) event);
+            onGenericUser((GenericUserEvent) event);
+        else if (event instanceof GenericSelfUpdateEvent)
+            onGenericSelfUpdate((GenericSelfUpdateEvent) event);
         else if (event instanceof GenericMessageEvent)
             onGenericMessage((GenericMessageEvent) event);
         else if (event instanceof GenericTextChannelEvent)

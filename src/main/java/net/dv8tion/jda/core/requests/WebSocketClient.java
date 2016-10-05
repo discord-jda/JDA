@@ -732,6 +732,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         handlers.put("PRESENCE_UPDATE",     new PresenceUpdateHandler(api));
         handlers.put("READY",               new ReadyHandler(api));
         handlers.put("TYPING_START",        new TypingStartHandler(api));
+        handlers.put("USER_UPDATE",         new UserUpdateHandler(api));
     }
 }
 

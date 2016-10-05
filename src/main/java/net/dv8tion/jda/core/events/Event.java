@@ -27,10 +27,10 @@ import net.dv8tion.jda.core.JDA;
  */
 public abstract class Event
 {
-    private final JDA api;
-    private final long responseNumber;
+    protected final JDA api;
+    protected final long responseNumber;
 
-    protected Event(JDA api, long responseNumber)
+    public Event(JDA api, long responseNumber)
     {
         this.api = api;
         this.responseNumber = responseNumber;
