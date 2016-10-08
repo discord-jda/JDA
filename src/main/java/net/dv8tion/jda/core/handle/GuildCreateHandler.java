@@ -18,6 +18,9 @@ package net.dv8tion.jda.core.handle;
 import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.events.guild.GuildAvailableEvent;
+import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
+import net.dv8tion.jda.core.events.guild.UnavailableGuildJoinedEvent;
 import org.json.JSONObject;
 
 public class GuildCreateHandler extends SocketHandler
@@ -45,17 +48,18 @@ public class GuildCreateHandler extends SocketHandler
                 {
                     if(wasAvail == null)                    //didn't exist
                     {
-//                        api.getEventManager().handle(
-//                                new GuildJoinEvent(
-//                                        api, responseNumber,
-//                                        guild));
+                        api.getEventManager().handle(
+                                new GuildJoinEvent(
+                                        api, responseNumber,
+                                        guild));
                         EventCache.get(api).playbackCache(EventCache.Type.GUILD, guild.getId());
                     }
                     else if (!wasAvail)                     //was previously unavailable
                     {
-//                        api.getEventManager().handle(
-//                                new GuildAvailableEvent(api, responseNumber, guild)
-//                        );
+                        api.getEventManager().handle(
+                                new GuildAvailableEvent(
+                                        api, responseNumber,
+                                        guild));
                     }
                     else
                     {
@@ -72,9 +76,10 @@ public class GuildCreateHandler extends SocketHandler
                 else
                 {
                     //Proper GuildJoinedEvent is fired when guild was populated
-//                api.getEventManager().handle(
-//                        new UnavailableGuildJoinedEvent(api, responseNumber, guild.getId())
-//                );
+                    api.getEventManager().handle(
+                            new UnavailableGuildJoinedEvent(
+                                    api, responseNumber,
+                                    guild.getId()));
                 }
             }
         });
