@@ -103,6 +103,6 @@ public class EventCache
 
     public enum Type
     {
-        USER, GUILD, CHANNEL, ROLE
+        USER, GUILD, CHANNEL, ROLE, RELATIONSHIP
     }
 }

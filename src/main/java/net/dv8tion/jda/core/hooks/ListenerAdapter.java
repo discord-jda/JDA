@@ -15,13 +15,13 @@
  */
 package net.dv8tion.jda.core.hooks;
 
-import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.client.events.group.*;
 import net.dv8tion.jda.client.events.group.update.GenericGroupUpdateEvent;
 import net.dv8tion.jda.client.events.group.update.GroupUpdateIconEvent;
 import net.dv8tion.jda.client.events.group.update.GroupUpdateNameEvent;
 import net.dv8tion.jda.client.events.group.update.GroupUpdateOwnerEvent;
 import net.dv8tion.jda.client.events.message.group.*;
+import net.dv8tion.jda.client.events.relationship.*;
 import net.dv8tion.jda.core.events.*;
 import net.dv8tion.jda.core.events.channel.priv.PrivateChannelCreateEvent;
 import net.dv8tion.jda.core.events.channel.priv.PrivateChannelDeleteEvent;
@@ -58,7 +58,7 @@ import net.dv8tion.jda.core.events.user.*;
  *    &nbsp;@Override
  *     public void onMessageReceived(MessageReceivedEvent event)
  *     {
- *         System.out.printf("[%s]: %s\n", event.getAuthor().getUsername(), event.getMessage().getContent());
+ *         System.out.printf("[%s]: %s\n", event.getAuthor().getName(), event.getMessage().getContent());
  *     }
  * }</code></pre>
  * @see net.dv8tion.jda.core.hooks.EventListener
@@ -114,6 +114,16 @@ public abstract class ListenerAdapter implements EventListener
     public void onMessageEmbed(MessageEmbedEvent event) {}
 
 //    public void onInviteReceived(InviteReceivedEvent event) {}
+
+    //Relationship Events (Client-Only)
+    public void onFriendAdded(FriendAddedEvent event) {}
+    public void onFriendRemoved(FriendRemovedEvent event) {}
+    public void onUserBlocked(UserBlockedEvent event) {}
+    public void onUserUnblocked(UserUnblockedEvent event) {}
+    public void onFriendRequestSent(FriendRequestSentEvent event) {}
+    public void onFriendRequestCanceled(FriendRequestCanceledEvent event) {}
+    public void onFriendRequestReceived(FriendRequestReceivedEvent event) {}
+    public void onFriendRequestIgnored(FriendRequestIgnoredEvent event) {}
 
     //TextChannel Events
     public void onTextChannelDelete(TextChannelDeleteEvent event) {}
@@ -205,12 +215,15 @@ public abstract class ListenerAdapter implements EventListener
 //    public void onAudioRegionChange(AudioRegionChangeEvent event) {}
 
     //Generic Events
-    public void onGenericSelfUpdate(GenericSelfUpdateEvent event) {}
-    public void onGenericUser(GenericUserEvent event) {}
     public void onGenericMessage(GenericMessageEvent event) {}
     public void onGenericGuildMessage(GenericGuildMessageEvent event) {}
     public void onGenericPrivateMessage(GenericPrivateMessageEvent event) {}
     public void onGenericGroupMessage(GenericGroupMessageEvent event) {}
+    public void onGenericUser(GenericUserEvent event) {}
+    public void onGenericSelfUpdate(GenericSelfUpdateEvent event) {}
+    public void onGenericRelationship(GenericRelationshipEvent event) {}
+    public void onGenericRelationshipAdd(GenericRelationshipAddEvent event) {}
+    public void onGenericRelationshipRemove(GenericRelationshipRemoveEvent event) {}
     public void onGenericTextChannel(GenericTextChannelEvent event) {}
     public void onGenericTextChannelUpdate(GenericTextChannelUpdateEvent event) {}
     public void onGenericVoiceChannel(GenericVoiceChannelEvent event) {}
@@ -220,7 +233,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericGuild(GenericGuildEvent event) {}
     public void onGenericGuildUpdate(GenericGuildUpdateEvent event) {}
     public void onGenericGuildMember(GenericGuildMemberEvent event) {}
-    public void onGenericRoleEvent(GenericRoleEvent event) {}
+    public void onGenericRole(GenericRoleEvent event) {}
     public void onGenericRoleUpdate(GenericRoleUpdateEvent event) {}
 //    public void onGenericVoice(GenericVoiceEvent event) {}
 //    public void onGenericAudio(GenericAudioEvent event) {}
@@ -241,29 +254,6 @@ public abstract class ListenerAdapter implements EventListener
             onShutdown((ShutdownEvent) event);
         else if (event instanceof StatusChangeEvent)
             onStatusChange((StatusChangeEvent) event);
-
-        //User Events
-        else if (event instanceof UserNameUpdateEvent)
-            onUserNameUpdate((UserNameUpdateEvent) event);
-        else if (event instanceof UserAvatarUpdateEvent)
-            onUserAvatarUpdate((UserAvatarUpdateEvent) event);
-        else if (event instanceof UserGameUpdateEvent)
-            onUserGameUpdate((UserGameUpdateEvent) event);
-        else if (event instanceof UserOnlineStatusUpdateEvent)
-            onUserOnlineStatusUpdate((UserOnlineStatusUpdateEvent) event);
-        else if (event instanceof UserTypingEvent)
-            onUserTyping((UserTypingEvent) event);
-
-        else if (event instanceof SelfUpdateAvatarEvent)
-            onSelfUpdateAvatar((SelfUpdateAvatarEvent) event);
-        else if (event instanceof SelfUpdateEmailEvent)
-            onSelfUpdateEmail((SelfUpdateEmailEvent) event);
-        else if (event instanceof SelfUpdateMFAEvent)
-            onSelfUpdateMFA((SelfUpdateMFAEvent) event);
-        else if (event instanceof SelfUpdateNameEvent)
-            onSelfUpdateName((SelfUpdateNameEvent) event);
-        else if (event instanceof SelfUpdateVerifiedEvent)
-            onSelfUpdateVerified((SelfUpdateVerifiedEvent) event);
 
         //Message Events
         //Guild (TextChannel) Message Events
@@ -310,6 +300,48 @@ public abstract class ListenerAdapter implements EventListener
 //        //Invite Messages
 //        else if (event instanceof InviteReceivedEvent)
 //            onInviteReceived(((InviteReceivedEvent) event));
+
+        //User Events
+        else if (event instanceof UserNameUpdateEvent)
+            onUserNameUpdate((UserNameUpdateEvent) event);
+        else if (event instanceof UserAvatarUpdateEvent)
+            onUserAvatarUpdate((UserAvatarUpdateEvent) event);
+        else if (event instanceof UserGameUpdateEvent)
+            onUserGameUpdate((UserGameUpdateEvent) event);
+        else if (event instanceof UserOnlineStatusUpdateEvent)
+            onUserOnlineStatusUpdate((UserOnlineStatusUpdateEvent) event);
+        else if (event instanceof UserTypingEvent)
+            onUserTyping((UserTypingEvent) event);
+
+        //Self Events
+        else if (event instanceof SelfUpdateAvatarEvent)
+            onSelfUpdateAvatar((SelfUpdateAvatarEvent) event);
+        else if (event instanceof SelfUpdateEmailEvent)
+            onSelfUpdateEmail((SelfUpdateEmailEvent) event);
+        else if (event instanceof SelfUpdateMFAEvent)
+            onSelfUpdateMFA((SelfUpdateMFAEvent) event);
+        else if (event instanceof SelfUpdateNameEvent)
+            onSelfUpdateName((SelfUpdateNameEvent) event);
+        else if (event instanceof SelfUpdateVerifiedEvent)
+            onSelfUpdateVerified((SelfUpdateVerifiedEvent) event);
+
+        //Relationship Events
+        else if (event instanceof FriendAddedEvent)
+            onFriendAdded((FriendAddedEvent) event);
+        else if (event instanceof FriendRemovedEvent)
+            onFriendRemoved((FriendRemovedEvent) event);
+        else if (event instanceof UserBlockedEvent)
+            onUserBlocked((UserBlockedEvent) event);
+        else if (event instanceof UserUnblockedEvent)
+            onUserUnblocked((UserUnblockedEvent) event);
+        else if (event instanceof FriendRequestSentEvent)
+            onFriendRequestSent((FriendRequestSentEvent) event);
+        else if (event instanceof FriendRequestCanceledEvent)
+            onFriendRequestCanceled((FriendRequestCanceledEvent) event);
+        else if (event instanceof FriendRequestReceivedEvent)
+            onFriendRequestReceived((FriendRequestReceivedEvent) event);
+        else if (event instanceof FriendRequestIgnoredEvent)
+            onFriendRequestIgnored((FriendRequestIgnoredEvent) event);
 
         //TextChannel Events
         else if (event instanceof TextChannelCreateEvent)
@@ -469,12 +501,16 @@ public abstract class ListenerAdapter implements EventListener
 
         //Generic Events
         //Start a new if statement so that these are no overridden by the above events.
-        if (event instanceof GenericPrivateMessageEvent)
-            onGenericPrivateMessage((GenericPrivateMessageEvent) event);
-        else if (event instanceof GenericGuildMessageEvent)
+        if (event instanceof GenericGuildMessageEvent)
             onGenericGuildMessage((GenericGuildMessageEvent) event);
+        else if (event instanceof GenericPrivateMessageEvent)
+            onGenericPrivateMessage((GenericPrivateMessageEvent) event);
         else if (event instanceof GenericGroupMessageEvent)
             onGenericGroupMessage((GenericGroupMessageEvent) event);
+        else if (event instanceof GenericRelationshipAddEvent)
+            onGenericRelationshipAdd((GenericRelationshipAddEvent) event);
+        else if (event instanceof GenericRelationshipRemoveEvent)
+            onGenericRelationshipRemove((GenericRelationshipRemoveEvent) event);
         else if (event instanceof GenericTextChannelUpdateEvent)
             onGenericTextChannelUpdate((GenericTextChannelUpdateEvent) event);
         else if (event instanceof GenericVoiceChannelUpdateEvent)
@@ -493,21 +529,24 @@ public abstract class ListenerAdapter implements EventListener
 //            onGenericAudio((GenericAudioEvent) event);
 //
         //Generic events that have generic subclasses (the subclasses as above).
-        if (event instanceof GenericUserEvent)
+
+        if (event instanceof GenericMessageEvent)
+            onGenericMessage((GenericMessageEvent) event);
+        else if (event instanceof GenericUserEvent)
             onGenericUser((GenericUserEvent) event);
         else if (event instanceof GenericSelfUpdateEvent)
             onGenericSelfUpdate((GenericSelfUpdateEvent) event);
-        else if (event instanceof GenericMessageEvent)
-            onGenericMessage((GenericMessageEvent) event);
+        else if (event instanceof GenericRelationshipEvent)
+            onGenericRelationship((GenericRelationshipEvent) event);
         else if (event instanceof GenericTextChannelEvent)
             onGenericTextChannel((GenericTextChannelEvent) event);
         else if (event instanceof GenericVoiceChannelEvent)
             onGenericVoiceChannel((GenericVoiceChannelEvent) event);
-        else if (event instanceof GenericGroupEvent)
-            onGenericGroup((GenericGroupEvent) event);
         else if (event instanceof GenericGuildEvent)
             onGenericGuild((GenericGuildEvent) event);
+        else if (event instanceof GenericGroupEvent)
+            onGenericGroup((GenericGroupEvent) event);
         else if (event instanceof GenericRoleEvent)
-            onGenericRoleEvent((GenericRoleEvent) event);
+            onGenericRole((GenericRoleEvent) event);
     }
 }
