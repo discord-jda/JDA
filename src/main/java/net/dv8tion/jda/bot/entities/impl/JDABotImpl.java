@@ -18,26 +18,22 @@ package net.dv8tion.jda.bot.entities.impl;
 
 import net.dv8tion.jda.bot.JDABot;
 import net.dv8tion.jda.core.AccountType;
+import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import org.apache.http.HttpHost;
 
-public class JDABotImpl extends JDAImpl implements JDABot
+public class JDABotImpl implements JDABot
 {
+    protected final JDAImpl api;
 
-    public JDABotImpl(HttpHost proxy, boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled)
+    public JDABotImpl(JDAImpl api)
     {
-        super(proxy, autoReconnect, audioEnabled, useShutdownHook, bulkDeleteSplittingEnabled);
+        this.api = api;
     }
 
     @Override
-    public AccountType getAccountType()
+    public JDA getJDA()
     {
-        return AccountType.BOT;
-    }
-
-    @Override
-    public JDABot asBot()
-    {
-        return this;
+        return api;
     }
 }

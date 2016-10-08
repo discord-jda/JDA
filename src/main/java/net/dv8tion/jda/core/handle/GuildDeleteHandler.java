@@ -16,6 +16,13 @@
 
 package net.dv8tion.jda.core.handle;
 
+import net.dv8tion.jda.client.JDAClient;
+import net.dv8tion.jda.client.entities.Friend;
+import net.dv8tion.jda.client.entities.Group;
+import net.dv8tion.jda.client.entities.Relationship;
+import net.dv8tion.jda.client.entities.RelationshipType;
+import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
+import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.impl.*;
@@ -24,10 +31,7 @@ import net.dv8tion.jda.core.events.guild.GuildUnavailableEvent;
 import net.dv8tion.jda.core.requests.GuildLock;
 import org.json.JSONObject;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class GuildDeleteHandler extends SocketHandler
 {
@@ -53,7 +57,9 @@ public class GuildDeleteHandler extends SocketHandler
         {
             ((GuildImpl) guild).setAvailable(false);
             api.getEventManager().handle(
-                    new GuildUnavailableEvent(api, responseNumber, guild)
+                    new GuildUnavailableEvent(
+                            api, responseNumber,
+                            guild)
             );
             return null;
         }
@@ -62,6 +68,7 @@ public class GuildDeleteHandler extends SocketHandler
 //            api.getAudioManagersMap().remove(guild);
 
         //cleaning up all users that we do not share a guild with anymore
+        // Anything left in memberIds will be removed from the main userMap
         Set<String> memberIds = guild.getMembersMap().keySet();
         for (Guild guildI : api.getGuilds())
         {
@@ -77,20 +84,45 @@ public class GuildDeleteHandler extends SocketHandler
             }
         }
 
-        //TODO: remove memberIds that have Relationships with the logged in account (thus saving them)
+        //If we are a client account, be sure to not remove any users from the cache that are Friends.
+        // Remember, everything left in memberIds is removed from the userMap
+        if (api.getAccountType() == AccountType.CLIENT)
+        {
+            HashMap<String, Relationship> relationships = ((JDAClientImpl) api.asClient()).getRelationshipMap();
+            for (Iterator<String> it = memberIds.iterator(); it.hasNext();)
+            {
+                Relationship rel = relationships.get(it.next());
+                if (rel != null && rel.getType() == RelationshipType.FRIEND)
+                    it.remove();
+            }
+        }
 
         for (String memberId : memberIds)
         {
-            User user = api.getUserMap().remove(memberId);
+            UserImpl user = (UserImpl) api.getUserMap().remove(memberId);
             if (user.hasPrivateChannel())
             {
-                PrivateChannelImpl chan = (PrivateChannelImpl) user.getPrivateChannel();
-                ((UserImpl) user).setFake(true);
-                chan.setFake(true);
+                PrivateChannelImpl priv = (PrivateChannelImpl) user.getPrivateChannel();
+                user.setFake(true);
+                priv.setFake(true);
                 api.getFakeUserMap().put(user.getId(), user);
-                api.getFakePrivateChannelMap().put(chan.getId(), chan);
+                api.getFakePrivateChannelMap().put(priv.getId(), priv);
             }
-
+            else if (api.getAccountType() == AccountType.CLIENT)
+            {
+                //While the user might not have a private channel, if this is a client account then the user
+                // could be in a Group, and if so we need to change the User object to be fake and
+                // place it in the FakeUserMap
+                for (Group grp : api.asClient().getGroups())
+                {
+                    if (grp.getNonFriendUsers().contains(user))
+                    {
+                        user.setFake(true);
+                        api.getFakeUserMap().put(user.getId(), user);
+                        break; //Breaks from groups loop, not memberIds loop
+                    }
+                }
+            }
         }
 
         api.getGuildMap().remove(guild.getId());

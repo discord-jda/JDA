@@ -279,15 +279,8 @@ public class JDABuilder
     {
         jdaCreated = true;
 
-        JDAImpl jda;
-        if (accountType == AccountType.BOT)
-        {
-            jda = new JDABotImpl(proxy, autoReconnect, enableVoice, enableShutdownHook, enableBulkDeleteSplitting);
-        }
-        else
-        {
-            jda = new JDAClientImpl(proxy, autoReconnect, enableVoice, enableShutdownHook, enableBulkDeleteSplitting);
-        }
+        JDAImpl jda = new JDAImpl(accountType, proxy, autoReconnect, enableVoice, enableShutdownHook, enableBulkDeleteSplitting);
+
         if (eventManager != null)
         {
             jda.setEventManager(eventManager);

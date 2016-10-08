@@ -9,34 +9,169 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 
 package net.dv8tion.jda.client.entities.impl;
 
 import net.dv8tion.jda.client.JDAClient;
+import net.dv8tion.jda.client.entities.*;
 import net.dv8tion.jda.core.AccountType;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import org.apache.http.HttpHost;
 
-public class JDAClientImpl extends JDAImpl implements JDAClient
+import javax.management.relation.Relation;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class JDAClientImpl implements JDAClient
 {
-    public JDAClientImpl(HttpHost proxy, boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled)
+    protected final JDAImpl api;
+    protected final HashMap<String, Group> groups = new HashMap<>();
+    protected final HashMap<String, Relationship> relationships = new HashMap<>();
+
+    public JDAClientImpl(JDAImpl api)
     {
-        super(proxy, autoReconnect, audioEnabled, useShutdownHook, bulkDeleteSplittingEnabled);
+        this.api = api;
     }
 
     @Override
-    public AccountType getAccountType()
+    public JDA getJDA()
     {
-        return AccountType.CLIENT;
+        return api;
     }
 
     @Override
-    public JDAClient asClient()
+    public List<Group> getGroups()
     {
-        return this;
+        return Collections.unmodifiableList(
+                new ArrayList<>(
+                        groups.values()));
+    }
+
+    @Override
+    public List<Group> getGroupsByName(String name, boolean ignoreCase)
+    {
+        return Collections.unmodifiableList(groups.values().stream()
+                .filter(g -> g.getName() != null
+                        && (ignoreCase
+                            ? g.getName().equalsIgnoreCase(name)
+                            : g.getName().equals(name)))
+                .collect(Collectors.toList()));
+    }
+
+    @Override
+    public Group getGroupById(String id)
+    {
+        return groups.get(id);
+    }
+
+    @Override
+    public List<Relationship> getRelationships()
+    {
+        return Collections.unmodifiableList(
+                new ArrayList<>(
+                        relationships.values()));
+    }
+
+    @Override
+    public List<Relationship> getRelationships(RelationshipType type)
+    {
+        return Collections.unmodifiableList(relationships.values().stream()
+                .filter(r -> r.getType().equals(type))
+                .collect(Collectors.toList()));
+    }
+
+    @Override
+    public List<Relationship> getRelationships(RelationshipType type, String name, boolean ignoreCase)
+    {
+        return Collections.unmodifiableList(relationships.values().stream()
+                .filter(r -> r.getType().equals(type))
+                .filter(r -> (ignoreCase
+                        ? r.getUser().getName().equalsIgnoreCase(name)
+                        : r.getUser().getName().equals(name)))
+                .collect(Collectors.toList()));
+    }
+
+    @Override
+    public List<Relationship> getRelationshipsByName(String name, boolean ignoreCase)
+    {
+        return Collections.unmodifiableList(relationships.values().stream()
+                .filter(r -> (ignoreCase
+                        ? r.getUser().getName().equalsIgnoreCase(name)
+                        : r.getUser().getName().equals(name)))
+                .collect(Collectors.toList()));
+    }
+
+    @Override
+    public Relationship getRelationship(User user)
+    {
+        return getRelationshipById(user.getId());
+    }
+
+    @Override
+    public Relationship getRelationship(Member member)
+    {
+        return getRelationship(member.getUser());
+    }
+
+    @Override
+    public Relationship getRelationshipById(String id)
+    {
+        return relationships.get(id);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<Friend> getFriends()
+    {
+        return (List<Friend>) (List) getRelationships(RelationshipType.FRIEND);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<Friend> getFriendsByName(String name, boolean ignoreCase)
+    {
+        return (List<Friend>) (List) getRelationships(RelationshipType.FRIEND, name, ignoreCase);
+    }
+
+    @Override
+    public Friend getFriend(User user)
+    {
+        return getFriendById(user.getId());
+    }
+
+    @Override
+    public Friend getFriend(Member member)
+    {
+        return getFriend(member.getUser());
+    }
+
+    @Override
+    public Friend getFriendById(String id)
+    {
+        Relationship r = relationships.get(id);
+        if (r instanceof Friend)
+            return (Friend) r;
+        else
+            return null;
+    }
+
+    public HashMap<String, Group> getGroupMap()
+    {
+        return groups;
+    }
+
+    public HashMap<String, Relationship> getRelationshipMap()
+    {
+        return relationships;
     }
 }

@@ -18,7 +18,10 @@ package net.dv8tion.jda.core.entities.impl;
 
 import com.mashape.unirest.http.Unirest;
 import net.dv8tion.jda.bot.JDABot;
+import net.dv8tion.jda.bot.entities.impl.JDABotImpl;
 import net.dv8tion.jda.client.JDAClient;
+import net.dv8tion.jda.client.entities.Group;
+import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
@@ -39,7 +42,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class JDAImpl implements JDA
+public class JDAImpl implements JDA
 {
     public static final SimpleLog LOG = SimpleLog.getLog("JDA");
 
@@ -51,6 +54,10 @@ public abstract class JDAImpl implements JDA
 
     protected final HashMap<String, User> fakeUsers = new HashMap<>();
     protected final HashMap<String, PrivateChannel> fakePrivateChannels = new HashMap<>();
+
+    protected final AccountType accountType;
+    protected final JDAClient jdaClient;
+    protected final JDABot jdaBot;
 
     protected HttpHost proxy;
     protected WebSocketClient client;
@@ -66,13 +73,17 @@ public abstract class JDAImpl implements JDA
     protected boolean autoReconnect;
     protected long responseTotal;
 
-    public JDAImpl(HttpHost proxy, boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled)
+    public JDAImpl(AccountType accountType, HttpHost proxy, boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled)
     {
+        this.accountType = accountType;
         this.proxy = proxy;
         this.autoReconnect = autoReconnect;
         this.audioEnabled = audioEnabled;
         this.useShutdownHook = useShutdownHook;
         this.bulkDeleteSplittingEnabled = bulkDeleteSplittingEnabled;
+
+        this.jdaClient = accountType == AccountType.CLIENT ? new JDAClientImpl(this) : null;
+        this.jdaBot = accountType == AccountType.BOT ? new JDABotImpl(this) : null;
 
         if (audioEnabled)
             ;   //TODO: setup audio system
@@ -402,13 +413,19 @@ public abstract class JDAImpl implements JDA
     @Override
     public JDAClient asClient()
     {
-        throw new AccountTypeException(AccountType.BOT);
+        if (getAccountType() != AccountType.CLIENT)
+            throw new AccountTypeException(AccountType.CLIENT);
+
+        return jdaClient;
     }
 
     @Override
     public JDABot asBot()
     {
-        throw new AccountTypeException(AccountType.CLIENT);
+        if (getAccountType() != AccountType.BOT)
+            throw new AccountTypeException(AccountType.BOT);
+
+        return jdaBot;
     }
 
     @Override
@@ -427,6 +444,12 @@ public abstract class JDAImpl implements JDA
     public void installAuxiliaryCable(int port) throws UnsupportedOperationException
     {
         throw new UnsupportedOperationException("Nice try m8!");
+    }
+
+    @Override
+    public AccountType getAccountType()
+    {
+        return accountType;
     }
 
     @Override

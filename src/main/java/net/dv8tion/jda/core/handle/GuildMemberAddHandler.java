@@ -51,25 +51,6 @@ public class GuildMemberAddHandler extends SocketHandler
             return null;
         }
 
-        String userId = content.getJSONObject("user").getString("id");
-
-        //If we had a fake version, remove it from the fake mappings and place it in the main UserMap
-        // By placing it into main UserMap, when we make the call to EntityBuilder#createUser, it will just update
-        // the already created object
-        if (api.getFakeUserMap().containsKey(userId))
-        {
-            UserImpl user = (UserImpl) api.getFakeUserMap().remove(userId);
-            user.setFake(false);
-            api.getUserMap().put(user.getId(), user);
-            if (user.hasPrivateChannel())
-            {
-                PrivateChannelImpl priv = (PrivateChannelImpl) user.getPrivateChannel();
-                priv.setFake(false);
-                api.getFakePrivateChannelMap().remove(priv.getId());
-                api.getPrivateChannelMap().put(priv.getId(), priv);
-            }
-        }
-
         Member member = EntityBuilder.get(api).createMember(guild, content);
         api.getEventManager().handle(
                 new GuildMemberJoinEvent(

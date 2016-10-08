@@ -418,6 +418,23 @@ public class EntityBuilder
         if (useCache)
         {
             userObj = ((UserImpl) api.getUserMap().get(id));
+
+            //If we had a fake user, remove it from the fake mappings, make it non-fake. Place it into the main mapping
+            // If it had a PrivateChannel, do the same for it.
+            if (userObj == null && api.getFakeUserMap().containsKey(id))
+            {
+                userObj = (UserImpl) api.getFakeUserMap().remove(id);
+                userObj.setFake(false);
+                api.getUserMap().put(userObj.getId(), userObj);
+                if (userObj.hasPrivateChannel())
+                {
+                    PrivateChannelImpl priv = (PrivateChannelImpl) userObj.getPrivateChannel();
+                    priv.setFake(false);
+                    api.getFakePrivateChannelMap().remove(priv.getId());
+                    api.getPrivateChannelMap().put(priv.getId(), priv);
+                }
+            }
+
             if (userObj == null)
             {
                 userObj = new UserImpl(id, api);

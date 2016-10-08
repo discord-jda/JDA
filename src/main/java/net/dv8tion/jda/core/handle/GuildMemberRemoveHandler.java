@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.core.handle;
 
+import net.dv8tion.jda.client.entities.Group;
+import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
@@ -65,9 +67,12 @@ public class GuildMemberRemoveHandler extends SocketHandler
 //                            vState, channel));
         }
 
-        if (!api.getGuildMap().values().stream().anyMatch(g -> ((GuildImpl) g).getMembersMap().containsKey(userId)))
+        //The user is not in a different guild that we share
+        // The user also is not a friend of this account in the case that the logged in account is a client account.
+        if (!api.getGuildMap().values().stream().anyMatch(g -> ((GuildImpl) g).getMembersMap().containsKey(userId))
+                && !(api.getAccountType() == AccountType.CLIENT && api.asClient().getFriendById(userId) != null))
         {
-            UserImpl user = (UserImpl) member.getUser();
+            UserImpl user = (UserImpl) api.getUserMap().remove(userId);
             if (user.hasPrivateChannel())
             {
                 PrivateChannelImpl priv = (PrivateChannelImpl) user.getPrivateChannel();
@@ -76,7 +81,21 @@ public class GuildMemberRemoveHandler extends SocketHandler
                 api.getFakeUserMap().put(user.getId(), user);
                 api.getFakePrivateChannelMap().put(priv.getId(), priv);
             }
-            api.getUserMap().remove(user.getId());
+            else if (api.getAccountType() == AccountType.CLIENT)
+            {
+                //While the user might not have a private channel, if this is a client account then the user
+                // could be in a Group, and if so we need to change the User object to be fake and
+                // place it in the FakeUserMap
+                for (Group grp : api.asClient().getGroups())
+                {
+                    if (grp.getNonFriendUsers().contains(user))
+                    {
+                        user.setFake(true);
+                        api.getFakeUserMap().put(user.getId(), user);
+                        break; //Breaks from groups loop
+                    }
+                }
+            }
         }
         api.getEventManager().handle(
                 new GuildMemberLeaveEvent(

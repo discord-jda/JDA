@@ -124,7 +124,7 @@ public interface Channel extends ISnowflake
      * of this {@link net.dv8tion.jda.core.entities.Channel Channel}.<br>
      * This combines {@link net.dv8tion.jda.core.entities.User User} and {@link net.dv8tion.jda.core.entities.Role Role} overrides.
      * If you would like only {@link net.dv8tion.jda.core.entities.User} overrides or only {@link net.dv8tion.jda.core.entities.Role Role}
-     * overrides, use {@link #getUserPermissionOverrides()} or {@link #getRolePermissionOverrides()} respectively.
+     * overrides, use {@link #getMemberPermissionOverrides()} ()} or {@link #getRolePermissionOverrides()} respectively.
      *
      * @return
      *      Possibly-empty list of all {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides} for this {@link net.dv8tion.jda.core.entities.Channel Channel}.
