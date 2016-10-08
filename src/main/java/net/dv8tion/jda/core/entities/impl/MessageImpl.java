@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
+import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.Permission;
@@ -37,7 +38,6 @@ public class MessageImpl implements Message
     private final String id;
     private final MessageType type;
     private final MessageChannel channel;
-    private final boolean isPrivate;
     private final boolean fromWebhook;
     private boolean mentionsEveryone = false;
     private boolean isTTS = false;
@@ -66,7 +66,6 @@ public class MessageImpl implements Message
         this.api = (channel != null) ? (JDAImpl) channel.getJDA() : null;
         this.fromWebhook = fromWebhook;
         this.type = type;
-        this.isPrivate = channel instanceof PrivateChannel;
     }
 
     @Override
@@ -167,7 +166,7 @@ public class MessageImpl implements Message
             String tmp = content;
             for (User user : mentionedUsers)
             {
-                if (isPrivate)
+                if (isFromType(ChannelType.PRIVATE) || isFromType(ChannelType.GROUP))
                 {
                     tmp = tmp.replace("<@" + user.getId() + '>', '@' + user.getName())
                             .replace("<@!" + user.getId() + '>', '@' + user.getName());
@@ -199,6 +198,25 @@ public class MessageImpl implements Message
     }
 
     @Override
+    public boolean isFromType(ChannelType type)
+    {
+        return getChannelType() == type;
+    }
+
+    @Override
+    public ChannelType getChannelType()
+    {
+        if (channel instanceof TextChannel)
+            return ChannelType.TEXT;
+        if (channel instanceof  PrivateChannel)
+            return ChannelType.PRIVATE;
+        if (channel instanceof Group)
+            return ChannelType.GROUP;
+
+        return ChannelType.UNKNOWN;
+    }
+
+    @Override
     public MessageChannel getChannel()
     {
         return channel;
@@ -207,19 +225,25 @@ public class MessageImpl implements Message
     @Override
     public PrivateChannel getPrivateChannel()
     {
-        return isPrivate ? (PrivateChannel) channel : null;
+        return isFromType(ChannelType.PRIVATE) ? (PrivateChannel) channel : null;
+    }
+
+    @Override
+    public Group getGroup()
+    {
+        return isFromType(ChannelType.GROUP) ? (Group) channel : null;
     }
 
     @Override
     public TextChannel getTextChannel()
     {
-        return !isPrivate ? (TextChannel) channel : null;
+        return isFromType(ChannelType.TEXT) ? (TextChannel) channel : null;
     }
 
     @Override
     public Guild getGuild()
     {
-        return !isPrivate ? getTextChannel().getGuild() : null;
+        return isFromType(ChannelType.TEXT) ? getTextChannel().getGuild() : null;
     }
 
     @Override
@@ -232,12 +256,6 @@ public class MessageImpl implements Message
     public List<MessageEmbed> getEmbeds()
     {
         return Collections.unmodifiableList(embeds);
-    }
-
-    @Override
-    public boolean isPrivate()
-    {
-        return isPrivate;
     }
 
     @Override
@@ -299,8 +317,8 @@ public class MessageImpl implements Message
     {
         if (!getJDA().getSelfInfo().equals(getAuthor()))
         {
-            if (isPrivate)
-                throw new PermissionException("Cannot delete another User's messages in a PrivateChannel.");
+            if (isFromType(ChannelType.PRIVATE) || isFromType(ChannelType.GROUP))
+                throw new PermissionException("Cannot delete another User's messages in a Group or PrivateChannel.");
             else if (!getGuild().getMember(getJDA().getSelfInfo())
                     .hasPermission((TextChannel) getChannel(), Permission.MESSAGE_MANAGE))
                 throw new PermissionException(Permission.MESSAGE_MANAGE);

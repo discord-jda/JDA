@@ -198,6 +198,11 @@ public class GroupImpl implements Group
         return null;
     }
 
+    public HashMap<String, User> getUserMap()
+    {
+        return userMap;
+    }
+
     public GroupImpl setCurrentCall(Call call)
     {
         this.currentCall = call;

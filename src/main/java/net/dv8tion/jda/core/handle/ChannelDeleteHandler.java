@@ -16,6 +16,10 @@
 
 package net.dv8tion.jda.core.handle;
 
+import net.dv8tion.jda.client.entities.Group;
+import net.dv8tion.jda.client.entities.impl.GroupImpl;
+import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
+import net.dv8tion.jda.client.events.group.GroupLeaveEvent;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
@@ -57,7 +61,7 @@ public class ChannelDeleteHandler extends SocketHandler
                     {
                         handle(responseNumber, allContent);
                     });
-                    EventCache.LOG.debug("CHANNEL_DELETE attempted to delete a channel that doesn't exist! JSON: " + content);
+                    EventCache.LOG.debug("CHANNEL_DELETE attempted to delete a text channel that is not yet cached. JSON: " + content);
                     return null;
                 }
 
@@ -78,7 +82,7 @@ public class ChannelDeleteHandler extends SocketHandler
                     {
                         handle(responseNumber, allContent);
                     });
-                    EventCache.LOG.debug("CHANNEL_DELETE attempted to delete a channel that doesn't exist! JSON: " + content);
+                    EventCache.LOG.debug("CHANNEL_DELETE attempted to delete a voice channel that is not yet cached. JSON: " + content);
                     return null;
                 }
                 //We use this instead of getAudioManager(Guild) so we don't create a new instance. Efficiency!
@@ -108,7 +112,7 @@ public class ChannelDeleteHandler extends SocketHandler
                     {
                         handle(responseNumber, allContent);
                     });
-                    EventCache.LOG.debug("CHANNEL_DELETE attempted to delete a channel that doesn't exist! JSON: " + content);
+                    EventCache.LOG.debug("CHANNEL_DELETE attempted to delete a private channel that is not yet cached. JSON: " + content);
                     return null;
                 }
 
@@ -125,7 +129,37 @@ public class ChannelDeleteHandler extends SocketHandler
             }
             case GROUP:
             {
-                JDAImpl.LOG.debug("Received CHANNEL_DELETE for a group, but JDA doesn't support groups. (Use JDA-Client)");
+                //TODO: close call on group leave (kill audio manager)
+                String groupId = content.getString("id");
+                GroupImpl group = (GroupImpl) ((JDAClientImpl) api.asClient()).getGroupMap().remove(groupId);
+                if (group == null)
+                {
+                    EventCache.get(api).cache(EventCache.Type.CHANNEL, content.getString("id"), () ->
+                    {
+                        handle(responseNumber, allContent);
+                    });
+                    EventCache.LOG.debug("CHANNEL_DELETE attempted to delete a group that is not yet cached. JSON: " + content);
+                    return null;
+                }
+
+                group.getUserMap().forEach((userId, user) ->
+                {
+                    //User is fake, has no privateChannel, is not in a relationship, and is not in any other groups
+                    // then we remove the fake user from the fake cache as it was only in this group
+                    //Note: we getGroups() which gets all groups, however we already removed the current group above.
+                    if (user.isFake()
+                            && !user.hasPrivateChannel()
+                            && api.asClient().getRelationshipById(userId) == null
+                            && api.asClient().getGroups().stream().allMatch(g -> !g.getUsers().contains(user)))
+                    {
+                        api.getFakeUserMap().remove(userId);
+                    }
+                });
+
+                api.getEventManager().handle(
+                        new GroupLeaveEvent(
+                                api, responseNumber,
+                                group));
                 break;
             }
             default:

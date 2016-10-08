@@ -15,6 +15,9 @@
  */
 package net.dv8tion.jda.core.handle;
 
+import net.dv8tion.jda.client.entities.Group;
+import net.dv8tion.jda.client.events.message.group.GroupMessageDeleteEvent;
+import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -45,13 +48,15 @@ public class MessageDeleteHandler extends SocketHandler
             channel = api.getPrivateChannelById(channelId);
         if (channel == null)
             channel = api.getFakePrivateChannelMap().get(channelId);
+        if (channel == null && api.getAccountType() == AccountType.CLIENT)
+            channel = api.asClient().getGroupById(channelId);
         if (channel == null)
         {
             EventCache.get(api).cache(EventCache.Type.CHANNEL, channelId, () ->
             {
                 handle(responseNumber, allContent);
             });
-            EventCache.LOG.debug("Got message update for a channel that is not yet cached. ChannelId: " + channelId);
+            EventCache.LOG.debug("Got message delete for a channel/group that is not yet cached. ChannelId: " + channelId);
             return null;
         }
 
@@ -67,13 +72,21 @@ public class MessageDeleteHandler extends SocketHandler
                             api, responseNumber,
                             messageId, tChan));
         }
-        else
+        else if (channel instanceof PrivateChannel)
         {
             api.getEventManager().handle(
                     new PrivateMessageDeleteEvent(
                             api, responseNumber,
                             messageId, (PrivateChannel) channel));
         }
+        else
+        {
+            api.getEventManager().handle(
+                    new GroupMessageDeleteEvent(
+                            api, responseNumber,
+                            messageId, (Group) channel));
+        }
+
         //Combo event
         api.getEventManager().handle(
                 new MessageDeleteEvent(

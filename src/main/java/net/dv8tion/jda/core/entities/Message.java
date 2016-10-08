@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.core.entities;
 
+import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.Requester;
@@ -130,14 +131,10 @@ public interface Message extends ISnowflake
      */
     String getStrippedContent();
 
-    /**
-     * Checks, whether this Message was sent in a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} (Private Message),
-     * or in a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} (sent in Guild channel)
-     *
-     * @return
-     *      true, if this Message is from a PrivateChannel, false if it is from a TextChannel
-     */
-    boolean isPrivate();
+
+    boolean isFromType(ChannelType type);
+
+    ChannelType getChannelType();
 
     boolean isWebhookMessage();
 
@@ -150,6 +147,8 @@ public interface Message extends ISnowflake
     MessageChannel getChannel();
 
     PrivateChannel getPrivateChannel();
+
+    Group getGroup();
 
     TextChannel getTextChannel();
 

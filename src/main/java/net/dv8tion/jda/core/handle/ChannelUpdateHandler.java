@@ -16,6 +16,10 @@
 
 package net.dv8tion.jda.core.handle;
 
+import net.dv8tion.jda.client.entities.impl.GroupImpl;
+import net.dv8tion.jda.client.events.group.update.GroupUpdateIconEvent;
+import net.dv8tion.jda.client.events.group.update.GroupUpdateNameEvent;
+import net.dv8tion.jda.client.events.group.update.GroupUpdateOwnerEvent;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.*;
 import net.dv8tion.jda.core.events.channel.text.update.TextChannelUpdateNameEvent;
@@ -29,6 +33,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ChannelUpdateHandler extends SocketHandler
@@ -41,6 +46,13 @@ public class ChannelUpdateHandler extends SocketHandler
     @Override
     protected String handleInternally(JSONObject content)
     {
+        ChannelType type = ChannelType.fromId(content.getInt("type"));
+        if (type == ChannelType.GROUP)
+        {
+            handleGroup(content);
+            return null;
+        }
+
         List<Role> changedRoles = new ArrayList<>();
         List<Member> changedMembers = new ArrayList<>();
         List<Role> containedRoles = new ArrayList<>();
@@ -49,7 +61,6 @@ public class ChannelUpdateHandler extends SocketHandler
         String name = content.getString("name");
         int position = content.getInt("position");
         JSONArray permOverwrites = content.getJSONArray("permission_overwrites");
-        ChannelType type = ChannelType.fromId(content.getInt("type"));
         switch (type)
         {
             case TEXT:
@@ -298,6 +309,55 @@ public class ChannelUpdateHandler extends SocketHandler
             }
             default:
                 throw new IllegalArgumentException("CHANNEL_UPDATE provided an unrecognized PermissionOverride type. JSON: " + content);
+        }
+    }
+
+    private void handleGroup(JSONObject content)
+    {
+        String groupId = content.getString("id");
+        String name = !content.isNull("name") ? content.getString("name") : null;
+        String iconId = !content.isNull("icon") ? content.getString("icon") : null;
+        String ownerId = content.getString("owner_id");
+
+        GroupImpl group = (GroupImpl) api.asClient().getGroupById(groupId);
+        if (group == null)
+        {
+            EventCache.get(api).cache(EventCache.Type.CHANNEL, groupId, () ->
+            {
+                handle(responseNumber, allContent);
+            });
+            EventCache.LOG.debug("Recieved CHANNEL_UPDATE for a group that was not yet cached. JSON: " + content);
+            return;
+        }
+
+        User owner = group.getUserMap().get(ownerId);
+
+        if (!Objects.equals(name, group.getName()))
+        {
+            String oldName = group.getName();
+            group.setName(name);
+            api.getEventManager().handle(
+                    new GroupUpdateNameEvent(
+                            api, responseNumber,
+                            group, oldName));
+        }
+        if (!Objects.equals(iconId, group.getIconId()))
+        {
+            String oldIconId = group.getIconId();
+            group.setIconId(iconId);
+            api.getEventManager().handle(
+                    new GroupUpdateIconEvent(
+                            api, responseNumber,
+                            group, oldIconId));
+        }
+        if (!Objects.equals(owner, group.getOwner()))
+        {
+            User oldOwner = group.getOwner();
+            group.setOwner(owner);
+            api.getEventManager().handle(
+                    new GroupUpdateOwnerEvent(
+                            api, responseNumber,
+                            group, oldOwner));
         }
     }
 }

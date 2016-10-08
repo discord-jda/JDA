@@ -15,6 +15,10 @@
  */
 package net.dv8tion.jda.core.handle;
 
+import net.dv8tion.jda.client.entities.Group;
+import net.dv8tion.jda.client.events.message.group.GroupMessageEmbedEvent;
+import net.dv8tion.jda.client.events.message.group.GroupMessageUpdateEvent;
+import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.message.MessageEmbedEvent;
@@ -24,6 +28,7 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.core.events.message.priv.PrivateMessageEmbedEvent;
 import net.dv8tion.jda.core.events.message.priv.PrivateMessageUpdateEvent;
 import net.dv8tion.jda.core.requests.GuildLock;
+import net.dv8tion.jda.core.requests.WebSocketClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -93,25 +98,42 @@ public class MessageUpdateHandler extends SocketHandler
             }
         }
 
-        if (!message.isPrivate())
+        switch (message.getChannelType())
         {
-            TextChannel channel = message.getTextChannel();
-            if (GuildLock.get(api).isLocked(channel.getGuild().getId()))
+            case TEXT:
             {
-                return channel.getGuild().getId();
+                TextChannel channel = message.getTextChannel();
+                if (GuildLock.get(api).isLocked(channel.getGuild().getId()))
+                {
+                    return channel.getGuild().getId();
+                }
+                api.getEventManager().handle(
+                        new GuildMessageUpdateEvent(
+                                api, responseNumber,
+                                message));
+                break;
             }
-            api.getEventManager().handle(
-                    new GuildMessageUpdateEvent(
-                            api, responseNumber,
-                            message));
+            case PRIVATE:
+            {
+                api.getEventManager().handle(
+                        new PrivateMessageUpdateEvent(
+                                api, responseNumber,
+                                message));
+            }
+            case GROUP:
+            {
+                api.getEventManager().handle(
+                        new GroupMessageUpdateEvent(
+                                api, responseNumber,
+                                message));
+                break;
+            }
+
+            default:
+                WebSocketClient.LOG.warn("Received a MESSAGE_UPDATE with a unknown MessageChannel ChannelType. JSON: " + content);
+                return null;
         }
-        else
-        {
-            api.getEventManager().handle(
-                    new PrivateMessageUpdateEvent(
-                            api, responseNumber,
-                            message));
-        }
+
         //Combo event
         api.getEventManager().handle(
                 new MessageUpdateEvent(
@@ -131,13 +153,15 @@ public class MessageUpdateHandler extends SocketHandler
             channel = api.getPrivateChannelMap().get(channelId);
         if (channel == null)
             channel = api.getFakePrivateChannelMap().get(channelId);
+        if (channel == null && api.getAccountType() == AccountType.CLIENT)
+            channel = api.asClient().getGroupById(channelId);
         if (channel == null)
         {
             EventCache.get(api).cache(EventCache.Type.CHANNEL, channelId, () ->
             {
                 handle(responseNumber, allContent);
             });
-            EventCache.LOG.debug("Received message update for embeds for a channel that JDA does not have cached yet.");
+            EventCache.LOG.debug("Received message update for embeds for a channel/group that JDA does not have cached yet.");
             return null;
         }
 
@@ -159,12 +183,19 @@ public class MessageUpdateHandler extends SocketHandler
                             api, responseNumber,
                             messageId, tChannel, embeds));
         }
-        else
+        else if (channel instanceof PrivateChannel)
         {
             api.getEventManager().handle(
                     new PrivateMessageEmbedEvent(
                             api, responseNumber,
                             messageId, (PrivateChannel) channel, embeds));
+        }
+        else
+        {
+            api.getEventManager().handle(
+                    new GroupMessageEmbedEvent(
+                            api, responseNumber,
+                            messageId, (Group) channel, embeds));
         }
         //Combo event
         api.getEventManager().handle(

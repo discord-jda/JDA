@@ -15,6 +15,13 @@
  */
 package net.dv8tion.jda.core.hooks;
 
+import net.dv8tion.jda.client.entities.Group;
+import net.dv8tion.jda.client.events.group.*;
+import net.dv8tion.jda.client.events.group.update.GenericGroupUpdateEvent;
+import net.dv8tion.jda.client.events.group.update.GroupUpdateIconEvent;
+import net.dv8tion.jda.client.events.group.update.GroupUpdateNameEvent;
+import net.dv8tion.jda.client.events.group.update.GroupUpdateOwnerEvent;
+import net.dv8tion.jda.client.events.message.group.*;
 import net.dv8tion.jda.core.events.*;
 import net.dv8tion.jda.core.events.channel.priv.PrivateChannelCreateEvent;
 import net.dv8tion.jda.core.events.channel.priv.PrivateChannelDeleteEvent;
@@ -93,6 +100,12 @@ public abstract class ListenerAdapter implements EventListener
     public void onPrivateMessageDelete(PrivateMessageDeleteEvent event) {}
     public void onPrivateMessageEmbed(PrivateMessageEmbedEvent event) {}
 
+    //Group Message Events
+    public void onGroupMessageReceived(GroupMessageReceivedEvent event) {}
+    public void onGroupMessageUpdate(GroupMessageUpdateEvent event) {}
+    public void onGroupMessageDelete(GroupMessageDeleteEvent event) {}
+    public void onGroupMessageEmbed(GroupMessageEmbedEvent event) {}
+
     //Combined Message Events (Combines Guild and Private message into 1 event)
     public void onMessageReceived(MessageReceivedEvent event) {}
     public void onMessageUpdate(MessageUpdateEvent event) {}
@@ -123,12 +136,23 @@ public abstract class ListenerAdapter implements EventListener
     public void onPrivateChannelCreate(PrivateChannelCreateEvent event) {}
     public void onPrivateChannelDelete(PrivateChannelDeleteEvent event) {}
 
+    //Group Events
+    public void onGroupJoin(GroupJoinEvent event) {}
+    public void onGroupLeave(GroupLeaveEvent event) {}
+    public void onGroupUserJoin(GroupUserJoinEvent event) {}
+    public void onGroupUserLeave(GroupUserLeaveEvent event) {}
+
+    //Group Update Event
+    public void onGroupUpdateIcon(GroupUpdateIconEvent event) {}
+    public void onGroupUpdateName(GroupUpdateNameEvent event){}
+    public void onGroupUpdateOwner(GroupUpdateOwnerEvent event) {}
+
     //Guild Events
     public void onGuildJoin(GuildJoinEvent event) {}
-    public void onUnavailableGuildJoined(UnavailableGuildJoinedEvent event) {}
     public void onGuildLeave(GuildLeaveEvent event) {}
     public void onGuildAvailable(GuildAvailableEvent event) {}
     public void onGuildUnavailable(GuildUnavailableEvent event) {}
+    public void onUnavailableGuildJoined(UnavailableGuildJoinedEvent event) {}
     public void onGuildBan(GuildBanEvent event) {}
     public void onGuildUnban(GuildUnbanEvent event) {}
 
@@ -186,10 +210,13 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericMessage(GenericMessageEvent event) {}
     public void onGenericGuildMessage(GenericGuildMessageEvent event) {}
     public void onGenericPrivateMessage(GenericPrivateMessageEvent event) {}
+    public void onGenericGroupMessage(GenericGroupMessageEvent event) {}
     public void onGenericTextChannel(GenericTextChannelEvent event) {}
     public void onGenericTextChannelUpdate(GenericTextChannelUpdateEvent event) {}
     public void onGenericVoiceChannel(GenericVoiceChannelEvent event) {}
     public void onGenericVoiceChannelUpdate(GenericVoiceChannelUpdateEvent event) {}
+    public void onGenericGroup(GenericGroupEvent event) {}
+    public void onGenericGroupUpdate(GenericGroupUpdateEvent event) {}
     public void onGenericGuild(GenericGuildEvent event) {}
     public void onGenericGuildUpdate(GenericGuildUpdateEvent event) {}
     public void onGenericGuildMember(GenericGuildMemberEvent event) {}
@@ -248,6 +275,7 @@ public abstract class ListenerAdapter implements EventListener
             onGuildMessageDelete((GuildMessageDeleteEvent) event);
         else if (event instanceof GuildMessageEmbedEvent)
             onGuildMessageEmbed((GuildMessageEmbedEvent) event);
+
         //Private Message Events
         else if (event instanceof PrivateMessageReceivedEvent)
             onPrivateMessageReceived((PrivateMessageReceivedEvent) event);
@@ -257,6 +285,17 @@ public abstract class ListenerAdapter implements EventListener
             onPrivateMessageDelete((PrivateMessageDeleteEvent) event);
         else if (event instanceof PrivateMessageEmbedEvent)
             onPrivateMessageEmbed((PrivateMessageEmbedEvent) event);
+
+        //Group Message Events
+        else if (event instanceof GroupMessageReceivedEvent)
+            onGroupMessageReceived((GroupMessageReceivedEvent) event);
+        else if (event instanceof GroupMessageUpdateEvent)
+            onGroupMessageUpdate((GroupMessageUpdateEvent) event);
+        else if (event instanceof GroupMessageDeleteEvent)
+            onGroupMessageDelete((GroupMessageDeleteEvent) event);
+        else if (event instanceof GroupMessageEmbedEvent)
+            onGroupMessageEmbed((GroupMessageEmbedEvent) event);
+
         //Combined Message Events (Combines Guild and Private message into 1 event)
         else if (event instanceof MessageReceivedEvent)
             onMessageReceived((MessageReceivedEvent) event);
@@ -308,17 +347,35 @@ public abstract class ListenerAdapter implements EventListener
         else if (event instanceof PrivateChannelDeleteEvent)
             onPrivateChannelDelete((PrivateChannelDeleteEvent) event);
 
+        //Group Events
+        else if (event instanceof GroupJoinEvent)
+            onGroupJoin((GroupJoinEvent) event);
+        else if (event instanceof GroupLeaveEvent)
+            onGroupLeave((GroupLeaveEvent) event);
+        else if (event instanceof GroupUserJoinEvent)
+            onGroupUserJoin((GroupUserJoinEvent) event);
+        else if (event instanceof GroupUserLeaveEvent)
+            onGroupUserLeave((GroupUserLeaveEvent) event);
+
+        //Group Update Events
+        else if (event instanceof GroupUpdateIconEvent)
+            onGroupUpdateIcon((GroupUpdateIconEvent) event);
+        else if (event instanceof GroupUpdateNameEvent)
+            onGroupUpdateName((GroupUpdateNameEvent) event);
+        else if (event instanceof GroupUpdateOwnerEvent)
+            onGroupUpdateOwner((GroupUpdateOwnerEvent) event);
+
         //Guild Events
         else if (event instanceof GuildJoinEvent)
             onGuildJoin((GuildJoinEvent) event);
-        else if (event instanceof UnavailableGuildJoinedEvent)
-            onUnavailableGuildJoined((UnavailableGuildJoinedEvent) event);
         else if (event instanceof GuildLeaveEvent)
             onGuildLeave((GuildLeaveEvent) event);
         else if (event instanceof GuildAvailableEvent)
             onGuildAvailable((GuildAvailableEvent) event);
         else if (event instanceof GuildUnavailableEvent)
             onGuildUnavailable((GuildUnavailableEvent) event);
+        else if (event instanceof UnavailableGuildJoinedEvent)
+            onUnavailableGuildJoined((UnavailableGuildJoinedEvent) event);
         else if (event instanceof GuildBanEvent)
             onGuildBan((GuildBanEvent) event);
         else if (event instanceof GuildUnbanEvent)
@@ -416,10 +473,14 @@ public abstract class ListenerAdapter implements EventListener
             onGenericPrivateMessage((GenericPrivateMessageEvent) event);
         else if (event instanceof GenericGuildMessageEvent)
             onGenericGuildMessage((GenericGuildMessageEvent) event);
+        else if (event instanceof GenericGroupMessageEvent)
+            onGenericGroupMessage((GenericGroupMessageEvent) event);
         else if (event instanceof GenericTextChannelUpdateEvent)
             onGenericTextChannelUpdate((GenericTextChannelUpdateEvent) event);
         else if (event instanceof GenericVoiceChannelUpdateEvent)
             onGenericVoiceChannelUpdate((GenericVoiceChannelUpdateEvent) event);
+        else if (event instanceof GenericGroupUpdateEvent)
+            onGenericGroupUpdate((GenericGroupUpdateEvent) event);
         else if (event instanceof GenericGuildUpdateEvent)
             onGenericGuildUpdate((GenericGuildUpdateEvent) event);
         else if (event instanceof GenericGuildMemberEvent)
@@ -442,6 +503,8 @@ public abstract class ListenerAdapter implements EventListener
             onGenericTextChannel((GenericTextChannelEvent) event);
         else if (event instanceof GenericVoiceChannelEvent)
             onGenericVoiceChannel((GenericVoiceChannelEvent) event);
+        else if (event instanceof GenericGroupEvent)
+            onGenericGroup((GenericGroupEvent) event);
         else if (event instanceof GenericGuildEvent)
             onGenericGuild((GenericGuildEvent) event);
         else if (event instanceof GenericRoleEvent)

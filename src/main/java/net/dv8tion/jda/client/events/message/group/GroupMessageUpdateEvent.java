@@ -14,23 +14,15 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.client.entities;
+package net.dv8tion.jda.client.events.message.group;
 
-import net.dv8tion.jda.core.OnlineStatus;
-import net.dv8tion.jda.core.entities.Game;
-import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.Message;
 
-import java.time.OffsetDateTime;
-
-public interface Friend extends Relationship
+public class GroupMessageUpdateEvent extends GenericGroupMessageEvent
 {
-    OnlineStatus getOnlineStatus();
-
-    OffsetDateTime getOnlineStatusModifiedTime();
-
-    Game getGame();
-
-    RestAction removeFriend();
-
-    //Create new Group
+    public GroupMessageUpdateEvent(JDA api, long responseNumber, Message message)
+    {
+        super(api, responseNumber, message, message.getGroup());
+    }
 }

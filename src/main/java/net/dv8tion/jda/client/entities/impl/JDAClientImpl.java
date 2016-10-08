@@ -130,6 +130,16 @@ public class JDAClientImpl implements JDAClient
     }
 
     @Override
+    public Relationship getRelationshipById(String id, RelationshipType type)
+    {
+        Relationship relationship = getRelationshipById(id);
+        if (relationship != null && relationship.getType() == type)
+            return relationship;
+        else
+            return null;
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public List<Friend> getFriends()
     {
@@ -158,11 +168,7 @@ public class JDAClientImpl implements JDAClient
     @Override
     public Friend getFriendById(String id)
     {
-        Relationship r = relationships.get(id);
-        if (r instanceof Friend)
-            return (Friend) r;
-        else
-            return null;
+        return (Friend) getRelationshipById(id, RelationshipType.FRIEND);
     }
 
     public HashMap<String, Group> getGroupMap()

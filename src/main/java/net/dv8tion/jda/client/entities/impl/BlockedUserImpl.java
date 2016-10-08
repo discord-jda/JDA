@@ -14,23 +14,37 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.client.entities;
+package net.dv8tion.jda.client.entities.impl;
 
-import net.dv8tion.jda.core.OnlineStatus;
-import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.client.entities.BlockedUser;
+import net.dv8tion.jda.client.entities.RelationshipType;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.requests.RestAction;
 
-import java.time.OffsetDateTime;
-
-public interface Friend extends Relationship
+public class BlockedUserImpl implements BlockedUser
 {
-    OnlineStatus getOnlineStatus();
+    private final User user;
 
-    OffsetDateTime getOnlineStatusModifiedTime();
+    public BlockedUserImpl(User user)
+    {
+        this.user = user;
+    }
 
-    Game getGame();
+    @Override
+    public RelationshipType getType()
+    {
+        return RelationshipType.BLOCKED;
+    }
 
-    RestAction removeFriend();
+    @Override
+    public User getUser()
+    {
+        return user;
+    }
 
-    //Create new Group
+    @Override
+    public RestAction unblockUser()
+    {
+        return null;
+    }
 }

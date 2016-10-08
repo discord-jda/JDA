@@ -16,15 +16,23 @@
 
 package net.dv8tion.jda.core.handle;
 
+import net.dv8tion.jda.client.entities.Relationship;
+import net.dv8tion.jda.client.entities.RelationshipType;
+import net.dv8tion.jda.client.entities.impl.FriendImpl;
 import net.dv8tion.jda.core.AccountType;
+import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.requests.WebSocketClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TimeZone;
 
 public class ReadyHandler extends SocketHandler
 {
@@ -83,20 +91,6 @@ public class ReadyHandler extends SocketHandler
                 builder.createGuildFirstPass(guild, this::guildSetupComplete);
         }
 
-        if (api.getAccountType() == AccountType.BOT)
-        {
-
-        }
-        else
-        {
-            //GuildSync
-            //GuildMemberChunk
-
-            //Client
-            JSONArray presences = content.getJSONArray("presences");
-            JSONArray relationships = content.getJSONArray("relationships");
-            JSONObject notes = content.getJSONObject("notes");
-        }
         if (guilds.length() == 0)
             guildLoadComplete(content);
 
@@ -105,16 +99,56 @@ public class ReadyHandler extends SocketHandler
 
     public void guildLoadComplete(JSONObject content)
     {
+        EntityBuilder builder = EntityBuilder.get(api);
         JSONArray privateChannels = content.getJSONArray("private_channels");
 
-        EntityBuilder builder = EntityBuilder.get(api);
-        for (int i = 0; i < privateChannels.length(); i++)
+        if (api.getAccountType() == AccountType.CLIENT)
         {
-            builder.createPrivateChannel(privateChannels.getJSONObject(i));
+            JSONArray relationships = content.getJSONArray("relationships");
+            JSONArray presences = content.getJSONArray("presences");
+            JSONObject notes = content.getJSONObject("notes");
+            JSONArray readstates = content.has("read_state") ? content.getJSONArray("read_state") : null;
+            JSONArray guildSettings = content.has("user_guild_settings") ? content.getJSONArray("user_guild_settings") : null;
+
+            for (int i = 0; i < relationships.length(); i++)
+            {
+                JSONObject relationship = relationships.getJSONObject(i);
+                Relationship r = builder.createRelationship(relationship);
+                if (r == null)
+                    JDAImpl.LOG.fatal("Provided relationship in READY with an unknown type! JSON: " + relationship.toString());
+            }
+
+            for (int i = 0; i < presences.length(); i++)
+            {
+                JSONObject presence = presences.getJSONObject(i);
+                String userId = presence.getJSONObject("user").getString("id");
+                FriendImpl friend = (FriendImpl) api.asClient().getFriendById(userId);
+                if (friend == null)
+                    WebSocketClient.LOG.warn("Received a presence in the Presences array in READY that did not corrospond to a cached Friend! JSON: " + presence);
+                else
+                    builder.createPresence(friend, presence);
+            }
         }
 
-        JSONArray readstates = content.has("read_state") ? content.getJSONArray("read_state") : null;
-        JSONArray guildSettings = content.has("user_guild_settings") ? content.getJSONArray("user_guild_settings") : null;
+        for (int i = 0; i < privateChannels.length(); i++)
+        {
+            JSONObject chan = privateChannels.getJSONObject(i);
+            ChannelType type = ChannelType.fromId(chan.getInt("type"));
+
+            switch (type)
+            {
+                case PRIVATE:
+                    builder.createPrivateChannel(chan);
+                    break;
+                case GROUP:
+                    builder.createGroup(chan);
+                    break;
+                default:
+                    WebSocketClient.LOG.warn("Received a Channel in the priv_channels array in READY of an unknown type! JSON: " + type);
+            }
+
+        }
+
         api.getClient().ready();
     }
 

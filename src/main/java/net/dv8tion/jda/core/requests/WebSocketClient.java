@@ -17,6 +17,9 @@
 package net.dv8tion.jda.core.requests;
 
 import com.neovisionaries.ws.client.*;
+import net.dv8tion.jda.client.handle.ChannelRecipientAddHandler;
+import net.dv8tion.jda.client.handle.ChannelRecipientRemoveHandler;
+import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
@@ -734,6 +737,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         handlers.put("READY",               new ReadyHandler(api));
         handlers.put("TYPING_START",        new TypingStartHandler(api));
         handlers.put("USER_UPDATE",         new UserUpdateHandler(api));
+
+        if (api.getAccountType() == AccountType.CLIENT)
+        {
+            handlers.put("CHANNEL_RECIPIENT_ADD",    new ChannelRecipientAddHandler(api));
+            handlers.put("CHANNEL_RECIPIENT_REMOVE", new ChannelRecipientRemoveHandler(api));
+        }
     }
 }
 

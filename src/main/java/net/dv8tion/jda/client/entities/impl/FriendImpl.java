@@ -23,11 +23,14 @@ import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.requests.RestAction;
 
+import java.time.OffsetDateTime;
+
 public class FriendImpl implements Friend
 {
     private final User user;
 
     private OnlineStatus onlineStatus = OnlineStatus.OFFLINE;
+    private OffsetDateTime lastModifiedTime;
     private Game game;
 
     public FriendImpl(User user)
@@ -48,13 +51,19 @@ public class FriendImpl implements Friend
     }
 
     @Override
-    public RestAction removeFriend()
+    public OnlineStatus getOnlineStatus()
     {
-        return null;
+        return onlineStatus;
     }
 
     @Override
-    public OnlineStatus getOnlineStatus()
+    public OffsetDateTime getOnlineStatusModifiedTime()
+    {
+        return lastModifiedTime;
+    }
+
+    @Override
+    public RestAction removeFriend()
     {
         return null;
     }
@@ -62,7 +71,7 @@ public class FriendImpl implements Friend
     @Override
     public Game getGame()
     {
-        return null;
+        return game;
     }
 
     public FriendImpl setOnlineStatus(OnlineStatus onlineStatus)
@@ -74,6 +83,12 @@ public class FriendImpl implements Friend
     public FriendImpl setGame(Game game)
     {
         this.game = game;
+        return this;
+    }
+
+    public FriendImpl setOnlineStatusModifiedTime(OffsetDateTime lastModifiedTime)
+    {
+        this.lastModifiedTime = lastModifiedTime;
         return this;
     }
 }

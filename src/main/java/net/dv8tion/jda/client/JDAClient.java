@@ -41,6 +41,7 @@ public interface JDAClient
     Relationship getRelationship(User user);
     Relationship getRelationship(Member member);
     Relationship getRelationshipById(String id);
+    Relationship getRelationshipById(String id, RelationshipType type);
 
     List<Friend> getFriends();
     List<Friend> getFriendsByName(String name, boolean ignoreCase);

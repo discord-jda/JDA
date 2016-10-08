@@ -16,6 +16,11 @@
 
 package net.dv8tion.jda.core.entities;
 
+import net.dv8tion.jda.client.entities.Friend;
+import net.dv8tion.jda.client.entities.Group;
+import net.dv8tion.jda.client.entities.Relationship;
+import net.dv8tion.jda.client.entities.RelationshipType;
+import net.dv8tion.jda.client.entities.impl.*;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
@@ -23,6 +28,7 @@ import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.MessageEmbed.Provider;
 import net.dv8tion.jda.core.entities.MessageEmbed.Thumbnail;
 import net.dv8tion.jda.core.entities.impl.*;
+import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.handle.GuildMembersChunkHandler;
 import net.dv8tion.jda.core.handle.ReadyHandler;
 import net.dv8tion.jda.core.requests.GuildLock;
@@ -31,6 +37,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.awt.*;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.List;
@@ -81,7 +88,7 @@ public class EntityBuilder
         return (SelfInfo) selfInfo
                 .setVerified(self.getBoolean("verified"))
                 .setMfaEnabled(self.getBoolean("mfa_enabled"))
-                .setEmail(self.has("email") ? self.getString("email") : null)
+                .setEmail(!self.isNull("email") ? self.getString("email") : null)
                 .setName(self.getString("username"))
                 .setDiscriminator(self.getString("discriminator"))
                 .setAvatarId(self.isNull("avatar") ? null : self.getString("avatar"))
@@ -165,14 +172,11 @@ public class EntityBuilder
             {
                 JSONObject presence = presences.getJSONObject(i);
                 MemberImpl member = (MemberImpl) guildObj.getMembersMap().get(presence.getJSONObject("user").getString("id"));
-//                if (member == null)
-//                {
-//                    //corresponding user to presence not found... ignoring
-//                    continue;
-//                }
+
                 if (member == null)
                     WebSocketClient.LOG.fatal("Received a Presence for a non-existent Member when dealing with GuildFirstPass!");
-                createPresence(member, presence);
+                else
+                    createPresence(member, presence);
             }
         }
 
@@ -409,47 +413,51 @@ public class EntityBuilder
         }
     }
 
-    public User createFakeUser(JSONObject user) { return createUser(user, false); }
-    public User createUser(JSONObject user)     { return createUser(user, true); }
-    private User createUser(JSONObject user, boolean useCache)
+    public User createFakeUser(JSONObject user, boolean modifyCache) { return createUser(user, true, modifyCache); }
+    public User createUser(JSONObject user)     { return createUser(user, false, true); }
+    private User createUser(JSONObject user, boolean fake, boolean modifyCache)
     {
         String id = user.getString("id");
         UserImpl userObj;
-        if (useCache)
-        {
-            userObj = ((UserImpl) api.getUserMap().get(id));
 
-            //If we had a fake user, remove it from the fake mappings, make it non-fake. Place it into the main mapping
-            // If it had a PrivateChannel, do the same for it.
-            if (userObj == null && api.getFakeUserMap().containsKey(id))
+        userObj = (UserImpl) api.getUserMap().get(id);
+        if (userObj == null)
+        {
+            userObj = (UserImpl) api.getFakeUserMap().get(id);
+            if (userObj != null)
             {
-                userObj = (UserImpl) api.getFakeUserMap().remove(id);
-                userObj.setFake(false);
-                api.getUserMap().put(userObj.getId(), userObj);
-                if (userObj.hasPrivateChannel())
+                if (!fake && modifyCache)
                 {
-                    PrivateChannelImpl priv = (PrivateChannelImpl) userObj.getPrivateChannel();
-                    priv.setFake(false);
-                    api.getFakePrivateChannelMap().remove(priv.getId());
-                    api.getPrivateChannelMap().put(priv.getId(), priv);
+                    api.getFakeUserMap().remove(id);
+                    userObj.setFake(false);
+                    api.getUserMap().put(userObj.getId(), userObj);
+                    if (userObj.hasPrivateChannel())
+                    {
+                        PrivateChannelImpl priv = (PrivateChannelImpl) userObj.getPrivateChannel();
+                        priv.setFake(false);
+                        api.getFakePrivateChannelMap().remove(priv.getId());
+                        api.getPrivateChannelMap().put(priv.getId(), priv);
+                    }
                 }
             }
-
-            if (userObj == null)
+            else
             {
-                userObj = new UserImpl(id, api);
-                api.getUserMap().put(id, userObj);
+                userObj = new UserImpl(id, api).setFake(fake);
+                if (modifyCache)
+                {
+                    if (fake)
+                        api.getFakeUserMap().put(id, userObj);
+                    else
+                        api.getUserMap().put(id, userObj);
+                }
             }
         }
-        else
-            userObj = new UserImpl(id, api);
 
         return userObj
                 .setName(user.getString("username"))
                 .setDiscriminator(user.get("discriminator").toString())
                 .setAvatarId(user.isNull("avatar") ? null : user.getString("avatar"))
-                .setBot(user.has("bot") && user.getBoolean("bot"))
-                .setFake(!useCache);
+                .setBot(user.has("bot") && user.getBoolean("bot"));
     }
 
     public Member createMember(GuildImpl guild, JSONObject memberJson)
@@ -490,10 +498,15 @@ public class EntityBuilder
         return member;
     }
 
-    public void createPresence(MemberImpl member, JSONObject presenceJson)
+    //Effectively the same as createFriendPresence
+    public void createPresence(Object memberOrFriend, JSONObject presenceJson)
     {
+        if (memberOrFriend == null)
+            throw new NullPointerException("Provided memberOrFriend was null!");
+
         JSONObject gameJson = presenceJson.isNull("game") ? null: presenceJson.getJSONObject("game");
-        member.setOnlineStatus(OnlineStatus.fromKey(presenceJson.getString("status")));
+        OnlineStatus onlineStatus = OnlineStatus.fromKey(presenceJson.getString("status"));
+        Game game = null;
 
         if (gameJson != null && !gameJson.isNull("name"))
         {
@@ -505,8 +518,28 @@ public class EntityBuilder
                     ? Game.GameType.DEFAULT
                     : Game.GameType.fromKey(gameJson.getInt("type"));
 
-            member.setGame(new GameImpl(gameName, url, gameType));
+            game = new GameImpl(gameName, url, gameType);
         }
+        if (memberOrFriend instanceof Member)
+        {
+            MemberImpl member = (MemberImpl) memberOrFriend;
+            member.setOnlineStatus(onlineStatus);
+            member.setGame(game);
+        }
+        else if (memberOrFriend instanceof Friend)
+        {
+            FriendImpl friend = (FriendImpl) memberOrFriend;
+            friend.setOnlineStatus(onlineStatus);
+            friend.setGame(game);
+
+            OffsetDateTime lastModified = OffsetDateTime.ofInstant(
+                    Instant.ofEpochMilli(presenceJson.getLong("last_modified")),
+                    TimeZone.getTimeZone("GMT").toZoneId());
+
+            friend.setOnlineStatusModifiedTime(lastModified);
+        }
+        else
+            throw new IllegalArgumentException("An object was provided to EntityBuilder#createPresence that wasn't a Member or Friend. JSON: " + presenceJson);
     }
 
     public TextChannel createTextChannel(JSONObject json, String guildId)
@@ -553,8 +586,7 @@ public class EntityBuilder
         if (user == null)
         {   //The API can give us private channels connected to Users that we can no longer communicate with.
             // As such, make a fake user and fake private channel.
-            user = (UserImpl) createFakeUser(recipient);
-            api.getFakeUserMap().put(user.getId(), user);
+            user = (UserImpl) createFakeUser(recipient, true);
         }
 
         PrivateChannelImpl priv = new PrivateChannelImpl(privatechat.getString("id"), user);
@@ -595,6 +627,7 @@ public class EntityBuilder
         String content = jsonObject.getString("content");
         String channelId = jsonObject.getString("channel_id");
         JSONObject author = jsonObject.getJSONObject("author");
+        String authorId = author.getString("id");
         boolean fromWebhook = jsonObject.has("webhook_id");
         MessageChannel chan = api.getTextChannelById(channelId);
         if (chan == null)
@@ -613,6 +646,8 @@ public class EntityBuilder
                         .setBot(author.has("bot") && author.getBoolean("bot"));
             }
         }
+        if (chan == null && api.getAccountType() == AccountType.CLIENT)
+            chan = api.asClient().getGroupById(channelId);
         if (chan == null)
             throw new IllegalArgumentException(MISSING_CHANNEL);
 
@@ -624,14 +659,24 @@ public class EntityBuilder
                 .setPinned(jsonObject.getBoolean("pinned"));
         if (chan instanceof PrivateChannel)
             message.setAuthor(((PrivateChannel) chan).getUser());
+        else if (chan instanceof Group)
+        {
+            User user = api.getUserMap().get(authorId);
+            if (user == null)
+                user = api.getFakeUserMap().get(authorId);
+            if (user == null)
+                throw new IllegalArgumentException(MISSING_USER);
+            message.setAuthor(user);
+        }
         else
         {
             GuildImpl guild = (GuildImpl) ((TextChannel) chan).getGuild();
-            User user = api.getUserMap().get(author.getString("id"));
+            Member member = guild.getMembersMap().get(authorId);
+            User user = member != null ? member.getUser() : null;
             if (user != null)
                 message.setAuthor(user);
             else if (fromWebhook)
-                message.setAuthor(createFakeUser(author));
+                message.setAuthor(createFakeUser(author, false));
             else
                 throw new IllegalArgumentException(MISSING_USER);
         }
@@ -665,7 +710,7 @@ public class EntityBuilder
         if (!jsonObject.isNull("edited_timestamp"))
             message.setEditedTime(OffsetDateTime.parse(jsonObject.getString("edited_timestamp")));
 
-        if (!message.isPrivate())
+        if (message.isFromType(ChannelType.TEXT))
         {
             TextChannel textChannel = message.getTextChannel();
             TreeMap<Integer, User> mentionedUsers = new TreeMap<>();
@@ -809,6 +854,81 @@ public class EntityBuilder
         }
         return permOverride.setAllow(allow)
                 .setDeny(deny);
+    }
+
+    public Relationship createRelationship(JSONObject relationshipJson)
+    {
+        if (api.getAccountType() != AccountType.CLIENT)
+            throw new AccountTypeException(AccountType.CLIENT, "Attempted to create a Relationship but the logged in account is not a CLIENT!");
+
+        RelationshipType type = RelationshipType.fromKey(relationshipJson.getInt("type"));
+        User user;
+        if (type == RelationshipType.FRIEND)
+            user = createUser(relationshipJson.getJSONObject("user"));
+        else
+            user = createFakeUser(relationshipJson.getJSONObject("user"), true);
+
+        Relationship relationship = api.asClient().getRelationshipById(user.getId(), type);
+        if (relationship == null)
+        {
+            switch (type)
+            {
+                case FRIEND:
+                    relationship = new FriendImpl(user);
+                    break;
+                case BLOCKED:
+                    relationship = new BlockedUserImpl(user);
+                    break;
+                case INCOMING_FRIEND_REQUEST:
+                    relationship = new IncomingFriendRequestImpl(user);
+                    break;
+                case OUTGOING_FRIEND_REQUEST:
+                    relationship = new OutgoingFriendRequestImpl(user);
+                    break;
+                default:
+                    return null;
+            }
+            ((JDAClientImpl) api.asClient()).getRelationshipMap().put(user.getId(), relationship);
+        }
+        return relationship;
+    }
+
+    public Group createGroup(JSONObject groupJson)
+    {
+        if (api.getAccountType() != AccountType.CLIENT)
+            throw new AccountTypeException(AccountType.CLIENT, "Attempted to create a Group but the logged in account is not a CLIENT!");
+
+        String groupId = groupJson.getString("id");
+        JSONArray recipients = groupJson.getJSONArray("recipients");
+        String ownerId = groupJson.getString("owner_id");
+        String name = !groupJson.isNull("name") ? groupJson.getString("name") : null;
+        String iconId = !groupJson.isNull("icon") ? groupJson.getString("icon") : null;
+
+        GroupImpl group = (GroupImpl) api.asClient().getGroupById(groupId);
+        if (group == null)
+        {
+            group = new GroupImpl(groupId, api);
+            ((JDAClientImpl) api.asClient()).getGroupMap().put(groupId, group);
+        }
+
+        HashMap<String, User> groupUsers = group.getUserMap();
+        groupUsers.put(api.getSelfInfo().getId(), api.getSelfInfo());
+        for (int i = 0; i < recipients.length(); i++)
+        {
+            JSONObject groupUser = recipients.getJSONObject(i);
+            groupUsers.put(groupUser.getString("id"), createFakeUser(groupUser, true));
+        }
+
+        User owner = api.getUserMap().get(ownerId);
+        if (owner == null)
+            owner = api.getFakeUserMap().get(ownerId);
+        if (owner == null)
+            throw new IllegalArgumentException("Attempted to build a Group, but could not find user by provided owner id." +
+                    "This should not be possible because the owner should be IN the group!");
+
+        return group.setOwner(owner)
+                .setName(name)
+                .setIconId(iconId);
     }
 
     public void clearCache()

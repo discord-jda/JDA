@@ -35,6 +35,16 @@ public class MessageUpdateEvent extends Event
         this.message = message;
     }
 
+    public boolean isFromType(ChannelType channelType)
+    {
+        return message.isFromType(channelType);
+    }
+
+    public ChannelType getChannelType()
+    {
+        return message.getChannelType();
+    }
+
     public Message getMessage()
     {
         return message;
@@ -47,12 +57,7 @@ public class MessageUpdateEvent extends Event
 
     public Member getMember()
     {
-        return !isPrivate() ? getGuild().getMember(getAuthor()) : null;
-    }
-
-    public boolean isPrivate()
-    {
-        return message.isPrivate();
+        return  isFromType(ChannelType.TEXT) ? getGuild().getMember(getAuthor()) : null;
     }
 
     public MessageChannel getChannel()

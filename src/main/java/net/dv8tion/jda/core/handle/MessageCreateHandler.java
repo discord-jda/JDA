@@ -15,10 +15,8 @@
  */
 package net.dv8tion.jda.core.handle;
 
-import net.dv8tion.jda.core.entities.EntityBuilder;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageType;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.client.events.message.group.GroupMessageReceivedEvent;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 //import net.dv8tion.jda.core.events.InviteReceivedEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -28,6 +26,7 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.core.requests.GuildLock;
 //import net.dv8tion.jda.core.utils.InviteUtil;
+import net.dv8tion.jda.core.requests.WebSocketClient;
 import org.json.JSONObject;
 
 import java.util.regex.Pattern;
@@ -90,25 +89,42 @@ public class MessageCreateHandler extends SocketHandler
             }
         }
 
-        if (!message.isPrivate())
+        switch (message.getChannelType())
         {
-            TextChannel channel = message.getTextChannel();
-            if (GuildLock.get(api).isLocked(channel.getGuild().getId()))
+            case TEXT:
             {
-                return channel.getGuild().getId();
+                TextChannel channel = message.getTextChannel();
+                if (GuildLock.get(api).isLocked(channel.getGuild().getId()))
+                {
+                    return channel.getGuild().getId();
+                }
+                api.getEventManager().handle(
+                        new GuildMessageReceivedEvent(
+                                api, responseNumber,
+                                message));
+                break;
             }
-            api.getEventManager().handle(
-                    new GuildMessageReceivedEvent(
-                            api, responseNumber,
-                            message));
+            case PRIVATE:
+            {
+                api.getEventManager().handle(
+                        new PrivateMessageReceivedEvent(
+                                api, responseNumber,
+                                message));
+                break;
+            }
+            case GROUP:
+            {
+                api.getEventManager().handle(
+                        new GroupMessageReceivedEvent(
+                                api, responseNumber,
+                                message));
+                break;
+            }
+            default:
+                WebSocketClient.LOG.warn("Received a MESSAGE_CREATE with a unknown MessageChannel ChannelType. JSON: " + content);
+                return null;
         }
-        else
-        {
-            api.getEventManager().handle(
-                    new PrivateMessageReceivedEvent(
-                            api, responseNumber,
-                            message));
-        }
+
         //Combo event
         api.getEventManager().handle(
                 new MessageReceivedEvent(

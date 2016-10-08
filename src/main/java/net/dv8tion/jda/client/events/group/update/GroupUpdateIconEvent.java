@@ -14,36 +14,29 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.client.entities;
+package net.dv8tion.jda.client.events.group.update;
 
-public enum RelationshipType
+import net.dv8tion.jda.client.entities.Group;
+import net.dv8tion.jda.core.JDA;
+
+public class GroupUpdateIconEvent extends GenericGroupUpdateEvent
 {
-    NO_RELATIONSHIP(0),
-    FRIEND(1),
-    BLOCKED(2),
-    INCOMING_FRIEND_REQUEST(3),
-    OUTGOING_FRIEND_REQUEST(4),
-    UNKNOWN(-1);
+    protected final String oldIconId;
 
-    private final int key;
-
-    private RelationshipType(int key)
+    public GroupUpdateIconEvent(JDA api, long responseNumber, Group group, String oldIconId)
     {
-        this.key = key;
+        super(api, responseNumber, group);
+        this.oldIconId = oldIconId;
     }
 
-    public int getKey()
+    public String getOldIconId()
     {
-        return key;
+        return oldIconId;
     }
 
-    public static RelationshipType fromKey(int key)
+    public String getOldIconUrl()
     {
-        for (RelationshipType type : values())
-        {
-            if (type.getKey() == key)
-                return type;
-        }
-        return UNKNOWN;
+        return oldIconId == null ? null :
+                "https://cdn.discordapp.com/channel-icons/" + group.getId() + "/" + oldIconId + ".jpg";
     }
 }

@@ -39,7 +39,7 @@ public class EventCache
         return cache;
     }
 
-    protected void cache(Type type, String triggerId, Runnable handler)
+    public void cache(Type type, String triggerId, Runnable handler)
     {
         HashMap<String, List<Runnable>> triggerCache = eventCache.get(type);
         if (triggerCache == null)
@@ -58,7 +58,7 @@ public class EventCache
         items.add(handler);
     }
 
-    protected void playbackCache(Type type, String triggerId)
+    public void playbackCache(Type type, String triggerId)
     {
         List<Runnable> items;
         try
@@ -101,7 +101,7 @@ public class EventCache
         eventCache.clear();
     }
 
-    enum Type
+    public enum Type
     {
         USER, GUILD, CHANNEL, ROLE
     }

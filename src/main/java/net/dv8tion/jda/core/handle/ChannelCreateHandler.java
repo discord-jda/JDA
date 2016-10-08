@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.handle;
 
+import net.dv8tion.jda.client.events.group.GroupJoinEvent;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
@@ -70,7 +71,10 @@ public class ChannelCreateHandler extends SocketHandler
             }
             case GROUP:
             {
-                JDAImpl.LOG.debug("Received GROUP channel create. Ignoring because JDA doesn't support groups. (Use JDA-Client)");
+                api.getEventManager().handle(
+                        new GroupJoinEvent(
+                                api, responseNumber,
+                                EntityBuilder.get(api).createGroup(content)));
                 break;
             }
             default:
