@@ -93,9 +93,8 @@ public interface Guild extends ISnowflake
     boolean isMember(User user);
 
     Member getMember(User user);
-
     Member getMemberById(String userId);
-
+    List<Member> getMembers();
     List<Member> getMembersByName(String name, boolean ignoreCase);
     List<Member> getMembersByNickname(String nickname, boolean ignoreCase);
     List<Member> getMembersByEffectiveName(String name, boolean ignoreCase);
@@ -103,8 +102,7 @@ public interface Guild extends ISnowflake
     List<Member> getMembersWithRoles(Collection<Role> roles);
 
 
-    List<Member> getMembers();
-
+    TextChannel getTextChannelById(String id);
     /**
      * The {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} available on the {@link net.dv8tion.jda.core.entities.Guild Guild}.
      * The channels returned will be sorted according to their position.
@@ -113,6 +111,7 @@ public interface Guild extends ISnowflake
      *      An Immutable List of {@link net.dv8tion.jda.core.entities.TextChannel TextChannels}.
      */
     List<TextChannel> getTextChannels();
+    List<TextChannel> getTextChannelsByName(String name, boolean ignoreCase);
 //
 //    /**
 //     * Creates a new {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} in this Guild.
@@ -127,6 +126,7 @@ public interface Guild extends ISnowflake
 //     */
 //    ChannelManager createTextChannel(String name);
 //
+    VoiceChannel getVoiceChannelById(String id);
     /**
      * The {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels} available on the {@link net.dv8tion.jda.core.entities.Guild Guild}.
      * The channels returned will be sorted according to their position.
@@ -135,6 +135,7 @@ public interface Guild extends ISnowflake
      *      An Immutable List of {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels}.
      */
     List<VoiceChannel> getVoiceChannels();
+    List<VoiceChannel> getVoiceChannelsByName(String name, boolean ignoreCase);
 //
 //    /**
 //     * Creates a new {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} in this Guild.
@@ -150,15 +151,6 @@ public interface Guild extends ISnowflake
 //    ChannelManager createVoiceChannel(String name);
 
     /**
-     * The {@link net.dv8tion.jda.core.entities.Role Roles} of this {@link net.dv8tion.jda.core.entities.Guild Guild}.
-     * The roles returned will be sorted according to their position.
-     *
-     * @return
-     *      An Immutable List of {@link net.dv8tion.jda.core.entities.Role Roles}.
-     */
-    List<Role> getRoles();
-
-    /**
      * This returns the {@link net.dv8tion.jda.core.entities.Role Role} which has the same id as the one provided.<br>
      * If there is no {@link net.dv8tion.jda.core.entities.Role Role} that matches the requested id, <code>null</code> is returned.
      *
@@ -168,6 +160,16 @@ public interface Guild extends ISnowflake
      *      Possibly-null Role with matching id.
      */
     Role getRoleById(String id);
+
+    /**
+     * The {@link net.dv8tion.jda.core.entities.Role Roles} of this {@link net.dv8tion.jda.core.entities.Guild Guild}.
+     * The roles returned will be sorted according to their position.
+     *
+     * @return
+     *      An Immutable List of {@link net.dv8tion.jda.core.entities.Role Roles}.
+     */
+    List<Role> getRoles();
+    List<Role> getRolesByName(String name, boolean ignoreCase);
 //
 //    /**
 //     * Creates a new {@link net.dv8tion.jda.core.entities.Role Role} in this Guild.

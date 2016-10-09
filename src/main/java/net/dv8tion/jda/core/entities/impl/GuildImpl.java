@@ -121,16 +121,28 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    public Member getMember(User user)
+    {
+        return getMemberById(user.getId());
+    }
+
+    @Override
     public Member getMemberById(String userId)
     {
         return members.get(userId);
     }
 
     @Override
+    public List<Member> getMembers()
+    {
+        return Collections.unmodifiableList(new ArrayList<>(members.values()));
+    }
+
+    @Override
     public List<Member> getMembersByName(String name, boolean ignoreCase)
     {
-        return Collections.unmodifiableList(
-                members.values().stream().filter(m ->
+        return Collections.unmodifiableList(members.values().stream()
+                .filter(m ->
                     ignoreCase
                     ? name.equalsIgnoreCase(m.getUser().getName())
                     : name.equals(m.getUser().getName()))
@@ -140,23 +152,23 @@ public class GuildImpl implements Guild
     @Override
     public List<Member> getMembersByNickname(String nickname, boolean ignoreCase)
     {
-        return Collections.unmodifiableList(
-            members.values().stream().filter(m ->
-                ignoreCase
-                ? nickname.equalsIgnoreCase(m.getNickname())
-                : nickname.equals(m.getNickname()))
-            .collect(Collectors.toList()));
+        return Collections.unmodifiableList(members.values().stream()
+                .filter(m ->
+                    ignoreCase
+                    ? nickname.equalsIgnoreCase(m.getNickname())
+                    : nickname.equals(m.getNickname()))
+                .collect(Collectors.toList()));
     }
 
     @Override
     public List<Member> getMembersByEffectiveName(String name, boolean ignoreCase)
     {
-        return Collections.unmodifiableList(
-            members.values().stream().filter(m ->
-                ignoreCase
-                ? name.equalsIgnoreCase(m.getEffectiveName())
-                : name.equals(m.getEffectiveName()))
-            .collect(Collectors.toList()));
+        return Collections.unmodifiableList(members.values().stream()
+                .filter(m ->
+                    ignoreCase
+                    ? name.equalsIgnoreCase(m.getEffectiveName())
+                    : name.equals(m.getEffectiveName()))
+                .collect(Collectors.toList()));
     }
 
     @Override
@@ -168,22 +180,26 @@ public class GuildImpl implements Guild
     @Override
     public List<Member> getMembersWithRoles(Collection<Role> roles)
     {
-        return Collections.unmodifiableList(
-                members.values().stream()
+        return Collections.unmodifiableList(members.values().stream()
                         .filter(m -> m.getRoles().containsAll(roles))
                         .collect(Collectors.toList()));
     }
 
     @Override
-    public Member getMember(User user)
+    public TextChannel getTextChannelById(String id)
     {
-        return getMemberById(user.getId());
+        return textChannels.get(id);
     }
 
     @Override
-    public List<Member> getMembers()
+    public List<TextChannel> getTextChannelsByName(String name, boolean ignoreCase)
     {
-        return Collections.unmodifiableList(new ArrayList<>(members.values()));
+        return Collections.unmodifiableList(textChannels.values().stream()
+                .filter(tc ->
+                    ignoreCase
+                    ? name.equalsIgnoreCase(tc.getName())
+                    : name.equals(tc.getName()))
+                .collect(Collectors.toList()));
     }
 
     @Override
@@ -195,11 +211,34 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    public VoiceChannel getVoiceChannelById(String id)
+    {
+        return voiceChannels.get(id);
+    }
+
+    @Override
+    public List<VoiceChannel> getVoiceChannelsByName(String name, boolean ignoreCase)
+    {
+        return Collections.unmodifiableList(voiceChannels.values().stream()
+            .filter(vc ->
+                    ignoreCase
+                    ? name.equalsIgnoreCase(vc.getName())
+                    : name.equals(vc.getName()))
+            .collect(Collectors.toList()));
+    }
+
+    @Override
     public List<VoiceChannel> getVoiceChannels()
     {
         List<VoiceChannel> channels = new ArrayList<>(voiceChannels.values());
         Collections.sort(channels, (v1, v2) -> v2.compareTo(v1));
         return Collections.unmodifiableList(channels);
+    }
+
+    @Override
+    public Role getRoleById(String id)
+    {
+        return roles.get(id);
     }
 
     @Override
@@ -211,9 +250,14 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public Role getRoleById(String id)
+    public List<Role> getRolesByName(String name, boolean ignoreCase)
     {
-        return roles.get(id);
+        return Collections.unmodifiableList(roles.values().stream()
+                .filter(r ->
+                        ignoreCase
+                        ? name.equalsIgnoreCase(r.getName())
+                        : name.equals(r.getName()))
+                .collect(Collectors.toList()));
     }
 
     @Override
