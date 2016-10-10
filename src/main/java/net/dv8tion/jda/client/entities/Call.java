@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.client.entities;
 
+import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.AudioChannel;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.User;
@@ -24,6 +25,7 @@ import java.util.List;
 
 public interface Call extends AudioChannel
 {
+    Region getRegion();
     boolean isGroupCall();
     CallableChannel getCallableChannel();
     Group getGroup();

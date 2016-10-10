@@ -21,7 +21,6 @@ import net.dv8tion.jda.client.entities.CallableChannel;
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.client.entities.impl.*;
 import net.dv8tion.jda.core.Region;
-import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.entities.impl.PrivateChannelImpl;
 import net.dv8tion.jda.core.handle.EventCache;
@@ -59,6 +58,7 @@ public class CallCreateHandler extends SocketHandler
         }
 
         CallImpl call = new CallImpl(channel, messageId);
+        call.setRegion(region);
         HashMap<String, CallUser> callUsers = call.getCallUserMap();
 
         if (channel instanceof Group)

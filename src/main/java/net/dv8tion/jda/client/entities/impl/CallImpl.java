@@ -20,6 +20,7 @@ import net.dv8tion.jda.client.entities.Call;
 import net.dv8tion.jda.client.entities.CallUser;
 import net.dv8tion.jda.client.entities.CallableChannel;
 import net.dv8tion.jda.client.entities.Group;
+import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -40,10 +41,18 @@ public class CallImpl implements Call
     private HashMap<String, CallUser> callUsers = new HashMap<>();
     private HashMap<String, CallUser> callUserHistory = new HashMap<>();
 
+    private Region region;
+
     public CallImpl(CallableChannel callableChannel, String messageId)
     {
         this.callableChannel = callableChannel;
         this.messageId = messageId;
+    }
+
+    @Override
+    public Region getRegion()
+    {
+        return region;
     }
 
     @Override
@@ -104,6 +113,12 @@ public class CallImpl implements Call
     public String getId()
     {
         return callableChannel.getId();
+    }
+
+    public CallImpl setRegion(Region region)
+    {
+        this.region = region;
+        return this;
     }
 
     public HashMap<String, CallUser> getCallUserMap()
