@@ -37,6 +37,7 @@ public class JDAClientImpl implements JDAClient
     protected final JDAImpl api;
     protected final HashMap<String, Group> groups = new HashMap<>();
     protected final HashMap<String, Relationship> relationships = new HashMap<>();
+    protected final HashMap<String, CallUser> callUsers = new HashMap<>();
 
     public JDAClientImpl(JDAImpl api)
     {
@@ -179,5 +180,10 @@ public class JDAClientImpl implements JDAClient
     public HashMap<String, Relationship> getRelationshipMap()
     {
         return relationships;
+    }
+
+    public HashMap<String, CallUser> getCallUserMap()
+    {
+        return callUsers;
     }
 }

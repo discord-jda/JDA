@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.client.handle;
 
+import net.dv8tion.jda.client.entities.impl.CallImpl;
+import net.dv8tion.jda.client.entities.impl.CallUserImpl;
 import net.dv8tion.jda.client.entities.impl.GroupImpl;
 import net.dv8tion.jda.client.events.group.GroupUserJoinEvent;
 import net.dv8tion.jda.core.entities.EntityBuilder;
@@ -52,10 +54,18 @@ public class ChannelRecipientAddHandler extends SocketHandler
         User user = EntityBuilder.get(api).createFakeUser(userJson, true);
         group.getUserMap().put(user.getId(), user);
 
+        CallImpl call = (CallImpl) group.getCurrentCall();
+        if (call != null)
+        {
+            call.getCallUserMap().put(user.getId(), new CallUserImpl(call, user));
+        }
+
         api.getEventManager().handle(
                 new GroupUserJoinEvent(
                         api, responseNumber,
                         group, user));
+
+        EventCache.get(api).playbackCache(EventCache.Type.USER, user.getId());
         return null;
     }
 }

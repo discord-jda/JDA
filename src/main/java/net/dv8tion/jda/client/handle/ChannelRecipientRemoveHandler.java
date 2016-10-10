@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.client.handle;
 
+import net.dv8tion.jda.client.entities.impl.CallImpl;
 import net.dv8tion.jda.client.entities.impl.GroupImpl;
 import net.dv8tion.jda.client.events.group.GroupUserLeaveEvent;
 import net.dv8tion.jda.core.entities.User;
@@ -57,6 +58,12 @@ public class ChannelRecipientRemoveHandler extends SocketHandler
             });
             EventCache.LOG.debug("Received a CHANNEL_RECIPIENT_REMOVE for a user that is not yet cached in the group! JSON: " + content);
             return null;
+        }
+
+        CallImpl call = (CallImpl) group.getCurrentCall();
+        if (call != null)
+        {
+            call.getCallUserMap().remove(userId);
         }
 
         //User is fake, has no privateChannel, is not in a relationship, and is not in any other groups

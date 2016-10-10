@@ -17,10 +17,7 @@
 package net.dv8tion.jda.core.requests;
 
 import com.neovisionaries.ws.client.*;
-import net.dv8tion.jda.client.handle.ChannelRecipientAddHandler;
-import net.dv8tion.jda.client.handle.ChannelRecipientRemoveHandler;
-import net.dv8tion.jda.client.handle.RelationshipAddHandler;
-import net.dv8tion.jda.client.handle.RelationshipRemoveHandler;
+import net.dv8tion.jda.client.handle.*;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.EntityBuilder;
@@ -739,13 +736,25 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         handlers.put("READY",               new ReadyHandler(api));
         handlers.put("TYPING_START",        new TypingStartHandler(api));
         handlers.put("USER_UPDATE",         new UserUpdateHandler(api));
+        handlers.put("VOICE_STATE_UPDATE",  new VoiceStateUpdateHandler(api));
 
         if (api.getAccountType() == AccountType.CLIENT)
         {
+            handlers.put("CALL_CREATE",              new CallCreateHandler(api));
+            handlers.put("CALL_DELETE",              new CallDeleteHandler(api));
             handlers.put("CHANNEL_RECIPIENT_ADD",    new ChannelRecipientAddHandler(api));
             handlers.put("CHANNEL_RECIPIENT_REMOVE", new ChannelRecipientRemoveHandler(api));
             handlers.put("RELATIONSHIP_ADD",         new RelationshipAddHandler(api));
             handlers.put("RELATIONSHIP_REMOVE",      new RelationshipRemoveHandler(api));
+
+            handlers.put("MESSAGE_ACK", new SocketHandler(api)
+            {
+                @Override
+                protected String handleInternally(JSONObject content)
+                {
+                    return null;
+                }
+            });
         }
     }
 }

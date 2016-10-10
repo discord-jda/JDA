@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.client.handle;
 
+import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.client.entities.Relationship;
 import net.dv8tion.jda.client.entities.RelationshipType;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
@@ -23,7 +24,12 @@ import net.dv8tion.jda.client.events.relationship.FriendRemovedEvent;
 import net.dv8tion.jda.client.events.relationship.FriendRequestCanceledEvent;
 import net.dv8tion.jda.client.events.relationship.FriendRequestIgnoredEvent;
 import net.dv8tion.jda.client.events.relationship.UserUnblockedEvent;
+import net.dv8tion.jda.core.AccountType;
+import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.entities.impl.PrivateChannelImpl;
+import net.dv8tion.jda.core.entities.impl.UserImpl;
 import net.dv8tion.jda.core.handle.EventCache;
 import net.dv8tion.jda.core.handle.SocketHandler;
 import net.dv8tion.jda.core.requests.WebSocketClient;
@@ -47,6 +53,8 @@ public class RelationshipRemoveHandler extends SocketHandler
         if (type == RelationshipType.NO_RELATIONSHIP)
             return null;
 
+        //Make sure that we get the proper relationship, not just any one cached by this userId.
+        //Deals with possibly out of order RELATIONSHIP_REMOVE and RELATIONSHIP_ADD when blocking a Friend.
         Relationship relationship = api.asClient().getRelationshipById(userId, type);
         if (relationship == null)
         {
@@ -58,6 +66,51 @@ public class RelationshipRemoveHandler extends SocketHandler
             return null;
         }
         ((JDAClientImpl) api.asClient()).getRelationshipMap().remove(userId);
+
+        if (relationship.getType() == RelationshipType.FRIEND)
+        {
+            //The user is not in a different guild that we share
+            if (!api.getGuildMap().values().stream().anyMatch(g -> ((GuildImpl) g).getMembersMap().containsKey(userId)))
+            {
+                UserImpl user = (UserImpl) api.getUserMap().remove(userId);
+                if (user.hasPrivateChannel())
+                {
+                    PrivateChannelImpl priv = (PrivateChannelImpl) user.getPrivateChannel();
+                    user.setFake(true);
+                    priv.setFake(true);
+                    api.getFakeUserMap().put(user.getId(), user);
+                    api.getFakePrivateChannelMap().put(priv.getId(), priv);
+                }
+                else
+                {
+                    //While the user might not have a private channel, if this is a client account then the user
+                    // could be in a Group, and if so we need to change the User object to be fake and
+                    // place it in the FakeUserMap
+                    for (Group grp : api.asClient().getGroups())
+                    {
+                        if (grp.getNonFriendUsers().contains(user))
+                        {
+                            user.setFake(true);
+                            api.getFakeUserMap().put(user.getId(), user);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            //Checks that the user is fake, has no privateChannel,and is not in any other groups
+            // then we remove the fake user from the fake cache as it was only in this group
+            //Note: we getGroups() which gets all groups, however we already removed the user from the current group.
+            User user = relationship.getUser();
+            if (user.isFake()
+                    && !user.hasPrivateChannel()
+                    && api.asClient().getGroups().stream().allMatch(g -> !g.getUsers().contains(user)))
+            {
+                api.getFakeUserMap().remove(userId);
+            }
+        }
 
         switch (type)
         {

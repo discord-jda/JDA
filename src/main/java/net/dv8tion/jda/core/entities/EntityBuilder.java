@@ -402,7 +402,7 @@ public class EntityBuilder
                     (VoiceChannelImpl) guildObj.getVoiceChannelMap().get(voiceStateJson.getString("channel_id"));
             voiceChannel.getConnectedMembersMap().put(member.getUser().getId(), member);
 
-            VoiceStateImpl voiceState = (VoiceStateImpl) member.getVoiceState();
+            GuildVoiceStateImpl voiceState = (GuildVoiceStateImpl) member.getVoiceState();
             voiceState.setSelfMuted(voiceStateJson.getBoolean("self_mute"))
                     .setSelfDeafened(voiceStateJson.getBoolean("self_deaf"))
                     .setGuildMuted(voiceStateJson.getBoolean("mute"))
@@ -470,7 +470,7 @@ public class EntityBuilder
             guild.getMembersMap().put(user.getId(), member);
         }
 
-        ((VoiceStateImpl) member.getVoiceState())
+        ((GuildVoiceStateImpl) member.getVoiceState())
             .setGuildMuted(memberJson.getBoolean("mute"))
             .setGuildDeafened(memberJson.getBoolean("deaf"));
 
@@ -633,19 +633,7 @@ public class EntityBuilder
         if (chan == null)
             chan = api.getPrivateChannelById(channelId);
         if (chan == null)
-        {
             chan = api.getFakePrivateChannelMap().get(channelId);
-            if (chan != null)
-            {
-                //If message is from a private channel from a different shard, use the information provided to use
-                // from the json to update the User info.
-                UserImpl user = (UserImpl) ((PrivateChannel) chan).getUser();
-                user.setName(author.getString("username"))
-                        .setDiscriminator(author.get("discriminator").toString())
-                        .setAvatarId(author.isNull("avatar") ? null : author.getString("avatar"))
-                        .setBot(author.has("bot") && author.getBoolean("bot"));
-            }
-        }
         if (chan == null && api.getAccountType() == AccountType.CLIENT)
             chan = api.asClient().getGroupById(channelId);
         if (chan == null)
@@ -661,12 +649,23 @@ public class EntityBuilder
             message.setAuthor(((PrivateChannel) chan).getUser());
         else if (chan instanceof Group)
         {
-            User user = api.getUserMap().get(authorId);
+            UserImpl user = (UserImpl) api.getUserMap().get(authorId);
             if (user == null)
-                user = api.getFakeUserMap().get(authorId);
+                user = (UserImpl) api.getFakeUserMap().get(authorId);
+            if (user == null && fromWebhook)
+                user = (UserImpl) createFakeUser(author, false);
             if (user == null)
                 throw new IllegalArgumentException(MISSING_USER);
             message.setAuthor(user);
+
+            //If the message was sent by a cached fake user, lets update it.
+            if (user.isFake() && !fromWebhook)
+            {
+                user.setName(author.getString("username"))
+                        .setDiscriminator(author.get("discriminator").toString())
+                        .setAvatarId(author.isNull("avatar") ? null : author.getString("avatar"))
+                        .setBot(author.has("bot") && author.getBoolean("bot"));
+            }
         }
         else
         {

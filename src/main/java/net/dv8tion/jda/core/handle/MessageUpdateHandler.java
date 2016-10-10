@@ -47,21 +47,33 @@ public class MessageUpdateHandler extends SocketHandler
     {
         if (content.has("author"))
         {
-            MessageType type = MessageType.fromId(content.getInt("type"));
-
-            switch (type)
+            if (content.has("type"))
             {
-                case DEFAULT:
-                    return handleDefaultMessage(content);
-                default:
-                    JDAImpl.LOG.debug("JDA received a message of unknown type. Type: " + type + "  JSON: " + content);
-                    return null;
+                MessageType type = MessageType.fromId(content.getInt("type"));
+                switch (type)
+                {
+                    case DEFAULT:
+                        return handleDefaultMessage(content);
+                    default:
+                        WebSocketClient.LOG.debug("JDA received a message of unknown type. Type: " + type + "  JSON: " + content);
+                        return null;
+                }
+            }
+            else
+            {
+                //TODO: handle partial message update info. Example:
+                //From webhook/rich-embed.
+                //{"author":{"bot":true,"id":"233501884294365184","avatar":"27ae7496b3b30cddab2feaaed06d862a","username":"GitHub","discriminator":"0000"},"id":"234838126969880596","embeds":[{"color":15109472,"author":{"icon_url":"https://avatars.githubusercontent.com/u/2415829?v=3","name":"abalabahaha","proxy_icon_url":"https://images-ext-2.discordapp.net/eyJ1cmwiOiJodHRwczovL2F2YXRhcnMuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3UvMjQxNTgyOT92PTMifQ.mMTBuOMUKYowcUU1H8Gzc7g4fFQ","url":"https://github.com/abalabahaha"},"description":"It was removed from the unofficial docs and other places because devs didn't want automated registration.","type":"rich","title":"[hammerandchisel/discord-api-docs] New comment on issue #148: Register API call","url":"https://github.com/hammerandchisel/discord-api-docs/issues/148#issuecomment-252524279"}],"channel_id":"168311874624946176"}
+                return null;
             }
         }
-        else
+        else if (content.has("call"))
         {
-            return handleMessageEmbed(content);
+            handleCallMessage(content);
+            return null;
         }
+        else
+            return handleMessageEmbed(content);
     }
 
     private String handleDefaultMessage(JSONObject content)
@@ -203,5 +215,16 @@ public class MessageUpdateHandler extends SocketHandler
                         api, responseNumber,
                         messageId, channel, embeds));
         return null;
+    }
+
+    public void handleCallMessage(JSONObject content)
+    {
+        WebSocketClient.LOG.debug("Received a MESSAGE_UPDATE of type CALL:  " + content.toString());
+        //Called when someone joins call for first time.
+        //  It is not called when they leave or rejoin. That is all dictated by VOICE_STATE_UPDATE.
+        //  Probably can ignore the above due to VOICE_STATE_UPDATE
+        // Could have a mapping of all users who were participants at one point or another during the call
+        //  in comparison to the currently participants.
+        // and when the call is ended. Ending defined by ended_timestamp != null
     }
 }

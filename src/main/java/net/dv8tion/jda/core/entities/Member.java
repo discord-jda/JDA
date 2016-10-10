@@ -64,13 +64,13 @@ public interface Member extends IMentionable
     OffsetDateTime getJoinDate();
 
     /**
-     * The {@link net.dv8tion.jda.core.entities.VoiceState VoiceStatus} of this Member.<p>
+     * The {@link net.dv8tion.jda.core.entities.GuildVoiceState VoiceState} of this Member.<p>
      * This can be used to get the Member's VoiceChannel.
      *
      * @return
-     *      {@link net.dv8tion.jda.core.entities.VoiceState VoiceStatus}
+     *      {@link net.dv8tion.jda.core.entities.GuildVoiceState VoiceState}
      */
-    VoiceState getVoiceState();
+    GuildVoiceState getVoiceState();
 
     /**
      * The game that the user is currently playing.

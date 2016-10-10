@@ -16,25 +16,11 @@
 
 package net.dv8tion.jda.client.entities;
 
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.requests.RestAction;
 
-import java.util.List;
-
-public interface Group extends MessageChannel, CallableChannel
+public interface CallableChannel extends ISnowflake
 {
-    String getName();
-    String getIconId();
-    String getIconUrl();
-
-    User getOwner();
-    List<User> getUsers();
-    List<User> getNonFriendUsers();
-    List<Friend> getFriends();
-
-    //getGroupManager()
-
-
-    RestAction leaveGroup();
+    RestAction<Call> startCall();
+    Call getCurrentCall();
 }

@@ -39,6 +39,11 @@ public class RelationshipAddHandler extends SocketHandler
     protected String handleInternally(JSONObject content)
     {
         Relationship relationship = EntityBuilder.get(api).createRelationship(content);
+        if (relationship == null)
+        {
+            WebSocketClient.LOG.warn("Received a RELATIONSHIP_ADD with an unknown type! JSON: " + content);
+            return null;
+        }
         switch (relationship.getType())
         {
             case FRIEND:
@@ -70,6 +75,7 @@ public class RelationshipAddHandler extends SocketHandler
                 return null;
         }
         EventCache.get(api).playbackCache(EventCache.Type.RELATIONSHIP, relationship.getUser().getId());
+        EventCache.get(api).playbackCache(EventCache.Type.USER, relationship.getUser().getId());
         return null;
     }
 }

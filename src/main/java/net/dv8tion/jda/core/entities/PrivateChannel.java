@@ -15,13 +15,14 @@
  */
 package net.dv8tion.jda.core.entities;
 
+import net.dv8tion.jda.client.entities.CallableChannel;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.requests.RestAction;
 
 /**
  * Represents the connection used for direct messaging.
  */
-public interface PrivateChannel extends MessageChannel, IFakeable
+public interface PrivateChannel extends MessageChannel, CallableChannel, IFakeable
 {
     /**
      * The {@link net.dv8tion.jda.core.entities.User User} that this {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} communicates with.

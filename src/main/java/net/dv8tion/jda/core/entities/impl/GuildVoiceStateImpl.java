@@ -19,7 +19,7 @@ package net.dv8tion.jda.core.entities.impl;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 
-public class VoiceStateImpl implements VoiceState
+public class GuildVoiceStateImpl implements GuildVoiceState
 {
     private final Guild guild;
     private final Member member;
@@ -32,16 +32,10 @@ public class VoiceStateImpl implements VoiceState
     private boolean guildDeafened = false;
     private boolean suppressed = false;
 
-    public VoiceStateImpl(Guild guild, Member member)
+    public GuildVoiceStateImpl(Guild guild, Member member)
     {
         this.guild = guild;
         this.member = member;
-    }
-
-    @Override
-    public boolean isMuted()
-    {
-        return isSelfMuted() || isGuildMuted();
     }
 
     @Override
@@ -51,9 +45,33 @@ public class VoiceStateImpl implements VoiceState
     }
 
     @Override
-    public boolean isGuildMuted()
+    public boolean isSelfDeafened()
     {
-        return guildMuted;
+        return selfDeafened;
+    }
+
+    @Override
+    public JDA getJDA()
+    {
+        return guild.getJDA();
+    }
+
+    @Override
+    public AudioChannel getAudioChannel()
+    {
+        return connectedChannel;
+    }
+
+    @Override
+    public String getSessionId()
+    {
+        return sessionId;
+    }
+
+    @Override
+    public boolean isMuted()
+    {
+        return isSelfMuted() || isGuildMuted();
     }
 
     @Override
@@ -63,9 +81,9 @@ public class VoiceStateImpl implements VoiceState
     }
 
     @Override
-    public boolean isSelfDeafened()
+    public boolean isGuildMuted()
     {
-        return selfDeafened;
+        return guildMuted;
     }
 
     @Override
@@ -99,18 +117,6 @@ public class VoiceStateImpl implements VoiceState
     }
 
     @Override
-    public JDA getJDA()
-    {
-        return member.getJDA();
-    }
-
-    @Override
-    public String getSessionId()
-    {
-        return sessionId;
-    }
-
-    @Override
     public boolean inVoiceChannel()
     {
         return getChannel() != null;
@@ -125,11 +131,11 @@ public class VoiceStateImpl implements VoiceState
     @Override
     public boolean equals(Object obj)
     {
-        if (!(obj instanceof VoiceState))
+        if (!(obj instanceof GuildVoiceState))
         {
             return false;
         }
-        VoiceState oStatus = (VoiceState) obj;
+        GuildVoiceState oStatus = (GuildVoiceState) obj;
         return this == oStatus || (this.member.equals(oStatus.getMember()) && this.guild.equals(oStatus.getGuild()));
     }
 
@@ -141,43 +147,43 @@ public class VoiceStateImpl implements VoiceState
 
     // -- Setters --
 
-    public VoiceStateImpl setConnectedChannel(VoiceChannel connectedChannel)
+    public GuildVoiceStateImpl setConnectedChannel(VoiceChannel connectedChannel)
     {
         this.connectedChannel = connectedChannel;
         return this;
     }
 
-    public VoiceStateImpl setSessionId(String sessionId)
+    public GuildVoiceStateImpl setSessionId(String sessionId)
     {
         this.sessionId = sessionId;
         return this;
     }
 
-    public VoiceStateImpl setSelfMuted(boolean selfMuted)
+    public GuildVoiceStateImpl setSelfMuted(boolean selfMuted)
     {
         this.selfMuted = selfMuted;
         return this;
     }
 
-    public VoiceStateImpl setSelfDeafened(boolean selfDeafened)
+    public GuildVoiceStateImpl setSelfDeafened(boolean selfDeafened)
     {
         this.selfDeafened = selfDeafened;
         return this;
     }
 
-    public VoiceStateImpl setGuildMuted(boolean guildMuted)
+    public GuildVoiceStateImpl setGuildMuted(boolean guildMuted)
     {
         this.guildMuted = guildMuted;
         return this;
     }
 
-    public VoiceStateImpl setGuildDeafened(boolean guildDeafened)
+    public GuildVoiceStateImpl setGuildDeafened(boolean guildDeafened)
     {
         this.guildDeafened = guildDeafened;
         return this;
     }
 
-    public VoiceStateImpl setSuppressed(boolean suppressed)
+    public GuildVoiceStateImpl setSuppressed(boolean suppressed)
     {
         this.suppressed = suppressed;
         return this;

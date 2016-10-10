@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
+import net.dv8tion.jda.client.entities.Call;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.MessageHistory;
@@ -38,6 +39,7 @@ public class PrivateChannelImpl implements PrivateChannel
     private final String id;
     private final User user;
 
+    private Call currentCall = null;
     private boolean fake = false;
 
     public PrivateChannelImpl(String id, User user)
@@ -256,9 +258,27 @@ public class PrivateChannelImpl implements PrivateChannel
         return fake;
     }
 
+    @Override
+    public RestAction<Call> startCall()
+    {
+        return null;
+    }
+
+    @Override
+    public Call getCurrentCall()
+    {
+        return currentCall;
+    }
+
     public PrivateChannelImpl setFake(boolean fake)
     {
         this.fake = fake;
+        return this;
+    }
+
+    public PrivateChannelImpl setCurrentCall(Call currentCall)
+    {
+        this.currentCall = currentCall;
         return this;
     }
 

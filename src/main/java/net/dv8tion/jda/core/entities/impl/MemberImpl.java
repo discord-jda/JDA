@@ -32,7 +32,7 @@ public class MemberImpl implements Member
     private final Guild guild;
     private final User user;
     private final TreeSet<Role> roles = new TreeSet<>((r1, r2) -> r2.compareTo(r1));
-    private final VoiceState voiceState;
+    private final GuildVoiceState voiceState;
 
     private String nickname;
     private OffsetDateTime joinDate;
@@ -43,7 +43,7 @@ public class MemberImpl implements Member
     {
         this.guild = guild;
         this.user = user;
-        this.voiceState = new VoiceStateImpl(guild, this);
+        this.voiceState = new GuildVoiceStateImpl(guild, this);
     }
 
     @Override
@@ -71,7 +71,7 @@ public class MemberImpl implements Member
     }
 
     @Override
-    public VoiceState getVoiceState()
+    public GuildVoiceState getVoiceState()
     {
         return voiceState;
     }

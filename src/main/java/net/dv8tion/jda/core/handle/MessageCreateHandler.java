@@ -50,7 +50,7 @@ public class MessageCreateHandler extends SocketHandler
             case DEFAULT:
                 return handleDefaultMessage(content);
             default:
-                JDAImpl.LOG.debug("JDA received a message of unknown type. Type: " + type + "  JSON: " + content);
+                WebSocketClient.LOG.debug("JDA received a message of unknown type. Type: " + type + "  JSON: " + content);
         }
         return null;
     }

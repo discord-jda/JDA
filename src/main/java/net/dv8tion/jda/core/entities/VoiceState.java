@@ -20,38 +20,12 @@ import net.dv8tion.jda.core.JDA;
 public interface VoiceState
 {
     /**
-     * Returns whether the {@link net.dv8tion.jda.core.entities.Member Member} is muted, either
-     * by choice {@link #isSelfMuted()} ()} or deafened by an admin {@link #isGuildMuted()}
-     *
-     * @return
-     *      the Member's mute status
-     */
-    boolean isMuted();
-
-    /**
      * Returns whether the {@link net.dv8tion.jda.core.entities.Member Member} muted themselves.
      *
      * @return
      *      The Member's self-mute status
      */
     boolean isSelfMuted();
-
-    /**
-     * Returns whether the {@link net.dv8tion.jda.core.entities.Member Member} got muted by an Admin
-     *
-     * @return
-     *      the Member's guild-mute status
-     */
-    boolean isGuildMuted();
-
-    /**
-     * Returns whether the {@link net.dv8tion.jda.core.entities.Member Member} is deafened, either
-     * by choice {@link #isSelfDeafened()} ()} or deafened by an admin {@link #isGuildDeafened()}
-     *
-     * @return
-     *      the Member's deaf status
-     */
-    boolean isDeafened();
 
     /**
      * Returns whether the {@link net.dv8tion.jda.core.entities.Member Member} deafened themselves.
@@ -62,55 +36,6 @@ public interface VoiceState
     boolean isSelfDeafened();
 
     /**
-     * Returns whether the {@link net.dv8tion.jda.core.entities.Member Member} got deafened by an Admin
-     *
-     * @return
-     *      the Member's guild-deaf status
-     */
-    boolean isGuildDeafened();
-
-    /**
-     * Returns true if this {@link net.dv8tion.jda.core.entities.Member Member} is unable to speak because the
-     * channel is actively suppressing audio communication. This occurs only in
-     * {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels} where the Member either doesn't have
-     * {@link net.dv8tion.jda.core.Permission#VOICE_SPEAK Permission#VOICE_SPEAK} or if the channel is the
-     * designated AFK channel.
-     *
-     * @return
-     *      True if this {@link net.dv8tion.jda.core.entities.Member Member's} audio is being suppressed.
-     */
-    boolean isSuppressed();
-
-    /**
-     * Returns the current {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} that the {@link net.dv8tion.jda.core.entities.Member Member}
-     * is in. If the {@link net.dv8tion.jda.core.entities.Member Member} is currently not in a
-     * {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}, this returns null.
-     *
-     * @return
-     *      The VoiceChannel that the Member is in, or null.
-     */
-    VoiceChannel getChannel();
-
-    /**
-     * Returns the current {@link net.dv8tion.jda.core.entities.Guild Guild} of the {@link net.dv8tion.jda.core.entities.Member Member's}
-     * {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
-     * If the {@link net.dv8tion.jda.core.entities.User User} is currently not in a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}, this returns null
-     *
-     * @return
-     *      the User's VoiceChannel's Guild or null
-     */
-    Guild getGuild();
-
-    /**
-     * Returns the {@link net.dv8tion.jda.core.entities.Member Member} corresponding to this VoiceState Object
-     * (Backreference)
-     *
-     * @return
-     *      the Member that holds this VoiceState
-     */
-    Member getMember();
-
-    /**
      * Returns the {@link net.dv8tion.jda.core.JDA JDA} instance of this VoiceState
      *
      * @return
@@ -118,16 +43,7 @@ public interface VoiceState
      */
     JDA getJDA();
 
-    String getSessionId();
+    AudioChannel getAudioChannel();
 
-    /**
-     * Used to determine if the {@link net.dv8tion.jda.core.entities.User User} is currently in a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
-     * in the {@link net.dv8tion.jda.core.entities.Guild Guild} returned from {@link #getGuild() getGuild()}.<br>
-     * If this is <code>false</code>, {@link #getChannel() getChannel()} will return <code>null</code>.
-     *
-     * @return
-     *      True if the {@link net.dv8tion.jda.core.entities.User User} is currently in a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
-     *      in this {@link net.dv8tion.jda.core.entities.Guild Guild}.
-     */
-    boolean inVoiceChannel();
+    String getSessionId();
 }

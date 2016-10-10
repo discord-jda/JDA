@@ -16,25 +16,12 @@
 
 package net.dv8tion.jda.client.entities;
 
-import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.requests.RestAction;
 
-import java.util.List;
-
-public interface Group extends MessageChannel, CallableChannel
+public interface CallUser
 {
-    String getName();
-    String getIconId();
-    String getIconUrl();
-
-    User getOwner();
-    List<User> getUsers();
-    List<User> getNonFriendUsers();
-    List<Friend> getFriends();
-
-    //getGroupManager()
-
-
-    RestAction leaveGroup();
+    User getUser();
+    Call getCall();
+    CallVoiceState getVoiceState();
+    boolean isRinging();
 }
