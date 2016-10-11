@@ -136,11 +136,20 @@ public class EntityBuilder
                     continue;
                 }
                 Game presenceGame = null;
-                if (!presence.isNull("game") && !presence.getJSONObject("game").isNull("name"))
+                JSONObject gameJson = !presence.isNull("game") ? presence.getJSONObject("game") : null;
+                if (gameJson != null && !gameJson.isNull("name"))
                 {
-                    presenceGame = new GameImpl(presence.getJSONObject("game").get("name").toString(),
-                            presence.getJSONObject("game").isNull("url") ? null : presence.getJSONObject("game").get("url").toString(),
-                            presence.getJSONObject("game").isNull("type") ? Game.GameType.DEFAULT : Game.GameType.fromKey((int) presence.getJSONObject("game").get("type")));
+                    String gameName = gameJson.getString("name");
+                    String url = gameJson.isNull("url")
+                            ? null
+                            : gameJson.getString("url");
+                    Game.GameType gameType = gameJson.isNull("type")
+                            ? Game.GameType.DEFAULT
+                            : Game.GameType.fromKey(Integer.parseInt(gameJson.get("type").toString()));
+                            //we force the type value to be a string and parse it because sometimes discord is retarded and gives us a string for type
+                            // so we will deal with both int and string value cases by forcing int to be a string and parsing.
+
+                    presenceGame = new GameImpl(gameName, url, gameType);
                 }
                 user
                         .setCurrentGame(presenceGame)
