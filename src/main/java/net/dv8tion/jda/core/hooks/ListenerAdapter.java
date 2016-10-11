@@ -22,6 +22,7 @@ import net.dv8tion.jda.client.events.group.update.GroupUpdateNameEvent;
 import net.dv8tion.jda.client.events.group.update.GroupUpdateOwnerEvent;
 import net.dv8tion.jda.client.events.message.group.*;
 import net.dv8tion.jda.client.events.relationship.*;
+import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.events.*;
 import net.dv8tion.jda.core.events.channel.priv.PrivateChannelCreateEvent;
 import net.dv8tion.jda.core.events.channel.priv.PrivateChannelDeleteEvent;
@@ -100,12 +101,6 @@ public abstract class ListenerAdapter implements EventListener
     public void onPrivateMessageDelete(PrivateMessageDeleteEvent event) {}
     public void onPrivateMessageEmbed(PrivateMessageEmbedEvent event) {}
 
-    //Group Message Events
-    public void onGroupMessageReceived(GroupMessageReceivedEvent event) {}
-    public void onGroupMessageUpdate(GroupMessageUpdateEvent event) {}
-    public void onGroupMessageDelete(GroupMessageDeleteEvent event) {}
-    public void onGroupMessageEmbed(GroupMessageEmbedEvent event) {}
-
     //Combined Message Events (Combines Guild and Private message into 1 event)
     public void onMessageReceived(MessageReceivedEvent event) {}
     public void onMessageUpdate(MessageUpdateEvent event) {}
@@ -114,16 +109,6 @@ public abstract class ListenerAdapter implements EventListener
     public void onMessageEmbed(MessageEmbedEvent event) {}
 
 //    public void onInviteReceived(InviteReceivedEvent event) {}
-
-    //Relationship Events (Client-Only)
-    public void onFriendAdded(FriendAddedEvent event) {}
-    public void onFriendRemoved(FriendRemovedEvent event) {}
-    public void onUserBlocked(UserBlockedEvent event) {}
-    public void onUserUnblocked(UserUnblockedEvent event) {}
-    public void onFriendRequestSent(FriendRequestSentEvent event) {}
-    public void onFriendRequestCanceled(FriendRequestCanceledEvent event) {}
-    public void onFriendRequestReceived(FriendRequestReceivedEvent event) {}
-    public void onFriendRequestIgnored(FriendRequestIgnoredEvent event) {}
 
     //TextChannel Events
     public void onTextChannelDelete(TextChannelDeleteEvent event) {}
@@ -145,17 +130,6 @@ public abstract class ListenerAdapter implements EventListener
     //PrivateChannel Events
     public void onPrivateChannelCreate(PrivateChannelCreateEvent event) {}
     public void onPrivateChannelDelete(PrivateChannelDeleteEvent event) {}
-
-    //Group Events
-    public void onGroupJoin(GroupJoinEvent event) {}
-    public void onGroupLeave(GroupLeaveEvent event) {}
-    public void onGroupUserJoin(GroupUserJoinEvent event) {}
-    public void onGroupUserLeave(GroupUserLeaveEvent event) {}
-
-    //Group Update Event
-    public void onGroupUpdateIcon(GroupUpdateIconEvent event) {}
-    public void onGroupUpdateName(GroupUpdateNameEvent event){}
-    public void onGroupUpdateOwner(GroupUpdateOwnerEvent event) {}
 
     //Guild Events
     public void onGuildJoin(GuildJoinEvent event) {}
@@ -218,18 +192,12 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericMessage(GenericMessageEvent event) {}
     public void onGenericGuildMessage(GenericGuildMessageEvent event) {}
     public void onGenericPrivateMessage(GenericPrivateMessageEvent event) {}
-    public void onGenericGroupMessage(GenericGroupMessageEvent event) {}
     public void onGenericUser(GenericUserEvent event) {}
     public void onGenericSelfUpdate(GenericSelfUpdateEvent event) {}
-    public void onGenericRelationship(GenericRelationshipEvent event) {}
-    public void onGenericRelationshipAdd(GenericRelationshipAddEvent event) {}
-    public void onGenericRelationshipRemove(GenericRelationshipRemoveEvent event) {}
     public void onGenericTextChannel(GenericTextChannelEvent event) {}
     public void onGenericTextChannelUpdate(GenericTextChannelUpdateEvent event) {}
     public void onGenericVoiceChannel(GenericVoiceChannelEvent event) {}
     public void onGenericVoiceChannelUpdate(GenericVoiceChannelUpdateEvent event) {}
-    public void onGenericGroup(GenericGroupEvent event) {}
-    public void onGenericGroupUpdate(GenericGroupUpdateEvent event) {}
     public void onGenericGuild(GenericGuildEvent event) {}
     public void onGenericGuildUpdate(GenericGuildUpdateEvent event) {}
     public void onGenericGuildMember(GenericGuildMemberEvent event) {}
@@ -237,6 +205,47 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericRoleUpdate(GenericRoleUpdateEvent event) {}
 //    public void onGenericVoice(GenericVoiceEvent event) {}
 //    public void onGenericAudio(GenericAudioEvent event) {}
+
+
+    // ==========================================================================================
+    // |                                   Client Only Events                                   |
+    // ==========================================================================================
+
+    //Relationship Events
+    public void onFriendAdded(FriendAddedEvent event) {}
+    public void onFriendRemoved(FriendRemovedEvent event) {}
+    public void onUserBlocked(UserBlockedEvent event) {}
+    public void onUserUnblocked(UserUnblockedEvent event) {}
+    public void onFriendRequestSent(FriendRequestSentEvent event) {}
+    public void onFriendRequestCanceled(FriendRequestCanceledEvent event) {}
+    public void onFriendRequestReceived(FriendRequestReceivedEvent event) {}
+    public void onFriendRequestIgnored(FriendRequestIgnoredEvent event) {}
+
+    //Group Events
+    public void onGroupJoin(GroupJoinEvent event) {}
+    public void onGroupLeave(GroupLeaveEvent event) {}
+    public void onGroupUserJoin(GroupUserJoinEvent event) {}
+    public void onGroupUserLeave(GroupUserLeaveEvent event) {}
+
+    //Group Message Events
+    public void onGroupMessageReceived(GroupMessageReceivedEvent event) {}
+    public void onGroupMessageUpdate(GroupMessageUpdateEvent event) {}
+    public void onGroupMessageDelete(GroupMessageDeleteEvent event) {}
+    public void onGroupMessageEmbed(GroupMessageEmbedEvent event) {}
+
+    //Group Update Event
+    public void onGroupUpdateIcon(GroupUpdateIconEvent event) {}
+    public void onGroupUpdateName(GroupUpdateNameEvent event){}
+    public void onGroupUpdateOwner(GroupUpdateOwnerEvent event) {}
+
+    //Client Only Generic Events
+    public void onGenericRelationship(GenericRelationshipEvent event) {}
+    public void onGenericRelationshipAdd(GenericRelationshipAddEvent event) {}
+    public void onGenericRelationshipRemove(GenericRelationshipRemoveEvent event) {}
+    public void onGenericGroup(GenericGroupEvent event) {}
+    public void onGenericGroupMessage(GenericGroupMessageEvent event) {}
+    public void onGenericGroupUpdate(GenericGroupUpdateEvent event) {}
+
 
     @Override
     public final void onEvent(Event event)
@@ -275,16 +284,6 @@ public abstract class ListenerAdapter implements EventListener
             onPrivateMessageDelete((PrivateMessageDeleteEvent) event);
         else if (event instanceof PrivateMessageEmbedEvent)
             onPrivateMessageEmbed((PrivateMessageEmbedEvent) event);
-
-        //Group Message Events
-        else if (event instanceof GroupMessageReceivedEvent)
-            onGroupMessageReceived((GroupMessageReceivedEvent) event);
-        else if (event instanceof GroupMessageUpdateEvent)
-            onGroupMessageUpdate((GroupMessageUpdateEvent) event);
-        else if (event instanceof GroupMessageDeleteEvent)
-            onGroupMessageDelete((GroupMessageDeleteEvent) event);
-        else if (event instanceof GroupMessageEmbedEvent)
-            onGroupMessageEmbed((GroupMessageEmbedEvent) event);
 
         //Combined Message Events (Combines Guild and Private message into 1 event)
         else if (event instanceof MessageReceivedEvent)
@@ -325,24 +324,6 @@ public abstract class ListenerAdapter implements EventListener
         else if (event instanceof SelfUpdateVerifiedEvent)
             onSelfUpdateVerified((SelfUpdateVerifiedEvent) event);
 
-        //Relationship Events
-        else if (event instanceof FriendAddedEvent)
-            onFriendAdded((FriendAddedEvent) event);
-        else if (event instanceof FriendRemovedEvent)
-            onFriendRemoved((FriendRemovedEvent) event);
-        else if (event instanceof UserBlockedEvent)
-            onUserBlocked((UserBlockedEvent) event);
-        else if (event instanceof UserUnblockedEvent)
-            onUserUnblocked((UserUnblockedEvent) event);
-        else if (event instanceof FriendRequestSentEvent)
-            onFriendRequestSent((FriendRequestSentEvent) event);
-        else if (event instanceof FriendRequestCanceledEvent)
-            onFriendRequestCanceled((FriendRequestCanceledEvent) event);
-        else if (event instanceof FriendRequestReceivedEvent)
-            onFriendRequestReceived((FriendRequestReceivedEvent) event);
-        else if (event instanceof FriendRequestIgnoredEvent)
-            onFriendRequestIgnored((FriendRequestIgnoredEvent) event);
-
         //TextChannel Events
         else if (event instanceof TextChannelCreateEvent)
             onTextChannelCreate((TextChannelCreateEvent) event);
@@ -378,24 +359,6 @@ public abstract class ListenerAdapter implements EventListener
             onPrivateChannelCreate((PrivateChannelCreateEvent) event);
         else if (event instanceof PrivateChannelDeleteEvent)
             onPrivateChannelDelete((PrivateChannelDeleteEvent) event);
-
-        //Group Events
-        else if (event instanceof GroupJoinEvent)
-            onGroupJoin((GroupJoinEvent) event);
-        else if (event instanceof GroupLeaveEvent)
-            onGroupLeave((GroupLeaveEvent) event);
-        else if (event instanceof GroupUserJoinEvent)
-            onGroupUserJoin((GroupUserJoinEvent) event);
-        else if (event instanceof GroupUserLeaveEvent)
-            onGroupUserLeave((GroupUserLeaveEvent) event);
-
-        //Group Update Events
-        else if (event instanceof GroupUpdateIconEvent)
-            onGroupUpdateIcon((GroupUpdateIconEvent) event);
-        else if (event instanceof GroupUpdateNameEvent)
-            onGroupUpdateName((GroupUpdateNameEvent) event);
-        else if (event instanceof GroupUpdateOwnerEvent)
-            onGroupUpdateOwner((GroupUpdateOwnerEvent) event);
 
         //Guild Events
         else if (event instanceof GuildJoinEvent)
@@ -505,18 +468,10 @@ public abstract class ListenerAdapter implements EventListener
             onGenericGuildMessage((GenericGuildMessageEvent) event);
         else if (event instanceof GenericPrivateMessageEvent)
             onGenericPrivateMessage((GenericPrivateMessageEvent) event);
-        else if (event instanceof GenericGroupMessageEvent)
-            onGenericGroupMessage((GenericGroupMessageEvent) event);
-        else if (event instanceof GenericRelationshipAddEvent)
-            onGenericRelationshipAdd((GenericRelationshipAddEvent) event);
-        else if (event instanceof GenericRelationshipRemoveEvent)
-            onGenericRelationshipRemove((GenericRelationshipRemoveEvent) event);
         else if (event instanceof GenericTextChannelUpdateEvent)
             onGenericTextChannelUpdate((GenericTextChannelUpdateEvent) event);
         else if (event instanceof GenericVoiceChannelUpdateEvent)
             onGenericVoiceChannelUpdate((GenericVoiceChannelUpdateEvent) event);
-        else if (event instanceof GenericGroupUpdateEvent)
-            onGenericGroupUpdate((GenericGroupUpdateEvent) event);
         else if (event instanceof GenericGuildUpdateEvent)
             onGenericGuildUpdate((GenericGuildUpdateEvent) event);
         else if (event instanceof GenericGuildMemberEvent)
@@ -536,17 +491,79 @@ public abstract class ListenerAdapter implements EventListener
             onGenericUser((GenericUserEvent) event);
         else if (event instanceof GenericSelfUpdateEvent)
             onGenericSelfUpdate((GenericSelfUpdateEvent) event);
-        else if (event instanceof GenericRelationshipEvent)
-            onGenericRelationship((GenericRelationshipEvent) event);
         else if (event instanceof GenericTextChannelEvent)
             onGenericTextChannel((GenericTextChannelEvent) event);
         else if (event instanceof GenericVoiceChannelEvent)
             onGenericVoiceChannel((GenericVoiceChannelEvent) event);
         else if (event instanceof GenericGuildEvent)
             onGenericGuild((GenericGuildEvent) event);
-        else if (event instanceof GenericGroupEvent)
-            onGenericGroup((GenericGroupEvent) event);
         else if (event instanceof GenericRoleEvent)
             onGenericRole((GenericRoleEvent) event);
+
+        if (event.getJDA().getAccountType() == AccountType.CLIENT)
+        {
+            //Relationship Events
+            if (event instanceof FriendAddedEvent)
+                onFriendAdded((FriendAddedEvent) event);
+            else if (event instanceof FriendRemovedEvent)
+                onFriendRemoved((FriendRemovedEvent) event);
+            else if (event instanceof UserBlockedEvent)
+                onUserBlocked((UserBlockedEvent) event);
+            else if (event instanceof UserUnblockedEvent)
+                onUserUnblocked((UserUnblockedEvent) event);
+            else if (event instanceof FriendRequestSentEvent)
+                onFriendRequestSent((FriendRequestSentEvent) event);
+            else if (event instanceof FriendRequestCanceledEvent)
+                onFriendRequestCanceled((FriendRequestCanceledEvent) event);
+            else if (event instanceof FriendRequestReceivedEvent)
+                onFriendRequestReceived((FriendRequestReceivedEvent) event);
+            else if (event instanceof FriendRequestIgnoredEvent)
+                onFriendRequestIgnored((FriendRequestIgnoredEvent) event);
+
+            //Group Events
+            else if (event instanceof GroupJoinEvent)
+                onGroupJoin((GroupJoinEvent) event);
+            else if (event instanceof GroupLeaveEvent)
+                onGroupLeave((GroupLeaveEvent) event);
+            else if (event instanceof GroupUserJoinEvent)
+                onGroupUserJoin((GroupUserJoinEvent) event);
+            else if (event instanceof GroupUserLeaveEvent)
+                onGroupUserLeave((GroupUserLeaveEvent) event);
+
+            //Group Message Events
+            if (event instanceof GroupMessageReceivedEvent)
+                onGroupMessageReceived((GroupMessageReceivedEvent) event);
+            else if (event instanceof GroupMessageUpdateEvent)
+                onGroupMessageUpdate((GroupMessageUpdateEvent) event);
+            else if (event instanceof GroupMessageDeleteEvent)
+                onGroupMessageDelete((GroupMessageDeleteEvent) event);
+            else if (event instanceof GroupMessageEmbedEvent)
+                onGroupMessageEmbed((GroupMessageEmbedEvent) event);
+
+            //Group Update Events
+            else if (event instanceof GroupUpdateIconEvent)
+                onGroupUpdateIcon((GroupUpdateIconEvent) event);
+            else if (event instanceof GroupUpdateNameEvent)
+                onGroupUpdateName((GroupUpdateNameEvent) event);
+            else if (event instanceof GroupUpdateOwnerEvent)
+                onGroupUpdateOwner((GroupUpdateOwnerEvent) event);
+
+            //Client Only Child-Generic Events
+            if (event instanceof GenericRelationshipAddEvent)
+                onGenericRelationshipAdd((GenericRelationshipAddEvent) event);
+            else if (event instanceof GenericRelationshipRemoveEvent)
+                onGenericRelationshipRemove((GenericRelationshipRemoveEvent) event);
+            else if (event instanceof GenericGroupMessageEvent)
+                onGenericGroupMessage((GenericGroupMessageEvent) event);
+            else if (event instanceof GenericGroupUpdateEvent)
+                onGenericGroupUpdate((GenericGroupUpdateEvent) event);
+
+            //Client Only Generic Events
+            if (event instanceof GenericRelationshipEvent)
+                onGenericRelationship((GenericRelationshipEvent) event);
+            else if (event instanceof GenericGroupEvent)
+                onGenericGroup((GenericGroupEvent) event);
+
+        }
     }
 }
