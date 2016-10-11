@@ -20,6 +20,8 @@ import net.dv8tion.jda.client.entities.CallUser;
 import net.dv8tion.jda.client.entities.CallableChannel;
 import net.dv8tion.jda.client.entities.impl.CallImpl;
 import net.dv8tion.jda.client.entities.impl.CallUserImpl;
+import net.dv8tion.jda.client.events.call.update.CallUpdateRegionEvent;
+import net.dv8tion.jda.client.events.call.update.CallUpdateRingingUsersEvent;
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.handle.EventCache;
@@ -68,14 +70,17 @@ public class CallUpdateHandler extends SocketHandler
         {
             Region oldRegion = call.getRegion();
             call.setRegion(region);
-            //TODO: fire CallUpdateRegion event
+            api.getEventManager().handle(
+                    new CallUpdateRegionEvent(
+                            api, responseNumber,
+                            call, oldRegion));
         }
 
         //Deal with CallUser ringing status changes
         if (ringing.length() > 0)
         {
             List<String> givenRingingIds = toStringList(ringing);
-            List<CallUser> noLongerRingingUsers = new ArrayList<>();
+            List<CallUser> stoppedRingingUsers = new ArrayList<>();
             List<CallUser> startedRingingUsers = new ArrayList<>();
 
             for (CallUser cUser : call.getRingingUsers())
@@ -86,7 +91,7 @@ public class CallUpdateHandler extends SocketHandler
                 if (!givenRingingIds.contains(userId))
                 {
                     ((CallUserImpl) cUser).setRinging(false);
-                    noLongerRingingUsers.add(cUser);
+                    stoppedRingingUsers.add(cUser);
                 }
                 else
                     givenRingingIds.remove(userId);
@@ -100,9 +105,12 @@ public class CallUpdateHandler extends SocketHandler
                 startedRingingUsers.add(cUser);
             }
 
-            if (noLongerRingingUsers.size() > 0 || startedRingingUsers.size() > 0)
+            if (stoppedRingingUsers.size() > 0 || startedRingingUsers.size() > 0)
             {
-                //TODO: Fire CallUpdateRingingUsers event
+                api.getEventManager().handle(
+                        new CallUpdateRingingUsersEvent(
+                                api, responseNumber,
+                                call, stoppedRingingUsers, startedRingingUsers));
             }
         }
         return null;

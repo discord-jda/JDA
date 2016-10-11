@@ -14,22 +14,25 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.client.entities;
+package net.dv8tion.jda.client.events.call.update;
 
-import net.dv8tion.jda.core.entities.PrivateChannel;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.entities.VoiceState;
+import net.dv8tion.jda.client.entities.Call;
+import net.dv8tion.jda.client.events.call.GenericCallEvent;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.Region;
 
-public interface CallVoiceState extends VoiceState
+public class CallUpdateRegionEvent extends GenericCallEvent
 {
-    User getUser();
-    Call getCall();
-    CallUser getCallUser();
+    protected final Region oldRegion;
 
-    boolean isInCall();
+    public CallUpdateRegionEvent(JDA api, long responseNumber, Call call, Region oldRegion)
+    {
+        super(api, responseNumber, call);
+        this.oldRegion = oldRegion;
+    }
 
-    boolean isGroupCall();
-    CallableChannel getCallableChannel();
-    Group getGroup();
-    PrivateChannel getPrivateChannel();
+    public Region getOldRegion()
+    {
+        return oldRegion;
+    }
 }

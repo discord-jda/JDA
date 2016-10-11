@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.client.entities;
+package net.dv8tion.jda.core.events.guild.voice;
 
-import net.dv8tion.jda.core.entities.PrivateChannel;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.entities.VoiceState;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.VoiceChannel;
 
-public interface CallVoiceState extends VoiceState
+public class GuildVoiceLeaveEvent extends GenericGuildVoiceEvent
 {
-    User getUser();
-    Call getCall();
-    CallUser getCallUser();
+    protected final VoiceChannel channelLeft;
 
-    boolean isInCall();
+    public GuildVoiceLeaveEvent(JDA api, long responseNumber, Member member, VoiceChannel channelLeft)
+    {
+        super(api, responseNumber, member);
+        this.channelLeft = channelLeft;
+    }
 
-    boolean isGroupCall();
-    CallableChannel getCallableChannel();
-    Group getGroup();
-    PrivateChannel getPrivateChannel();
+    public VoiceChannel getChannelLeft()
+    {
+        return channelLeft;
+    }
 }

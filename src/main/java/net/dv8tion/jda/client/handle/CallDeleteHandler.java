@@ -22,6 +22,7 @@ import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.client.entities.impl.CallImpl;
 import net.dv8tion.jda.client.entities.impl.GroupImpl;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
+import net.dv8tion.jda.client.events.call.CallDeleteEvent;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.entities.impl.PrivateChannelImpl;
 import net.dv8tion.jda.core.handle.EventCache;
@@ -65,7 +66,6 @@ public class CallDeleteHandler extends SocketHandler
             {
                 ((JDAClientImpl) api.asClient()).getCallUserMap().remove(userId);
             });
-            //TODO: Fire GroupCallLeave / DeleteEvent
         }
         else
         {
@@ -73,8 +73,12 @@ public class CallDeleteHandler extends SocketHandler
             priv.setCurrentCall(null);
             ((JDAClientImpl) api.asClient()).getCallUserMap().remove(priv.getUser().getId());
             ((JDAClientImpl) api.asClient()).getCallUserMap().remove(api.getSelfInfo().getId());
-            //TODO: Fire PrivateCallLeave / DeleteEvent
         }
+
+        api.getEventManager().handle(
+                new CallDeleteEvent(
+                        api, responseNumber,
+                        call));
         return null;
     }
 }

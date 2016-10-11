@@ -19,16 +19,17 @@ package net.dv8tion.jda.core.handle;
 import net.dv8tion.jda.client.entities.*;
 import net.dv8tion.jda.client.entities.impl.CallImpl;
 import net.dv8tion.jda.client.entities.impl.CallVoiceStateImpl;
-import net.dv8tion.jda.client.entities.impl.GroupImpl;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
+import net.dv8tion.jda.client.events.call.voice.CallVoiceJoinEvent;
+import net.dv8tion.jda.client.events.call.voice.CallVoiceLeaveEvent;
+import net.dv8tion.jda.client.events.call.voice.CallVoiceSelfDeafenEvent;
+import net.dv8tion.jda.client.events.call.voice.CallVoiceSelfMuteEvent;
 import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.PrivateChannel;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.GuildVoiceStateImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.entities.impl.MemberImpl;
 import net.dv8tion.jda.core.entities.impl.VoiceChannelImpl;
+import net.dv8tion.jda.core.events.guild.voice.*;
 import net.dv8tion.jda.core.requests.GuildLock;
 import net.dv8tion.jda.core.requests.WebSocketClient;
 import org.json.JSONObject;
@@ -125,57 +126,56 @@ public class VoiceStateUpdateHandler extends SocketHandler
             VoiceChannelImpl oldChannel = (VoiceChannelImpl) vState.getChannel();
             vState.setConnectedChannel(channel);
 
-            //TODO: Fire join, move, and leave events.
             if (oldChannel == null)
             {
                 channel.getConnectedMembersMap().put(userId, member);
-//                api.getEventManager(
-//                        new VoiceJoinEvent(
-//                                api, responseNumber,
-//                                vState));
+                api.getEventManager().handle(
+                        new GuildVoiceJoinEvent(
+                                api, responseNumber,
+                                member));
             }
             else if (channel == null)
             {
                 oldChannel.getConnectedMembersMap().remove(userId);
-//                api.getEventManager().handle(
-//                        new VoiceLeaveEvent(
-//                                api, responseNumber,
-//                                vState, oldChannel));
+                api.getEventManager().handle(
+                        new GuildVoiceLeaveEvent(
+                                api, responseNumber,
+                                member, oldChannel));
             }
             else
             {
                 channel.getConnectedMembersMap().put(userId, member);
                 oldChannel.getConnectedMembersMap().remove(userId);
-//                api.getEventManager().handle(
-//                        new VoiceMoveEvent(
-//                                api, responseNumber,
-//                                vState, oldChannel));
+                api.getEventManager().handle(
+                        new GuildVoiceMoveEvent(
+                                api, responseNumber,
+                                member, oldChannel));
             }
         }
         if (selfMuted != vState.isSelfMuted())
         {
             vState.setSelfMuted(selfMuted);
-            //TODO: Fire selfMutedEvent
+            api.getEventManager().handle(new GuildVoiceSelfMuteEvent(api, responseNumber, member));
         }
         if (selfDeafened != vState.isSelfDeafened())
         {
             vState.setSelfDeafened(selfDeafened);
-            //TODO: Fire selfDeafenedEvent
+            api.getEventManager().handle(new GuildVoiceSelfDeafenEvent(api, responseNumber, member));
         }
         if (guildMuted != vState.isGuildMuted())
         {
             vState.setGuildMuted(guildMuted);
-            //TODO: Fire guildMutedEvent
+            api.getEventManager().handle(new GuildVoiceGuildMuteEvent(api, responseNumber, member));
         }
         if (guildDeafened != vState.isGuildDeafened())
         {
             vState.setGuildDeafened(guildDeafened);
-            //TODO: Fire guildDeafenedEvent
+            api.getEventManager().handle(new GuildVoiceGuildDeafenEvent(api, responseNumber, member));
         }
         if (suppressed != vState.isSuppressed())
         {
             vState.setSuppressed(suppressed);
-            //TODO: Fire suppressedEvent
+            api.getEventManager().handle(new GuildVoiceSuppressEvent(api, responseNumber, member));
         }
     }
 
@@ -231,14 +231,10 @@ public class VoiceStateUpdateHandler extends SocketHandler
             vState.setSessionId(sessionId);
             vState.setInCall(true);
 
-            if (channel instanceof Group)
-            {
-                //TODO: fire GroupCallJoinEvent
-            }
-            else
-            {
-                //TODO: fire PrivateCallJoinEvent
-            }
+            api.getEventManager().handle(
+                    new CallVoiceJoinEvent(
+                            api, responseNumber,
+                            cUser));
         }
         else //Leaving a call
         {
@@ -256,26 +252,22 @@ public class VoiceStateUpdateHandler extends SocketHandler
             vState.setSessionId(sessionId);
             vState.setInCall(false);
 
-            if (channel instanceof Group)
-            {
-                //TODO: GroupCallLeave
-            }
-            else
-            {
-                //TODO: PrivateCallLeave
-            }
+            api.getEventManager().handle(
+                    new CallVoiceLeaveEvent(
+                            api, responseNumber,
+                            cUser));
         }
 
+        //Now that we're done dealing with the joins and leaves, we can deal with the mute/deaf changes.
         if (selfMuted != vState.isSelfMuted())
         {
             vState.setSelfMuted(selfMuted);
-            //TODO: fireSelfMuted
+            api.getEventManager().handle(new CallVoiceSelfMuteEvent(api, responseNumber, vState.getCallUser()));
         }
         if (selfDeafened != vState.isSelfDeafened())
         {
             vState.setSelfDeafened(selfDeafened);
-            //TODO: fireSelfDeafened
+            api.getEventManager().handle(new CallVoiceSelfDeafenEvent(api, responseNumber, vState.getCallUser()));
         }
-        //Now that we're done dealing with the joins and leaves, we can deal with the mute/deaf changes.
     }
 }

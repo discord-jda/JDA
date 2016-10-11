@@ -14,22 +14,16 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.client.entities;
+package net.dv8tion.jda.client.events.call.update;
 
-import net.dv8tion.jda.core.entities.PrivateChannel;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.entities.VoiceState;
+import net.dv8tion.jda.client.entities.Call;
+import net.dv8tion.jda.client.events.call.GenericCallEvent;
+import net.dv8tion.jda.core.JDA;
 
-public interface CallVoiceState extends VoiceState
+public abstract class GenericCallUpdateEvent extends GenericCallEvent
 {
-    User getUser();
-    Call getCall();
-    CallUser getCallUser();
-
-    boolean isInCall();
-
-    boolean isGroupCall();
-    CallableChannel getCallableChannel();
-    Group getGroup();
-    PrivateChannel getPrivateChannel();
+    public GenericCallUpdateEvent(JDA api, long responseNumber, Call call)
+    {
+        super(api, responseNumber, call);
+    }
 }

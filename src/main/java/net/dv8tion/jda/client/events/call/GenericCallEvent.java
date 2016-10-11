@@ -14,55 +14,41 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.client.entities.impl;
+package net.dv8tion.jda.client.events.call;
 
 import net.dv8tion.jda.client.entities.Call;
-import net.dv8tion.jda.client.entities.CallUser;
-import net.dv8tion.jda.client.entities.CallVoiceState;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.client.entities.Group;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.PrivateChannel;
+import net.dv8tion.jda.core.events.Event;
 
-public class CallUserImpl implements CallUser
+public abstract class GenericCallEvent extends Event
 {
     protected final Call call;
-    protected final User user;
-    protected final CallVoiceState voiceState;
 
-    protected boolean ringing;
-
-    public CallUserImpl(Call call, User user)
+    public GenericCallEvent(JDA api, long responseNumber, Call call)
     {
+        super(api, responseNumber);
         this.call = call;
-        this.user = user;
-        this.voiceState = new CallVoiceStateImpl(this);
     }
 
-    @Override
     public Call getCall()
     {
         return call;
     }
 
-    @Override
-    public User getUser()
+    public boolean isGroupCall()
     {
-        return user;
+        return call.isGroupCall();
     }
 
-    @Override
-    public CallVoiceState getVoiceState()
+    public Group getGroup()
     {
-        return voiceState;
+        return call.getGroup();
     }
 
-    @Override
-    public boolean isRinging()
+    public PrivateChannel getPrivateChannel()
     {
-        return ringing;
-    }
-
-    public CallUserImpl setRinging(boolean ringing)
-    {
-        this.ringing = ringing;
-        return this;
+        return call.getPrivateChannel();
     }
 }

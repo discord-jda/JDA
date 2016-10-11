@@ -16,10 +16,7 @@
 
 package net.dv8tion.jda.client.entities.impl;
 
-import net.dv8tion.jda.client.entities.Call;
-import net.dv8tion.jda.client.entities.CallVoiceState;
-import net.dv8tion.jda.client.entities.CallableChannel;
-import net.dv8tion.jda.client.entities.Group;
+import net.dv8tion.jda.client.entities.*;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.AudioChannel;
 import net.dv8tion.jda.core.entities.PrivateChannel;
@@ -27,18 +24,16 @@ import net.dv8tion.jda.core.entities.User;
 
 public class CallVoiceStateImpl implements CallVoiceState
 {
-    private final Call call;
-    private final User user;
+    private final CallUser cUser;
 
     private String sessionId;
     private boolean selfMuted = false;
     private boolean selfDeafened = false;
     private boolean inCall = false;
 
-    public CallVoiceStateImpl(Call call, User user)
+    public CallVoiceStateImpl(CallUser cUser)
     {
-        this.call = call;
-        this.user = user;
+        this.cUser = cUser;
     }
 
     @Override
@@ -56,13 +51,13 @@ public class CallVoiceStateImpl implements CallVoiceState
     @Override
     public JDA getJDA()
     {
-        return user.getJDA();
+        return cUser.getUser().getJDA();
     }
 
     @Override
     public AudioChannel getAudioChannel()
     {
-        return call;
+        return getCall();
     }
 
     @Override
@@ -74,13 +69,19 @@ public class CallVoiceStateImpl implements CallVoiceState
     @Override
     public User getUser()
     {
-        return user;
+        return cUser.getUser();
     }
 
     @Override
     public Call getCall()
     {
-        return call;
+        return cUser.getCall();
+    }
+
+    @Override
+    public CallUser getCallUser()
+    {
+        return cUser;
     }
 
     @Override
@@ -92,25 +93,25 @@ public class CallVoiceStateImpl implements CallVoiceState
     @Override
     public boolean isGroupCall()
     {
-        return call.isGroupCall();
+        return getCall().isGroupCall();
     }
 
     @Override
     public CallableChannel getCallableChannel()
     {
-        return call.getCallableChannel();
+        return getCall().getCallableChannel();
     }
 
     @Override
     public Group getGroup()
     {
-        return call.getGroup();
+        return getCall().getGroup();
     }
 
     @Override
     public PrivateChannel getPrivateChannel()
     {
-        return call.getPrivateChannel();
+        return getCall().getPrivateChannel();
     }
 
     public CallVoiceStateImpl setSelfMuted(boolean selfMuted)

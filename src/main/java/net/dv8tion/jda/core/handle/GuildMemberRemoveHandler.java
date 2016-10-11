@@ -59,6 +59,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
             vState.setConnectedChannel(null);
             ((VoiceChannelImpl) channel).getConnectedMembersMap().remove(member);
             //TODO: Implement after deciding how to handle VoiceChannel vs GroupCall for VoiceState.
+            //  After further study, might not need to actually have the event or the above code.
 //            api.getEventManager().handle(
 //                    new VoiceLeaveEvent(
 //                            api, responseNumber,

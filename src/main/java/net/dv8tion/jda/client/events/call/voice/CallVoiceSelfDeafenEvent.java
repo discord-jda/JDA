@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.client.entities;
+package net.dv8tion.jda.client.events.call.voice;
 
-import net.dv8tion.jda.core.entities.PrivateChannel;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.entities.VoiceState;
+import net.dv8tion.jda.client.entities.CallUser;
+import net.dv8tion.jda.core.JDA;
 
-public interface CallVoiceState extends VoiceState
+public class CallVoiceSelfDeafenEvent extends GenericCallVoiceEvent
 {
-    User getUser();
-    Call getCall();
-    CallUser getCallUser();
+    protected final boolean selfDeafened;
 
-    boolean isInCall();
+    public CallVoiceSelfDeafenEvent(JDA api, long responseNumber, CallUser cUser)
+    {
+        super(api, responseNumber, cUser);
+        this.selfDeafened = cUser.getVoiceState().isSelfDeafened();
+    }
 
-    boolean isGroupCall();
-    CallableChannel getCallableChannel();
-    Group getGroup();
-    PrivateChannel getPrivateChannel();
+    public boolean isSelfDeafened()
+    {
+        return selfDeafened;
+    }
 }
