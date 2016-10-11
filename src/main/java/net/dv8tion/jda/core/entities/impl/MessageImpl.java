@@ -173,7 +173,10 @@ public class MessageImpl implements Message
                 }
                 else
                 {
-                    String name = getGuild().getMember(author).getEffectiveName();
+                    String name;
+                    if (getGuild().isMember(user))
+                        name = getGuild().getMember(user).getEffectiveName();
+                    else name = user.getName();
                     tmp = tmp.replace("<@" + user.getId() + '>', '@' + name)
                             .replace("<@!" + user.getId() + '>', '@' + name);
                 }
