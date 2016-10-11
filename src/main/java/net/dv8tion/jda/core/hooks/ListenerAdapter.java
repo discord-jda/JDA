@@ -177,6 +177,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildVoiceGuildDeafen(GuildVoiceGuildDeafenEvent event) {}
     public void onGuildVoiceSelfMute(GuildVoiceSelfMuteEvent event) {}
     public void onGuildVoiceSelfDeafen(GuildVoiceSelfDeafenEvent event) {}
+    public void onGuildVoiceSuppress(GuildVoiceSuppressEvent event) {}
 
     //Role events
     public void onRoleCreate(RoleCreateEvent event) {}
@@ -454,6 +455,8 @@ public abstract class ListenerAdapter implements EventListener
             onGuildVoiceSelfMute((GuildVoiceSelfMuteEvent) event);
         else if (event instanceof GuildVoiceSelfDeafenEvent)
             onGuildVoiceSelfDeafen((GuildVoiceSelfDeafenEvent) event);
+        else if (event instanceof GuildVoiceSuppressEvent)
+            onGuildVoiceSuppress((GuildVoiceSuppressEvent) event);
 
         //Role Events
         else if (event instanceof RoleCreateEvent)

@@ -152,6 +152,10 @@ public class VoiceStateUpdateHandler extends SocketHandler
                                 member, oldChannel));
             }
         }
+
+        boolean wasMute = vState.isMuted();
+        boolean wasDeaf = vState.isDeafened();
+
         if (selfMuted != vState.isSelfMuted())
         {
             vState.setSelfMuted(selfMuted);
@@ -177,6 +181,10 @@ public class VoiceStateUpdateHandler extends SocketHandler
             vState.setSuppressed(suppressed);
             api.getEventManager().handle(new GuildVoiceSuppressEvent(api, responseNumber, member));
         }
+        if (wasMute != vState.isMuted())
+            api.getEventManager().handle(new GuildVoiceMuteEvent(api, responseNumber, member));
+        if (wasDeaf != vState.isDeafened())
+            api.getEventManager().handle(new GuildVoiceDeafenEvent(api, responseNumber, member));
     }
 
     private void handleCallVoiceState(JSONObject content)
