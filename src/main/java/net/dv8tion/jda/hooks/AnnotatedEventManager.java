@@ -20,12 +20,13 @@ import net.dv8tion.jda.events.Event;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.*;
 
 public class AnnotatedEventManager implements IEventManager
 {
     private final Set<Object> listeners = new HashSet<>();
-    private final Map<Class<? extends Event>, Map<Object, Method>> methods = new HashMap<>();
+    private final Map<Class<? extends Event>, Map<Object, List<Method>>> methods = new HashMap<>();
 
     @Override
     public void register(Object listener)
@@ -58,25 +59,20 @@ public class AnnotatedEventManager implements IEventManager
         Class<? extends Event> eventClass = event.getClass();
         do
         {
-            Map<Object, Method> listeners = methods.get(eventClass);
+            Map<Object, List<Method>> listeners = methods.get(eventClass);
             if (listeners != null)
             {
-                listeners.entrySet().forEach(e -> {
-                    try
-                    {
-                        e.getValue().setAccessible(true);
-                        e.getValue().invoke(e.getKey(), event);
-                    }
-                    catch (IllegalAccessException | InvocationTargetException e1)
-                    {
+                listeners.entrySet().forEach(e -> e.getValue().forEach(method -> {
+                    try {
+                        method.setAccessible(true);
+                        method.invoke(e.getKey(), event);
+                    } catch (IllegalAccessException | InvocationTargetException e1) {
                         JDAImpl.LOG.log(e1);
-                    }
-                    catch (Throwable throwable)
-                    {
+                    } catch (Throwable throwable) {
                         JDAImpl.LOG.fatal("One of the EventListeners had an uncaught exception");
                         JDAImpl.LOG.log(throwable);
                     }
-                });
+                }));
             }
             eventClass = eventClass == Event.class ? null : (Class<? extends Event>) eventClass.getSuperclass();
         }
@@ -88,10 +84,11 @@ public class AnnotatedEventManager implements IEventManager
         methods.clear();
         for (Object listener : listeners)
         {
-            Class<?> c = listener.getClass();
+            boolean isClass = listener instanceof Class;
+            Class<?> c = isClass ? (Class) listener : listener.getClass();
             Method[] allMethods = c.getDeclaredMethods();
             for (Method m : allMethods) {
-                if (!m.isAnnotationPresent(SubscribeEvent.class))
+                if (!m.isAnnotationPresent(SubscribeEvent.class) || (isClass && !Modifier.isStatic(m.getModifiers())))
                 {
                     continue;
                 }
@@ -104,7 +101,10 @@ public class AnnotatedEventManager implements IEventManager
                     {
                         methods.put(eventClass, new HashMap<>());
                     }
-                    methods.get(eventClass).put(listener, m);
+                    if (!methods.get(eventClass).containsKey(listener)) {
+                        methods.get(eventClass).put(listener, new ArrayList<>());
+                    }
+                    methods.get(eventClass).get(listener).add(m);
                 }
             }
         }
