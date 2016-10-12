@@ -115,6 +115,15 @@ public class Route
         public static final Route ACCEPT_INVITE =       new Route(POST,   "invites/{code}");
     }
 
+    public static class Custom
+    {
+        public static final Route DELETE_ROUTE = new Route(DELETE, "{}");
+        public static final Route GET_ROUTE =    new Route(GET, "{}");
+        public static final Route POST_ROUTE =   new Route(POST, "{}");
+        public static final Route PUT_ROUTE =    new Route(PUT, "{}");
+        public static final Route PATCH_ROUTE =  new Route(PATCH, "{}");
+    }
+
     private final String route;
     private final String ratelimitRoute;
     private final String compilableRoute;
