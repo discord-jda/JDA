@@ -25,8 +25,7 @@ import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.Region;
-import net.dv8tion.jda.core.entities.MessageEmbed.Provider;
-import net.dv8tion.jda.core.entities.MessageEmbed.Thumbnail;
+import net.dv8tion.jda.core.entities.MessageEmbed.*;
 import net.dv8tion.jda.core.entities.impl.*;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.handle.GuildMembersChunkHandler;
@@ -762,7 +761,9 @@ public class EntityBuilder
         MessageEmbedImpl embed = new MessageEmbedImpl()
                 .setUrl(messageEmbed.getString("url"))
                 .setTitle(messageEmbed.isNull("title") ? null : messageEmbed.getString("title"))
-                .setDescription(messageEmbed.isNull("description") ? null : messageEmbed.getString("description"));
+                .setDescription(messageEmbed.isNull("description") ? null : messageEmbed.getString("description"))
+                .setColor(messageEmbed.isNull("color") || messageEmbed.getInt("color") == 0 ? null : new Color(messageEmbed.getInt("color")))
+                .setTimestamp(messageEmbed.isNull("timestamp") ? null : OffsetDateTime.parse(messageEmbed.getString("timestamp")));
 
         EmbedType type = EmbedType.fromKey(messageEmbed.getString("type"));
 //        if (type.equals(EmbedType.UNKNOWN))
@@ -792,12 +793,51 @@ public class EntityBuilder
         if (messageEmbed.has("author"))
         {
             JSONObject authorJson = messageEmbed.getJSONObject("author");
-            embed.setAuthor(new Provider(
+            embed.setAuthor(new AuthorInfo(
                     authorJson.isNull("name") ? null : authorJson.getString("name"),
-                    authorJson.isNull("url") ? null : authorJson.getString("url")));
+                    authorJson.isNull("url") ? null : authorJson.getString("url"),
+                    authorJson.isNull("icon_url") ? null : authorJson.getString("icon_url"),
+                    authorJson.isNull("proxy_icon_url") ? null : authorJson.getString("proxy_icon_url")));
         }
         else embed.setAuthor(null);
 
+        if (messageEmbed.has("image"))
+        {
+            JSONObject imageJson = messageEmbed.getJSONObject("image");
+            embed.setImage(new ImageInfo(
+                    imageJson.isNull("url") ? null : imageJson.getString("url"),
+                    imageJson.isNull("proxy_url") ? null : imageJson.getString("proxy_url"),
+                    imageJson.isNull("width") ? -1 : imageJson.getInt("width"),
+                    imageJson.isNull("height") ? -1 : imageJson.getInt("height")));
+        }
+        else embed.setImage(null);
+        
+        if (messageEmbed.has("footer"))
+        {
+            JSONObject footerJson = messageEmbed.getJSONObject("footer");
+            embed.setFooter(new Footer(
+                    footerJson.isNull("text") ? null : footerJson.getString("text"),
+                    footerJson.isNull("icon_url") ? null : footerJson.getString("icon_url"),
+                    footerJson.isNull("proxy_icon_url") ? null : footerJson.getString("proxy_icon_url")));
+        }
+        else embed.setFooter(null);
+        
+        if (messageEmbed.has("fields"))
+        {
+            JSONArray fieldsJson = messageEmbed.getJSONArray("fields");
+            List<Field> fields = new LinkedList<>();
+            for(int index=0; index<fieldsJson.length(); index++)
+            {
+                JSONObject fieldJson = fieldsJson.getJSONObject(index);
+                fields.add(new Field(
+                        fieldJson.isNull("name") ? null : fieldJson.getString("name"),
+                        fieldJson.isNull("value") ? null : fieldJson.getString("value"),
+                        fieldJson.isNull("inline") ? false : fieldJson.getBoolean("inline")));
+            }
+            embed.setFields(fields);
+        }
+        else embed.setFields(Collections.emptyList());
+        
         if (messageEmbed.has("video"))
         {
             JSONObject videoJson = messageEmbed.getJSONObject("video");

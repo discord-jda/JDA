@@ -25,6 +25,7 @@ public enum EmbedType
     IMAGE("image"),
     VIDEO("video"),
     LINK("link"),
+    RICH("rich"),
     UNKNOWN("");
 
     private final String key;
@@ -34,7 +35,7 @@ public enum EmbedType
     }
 
     /**
-     * Attemps to find the EmbedType from the provided key.<br>
+     * Attempts to find the EmbedType from the provided key.<br>
      * If the provided key doesn't match any known {@link net.dv8tion.jda.core.entities.EmbedType EmbedType},
      * this will return {@link net.dv8tion.jda.core.entities.EmbedType#UNKNOWN UNKNOWN}.
      *
