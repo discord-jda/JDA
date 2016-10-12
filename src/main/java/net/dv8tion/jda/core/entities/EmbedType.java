@@ -25,6 +25,7 @@ public enum EmbedType
     IMAGE("image"),
     VIDEO("video"),
     LINK("link"),
+    RICH("rich"),
     UNKNOWN("");
 
     private final String key;

@@ -15,6 +15,9 @@
  */
 package net.dv8tion.jda.core.entities.impl;
 
+import java.awt.Color;
+import java.time.OffsetDateTime;
+import java.util.List;
 import net.dv8tion.jda.core.entities.EmbedType;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 
@@ -26,8 +29,13 @@ public class MessageEmbedImpl implements MessageEmbed
     private EmbedType type;
     private MessageEmbed.Thumbnail thumbnail;
     private Provider siteProvider;
-    private Provider author;
+    private AuthorInfo author;
     private VideoInfo videoInfo;
+    private OffsetDateTime timestamp;
+    private Color color;
+    private Footer footer;
+    private ImageInfo image;
+    private List<Field> fields;
 
     @Override
     public String getUrl()
@@ -66,7 +74,7 @@ public class MessageEmbedImpl implements MessageEmbed
     }
 
     @Override
-    public Provider getAuthor()
+    public AuthorInfo getAuthor()
     {
         return author;
     }
@@ -75,6 +83,31 @@ public class MessageEmbedImpl implements MessageEmbed
     public VideoInfo getVideoInfo()
     {
         return videoInfo;
+    }
+    
+    @Override
+    public Footer getFooter() {
+        return footer;
+    }
+
+    @Override
+    public ImageInfo getImage() {
+        return image;
+    }
+
+    @Override
+    public List<Field> getFields() {
+        return fields;
+    }
+    
+    @Override
+    public Color getColor() {
+        return color;
+    }
+
+    @Override
+    public OffsetDateTime getTimestamp() {
+        return timestamp;
     }
 
     public MessageEmbedImpl setUrl(String url)
@@ -113,7 +146,7 @@ public class MessageEmbedImpl implements MessageEmbed
         return this;
     }
 
-    public MessageEmbedImpl setAuthor(Provider author)
+    public MessageEmbedImpl setAuthor(AuthorInfo author)
     {
         this.author = author;
         return this;
@@ -125,6 +158,36 @@ public class MessageEmbedImpl implements MessageEmbed
         return this;
     }
 
+    public MessageEmbedImpl setFooter(Footer footer)
+    {
+        this.footer = footer;
+        return this;
+    }
+    
+    public MessageEmbedImpl setImage(ImageInfo image)
+    {
+        this.image = image;
+        return this;
+    }
+    
+    public MessageEmbedImpl setFields(List<Field> fields)
+    {
+        this.fields = fields;
+        return this;
+    }
+    
+    public MessageEmbedImpl setColor(Color color)
+    {
+        this.color = color;
+        return this;
+    }
+    
+    public MessageEmbedImpl setTimestamp(OffsetDateTime timestamp)
+    {
+        this.timestamp = timestamp;
+        return this;
+    }
+    
     @Override
     public boolean equals(Object o)
     {
