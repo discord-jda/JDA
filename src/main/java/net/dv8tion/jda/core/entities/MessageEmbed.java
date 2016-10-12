@@ -15,6 +15,10 @@
  */
 package net.dv8tion.jda.core.entities;
 
+import java.awt.Color;
+import java.time.OffsetDateTime;
+import java.util.List;
+
 /**
  * Represents an embed displayed by Discord.<br>
  * This class has many possibilities for null values, so be careful!
@@ -77,13 +81,12 @@ public interface MessageEmbed
 
     /**
      * The information on the creator of the embedded content.<br>
-     * This is typically used for Youtube stuff and will return the username of the video uploader.
-     * If Discord did not generate any deliverable author information, this returns null.
+     * This is typically used to represent the account on the providing site.
      *
      * @return
-     *      Possibly-null {@link net.dv8tion.jda.core.entities.MessageEmbed.Provider Provider} containing author information.
+     *      Possibly-null {@link net.dv8tion.jda.core.entities.MessageEmbed.AuthorInfo AuthorInfo} containing author information.
      */
-    Provider getAuthor();
+    AuthorInfo getAuthor();
 
     /**
      * The information about the video which should be displayed as an embed.<br>
@@ -95,6 +98,49 @@ public interface MessageEmbed
      *      Possibly-null {@link net.dv8tion.jda.core.entities.MessageEmbed.VideoInfo VideoInfo} containing the information about the video which should be embedded.
      */
     VideoInfo getVideoInfo();
+    
+    /**
+     * The footer (bottom) of the embedded content.<br>
+     * This is typically used for timestamps or site icons.
+     *
+     * @return
+     *      Possibly-null {@link net.dv8tion.jda.core.entities.MessageEmbed.Footer Footer} containing the embed footer content.
+     */
+    Footer getFooter();
+    
+    /**
+     * The information about the image in the message embed
+     *
+     * @return
+     *      Possibly-null {@link net.dv8tion.jda.core.entities.MessageEmbed.ImageInfo ImageInfo} containing image information.
+     */
+    ImageInfo getImage();
+    
+    /**
+     * The fields in a message embed.<br>
+     * Message embeds can contain multiple fields, each with a name, value, and a boolean
+     * to determine if it will fall in-line with other fields.
+     *
+     * @return
+     *      Possibly-null List of {@link net.dv8tion.jda.core.entities.MessageEmbed.Field Field} objects containing field information.
+     */
+    List<Field> getFields();
+    
+    /**
+     * The color of the stripe on the side of the embed.<br>
+     *
+     * @return
+     *      Possibly-null Color.
+     */
+    Color getColor();
+    
+    /**
+     * The timestamp of the embed.<br>
+     *
+     * @return
+     *      Possibly-null OffsetDateTime object representing the timestamp.
+     */
+    OffsetDateTime getTimestamp();
 
     /**
      * Represents the information Discord provided about a thumbnail image that should be
@@ -254,6 +300,237 @@ public interface MessageEmbed
         public int getHeight()
         {
             return height;
+        }
+    }
+    
+    /**
+     * Represents the information provided to embed an image.
+     */
+    class ImageInfo
+    {
+        protected final String url;
+        protected final String proxyUrl;
+        protected final int width;
+        protected final int height;
+
+        public ImageInfo(String url, String proxyUrl, int width, int height)
+        {
+            this.url = url;
+            this.proxyUrl = proxyUrl;
+            this.width = width;
+            this.height = height;
+        }
+
+        /**
+         * The url of the image.
+         *
+         * @return
+         *      Never-null String containing the image url.
+         */
+        public String getUrl()
+        {
+            return url;
+        }
+        
+        /**
+         * The url of the image, proxied by Discord
+         *
+         * @return
+         *      Never-null String containing the proxied image url.
+         */
+        public String getProxyUrl()
+        {
+            return proxyUrl;
+        }
+
+        /**
+         * The width of the image.
+         *
+         * @return
+         *      Non-negative, Non-zero int containing the width of the embedded image.
+         */
+        public int getWidth()
+        {
+            return width;
+        }
+
+        /**
+         * The height of the image.
+         *
+         * @return
+         *      Non-negative, Non-zero int containing the height of the embedded image.
+         */
+        public int getHeight()
+        {
+            return height;
+        }
+    }
+    
+    /**
+     * Class that represents the author of content, possibly including an icon
+     * that Discord proxies.
+     */
+    class AuthorInfo
+    {
+        protected final String name;
+        protected final String url;
+        protected final String iconUrl;
+        protected final String proxyIconUrl;
+
+        public AuthorInfo(String name, String url, String iconUrl, String proxyIconUrl)
+        {
+            this.name = name;
+            this.url = url;
+            this.iconUrl = iconUrl;
+            this.proxyIconUrl = proxyIconUrl;
+        }
+
+        /**
+         * The name of the Author.<br>
+         * This is most likely the name of the account associated with the embed
+         *
+         * @return
+         *      Possibly-null String containing the name of the author.
+         */
+        public String getName()
+        {
+            return name;
+        }
+
+        /**
+         * The url of the author.<br>
+         *
+         * @return
+         *      Possibly-null String containing the url of the author.
+         */
+        public String getUrl()
+        {
+            return url;
+        }
+        
+        /**
+         * The url of the author's icon.
+         *
+         * @return
+         *      Possibly-null String containing the author's icon url.
+         */
+        public String getIconUrl()
+        {
+            return iconUrl;
+        }
+        
+        /**
+         * The url of the author's icon, proxied by Discord
+         *
+         * @return
+         *      Possibly-null String containing the proxied icon url.
+         */
+        public String getProxyIconUrl()
+        {
+            return proxyIconUrl;
+        }
+    }
+    
+    /**
+     * Class that represents a footer at the bottom of an embed
+     */
+    class Footer
+    {
+        protected final String text;
+        protected final String iconUrl;
+        protected final String proxyIconUrl;
+
+        public Footer(String text, String iconUrl, String proxyIconUrl)
+        {
+            this.text = text;
+            this.iconUrl = iconUrl;
+            this.proxyIconUrl = proxyIconUrl;
+        }
+
+        /**
+         * The text in the footer
+         *
+         * @return
+         *      Possibly-null String containing the text in the footer.
+         */
+        public String getText()
+        {
+            return text;
+        }
+        
+        /**
+         * The url of the footer's icon.
+         *
+         * @return
+         *      Possibly-null String containing the footer's icon url.
+         */
+        public String getIconUrl()
+        {
+            return iconUrl;
+        }
+        
+        /**
+         * The url of the footer's icon, proxied by Discord
+         *
+         * @return
+         *      Possibly-null String containing the proxied icon url.
+         */
+        public String getProxyIconUrl()
+        {
+            return proxyIconUrl;
+        }
+    }
+    
+    /**
+     * Represents a field in an embed. A single embed contains an array of
+     * embed fields, each with a name and value, and a boolean determining if
+     * the field can display on the same line as previous fields if there is
+     * enough space horizontally.
+     */
+    class Field
+    {
+        protected final String name;
+        protected final String value;
+        protected final boolean inline;
+
+        public Field(String name, String value, boolean inline)
+        {
+            this.name = name;
+            this.value = value;
+            this.inline = inline;
+        }
+
+        /**
+         * The name of the field
+         *
+         * @return
+         *      Possibly-null String containing the name of the field.
+         */
+        public String getName()
+        {
+            return name;
+        }
+
+        /**
+         * The value of the field
+         *
+         * @return
+         *      Possibly-null String containing the value (contents) of the field.
+         */
+        public String getValue()
+        {
+            return value;
+        }
+        
+        /**
+         * If the field is in line.
+         *
+         * @return
+         *      true if the field can be in line with other fields, false otherwise.
+         */
+        public boolean isInline()
+        {
+            return inline;
         }
     }
 }
