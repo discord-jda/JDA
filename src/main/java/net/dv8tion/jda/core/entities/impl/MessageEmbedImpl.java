@@ -17,6 +17,7 @@ package net.dv8tion.jda.core.entities.impl;
 
 import java.awt.Color;
 import java.time.OffsetDateTime;
+import java.util.Collections;
 import java.util.List;
 import net.dv8tion.jda.core.entities.EmbedType;
 import net.dv8tion.jda.core.entities.MessageEmbed;
@@ -97,7 +98,7 @@ public class MessageEmbedImpl implements MessageEmbed
 
     @Override
     public List<Field> getFields() {
-        return fields;
+        return Collections.unmodifiableList(fields);
     }
     
     @Override

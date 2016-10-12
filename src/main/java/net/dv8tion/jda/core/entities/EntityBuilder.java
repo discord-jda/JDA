@@ -762,7 +762,7 @@ public class EntityBuilder
                 .setUrl(messageEmbed.getString("url"))
                 .setTitle(messageEmbed.isNull("title") ? null : messageEmbed.getString("title"))
                 .setDescription(messageEmbed.isNull("description") ? null : messageEmbed.getString("description"))
-                .setColor(messageEmbed.isNull("color") ? null : Color.decode(String.valueOf(messageEmbed.getInt("color"))))
+                .setColor(messageEmbed.isNull("color") || messageEmbed.getInt("color") == 0 ? null : new Color(messageEmbed.getInt("color")))
                 .setTimestamp(messageEmbed.isNull("timestamp") ? null : OffsetDateTime.parse(messageEmbed.getString("timestamp")));
 
         EmbedType type = EmbedType.fromKey(messageEmbed.getString("type"));
@@ -825,21 +825,18 @@ public class EntityBuilder
         if (messageEmbed.has("fields"))
         {
             JSONArray fieldsJson = messageEmbed.getJSONArray("fields");
-            if(fieldsJson.length()>0)
+            List<Field> fields = new LinkedList<>();
+            for(int index=0; index<fieldsJson.length(); index++)
             {
-                List<Field> fields = new LinkedList<>();
-                for(int index=0; index<fieldsJson.length(); index++)
-                {
-                    JSONObject fieldJson = fieldsJson.getJSONObject(index);
-                    fields.add(new Field(
-                            fieldJson.isNull("name") ? null : fieldJson.getString("name"),
-                            fieldJson.isNull("value") ? null : fieldJson.getString("value"),
-                            fieldJson.isNull("inline") ? false : fieldJson.getBoolean("inline")));
-                }
-                embed.setFields(fields);
+                JSONObject fieldJson = fieldsJson.getJSONObject(index);
+                fields.add(new Field(
+                        fieldJson.isNull("name") ? null : fieldJson.getString("name"),
+                        fieldJson.isNull("value") ? null : fieldJson.getString("value"),
+                        fieldJson.isNull("inline") ? false : fieldJson.getBoolean("inline")));
             }
+            embed.setFields(fields);
         }
-        else embed.setFields(null);
+        else embed.setFields(Collections.emptyList());
         
         if (messageEmbed.has("video"))
         {

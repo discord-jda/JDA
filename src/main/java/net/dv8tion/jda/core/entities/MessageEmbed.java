@@ -119,15 +119,17 @@ public interface MessageEmbed
     /**
      * The fields in a message embed.<br>
      * Message embeds can contain multiple fields, each with a name, value, and a boolean
-     * to determine if it will fall in-line with other fields.
+     * to determine if it will fall in-line with other fields. If the embed contains no
+     * fields, an empty list will be returned.
      *
      * @return
-     *      Possibly-null List of {@link net.dv8tion.jda.core.entities.MessageEmbed.Field Field} objects containing field information.
+     *      Never-null (but possibly empty) List of {@link net.dv8tion.jda.core.entities.MessageEmbed.Field Field} objects containing field information.
      */
     List<Field> getFields();
     
     /**
      * The color of the stripe on the side of the embed.<br>
+     * If the color is 0 (no color), this will return null.
      *
      * @return
      *      Possibly-null Color.
