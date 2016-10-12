@@ -762,7 +762,7 @@ public class EntityBuilder
                 .setUrl(messageEmbed.getString("url"))
                 .setTitle(messageEmbed.isNull("title") ? null : messageEmbed.getString("title"))
                 .setDescription(messageEmbed.isNull("description") ? null : messageEmbed.getString("description"))
-                .setColor(messageEmbed.isNull("color") ? null : Color.decode(String.valueOf(messageEmbed.getInt("color"))) )
+                .setColor(messageEmbed.isNull("color") ? null : Color.decode(String.valueOf(messageEmbed.getInt("color"))))
                 .setTimestamp(messageEmbed.isNull("timestamp") ? null : OffsetDateTime.parse(messageEmbed.getString("timestamp")));
 
         EmbedType type = EmbedType.fromKey(messageEmbed.getString("type"));
