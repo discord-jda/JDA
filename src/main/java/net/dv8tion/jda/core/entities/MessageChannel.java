@@ -29,6 +29,20 @@ import java.util.List;
 public interface MessageChannel extends ISnowflake
 {
     /**
+     * This method is a shortcut method to return the following information in the following situation:
+     * If the MessageChannel is instance of..
+     * <ul>
+     *     <li><b>TextChannel</b> - Returns {@link TextChannel#getName()}</li>
+     *     <li><b>PrivateChannel</b> Returns {@link PrivateChannel#getUser()} {@link net.dv8tion.jda.core.entities.User#getName() .getName()}</li>
+     *     <li><b>Group</b> - Returns {@link net.dv8tion.jda.client.entities.Group#getName()}</li>
+     * </ul>
+     *
+     * @return
+     *      Possibly-null "name" of the MessageChannel. Different implementations determine what the name is.
+     */
+    String getName();
+
+    /**
      * Returns the {@link net.dv8tion.jda.core.JDA JDA} instance of this MessageChannel
      *
      * @return

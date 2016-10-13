@@ -55,6 +55,12 @@ public class PrivateChannelImpl implements PrivateChannel
     }
 
     @Override
+    public String getName()
+    {
+        return user.getName();
+    }
+
+    @Override
     public JDA getJDA()
     {
         return user.getJDA();

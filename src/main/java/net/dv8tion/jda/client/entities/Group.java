@@ -24,6 +24,13 @@ import java.util.List;
 
 public interface Group extends MessageChannel, CallableChannel
 {
+    /**
+     * Returns the name set for this group.<br>
+     * If no name has been set for this group, then null is returned.
+     *
+     * @return
+     *      Possibly-null name of the group.
+     */
     String getName();
     String getIconId();
     String getIconUrl();
