@@ -47,5 +47,5 @@ public interface PrivateChannel extends MessageChannel, CallableChannel, IFakeab
      * @return
      *          {@link net.dv8tion.jda.core.requests.RestAction RestAction}
      */
-    RestAction close();
+    RestAction<Void> close();
 }

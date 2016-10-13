@@ -18,6 +18,7 @@ package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
+import net.dv8tion.jda.core.requests.RestAction;
 
 /**
  * Represents a Discord User.
@@ -86,6 +87,8 @@ public interface User extends ISnowflake, IMentionable, IFakeable
      *      True if the logged in account shares a PrivateChannel with this user.
      */
     boolean hasPrivateChannel();
+
+    RestAction<PrivateChannel> openPrivateChannel();
 
     /**
      * Gets the {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} of this

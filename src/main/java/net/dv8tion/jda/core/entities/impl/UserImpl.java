@@ -18,9 +18,15 @@ package net.dv8tion.jda.core.entities.impl;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
+import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.requests.Request;
+import net.dv8tion.jda.core.requests.Response;
+import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.Route;
+import org.json.JSONObject;
 
 public class UserImpl implements User
 {
@@ -83,12 +89,39 @@ public class UserImpl implements User
     }
 
     @Override
-    public PrivateChannel getPrivateChannel()
+    public RestAction<PrivateChannel> openPrivateChannel()
     {
         if (privateChannel != null)
-            return privateChannel;
-        //else, create a new one.
-        return null;
+            throw new IllegalStateException("A private channel already exists for this User!");
+
+        Route.CompiledRoute route = Route.Self.CREATE_PRIVATE_CHANNEL.compile();
+        JSONObject body = new JSONObject().put("recipient_id", getId());
+        return new RestAction<PrivateChannel>(api, route, body)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                {
+                    PrivateChannel priv = EntityBuilder.get(api).createPrivateChannel(response.getObject());
+                    UserImpl.this.privateChannel = priv;
+                    request.onSuccess(priv);
+                }
+                else
+                {
+                    request.onFailure(response);
+                }
+            }
+        };
+    }
+
+    @Override
+    public PrivateChannel getPrivateChannel()
+    {
+        if (hasPrivateChannel())
+            throw new IllegalStateException("There is no PrivateChannel for this user yet! Use User#openPrivateChannel() first!");
+
+        return privateChannel;
     }
 
     @Override
