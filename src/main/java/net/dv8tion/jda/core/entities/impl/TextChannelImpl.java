@@ -62,15 +62,33 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
-    public RestAction deleteMessages(Collection<Message> messages)
+    public RestAction<Void> deleteMessages(Collection<Message> messages)
     {
-        return null;
+        return deleteMessagesByIds(messages.stream()
+                .map(msg -> msg.toString())
+                .collect(Collectors.toList()));
     }
 
     @Override
-    public RestAction deleteMessagesByIds(Collection<String> messageIds)
+    public RestAction<Void> deleteMessagesByIds(Collection<String> messageIds)
     {
-        return null;
+        checkPermission(Permission.MESSAGE_MANAGE, "Must have MESSAGE_MANAGE in order to bulk delete messages in this channel regardless of author.");
+        if (messageIds.size() < 2 || messageIds.size() > 100)
+            throw new IllegalArgumentException("Must provide at least 2 or at most 100 messages to be deleted.");
+
+        JSONObject body = new JSONObject().put("messages", messageIds);
+        Route.CompiledRoute route = Route.Messages.DELETE_MESSAGES.compile(id);
+        return new RestAction<Void>(getJDA(), route, body)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
     }
 
     @Override
@@ -153,9 +171,7 @@ public class TextChannelImpl implements TextChannel
                 }
                 else
                 {
-                    request.onFailure(
-                            new ErrorResponseException(
-                                    ErrorResponse.fromJSON(response.getObject()), response));
+                    request.onFailure(response);
                 }
             }
         };
@@ -177,7 +193,8 @@ public class TextChannelImpl implements TextChannel
         checkPermission(Permission.MESSAGE_HISTORY);
 
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE.compile(getId(), messageId);
-        return new RestAction<Message>(getJDA(), route, null) {
+        return new RestAction<Message>(getJDA(), route, null)
+        {
             @Override
             protected void handleResponse(Response response, Request request)
             {
@@ -219,15 +236,9 @@ public class TextChannelImpl implements TextChannel
             protected void handleResponse(Response response, Request request)
             {
                 if (response.isOk())
-                {
                     request.onSuccess(null);
-                }
                 else
-                {
-                    request.onFailure(
-                            new ErrorResponseException(
-                                    ErrorResponse.fromJSON(response.getObject()), response));
-                }
+                    request.onFailure(response);
             }
         };
     }
@@ -239,9 +250,20 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
-    public RestAction sendTyping()
+    public RestAction<Void> sendTyping()
     {
-        return null;
+        Route.CompiledRoute route = Route.Channels.SEND_TYPING.compile(id);
+        return new RestAction<Void>(getJDA(), route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
     }
 
     @Override
@@ -258,16 +280,9 @@ public class TextChannelImpl implements TextChannel
             protected void handleResponse(Response response, Request request)
             {
                 if (response.isOk())
-                {
-
                     request.onSuccess(null);
-                }
                 else
-                {
-                    request.onFailure(
-                            new ErrorResponseException(
-                                    ErrorResponse.fromJSON(response.getObject()), response));
-                }
+                    request.onFailure(response);
             }
         };
     }
@@ -286,15 +301,9 @@ public class TextChannelImpl implements TextChannel
             protected void handleResponse(Response response, Request request)
             {
                 if (response.isOk())
-                {
                     request.onSuccess(null);
-                }
                 else
-                {
-                    request.onFailure(
-                            new ErrorResponseException(
-                                    ErrorResponse.fromJSON(response.getObject()), response));
-                }
+                    request.onFailure(response);
             }
         };
     }
@@ -305,7 +314,8 @@ public class TextChannelImpl implements TextChannel
         checkPermission(Permission.MESSAGE_READ, "Cannot get the pinned message of a channel without MESSAGE_READ access.");
 
         Route.CompiledRoute route = Route.Messages.GET_PINNED_MESSAGES.compile(getId());
-        return new RestAction<List<Message>>(getJDA(), route, null) {
+        return new RestAction<List<Message>>(getJDA(), route, null)
+        {
             @Override
             protected void handleResponse(Response response, Request request)
             {
@@ -324,9 +334,7 @@ public class TextChannelImpl implements TextChannel
                 }
                 else
                 {
-                    request.onFailure(
-                            new ErrorResponseException(
-                                    ErrorResponse.fromJSON(response.getObject()), response));
+                    request.onFailure(response);
                 }
             }
         };

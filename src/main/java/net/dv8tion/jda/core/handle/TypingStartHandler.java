@@ -15,6 +15,9 @@
  */
 package net.dv8tion.jda.core.handle;
 
+import net.dv8tion.jda.client.entities.Group;
+import net.dv8tion.jda.client.entities.impl.GroupImpl;
+import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -42,29 +45,34 @@ public class TypingStartHandler extends SocketHandler
     {
         String channelId = content.getString("channel_id");
         MessageChannel channel = api.getTextChannelMap().get(channelId);
-        if (channel != null)
+        if (channel == null)
+            channel = api.getPrivateChannelMap().get(channelId);
+        if (channel == null)
+            channel = api.getFakePrivateChannelMap().get(channelId);
+        if (channel == null && api.getAccountType() == AccountType.CLIENT)
+            channel = api.asClient().getGroupById(channelId);
+        if (channel == null)
+            return null;    //We don't have the channel cached yet. We chose not to cache this event
+                            // because that happen very often and could easily fill up the EventCache if
+                            // we, for some reason, never get the channel. Especially in an active channel.
+
+        if (channel instanceof TextChannel)
         {
-            if (GuildLock.get(api).isLocked(((TextChannel) channel).getGuild().getId()))
+            String guildId = ((TextChannel) channel).getGuild().getId();
+            if (GuildLock.get(api).isLocked(guildId))
             {
-                return ((TextChannel) channel).getGuild().getId();
+                return guildId;
             }
         }
-        else
-        {
-            channel = api.getPrivateChannelMap().get(channelId);
-            if (channel == null)
-                channel = api.getFakePrivateChannelMap().get(channelId);
-            if (channel == null)
-                return null;    //We don't have the channel cached yet. We chose not to cache this event
-                                // because that happen very often and could easily fill up the EventCache if
-                                // we, for some reason, never get the channel. Especially in an active channel.
-        }
 
+        String userId = content.getString("user_id");
         User user;
-        if (channel instanceof PrivateChannel && ((PrivateChannel) channel).isFake())
+        if (channel instanceof PrivateChannel)
             user = ((PrivateChannel) channel).getUser();
+        else if (channel instanceof Group)
+            user = ((GroupImpl) channel).getUserMap().get(userId);
         else
-            user = api.getUserMap().get(content.getString("user_id"));
+            user = api.getUserMap().get(userId);
 
         if (user == null)
             return null;    //Just like in the comment above, if for some reason we don't have the user for some reason

@@ -173,7 +173,7 @@ public interface MessageChannel extends ISnowflake
      * @return
      *          {@link net.dv8tion.jda.core.requests.RestAction RestAction}.
      */
-    RestAction sendTyping();
+    RestAction<Void> sendTyping();
 
     /**
      * Used to pin a message.<br>

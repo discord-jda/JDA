@@ -20,17 +20,22 @@ import net.dv8tion.jda.client.entities.Call;
 import net.dv8tion.jda.client.entities.Friend;
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.MessageHistory;
+import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.requests.Request;
+import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.Route;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class GroupImpl implements Group
 {
@@ -141,13 +146,30 @@ public class GroupImpl implements Group
     @Override
     public RestAction<Message> sendMessage(String text)
     {
-        return null;
+        return sendMessage(new MessageBuilder().appendString(text).build());
     }
 
     @Override
     public RestAction<Message> sendMessage(Message msg)
     {
-        return null;
+        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
+        JSONObject json = new JSONObject().put("content", msg.getRawContent()).put("tts", msg.isTTS());
+        return new RestAction<Message>(getJDA(), route, json)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                {
+                    Message m = EntityBuilder.get(getJDA()).createMessage(response.getObject());
+                    request.onSuccess(m);
+                }
+                else
+                {
+                    request.onFailure(response);
+                }
+            }
+        };
     }
 
     @Override
@@ -165,7 +187,19 @@ public class GroupImpl implements Group
     @Override
     public RestAction<Void> deleteMessageById(String messageId)
     {
-        return null;
+        checkNull(messageId, "messageId");
+
+        Route.CompiledRoute route = Route.Messages.DELETE_MESSAGE.compile(getId(), messageId);
+        return new RestAction<Void>(getJDA(), route, null) {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
     }
 
     @Override
@@ -183,19 +217,69 @@ public class GroupImpl implements Group
     @Override
     public RestAction<Void> pinMessageById(String messageId)
     {
-        return null;
+        checkNull(messageId, "messageId");
+
+        Route.CompiledRoute route = Route.Messages.ADD_PINNED_MESSAGE.compile(getId(), messageId);
+        return new RestAction<Void>(getJDA(), route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
     }
 
     @Override
     public RestAction<Void> unpinMessageById(String messageId)
     {
-        return null;
+        checkNull(messageId, "messageId");
+
+        Route.CompiledRoute route = Route.Messages.REMOVE_PINNED_MESSAGE.compile(getId(), messageId);
+        return new RestAction<Void>(getJDA(), route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
     }
 
     @Override
     public RestAction<List<Message>> getPinnedMessages()
     {
-        return null;
+        Route.CompiledRoute route = Route.Messages.GET_PINNED_MESSAGES.compile(getId());
+        return new RestAction<List<Message>>(getJDA(), route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                {
+                    LinkedList<Message> pinnedMessages = new LinkedList<>();
+                    EntityBuilder builder = EntityBuilder.get(getJDA());
+                    JSONArray pins = response.getArray();
+
+                    for (int i = 0; i < pins.length(); i++)
+                    {
+                        pinnedMessages.add(builder.createMessage(pins.getJSONObject(i)));
+                    }
+
+                    request.onSuccess(Collections.unmodifiableList(pinnedMessages));
+                }
+                else
+                {
+                    request.onFailure(response);
+                }
+            }
+        };
     }
 
     public HashMap<String, User> getUserMap()
@@ -225,5 +309,11 @@ public class GroupImpl implements Group
     {
         this.iconId = iconId;
         return this;
+    }
+
+    private void checkNull(Object obj, String name)
+    {
+        if (obj == null)
+            throw new NullPointerException("Provided " + name + " was null!");
     }
 }

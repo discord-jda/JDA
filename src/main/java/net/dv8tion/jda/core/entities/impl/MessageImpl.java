@@ -307,9 +307,7 @@ public class MessageImpl implements Message
                 }
                 else
                 {
-                    request.onFailure(
-                            new ErrorResponseException(
-                                    ErrorResponse.fromJSON(response.getObject()), response));
+                    request.onFailure(response);
                 }
             }
         };

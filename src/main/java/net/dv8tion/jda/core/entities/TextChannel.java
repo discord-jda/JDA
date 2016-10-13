@@ -60,7 +60,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *      If this account does not have MANAGE_MESSAGES
      */
-    RestAction deleteMessages(Collection<Message> messages);
+    RestAction<Void> deleteMessages(Collection<Message> messages);
 
     /**
      * Bulk deletes a list of messages. <b>This is not the same as calling {@link net.dv8tion.jda.core.entities.MessageChannel#deleteMessageById(String)} in a loop.</b> <br>
@@ -85,5 +85,5 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *      If this account does not have MANAGE_MESSAGES
      */
-    RestAction deleteMessagesByIds(Collection<String> messageIds);
+    RestAction<Void> deleteMessagesByIds(Collection<String> messageIds);
 }

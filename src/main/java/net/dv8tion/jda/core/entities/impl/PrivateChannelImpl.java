@@ -83,9 +83,7 @@ public class PrivateChannelImpl implements PrivateChannel
                 }
                 else
                 {
-                    request.onFailure(
-                            new ErrorResponseException(
-                                    ErrorResponse.fromJSON(response.getObject()), response));
+                    request.onFailure(response);
                 }
             }
         };
@@ -103,7 +101,8 @@ public class PrivateChannelImpl implements PrivateChannel
         checkNull(messageId, "messageId");
 
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE.compile(getId(), messageId);
-        return new RestAction<Message>(getJDA(), route, null) {
+        return new RestAction<Message>(getJDA(), route, null)
+        {
             @Override
             protected void handleResponse(Response response, Request request)
             {
@@ -114,9 +113,7 @@ public class PrivateChannelImpl implements PrivateChannel
                 }
                 else
                 {
-                    request.onFailure(
-                            new ErrorResponseException(
-                                    ErrorResponse.fromJSON(response.getObject()), response));
+                    request.onFailure(response);
                 }
             }
         };
@@ -128,20 +125,15 @@ public class PrivateChannelImpl implements PrivateChannel
         checkNull(messageId, "messageId");
 
         Route.CompiledRoute route = Route.Messages.DELETE_MESSAGE.compile(getId(), messageId);
-        return new RestAction<Void>(getJDA(), route, null) {
+        return new RestAction<Void>(getJDA(), route, null)
+        {
             @Override
             protected void handleResponse(Response response, Request request)
             {
                 if (response.isOk())
-                {
                     request.onSuccess(null);
-                }
                 else
-                {
-                    request.onFailure(
-                            new ErrorResponseException(
-                                    ErrorResponse.fromJSON(response.getObject()), response));
-                }
+                    request.onFailure(response);
             }
         };
     }
@@ -155,7 +147,18 @@ public class PrivateChannelImpl implements PrivateChannel
     @Override
     public RestAction sendTyping()
     {
-        return null;
+        Route.CompiledRoute route = Route.Channels.SEND_TYPING.compile(id);
+        return new RestAction<Void>(getJDA(), route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
     }
 
     @Override
@@ -170,16 +173,9 @@ public class PrivateChannelImpl implements PrivateChannel
             protected void handleResponse(Response response, Request request)
             {
                 if (response.isOk())
-                {
-
                     request.onSuccess(null);
-                }
                 else
-                {
-                    request.onFailure(
-                            new ErrorResponseException(
-                                    ErrorResponse.fromJSON(response.getObject()), response));
-                }
+                    request.onFailure(response);
             }
         };
     }
@@ -196,15 +192,9 @@ public class PrivateChannelImpl implements PrivateChannel
             protected void handleResponse(Response response, Request request)
             {
                 if (response.isOk())
-                {
                     request.onSuccess(null);
-                }
                 else
-                {
-                    request.onFailure(
-                            new ErrorResponseException(
-                                    ErrorResponse.fromJSON(response.getObject()), response));
-                }
+                    request.onFailure(response);
             }
         };
     }
@@ -213,7 +203,8 @@ public class PrivateChannelImpl implements PrivateChannel
     public RestAction<List<Message>> getPinnedMessages()
     {
         Route.CompiledRoute route = Route.Messages.GET_PINNED_MESSAGES.compile(getId());
-        return new RestAction<List<Message>>(getJDA(), route, null) {
+        return new RestAction<List<Message>>(getJDA(), route, null)
+        {
             @Override
             protected void handleResponse(Response response, Request request)
             {
@@ -232,9 +223,7 @@ public class PrivateChannelImpl implements PrivateChannel
                 }
                 else
                 {
-                    request.onFailure(
-                            new ErrorResponseException(
-                                    ErrorResponse.fromJSON(response.getObject()), response));
+                    request.onFailure(response);
                 }
             }
         };
