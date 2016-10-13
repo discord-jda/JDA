@@ -515,7 +515,7 @@ public class EntityBuilder
                     : gameJson.getString("url");
             Game.GameType gameType = gameJson.isNull("type")
                     ? Game.GameType.DEFAULT
-                    : Game.GameType.fromKey(gameJson.getInt("type"));
+                    : Game.GameType.fromKey(Integer.parseInt(gameJson.get("type").toString()));
 
             game = new GameImpl(gameName, url, gameType);
         }
