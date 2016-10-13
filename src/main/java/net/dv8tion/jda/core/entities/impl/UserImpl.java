@@ -93,6 +93,8 @@ public class UserImpl implements User
     {
         if (privateChannel != null)
             throw new IllegalStateException("A private channel already exists for this User!");
+        if (fake)
+            throw new IllegalStateException("Cannot open a PrivateChannel with a Fake user.");
 
         Route.CompiledRoute route = Route.Self.CREATE_PRIVATE_CHANNEL.compile();
         JSONObject body = new JSONObject().put("recipient_id", getId());
@@ -118,7 +120,7 @@ public class UserImpl implements User
     @Override
     public PrivateChannel getPrivateChannel()
     {
-        if (hasPrivateChannel())
+        if (!hasPrivateChannel())
             throw new IllegalStateException("There is no PrivateChannel for this user yet! Use User#openPrivateChannel() first!");
 
         return privateChannel;
