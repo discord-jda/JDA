@@ -142,6 +142,7 @@ repositories {
 dependencies {
     //General Utility
     compile 'org.apache.commons:commons-lang3:3.4'
+    compile 'org.apache.commons:commons-collections4:4.1'
     compile 'org.json:json:20150729'
 
     //Native Library Support

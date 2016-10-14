@@ -205,7 +205,19 @@ public class GroupImpl implements Group
     @Override
     public MessageHistory getHistory()
     {
-        return null;
+        return new MessageHistory(this);
+    }
+
+    @Override
+    public RestAction<MessageHistory> getHistoryAround(Message markerMessage, int limit)
+    {
+        return MessageHistory.getHistoryAround(this, markerMessage, limit);
+    }
+
+    @Override
+    public RestAction<MessageHistory> getHistoryAround(String markedMessageId, int limit)
+    {
+        return MessageHistory.getHistoryAround(this, markedMessageId, limit);
     }
 
     @Override

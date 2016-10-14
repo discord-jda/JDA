@@ -177,6 +177,9 @@ public interface MessageChannel extends ISnowflake
      */
     MessageHistory getHistory();
 
+    RestAction<MessageHistory> getHistoryAround(Message message, int limit);
+    RestAction<MessageHistory> getHistoryAround(String messageId, int limit);
+
     /**
      * Sends the typing status to discord. This is what is used to make the message "X is typing..." appear.<br>
      * The typing status only lasts for 10 seconds or until a message is sent.<br>

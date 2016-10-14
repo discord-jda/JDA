@@ -19,118 +19,209 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.core.events.message.MessageDeleteEvent;
+import net.dv8tion.jda.core.events.message.MessageUpdateEvent;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.entities.EntityBuilder;
+import net.dv8tion.jda.core.hooks.*;
+import net.dv8tion.jda.core.requests.Request;
+import net.dv8tion.jda.core.requests.Response;
+import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.Route;
+import org.apache.commons.collections4.map.ListOrderedMap;
+import org.json.JSONArray;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
-public class MessageHistory
+public class MessageHistory implements net.dv8tion.jda.core.hooks.EventListener
 {
-    private final JDAImpl api;
-    private final String channelId;
-    private String lastId = null;
-    private boolean atEnd = false;
-    private final List<Message> queued = new LinkedList<>();
+    protected final JDAImpl api;
+    protected final MessageChannel channel;
+
+    protected ListOrderedMap<String, Message> history = new ListOrderedMap<>();
+    protected String markerId;
 
     public MessageHistory(MessageChannel channel)
     {
         this.api = (JDAImpl) channel.getJDA();
+        this.channel = channel;
         if (channel instanceof TextChannel &&
                 !((TextChannel) channel).getGuild().getMember(api.getSelfInfo()).hasPermission(Permission.MESSAGE_HISTORY))
             throw new PermissionException(Permission.MESSAGE_HISTORY);
-
-        this.channelId = channel.getId();
     }
 
     /**
-     * Gets all available Messages. Can be called multiple times and always returns the full set
+     * Returns the {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel} that this MessageHistory
+     * is related to.
      *
-     * @return all available Messages
+     * @return
+     *      The MessageChannel of this history.
      */
-    public List<Message> retrieveAll()
+    public MessageChannel getChannel()
     {
-        while (!atEnd && retrieve() != null)
+        return channel;
+    }
+
+    public synchronized RestAction<List<Message>> retrievePast(int amount)
+    {
+        if (amount > 100 || amount < 0)
+            throw new IllegalArgumentException("Message retrieval limit is between 1 and 100 messages. No more, no less. Limit provided: " + amount);
+
+        Route.CompiledRoute route;
+        if (history.isEmpty())
+            route = Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId(), Integer.toString(amount));
+        else
+            route = Route.Messages.GET_MESSAGE_HISTORY_BEFORE.compile(channel.getId(), Integer.toString(amount), history.lastKey());
+        return new RestAction<List<Message>>(api, route, null)
         {
-            //Nothing needed here
-        }
-        return queued;
-    }
-
-    /**
-     * Returns all already by the retrieve methods pulled messages of this history
-     *
-     * @return the list of already pulled messages
-     */
-    public List<Message> getRecent()
-    {
-        return queued;
-    }
-
-    /**
-     * Queues the next set of 100 Messages and returns them
-     * If the end of the chat was already reached, this function returns null
-     *
-     * @return a list of the next 100 Messages (max), or null if at end of chat
-     */
-    public List<Message> retrieve()
-    {
-        return retrieve(100);
-    }
-
-    /**
-     * Queues the next set of Messages and returns them
-     * If the end of the chat was already reached, this function returns null
-     *
-     * @param amount the amount to Messages to queue
-     * @return a list of the next [amount] Messages (max), or null if at end of chat
-     */
-    public List<Message> retrieve(int amount)
-    {
-        if (atEnd)
-        {
-            return null;
-        }
-        int toQueue;
-        LinkedList<Message> out = new LinkedList<>();
-        EntityBuilder builder = EntityBuilder.get(api);
-        while(amount > 0)
-        {
-            toQueue = Math.min(amount, 100);
-            try
+            @Override
+            protected void handleResponse(Response response, Request request)
             {
-//                Requester2.Response response = api.getRequester2().get(Requester2.DISCORD_API_PREFIX + "channels/" + channelId
-//                        + "/messages?limit=" + toQueue + (lastId != null ? "&before=" + lastId : ""));
-//                if(!response.isOk())
-//                    throw new RuntimeException("Error fetching message-history for channel with id " + channelId + "... Error: " + response.toString());
-//
-//                JSONArray array = response.getArray();
+                if (!response.isOk())
+                    request.onFailure(response);
 
-//                for (int i = 0; i < array.length(); i++)
-//                {
-//                    out.add(builder.createMessage(array.getJSONObject(i)));
-//                }
-//                if(array.length() < toQueue) {
-//                    atEnd = true;
-//                    break;
-//                }
-//                else
-//                {
-//                    lastId = out.getLast().getId();
-//                }
+                EntityBuilder builder = EntityBuilder.get(api);
+                LinkedList<Message> msgs  = new LinkedList<>();
+                JSONArray historyJson = response.getArray();
+
+                for (int i = 0; i < historyJson.length(); i++)
+                    msgs.add(builder.createMessage(historyJson.getJSONObject(i)));
+
+                if (history.isEmpty())
+
+
+                msgs.forEach(msg -> history.put(msg.getId(), msg));
+                request.onSuccess(msgs);
             }
-            catch (Exception ex)
-            {
-                JDAImpl.LOG.log(ex);
-                break;
-            }
-            amount -= toQueue;
-        }
-        if(out.size() == 0)
+        };
+    }
+
+    public RestAction<List<Message>> retrieveFuture(int amount)
+    {
+        if (amount > 100 || amount < 0)
+            throw new IllegalArgumentException("Message retrieval limit is between 1 and 100 messages. No more, no less. Limit provided: " + amount);
+
+        if (history.isEmpty())
+            throw new IllegalStateException("No messageId  is stored to use as the marker between the future and past." +
+                    "Either use MessageHistory(MessageChannel, String) or make a call to retrievePast(int) first.");
+
+        Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY_AFTER.compile(channel.getId(), Integer.toString(amount), history.firstKey());
+        return new RestAction<List<Message>>(api, route, null)
         {
-            return null;
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (!response.isOk())
+                    request.onFailure(response);
+
+                EntityBuilder builder = EntityBuilder.get(api);
+                LinkedList<Message> msgs  = new LinkedList<>();
+                JSONArray historyJson = response.getArray();
+
+                for (int i = 0; i < historyJson.length(); i++)
+                    msgs.add(builder.createMessage(historyJson.getJSONObject(i)));
+
+                for (Iterator<Message> it = msgs.descendingIterator(); it.hasNext();)
+                {
+                    Message m = it.next();
+                    history.put(0, m.getId(), m);
+                }
+
+                request.onSuccess(msgs);
+            }
+        };
+    }
+
+    public List<Message> getCachedHistory()
+    {
+        return Collections.unmodifiableList(new ArrayList<>(history.values()));
+    }
+
+    public Message getMessageById(String id)
+    {
+        return history.get(id);
+    }
+
+    public Message informUpdate(Message msg)
+    {
+        if (msg.getChannel().equals(channel) && history.containsKey(msg.getId()))
+            return history.put(msg.getId(), msg);
+
+        return null;
+    }
+
+    public Message informDeletion(Message msg)
+    {
+        if (msg.getChannel().equals(channel))
+            return informDeletion(msg.getId());
+
+        return null;
+    }
+
+
+    public Message informDeletion(String id)
+    {
+        if (id == null)
+            throw new NullPointerException("Provided message id was null!");
+        return history.remove(id);
+    }
+
+    @Override
+    public void onEvent(Event event)
+    {
+        if (event instanceof MessageUpdateEvent)
+        {
+            informUpdate(((MessageUpdateEvent) event).getMessage());
         }
-        queued.addAll(out);
-        return out;
+        else if (event instanceof MessageDeleteEvent)
+        {
+            MessageDeleteEvent mEvent = (MessageDeleteEvent) event;
+            if (mEvent.getChannel().equals(channel))
+            {
+                history.remove(mEvent.getMessageId());
+            }
+        }
+    }
+
+    public static RestAction<MessageHistory> getHistoryAround(MessageChannel channel, Message message, int limit)
+    {
+        if (!message.getChannel().equals(channel))
+            throw new IllegalArgumentException("The provided Message is not from the MessageChannel!");
+
+        return getHistoryAround(channel, message.getId(), limit);
+    }
+
+    public static RestAction<MessageHistory> getHistoryAround(MessageChannel channel, final String markerMessageId, int limit)
+    {
+        if (markerMessageId == null)
+            throw new IllegalArgumentException("Provided markedMessageId cannot be null!");
+
+        if (limit > 100 || limit < 1)
+            throw new IllegalArgumentException("Provided limit was out of bounds. Minimum: 1, Max: 100. Provided: " + limit);
+
+        Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY_AROUND.compile(channel.getId(), Integer.toString(limit), markerMessageId);
+        return new RestAction<MessageHistory>(channel.getJDA(), route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (!response.isOk())
+                    request.onFailure(response);
+
+                MessageHistory mHistory = new MessageHistory(channel);
+                mHistory.markerId = markerMessageId;
+
+                EntityBuilder builder = EntityBuilder.get(api);
+                LinkedList<Message> msgs  = new LinkedList<>();
+                JSONArray historyJson = response.getArray();
+
+                for (int i = 0; i < historyJson.length(); i++)
+                    msgs.add(builder.createMessage(historyJson.getJSONObject(i)));
+
+                msgs.forEach(msg -> mHistory.history.put(msg.getId(), msg));
+                request.onSuccess(mHistory);
+            }
+        };
     }
 }
