@@ -35,6 +35,7 @@ public enum Permission
     MESSAGE_ATTACH_FILES(15, true, true),
     MESSAGE_HISTORY(16, true, true),
     MESSAGE_MENTION_EVERYONE(17, true, true),
+    MESSAGE_EXT_EMOJI(18, true, true),
 
     VOICE_CONNECT(20, true, true),
     VOICE_SPEAK(21, true, true),
@@ -48,6 +49,8 @@ public enum Permission
 
     MANAGE_ROLES(28, true, false),
     MANAGE_PERMISSIONS(28, false, true),
+    MANAGE_WEBHOOKS(29, true, true),
+    MANAGE_EMOTES(30, true, false),
 
     UNKNOWN(-1, false, false);
 
