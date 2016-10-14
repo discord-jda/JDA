@@ -87,4 +87,10 @@ public class GuildMembersChunkHandler extends SocketHandler
         //Ignore. If one of the above things doesn't exist, causing an NPE, then we don't need to worry.
         catch (NullPointerException ignored) {}
     }
+
+    public void clearCache()
+    {
+        expectedGuildMembers.clear();
+        memberChunksCache.clear();
+    }
 }

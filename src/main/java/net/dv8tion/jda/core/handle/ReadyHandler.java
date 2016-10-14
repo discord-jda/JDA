@@ -99,6 +99,7 @@ public class ReadyHandler extends SocketHandler
 
     public void guildLoadComplete(JSONObject content)
     {
+        api.getClient().setChunkingAndSyncing(false);
         EntityBuilder builder = EntityBuilder.get(api);
         JSONArray privateChannels = content.getJSONArray("private_channels");
 
@@ -194,7 +195,7 @@ public class ReadyHandler extends SocketHandler
     {
         if (acknowledgedGuilds.size() == incompleteGuilds.size())
         {
-            api.getClient().setChunkingAndSyncing();
+            api.getClient().setChunkingAndSyncing(true);
             if (api.getAccountType() == AccountType.CLIENT)
                 sendGuildSyncRequests();
             sendMemberChunkRequests();

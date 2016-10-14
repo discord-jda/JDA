@@ -436,6 +436,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected void invalidate()
     {
         sessionId = null;
+        chunkingAndSyncing = false;
 
 //        TODO: Reimplement audio handler preservation
 //        //Preserve the audio handlers through registry invalidation
@@ -461,9 +462,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         api.getFakeUserMap().clear();
         api.getFakePrivateChannelMap().clear();
         EntityBuilder.get(api).clearCache();
-//        new ReadyHandler(api, 0).clearCache();
         EventCache.get(api).clear();
         GuildLock.get(api).clear();
+        this.<ReadyHandler>getHandler("READY").clearCache();
+        this.<GuildMembersChunkHandler>getHandler("GUILD_MEMBERS_CHUNK").clearCache();
     }
 
     protected void restoreAudioHandlers()
@@ -695,10 +697,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 //        LOG.log(cause);
     }
 
-    public void setChunkingAndSyncing()
+    public void setChunkingAndSyncing(boolean active)
     {
-        chunkingAndSyncing = true;
+        chunkingAndSyncing = active;
     }
+
 
     public HashMap<String, SocketHandler> getHandlers()
     {
