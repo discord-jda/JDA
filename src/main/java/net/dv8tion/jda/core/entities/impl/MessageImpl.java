@@ -209,14 +209,7 @@ public class MessageImpl implements Message
     @Override
     public ChannelType getChannelType()
     {
-        if (channel instanceof TextChannel)
-            return ChannelType.TEXT;
-        if (channel instanceof  PrivateChannel)
-            return ChannelType.PRIVATE;
-        if (channel instanceof Group)
-            return ChannelType.GROUP;
-
-        return ChannelType.UNKNOWN;
+        return channel.getType();
     }
 
     @Override

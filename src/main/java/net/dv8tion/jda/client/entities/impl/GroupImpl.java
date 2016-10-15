@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.MessageHistory;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
@@ -59,6 +60,12 @@ public class GroupImpl implements Group
     public String getName()
     {
         return name;
+    }
+
+    @Override
+    public ChannelType getType()
+    {
+        return ChannelType.GROUP;
     }
 
     @Override

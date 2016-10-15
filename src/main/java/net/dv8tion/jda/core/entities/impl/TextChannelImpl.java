@@ -98,6 +98,12 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
+    public ChannelType getType()
+    {
+        return ChannelType.TEXT;
+    }
+
+    @Override
     public String getTopic()
     {
         return topic;

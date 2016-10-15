@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.core.events.message;
 
+import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.Event;
@@ -68,6 +69,11 @@ public class MessageUpdateEvent extends Event
     public PrivateChannel getPrivateChannel()
     {
         return message.getPrivateChannel();
+    }
+
+    public Group getGroup()
+    {
+        return message.getGroup();
     }
 
     public TextChannel getTextChannel()

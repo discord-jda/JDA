@@ -42,6 +42,9 @@ public interface MessageChannel extends ISnowflake
      */
     String getName();
 
+    //TODO: doc
+    ChannelType getType();
+
     /**
      * Returns the {@link net.dv8tion.jda.core.JDA JDA} instance of this MessageChannel
      *
@@ -177,6 +180,7 @@ public interface MessageChannel extends ISnowflake
      */
     MessageHistory getHistory();
 
+    //TODO: doc
     RestAction<MessageHistory> getHistoryAround(Message message, int limit);
     RestAction<MessageHistory> getHistoryAround(String messageId, int limit);
 

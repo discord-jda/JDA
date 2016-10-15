@@ -20,11 +20,8 @@ import net.dv8tion.jda.client.entities.Call;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.MessageHistory;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.PrivateChannel;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
-import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.requests.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -58,6 +55,12 @@ public class PrivateChannelImpl implements PrivateChannel
     public String getName()
     {
         return user.getName();
+    }
+
+    @Override
+    public ChannelType getType()
+    {
+        return ChannelType.PRIVATE;
     }
 
     @Override

@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.core.events.message;
 
+import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.Event;
@@ -52,9 +53,14 @@ public class MessageEmbedEvent extends Event
         return embeds;
     }
 
-    public boolean isPrivate()
+    public boolean isFromType(ChannelType type)
     {
-        return channel instanceof PrivateChannel;
+        return channel.getType() == type;
+    }
+
+    public ChannelType getChannelType()
+    {
+        return channel.getType();
     }
 
     public MessageChannel getChannel()
@@ -64,17 +70,22 @@ public class MessageEmbedEvent extends Event
 
     public PrivateChannel getPrivateChannel()
     {
-        return isPrivate() ? (PrivateChannel) channel : null;
+        return isFromType(ChannelType.PRIVATE) ? (PrivateChannel) channel : null;
+    }
+
+    public Group getGroup()
+    {
+        return isFromType(ChannelType.GROUP) ? (Group) channel : null;
     }
 
     public TextChannel getTextChannel()
     {
-        return !isPrivate() ? (TextChannel) channel : null;
+        return isFromType(ChannelType.TEXT) ? (TextChannel) channel : null;
     }
 
     public Guild getGuild()
     {
-        return !isPrivate() ? getTextChannel().getGuild() : null;
+        return isFromType(ChannelType.TEXT) ? getTextChannel().getGuild() : null;
     }
 
 }
