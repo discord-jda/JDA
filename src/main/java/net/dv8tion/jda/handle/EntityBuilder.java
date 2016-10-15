@@ -143,12 +143,19 @@ public class EntityBuilder
                     String url = gameJson.isNull("url")
                             ? null
                             : gameJson.getString("url");
-                    Game.GameType gameType = gameJson.isNull("type")
-                            ? Game.GameType.DEFAULT
-                            : Game.GameType.fromKey(Integer.parseInt(gameJson.get("type").toString()));
-                            //we force the type value to be a string and parse it because sometimes discord is retarded and gives us a string for type
-                            // so we will deal with both int and string value cases by forcing int to be a string and parsing.
-
+                    Game.GameType gameType;
+                    try
+                    {
+                         gameType = gameJson.isNull("type")
+                                ? Game.GameType.DEFAULT
+                                : Game.GameType.fromKey(Integer.parseInt(gameJson.get("type").toString()));
+                        //we force the type value to be a string and parse it because sometimes discord is retarded and gives us a string for type
+                        // so we will deal with both int and string value cases by forcing int to be a string and parsing.
+                    }
+                    catch (NumberFormatException e)
+                    {
+                        gameType = Game.GameType.DEFAULT;
+                    }
                     presenceGame = new GameImpl(gameName, url, gameType);
                 }
                 user
