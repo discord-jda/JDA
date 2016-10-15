@@ -513,9 +513,18 @@ public class EntityBuilder
             String url = gameJson.isNull("url")
                     ? null
                     : gameJson.getString("url");
-            Game.GameType gameType = gameJson.isNull("type")
-                    ? Game.GameType.DEFAULT
-                    : Game.GameType.fromKey(Integer.parseInt(gameJson.get("type").toString()));
+
+            Game.GameType gameType;
+            try
+            {
+                gameType = gameJson.isNull("type")
+                        ? Game.GameType.DEFAULT
+                        : Game.GameType.fromKey(Integer.parseInt(gameJson.get("type").toString()));
+            }
+            catch (NumberFormatException e)
+            {
+                gameType = Game.GameType.DEFAULT;
+            }
 
             game = new GameImpl(gameName, url, gameType);
         }
