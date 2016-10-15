@@ -28,6 +28,7 @@ import java.util.function.Consumer;
 
 public abstract class RestAction<T>
 {
+    public static final EmptyRestAction EMPTY_REST_ACTION = new EmptyRestAction();
     public static final SimpleLog LOG = SimpleLog.getLog("RestAction");
 
     public static final Consumer DEFAULT_SUCCESS = o -> {};
@@ -134,4 +135,34 @@ public abstract class RestAction<T>
     }
 
     protected abstract void handleResponse(Response response, Request request);
+
+    public static class EmptyRestAction<Void> extends RestAction<Void>
+    {
+        public EmptyRestAction()
+        {
+            super(null, null, null);
+        }
+
+        @Override
+        public void queue(Consumer<Void> success, Consumer<Throwable> failure)
+        {
+            if (success != null)
+                success.accept(null);
+        }
+
+        @Override
+        public Void block()
+        {
+            return null;
+        }
+
+        @Override
+        public Void block(long timeout, TimeUnit timeUnit)
+        {
+            return null;
+        }
+
+        @Override
+        protected void handleResponse(Response response, Request request) { }
+    }
 }

@@ -17,6 +17,8 @@ package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Region;
+import net.dv8tion.jda.core.managers.GuildManager;
+import net.dv8tion.jda.core.managers.GuildManagerUpdatable;
 
 import java.util.Collection;
 import java.util.List;
@@ -224,17 +226,19 @@ public interface Guild extends ISnowflake
      */
     TextChannel getPublicChannel();
 
-//    /**
-//     * Returns the {@link net.dv8tion.jda.managers.GuildManager GuildManager} for this Guild.
-//     * In the GuildManager, you can modify most of its properties, and leave or delete it.
-//     *
-//     * @return
-//     *      The GuildManager of this Guild
-//     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
-//     *      if the guild is temporarily unavailable
-//     */
-//    GuildManager getManager();
-//
+    /**
+     * Returns the {@link net.dv8tion.jda.core.managers.GuildManager GuildManager} for this Guild.
+     * In the GuildManager, you can modify most of its properties, and leave or delete it.
+     *
+     * @return
+     *      The GuildManager of this Guild
+     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
+     */
+    GuildManager getManager();
+
+    GuildManagerUpdatable getManagerUpdatable();
+
 //    /**
 //     * Returns the {@link net.dv8tion.jda.managers.AudioManager AudioManager} that represents the
 //     * audio connection for this Guild.

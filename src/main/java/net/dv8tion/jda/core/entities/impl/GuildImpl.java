@@ -20,6 +20,8 @@ import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.managers.GuildManager;
+import net.dv8tion.jda.core.managers.GuildManagerUpdatable;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.json.JSONObject;
 
@@ -38,6 +40,10 @@ public class GuildImpl implements Guild
     private final HashMap<String, Role> roles = new HashMap<>();
 
     private final HashMap<String, JSONObject> cachedPresences = new HashMap<>();
+
+    private volatile GuildManager manager;
+    private volatile GuildManagerUpdatable managerUpdatable;
+    private Object mngLock = new Object();
 
     private Member owner;
     private String name;
@@ -270,6 +276,38 @@ public class GuildImpl implements Guild
     public TextChannel getPublicChannel()
     {
         return publicChannel;
+    }
+
+    @Override
+    public GuildManager getManager()
+    {
+        GuildManager mng = manager;
+        if (mng == null)
+        {
+            synchronized (mngLock)
+            {
+                mng = manager;
+                if (mng == null)
+                    mng = manager = new GuildManager(this);
+            }
+        }
+        return mng;
+    }
+
+    @Override
+    public GuildManagerUpdatable getManagerUpdatable()
+    {
+        GuildManagerUpdatable mng = managerUpdatable;
+        if (mng == null)
+        {
+            synchronized (mngLock)
+            {
+                mng = managerUpdatable;
+                if (mng == null)
+                    mng = managerUpdatable = new GuildManagerUpdatable(this);
+            }
+        }
+        return mng;
     }
 
     @Override
