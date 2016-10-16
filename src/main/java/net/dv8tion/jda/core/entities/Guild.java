@@ -174,6 +174,25 @@ public interface Guild extends ISnowflake
      */
     List<Role> getRoles();
     List<Role> getRolesByName(String name, boolean ignoreCase);
+
+    /**
+     * An {@link net.dv8tion.jda.core.entities.Emote Emote} matching the specified ID.<br>
+     *
+     * @param id
+     *      the emote id
+     * @return
+     *      An Emote matching the specified ID.
+     */
+    Emote getEmoteById(String id);
+
+    /**
+     * An immutable linked list of the emotes contained in this Guild.
+     *
+     * @return
+     *      An immutable list of emotes
+     */
+    List<Emote> getEmotes();
+
 //
 //    /**
 //     * Creates a new {@link net.dv8tion.jda.core.entities.Role Role} in this Guild.

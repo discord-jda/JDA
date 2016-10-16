@@ -17,10 +17,7 @@ package net.dv8tion.jda.core.utils;
 
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.entities.impl.GuildImpl;
-import net.dv8tion.jda.core.entities.impl.PermissionOverrideImpl;
-import net.dv8tion.jda.core.entities.impl.TextChannelImpl;
-import net.dv8tion.jda.core.entities.impl.VoiceChannelImpl;
+import net.dv8tion.jda.core.entities.impl.*;
 
 import java.util.List;
 import java.util.Map;
@@ -193,6 +190,49 @@ public class PermissionUtil
         }
         return true;
     }
+
+    /**
+     * Check whether the provided {@link net.dv8tion.jda.core.entities.Member Member} can use the specified {@link net.dv8tion.jda.core.entities.Emote Emote}.<p>
+     * If the specified Member is not in the emote's guild or the emote provided is fake this will return false.
+     * Otherwise it will check if the emote is restricted to any roles and if that is the case if the Member has one of these.
+     * <br><b>Note</b>: This is not checking if the issuer owns the Guild or not.
+     *
+     * @param issuer
+     *      The member that tries to interact with the Emote
+     * @param emote
+     *      The emote that is the target interaction
+     * @return
+     *      True, if the issuer can interact with the emote
+     */
+    public static boolean canInteract(Member issuer, Emote emote)
+    {
+        return !emote.isFake() // Fake emote -> can't use
+                && !(!emote.getRoles().isEmpty() // Emote restricted to roles -> check if the issuer has them
+                && !issuer.getRoles().parallelStream().anyMatch(r -> emote.getRoles().contains(r)));
+    }
+
+    /**
+     * Checks whether the specified {@link net.dv8tion.jda.core.entities.Emote Emote} can be used by the provided
+     * {@link net.dv8tion.jda.core.entities.Member Member} in the {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.<p>
+     *
+     * @param issuer
+     *      The member that tries to interact with the Emote
+     * @param emote
+     *      The emote that is the target interaction
+     * @param channel
+     *      The MessageChannel this emote should be interacted within
+     * @return
+     *      True, if the issuer can interact with the emote within the specified MessageChannel
+     */
+    public static boolean canInteract(Member issuer, Emote emote, MessageChannel channel)
+    {
+        return canInteract(issuer, emote) &&
+                (channel instanceof TextChannel
+                        ? emote.getGuild().equals(((TextChannel) channel).getGuild())
+                        || (emote.isManaged() && checkPermission((TextChannel) channel, issuer, Permission.MESSAGE_EXT_EMOJI))
+                        : emote.isManaged());
+    }
+
 
     /**
      * Gets the <code>int</code> representation of the effective permissions allowed for this {@link net.dv8tion.jda.core.entities.Member Member}

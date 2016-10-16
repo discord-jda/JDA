@@ -172,6 +172,17 @@ public interface Message extends ISnowflake
     List<MessageEmbed> getEmbeds();
 
     /**
+     * All emotes used in this Message.
+     * <p>
+     * <b>This may or may not contain fake Emotes.
+     * To check whether an Emote is fake you can test if {@link net.dv8tion.jda.core.entities.Emote#getGuild() Emote#getGuild} returns null.</b>
+     *
+     * @return
+     *      An immutable list of the Emotes used in this message (example match &lt;:jda:230988580904763393&gt;)
+     */
+    List<Emote> getEmotes();
+
+    /**
      * Is this Message supposed to be TTS (Text-to-speach)
      *
      * @return if message is tts

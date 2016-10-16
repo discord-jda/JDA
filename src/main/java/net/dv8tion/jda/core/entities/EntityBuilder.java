@@ -153,6 +153,25 @@ public class EntityBuilder
                 guildObj.setPublicRole(role);
         }
 
+        if (!guild.isNull("emojis"))
+        {
+            JSONArray array = guild.getJSONArray("emojis");
+            Map<String, Emote> emoteMap = guildObj.getEmoteMap();
+            for (int i = 0; i < array.length(); i++)
+            {
+                JSONObject obj = array.getJSONObject(i);
+                JSONArray emoteRoles = obj.getJSONArray("roles");
+                Role[] newRoles = new Role[emoteRoles.length()];
+                String eid = obj.getString("id");
+                for (int j = 0; j < emoteRoles.length(); j++)
+                    newRoles[j] = guildObj.getRoleById(emoteRoles.getString(j));
+                emoteMap.put(eid, new EmoteImpl(eid, guildObj)
+                        .overrideRoles(newRoles)
+                        .setName(obj.getString("name"))
+                        .setManaged(obj.getBoolean("managed")));
+            }
+        }
+
         if (guild.has("members"))
         {
             JSONArray members = guild.getJSONArray("members");

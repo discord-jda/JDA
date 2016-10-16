@@ -20,7 +20,6 @@ import com.mashape.unirest.http.Unirest;
 import net.dv8tion.jda.bot.JDABot;
 import net.dv8tion.jda.bot.entities.impl.JDABotImpl;
 import net.dv8tion.jda.client.JDAClient;
-import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
@@ -36,10 +35,7 @@ import org.json.JSONObject;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class JDAImpl implements JDA
@@ -377,6 +373,26 @@ public class JDAImpl implements JDA
     public PrivateChannel getPrivateChannelById(String id)
     {
         return privateChannels.get(id);
+    }
+
+    @Override
+    public List<Emote> getEmotes()
+    {
+        List<Emote> emotes = new LinkedList<>();
+        getGuilds().parallelStream().forEach(g -> emotes.addAll(g.getEmotes()));
+        return emotes;
+    }
+
+    @Override
+    public Emote getEmoteById(String id)
+    {
+        for (Guild guild : getGuilds())
+        {
+            Emote emote = guild.getEmoteById(id);
+            if (emote != null)
+                return emote;
+        }
+        return null;
     }
 
     @Override

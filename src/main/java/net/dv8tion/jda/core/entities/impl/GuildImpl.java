@@ -39,6 +39,7 @@ public class GuildImpl implements Guild
     private final HashMap<String, VoiceChannel> voiceChannels = new HashMap<>();
     private final HashMap<String, Member> members = new HashMap<>();
     private final HashMap<String, Role> roles = new HashMap<>();
+    private final HashMap<String, Emote> emotes = new HashMap<>();
 
     private final HashMap<String, JSONObject> cachedPresences = new HashMap<>();
 
@@ -272,6 +273,18 @@ public class GuildImpl implements Guild
                         ? name.equalsIgnoreCase(r.getName())
                         : name.equals(r.getName()))
                 .collect(Collectors.toList()));
+    }
+
+    @Override
+    public Emote getEmoteById(String id)
+    {
+        return emotes.get(id);
+    }
+
+    @Override
+    public List<Emote> getEmotes()
+    {
+        return Collections.unmodifiableList(new LinkedList<>(emotes.values()));
     }
 
     @Override
@@ -509,6 +522,12 @@ public class GuildImpl implements Guild
     {
         return cachedPresences;
     }
+
+    public HashMap<String, Emote> getEmoteMap()
+    {
+        return emotes;
+    }
+
 
     // -- Object overrides --
 
