@@ -94,6 +94,7 @@ public interface Guild extends ISnowflake
      */
     boolean isMember(User user);
 
+    Member getSelfMember();
     Member getMember(User user);
     Member getMemberById(String userId);
     List<Member> getMembers();

@@ -127,6 +127,12 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    public Member getSelfMember()
+    {
+        return getMember(getJDA().getSelfInfo());
+    }
+
+    @Override
     public Member getMember(User user)
     {
         return getMemberById(user.getId());
@@ -507,12 +513,5 @@ public class GuildImpl implements Guild
     public String toString()
     {
         return "G:" + getName() + '(' + getId() + ')';
-    }
-
-    // -- internal --
-
-    public Member getSelfMember()
-    {
-        return getMember(getJDA().getSelfInfo());
     }
 }

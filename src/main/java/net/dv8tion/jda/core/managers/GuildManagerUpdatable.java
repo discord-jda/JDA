@@ -41,7 +41,8 @@ public class GuildManagerUpdatable
     protected Region region = null;
 //    protected AvatarUtil.Avatar icon = null;
 //    protected AvatarUtil.Avatar splash
-    protected VoiceChannel afkChannel;
+    protected boolean afkChannelSet = false;
+    protected VoiceChannel afkChannel = null;
     protected Guild.VerificationLevel verificationLevel = null;
     protected Guild.NotificationLevel defaultNotificationLevel = null;
     protected Guild.MFALevel mfaLevel = null;
@@ -57,9 +58,7 @@ public class GuildManagerUpdatable
      */
     public GuildManagerUpdatable(Guild guild)
     {
-        checkAvailable();
         this.guild = guild;
-        this.afkChannel = guild.getAfkChannel();
     }
 
     /**
@@ -88,16 +87,14 @@ public class GuildManagerUpdatable
     public GuildManagerUpdatable setName(String name)
     {
         checkAvailable();
+        checkNull(name, "name");
         checkPermission(Permission.MANAGE_SERVER);
 
         if (guild.getName().equals(name))
-        {
             this.name = null;
-        }
         else
-        {
             this.name = name;
-        }
+
         return this;
     }
 
@@ -116,16 +113,14 @@ public class GuildManagerUpdatable
     public GuildManagerUpdatable setRegion(Region region)
     {
         checkAvailable();
+        checkNull(region, "region");
         checkPermission(Permission.MANAGE_SERVER);
 
         if (region == guild.getRegion() || region == Region.UNKNOWN)
-        {
             this.region = null;
-        }
         else
-        {
             this.region = region;
-        }
+
         return this;
     }
 
@@ -174,10 +169,19 @@ public class GuildManagerUpdatable
         checkPermission(Permission.MANAGE_SERVER);
 
         if (channel != null && !guild.equals(channel.getGuild()))
+            throw new IllegalArgumentException("Given VoiceChannel is not part of this Guild");
+
+        if (Objects.equals(channel, guild.getAfkChannel()))
         {
-            throw new IllegalArgumentException("Given VoiceChannel is not member of modifying Guild");
+            this.afkChannelSet = false;
+            this.afkChannel = null;
         }
-        this.afkChannel = channel;
+        else
+        {
+            this.afkChannelSet = true;
+            this.afkChannel = channel;
+        }
+
         return this;
     }
 
@@ -199,9 +203,14 @@ public class GuildManagerUpdatable
     public GuildManagerUpdatable setAfkTimeout(Timeout timeout)
     {
         checkAvailable();
+        checkNull(timeout, "timeout");
         checkPermission(Permission.MANAGE_SERVER);
 
-        this.timeout = timeout;
+        if (Objects.equals(timeout.getSeconds(), guild.getAfkTimeout()))
+            this.timeout = null;
+        else
+            this.timeout = timeout;
+
         return this;
     }
 
@@ -220,28 +229,27 @@ public class GuildManagerUpdatable
     public GuildManagerUpdatable setVerificationLevel(Guild.VerificationLevel level)
     {
         checkAvailable();
+        checkNull(level, "level");
         checkPermission(Permission.MANAGE_SERVER);
 
         if (guild.getVerificationLevel() == level)
-        {
             this.verificationLevel = null;
-        }
         else
-        {
             this.verificationLevel = level;
-        }
+
         return this;
     }
 
     public GuildManagerUpdatable setDefaultNotificationLevel(Guild.NotificationLevel level)
     {
         checkAvailable();
+        checkNull(level, "level");
         checkPermission(Permission.MANAGE_SERVER);
 
-        if (guild.getDefaultNotificationLevel() != level)
-            this.defaultNotificationLevel = level;
-        else
+        if (guild.getDefaultNotificationLevel() == level)
             this.defaultNotificationLevel = null;
+        else
+            this.defaultNotificationLevel = level;
 
         return this;
     }
@@ -251,10 +259,10 @@ public class GuildManagerUpdatable
         checkAvailable();
         checkPermission(Permission.MANAGE_SERVER);
 
-        if (guild.getRequiredMFALevel() != level)
-            this.mfaLevel = level;
-        else
+        if (guild.getRequiredMFALevel() == level)
             this.mfaLevel = null;
+        else
+            this.mfaLevel = level;
 
         return this;
     }
@@ -268,7 +276,8 @@ public class GuildManagerUpdatable
         this.region = null;
         this.timeout = null;
 //        this.icon = null;
-        this.afkChannel = guild.getAfkChannel();
+        this.afkChannelSet = false;
+        this.afkChannel = null;
         this.verificationLevel = null;
         this.defaultNotificationLevel = null;
         this.mfaLevel = null;
@@ -286,7 +295,7 @@ public class GuildManagerUpdatable
         checkPermission(Permission.MANAGE_SERVER);
 
         if (!needToUpdate())
-            return RestAction.EMPTY_REST_ACTION;
+            return new RestAction.EmptyRestAction<>(null);
 
         JSONObject frame = new JSONObject().put("name", guild.getName());
         if (name != null)
@@ -297,7 +306,7 @@ public class GuildManagerUpdatable
             frame.put("afk_timeout", timeout.getSeconds());
 //        if (icon != null)
 //            frame.put("icon", icon == AvatarUtil.DELETE_AVATAR ? JSONObject.NULL : icon.getEncoded());
-        if (!Objects.equals(afkChannel, guild.getAfkChannel()))
+        if (afkChannelSet && !Objects.equals(afkChannel, guild.getAfkChannel()))
             frame.put("afk_channel_id", afkChannel == null ? JSONObject.NULL : afkChannel.getId());
         if (verificationLevel != null)
             frame.put("verification_level", verificationLevel.getKey());
@@ -328,7 +337,7 @@ public class GuildManagerUpdatable
                 || region != null
                 || timeout != null
 //                || icon != null
-                || !Objects.equals(afkChannel, guild.getAfkChannel())
+                || afkChannelSet && !Objects.equals(afkChannel, guild.getAfkChannel())
                 || verificationLevel != null
                 || defaultNotificationLevel != null
                 || mfaLevel != null;
@@ -340,9 +349,15 @@ public class GuildManagerUpdatable
             throw new GuildUnavailableException();
     }
 
+    protected void checkNull(Object obj, String name)
+    {
+        if (obj == null)
+            throw new NullPointerException("Provided " + name + " was null!");
+    }
+
     protected void checkPermission(Permission perm)
     {
-        if (!PermissionUtil.checkPermission(guild, guild.getMember(getGuild().getJDA().getSelfInfo()), perm))
+        if (!PermissionUtil.checkPermission(guild, guild.getSelfMember(), perm))
             throw new PermissionException(perm);
     }
 }
