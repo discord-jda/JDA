@@ -67,7 +67,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
     {
         String userId = content.getString("user_id");
         String guildId = content.getString("guild_id");
-        String channelId = !content.isNull("channel_id ") ? content.getString("channel_id") : null;
+        String channelId = !content.isNull("channel_id") ? content.getString("channel_id") : null;
         String sessionId = !content.isNull("session_id") ? content.getString("session_id") : null;
         boolean selfMuted = content.getBoolean("self_mute");
         boolean selfDeafened = content.getBoolean("self_deaf");
