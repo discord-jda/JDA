@@ -50,20 +50,23 @@ public class Route
 
     public static class Guilds
     {
-        public static final Route GET_GUILD =       new Route(GET,    "guilds/{guild_id}",                   "guild_id");
-        public static final Route MODIFY_GUILD =    new Route(PATCH,  "guilds/{guild_id}",                   "guild_id");
-        public static final Route GET_CHANNELS =    new Route(GET,    "guilds/{guild_id}/channels",          "guild_id");
-        public static final Route MODIFY_CHANNELS = new Route(PATCH,  "guilds/{guild_id}/channels",          "guild_id");
-        public static final Route GET_BANS =        new Route(GET,    "guilds/{guild_id}/bans",              "guild_id");
-        public static final Route CREATE_BAN =      new Route(PUT,    "guilds/{guild_id}/bans/{user_id}",    "guild_id");
-        public static final Route REMOVE_BAN =      new Route(DELETE, "guilds/{guild_id}/bans/{user_id}",    "guild_id");
-        public static final Route KICK_MEMBER =     new Route(DELETE, "guilds/{guild_id}/members/{user_id}", "guild_id");
-        public static final Route MODIFY_MEMBER =   new Route(PATCH,  "guilds/{guild_id}/members/{user_id}", "guild_id");
-        public static final Route MODIFY_NICKNAME = new Route(PATCH,  "guilds/{guild_id}/members/{user_id}/nick", "guild_id");
+        public static final Route GET_GUILD =        new Route(GET,    "guilds/{guild_id}",                   "guild_id");
+        public static final Route MODIFY_GUILD =     new Route(PATCH,  "guilds/{guild_id}",                   "guild_id");
+        public static final Route GET_CHANNELS =     new Route(GET,    "guilds/{guild_id}/channels",          "guild_id");
+        public static final Route MODIFY_CHANNELS =  new Route(PATCH,  "guilds/{guild_id}/channels",          "guild_id");
+        public static final Route GET_BANS =         new Route(GET,    "guilds/{guild_id}/bans",              "guild_id");
+        public static final Route BAN =              new Route(PUT,    "guilds/{guild_id}/bans/{user_id}",    "guild_id");
+        public static final Route BAN_WITH_DELETE =  new Route(PUT,    "guilds/{guild_id}/bans/{user_id}?delete-message-days={}",    "guild_id");
+        public static final Route UNBAN =            new Route(DELETE, "guilds/{guild_id}/bans/{user_id}",    "guild_id");
+        public static final Route KICK_MEMBER =      new Route(DELETE, "guilds/{guild_id}/members/{user_id}", "guild_id");
+        public static final Route MODIFY_MEMBER =    new Route(PATCH,  "guilds/{guild_id}/members/{user_id}", "guild_id");
+        public static final Route MODIFY_SELF_NICK = new Route(PATCH, "guilds/{guild_id}/members/@me/nick",  "guild_id");
+        public static final Route PRUNABLE_COUNT =   new Route(GET,    "guilds/{guild_id}/prune?days={}",     "guild_id");
+        public static final Route PRUNE_MEMBERS =    new Route(POST,   "guilds/{guild_id}/prune?days={}",     "guild_id");
 
         //Client Only
-        public static final Route CREATE_GUILD =    new Route(POST,   "guilds");
-        public static final Route DELETE_GUILD =    new Route(POST,   "guilds/{guild_id}/delete");
+        public static final Route CREATE_GUILD =     new Route(POST,   "guilds");
+        public static final Route DELETE_GUILD =     new Route(POST,   "guilds/{guild_id}/delete");
     }
 
     public static class Roles
@@ -319,7 +322,7 @@ public class Route
         Route r;
         r = Self.CREATE_PRIVATE_CHANNEL;
         r = Users.GET_USER;
-        r = Guilds.CREATE_BAN;
+        r = Guilds.BAN;
         r = Roles.CREATE_ROLE;
         r = Channels.CREATE_PERM_OVERRIDE;
         r = Messages.ADD_PINNED_MESSAGE;

@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.managers.GuildController;
 import net.dv8tion.jda.core.managers.GuildManager;
 import net.dv8tion.jda.core.managers.GuildManagerUpdatable;
 import net.dv8tion.jda.core.utils.MiscUtil;
@@ -43,6 +44,7 @@ public class GuildImpl implements Guild
 
     private volatile GuildManager manager;
     private volatile GuildManagerUpdatable managerUpdatable;
+    private volatile GuildController controller;
     private Object mngLock = new Object();
 
     private Member owner;
@@ -314,6 +316,22 @@ public class GuildImpl implements Guild
             }
         }
         return mng;
+    }
+
+    @Override
+    public GuildController getController()
+    {
+        GuildController ctrl = controller;
+        if (ctrl == null)
+        {
+            synchronized (mngLock)
+            {
+                ctrl = controller;
+                if (ctrl == null)
+                    ctrl = controller = new GuildController(this);
+            }
+        }
+        return ctrl;
     }
 
     @Override

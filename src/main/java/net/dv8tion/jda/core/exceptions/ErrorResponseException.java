@@ -25,7 +25,10 @@ public class ErrorResponseException extends RuntimeException
     private final Response response;
     public ErrorResponseException(ErrorResponse errorResponse, Response response)
     {
-        super(errorResponse.getMeaning());
+        super(errorResponse.getMeaning()
+                + ((errorResponse == ErrorResponse.UNKNOWN_ERROR || errorResponse == ErrorResponse.UNDEFINED_ERROR)
+                    ? " : " + response.getString()
+                    : ""));
         this.response = response;
         this.errorResponse = errorResponse;
     }

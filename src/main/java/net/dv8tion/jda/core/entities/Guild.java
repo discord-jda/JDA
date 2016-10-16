@@ -17,6 +17,7 @@ package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Region;
+import net.dv8tion.jda.core.managers.GuildController;
 import net.dv8tion.jda.core.managers.GuildManager;
 import net.dv8tion.jda.core.managers.GuildManagerUpdatable;
 
@@ -239,6 +240,8 @@ public interface Guild extends ISnowflake
     GuildManager getManager();
 
     GuildManagerUpdatable getManagerUpdatable();
+
+    GuildController getController();
 
 //    /**
 //     * Returns the {@link net.dv8tion.jda.managers.AudioManager AudioManager} that represents the
