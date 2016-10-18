@@ -744,12 +744,16 @@ public class GuildController
             checkNull(role, "role in rolesToAdd");
             checkGuild(role.getGuild(), "role: " + role.toString());
             checkPosition(role);
+            if (role.isManaged())
+                throw new IllegalArgumentException("Cannot add a Managed role to a Member. Role: " + role.toString());
         });
         rolesToRemove.forEach(role ->
         {
             checkNull(role, "role in rolesToRemove");
             checkGuild(role.getGuild(), "role: " + role.toString());
             checkPosition(role);
+            if (role.isManaged())
+                throw new IllegalArgumentException("Cannot remove a Managed role from a Member. Role: " + role.toString());
         });
 
         Set<Role> currentRoles = new HashSet<>(((MemberImpl) member).getRoleSet());
@@ -803,6 +807,24 @@ public class GuildController
         if (roles.contains(guild.getPublicRole()))
             throw new IllegalArgumentException("Cannot add the PublicRole of a Guild to a Member. All members have this role by default!");
 
+        //Make sure that the current managed roles are preserved and no new ones are added.
+        List<Role> currentManaged = roles.stream().filter(r -> r.isManaged()).collect(Collectors.toList());
+        List<Role> newManaged = roles.stream().filter(r -> r.isManaged()).collect(Collectors.toList());
+        if (currentManaged.size() != 0 || newManaged.size() != 0)
+        {
+            for (Iterator<Role> it = currentManaged.iterator(); it.hasNext();)
+            {
+                Role r = it.next();
+                if (newManaged.contains(r))
+                    it.remove();
+            }
+
+            if (currentManaged.size() > 0)
+                throw new IllegalArgumentException("Cannot remove managed roles from a member! Roles: " + currentManaged.toString());
+            if (newManaged.size() > 0)
+                throw new IllegalArgumentException("Cannot add managed roles to a member! Roles: " + newManaged.toString());
+        }
+
         //This is identical to the rest action stuff in #modifyMemberRoles(Member, Collection<Role>, Collection<Role>)
         JSONObject body = new JSONObject()
                 .put("roles", roles.stream().map(Role::getId).collect(Collectors.toList()));
@@ -831,6 +853,9 @@ public class GuildController
 
         if (guild.getSelfMember().equals(newOwner))
             throw new IllegalArgumentException("The member provided as the newOwner is the currently logged in account. Provide a different member to give ownership to.");
+
+        if (newOwner.getUser().isBot())
+            throw new IllegalArgumentException("Cannot transfer ownership of a Guild to a Bot!");
 
         JSONObject body = new JSONObject().put("owner_id", newOwner.getUser().getId());
         Route.CompiledRoute route = Route.Guilds.MODIFY_GUILD.compile(guild.getId());
