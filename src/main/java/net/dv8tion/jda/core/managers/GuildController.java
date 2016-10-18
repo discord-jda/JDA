@@ -821,9 +821,31 @@ public class GuildController
         };
     }
 
-    //TODO: leave
-    //TODO: delete
-    //TODO: transferOwnership
+    public RestAction<Void> transferOwnership(Member newOwner)
+    {
+        checkAvailable();
+        checkNull(newOwner, "newOwner member");
+        checkGuild(newOwner.getGuild(), "newOwner member");
+        if (!guild.getOwner().equals(guild.getSelfMember()))
+            throw new PermissionException("The logged in account must be the owner of this Guild to be able to transfer ownership");
+
+        if (guild.getSelfMember().equals(newOwner))
+            throw new IllegalArgumentException("The member provided as the newOwner is the currently logged in account. Provide a different member to give ownership to.");
+
+        JSONObject body = new JSONObject().put("owner_id", newOwner.getUser().getId());
+        Route.CompiledRoute route = Route.Guilds.MODIFY_GUILD.compile(guild.getId());
+        return new RestAction<Void>(guild.getJDA(), route, body)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
+    }
 
     protected void checkAvailable()
     {
