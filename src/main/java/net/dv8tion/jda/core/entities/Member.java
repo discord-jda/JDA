@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.Permission;
 
 import java.awt.Color;
 import java.time.OffsetDateTime;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -146,21 +147,45 @@ public interface Member extends IMentionable
      * Checks whether or not this Member has the given {@link net.dv8tion.jda.core.Permission Permissions} in the Guild.
      *
      * @param permissions
-     *          Permissions to look for.
+     *          Permissions to check for.
      * @return
-     *      True - if all of the specified Permissions are granted.
+     *      True - if all of the specified Permissions are granted to this Member.
      */
     boolean hasPermission(Permission... permissions);
+
+    /**
+     * Checks whether or not this Member has the {@link net.dv8tion.jda.core.Permission Permissions} in the provided
+     * Collection&lt;Permission&gt; in the Guild.
+     *
+     * @param permissions
+     *          Permissions to check for.
+     * @return
+     *      True - if all of the specified Permissions are granted to this Member.
+     */
+    boolean hasPermission(Collection<Permission> permissions);
 
     /**
      * Checks whether or not this Member has the given {@link net.dv8tion.jda.core.Permission Permissions} in the specified Channel.
      *
      * @param channel
      *          The {@link net.dv8tion.jda.core.entities.Channel Channel} in which to check.
-     * @param permission
-     *          Permissions to look for.
+     * @param permissions
+     *          Permissions to check for.
      * @return
-     *      True - if all of the specified Permissions are granted.
+     *      True - if all of the specified Permissions are granted to this Member in the provided Channel.
      */
-    boolean hasPermission(Channel channel, Permission... permission);
+    boolean hasPermission(Channel channel, Permission... permissions);
+
+    /**
+     * Checks whether or not this Member has the {@link net.dv8tion.jda.core.Permission Permissions} in the provided
+     * Collection&lt;Permission&gt; in the specified Channel.
+     *
+     * @param channel
+     *          The {@link net.dv8tion.jda.core.entities.Channel Channel} in which to check.
+     * @param permissions
+     *          Permissions to check for.
+     * @return
+     *      True - if all of the specified Permissions are granted to this Member in the provided Channel.
+     */
+    boolean hasPermission(Channel channel, Collection<Permission> permissions);
 }
