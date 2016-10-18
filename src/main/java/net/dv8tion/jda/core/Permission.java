@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.core;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -145,5 +146,19 @@ public enum Permission
                 perms.add(perm);
         }
         return perms;
+    }
+
+    public static int getRaw(Permission... permissions)
+    {
+        int raw = 0;
+        for (Permission perm : permissions)
+            raw |= (1 << perm.getOffset());
+
+        return raw;
+    }
+
+    public static int getRaw(Collection<Permission> permissions)
+    {
+        return getRaw((Permission[]) permissions.toArray());
     }
 }
