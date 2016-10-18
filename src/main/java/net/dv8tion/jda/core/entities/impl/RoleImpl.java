@@ -125,7 +125,7 @@ public class RoleImpl implements Role
     {
         for (Permission perm : permissions)
         {
-            if ((rawPermissions & perm.getOffset()) != perm.getOffset())
+            if (((rawPermissions >> perm.getOffset()) & 1) != 1)
                 return false;
         }
         return true;
