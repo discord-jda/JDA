@@ -170,10 +170,12 @@ public class EntityBuilder
             for (int i = 0; i < presences.length(); i++)
             {
                 JSONObject presence = presences.getJSONObject(i);
-                MemberImpl member = (MemberImpl) guildObj.getMembersMap().get(presence.getJSONObject("user").getString("id"));
+                String userId = presence.getJSONObject("user").getString("id");
+                MemberImpl member = (MemberImpl) guildObj.getMembersMap().get(userId);
 
                 if (member == null)
-                    WebSocketClient.LOG.fatal("Received a Presence for a non-existent Member when dealing with GuildFirstPass!");
+                    WebSocketClient.LOG.debug("Received a Presence for a non-existent Member when dealing with GuildFirstPass! " +
+                            "Ignoreable error caused by discord. Guild: " + guildObj + " UserId: " + userId);
                 else
                     createPresence(member, presence);
             }
