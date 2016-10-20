@@ -17,6 +17,7 @@
 package net.dv8tion.jda.core.requests;
 
 import com.neovisionaries.ws.client.*;
+import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.client.handle.*;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
@@ -466,6 +467,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         GuildLock.get(api).clear();
         this.<ReadyHandler>getHandler("READY").clearCache();
         this.<GuildMembersChunkHandler>getHandler("GUILD_MEMBERS_CHUNK").clearCache();
+
+        if (api.getAccountType() == AccountType.CLIENT)
+        {
+            JDAClientImpl client = (JDAClientImpl) api.asClient();
+
+            client.getRelationshipMap().clear();
+            client.getGroupMap().clear();
+            client.getCallUserMap().clear();
+        }
     }
 
     protected void restoreAudioHandlers()

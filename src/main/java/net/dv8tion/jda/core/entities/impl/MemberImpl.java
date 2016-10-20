@@ -143,9 +143,21 @@ public class MemberImpl implements Member
     }
 
     @Override
+    public boolean hasPermission(Collection<Permission> permissions)
+    {
+        return hasPermission((Permission[]) permissions.toArray());
+    }
+
+    @Override
     public boolean hasPermission(Channel channel, Permission... permissions)
     {
         return PermissionUtil.checkPermission(channel, this, permissions);
+    }
+
+    @Override
+    public boolean hasPermission(Channel channel, Collection<Permission> permissions)
+    {
+        return hasPermission(channel, (Permission[]) permissions.toArray());
     }
 
     public MemberImpl setNickname(String nickname)

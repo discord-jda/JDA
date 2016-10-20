@@ -16,13 +16,12 @@
 
 package net.dv8tion.jda.core.requests.ratelimit;
 
-import com.mashape.unirest.http.HttpResponse;
 import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Route.CompiledRoute;
 
-public interface IRateLimiter
+import java.util.Queue;
+
+public interface IBucket
 {
-    void queueRequest(Request request);
-    Long getRateLimit(CompiledRoute route);
-    Long handleResponse(CompiledRoute route, HttpResponse<String> response);
+    String getRoute();
+    Queue<Request> getRequests();
 }

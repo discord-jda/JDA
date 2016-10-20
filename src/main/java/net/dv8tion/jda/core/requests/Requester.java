@@ -28,8 +28,12 @@ import net.dv8tion.jda.core.JDAInfo;
 import net.dv8tion.jda.core.requests.Route.CompiledRoute;
 import net.dv8tion.jda.core.requests.ratelimit.BotRateLimiter;
 import net.dv8tion.jda.core.requests.ratelimit.ClientRateLimiter;
-import net.dv8tion.jda.core.requests.ratelimit.IRateLimiter;
+import net.dv8tion.jda.core.requests.ratelimit.IBucket;
 import net.dv8tion.jda.core.utils.SimpleLog;
+
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Requester
 {
@@ -38,7 +42,7 @@ public class Requester
     public static final String DISCORD_API_PREFIX = "https://discordapp.com/api/";
 
     private final JDA api;
-    private final IRateLimiter ratelimiter;
+    private final RateLimiter rateLimiter;
 
     public Requester(JDA api)
     {
@@ -49,17 +53,18 @@ public class Requester
     {
         this.api = api;
         if (accountType == AccountType.BOT)
-            ratelimiter = new BotRateLimiter(this);
+            rateLimiter = new BotRateLimiter(this, 5);
         else
-            ratelimiter = new ClientRateLimiter(this);
-
+            rateLimiter = new ClientRateLimiter(this, 5);
     }
 
     public void request(Request apiRequest)
     {
+        if (rateLimiter.isShutdown)
+            throw new IllegalStateException("The Requester has been shutdown! No new requests can be requested!");
         if (apiRequest.shouldQueue())
         {
-            ratelimiter.queueRequest(apiRequest);
+            rateLimiter.queueRequest(apiRequest);
         }
         else
         {
@@ -80,7 +85,7 @@ public class Requester
     public Long execute(Request apiRequest)
     {
         CompiledRoute route = apiRequest.getRoute();
-        Long retryAfter = ratelimiter.getRateLimit(route);
+        Long retryAfter = rateLimiter.getRateLimit(route);
         if (retryAfter != null)
             return retryAfter;
 
@@ -114,7 +119,7 @@ public class Requester
                 return null;
             }
 
-            retryAfter = ratelimiter.handleResponse(route, response);
+            retryAfter = rateLimiter.handleResponse(route, response);
             if (retryAfter == null)
                 apiRequest.getRestAction().handleResponse(new Response(response.getStatus(), response.getBody(), -1), apiRequest);
 
@@ -126,6 +131,21 @@ public class Requester
             apiRequest.getRestAction().handleResponse(new Response(e), apiRequest);
             return null;
         }
+    }
+
+    public RateLimiter getRateLimiter()
+    {
+        return rateLimiter;
+    }
+
+    public void shutdown()
+    {
+        rateLimiter.shutdown();
+    }
+
+    public List<IBucket> shutdownNow()
+    {
+        return rateLimiter.shutdownNow();
     }
 
     private BaseRequest createRequest(Route.CompiledRoute route, String body)

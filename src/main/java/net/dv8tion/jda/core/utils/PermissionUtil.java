@@ -37,6 +37,9 @@ public class PermissionUtil
      */
     public static boolean canInteract(Member issuer, Member target)
     {
+        checkNull(issuer, "issuer member");
+        checkNull(target, "target member");
+
         Guild guild = issuer.getGuild();
         if (!guild.equals(target.getGuild()))
             throw new IllegalArgumentException("Provided members must both be Member objects of the same Guild!");
@@ -62,6 +65,9 @@ public class PermissionUtil
      */
     public static boolean canInteract(Member issuer, Role target)
     {
+        checkNull(issuer, "issuer member");
+        checkNull(target, "target role");
+
         Guild guild = issuer.getGuild();
         if (!guild.equals(target.getGuild()))
             throw new IllegalArgumentException("Provided Member issuer and Role target must be from the same Guild!");
@@ -84,6 +90,9 @@ public class PermissionUtil
      */
     public static boolean canInteract(Role issuer, Role target)
     {
+        checkNull(issuer, "issuer role");
+        checkNull(target, "target role");
+
         if(!issuer.getGuild().equals(target.getGuild()))
             throw new IllegalArgumentException("The 2 Roles are not from same Guild!");
         return target.getPosition() < issuer.getPosition();
@@ -123,6 +132,10 @@ public class PermissionUtil
      */
     public static boolean checkPermission(Guild guild, Member member, Permission... permissions)
     {
+        checkNull(guild, "guild");
+        checkNull(member, "member");
+        checkNull(permissions, "permissions");
+
         if (!guild.equals(member.getGuild()))
             throw new IllegalArgumentException("Provided member is not in the provided guild");
 
@@ -161,6 +174,10 @@ public class PermissionUtil
      */
     public static boolean checkPermission(Channel channel, Member member, Permission... permissions)
     {
+        checkNull(channel, "channel");
+        checkNull(member, "member");
+        checkNull(permissions, "permissions");
+
         GuildImpl guild = (GuildImpl) channel.getGuild();
         if (!guild.equals(member.getGuild()))
             throw new IllegalArgumentException("Provided channel and member are not from the same guild!");
@@ -251,6 +268,9 @@ public class PermissionUtil
      */
     public static int getEffectivePermission(Guild guild, Member member)
     {
+        checkNull(guild, "guild");
+        checkNull(member, "member");
+
         if (!member.getGuild().equals(guild))
             throw new IllegalArgumentException("Provided member is not in the provided guild!");
         //Default to binary OR of all global permissions in this guild
@@ -278,6 +298,9 @@ public class PermissionUtil
      */
     public static int getEffectivePermission(Channel channel, Member member)
     {
+        checkNull(channel, "channel");
+        checkNull(member, "member");
+
         if (!channel.getGuild().equals(member.getGuild()))
             throw new IllegalArgumentException("Provided channel and provided member are not of the same guild!");
 
@@ -361,5 +384,11 @@ public class PermissionUtil
         permission = permission | allow;    //Allow all the things that the cascade of roles allowed
         permission = permission & (~deny);  //Deny everything that the cascade of roles denied.
         return permission;
+    }
+
+    private static void checkNull(Object obj, String name)
+    {
+        if (obj == null)
+            throw new NullPointerException("Provided " + name + " was null!");
     }
 }

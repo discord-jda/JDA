@@ -20,6 +20,7 @@ import net.dv8tion.jda.bot.JDABot;
 import net.dv8tion.jda.client.JDAClient;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.hooks.IEventManager;
+import net.dv8tion.jda.core.requests.ratelimit.IBucket;
 import org.apache.http.HttpHost;
 
 import java.util.List;
@@ -427,6 +428,8 @@ public interface JDA
      *          If true, shuts down JDA's rest system permanently.
      */
     void shutdown(boolean free);
+
+    List<IBucket> shutdownNow(boolean free);
 
     /**
      * Installs an auxiliary cable into your system.

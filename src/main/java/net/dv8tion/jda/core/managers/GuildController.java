@@ -16,9 +16,11 @@
 
 package net.dv8tion.jda.core.managers;
 
+import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.entities.impl.MemberImpl;
 import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.requests.*;
@@ -26,10 +28,8 @@ import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class GuildController
 {
@@ -38,6 +38,16 @@ public class GuildController
     public GuildController(Guild guild)
     {
         this.guild = guild;
+    }
+
+    public Guild getGuild()
+    {
+        return guild;
+    }
+
+    public JDA getJDA()
+    {
+        return guild.getJDA();
     }
 
     /**
@@ -69,6 +79,7 @@ public class GuildController
     {
         checkAvailable();
         checkNull(member, "member");
+        checkGuild(member.getGuild(), "member");
 
         if(member.equals(guild.getSelfMember()))
         {
@@ -146,10 +157,8 @@ public class GuildController
         checkAvailable();
         checkNull(member, "member");
         checkNull(member, "voiceChannel");
-        if (!guild.equals(member.getGuild()))
-            throw new IllegalArgumentException("The provided Member is not part of this Guild!");
-        if (!guild.equals(voiceChannel.getGuild()))
-            throw new IllegalArgumentException("Cannot move a Member to a VoiceChannel that isn't part of this Guild!");
+        checkGuild(member.getGuild(), "member");
+        checkGuild(voiceChannel.getGuild(), "voiceChannel");
 
         GuildVoiceState vState = member.getVoiceState();
         if (!vState.inVoiceChannel())
@@ -282,11 +291,9 @@ public class GuildController
     {
         checkAvailable();
         checkNull(member, "member");
+        checkGuild(member.getGuild(), "member");
         checkPermission(Permission.KICK_MEMBERS);
         checkPosition(member);
-
-        if (!guild.equals(member.getGuild()))
-            throw new IllegalArgumentException("The provided member is not from this guild!");
 
         Route.CompiledRoute route = Route.Guilds.KICK_MEMBER.compile(guild.getId(), member.getUser().getId());
         return new RestAction<Void>(guild.getJDA(), route, null)
@@ -365,7 +372,9 @@ public class GuildController
      */
     public RestAction<Void> ban(Member member, int delDays)
     {
+        checkAvailable();
         checkNull(member, "member");
+        //Don't check if the provided member is from this guild. It doesn't matter if they are or aren't.
 
         return ban(member.getUser(), delDays);
     }
@@ -576,9 +585,8 @@ public class GuildController
     {
         checkAvailable();
         checkNull(member, "member");
+        checkGuild(member.getGuild(), "member");
         checkPermission(Permission.VOICE_DEAF_OTHERS);
-        if (!guild.equals(member.getGuild()))
-            throw new IllegalArgumentException("Provided member is not from this Guild!");
 
         //We check the owner instead of Position because, apparently, Discord doesn't care about position for
         // muting and deafening, only whether the affected Member is the owner.
@@ -632,9 +640,8 @@ public class GuildController
     {
         checkAvailable();
         checkNull(member, "member");
+        checkGuild(member.getGuild(), "member");
         checkPermission(Permission.VOICE_MUTE_OTHERS);
-        if (!guild.equals(member.getGuild()))
-            throw new IllegalArgumentException("Provided member is not from this Guild!");
 
         //We check the owner instead of Position because, apparently, Discord doesn't care about position for
         // muting and deafening, only whether the affected Member is the owner.
@@ -704,9 +711,166 @@ public class GuildController
         };
     }
 
-    //TODO: leave
-    //TODO: delete
-    //TODO: transferOwnership
+    public RestAction<Void> addRolesToMember(Member member, Role... roles)
+    {
+        return modifyMemberRoles(member, Arrays.asList(roles), Collections.emptyList());
+    }
+
+    public RestAction<Void> addRolesToMember(Member member, Collection<Role> roles)
+    {
+        return modifyMemberRoles(member, roles, Collections.emptyList());
+    }
+
+    public RestAction<Void> removeRolesFromMember(Member member, Role... roles)
+    {
+        return modifyMemberRoles(member, Collections.emptyList(), Arrays.asList(roles));
+    }
+
+    public RestAction<Void> removeRolesFromMember(Member member, Collection<Role> roles)
+    {
+        return modifyMemberRoles(member, Collections.emptyList(), roles);
+    }
+
+    public RestAction<Void> modifyMemberRoles(Member member, Collection<Role> rolesToAdd, Collection<Role> rolesToRemove)
+    {
+        checkAvailable();
+        checkNull(member, "member");
+        checkNull(rolesToAdd, "Collection containing roles to be added to the member");
+        checkNull(rolesToRemove, "Collection containing roles to be removed from the member");
+        checkGuild(member.getGuild(), "member");
+        checkPermission(Permission.MANAGE_ROLES);
+        rolesToAdd.forEach(role ->
+        {
+            checkNull(role, "role in rolesToAdd");
+            checkGuild(role.getGuild(), "role: " + role.toString());
+            checkPosition(role);
+            if (role.isManaged())
+                throw new IllegalArgumentException("Cannot add a Managed role to a Member. Role: " + role.toString());
+        });
+        rolesToRemove.forEach(role ->
+        {
+            checkNull(role, "role in rolesToRemove");
+            checkGuild(role.getGuild(), "role: " + role.toString());
+            checkPosition(role);
+            if (role.isManaged())
+                throw new IllegalArgumentException("Cannot remove a Managed role from a Member. Role: " + role.toString());
+        });
+
+        Set<Role> currentRoles = new HashSet<>(((MemberImpl) member).getRoleSet());
+        currentRoles.addAll(rolesToAdd);
+        currentRoles.removeAll(rolesToRemove);
+
+        if (currentRoles.contains(guild.getPublicRole()))
+            throw new IllegalArgumentException("Cannot add the PublicRole of a Guild to a Member. All members have this role by default!");
+
+        JSONObject body = new JSONObject()
+                .put("roles", currentRoles.stream().map(Role::getId).collect(Collectors.toList()));
+        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(guild.getId(), member.getUser().getId());
+
+        return new RestAction<Void>(guild.getJDA(), route, body)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
+    }
+
+    //Used to SET roles, not just modify the existing role list. e.g: The provided roles are the only ones the member
+    // will have afterwards
+    //Note: if no roles are provided, this member will have no roles.
+    public RestAction<Void> modifyMemberRoles(Member member, Role... roles)
+    {
+        return modifyMemberRoles(member, Arrays.asList(roles));
+    }
+
+    //Used to SET roles, not just modify the existing role list. e.g: The provided roles are the only ones the member
+    // will have afterwards.
+    //Note: if roles.isEmpty(), then this member will have no roles.
+    public RestAction<Void> modifyMemberRoles(Member member, Collection<Role> roles)
+    {
+        checkAvailable();
+        checkNull(member, "member");
+        checkNull(roles, "roles");
+        checkGuild(member.getGuild(), "member");
+        roles.forEach(role ->
+        {
+            checkNull(role, "role in collection");
+            checkGuild(role.getGuild(), "role: " + role.toString());
+            checkPosition(role);
+        });
+
+        if (roles.contains(guild.getPublicRole()))
+            throw new IllegalArgumentException("Cannot add the PublicRole of a Guild to a Member. All members have this role by default!");
+
+        //Make sure that the current managed roles are preserved and no new ones are added.
+        List<Role> currentManaged = roles.stream().filter(r -> r.isManaged()).collect(Collectors.toList());
+        List<Role> newManaged = roles.stream().filter(r -> r.isManaged()).collect(Collectors.toList());
+        if (currentManaged.size() != 0 || newManaged.size() != 0)
+        {
+            for (Iterator<Role> it = currentManaged.iterator(); it.hasNext();)
+            {
+                Role r = it.next();
+                if (newManaged.contains(r))
+                    it.remove();
+            }
+
+            if (currentManaged.size() > 0)
+                throw new IllegalArgumentException("Cannot remove managed roles from a member! Roles: " + currentManaged.toString());
+            if (newManaged.size() > 0)
+                throw new IllegalArgumentException("Cannot add managed roles to a member! Roles: " + newManaged.toString());
+        }
+
+        //This is identical to the rest action stuff in #modifyMemberRoles(Member, Collection<Role>, Collection<Role>)
+        JSONObject body = new JSONObject()
+                .put("roles", roles.stream().map(Role::getId).collect(Collectors.toList()));
+        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(guild.getId(), member.getUser().getId());
+
+        return new RestAction<Void>(guild.getJDA(), route, body)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
+    }
+
+    public RestAction<Void> transferOwnership(Member newOwner)
+    {
+        checkAvailable();
+        checkNull(newOwner, "newOwner member");
+        checkGuild(newOwner.getGuild(), "newOwner member");
+        if (!guild.getOwner().equals(guild.getSelfMember()))
+            throw new PermissionException("The logged in account must be the owner of this Guild to be able to transfer ownership");
+
+        if (guild.getSelfMember().equals(newOwner))
+            throw new IllegalArgumentException("The member provided as the newOwner is the currently logged in account. Provide a different member to give ownership to.");
+
+        if (newOwner.getUser().isBot())
+            throw new IllegalArgumentException("Cannot transfer ownership of a Guild to a Bot!");
+
+        JSONObject body = new JSONObject().put("owner_id", newOwner.getUser().getId());
+        Route.CompiledRoute route = Route.Guilds.MODIFY_GUILD.compile(guild.getId());
+        return new RestAction<Void>(guild.getJDA(), route, body)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
+    }
 
     protected void checkAvailable()
     {
@@ -720,6 +884,12 @@ public class GuildController
             throw new NullPointerException("Provided " + name + " was null!");
     }
 
+    protected void checkGuild(Guild providedGuild, String comment)
+    {
+        if (!guild.equals(providedGuild))
+            throw new IllegalArgumentException("Provided " + comment + " is not part of this Guild!");
+    }
+
     protected void checkPermission(Permission perm)
     {
         if (!PermissionUtil.checkPermission(guild, guild.getSelfMember(), perm))
@@ -729,12 +899,12 @@ public class GuildController
     protected void checkPosition(Member member)
     {
         if(!PermissionUtil.canInteract(guild.getSelfMember(), member))
-            throw new PermissionException("Can't modify a user with higher or equal highest role than yourself!");
+            throw new PermissionException("Can't member a user with higher or equal highest role than yourself!");
     }
 
     protected void checkPosition(Role role)
     {
         if(!PermissionUtil.canInteract(guild.getSelfMember(), role))
-            throw new PermissionException("Can't modify a user with higher or equal highest role than yourself!");
+            throw new PermissionException("Can't modify a member with higher or equal highest role than yourself! Role: " + role.toString());
     }
 }

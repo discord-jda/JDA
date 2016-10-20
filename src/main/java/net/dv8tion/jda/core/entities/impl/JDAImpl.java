@@ -29,6 +29,7 @@ import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.hooks.InterfacedEventManager;
 import net.dv8tion.jda.core.requests.*;
+import net.dv8tion.jda.core.requests.ratelimit.IBucket;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import org.apache.http.HttpHost;
 import org.json.JSONObject;
@@ -106,7 +107,7 @@ public class JDAImpl implements JDA
                 @Override
                 public void run()
                 {
-                    JDAImpl.this.shutdown();
+                    JDAImpl.this.shutdownNow(true);
                 }
             });
         }
@@ -407,13 +408,15 @@ public class JDAImpl implements JDA
         shutdown(true);
     }
 
+    //TODO: offer a timeout version.
     @Override
     public void shutdown(boolean free)
     {
         setStatus(Status.SHUTTING_DOWN);
-        //TODO: Shutdown ASYNC system
+        getRequester().shutdown();
         //TODO: Shutdown audio connections.
-        //TODO: Shutdown Main Websocket.
+        getClient().setAutoReconnect(false);
+        getClient().close();
 
         if (free)
         {
@@ -423,7 +426,28 @@ public class JDAImpl implements JDA
             }
             catch (IOException ignored) {}
         }
+        setStatus(Status.SHUTDOWN);
+    }
+
+    @Override
+    public List<IBucket> shutdownNow(boolean free)
+    {
         setStatus(Status.SHUTTING_DOWN);
+        List<IBucket> buckets = getRequester().shutdownNow();
+        //TODO: Shutdown audio connections.
+        getClient().setAutoReconnect(false);
+        getClient().close();
+
+        if (free)
+        {
+            try
+            {
+                Unirest.shutdown();
+            }
+            catch (IOException ignored) {}
+        }
+        setStatus(Status.SHUTDOWN);
+        return buckets;
     }
 
     @Override

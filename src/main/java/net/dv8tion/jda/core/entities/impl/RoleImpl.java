@@ -26,6 +26,7 @@ import net.dv8tion.jda.core.utils.PermissionUtil;
 
 import java.awt.*;
 import java.time.OffsetDateTime;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -125,16 +126,28 @@ public class RoleImpl implements Role
     {
         for (Permission perm : permissions)
         {
-            if ((rawPermissions & perm.getOffset()) != perm.getOffset())
+            if (((rawPermissions >> perm.getOffset()) & 1) != 1)
                 return false;
         }
         return true;
     }
 
     @Override
+    public boolean hasPermission(Collection<Permission> permissions)
+    {
+        return hasPermission((Permission[]) permissions.toArray());
+    }
+
+    @Override
     public boolean hasPermission(Channel chanel, Permission... permissions)
     {
         return false;
+    }
+
+    @Override
+    public boolean hasPermission(Channel channel, Collection<Permission> permissions)
+    {
+        return hasPermission(channel, (Permission[]) permissions.toArray());
     }
 
     @Override

@@ -18,40 +18,26 @@ package net.dv8tion.jda.core.requests.ratelimit;
 
 import com.mashape.unirest.http.Headers;
 import com.mashape.unirest.http.HttpResponse;
+import net.dv8tion.jda.core.requests.RateLimiter;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.core.requests.Route.CompiledRoute;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Iterator;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 
-public class BotRateLimiter implements IRateLimiter
+public class BotRateLimiter extends RateLimiter
 {
-    final Requester requester;
-    ExecutorService pool = Executors.newFixedThreadPool(5);
     volatile Long timeOffset = null;
     volatile Long globalCooldown = null;
-    volatile ConcurrentHashMap<String, Bucket> buckets = new ConcurrentHashMap<>();
-    volatile ConcurrentLinkedQueue<Bucket> submittedBuckets = new ConcurrentLinkedQueue<>();
 
-    public BotRateLimiter(Requester requester)
+    public BotRateLimiter(Requester requester, int poolSize)
     {
-        this.requester = requester;
-    }
-
-    @Override
-    public void queueRequest(Request request)
-    {
-        Bucket bucket = getBucket(request.getRoute().getRatelimitRoute());
-        synchronized (bucket)
-        {
-            bucket.addToQueue(request);
-        }
+        super(requester, poolSize);
     }
 
     @Override
@@ -87,7 +73,19 @@ public class BotRateLimiter implements IRateLimiter
     }
 
     @Override
-    public Long handleResponse(CompiledRoute route, HttpResponse<String> response)
+    protected void queueRequest(Request request)
+    {
+        if (isShutdown)
+            throw new RejectedExecutionException("Cannot queue a request after shutdown");
+        Bucket bucket = getBucket(request.getRoute().getRatelimitRoute());
+        synchronized (bucket)
+        {
+            bucket.addToQueue(request);
+        }
+    }
+
+    @Override
+    protected Long handleResponse(CompiledRoute route, HttpResponse<String> response)
     {
         Bucket bucket = getBucket(route.getRatelimitRoute());
         synchronized (bucket)
@@ -123,12 +121,12 @@ public class BotRateLimiter implements IRateLimiter
 
     private Bucket getBucket(String route)
     {
-        Bucket bucket = buckets.get(route);
+        Bucket bucket = (Bucket) buckets.get(route);
         if (bucket == null)
         {
             synchronized (buckets)
             {
-                bucket = buckets.get(route);
+                bucket = (Bucket) buckets.get(route);
                 if (bucket == null)
                 {
                     bucket = new Bucket(route);
@@ -179,7 +177,7 @@ public class BotRateLimiter implements IRateLimiter
         catch (NumberFormatException ignored) {}
     }
 
-    private class Bucket implements Runnable
+    private class Bucket implements IBucket, Runnable
     {
         final String route;
         volatile long resetTime = 0;
@@ -204,8 +202,8 @@ public class BotRateLimiter implements IRateLimiter
             {
                 if (!submittedBuckets.contains(this))
                 {
-                    submittedBuckets.add(this);
                     pool.submit(this);
+                    submittedBuckets.add(this);
                 }
             }
         }
@@ -249,10 +247,29 @@ public class BotRateLimiter implements IRateLimiter
                     submittedBuckets.remove(this);
                     if (!requests.isEmpty())
                     {
-                        this.submitForProcessing();
+                        try
+                        {
+                            this.submitForProcessing();
+                        }
+                        catch (RejectedExecutionException e)
+                        {
+                            Requester.LOG.debug("Caught RejectedExecutionException when re-queuing a ratelimited request. The requester is probably shutdown, thus, this can be ignored.");
+                        }
                     }
                 }
             }
+        }
+
+        @Override
+        public String getRoute()
+        {
+            return route;
+        }
+
+        @Override
+        public Queue<Request> getRequests()
+        {
+            return requests;
         }
     }
 }
