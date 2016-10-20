@@ -17,38 +17,23 @@
 package net.dv8tion.jda.core.requests.ratelimit;
 
 import com.mashape.unirest.http.HttpResponse;
+import net.dv8tion.jda.core.requests.RateLimiter;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.core.requests.Route;
 import org.json.JSONObject;
 
-import java.util.Iterator;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
-public class ClientRateLimiter implements IRateLimiter
+public class ClientRateLimiter extends RateLimiter
 {
-    private final Requester requester;
-    ExecutorService pool = Executors.newFixedThreadPool(5);
-    volatile ConcurrentHashMap<String, Bucket> buckets = new ConcurrentHashMap<>();
-    volatile ConcurrentLinkedQueue<Bucket> submittedBuckets = new ConcurrentLinkedQueue<>();
     volatile Long globalCooldown = null;
 
-    public ClientRateLimiter(Requester requester)
+    public ClientRateLimiter(Requester requester, int poolSize)
     {
-        this.requester = requester;
-    }
-
-    @Override
-    public void queueRequest(Request request)
-    {
-        Bucket bucket = getBucket(request.getRoute().getBaseRoute().getRoute());
-        synchronized (bucket)
-        {
-            bucket.addToQueue(request);
-        }
+        super(requester, poolSize);
     }
 
     @Override
@@ -80,7 +65,19 @@ public class ClientRateLimiter implements IRateLimiter
     }
 
     @Override
-    public Long handleResponse(Route.CompiledRoute route, HttpResponse<String> response)
+    protected void queueRequest(Request request)
+    {
+        if (isShutdown)
+            throw new RejectedExecutionException("Cannot queue a request after shutdown");
+        Bucket bucket = getBucket(request.getRoute().getBaseRoute().getRoute());
+        synchronized (bucket)
+        {
+            bucket.addToQueue(request);
+        }
+    }
+
+    @Override
+    protected Long handleResponse(Route.CompiledRoute route, HttpResponse<String> response)
     {
         Bucket bucket = getBucket(route.getBaseRoute().getRoute());
         synchronized (bucket)
@@ -110,12 +107,12 @@ public class ClientRateLimiter implements IRateLimiter
 
     private Bucket getBucket(String route)
     {
-        Bucket bucket = buckets.get(route);
+        Bucket bucket = (Bucket) buckets.get(route);
         if (bucket == null)
         {
             synchronized (buckets)
             {
-                bucket = buckets.get(route);
+                bucket = (Bucket) buckets.get(route);
                 if (bucket == null)
                 {
                     bucket = new Bucket(route);
@@ -126,7 +123,7 @@ public class ClientRateLimiter implements IRateLimiter
         return bucket;
     }
 
-    private class Bucket implements Runnable
+    private class Bucket implements IBucket, Runnable
     {
         final String route;
         volatile long retryAfter = 0;
@@ -198,6 +195,18 @@ public class ClientRateLimiter implements IRateLimiter
                     }
                 }
             }
+        }
+
+        @Override
+        public String getRoute()
+        {
+            return route;
+        }
+
+        @Override
+        public Queue<Request> getRequests()
+        {
+            return requests;
         }
     }
 }

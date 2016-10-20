@@ -174,8 +174,7 @@ public class EntityBuilder
                 MemberImpl member = (MemberImpl) guildObj.getMembersMap().get(userId);
 
                 if (member == null)
-                    WebSocketClient.LOG.debug("Received a Presence for a non-existent Member when dealing with GuildFirstPass! " +
-                            "Ignoreable error caused by discord. Guild: " + guildObj + " UserId: " + userId);
+                    WebSocketClient.LOG.debug("Received a ghost presence in GuildFirstPass! Guild: " + guildObj + " UserId: " + userId);
                 else
                     createPresence(member, presence);
             }
