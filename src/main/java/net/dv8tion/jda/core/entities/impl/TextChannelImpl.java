@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.entities.EntityBuilder;
+import net.dv8tion.jda.core.managers.*;
 import net.dv8tion.jda.core.requests.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -38,6 +39,10 @@ public class TextChannelImpl implements TextChannel
     private final GuildImpl guild;
     private final HashMap<Member, PermissionOverride> memberOverrides = new HashMap<>();
     private final HashMap<Role, PermissionOverride> roleOverrides = new HashMap<>();
+
+    private volatile ChannelManager manager;
+    private volatile ChannelManagerUpdatable managerUpdatable;
+    private Object mngLock = new Object();
 
     private String name;
     private String topic;
@@ -389,6 +394,57 @@ public class TextChannelImpl implements TextChannel
     public List<PermissionOverride> getRolePermissionOverrides()
     {
         return Collections.unmodifiableList(new ArrayList<>(roleOverrides.values()));
+    }
+
+    @Override
+    public ChannelManager getManager()
+    {
+        ChannelManager mng = manager;
+        if (mng == null)
+        {
+            synchronized (mngLock)
+            {
+                mng = manager;
+                if (mng == null)
+                    mng = manager = new ChannelManager(this);
+            }
+        }
+        return mng;
+    }
+
+    @Override
+    public ChannelManagerUpdatable getManagerUpdatable()
+    {
+        ChannelManagerUpdatable mng = managerUpdatable;
+        if (mng == null)
+        {
+            synchronized (mngLock)
+            {
+                mng = managerUpdatable;
+                if (mng == null)
+                    mng = managerUpdatable = new ChannelManagerUpdatable(this);
+            }
+        }
+        return mng;
+    }
+
+    @Override
+    public RestAction<Void> delete()
+    {
+        checkPermission(Permission.MANAGE_CHANNEL);
+
+        Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(id);
+        return new RestAction<Void>(getJDA(), route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
     }
 
     @Override

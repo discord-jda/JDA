@@ -17,6 +17,9 @@ package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.managers.ChannelManager;
+import net.dv8tion.jda.core.managers.ChannelManagerUpdatable;
+import net.dv8tion.jda.core.requests.RestAction;
 //import net.dv8tion.jda.core.managers.ChannelManager;
 //import net.dv8tion.jda.core.managers.PermissionOverrideManager;
 //import net.dv8tion.jda.core.utils.InviteUtil;
@@ -150,6 +153,19 @@ public interface Channel extends ISnowflake
      *      for this {@link net.dv8tion.jda.core.entities.Channel Channel}.
      */
     List<PermissionOverride> getRolePermissionOverrides();
+
+    /**
+     * Returns the {@link net.dv8tion.jda.core.managers.ChannelManager ChannelManager} for this Channel.
+     * In the ChannelManager, you can modify the name, topic and position of this Channel.
+     *
+     * @return
+     *      The ChannelManager of this Channel
+     */
+    ChannelManager getManager();
+
+    ChannelManagerUpdatable getManagerUpdatable();
+
+    RestAction<Void> delete();
 
 //    /**
 //     * Creates a new {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride} for a given {@link net.dv8tion.jda.core.entities.Member Member}.

@@ -19,6 +19,13 @@ package net.dv8tion.jda.core.entities.impl;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.managers.ChannelManager;
+import net.dv8tion.jda.core.managers.ChannelManagerUpdatable;
+import net.dv8tion.jda.core.requests.Request;
+import net.dv8tion.jda.core.requests.Response;
+import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.MiscUtil;
 
 import java.time.OffsetDateTime;
@@ -35,6 +42,10 @@ public class VoiceChannelImpl implements VoiceChannel
     private final HashMap<Member, PermissionOverride> memberOverrides = new HashMap<>();
     private final HashMap<Role, PermissionOverride> roleOverrides = new HashMap<>();
     private final HashMap<String, Member> connectedMembers = new HashMap<>();
+
+    private volatile ChannelManager manager;
+    private volatile ChannelManagerUpdatable managerUpdatable;
+    private Object mngLock = new Object();
 
     private String name;
     private int rawPosition;
@@ -135,6 +146,57 @@ public class VoiceChannelImpl implements VoiceChannel
     }
 
     @Override
+    public ChannelManager getManager()
+    {
+        ChannelManager mng = manager;
+        if (mng == null)
+        {
+            synchronized (mngLock)
+            {
+                mng = manager;
+                if (mng == null)
+                    mng = manager = new ChannelManager(this);
+            }
+        }
+        return mng;
+    }
+
+    @Override
+    public ChannelManagerUpdatable getManagerUpdatable()
+    {
+        ChannelManagerUpdatable mng = managerUpdatable;
+        if (mng == null)
+        {
+            synchronized (mngLock)
+            {
+                mng = managerUpdatable;
+                if (mng == null)
+                    mng = managerUpdatable = new ChannelManagerUpdatable(this);
+            }
+        }
+        return mng;
+    }
+
+    @Override
+    public RestAction<Void> delete()
+    {
+        checkPermission(Permission.MANAGE_CHANNEL);
+
+        Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(id);
+        return new RestAction<Void>(getJDA(), route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
+    }
+
+    @Override
     public String getId()
     {
         return id;
@@ -223,5 +285,17 @@ public class VoiceChannelImpl implements VoiceChannel
     public HashMap<String, Member> getConnectedMembersMap()
     {
         return connectedMembers;
+    }
+
+    private void checkPermission(Permission permission) {checkPermission(permission, null);}
+    private void checkPermission(Permission permission, String message)
+    {
+        if (!guild.getSelfMember().hasPermission(this, permission))
+        {
+            if (message != null)
+                throw new PermissionException(permission, message);
+            else
+                throw new PermissionException(permission);
+        }
     }
 }
