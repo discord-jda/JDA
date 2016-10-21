@@ -22,7 +22,9 @@ public enum OnlineStatus
 {
     ONLINE("online"),
     IDLE("idle"),
+    DO_NOT_DISTURB("dnd"),
     OFFLINE("offline"),
+    INVISIBLE("invisible"),
     UNKNOWN("");
 
     private final String key;
