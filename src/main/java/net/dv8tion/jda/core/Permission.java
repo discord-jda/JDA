@@ -79,23 +79,15 @@ public enum Permission
     }
 
     /**
-     * Gets the {@link net.dv8tion.jda.core.Permission Permission} relating to the provided offset.<br>
-     * If there is no {@link net.dv8tion.jda.core.Permission Permssions} that matches the provided
-     * offset, {@link net.dv8tion.jda.core.Permission#UNKNOWN Permission.UNKNOWN} is returned.
+     * The value of this permission when viewed as a raw value.<br>
+     * This is equvalent to <code>1 &lt;&lt; {@link #getOffset()}</code>
      *
-     * @param offset
-     *          The offset to match a {@link net.dv8tion.jda.core.Permission Permission} to.
      * @return
-     *      {@link net.dv8tion.jda.core.Permission Permission} relating to the provided offset.
+     *      The raw value of this specific permission.
      */
-    public static Permission getFromOffset(int offset)
+    public long getRawValue()
     {
-        for (Permission perm : values())
-        {
-            if (perm.offset == offset)
-                return perm;
-        }
-        return UNKNOWN;
+        return 1 << getOffset();
     }
 
     /**
@@ -121,6 +113,26 @@ public enum Permission
     }
 
     /**
+     * Gets the {@link net.dv8tion.jda.core.Permission Permission} relating to the provided offset.<br>
+     * If there is no {@link net.dv8tion.jda.core.Permission Permssions} that matches the provided
+     * offset, {@link net.dv8tion.jda.core.Permission#UNKNOWN Permission.UNKNOWN} is returned.
+     *
+     * @param offset
+     *          The offset to match a {@link net.dv8tion.jda.core.Permission Permission} to.
+     * @return
+     *      {@link net.dv8tion.jda.core.Permission Permission} relating to the provided offset.
+     */
+    public static Permission getFromOffset(int offset)
+    {
+        for (Permission perm : values())
+        {
+            if (perm.offset == offset)
+                return perm;
+        }
+        return UNKNOWN;
+    }
+
+    /**
      * A list of all {@link net.dv8tion.jda.core.Permission Permissions} that are specified by this raw int representation of
      * permissions. The is best used with the getRaw methods in {@link net.dv8tion.jda.core.entities.Role Role},
      * {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride} or {@link net.dv8tion.jda.core.utils.PermissionUtil}.
@@ -135,7 +147,7 @@ public enum Permission
      * @return
      *      Possibly-empty list of {@link net.dv8tion.jda.core.Permission Permissions}.
      */
-    public static List<Permission> getPermissions(int permissions)
+    public static List<Permission> getPermissions(long permissions)
     {
         List<Permission> perms = new LinkedList<>();
         for (Permission perm : Permission.values())
@@ -148,16 +160,16 @@ public enum Permission
         return perms;
     }
 
-    public static int getRaw(Permission... permissions)
+    public static long getRaw(Permission... permissions)
     {
-        int raw = 0;
+        long raw = 0;
         for (Permission perm : permissions)
             raw |= (1 << perm.getOffset());
 
         return raw;
     }
 
-    public static int getRaw(Collection<Permission> permissions)
+    public static long getRaw(Collection<Permission> permissions)
     {
         return getRaw((Permission[]) permissions.toArray());
     }

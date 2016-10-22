@@ -623,7 +623,7 @@ public class EntityBuilder
         }
         return role.setName(roleJson.getString("name"))
                 .setRawPosition(roleJson.getInt("position"))
-                .setRawPermissions(roleJson.getInt("permissions"))
+                .setRawPermissions(roleJson.getLong("permissions"))
                 .setManaged(roleJson.getBoolean("managed"))
                 .setHoisted(roleJson.getBoolean("hoist"))
                 .setColor(roleJson.getInt("color") != 0 ? new Color(roleJson.getInt("color")) : null)
@@ -863,8 +863,8 @@ public class EntityBuilder
     {
         PermissionOverrideImpl permOverride = null;
         String id = override.getString("id");
-        int allow = override.getInt("allow");
-        int deny = override.getInt("deny");
+        long allow = override.getLong("allow");
+        long deny = override.getLong("deny");
 
         switch (override.getString("type"))
         {
