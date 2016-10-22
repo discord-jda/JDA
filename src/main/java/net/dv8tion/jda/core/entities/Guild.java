@@ -117,21 +117,9 @@ public interface Guild extends ISnowflake
      */
     List<TextChannel> getTextChannels();
     List<TextChannel> getTextChannelsByName(String name, boolean ignoreCase);
-//
-//    /**
-//     * Creates a new {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} in this Guild.
-//     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.Permission#MANAGE_CHANNEL MANAGE_CHANNEL Permission}
-//     *
-//     * @param name
-//     *      the name of the TextChannel to create
-//     * @return
-//     *      the ChannelManager for the created TextChannel
-//     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
-//     *      if the guild is temporarily unavailable
-//     */
-//    ChannelManager createTextChannel(String name);
-//
+
     VoiceChannel getVoiceChannelById(String id);
+
     /**
      * The {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels} available on the {@link net.dv8tion.jda.core.entities.Guild Guild}.
      * The channels returned will be sorted according to their position.
@@ -140,20 +128,8 @@ public interface Guild extends ISnowflake
      *      An Immutable List of {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels}.
      */
     List<VoiceChannel> getVoiceChannels();
+
     List<VoiceChannel> getVoiceChannelsByName(String name, boolean ignoreCase);
-//
-//    /**
-//     * Creates a new {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} in this Guild.
-//     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.Permission#MANAGE_CHANNEL MANAGE_CHANNEL Permission}
-//     *
-//     * @param name
-//     *      the name of the VoiceChannel to create
-//     * @return
-//     *      the ChannelManager for the created VoiceChannel
-//     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
-//     *      if the guild is temporarily unavailable
-//     */
-//    ChannelManager createVoiceChannel(String name);
 
     /**
      * This returns the {@link net.dv8tion.jda.core.entities.Role Role} which has the same id as the one provided.<br>
@@ -175,42 +151,6 @@ public interface Guild extends ISnowflake
      */
     List<Role> getRoles();
     List<Role> getRolesByName(String name, boolean ignoreCase);
-//
-//    /**
-//     * Creates a new {@link net.dv8tion.jda.core.entities.Role Role} in this Guild.
-//     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.Permission#MANAGE_ROLES MANAGE_ROLES Permission}
-//     *
-//     * @return
-//     *      the RoleManager for the created Role
-//     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
-//     *      if the guild is temporarily unavailable
-//     */
-//    RoleManager createRole();
-//
-//    /**
-//     * Creates a new {@link net.dv8tion.jda.core.entities.Role Role} in this {@link net.dv8tion.jda.core.entities.Guild Guild} with the same settings as the given {@link net.dv8tion.jda.core.entities.Role Role}.
-//     * It will be placed at the bottom (just over the @everyone role) to avoid permission hierarchy conflicts.
-//     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.Permission#MANAGE_ROLES MANAGE_ROLES Permission}
-//     * and all {@link net.dv8tion.jda.Permission Permissions} the given {@link net.dv8tion.jda.core.entities.Role Role} has.
-//     *
-//     * @param role
-//     *      The {@link net.dv8tion.jda.core.entities.Role Role} that should be copied
-//     * @return
-//     *      the RoleManager for the created Role
-//     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
-//     *      if the guild is temporarily unavailable
-//     * @throws net.dv8tion.jda.exceptions.PermissionException
-//     *      if the bot doesn't has {@link net.dv8tion.jda.Permission#MANAGE_ROLES MANAGE_ROLES Permission} and every Permission the given Role has
-//     */
-//    RoleManager createCopyOfRole(Role role);
-
-//
-//    /**
-//     * Provides the {@link net.dv8tion.jda.core.entities.Role Role} that determines the color for the provided {@link net.dv8tion.jda.core.entities.User User}
-//     *
-//     * If the {@link net.dv8tion.jda.core.entities.User User} has the default color, this returns the same as getPublicRole();
-//     */
-//    Role getColorDeterminantRoleForUser(User user);
 
     /**
      * The @everyone {@link net.dv8tion.jda.core.entities.Role Role} of this {@link net.dv8tion.jda.core.entities.Guild Guild}
