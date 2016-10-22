@@ -159,16 +159,18 @@ public class EntityBuilder
             Map<String, Emote> emoteMap = guildObj.getEmoteMap();
             for (int i = 0; i < array.length(); i++)
             {
-                JSONObject obj = array.getJSONObject(i);
-                JSONArray emoteRoles = obj.getJSONArray("roles");
-                Role[] newRoles = new Role[emoteRoles.length()];
-                String eid = obj.getString("id");
+                JSONObject object = array.getJSONObject(i);
+                JSONArray emoteRoles = object.getJSONArray("roles");
+                String emoteId = object.getString("id");
+
+                EmoteImpl emoteObj = new EmoteImpl(emoteId, guildObj);
+                Set<Role> roleSet = emoteObj.getRoleSet();
+
                 for (int j = 0; j < emoteRoles.length(); j++)
-                    newRoles[j] = guildObj.getRoleById(emoteRoles.getString(j));
-                emoteMap.put(eid, new EmoteImpl(eid, guildObj)
-                        .overrideRoles(newRoles)
-                        .setName(obj.getString("name"))
-                        .setManaged(obj.getBoolean("managed")));
+                    roleSet.add(guildObj.getRoleById(emoteRoles.getString(j)));
+                emoteMap.put(emoteId, emoteObj
+                        .setName(object.getString("name"))
+                        .setManaged(object.getBoolean("managed")));
             }
         }
 

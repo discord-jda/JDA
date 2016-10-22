@@ -19,14 +19,15 @@ package net.dv8tion.jda.core.entities;
 import net.dv8tion.jda.client.managers.EmoteManager;
 import net.dv8tion.jda.client.managers.EmoteManagerUpdatable;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * Represents a Custom Emote. (Emoji in official Discord API terminology)
  */
-public interface Emote extends ISnowflake
+public interface Emote extends ISnowflake, IMentionable, IFakeable
 {
 
     /**
@@ -42,9 +43,11 @@ public interface Emote extends ISnowflake
      * Roles this emote is active for (<a href="https://discordapp.com/developers/docs/resources/guild#emoji-object">source</a>)
      *
      * @return
-     *      The roles this emote is active for (all roles if empty)
+     *      An immutable list of the roles this emote is active for (all roles if empty)
+     * @throws IllegalStateException
+     *      if this emotes is fake
      */
-    Set<Role> getRoles();
+    List<Role> getRoles();
 
     /**
      * The name of this emote
@@ -63,20 +66,28 @@ public interface Emote extends ISnowflake
     boolean isManaged();
 
     /**
-     * Describes whether an entity is fake or not.
-     *
-     * @return
-     *      False - if this is an actual JDA entity.
-     */
-    boolean isFake();
-
-    /**
      * The {@link net.dv8tion.jda.core.JDA JDA} instance of this Emote
      *
      * @return
      *      The JDA instance of this Emote
      */
     JDA getJDA();
+
+    /**
+     * Deletes this Emote.
+     *
+     * @return
+     *      {@link net.dv8tion.jda.core.requests.RestAction RestAction} - <br>
+     *      &nbsp;&nbsp;&nbsp;&nbsp;<b>Type</b>: {@link java.lang.Void}<br>
+     *      &nbsp;&nbsp;&nbsp;&nbsp;<b>Value</b>: None
+     * @throws IllegalStateException
+     *      if this Emote is fake
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *      if the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES MANAGE_EMOTES} is not given
+     * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
+     *      if the current account is not from {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType#CLIENT}
+     */
+    RestAction<Void> delete();
 
     /**
      * The {@link net.dv8tion.jda.client.managers.EmoteManager Manager} for this emote<p>
@@ -86,7 +97,9 @@ public interface Emote extends ISnowflake
      * @return
      *      The EmoteManager for this Emote
      * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
-     *      if this is not used with {@link net.dv8tion.jda.core.AccountType#CLIENT}
+     *      if this is not used with {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType#CLIENT}
+     * @throws IllegalStateException
+     *      if this emote is fake
      */
     EmoteManager getManager();
 
@@ -99,7 +112,9 @@ public interface Emote extends ISnowflake
      * @return
      *      The EmoteManagerUpdatable for this Emote
      * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
-     *      if this is not used with {@link net.dv8tion.jda.core.AccountType#CLIENT}
+     *      if this is not used with {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType#CLIENT}
+     * @throws IllegalStateException
+     *      if this emote is fake
      */
     EmoteManagerUpdatable getManagerUpdatable();
 
@@ -124,7 +139,8 @@ public interface Emote extends ISnowflake
      *      A usable String representation for this Emote
      * @see <a href="https://discordapp.com/developers/docs/resources/channel#message-formatting">Message Formatting</a>
      */
-    default String getAsEmote()
+    @Override
+    default String getAsMention()
     {
         return "<:" + getName() + ":" + getId() + ">";
     }
@@ -132,23 +148,23 @@ public interface Emote extends ISnowflake
     /**
      * Whether the specified Member can interact with this Emote
      *
-     * @param member
-     *      The Member to test
+     * @param issuer
+     *      The User to test
      * @return
      *      True, if the provided Member can use this Emote
      * @see net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Emote)
      * @see net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Emote, MessageChannel)
      */
-    default boolean canInteract(Member member)
+    default boolean canInteract(Member issuer)
     {
-        return PermissionUtil.canInteract(member, this);
+        return PermissionUtil.canInteract(issuer, this);
     }
 
     /**
      * Whether the specified Member can interact with this Emote within the provided MessageChannel
      *
-     * @param member
-     *      The Member to test
+     * @param issuer
+     *      The User to test
      * @param channel
      *      The MessageChannel to test
      * @return
@@ -156,8 +172,8 @@ public interface Emote extends ISnowflake
      * @see net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Emote)
      * @see net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Emote, MessageChannel)
      */
-    default boolean canInteract(Member member, MessageChannel channel)
+    default boolean canInteract(User issuer, MessageChannel channel)
     {
-        return PermissionUtil.canInteract(member, this, channel);
+        return PermissionUtil.canInteract(issuer, this, channel);
     }
 }

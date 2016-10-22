@@ -187,7 +187,7 @@ public class MessageImpl implements Message
             }
             for (Emote emote : getEmotes())
             {
-                tmp = tmp.replace(emote.getAsEmote(), ":" + emote.getName() + ":");
+                tmp = tmp.replace(emote.getAsMention(), ":" + emote.getName() + ":");
             }
             for (TextChannel mentionedChannel : mentionedChannels)
             {
@@ -263,7 +263,7 @@ public class MessageImpl implements Message
     }
 
     @Override
-    public synchronized List<Emote> getEmotes()
+    public List<Emote> getEmotes()
     {
         if (this.emotes == null)
         {
@@ -271,13 +271,16 @@ public class MessageImpl implements Message
             Matcher matcher = EMOTE_PATTERN.matcher(getRawContent());
             while (matcher.find())
             {
-                Emote e = api.getEmoteById(matcher.group(2));
-                if (e == null)
-                    e = new EmoteImpl(matcher.group(2), api).setName(matcher.group(1));
-                emotes.add(e);
+                String emoteId   = matcher.group(2);
+                String emoteName = matcher.group(1);
+                Emote emote = api.getEmoteById(emoteId);
+                if (emote == null)
+                    emote = new EmoteImpl(emoteId, api).setName(emoteName);
+                emotes.add(emote);
             }
+            emotes = Collections.unmodifiableList(emotes);
         }
-        return Collections.unmodifiableList(this.emotes);
+        return emotes;
     }
 
     @Override

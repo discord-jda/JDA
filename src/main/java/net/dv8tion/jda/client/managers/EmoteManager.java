@@ -18,6 +18,7 @@ package net.dv8tion.jda.client.managers;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Emote;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.impl.EmoteImpl;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
@@ -33,12 +34,10 @@ import java.util.Set;
 public class EmoteManager
 {
 
-    private final EmoteImpl emote;
     private EmoteManagerUpdatable updatable;
 
     public EmoteManager(EmoteImpl emote)
     {
-        this.emote = emote;
         this.updatable = new EmoteManagerUpdatable(emote);
     }
 
@@ -49,7 +48,9 @@ public class EmoteManager
      * @param name
      *      The name to set for this Emote (null to keep current name)
      * @return
-     *      A RestAction&lt;Void&gt; similar to {@link EmoteManagerUpdatable#update()} (to complete operation append .queue(...) or .block(...))
+     *      {@link net.dv8tion.jda.core.requests.RestAction RestAction} - <br>
+     *      &nbsp;&nbsp;&nbsp;&nbsp;<b>Type</b>: {@link java.lang.Void}<br>
+     *      &nbsp;&nbsp;&nbsp;&nbsp;<b>Value</b>: None
      * @throws AccountTypeException
      *      if the current AccountType is not Client
      * @throws PermissionException
@@ -69,7 +70,9 @@ public class EmoteManager
      * @param roles
      *      A set of roles (all within the same guild the emote is in) / null to keep current roles
      * @return
-     *      A RestAction&lt;Void&gt; similar to {@link EmoteManagerUpdatable#update()} (to complete operation append .queue(...) or .block(...))
+     *      {@link net.dv8tion.jda.core.requests.RestAction RestAction} - <br>
+     *      &nbsp;&nbsp;&nbsp;&nbsp;<b>Type</b>: {@link java.lang.Void}<br>
+     *      &nbsp;&nbsp;&nbsp;&nbsp;<b>Value</b>: None
      * @throws AccountTypeException
      *      if the current AccountType is not Client
      * @throws PermissionException
@@ -81,30 +84,6 @@ public class EmoteManager
     }
 
     /**
-     * Deletes this Emote.<p>
-     * <b>This is a <u>client only</u> function!</b>
-     *
-     * @return
-     *      An {@link net.dv8tion.jda.core.requests.RestAction RestAction&lt;Void&gt;} (to complete operation append .queue(...) or .block(...))
-     * @throws AccountTypeException
-     *      if the current AccountType is not Client
-     * @throws PermissionException
-     *      if either the Emote trying to delete is fake or we do not have the required Permissions to delete this emote
-     */
-    public RestAction<Void> delete()
-    {
-        return updatable.delete();
-    }
-
-    /**
-     * Resets this Manager to default values.
-     */
-    public void reset()
-    {
-        updatable.reset();
-    }
-
-    /**
      * The {@link net.dv8tion.jda.core.JDA JDA} instance of this Emote
      *
      * @return
@@ -112,7 +91,18 @@ public class EmoteManager
      */
     public JDA getJDA()
     {
-        return emote.getJDA();
+        return updatable.getJDA();
+    }
+
+    /**
+     * The {@link net.dv8tion.jda.core.entities.Guild Guild} this emote is in
+     *
+     * @return
+     *      The Guild of the respected Emote
+     */
+    public Guild getGuild()
+    {
+        return updatable.getGuild();
     }
 
     /**
@@ -123,21 +113,7 @@ public class EmoteManager
      */
     public Emote getEmote()
     {
-        return emote;
-    }
-
-    /**
-     * An <b>updatable</b> manager of this Manager.<p>
-     * This will only work for the client account type.<br>
-     * With the EmoteManager returned you can modify this Emote's properties or delete it.<p>
-     * This specific Manager is used to modify multiple properties at once by setting the property and calling {@link EmoteManagerUpdatable#update()}
-     *
-     * @return
-     *      The updatable version of this Manager
-     */
-    public EmoteManagerUpdatable asUpdatable()
-    {
-        return updatable;
+        return updatable.getEmote();
     }
 
 }

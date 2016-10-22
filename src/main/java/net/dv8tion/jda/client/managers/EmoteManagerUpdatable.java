@@ -20,12 +20,12 @@ import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Emote;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.impl.EmoteImpl;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
-import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
@@ -44,13 +44,16 @@ import java.util.Set;
 public class EmoteManagerUpdatable
 {
 
+    private final EmoteImpl emote;
     private Set<Role> roles = null;
     private String name = null;
-    private final EmoteImpl emote;
-    private EmoteManager manager = null;
 
     public EmoteManagerUpdatable(EmoteImpl emote)
     {
+        if (emote.getJDA().getAccountType() != AccountType.CLIENT)
+            throw new AccountTypeException(AccountType.CLIENT);
+        if (emote.isFake())
+            throw new IllegalStateException("The emote you are trying to update is not an actual emote we have access to (it is fake)!");
         this.emote = emote;
     }
 
@@ -85,51 +88,25 @@ public class EmoteManagerUpdatable
     }
 
     /**
-     * Deletes this Emote.<p>
-     * <b>This is a <u>client only</u> function!</b>
-     *
-     * @return
-     *      An {@link net.dv8tion.jda.core.requests.RestAction RestAction&lt;Void&gt;} (to complete operation append .queue(...) or .block(...))
-     * @throws AccountTypeException
-     *      if the current AccountType is not Client
-     * @throws PermissionException
-     *      if either the Emote trying to delete is fake or we do not have the required Permissions to delete this emote
-     */
-    public RestAction<Void> delete()
-    {
-        checkAccess();
-        return new RestAction<Void>(getJDA(), Route.Custom.DELETE_ROUTE.compile(String.format("guilds/%s/emojis/%s",
-                emote.getGuild().getId(), emote.getGuild().getId()), emote.getId()), null)
-        {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                if (response.isRateLimit())
-                    request.onFailure(new RateLimitedException(request.getRoute(), response.retryAfter));
-                else if (response.isError())
-                    request.onFailure(response.exception);
-            }
-        };
-    }
-
-    /**
      * Updates the Emote of this Manager with the values set with the intermediate Methods. (set- Name/Roles)<p>
      * <b>This is a <u>client only</u> function!</b>
      *
      * @return
-     *      An {@link net.dv8tion.jda.core.requests.RestAction RestAction&lt;Void&gt;} (to complete operation append .queue(...) or .block(...))
-     * @throws AccountTypeException
-     *      if the current AccountType is not Client
+     *      {@link net.dv8tion.jda.core.requests.RestAction RestAction} - <br>
+     *      &nbsp;&nbsp;&nbsp;&nbsp;<b>Type</b>: {@link java.lang.Void}<br>
+     *      &nbsp;&nbsp;&nbsp;&nbsp;<b>Value</b>: None
      * @throws PermissionException
-     *      if either the Emote trying to update is fake or we do not have the required Permissions to update this emote
+     *      if we do not have the required Permissions to update this emote ({@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES MANAGE_EMOTES})
      * @throws IllegalArgumentException
      *      if the specified name in {@link #setName(String)} has less than 2 chars or more than 32 chars.
      */
     public RestAction<Void> update()
     {
-        checkAccess();
+        if (!PermissionUtil.checkPermission(emote.getGuild(),
+                emote.getGuild().getSelfMember(), Permission.MANAGE_EMOTES))
+            throw new PermissionException(Permission.MANAGE_EMOTES);
+        if (name == null && roles == null) // needToUpdate()
+            return new RestAction.EmptyRestAction<Void>(null);
         if (name != null && (name.length() < 2 || name.length() > 32))
             throw new IllegalArgumentException("Name exceeds char limit. [2 <= x <= 32]");
         JSONObject body = new JSONObject();
@@ -139,16 +116,14 @@ public class EmoteManagerUpdatable
             body.put("roles", new JSONArray(Arrays.toString(roles.parallelStream().map(ISnowflake::getId).toArray())));
 
         reset(); //reset because we built the JSONObject needed to update
-        return new RestAction<Void>(getJDA(), Route.Custom.PATCH_ROUTE.compile(String.format("guilds/%s/emojis/%s", emote.getGuild().getId(), emote.getId())), body)
+        return new RestAction<Void>(getJDA(), Route.Emotes.MODIFY_EMOTE.compile(emote.getGuild().getId(), emote.getId()), body)
         {
             @Override
             protected void handleResponse(Response response, Request request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
-                if (response.isRateLimit())
-                    request.onFailure(new RateLimitedException(request.getRoute(), response.retryAfter));
-                else if (response.isError())
+                else
                     request.onFailure(response.exception);
             }
         };
@@ -175,6 +150,17 @@ public class EmoteManagerUpdatable
     }
 
     /**
+     * The {@link net.dv8tion.jda.core.entities.Guild Guild} this emote is in
+     *
+     * @return
+     *      The Guild of the respected Emote
+     */
+    public Guild getGuild()
+    {
+        return emote.getGuild();
+    }
+
+    /**
      * The {@link net.dv8tion.jda.core.entities.Emote Emote} represented by this Manager.
      *
      * @return
@@ -183,31 +169,6 @@ public class EmoteManagerUpdatable
     public Emote getEmote()
     {
         return emote;
-    }
-
-    /**
-     * The {@link net.dv8tion.jda.client.managers.EmoteManager Manager} for this emote<p>
-     * With the EmoteManager returned you can modify this Emote's properties or delete it.
-     *
-     * @return
-     *      The EmoteManager for this Emote
-     */
-    public synchronized EmoteManager asManager()
-    {
-        if (manager == null)
-            manager = new EmoteManager(emote);
-        return manager;
-    }
-
-    private void checkAccess()
-    {
-        if (getJDA().getAccountType() != AccountType.CLIENT)
-            throw new AccountTypeException(AccountType.CLIENT);
-        if (emote.isFake())
-            throw new PermissionException("Trying to update a fake emote.");
-        if (!PermissionUtil.checkPermission(emote.getGuild(),
-                emote.getGuild().getMemberById(emote.getJDA().getSelfInfo().getId()), Permission.getFromOffset(30)))
-            throw new PermissionException(Permission.getFromOffset(30));
     }
 
 }

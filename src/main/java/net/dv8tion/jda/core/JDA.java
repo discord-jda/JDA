@@ -322,6 +322,20 @@ public interface JDA
     List<Emote> getEmotes();
 
     /**
+     * An unmodifiable list of all {@link net.dv8tion.jda.core.entities.Emote Emotes} that have the same name as the one provided.<br>
+     * If there are no {@link net.dv8tion.jda.core.entities.Emote Emotes} with the provided name, then this returns an empty list.
+     *
+     * @param name
+     *          The name of the requested {@link net.dv8tion.jda.core.entities.Emotes Emotes}.
+     * @param ignoreCase
+     *          Whether to ignore case or not.
+     * @return
+     *      Possibly-empty list of all the {@link net.dv8tion.jda.core.entities.Emote Emotes} that all have the
+     *      same name as the provided name.
+     */
+    List<Emote> getEmotesByName(String name, boolean ignoreCase);
+
+    /**
      * Retrieves an emote matching the specified <code>id</code> if one is available in our cache.
      *
      * @param id

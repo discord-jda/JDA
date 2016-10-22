@@ -29,6 +29,7 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.MiscUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
@@ -290,6 +291,17 @@ public class GuildImpl implements Guild
     public List<Emote> getEmotes()
     {
         return Collections.unmodifiableList(new LinkedList<>(emotes.values()));
+    }
+
+    @Override
+    public List<Emote> getEmotesByName(String name, boolean ignoreCase)
+    {
+        return Collections.unmodifiableList(emotes.values().parallelStream()
+                .filter(e ->
+                        ignoreCase
+                        ? StringUtils.equalsIgnoreCase(e.getName(), name)
+                        : StringUtils.equals(e.getName(), name))
+                .collect(Collectors.toList()));
     }
 
     @Override

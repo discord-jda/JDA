@@ -379,9 +379,17 @@ public class JDAImpl implements JDA
     @Override
     public List<Emote> getEmotes()
     {
-        List<Emote> emotes = new LinkedList<>();
+        List<Emote> emotes = new ArrayList<>();
         getGuilds().parallelStream().forEach(g -> emotes.addAll(g.getEmotes()));
-        return emotes;
+        return Collections.unmodifiableList(emotes);
+    }
+
+    @Override
+    public List<Emote> getEmotesByName(String name, boolean ignoreCase)
+    {
+        List<Emote> emotes = new ArrayList<>();
+        getGuilds().parallelStream().forEach(g -> emotes.addAll(g.getEmotesByName(name, ignoreCase)));
+        return Collections.unmodifiableList(emotes);
     }
 
     @Override
