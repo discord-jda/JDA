@@ -89,7 +89,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
                             api, responseNumber,
                             role, oldColor));
         }
-        if (Objects.equals(position, role.getPositionRaw()))
+        if (!Objects.equals(position, role.getPositionRaw()))
         {
             int oldPosition = role.getPosition();
             int oldPositionRaw = role.getPositionRaw();
@@ -99,7 +99,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
                             api, responseNumber,
                             role, oldPosition, oldPositionRaw));
         }
-        if (Objects.equals(permissions, role.getPermissionsRaw()))
+        if (!Objects.equals(permissions, role.getPermissionsRaw()))
         {
             int oldPermissionsRaw = role.getPermissionsRaw();
             role.setRawPermissions(permissions);

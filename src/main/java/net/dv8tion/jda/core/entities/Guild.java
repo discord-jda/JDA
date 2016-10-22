@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.managers.GuildController;
 import net.dv8tion.jda.core.managers.GuildManager;
 import net.dv8tion.jda.core.managers.GuildManagerUpdatable;
+import net.dv8tion.jda.core.requests.RestAction;
 
 import java.util.Collection;
 import java.util.List;
@@ -261,6 +262,10 @@ public interface Guild extends ISnowflake
     GuildManagerUpdatable getManagerUpdatable();
 
     GuildController getController();
+
+    RestAction<Void> leave();
+
+    RestAction<Void> delete();
 
 //    /**
 //     * Returns the {@link net.dv8tion.jda.managers.AudioManager AudioManager} that represents the

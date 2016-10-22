@@ -20,9 +20,14 @@ import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.managers.GuildController;
 import net.dv8tion.jda.core.managers.GuildManager;
 import net.dv8tion.jda.core.managers.GuildManagerUpdatable;
+import net.dv8tion.jda.core.requests.Request;
+import net.dv8tion.jda.core.requests.Response;
+import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.json.JSONObject;
 
@@ -345,6 +350,46 @@ public class GuildImpl implements Guild
             }
         }
         return ctrl;
+    }
+
+    @Override
+    public RestAction<Void> leave()
+    {
+        if (owner.equals(getSelfMember()))
+            throw new IllegalStateException("Cannot leave a guild that you are the owner of! Transfer guild ownership first!");
+
+        Route.CompiledRoute route = Route.Self.LEAVE_GUILD.compile(id);
+        return new RestAction<Void>(api, route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
+    }
+
+    @Override
+    public RestAction<Void> delete()
+    {
+        if (!owner.equals(getSelfMember()))
+            throw new PermissionException("Cannot delete a guild that you do not own!");
+
+        Route.CompiledRoute route = Route.Guilds.DELETE_GUILD.compile(id);
+        return new RestAction<Void>(api, route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
     }
 
     @Override
