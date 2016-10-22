@@ -32,6 +32,7 @@ import net.dv8tion.jda.core.handle.GuildMembersChunkHandler;
 import net.dv8tion.jda.core.handle.ReadyHandler;
 import net.dv8tion.jda.core.requests.GuildLock;
 import net.dv8tion.jda.core.requests.WebSocketClient;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -655,7 +656,12 @@ public class EntityBuilder
                 .setTTS(jsonObject.getBoolean("tts"))
                 .setPinned(jsonObject.getBoolean("pinned"));
         if (chan instanceof PrivateChannel)
-            message.setAuthor(((PrivateChannel) chan).getUser());
+        {
+            if (StringUtils.equals(authorId, api.getSelfInfo().getId()))
+                message.setAuthor(api.getSelfInfo());
+            else
+                message.setAuthor(((PrivateChannel) chan).getUser());
+        }
         else if (chan instanceof Group)
         {
             UserImpl user = (UserImpl) api.getUserMap().get(authorId);
