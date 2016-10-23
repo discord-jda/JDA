@@ -40,7 +40,7 @@ public class RoleImpl implements Role
     private boolean managed;
     private boolean hoisted;
     private boolean mentionable;
-    private int rawPermissions;
+    private long rawPermissions;
     private int rawPosition;
 
     public RoleImpl(String id, Guild guild)
@@ -97,7 +97,7 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public int getPermissionsRaw()
+    public long getPermissionsRaw()
     {
         return rawPermissions;
     }
@@ -248,7 +248,7 @@ public class RoleImpl implements Role
         return this;
     }
 
-    public RoleImpl setRawPermissions(int rawPermissions)
+    public RoleImpl setRawPermissions(long rawPermissions)
     {
         this.rawPermissions = rawPermissions;
         return this;

@@ -52,6 +52,7 @@ public class Route
     {
         public static final Route GET_GUILD =        new Route(GET,    "guilds/{guild_id}",                   "guild_id");
         public static final Route MODIFY_GUILD =     new Route(PATCH,  "guilds/{guild_id}",                   "guild_id");
+        public static final Route CREATE_CHANNEL =   new Route(POST,   "guilds/{guild_id}/channels",          "guild_id");
         public static final Route GET_CHANNELS =     new Route(GET,    "guilds/{guild_id}/channels",          "guild_id");
         public static final Route MODIFY_CHANNELS =  new Route(PATCH,  "guilds/{guild_id}/channels",          "guild_id");
         public static final Route GET_BANS =         new Route(GET,    "guilds/{guild_id}/bans",              "guild_id");
@@ -60,7 +61,7 @@ public class Route
         public static final Route UNBAN =            new Route(DELETE, "guilds/{guild_id}/bans/{user_id}",    "guild_id");
         public static final Route KICK_MEMBER =      new Route(DELETE, "guilds/{guild_id}/members/{user_id}", "guild_id");
         public static final Route MODIFY_MEMBER =    new Route(PATCH,  "guilds/{guild_id}/members/{user_id}", "guild_id");
-        public static final Route MODIFY_SELF_NICK = new Route(PATCH, "guilds/{guild_id}/members/@me/nick",  "guild_id");
+        public static final Route MODIFY_SELF_NICK = new Route(PATCH,  "guilds/{guild_id}/members/@me/nick",  "guild_id");
         public static final Route PRUNABLE_COUNT =   new Route(GET,    "guilds/{guild_id}/prune?days={}",     "guild_id");
         public static final Route PRUNE_MEMBERS =    new Route(POST,   "guilds/{guild_id}/prune?days={}",     "guild_id");
 
@@ -80,9 +81,9 @@ public class Route
 
     public static class Channels
     {
-        public static final Route DELETE_CHANNEL = new Route(DELETE, "channels/{channel_id}",        "channel_id");
-        public static final Route MODIFY_CHANNEL = new Route(PATCH,  "channels/{channel_id}",        "channel_id");
-        public static final Route SEND_TYPING =    new Route(POST,   "channels/{channel_id}/typing", "channel_id");
+        public static final Route DELETE_CHANNEL =       new Route(DELETE, "channels/{channel_id}");
+        public static final Route MODIFY_CHANNEL =       new Route(PATCH,  "channels/{channel_id}",        "channel_id");
+        public static final Route SEND_TYPING =          new Route(POST,   "channels/{channel_id}/typing", "channel_id");
         public static final Route GET_PERMISSIONS =      new Route(GET,    "channels/{channel_id}/permissions",                   "channel_id");
         public static final Route GET_PERM_OVERRIDE =    new Route(GET,    "channels/{channel_id}/permissions/{permoverride_id}", "channel_id");
         public static final Route CREATE_PERM_OVERRIDE = new Route(PUT,    "channels/{channel_id}/permissions/{permoverride_id}", "channel_id");

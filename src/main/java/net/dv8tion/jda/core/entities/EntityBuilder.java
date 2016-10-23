@@ -32,6 +32,7 @@ import net.dv8tion.jda.core.handle.GuildMembersChunkHandler;
 import net.dv8tion.jda.core.handle.ReadyHandler;
 import net.dv8tion.jda.core.requests.GuildLock;
 import net.dv8tion.jda.core.requests.WebSocketClient;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -623,7 +624,7 @@ public class EntityBuilder
         }
         return role.setName(roleJson.getString("name"))
                 .setRawPosition(roleJson.getInt("position"))
-                .setRawPermissions(roleJson.getInt("permissions"))
+                .setRawPermissions(roleJson.getLong("permissions"))
                 .setManaged(roleJson.getBoolean("managed"))
                 .setHoisted(roleJson.getBoolean("hoist"))
                 .setColor(roleJson.getInt("color") != 0 ? new Color(roleJson.getInt("color")) : null)
@@ -655,7 +656,12 @@ public class EntityBuilder
                 .setTTS(jsonObject.getBoolean("tts"))
                 .setPinned(jsonObject.getBoolean("pinned"));
         if (chan instanceof PrivateChannel)
-            message.setAuthor(((PrivateChannel) chan).getUser());
+        {
+            if (StringUtils.equals(authorId, api.getSelfInfo().getId()))
+                message.setAuthor(api.getSelfInfo());
+            else
+                message.setAuthor(((PrivateChannel) chan).getUser());
+        }
         else if (chan instanceof Group)
         {
             UserImpl user = (UserImpl) api.getUserMap().get(authorId);
@@ -863,8 +869,8 @@ public class EntityBuilder
     {
         PermissionOverrideImpl permOverride = null;
         String id = override.getString("id");
-        int allow = override.getInt("allow");
-        int deny = override.getInt("deny");
+        long allow = override.getLong("allow");
+        long deny = override.getLong("deny");
 
         switch (override.getString("type"))
         {

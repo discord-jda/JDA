@@ -28,8 +28,8 @@ public class PermissionOverrideImpl implements PermissionOverride
     private final Member member;
     private final Role role;
     private final Channel channel;
-    private int allow;
-    private int deny;
+    private long allow;
+    private long deny;
 
     public PermissionOverrideImpl(Channel channel, Member member, Role role)
     {
@@ -39,19 +39,19 @@ public class PermissionOverrideImpl implements PermissionOverride
     }
 
     @Override
-    public int getAllowedRaw()
+    public long getAllowedRaw()
     {
         return allow;
     }
 
     @Override
-    public int getInheritRaw()
+    public long getInheritRaw()
     {
         return ~(allow | deny);
     }
 
     @Override
-    public int getDeniedRaw()
+    public long getDeniedRaw()
     {
         return deny;
     }
@@ -116,13 +116,13 @@ public class PermissionOverrideImpl implements PermissionOverride
         return getRole() != null;
     }
 
-    public PermissionOverrideImpl setAllow(int allow)
+    public PermissionOverrideImpl setAllow(long allow)
     {
         this.allow = allow;
         return this;
     }
 
-    public PermissionOverrideImpl setDeny(int deny)
+    public PermissionOverrideImpl setDeny(long deny)
     {
         this.deny = deny;
         return this;
