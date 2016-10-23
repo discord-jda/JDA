@@ -75,7 +75,7 @@ public interface Guild extends ISnowflake
      * @return
      *      Positive int representing the timeout value.
      */
-    int getAfkTimeout();
+    Timeout getAfkTimeout();
 
     /**
      * The {@link net.dv8tion.jda.core.Region Region} that this {@link net.dv8tion.jda.core.entities.Guild Guild} exists in.<br>
@@ -266,6 +266,59 @@ public interface Guild extends ISnowflake
 //     *      An Immutable List of {@link net.dv8tion.jda.utils.InviteUtil.AdvancedInvite Invites} for this guild.
 //     */
 //    List<AdvancedInvite> getInvites();
+
+    /**
+     * Represents the idle time allowed until a user is moved to the
+     * AFK {@link net.dv8tion.jda.core.entities.VoiceChannel} if one is set.
+     */
+    public enum Timeout
+    {
+        SECONDS_60(60),
+        SECONDS_300(300),
+        SECONDS_900(900),
+        SECONDS_1800(1800),
+        SECONDS_3600(3600);
+
+        private final int seconds;
+        Timeout(int seconds)
+        {
+            this.seconds = seconds;
+        }
+
+        /**
+         * The amount of seconds represented by this {@link Timeout}.
+         *
+         * @return
+         *      An positive non-zero int representing the timeout amount in seconds.
+         */
+        public int getSeconds()
+        {
+            return seconds;
+        }
+
+        /**
+         * The timeout as a string.<br>
+         * Examples:    "60"  "300"   etc
+         *
+         * @return
+         *      Seconds as a string.
+         */
+        @Override
+        public String toString()
+        {
+            return "" + seconds;
+        }
+
+        public static Timeout fromKey(int seconds)
+        {
+            for (Timeout t : values())
+            {
+                if (t.getSeconds() == seconds)
+                    return t;
+            }
+            throw new IllegalArgumentException("Provided key was not recoginized. Seconds: " + seconds);
+        }
+    }
 
     /**
      * Represents the Verification-Level of the Guild.

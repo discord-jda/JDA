@@ -24,6 +24,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.managers.fields.ChannelField;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
@@ -31,21 +32,19 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.json.JSONObject;
 
-import java.util.Objects;
-
 public class ChannelManagerUpdatable
 {
     protected final Channel channel;
-    private String name = null;
-    private String topic = null;
-    private int userLimit = -1;
-    private int bitrate = -1;
-//    private int position = -1;
-//    private Map<Integer, Channel> newPositions = new HashMap<>();
+
+    protected ChannelField<String> name;
+    protected ChannelField<String> topic;
+    protected ChannelField<Integer> userLimit;
+    protected ChannelField<Integer> bitrate;
 
     public ChannelManagerUpdatable(Channel channel)
     {
         this.channel = channel;
+        setupFields();
     }
 
     public JDA getJDA()
@@ -53,11 +52,6 @@ public class ChannelManagerUpdatable
         return channel.getJDA();
     }
 
-    /**
-     * Returns the {@link net.dv8tion.jda.core.entities.Channel Channel} object of this Manager. Useful if this Manager was returned via a create function
-     *
-     * @return the Channel of this Manager
-     */
     public Channel getChannel()
     {
         return channel;
@@ -68,112 +62,41 @@ public class ChannelManagerUpdatable
         return channel.getGuild();
     }
 
-    /**
-     * Sets the name of this Channel.
-     * This change will only be applied, if {@link #update()} is called.
-     * So multiple changes can be made at once.
-     *
-     * @param name The new name of the Channel, or null to keep current one
-     * @return this
-     */
-    public ChannelManagerUpdatable setName(String name)
+    public ChannelField<String> getNameField()
     {
         checkPermission(Permission.MANAGE_CHANNEL);
 
-        if (Objects.equals(name, channel.getName()))
-        {
-            this.name = null;
-        }
-        else
-        {
-            this.name = name;
-        }
-
-        return this;
+        return name;
     }
 
-    /**
-     * Sets the topic of this Channel.
-     * This is not available for {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels}
-     * and will result in a {@link java.lang.UnsupportedOperationException UnsupportedOperationException}.
-     * <p>
-     * This change will only be applied, if {@link #update()} is called.
-     * So multiple changes can be made at once.
-     *
-     * @param topic The new topic of the Channel, or null to keep current one
-     * @return this
-     * @throws java.lang.UnsupportedOperationException thrown when attempting to set the topic for a {@link net.dv8tion.jda.core.entities.VoiceChannel}
-     */
-    public ChannelManagerUpdatable setTopic(String topic)
+    public ChannelField<String> getTopicField()
     {
         checkPermission(Permission.MANAGE_CHANNEL);
 
         if (channel instanceof VoiceChannel)
             throw new UnsupportedOperationException("Setting a Topic on VoiceChannels is not allowed!");
 
-        if (Objects.equals(topic, ((TextChannel) channel).getTopic()))
-            this.topic = null;
-        else
-            this.topic = topic;
-
-        return this;
+        return topic;
     }
 
-    /**
-     * Used to set the maximum amount of users that can be connected to a
-     * {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} at the same time.
-     * <p>
-     * The accepted range is 0-99, with 0 representing no limit. -1 can be provided to reset the value.<br>
-     * The default is: 0
-     *
-     * @param userLimit The maximum amount of Users that can be connected to a voice channel at a time.
-     * @return This ChannelManager
-     * @throws java.lang.UnsupportedOperationException thrown when attempting to set the userLimit for a {@link net.dv8tion.jda.core.entities.TextChannel}
-     * @throws java.lang.IllegalArgumentException      thrown if the provided userLimit it outside the range of 0 to 99, not including the reset value: -1
-     */
-    public ChannelManagerUpdatable setUserLimit(int userLimit)
+    public ChannelField<Integer> getUserLimitField()
     {
         checkPermission(Permission.MANAGE_CHANNEL);
 
         if (channel instanceof TextChannel)
             throw new UnsupportedOperationException("Setting user limit for TextChannels is not allowed!");
-        if (userLimit < -1 || userLimit > 99)
-            throw new IllegalArgumentException("Provided userlimit must be either within the bounds of 0-99 inclusive or -1 to reset.");
 
-        if (userLimit == ((VoiceChannel) channel).getUserLimit())
-            this.userLimit = -1;
-        else
-            this.userLimit = userLimit;
-
-        return this;
+        return userLimit;
     }
 
-    /**
-     * Used to set the bitrate that Discord clients will use when sending and receiving audio.
-     * <p>
-     * The accepted range is 8000-96000. -1 can be provided to reset the value.<br>
-     * The default value is: 64000
-     *
-     * @param bitrate The bitrate which Discord clients will conform to when dealing with the audio from this channel.
-     * @return This ChannelManager
-     * @throws java.lang.UnsupportedOperationException thrown when attempting to set the bitrate for a {@link net.dv8tion.jda.core.entities.TextChannel}
-     * @throws java.lang.IllegalArgumentException      thrown if the provided bitrate it outside the range of 8000 to 96000, not including the reset value: -1
-     */
-    public ChannelManagerUpdatable setBitrate(int bitrate)
+    public ChannelField<Integer> getBitrateField()
     {
         checkPermission(Permission.MANAGE_CHANNEL);
 
         if (channel instanceof TextChannel)
             throw new UnsupportedOperationException("Setting user limit for TextChannels is not allowed!");
-        if (bitrate != -1 && (bitrate < 8000 || bitrate > 96000))
-            throw new IllegalArgumentException("Provided bitrate must be within the range of 8000 to 96000, or -1 to reset. Recommended is 64000");
 
-        if (bitrate == ((VoiceChannel) channel).getBitrate())
-            this.bitrate = -1;
-        else
-            this.bitrate = bitrate;
-
-        return this;
+        return bitrate;
     }
 
     /**
@@ -181,12 +104,10 @@ public class ChannelManagerUpdatable
      */
     public void reset()
     {
-        this.name = null;
-        this.topic = null;
-        this.bitrate = -1;
-        this.userLimit = -1;
-//        position = -1;
-//        newPositions.clear();
+        this.name.reset();
+        this.topic.reset();
+        this.bitrate.reset();
+        this.userLimit.reset();
     }
 
     /**
@@ -200,19 +121,14 @@ public class ChannelManagerUpdatable
             return new RestAction.EmptyRestAction<Void>(null);
 
         JSONObject frame = new JSONObject().put("name", channel.getName());
-        if (this.name != null)
-            frame.put("name", this.name);
-        if (this.topic != null)
-            frame.put("topic", this.topic);
-        if (userLimit != -1)
-            frame.put("user_limit", userLimit);
-        if (bitrate != -1)
-            frame.put("bitrate", bitrate);
-//        if (position != -1 && !newPositions.isEmpty())
-//        {
-//            updatePosition();
-//            frame.put("position", this.position);
-//        }
+        if (name.shouldUpdate())
+            frame.put("name", name.getValue());
+        if (topic != null && topic.shouldUpdate())
+            frame.put("topic", topic.getValue() == null ? JSONObject.NULL : topic.getValue());
+        if (userLimit != null && userLimit.shouldUpdate())
+            frame.put("user_limit", userLimit.getValue());
+        if (bitrate != null && bitrate.shouldUpdate())
+            frame.put("bitrate", bitrate.getValue());
 
         reset();    //now that we've built our JSON object, reset the manager back to the non-modified state
         Route.CompiledRoute route = Route.Channels.MODIFY_CHANNEL.compile(channel.getId());
@@ -231,16 +147,69 @@ public class ChannelManagerUpdatable
 
     protected boolean needToUpdate()
     {
-        return name != null
-                || topic != null
-                || userLimit != -1
-                || bitrate != -1;
+        return name.shouldUpdate()
+                || topic.shouldUpdate()
+                || userLimit.shouldUpdate()
+                || bitrate.shouldUpdate();
     }
 
-    private void checkPermission(Permission perm)
+    protected void checkPermission(Permission perm)
     {
         if (!PermissionUtil.checkPermission(channel, getGuild().getSelfMember(), perm))
             throw new PermissionException(perm);
     }
 
+    protected void setupFields()
+    {
+        this.name = new ChannelField<String>(this, channel::getName)
+        {
+            @Override
+            public void checkValue(String value)
+            {
+                checkNull(value, "name");
+                if (value.length() < 2 || value.length() > 100)
+                    throw new IllegalArgumentException("Provided channel name must be 2 to 100 characters in length");
+            }
+        };
+
+        if (channel instanceof TextChannel)
+        {
+            TextChannel tc = (TextChannel) channel;
+            this.topic = new ChannelField<String>(this, tc::getTopic)
+            {
+                @Override
+                public void checkValue(String value)
+                {
+                    if (value != null && value.length() > 1024)
+                        throw new IllegalArgumentException("Provided topic must less than or equal to 1024 characters in length");
+                }
+            };
+        }
+        else
+        {
+            VoiceChannel vc = (VoiceChannel) channel;
+            this.userLimit = new ChannelField<Integer>(this, vc::getUserLimit)
+            {
+                @Override
+                public void checkValue(Integer value)
+                {
+                    checkNull(value, "user limit");
+                    if (value < 1 || value > 99)
+                        throw new IllegalArgumentException("Provided user limit must be 1 to 99.");
+                }
+            };
+
+            this.bitrate = new ChannelField<Integer>(this, vc::getBitrate)
+            {
+                @Override
+                public void checkValue(Integer value)
+                {
+                    checkNull(value, "bitrate");
+                    if (value < 8000 || value > 96000)
+                        throw new IllegalArgumentException("Provided bitrate must be 8000 to 96000");
+                }
+            };
+        }
+
+    }
 }

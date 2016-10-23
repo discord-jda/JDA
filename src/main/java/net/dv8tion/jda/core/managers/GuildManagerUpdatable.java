@@ -22,7 +22,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
-import net.dv8tion.jda.core.managers.GuildManager.Timeout;
+import net.dv8tion.jda.core.managers.fields.GuildField;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
@@ -30,98 +30,45 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.json.JSONObject;
 
-import java.util.Objects;
-
 public class GuildManagerUpdatable
 {    
     protected final Guild guild;
-
-    protected Timeout timeout = null;
-    protected String name = null;
-    protected Region region = null;
 //    protected AvatarUtil.Avatar icon = null;
 //    protected AvatarUtil.Avatar splash
-    protected boolean afkChannelSet = false;
-    protected VoiceChannel afkChannel = null;
-    protected Guild.VerificationLevel verificationLevel = null;
-    protected Guild.NotificationLevel defaultNotificationLevel = null;
-    protected Guild.MFALevel mfaLevel = null;
 
-    /**
-     * Creates a {@link GuildManagerUpdatable} that can be used to manage
-     * different aspects of the provided {@link net.dv8tion.jda.core.entities.Guild}.
-     *
-     * @param guild
-     *          The {@link net.dv8tion.jda.core.entities.Guild} which the manager deals with.
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *      if the guild is temporarily unavailable
-     */
+    protected GuildField<String> name;
+    protected GuildField<Guild.Timeout> timeout;
+    protected GuildField<Region> region;
+    protected GuildField<VoiceChannel> afkChannel;
+    protected GuildField<Guild.VerificationLevel> verificationLevel;
+    protected GuildField<Guild.NotificationLevel> defaultNotificationLevel;
+    protected GuildField<Guild.MFALevel> mfaLevel;
+
     public GuildManagerUpdatable(Guild guild)
     {
         this.guild = guild;
+        setupFields();
     }
 
-    /**
-     * Returns the {@link net.dv8tion.jda.core.entities.Guild Guild} object of this Manager. Useful if this Manager was returned via a create function
-     *
-     * @return
-     *      the {@link net.dv8tion.jda.core.entities.Guild Guild} of this Manager
-     */
     public Guild getGuild()
     {
         return guild;
     }
 
-    /**
-     * Changes the name of this Guild.
-     * This change will only be applied, if {@link #update()} is called.
-     * So multiple changes can be made at once.
-     *
-     * @param name
-     *          the new name of the Guild, or null to keep current one
-     * @return
-     *      This {@link GuildManagerUpdatable GuildManager} instance. Useful for chaining.
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *      if the guild is temporarily unavailable
-     */
-    public GuildManagerUpdatable setName(String name)
+    public GuildField<String> getNameField()
     {
         checkAvailable();
-        checkNull(name, "name");
         checkPermission(Permission.MANAGE_SERVER);
 
-        if (guild.getName().equals(name))
-            this.name = null;
-        else
-            this.name = name;
-
-        return this;
+        return name;
     }
 
-    /**
-     * Changes the {@link net.dv8tion.jda.core.Region Region} of this {@link net.dv8tion.jda.core.entities.Guild Guild}.
-     * This change will only be applied, if {@link #update()} is called.
-     * So multiple changes can be made at once.
-     *
-     * @param region
-     *          the new {@link net.dv8tion.jda.core.Region Region}, or null to keep current one
-     * @return
-     *      This {@link GuildManagerUpdatable GuildManager} instance. Useful for chaining.
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *      if the guild is temporarily unavailable
-     */
-    public GuildManagerUpdatable setRegion(Region region)
+    public GuildField<Region> getRegionField()
     {
         checkAvailable();
-        checkNull(region, "region");
         checkPermission(Permission.MANAGE_SERVER);
 
-        if (region == guild.getRegion() || region == Region.UNKNOWN)
-            this.region = null;
-        else
-            this.region = region;
-
-        return this;
+        return region;
     }
 
 //    /**
@@ -149,122 +96,47 @@ public class GuildManagerUpdatable
 //        return this;
 //    }
 
-    /**
-     * Changes the AFK {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} of this Guild
-     * If passed null, this will disable the AFK-Channel.
-     *
-     * This change will only be applied, if {@link #update()} is called.
-     * So multiple changes can be made at once.
-     *
-     * @param channel
-     *          the new afk-channel
-     * @return
-     *      This {@link GuildManagerUpdatable GuildManager} instance. Useful for chaining.
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *      if the guild is temporarily unavailable
-     */
-    public GuildManagerUpdatable setAfkChannel(VoiceChannel channel)
+    public GuildField<VoiceChannel> getAfkChannelField()
     {
         checkAvailable();
         checkPermission(Permission.MANAGE_SERVER);
 
-        if (channel != null && !guild.equals(channel.getGuild()))
-            throw new IllegalArgumentException("Given VoiceChannel is not part of this Guild");
-
-        if (Objects.equals(channel, guild.getAfkChannel()))
-        {
-            this.afkChannelSet = false;
-            this.afkChannel = null;
-        }
-        else
-        {
-            this.afkChannelSet = true;
-            this.afkChannel = channel;
-        }
-
-        return this;
+        return afkChannel;
     }
 
     /**
-     * Changes the AFK Timeout of this Guild
-     * After given timeout (in seconds) Users being AFK in voice are being moved to the AFK-Channel
      * Valid timeouts are: 60, 300, 900, 1800, 3600.
-     *
-     * This change will only be applied, if {@link #update()} is called.
-     * So multiple changes can be made at once.
-     *
-     * @param timeout
-     *      the new afk timeout, or null to keep current one
-     * @return
-     *      This {@link GuildManagerUpdatable GuildManager} instance. Useful for chaining.
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *      if the guild is temporarily unavailable
      */
-    public GuildManagerUpdatable setAfkTimeout(Timeout timeout)
+    public GuildField<Guild.Timeout> getAfkTimeoutField()
     {
         checkAvailable();
-        checkNull(timeout, "timeout");
         checkPermission(Permission.MANAGE_SERVER);
 
-        if (Objects.equals(timeout.getSeconds(), guild.getAfkTimeout()))
-            this.timeout = null;
-        else
-            this.timeout = timeout;
-
-        return this;
+        return timeout;
     }
 
-    /**
-     * Changes the Verification-Level of this Guild.
-     * This change will only be applied, if {@link #update()} is called.
-     * So multiple changes can be made at once.
-     *
-     * @param level
-     *          the new Verification-Level of the Guild, or null to keep current one
-     * @return
-     *      This {@link GuildManagerUpdatable GuildManager} instance. Useful for chaining.
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *      if the guild is temporarily unavailable
-     */
-    public GuildManagerUpdatable setVerificationLevel(Guild.VerificationLevel level)
+    public GuildField<Guild.VerificationLevel> getVerificationLevelField()
     {
         checkAvailable();
-        checkNull(level, "level");
         checkPermission(Permission.MANAGE_SERVER);
 
-        if (guild.getVerificationLevel() == level)
-            this.verificationLevel = null;
-        else
-            this.verificationLevel = level;
-
-        return this;
+        return verificationLevel;
     }
 
-    public GuildManagerUpdatable setDefaultNotificationLevel(Guild.NotificationLevel level)
+    public GuildField<Guild.NotificationLevel> getDefaultNotificationLevelField()
     {
         checkAvailable();
-        checkNull(level, "level");
         checkPermission(Permission.MANAGE_SERVER);
 
-        if (guild.getDefaultNotificationLevel() == level)
-            this.defaultNotificationLevel = null;
-        else
-            this.defaultNotificationLevel = level;
-
-        return this;
+        return defaultNotificationLevel;
     }
 
-    public GuildManagerUpdatable setRequiredMFALevel(Guild.MFALevel level)
+    public GuildField<Guild.MFALevel> getRequiredMFALevelField()
     {
         checkAvailable();
         checkPermission(Permission.MANAGE_SERVER);
 
-        if (guild.getRequiredMFALevel() == level)
-            this.mfaLevel = null;
-        else
-            this.mfaLevel = level;
-
-        return this;
+        return mfaLevel;
     }
 
     /**
@@ -272,15 +144,13 @@ public class GuildManagerUpdatable
      */
     public void reset()
     {
-        this.name = null;
-        this.region = null;
-        this.timeout = null;
-//        this.icon = null;
-        this.afkChannelSet = false;
-        this.afkChannel = null;
-        this.verificationLevel = null;
-        this.defaultNotificationLevel = null;
-        this.mfaLevel = null;
+        this.name.reset();
+        this.region.reset();
+        this.timeout.reset();
+        this.afkChannel.reset();
+        this.verificationLevel.reset();
+        this.defaultNotificationLevel.reset();
+        this.mfaLevel.reset();
     }
 
     /**
@@ -297,27 +167,28 @@ public class GuildManagerUpdatable
         if (!needToUpdate())
             return new RestAction.EmptyRestAction<>(null);
 
-        JSONObject frame = new JSONObject().put("name", guild.getName());
-        if (name != null)
-            frame.put("name", name);
-        if (region != null)
-            frame.put("region", region.getKey());
-        if (timeout != null)
-            frame.put("afk_timeout", timeout.getSeconds());
+        JSONObject body = new JSONObject().put("name", guild.getName());
+        if (name.shouldUpdate())
+            body.put("name", name.getValue());
+        if (region.shouldUpdate())
+            body.put("region", region.getValue().getKey());
+        if (timeout.shouldUpdate())
+            body.put("afk_timeout", timeout.getValue().getSeconds());
 //        if (icon != null)
 //            frame.put("icon", icon == AvatarUtil.DELETE_AVATAR ? JSONObject.NULL : icon.getEncoded());
-        if (afkChannelSet && !Objects.equals(afkChannel, guild.getAfkChannel()))
-            frame.put("afk_channel_id", afkChannel == null ? JSONObject.NULL : afkChannel.getId());
-        if (verificationLevel != null)
-            frame.put("verification_level", verificationLevel.getKey());
-        if (defaultNotificationLevel != null)
-            frame.put("default_notification_level", defaultNotificationLevel.getKey());
-        if (mfaLevel != null)
-            frame.put("mfa_level", mfaLevel.getKey());
+        if (afkChannel.shouldUpdate())
+            body.put("afk_channel_id", afkChannel.getValue() == null ? JSONObject.NULL : afkChannel.getValue().getId());
+        if (verificationLevel.shouldUpdate())
+            body.put("verification_level", verificationLevel.getValue().getKey());
+        if (defaultNotificationLevel.shouldUpdate())
+            body.put("default_notification_level", defaultNotificationLevel.getValue().getKey());
+        if (mfaLevel.shouldUpdate())
+            body.put("mfa_level", mfaLevel.getValue().getKey());
 
         reset(); //now that we've built our JSON object, reset the manager back to the non-modified state
         Route.CompiledRoute route = Route.Guilds.MODIFY_GUILD.compile(guild.getId());
-        return new RestAction<Void>(guild.getJDA(), route, frame) {
+        return new RestAction<Void>(guild.getJDA(), route, body)
+        {
             @Override
             protected void handleResponse(Response response, Request request)
             {
@@ -333,14 +204,14 @@ public class GuildManagerUpdatable
 
     protected boolean needToUpdate()
     {
-        return name != null
-                || region != null
-                || timeout != null
+        return name.shouldUpdate()
+                || region.shouldUpdate()
+                || timeout.shouldUpdate()
 //                || icon != null
-                || afkChannelSet && !Objects.equals(afkChannel, guild.getAfkChannel())
-                || verificationLevel != null
-                || defaultNotificationLevel != null
-                || mfaLevel != null;
+                || afkChannel.shouldUpdate()
+                || verificationLevel.shouldUpdate()
+                || defaultNotificationLevel.shouldUpdate()
+                || mfaLevel.shouldUpdate();
     }
 
     protected void checkAvailable()
@@ -349,15 +220,86 @@ public class GuildManagerUpdatable
             throw new GuildUnavailableException();
     }
 
-    protected void checkNull(Object obj, String name)
-    {
-        if (obj == null)
-            throw new NullPointerException("Provided " + name + " was null!");
-    }
-
     protected void checkPermission(Permission perm)
     {
         if (!PermissionUtil.checkPermission(guild, guild.getSelfMember(), perm))
             throw new PermissionException(perm);
+    }
+
+    protected void setupFields()
+    {
+        this.name = new GuildField<String>(this, guild::getName)
+        {
+            @Override
+            public void checkValue(String value)
+            {
+                checkNull(value, "guild name");
+                if (value.length() < 2 || value.length() > 100)
+                    throw new IllegalArgumentException("Provided guild name must be 2 to 100 characters in length");
+            }
+        };
+
+        this.timeout = new GuildField<Guild.Timeout>(this, guild::getAfkTimeout)
+        {
+            @Override
+            public void checkValue(Guild.Timeout value)
+            {
+                checkNull(value, "Timeout");
+            }
+        };
+
+        this.region = new GuildField<Region>(this, guild::getRegion)
+        {
+            @Override
+            public void checkValue(Region value)
+            {
+                checkNull(value, "Region");
+                if (value == Region.UNKNOWN)
+                    throw new IllegalArgumentException("Cannot set Guild Region to UNKNOWN!");
+            }
+        };
+
+        this.afkChannel = new GuildField<VoiceChannel>(this, guild::getAfkChannel)
+        {
+            @Override
+            public void checkValue(VoiceChannel value)
+            {
+                if (value != null && !guild.equals(value.getGuild()))
+                    throw new IllegalArgumentException("Provided AFK Channel is not from this Guild!");
+            }
+        };
+
+        this.verificationLevel = new GuildField<Guild.VerificationLevel>(this, guild::getVerificationLevel)
+        {
+            @Override
+            public void checkValue(Guild.VerificationLevel value)
+            {
+                checkNull(value, "VerificationLevel");
+                if (value == Guild.VerificationLevel.UNKNOWN)
+                    throw new IllegalArgumentException("Cannot set Guild VerificationLevel to UNKNOWN");
+            }
+        };
+
+        this.defaultNotificationLevel = new GuildField<Guild.NotificationLevel>(this, guild::getDefaultNotificationLevel)
+        {
+            @Override
+            public void checkValue(Guild.NotificationLevel value)
+            {
+                checkNull(value, "NotificationLevel");
+                if (value == Guild.NotificationLevel.UNKNOWN)
+                    throw new IllegalArgumentException("Cannot set NotificationLevel to UNKNOWN");
+            }
+        };
+
+        this.mfaLevel = new GuildField<Guild.MFALevel>(this, guild::getRequiredMFALevel)
+        {
+            @Override
+            public void checkValue(Guild.MFALevel value)
+            {
+                checkNull(value, "MFALevel");
+                if (value == Guild.MFALevel.UNKNOWN)
+                    throw new IllegalArgumentException("Cannot set MFALevel to UNKNOWN");
+            }
+        };
     }
 }

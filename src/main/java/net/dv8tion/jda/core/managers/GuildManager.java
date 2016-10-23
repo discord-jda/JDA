@@ -43,12 +43,12 @@ public class GuildManager
 
     public RestAction<Void> setName(String name)
     {
-        return  updatable.setName(name).update();
+        return  updatable.getNameField().setValue(name).update();
     }
 
     public RestAction<Void> setRegion(Region region)
     {
-        return updatable.setRegion(region).update();
+        return updatable.getRegionField().setValue(region).update();
     }
 
 //    public RestAction<Void> setIcon(AvatarUtil.Avatar avatar)
@@ -58,69 +58,26 @@ public class GuildManager
 
     public RestAction<Void> setAfkChannel(VoiceChannel afkChannel)
     {
-        return updatable.setAfkChannel(afkChannel).update();
+        return updatable.getAfkChannelField().setValue(afkChannel).update();
     }
 
-    public RestAction<Void> setAfkTimeout(Timeout timeout)
+    public RestAction<Void> setAfkTimeout(Guild.Timeout timeout)
     {
-        return updatable.setAfkTimeout(timeout).update();
+        return updatable.getAfkTimeoutField().setValue(timeout).update();
     }
 
     public RestAction<Void> setVerificationLevel(Guild.VerificationLevel level)
     {
-        return updatable.setVerificationLevel(level).update();
+        return updatable.getVerificationLevelField().setValue(level).update();
     }
 
     public RestAction<Void> setDefaultNotificationLeveL(Guild.NotificationLevel level)
     {
-        return updatable.setDefaultNotificationLevel(level).update();
+        return updatable.getDefaultNotificationLevelField().setValue(level).update();
     }
 
     public RestAction<Void> setRequiredMFALevel(Guild.MFALevel level)
     {
-        return updatable.setRequiredMFALevel(level).update();
-    }
-
-    /**
-     * Represents the idle time allowed until a user is moved to the
-     * AFK {@link net.dv8tion.jda.core.entities.VoiceChannel} if one is set.
-     */
-    public enum Timeout
-    {
-        SECONDS_60(60),
-        SECONDS_300(300),
-        SECONDS_900(900),
-        SECONDS_1800(1800),
-        SECONDS_3600(3600);
-
-        private final int seconds;
-        Timeout(int seconds)
-        {
-            this.seconds = seconds;
-        }
-
-        /**
-         * The amount of seconds represented by this {@link Timeout}.
-         *
-         * @return
-         *      An positive non-zero int representing the timeout amount in seconds.
-         */
-        public int getSeconds()
-        {
-            return seconds;
-        }
-
-        /**
-         * The timeout as a string.<br>
-         * Examples:    "60"  "300"   etc
-         *
-         * @return
-         *      Seconds as a string.
-         */
-        @Override
-        public String toString()
-        {
-            return "" + seconds;
-        }
+        return updatable.getRequiredMFALevelField().setValue(level).update();
     }
 }

@@ -140,7 +140,7 @@ public class EntityBuilder
                 .setSplashId(guild.isNull("splash") ? null : guild.getString("splash"))
                 .setRegion(Region.fromKey(guild.getString("region")))
                 .setName(guild.getString("name"))
-                .setAfkTimeout(guild.getInt("afk_timeout"))
+                .setAfkTimeout(Guild.Timeout.fromKey(guild.getInt("afk_timeout")))
                 .setVerificationLevel(Guild.VerificationLevel.fromKey(guild.getInt("verification_level")))
                 .setDefaultNotificationLevel(Guild.NotificationLevel.fromKey(guild.getInt("default_message_notifications")))
                 .setRequiredMFALevel(Guild.MFALevel.fromKey(guild.getInt("mfa_level")));
