@@ -476,8 +476,8 @@ public class EntityBuilder
             .setGuildDeafened(memberJson.getBoolean("deaf"));
 
         member.setJoinDate(OffsetDateTime.parse(memberJson.getString("joined_at")))
-            .setNickname(memberJson.has("nickname") && !memberJson.isNull("nickname")
-                ? memberJson.getString("nickname")
+            .setNickname(memberJson.has("nick") && !memberJson.isNull("nick")
+                ? memberJson.getString("nick")
                 : null);
 
         JSONArray rolesJson = memberJson.getJSONArray("roles");
