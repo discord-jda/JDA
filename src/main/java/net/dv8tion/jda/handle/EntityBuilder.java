@@ -139,10 +139,10 @@ public class EntityBuilder
                 JSONObject gameJson = !presence.isNull("game") ? presence.getJSONObject("game") : null;
                 if (gameJson != null && !gameJson.isNull("name"))
                 {
-                    String gameName = gameJson.getString("name");
+                    String gameName = gameJson.get("name").toString(); // Thanks discord :)
                     String url = gameJson.isNull("url")
                             ? null
-                            : gameJson.getString("url");
+                            : gameJson.get("url").toString(); // Thanks discord :)
                     Game.GameType gameType;
                     try
                     {
