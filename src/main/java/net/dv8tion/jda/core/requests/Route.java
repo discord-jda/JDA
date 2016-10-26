@@ -108,7 +108,7 @@ public class Route
 
         //Bot only
         public static final Route GET_MESSAGE =     new Route(GET, "channels/{channel_id}/messages/{message_id}", "channel_id");
-        public static final Route DELETE_MESSAGES = new Route(PUT, "channels/{channel_id}/messages/bulk_delete",  "channel_id");
+        public static final Route DELETE_MESSAGES = new Route(POST, "channels/{channel_id}/messages/bulk_delete",  "channel_id");
     }
 
     public static class Invites
