@@ -24,10 +24,10 @@ import java.util.function.Supplier;
 
 public abstract class Field<T, M>
 {
-    private final M manager;
-    private final Supplier<T> originalValue;
-    private T value;
-    private boolean set;
+    protected final M manager;
+    protected final Supplier<T> originalValue;
+    protected T value;
+    protected boolean set;
 
 
     public Field(M manager, Supplier<T> originalValue)

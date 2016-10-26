@@ -17,6 +17,8 @@ package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.managers.RoleManager;
+import net.dv8tion.jda.core.managers.RoleManagerUpdatable;
 
 import java.awt.*;
 import java.util.Collection;
@@ -160,14 +162,16 @@ public interface Role extends ISnowflake, IMentionable, Comparable<Role>
      */
     Guild getGuild();
 
-//    /**
-//     * Returns the {@link net.dv8tion.jda.managers.RoleManager RoleManager} for this Role.
-//     * In the RoleManager, you can modify all its values.
-//     *
-//     * @return
-//     *      The RoleManager of this Role
-//     */
-//    RoleManager getManager();
+    /**
+     * Returns the {@link net.dv8tion.jda.core.managers.RoleManager RoleManager} for this Role.
+     * In the RoleManager, you can modify all its values.
+     *
+     * @return
+     *      The RoleManager of this Role
+     */
+    RoleManager getManager();
+
+    RoleManagerUpdatable getManagerUpdatable();
 
     /**
      * Returns the {@link net.dv8tion.jda.core.JDA JDA} instance of this Role
