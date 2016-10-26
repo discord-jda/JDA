@@ -511,10 +511,10 @@ public class EntityBuilder
 
         if (gameJson != null && !gameJson.isNull("name"))
         {
-            String gameName = gameJson.getString("name");
+            String gameName = gameJson.get("name").toString();
             String url = gameJson.isNull("url")
                     ? null
-                    : gameJson.getString("url");
+                    : gameJson.get("url").toString();
 
             Game.GameType gameType;
             try
