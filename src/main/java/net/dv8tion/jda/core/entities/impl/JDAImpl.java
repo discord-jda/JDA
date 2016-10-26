@@ -483,15 +483,17 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public void addEventListener(Object listener)
+    public void addEventListener(Object... listeners)
     {
-        eventManager.register(listener);
+        for (Object listener: listeners)
+            eventManager.register(listener);
     }
 
     @Override
-    public void removeEventListener(Object listener)
+    public void removeEventListener(Object... listeners)
     {
-        eventManager.unregister(listener);
+        for (Object listener: listeners)
+            eventManager.unregister(listener);
     }
 
     @Override

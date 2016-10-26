@@ -113,18 +113,18 @@ public interface JDA
      * Note: when using the {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventListener} (default),
      * given listener <b>must</b> be instance of {@link net.dv8tion.jda.core.hooks.EventListener EventListener}!
      *
-     * @param listener
+     * @param listeners
      *          The listener
      */
-    void addEventListener(Object listener);
+    void addEventListener(Object... listeners);
 
     /**
      * Removes the provided Object from the event-listeners and no longer uses it to handle events.
      *
-     * @param listener
+     * @param listeners
      *          The listener to be removed.
      */
-    void removeEventListener(Object listener);
+    void removeEventListener(Object... listeners);
 
     /**
      * Returns an unmodifiable List of Objects that have been registered as EventListeners.

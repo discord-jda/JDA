@@ -24,7 +24,7 @@ import net.dv8tion.jda.core.events.Event;
  * <br><b>Examples: </b><br>
  * <code>
  *     JDA jda = new {@link net.dv8tion.jda.core.JDABuilder JDABuilder}(AccountType.BOT).{@link net.dv8tion.jda.core.JDABuilder#addListener(Object) addListener(listener)}.buildBlocking();<br>
- *     {@link net.dv8tion.jda.core.JDA#addEventListener(Object) jda.addEventListener(listener)};
+ *     {@link net.dv8tion.jda.core.JDA#addEventListener(Object...) jda.addEventListener(listener)};
  * </code>
  * @see net.dv8tion.jda.core.hooks.ListenerAdapter
  */
