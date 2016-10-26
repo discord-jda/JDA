@@ -92,7 +92,8 @@ public class UserImpl implements User
     public RestAction<PrivateChannel> openPrivateChannel()
     {
         if (privateChannel != null)
-            throw new IllegalStateException("A private channel already exists for this User!");
+            return new RestAction.EmptyRestAction<PrivateChannel>(privateChannel);
+
         if (fake)
             throw new IllegalStateException("Cannot open a PrivateChannel with a Fake user.");
 
