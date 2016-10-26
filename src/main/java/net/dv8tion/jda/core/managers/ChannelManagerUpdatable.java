@@ -105,9 +105,15 @@ public class ChannelManagerUpdatable
     public void reset()
     {
         this.name.reset();
-        this.topic.reset();
-        this.bitrate.reset();
-        this.userLimit.reset();
+        if (channel instanceof TextChannel)
+        {
+            this.topic.reset();
+        }
+        else
+        {
+            this.bitrate.reset();
+            this.userLimit.reset();
+        }
     }
 
     /**
