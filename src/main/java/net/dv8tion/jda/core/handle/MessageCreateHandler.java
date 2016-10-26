@@ -60,7 +60,7 @@ public class MessageCreateHandler extends SocketHandler
         Message message;
         try
         {
-            message = EntityBuilder.get(api).createMessage(content);
+            message = EntityBuilder.get(api).createMessage(content, true);
         }
         catch (IllegalArgumentException e)
         {

@@ -47,21 +47,21 @@ public class ChannelManager
 
     public RestAction<Void> setName(String name)
     {
-        return updatable.setName(name).update();
+        return updatable.getNameField().setValue(name).update();
     }
 
     public RestAction<Void> setTopic(String topic)
     {
-        return updatable.setTopic(topic).update();
+        return updatable.getTopicField().setValue(topic).update();
     }
 
     public RestAction<Void> setUserLimit(int userLimit)
     {
-        return updatable.setUserLimit(userLimit).update();
+        return updatable.getUserLimitField().setValue(userLimit).update();
     }
 
     public RestAction<Void> setBitrate(int bitrate)
     {
-        return updatable.setBitrate(bitrate).update();
+        return updatable.getBitrateField().setValue(bitrate).update();
     }
 }

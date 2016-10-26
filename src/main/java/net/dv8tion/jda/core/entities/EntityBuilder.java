@@ -141,7 +141,7 @@ public class EntityBuilder
                 .setSplashId(guild.isNull("splash") ? null : guild.getString("splash"))
                 .setRegion(Region.fromKey(guild.getString("region")))
                 .setName(guild.getString("name"))
-                .setAfkTimeout(guild.getInt("afk_timeout"))
+                .setAfkTimeout(Guild.Timeout.fromKey(guild.getInt("afk_timeout")))
                 .setVerificationLevel(Guild.VerificationLevel.fromKey(guild.getInt("verification_level")))
                 .setDefaultNotificationLevel(Guild.NotificationLevel.fromKey(guild.getInt("default_message_notifications")))
                 .setRequiredMFALevel(Guild.MFALevel.fromKey(guild.getInt("mfa_level")));
@@ -512,10 +512,10 @@ public class EntityBuilder
 
         if (gameJson != null && !gameJson.isNull("name"))
         {
-            String gameName = gameJson.getString("name");
+            String gameName = gameJson.get("name").toString();
             String url = gameJson.isNull("url")
                     ? null
-                    : gameJson.getString("url");
+                    : gameJson.get("url").toString();
 
             Game.GameType gameType;
             try
@@ -632,7 +632,8 @@ public class EntityBuilder
                 .setMentionable(roleJson.has("mentionable") && roleJson.getBoolean("mentionable"));
     }
 
-    public Message createMessage(JSONObject jsonObject)
+    public Message createMessage(JSONObject jsonObject) { return createMessage(jsonObject, false); }
+    public Message createMessage(JSONObject jsonObject, boolean exceptionOnMissingUser)
     {
         String id = jsonObject.getString("id");
         String content = jsonObject.getString("content");
@@ -671,7 +672,12 @@ public class EntityBuilder
             if (user == null && fromWebhook)
                 user = (UserImpl) createFakeUser(author, false);
             if (user == null)
-                throw new IllegalArgumentException(MISSING_USER);
+            {
+                if (exceptionOnMissingUser)
+                    throw new IllegalArgumentException(MISSING_USER);   //Specifically for MESSAGE_CREATE
+                else
+                    user = (UserImpl) createFakeUser(author, false);  //Any message creation that isn't MESSAGE_CREATE
+            }
             message.setAuthor(user);
 
             //If the message was sent by a cached fake user, lets update it.
