@@ -34,6 +34,7 @@ import net.dv8tion.jda.core.requests.GuildLock;
 import net.dv8tion.jda.core.requests.WebSocketClient;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.awt.*;
@@ -774,17 +775,18 @@ public class EntityBuilder
 
     public MessageEmbed createMessageEmbed(JSONObject messageEmbed)
     {
+        if (messageEmbed.isNull("type"))
+            throw new JSONException("Encountered embed object with missing/null type field for Json: " + messageEmbed);
+        EmbedType type = EmbedType.fromKey(messageEmbed.getString("type"));
+       /* if (type == EmbedType.UNKNOWN)
+            throw new JSONException("Discord provided us an unknown embed type.  Json: " + messageEmbed);*/
         MessageEmbedImpl embed = new MessageEmbedImpl()
-                .setUrl(messageEmbed.getString("url"))
+                .setType(type)
+                .setUrl(messageEmbed.isNull("url") ? null : messageEmbed.getString("url"))
                 .setTitle(messageEmbed.isNull("title") ? null : messageEmbed.getString("title"))
                 .setDescription(messageEmbed.isNull("description") ? null : messageEmbed.getString("description"))
                 .setColor(messageEmbed.isNull("color") || messageEmbed.getInt("color") == 0 ? null : new Color(messageEmbed.getInt("color")))
                 .setTimestamp(messageEmbed.isNull("timestamp") ? null : OffsetDateTime.parse(messageEmbed.getString("timestamp")));
-
-        EmbedType type = EmbedType.fromKey(messageEmbed.getString("type"));
-//        if (type.equals(EmbedType.UNKNOWN))
-//            throw new IllegalArgumentException("Discord provided us an unknown embed type.  Json: " + messageEmbed);
-        embed.setType(type);
 
         if (messageEmbed.has("thumbnail"))
         {
@@ -848,7 +850,7 @@ public class EntityBuilder
                 fields.add(new Field(
                         fieldJson.isNull("name") ? null : fieldJson.getString("name"),
                         fieldJson.isNull("value") ? null : fieldJson.getString("value"),
-                        fieldJson.isNull("inline") ? false : fieldJson.getBoolean("inline")));
+                        !fieldJson.isNull("inline") && fieldJson.getBoolean("inline")));
             }
             embed.setFields(fields);
         }
