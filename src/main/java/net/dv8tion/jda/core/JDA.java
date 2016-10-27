@@ -106,7 +106,7 @@ public interface JDA
     void setEventManager(IEventManager manager);
 
     /**
-     * Adds an Object to the event-listeners that will be used to handle events.
+     * Adds all provided listeners to the event-listeners that will be used to handle events.
      * This uses the {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventListener} by default.
      * To switch to the {@link net.dv8tion.jda.core.hooks.AnnotatedEventManager AnnotatedEventManager}, use {@link #setEventManager(IEventManager)}.
      *
@@ -119,7 +119,7 @@ public interface JDA
     void addEventListener(Object... listeners);
 
     /**
-     * Removes the provided Object from the event-listeners and no longer uses it to handle events.
+     * Removes all provided listeners from the event-listeners and no longer uses it to handle events.
      *
      * @param listeners
      *          The listener to be removed.

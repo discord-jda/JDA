@@ -23,8 +23,8 @@ import net.dv8tion.jda.core.events.Event;
  * or the {@link net.dv8tion.jda.core.JDABuilder JDABuilder}.<br>
  * <br><b>Examples: </b><br>
  * <code>
- *     JDA jda = new {@link net.dv8tion.jda.core.JDABuilder JDABuilder}(AccountType.BOT).{@link net.dv8tion.jda.core.JDABuilder#addListener(Object) addListener(listener)}.buildBlocking();<br>
- *     {@link net.dv8tion.jda.core.JDA#addEventListener(Object...) jda.addEventListener(listener)};
+ *     JDA jda = new {@link net.dv8tion.jda.core.JDABuilder JDABuilder}(AccountType.BOT).{@link net.dv8tion.jda.core.JDABuilder#addListener(Object...) addListener(listeners)}.buildBlocking();<br>
+ *     {@link net.dv8tion.jda.core.JDA#addEventListener(Object...) jda.addEventListener(listeners)};
  * </code>
  * @see net.dv8tion.jda.core.hooks.ListenerAdapter
  */

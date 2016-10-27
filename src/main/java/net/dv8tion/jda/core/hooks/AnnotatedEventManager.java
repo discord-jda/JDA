@@ -62,13 +62,19 @@ public class AnnotatedEventManager implements IEventManager
             Map<Object, List<Method>> listeners = methods.get(eventClass);
             if (listeners != null)
             {
-                listeners.entrySet().forEach(e -> e.getValue().forEach(method -> {
-                    try {
+                listeners.entrySet().forEach(e -> e.getValue().forEach(method ->
+                {
+                    try
+                    {
                         method.setAccessible(true);
                         method.invoke(e.getKey(), event);
-                    } catch (IllegalAccessException | InvocationTargetException e1) {
+                    }
+                    catch (IllegalAccessException | InvocationTargetException e1)
+                    {
                         JDAImpl.LOG.log(e1);
-                    } catch (Throwable throwable) {
+                    }
+                    catch (Throwable throwable)
+                    {
                         JDAImpl.LOG.fatal("One of the EventListeners had an uncaught exception");
                         JDAImpl.LOG.log(throwable);
                     }
@@ -87,7 +93,8 @@ public class AnnotatedEventManager implements IEventManager
             boolean isClass = listener instanceof Class;
             Class<?> c = isClass ? (Class) listener : listener.getClass();
             Method[] allMethods = c.getDeclaredMethods();
-            for (Method m : allMethods) {
+            for (Method m : allMethods)
+            {
                 if (!m.isAnnotationPresent(SubscribeEvent.class) || (isClass && !Modifier.isStatic(m.getModifiers())))
                 {
                     continue;
@@ -101,9 +108,12 @@ public class AnnotatedEventManager implements IEventManager
                     {
                         methods.put(eventClass, new HashMap<>());
                     }
-                    if (!methods.get(eventClass).containsKey(listener)) {
+
+                    if (!methods.get(eventClass).containsKey(listener))
+                    {
                         methods.get(eventClass).put(listener, new ArrayList<>());
                     }
+
                     methods.get(eventClass).get(listener).add(m);
                 }
             }

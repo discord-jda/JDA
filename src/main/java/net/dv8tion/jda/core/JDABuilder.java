@@ -24,6 +24,7 @@ import net.dv8tion.jda.core.hooks.IEventManager;
 import org.apache.http.HttpHost;
 
 import javax.security.auth.login.LoginException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -229,7 +230,7 @@ public class JDABuilder
      */
     public JDABuilder removeListener(Object... listeners)
     {
-        Collections.addAll(this.listeners, listeners);
+        this.listeners.removeAll(Arrays.asList(listeners));
         return this;
     }
 
