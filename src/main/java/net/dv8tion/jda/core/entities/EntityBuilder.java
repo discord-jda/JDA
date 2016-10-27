@@ -592,7 +592,9 @@ public class EntityBuilder
 
     public PrivateChannel createPrivateChannel(JSONObject privatechat)
     {
-        JSONObject recipient = privatechat.getJSONArray("recipients").getJSONObject(0);
+        JSONObject recipient = privatechat.has("recipients") ? 
+            privatechat.getJSONArray("recipients").getJSONObject(0) :
+            privatechat.getJSONObject("recipient");
         UserImpl user = ((UserImpl) api.getUserMap().get(recipient.getString("id")));
         if (user == null)
         {   //The API can give us private channels connected to Users that we can no longer communicate with.
