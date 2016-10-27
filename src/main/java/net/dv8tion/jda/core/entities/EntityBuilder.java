@@ -636,7 +636,7 @@ public class EntityBuilder
     public Message createMessage(JSONObject jsonObject, boolean exceptionOnMissingUser)
     {
         String id = jsonObject.getString("id");
-        String content = jsonObject.getString("content");
+        String content = !jsonObject.isNull("content") ? jsonObject.getString("content") : "";
         String channelId = jsonObject.getString("channel_id");
         JSONObject author = jsonObject.getJSONObject("author");
         String authorId = author.getString("id");
@@ -653,10 +653,10 @@ public class EntityBuilder
 
         MessageImpl message = new MessageImpl(id, chan, fromWebhook)
                 .setContent(content)
-                .setTime(OffsetDateTime.parse(jsonObject.getString("timestamp")))
-                .setMentionsEveryone(jsonObject.getBoolean("mention_everyone"))
-                .setTTS(jsonObject.getBoolean("tts"))
-                .setPinned(jsonObject.getBoolean("pinned"));
+                .setTime(!jsonObject.isNull("timestamp") ? OffsetDateTime.parse(jsonObject.getString("timestamp")) : OffsetDateTime.now())
+                .setMentionsEveryone(!jsonObject.isNull("mention_everyone") && jsonObject.getBoolean("mention_everyone"))
+                .setTTS(!jsonObject.isNull("tts") && jsonObject.getBoolean("tts"))
+                .setPinned(!jsonObject.isNull("pinned") && jsonObject.getBoolean("pinned"));
         if (chan instanceof PrivateChannel)
         {
             if (StringUtils.equals(authorId, api.getSelfInfo().getId()))
@@ -703,20 +703,23 @@ public class EntityBuilder
         }
 
         List<Message.Attachment> attachments = new LinkedList<>();
-        JSONArray jsonAttachments = jsonObject.getJSONArray("attachments");
-        for (int i = 0; i < jsonAttachments.length(); i++)
+        if (!jsonObject.isNull("attachments"))
         {
-            JSONObject jsonAttachment = jsonAttachments.getJSONObject(i);
-            attachments.add(new Message.Attachment(
-                    jsonAttachment.getString("id"),
-                    jsonAttachment.getString("url"),
-                    jsonAttachment.getString("proxy_url"),
-                    jsonAttachment.getString("filename"),
-                    jsonAttachment.getInt("size"),
-                    jsonAttachment.has("height") ? jsonAttachment.getInt("height") : 0,
-                    jsonAttachment.has("width") ? jsonAttachment.getInt("width") : 0,
-                    api
-            ));
+            JSONArray jsonAttachments = jsonObject.getJSONArray("attachments");
+            for (int i = 0; i < jsonAttachments.length(); i++)
+            {
+                JSONObject jsonAttachment = jsonAttachments.getJSONObject(i);
+                attachments.add(new Message.Attachment(
+                        jsonAttachment.getString("id"),
+                        jsonAttachment.getString("url"),
+                        jsonAttachment.getString("proxy_url"),
+                        jsonAttachment.getString("filename"),
+                        jsonAttachment.getInt("size"),
+                        jsonAttachment.has("height") ? jsonAttachment.getInt("height") : 0,
+                        jsonAttachment.has("width") ? jsonAttachment.getInt("width") : 0,
+                        api
+                ));
+            }
         }
         message.setAttachments(attachments);
 
@@ -735,30 +738,37 @@ public class EntityBuilder
         {
             TextChannel textChannel = message.getTextChannel();
             TreeMap<Integer, User> mentionedUsers = new TreeMap<>();
-            JSONArray mentions = jsonObject.getJSONArray("mentions");
-            for (int i = 0; i < mentions.length(); i++)
+            if (!jsonObject.isNull("mentions"))
             {
-                JSONObject mention = mentions.getJSONObject(i);
-                User u = api.getUserMap().get(mention.getString("id"));
-                if (u != null)
+                JSONArray mentions = jsonObject.getJSONArray("mentions");
+                for (int i = 0; i < mentions.length(); i++)
                 {
-                    //We do this to properly order the mentions. The array given by discord is out of order sometimes.
-                    int index = content.indexOf("<@" + mention.getString("id") + ">");
-                    mentionedUsers.put(index, u);
+                    JSONObject mention = mentions.getJSONObject(i);
+                    User u = api.getUserMap().get(mention.getString("id"));
+                    if (u != null)
+                    {
+                        //We do this to properly order the mentions. The array given by discord is out of order sometimes.
+
+                        int index = content.indexOf("<@" + mention.getString("id") + ">");
+                        mentionedUsers.put(index, u);
+                    }
                 }
             }
             message.setMentionedUsers(new LinkedList<User>(mentionedUsers.values()));
 
             TreeMap<Integer, Role> mentionedRoles = new TreeMap<>();
-            JSONArray roleMentions = jsonObject.getJSONArray("mention_roles");
-            for (int i = 0; i < roleMentions.length(); i++)
+            if (!jsonObject.isNull("mention_roles"))
             {
-                String roleId = roleMentions.getString(i);
-                Role r = textChannel.getGuild().getRoleById(roleId);
-                if (r != null)
+                JSONArray roleMentions = jsonObject.getJSONArray("mention_roles");
+                for (int i = 0; i < roleMentions.length(); i++)
                 {
-                    int index = content.indexOf("<@&" + roleId + ">");
-                    mentionedRoles.put(index, r);
+                    String roleId = roleMentions.getString(i);
+                    Role r = textChannel.getGuild().getRoleById(roleId);
+                    if (r != null)
+                    {
+                        int index = content.indexOf("<@&" + roleId + ">");
+                        mentionedRoles.put(index, r);
+                    }
                 }
             }
             message.setMentionedRoles(new LinkedList<Role>(mentionedRoles.values()));
