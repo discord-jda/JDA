@@ -25,9 +25,9 @@ import java.util.List;
 
 public class RoleUpdatePermissionsEvent extends GenericRoleUpdateEvent
 {
-    private final int oldPermissionsRaw;
+    private final long oldPermissionsRaw;
 
-    public RoleUpdatePermissionsEvent(JDA api, long responseNumber, Role role, int oldPermissionsRaw)
+    public RoleUpdatePermissionsEvent(JDA api, long responseNumber, Role role, long oldPermissionsRaw)
     {
         super(api, responseNumber, role);
         this.oldPermissionsRaw = oldPermissionsRaw;
@@ -39,7 +39,7 @@ public class RoleUpdatePermissionsEvent extends GenericRoleUpdateEvent
                 Permission.getPermissions(oldPermissionsRaw));
     }
 
-    public int getOldPermissionsRaw()
+    public long getOldPermissionsRaw()
     {
         return oldPermissionsRaw;
     }

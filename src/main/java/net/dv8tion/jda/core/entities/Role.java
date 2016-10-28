@@ -17,6 +17,8 @@ package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.managers.RoleManager;
+import net.dv8tion.jda.core.managers.RoleManagerUpdatable;
 
 import java.awt.*;
 import java.util.Collection;
@@ -82,13 +84,13 @@ public interface Role extends ISnowflake, IMentionable, Comparable<Role>
     boolean isMentionable();
 
     /**
-     * The <code>int</code> representation of the literal permissions that this {@link net.dv8tion.jda.core.entities.Role Role} has.<br>
+     * The <code>long</code> representation of the literal permissions that this {@link net.dv8tion.jda.core.entities.Role Role} has.<br>
      * <b>NOTE:</b> these do not necessarily represent the permissions this role will have in a {@link net.dv8tion.jda.core.entities.Channel Channel}.
      *
      * @return
-     *      Never-negative int containing offset permissions of this role.
+     *      Never-negative long containing offset permissions of this role.
      */
-    int getPermissionsRaw();
+    long getPermissionsRaw();
 
     /**
      * A list of the literal {@link net.dv8tion.jda.core.Permission Permissions} that this {@link net.dv8tion.jda.core.entities.Role Role} has.<br>
@@ -160,14 +162,16 @@ public interface Role extends ISnowflake, IMentionable, Comparable<Role>
      */
     Guild getGuild();
 
-//    /**
-//     * Returns the {@link net.dv8tion.jda.managers.RoleManager RoleManager} for this Role.
-//     * In the RoleManager, you can modify all its values.
-//     *
-//     * @return
-//     *      The RoleManager of this Role
-//     */
-//    RoleManager getManager();
+    /**
+     * Returns the {@link net.dv8tion.jda.core.managers.RoleManager RoleManager} for this Role.
+     * In the RoleManager, you can modify all its values.
+     *
+     * @return
+     *      The RoleManager of this Role
+     */
+    RoleManager getManager();
+
+    RoleManagerUpdatable getManagerUpdatable();
 
     /**
      * Returns the {@link net.dv8tion.jda.core.JDA JDA} instance of this Role

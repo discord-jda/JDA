@@ -872,6 +872,186 @@ public class GuildController
         };
     }
 
+    /**
+     * Creates a new {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} in this Guild.
+     * For this to be successful, the logged in account has to have the
+     * {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission
+     *
+     * @param name
+     *      the name of the TextChannel to create
+     * @return
+     *      {@link net.dv8tion.jda.core.requests.RestAction RestAction} - <br>
+     *      &nbsp;&nbsp;&nbsp;&nbsp;<b>Type</b>: {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}<br>
+     *      &nbsp;&nbsp;&nbsp;&nbsp;<b>Value</b>: The newly created {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *      If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL} permission.
+     * @throws java.lang.IllegalArgumentException
+     *      If the provided name is less than 2 characters or greater than 100 characters in length
+     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
+     */
+    public RestAction<TextChannel> createTextChannel(String name)
+    {
+        checkAvailable();
+        checkPermission(Permission.MANAGE_CHANNEL);
+        checkNull(name, "name");
+
+        if (name.length() < 2 || name.length() > 100)
+            throw new IllegalArgumentException("Provided name must be 2 - 100 characters in length");
+
+        JSONObject body = new JSONObject()
+                .put("type", "text")
+                .put("name", name);
+        Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(guild.getId());
+        return new RestAction<TextChannel>(getJDA(), route, body)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (!response.isOk())
+                    request.onFailure(response);
+
+                JSONObject chanJson = response.getObject();
+                TextChannel tc = EntityBuilder.get(api).createTextChannel(chanJson, guild.getId());
+
+                request.onSuccess(tc);
+            }
+        };
+    }
+
+    /**
+     * Creates a new {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} in this Guild.
+     * For this to be successful, the logged in account has to have the
+     * {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission.
+     *
+     * @param name
+     *      the name of the VoiceChannel to create
+     * @return
+     *      {@link net.dv8tion.jda.core.requests.RestAction RestAction} - <br>
+     *      &nbsp;&nbsp;&nbsp;&nbsp;<b>Type</b>: {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}<br>
+     *      &nbsp;&nbsp;&nbsp;&nbsp;<b>Value</b>: The newly created {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *      If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL} permission.
+     * @throws java.lang.IllegalArgumentException
+     *      If the provided name is less than 2 characters or greater than 100 characters in length
+     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
+     */
+    public RestAction<VoiceChannel> createVoiceChannel(String name)
+    {
+        checkAvailable();
+        checkPermission(Permission.MANAGE_CHANNEL);
+        checkNull(name, "name");
+
+        if (name.length() < 2 || name.length() > 100)
+            throw new IllegalArgumentException("Provided name must be 2 to 100 characters in length");
+
+        JSONObject body = new JSONObject()
+                .put("type", "voice")
+                .put("name", name);
+        Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(guild.getId());
+        return new RestAction<VoiceChannel>(getJDA(), route, body)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (!response.isOk())
+                    request.onFailure(response);
+
+                JSONObject chanJson = response.getObject();
+                VoiceChannel vc = EntityBuilder.get(api).createVoiceChannel(chanJson, guild.getId());
+
+                request.onSuccess(vc);
+            }
+        };
+    }
+
+    /**
+     * Creates a new {@link net.dv8tion.jda.core.entities.Role Role} in this Guild.
+     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES Permission}
+     *
+     * @return
+     *      {@link net.dv8tion.jda.core.requests.RestAction RestAction} - <br>
+     *      &nbsp;&nbsp;&nbsp;&nbsp;<b>Type</b>: {@link net.dv8tion.jda.core.entities.Role Role}<br>
+     *      &nbsp;&nbsp;&nbsp;&nbsp;<b>Value</b>: The newly created {@link net.dv8tion.jda.core.entities.Role Role}
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *      If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES} permission.
+     * @throws java.lang.IllegalArgumentException
+     *      If the provided name is less than 2 characters or greater than 100 characters in length
+     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
+     */
+    RestAction<Role> createRole()
+    {
+        checkAvailable();
+        checkPermission(Permission.MANAGE_ROLES);
+
+        Route.CompiledRoute route = Route.Roles.CREATE_ROLE.compile(guild.getId());
+        return new RestAction<Role>(getJDA(), route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (!response.isOk())
+                    request.onFailure(response);
+
+                JSONObject roleJson = response.getObject();
+                Role role = EntityBuilder.get(api).createRole(roleJson, guild.getId());
+
+                request.onSuccess(role);
+            }
+        };
+    }
+
+    /**
+     * Creates a new {@link net.dv8tion.jda.core.entities.Role Role} in this {@link net.dv8tion.jda.core.entities.Guild Guild} with the same settings as the given {@link net.dv8tion.jda.core.entities.Role Role}.
+     * It will be placed at the bottom (just over the @everyone role) to avoid permission hierarchy conflicts.
+     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES Permission}
+     * and all {@link net.dv8tion.jda.core.Permission Permissions} the given {@link net.dv8tion.jda.core.entities.Role Role} has.
+     *
+     * @param role
+     *      The {@link net.dv8tion.jda.core.entities.Role Role} that should be copied
+     * @return
+     *      {@link net.dv8tion.jda.core.requests.RestAction RestAction} - <br>
+     *      &nbsp;&nbsp;&nbsp;&nbsp;<b>Type</b>: {@link net.dv8tion.jda.core.entities.Role Role}<br>
+     *      &nbsp;&nbsp;&nbsp;&nbsp;<b>Value</b>: The newly created {@link net.dv8tion.jda.core.entities.Role Role} after it has been created and had settings from the provided role copied to it.
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *      If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES} permission and every Permission the provided Role has.
+     * @throws java.lang.IllegalArgumentException
+     *      If the provided name is less than 2 characters or greater than 100 characters in length
+     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
+     */
+    RestAction<Role> createCopyOfRole(Role role)
+    {
+        checkAvailable();
+        checkPermission(Permission.MANAGE_ROLES);
+        role.getPermissions().forEach(perm -> checkPermission(perm));
+
+        Route.CompiledRoute route = Route.Roles.CREATE_ROLE.compile(guild.getId());
+        return new RestAction<Role>(getJDA(), route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (!response.isOk())
+                    request.onFailure(response);
+
+                JSONObject roleJson = response.getObject();
+                Role r = EntityBuilder.get(api).createRole(roleJson, guild.getId());
+
+                RoleManagerUpdatable mng = r.getManagerUpdatable()
+                        .getNameField().setValue(role.getName())
+                        .getColorField().setValue(role.getColor())
+                        .getMentionableField().setValue(role.isMentionable())
+                        .getHoistedField().setValue(role.isHoisted())
+                        .getPermissionField().setValue(role.getPermissionsRaw());
+
+                mng.update().queue(request.getOnSuccess(), request.getOnFailure());
+            }
+        };
+    }
+
     protected void checkAvailable()
     {
         if (!guild.isAvailable())

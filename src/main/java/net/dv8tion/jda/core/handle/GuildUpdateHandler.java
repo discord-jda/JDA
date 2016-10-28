@@ -53,7 +53,7 @@ public class GuildUpdateHandler extends SocketHandler
         Guild.VerificationLevel verificationLevel = Guild.VerificationLevel.fromKey(content.getInt("verification_level"));
         Guild.NotificationLevel notificationLevel = Guild.NotificationLevel.fromKey(content.getInt("default_message_notifications"));
         Guild.MFALevel mfaLevel = Guild.MFALevel.fromKey(content.getInt("mfa_level"));
-        int afkTimeout = content.getInt("afk_timeout");
+        Guild.Timeout afkTimeout = Guild.Timeout.fromKey(content.getInt("afk_timeout"));
         VoiceChannel afkChannel = !content.isNull("afk_channel_id")
                 ? guild.getVoiceChannelMap().get(content.getString("afk_channel_id"))
                 : null;
@@ -132,7 +132,7 @@ public class GuildUpdateHandler extends SocketHandler
         }
         if (!Objects.equals(afkTimeout, guild.getAfkTimeout()))
         {
-            int oldAfkTimeout = guild.getAfkTimeout();
+            Guild.Timeout oldAfkTimeout = guild.getAfkTimeout();
             guild.setAfkTimeout(afkTimeout);
             api.getEventManager().handle(
                     new GuildUpdateAfkTimeoutEvent(

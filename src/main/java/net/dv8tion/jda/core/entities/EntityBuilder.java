@@ -32,6 +32,7 @@ import net.dv8tion.jda.core.handle.GuildMembersChunkHandler;
 import net.dv8tion.jda.core.handle.ReadyHandler;
 import net.dv8tion.jda.core.requests.GuildLock;
 import net.dv8tion.jda.core.requests.WebSocketClient;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -139,7 +140,7 @@ public class EntityBuilder
                 .setSplashId(guild.isNull("splash") ? null : guild.getString("splash"))
                 .setRegion(Region.fromKey(guild.getString("region")))
                 .setName(guild.getString("name"))
-                .setAfkTimeout(guild.getInt("afk_timeout"))
+                .setAfkTimeout(Guild.Timeout.fromKey(guild.getInt("afk_timeout")))
                 .setVerificationLevel(Guild.VerificationLevel.fromKey(guild.getInt("verification_level")))
                 .setDefaultNotificationLevel(Guild.NotificationLevel.fromKey(guild.getInt("default_message_notifications")))
                 .setRequiredMFALevel(Guild.MFALevel.fromKey(guild.getInt("mfa_level")));
@@ -496,8 +497,8 @@ public class EntityBuilder
             .setGuildDeafened(memberJson.getBoolean("deaf"));
 
         member.setJoinDate(OffsetDateTime.parse(memberJson.getString("joined_at")))
-            .setNickname(memberJson.has("nickname") && !memberJson.isNull("nickname")
-                ? memberJson.getString("nickname")
+            .setNickname(memberJson.has("nick") && !memberJson.isNull("nick")
+                ? memberJson.getString("nick")
                 : null);
 
         JSONArray rolesJson = memberJson.getJSONArray("roles");
@@ -531,10 +532,10 @@ public class EntityBuilder
 
         if (gameJson != null && !gameJson.isNull("name"))
         {
-            String gameName = gameJson.getString("name");
+            String gameName = gameJson.get("name").toString();
             String url = gameJson.isNull("url")
                     ? null
-                    : gameJson.getString("url");
+                    : gameJson.get("url").toString();
 
             Game.GameType gameType;
             try
@@ -644,14 +645,15 @@ public class EntityBuilder
         }
         return role.setName(roleJson.getString("name"))
                 .setRawPosition(roleJson.getInt("position"))
-                .setRawPermissions(roleJson.getInt("permissions"))
+                .setRawPermissions(roleJson.getLong("permissions"))
                 .setManaged(roleJson.getBoolean("managed"))
                 .setHoisted(roleJson.getBoolean("hoist"))
                 .setColor(roleJson.getInt("color") != 0 ? new Color(roleJson.getInt("color")) : null)
                 .setMentionable(roleJson.has("mentionable") && roleJson.getBoolean("mentionable"));
     }
 
-    public Message createMessage(JSONObject jsonObject)
+    public Message createMessage(JSONObject jsonObject) { return createMessage(jsonObject, false); }
+    public Message createMessage(JSONObject jsonObject, boolean exceptionOnMissingUser)
     {
         String id = jsonObject.getString("id");
         String content = jsonObject.getString("content");
@@ -676,7 +678,12 @@ public class EntityBuilder
                 .setTTS(jsonObject.getBoolean("tts"))
                 .setPinned(jsonObject.getBoolean("pinned"));
         if (chan instanceof PrivateChannel)
-            message.setAuthor(((PrivateChannel) chan).getUser());
+        {
+            if (StringUtils.equals(authorId, api.getSelfInfo().getId()))
+                message.setAuthor(api.getSelfInfo());
+            else
+                message.setAuthor(((PrivateChannel) chan).getUser());
+        }
         else if (chan instanceof Group)
         {
             UserImpl user = (UserImpl) api.getUserMap().get(authorId);
@@ -685,7 +692,12 @@ public class EntityBuilder
             if (user == null && fromWebhook)
                 user = (UserImpl) createFakeUser(author, false);
             if (user == null)
-                throw new IllegalArgumentException(MISSING_USER);
+            {
+                if (exceptionOnMissingUser)
+                    throw new IllegalArgumentException(MISSING_USER);   //Specifically for MESSAGE_CREATE
+                else
+                    user = (UserImpl) createFakeUser(author, false);  //Any message creation that isn't MESSAGE_CREATE
+            }
             message.setAuthor(user);
 
             //If the message was sent by a cached fake user, lets update it.
@@ -884,8 +896,8 @@ public class EntityBuilder
     {
         PermissionOverrideImpl permOverride = null;
         String id = override.getString("id");
-        int allow = override.getInt("allow");
-        int deny = override.getInt("deny");
+        long allow = override.getLong("allow");
+        long deny = override.getLong("deny");
 
         switch (override.getString("type"))
         {

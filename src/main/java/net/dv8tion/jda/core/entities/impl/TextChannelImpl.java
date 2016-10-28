@@ -70,7 +70,7 @@ public class TextChannelImpl implements TextChannel
     public RestAction<Void> deleteMessages(Collection<Message> messages)
     {
         return deleteMessagesByIds(messages.stream()
-                .map(msg -> msg.toString())
+                .map(ISnowflake::getId)
                 .collect(Collectors.toList()));
     }
 

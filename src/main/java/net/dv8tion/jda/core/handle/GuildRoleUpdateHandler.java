@@ -67,7 +67,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
         String name = rolejson.getString("name");
         Color color = rolejson.getInt("color") != 0 ? new Color(rolejson.getInt("color")) : null;
         int position = rolejson.getInt("position");
-        int permissions = rolejson.getInt("permissions");
+        long permissions = rolejson.getLong("permissions");
         boolean hoisted = rolejson.getBoolean("hoist");
         boolean mentionable = rolejson.getBoolean("mentionable");
 
@@ -101,7 +101,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
         }
         if (!Objects.equals(permissions, role.getPermissionsRaw()))
         {
-            int oldPermissionsRaw = role.getPermissionsRaw();
+            long oldPermissionsRaw = role.getPermissionsRaw();
             role.setRawPermissions(permissions);
             api.getEventManager().handle(
                     new RoleUpdatePermissionsEvent(

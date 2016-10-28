@@ -28,31 +28,31 @@ import java.util.List;
 public interface PermissionOverride
 {
     /**
-     * This is the raw binary representation (as a base 10 int) of the permissions allowed by this override.<br>
-     * The integer relates to the offsets used by each {@link net.dv8tion.jda.core.Permission Permission}.
+     * This is the raw binary representation (as a base 10 long) of the permissions allowed by this override.<br>
+     * The long relates to the offsets used by each {@link net.dv8tion.jda.core.Permission Permission}.
      *
      * @return
-     *      Never-negative int containing the binary representation of the allowed permissions of this override.
+     *      Never-negative long containing the binary representation of the allowed permissions of this override.
      */
-    int getAllowedRaw();
+    long getAllowedRaw();
 
     /**
-     * This is the raw binary representation (as a base 10 int) of the permissions not affected by this override.<br>
-     * The integer relates to the offsets used by each {@link net.dv8tion.jda.core.Permission Permission}.
+     * This is the raw binary representation (as a base 10 long) of the permissions not affected by this override.<br>
+     * The long relates to the offsets used by each {@link net.dv8tion.jda.core.Permission Permission}.
      *
      * @return
-     *      Never-negative int containing the binary representation of the unaffected permissions of this override.
+     *      Never-negative long containing the binary representation of the unaffected permissions of this override.
      */
-    int getInheritRaw();
+    long getInheritRaw();
 
     /**
-     * This is the raw binary representation (as a base 10 int) of the permissions denied by this override.<br>
-     * The integer relates to the offsets used by each {@link net.dv8tion.jda.core.Permission Permission}.
+     * This is the raw binary representation (as a base 10 long) of the permissions denied by this override.<br>
+     * The long relates to the offsets used by each {@link net.dv8tion.jda.core.Permission Permission}.
      *
      * @return
-     *      Never-negative int containing the binary representation of the denied permissions of this override.
+     *      Never-negative long containing the binary representation of the denied permissions of this override.
      */
-    int getDeniedRaw();
+    long getDeniedRaw();
 
     /**
      * An unmodifiable list of all {@link net.dv8tion.jda.core.Permission Permissions} that are specifically allowed by this override.
@@ -90,7 +90,7 @@ public interface PermissionOverride
      * If this {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride} is an override dealing with
      * a {@link net.dv8tion.jda.core.entities.Member Member}, then this method will return the related {@link net.dv8tion.jda.core.entities.Member Member}.<br>
      * Otherwise, this method returns <code>null</code>.<br>
-     * Basically: if {@link net.dv8tion.jda.core.entities.PermissionOverride#isUserOverride()} returns <code>false</code>, this returns <code>null</code>.
+     * Basically: if {@link net.dv8tion.jda.core.entities.PermissionOverride#isMemberOverride()} returns <code>false</code>, this returns <code>null</code>.
      *
      * @return
      *      Possibly-null related {@link net.dv8tion.jda.core.entities.Member Member}.

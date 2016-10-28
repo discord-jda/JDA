@@ -75,7 +75,7 @@ public interface Guild extends ISnowflake
      * @return
      *      Positive int representing the timeout value.
      */
-    int getAfkTimeout();
+    Timeout getAfkTimeout();
 
     /**
      * The {@link net.dv8tion.jda.core.Region Region} that this {@link net.dv8tion.jda.core.entities.Guild Guild} exists in.<br>
@@ -117,21 +117,9 @@ public interface Guild extends ISnowflake
      */
     List<TextChannel> getTextChannels();
     List<TextChannel> getTextChannelsByName(String name, boolean ignoreCase);
-//
-//    /**
-//     * Creates a new {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} in this Guild.
-//     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.Permission#MANAGE_CHANNEL MANAGE_CHANNEL Permission}
-//     *
-//     * @param name
-//     *      the name of the TextChannel to create
-//     * @return
-//     *      the ChannelManager for the created TextChannel
-//     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
-//     *      if the guild is temporarily unavailable
-//     */
-//    ChannelManager createTextChannel(String name);
-//
+
     VoiceChannel getVoiceChannelById(String id);
+
     /**
      * The {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels} available on the {@link net.dv8tion.jda.core.entities.Guild Guild}.
      * The channels returned will be sorted according to their position.
@@ -140,20 +128,8 @@ public interface Guild extends ISnowflake
      *      An Immutable List of {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels}.
      */
     List<VoiceChannel> getVoiceChannels();
+
     List<VoiceChannel> getVoiceChannelsByName(String name, boolean ignoreCase);
-//
-//    /**
-//     * Creates a new {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} in this Guild.
-//     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.Permission#MANAGE_CHANNEL MANAGE_CHANNEL Permission}
-//     *
-//     * @param name
-//     *      the name of the VoiceChannel to create
-//     * @return
-//     *      the ChannelManager for the created VoiceChannel
-//     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
-//     *      if the guild is temporarily unavailable
-//     */
-//    ChannelManager createVoiceChannel(String name);
 
     /**
      * This returns the {@link net.dv8tion.jda.core.entities.Role Role} which has the same id as the one provided.<br>
@@ -199,7 +175,7 @@ public interface Guild extends ISnowflake
      * If there are no {@link net.dv8tion.jda.core.entities.Emote Emotes} with the provided name, then this returns an empty list.
      *
      * @param name
-     *          The name of the requested {@link net.dv8tion.jda.core.entities.Emotes Emotes}.
+     *          The name of the requested {@link net.dv8tion.jda.core.entities.Emote Emotes}.
      * @param ignoreCase
      *          Whether to ignore case or not.
      * @return
@@ -207,43 +183,6 @@ public interface Guild extends ISnowflake
      *      same name as the provided name.
      */
     List<Emote> getEmotesByName(String name, boolean ignoreCase);
-
-//
-//    /**
-//     * Creates a new {@link net.dv8tion.jda.core.entities.Role Role} in this Guild.
-//     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.Permission#MANAGE_ROLES MANAGE_ROLES Permission}
-//     *
-//     * @return
-//     *      the RoleManager for the created Role
-//     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
-//     *      if the guild is temporarily unavailable
-//     */
-//    RoleManager createRole();
-//
-//    /**
-//     * Creates a new {@link net.dv8tion.jda.core.entities.Role Role} in this {@link net.dv8tion.jda.core.entities.Guild Guild} with the same settings as the given {@link net.dv8tion.jda.core.entities.Role Role}.
-//     * It will be placed at the bottom (just over the @everyone role) to avoid permission hierarchy conflicts.
-//     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.Permission#MANAGE_ROLES MANAGE_ROLES Permission}
-//     * and all {@link net.dv8tion.jda.Permission Permissions} the given {@link net.dv8tion.jda.core.entities.Role Role} has.
-//     *
-//     * @param role
-//     *      The {@link net.dv8tion.jda.core.entities.Role Role} that should be copied
-//     * @return
-//     *      the RoleManager for the created Role
-//     * @throws net.dv8tion.jda.exceptions.GuildUnavailableException
-//     *      if the guild is temporarily unavailable
-//     * @throws net.dv8tion.jda.exceptions.PermissionException
-//     *      if the bot doesn't has {@link net.dv8tion.jda.Permission#MANAGE_ROLES MANAGE_ROLES Permission} and every Permission the given Role has
-//     */
-//    RoleManager createCopyOfRole(Role role);
-
-//
-//    /**
-//     * Provides the {@link net.dv8tion.jda.core.entities.Role Role} that determines the color for the provided {@link net.dv8tion.jda.core.entities.User User}
-//     *
-//     * If the {@link net.dv8tion.jda.core.entities.User User} has the default color, this returns the same as getPublicRole();
-//     */
-//    Role getColorDeterminantRoleForUser(User user);
 
     /**
      * The @everyone {@link net.dv8tion.jda.core.entities.Role Role} of this {@link net.dv8tion.jda.core.entities.Guild Guild}
@@ -359,6 +298,59 @@ public interface Guild extends ISnowflake
 //     *      An Immutable List of {@link net.dv8tion.jda.utils.InviteUtil.AdvancedInvite Invites} for this guild.
 //     */
 //    List<AdvancedInvite> getInvites();
+
+    /**
+     * Represents the idle time allowed until a user is moved to the
+     * AFK {@link net.dv8tion.jda.core.entities.VoiceChannel} if one is set.
+     */
+    public enum Timeout
+    {
+        SECONDS_60(60),
+        SECONDS_300(300),
+        SECONDS_900(900),
+        SECONDS_1800(1800),
+        SECONDS_3600(3600);
+
+        private final int seconds;
+        Timeout(int seconds)
+        {
+            this.seconds = seconds;
+        }
+
+        /**
+         * The amount of seconds represented by this {@link Timeout}.
+         *
+         * @return
+         *      An positive non-zero int representing the timeout amount in seconds.
+         */
+        public int getSeconds()
+        {
+            return seconds;
+        }
+
+        /**
+         * The timeout as a string.<br>
+         * Examples:    "60"  "300"   etc
+         *
+         * @return
+         *      Seconds as a string.
+         */
+        @Override
+        public String toString()
+        {
+            return "" + seconds;
+        }
+
+        public static Timeout fromKey(int seconds)
+        {
+            for (Timeout t : values())
+            {
+                if (t.getSeconds() == seconds)
+                    return t;
+            }
+            throw new IllegalArgumentException("Provided key was not recoginized. Seconds: " + seconds);
+        }
+    }
 
     /**
      * Represents the Verification-Level of the Guild.

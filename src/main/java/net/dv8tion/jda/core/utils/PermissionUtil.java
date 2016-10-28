@@ -278,7 +278,7 @@ public class PermissionUtil
     /**
      * Gets the <code>int</code> representation of the effective permissions allowed for this {@link net.dv8tion.jda.core.entities.Member Member}
      * in this {@link net.dv8tion.jda.core.entities.Guild Guild}. This can be used in conjunction with
-     * {@link net.dv8tion.jda.core.Permission#getPermissions(int) Permission.getPermissions(int)} to easily get a list of all
+     * {@link net.dv8tion.jda.core.Permission#getPermissions(long) Permission.getPermissions(int)} to easily get a list of all
      * {@link net.dv8tion.jda.core.Permission Permissions} that this member has in this {@link net.dv8tion.jda.core.entities.Guild Guild}.
      * <p>
      * <b>This only returns the Guild-level permissions!</b>
@@ -288,9 +288,9 @@ public class PermissionUtil
      * @param member
      *          The {@link net.dv8tion.jda.core.entities.Member Member} whose permissions are being checked.
      * @return
-     *      The <code>int</code> representation of the literal permissions that this {@link net.dv8tion.jda.core.entities.Member Member} has in this {@link net.dv8tion.jda.core.entities.Guild Guild}.
+     *      The <code>long</code> representation of the literal permissions that this {@link net.dv8tion.jda.core.entities.Member Member} has in this {@link net.dv8tion.jda.core.entities.Guild Guild}.
      */
-    public static int getEffectivePermission(Guild guild, Member member)
+    public static long getEffectivePermission(Guild guild, Member member)
     {
         checkNull(guild, "guild");
         checkNull(member, "member");
@@ -298,7 +298,7 @@ public class PermissionUtil
         if (!member.getGuild().equals(guild))
             throw new IllegalArgumentException("Provided member is not in the provided guild!");
         //Default to binary OR of all global permissions in this guild
-        int permission = guild.getPublicRole().getPermissionsRaw();
+        long permission = guild.getPublicRole().getPermissionsRaw();
         for (Role role : member.getRoles())
         {
             permission = permission | role.getPermissionsRaw();
@@ -309,7 +309,7 @@ public class PermissionUtil
     /**
      * Gets the <code>int</code> representation of the effective permissions allowed for this {@link net.dv8tion.jda.core.entities.Member Member}
      * in this {@link net.dv8tion.jda.core.entities.Channel Channel}. This can be used in conjunction with
-     * {@link net.dv8tion.jda.core.Permission#getPermissions(int) Permission.getPermissions(int)} to easily get a list of all
+     * {@link net.dv8tion.jda.core.Permission#getPermissions(long) Permission.getPermissions(int)} to easily get a list of all
      * {@link net.dv8tion.jda.core.Permission Permissions} that this member can use in this {@link net.dv8tion.jda.core.entities.Channel Channel}.<br>
      * This functions very similarly to how {@link net.dv8tion.jda.core.entities.Role#getPermissionsRaw() Role.getPermissionsRaw()}.
      *
@@ -318,9 +318,9 @@ public class PermissionUtil
      * @param member
      *          The {@link net.dv8tion.jda.core.entities.Member Member} whose permissions are being checked.
      * @return
-     *      The <code>int</code> representation of the literal permissions that this {@link net.dv8tion.jda.core.entities.Member Member} has in this {@link net.dv8tion.jda.core.entities.Channel Channel}.
+     *      The <code>long</code> representation of the literal permissions that this {@link net.dv8tion.jda.core.entities.Member Member} has in this {@link net.dv8tion.jda.core.entities.Channel Channel}.
      */
-    public static int getEffectivePermission(Channel channel, Member member)
+    public static long getEffectivePermission(Channel channel, Member member)
     {
         checkNull(channel, "channel");
         checkNull(member, "member");
@@ -352,13 +352,13 @@ public class PermissionUtil
         if (guild.getOwner().equals(member))
             return true;
 
-        int effectivePerms = getEffectivePermission(member, guild, roleOverrides, memberOverrides);
+        long effectivePerms = getEffectivePermission(member, guild, roleOverrides, memberOverrides);
         return ((effectivePerms & (1 << Permission.ADMINISTRATOR.getOffset())) | (effectivePerms & (1 << perm.getOffset()))) > 0;
     }
 
-    private static int getEffectivePermission(Member member, GuildImpl guild, Map<Role, PermissionOverride> roleOverrides, Map<Member, PermissionOverride> memberOverrides)
+    private static long getEffectivePermission(Member member, GuildImpl guild, Map<Role, PermissionOverride> roleOverrides, Map<Member, PermissionOverride> memberOverrides)
     {
-        int permission = getEffectivePermission(guild, member);
+        long permission = getEffectivePermission(guild, member);
 
         //override with channel-specific overrides of @everyone
         PermissionOverride override = roleOverrides.get(guild.getPublicRole());
@@ -368,8 +368,8 @@ public class PermissionUtil
         }
 
         //handle role-overrides of this member in this channel (allow > disallow)
-        int allow = -1;
-        int deny = -1;
+        long allow = -1;
+        long deny = -1;
         for (Role role : member.getRoles())
         {
             PermissionOverride po = roleOverrides.get(role);
@@ -403,7 +403,7 @@ public class PermissionUtil
         return permission;
     }
 
-    private static int apply(int permission, int allow, int deny)
+    private static long apply(long permission, long allow, long deny)
     {
         permission = permission | allow;    //Allow all the things that the cascade of roles allowed
         permission = permission & (~deny);  //Deny everything that the cascade of roles denied.

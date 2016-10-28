@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.managers.*;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 
@@ -35,12 +36,16 @@ public class RoleImpl implements Role
     private final String id;
     private final Guild guild;
 
+    private volatile RoleManager manager;
+    private volatile RoleManagerUpdatable managerUpdatable;
+    private Object mngLock = new Object();
+
     private String name;
     private Color color;
     private boolean managed;
     private boolean hoisted;
     private boolean mentionable;
-    private int rawPermissions;
+    private long rawPermissions;
     private int rawPosition;
 
     public RoleImpl(String id, Guild guild)
@@ -97,7 +102,7 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public int getPermissionsRaw()
+    public long getPermissionsRaw()
     {
         return rawPermissions;
     }
@@ -154,6 +159,38 @@ public class RoleImpl implements Role
     public Guild getGuild()
     {
         return guild;
+    }
+
+    @Override
+    public RoleManager getManager()
+    {
+        RoleManager mng = manager;
+        if (mng == null)
+        {
+            synchronized (mngLock)
+            {
+                mng = manager;
+                if (mng == null)
+                    mng = manager = new RoleManager(this);
+            }
+        }
+        return mng;
+    }
+
+    @Override
+    public RoleManagerUpdatable getManagerUpdatable()
+    {
+        RoleManagerUpdatable mng = managerUpdatable;
+        if (mng == null)
+        {
+            synchronized (mngLock)
+            {
+                mng = managerUpdatable;
+                if (mng == null)
+                    mng = managerUpdatable = new RoleManagerUpdatable(this);
+            }
+        }
+        return mng;
     }
 
     @Override
@@ -248,7 +285,7 @@ public class RoleImpl implements Role
         return this;
     }
 
-    public RoleImpl setRawPermissions(int rawPermissions)
+    public RoleImpl setRawPermissions(long rawPermissions)
     {
         this.rawPermissions = rawPermissions;
         return this;

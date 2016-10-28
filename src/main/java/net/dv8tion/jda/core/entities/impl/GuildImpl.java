@@ -65,7 +65,7 @@ public class GuildImpl implements Guild
     private VerificationLevel verificationLevel;
     private NotificationLevel defaultNotificationLevel;
     private MFALevel mfaLevel;
-    private int afkTimeout;
+    private Timeout afkTimeout;
     private boolean available;
     private boolean canSendVerification = false;
 
@@ -118,7 +118,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public int getAfkTimeout()
+    public Timeout getAfkTimeout()
     {
         return afkTimeout;
     }
@@ -547,7 +547,7 @@ public class GuildImpl implements Guild
         return this;
     }
 
-    public GuildImpl setAfkTimeout(int afkTimeout)
+    public GuildImpl setAfkTimeout(Timeout afkTimeout)
     {
         this.afkTimeout = afkTimeout;
         return this;
