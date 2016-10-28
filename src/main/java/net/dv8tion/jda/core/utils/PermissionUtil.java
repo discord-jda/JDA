@@ -274,7 +274,6 @@ public class PermissionUtil
         return true;
     }
 
-
     /**
      * Gets the <code>int</code> representation of the effective permissions allowed for this {@link net.dv8tion.jda.core.entities.Member Member}
      * in this {@link net.dv8tion.jda.core.entities.Guild Guild}. This can be used in conjunction with

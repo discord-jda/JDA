@@ -32,12 +32,9 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.PermissionUtil;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -61,6 +58,8 @@ public class EmoteManagerUpdatable
             throw new AccountTypeException(AccountType.CLIENT);
         if (emote.isFake())
             throw new IllegalStateException("The emote you are trying to update is not an actual emote we have access to (it is fake)!");
+        if (emote.isManaged())
+            throw new IllegalStateException("You cannot modify a managed emote!");
         this.emote = emote;
         setupFields();
     }

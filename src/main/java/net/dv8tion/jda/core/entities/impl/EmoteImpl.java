@@ -23,7 +23,6 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
@@ -151,6 +150,8 @@ public class EmoteImpl implements Emote
             throw new AccountTypeException(AccountType.CLIENT);
         if (isFake())
             throw new IllegalStateException("The emote you are trying to delete is not an actual emote we have access to (it is fake)!");
+        if (managed)
+            throw new IllegalStateException("You cannot delete a managed emote!");
         if (!PermissionUtil.checkPermission(guild, guild.getSelfMember(), Permission.MANAGE_EMOTES))
             throw new PermissionException(Permission.MANAGE_EMOTES);
         return new RestAction<Void>(getJDA(), Route.Emotes.DELETE_EMOTE.compile(getGuild().getId(), getId()), null)
