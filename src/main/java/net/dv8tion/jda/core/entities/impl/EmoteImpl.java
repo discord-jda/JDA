@@ -43,16 +43,15 @@ public class EmoteImpl implements Emote
 
     private final String id;
     private final Guild guild;
+    private final JDA api;
 
     private volatile EmoteManager manager = null;
     private volatile EmoteManagerUpdatable managerUpdatable = null;
+    private Object mngLock = new Object();
 
     private boolean managed = false;
     private HashSet<Role> roles = null;
     private String name;
-
-    private JDA api;
-    private Object mngLock = new Object();
 
     public EmoteImpl(String id,  Guild guild)
     {
@@ -162,7 +161,7 @@ public class EmoteImpl implements Emote
                 if (response.isOk())
                     request.onSuccess(null);
                 else
-                    request.onFailure(response.exception);
+                    request.onFailure(response);
             }
         };
     }
@@ -193,9 +192,11 @@ public class EmoteImpl implements Emote
     @Override
     public boolean equals(Object obj)
     {
-        return obj instanceof ISnowflake
-                ? ((ISnowflake) obj).getId().equals(id) //snowflake equals
-                : obj instanceof String && (obj.equals(getId()) || obj.equals(getAsMention())); //allowing id or mention reference
+        if (!(obj instanceof Emote))
+            return false;
+
+        Emote oEmote = (Emote) obj;
+        return getId().equals(oEmote.getId());
     }
 
 

@@ -34,53 +34,11 @@ import java.util.Set;
 public class EmoteManager
 {
 
-    private EmoteManagerUpdatable updatable;
+    protected final EmoteManagerUpdatable updatable;
 
     public EmoteManager(EmoteImpl emote)
     {
         this.updatable = new EmoteManagerUpdatable(emote);
-    }
-
-    /**
-     * Sets the name of this Emote.<p>
-     * <b>This is a <u>client only</u> function!</b>
-     *
-     * @param name
-     *      The name to set for this Emote (null to keep current name)
-     * @return
-     *      {@link net.dv8tion.jda.core.requests.RestAction RestAction} - <br>
-     *      &nbsp;&nbsp;&nbsp;&nbsp;<b>Type</b>: {@link java.lang.Void}<br>
-     *      &nbsp;&nbsp;&nbsp;&nbsp;<b>Value</b>: None
-     * @throws AccountTypeException
-     *      if the current AccountType is not Client
-     * @throws PermissionException
-     *      if either the Emote trying to update is fake or we do not have the required Permissions to update this emote
-     * @throws IllegalArgumentException
-     *      if the specified name has less than 2 chars or more than 32 chars.
-     */
-    public RestAction<Void> setName(String name)
-    {
-        return updatable.setName(name).update();
-    }
-
-    /**
-     * Set roles this emote is active for.<p>
-     * <b>This is a <u>client only</u> function!</b>
-     *
-     * @param roles
-     *      A set of roles (all within the same guild the emote is in) / null to keep current roles
-     * @return
-     *      {@link net.dv8tion.jda.core.requests.RestAction RestAction} - <br>
-     *      &nbsp;&nbsp;&nbsp;&nbsp;<b>Type</b>: {@link java.lang.Void}<br>
-     *      &nbsp;&nbsp;&nbsp;&nbsp;<b>Value</b>: None
-     * @throws AccountTypeException
-     *      if the current AccountType is not Client
-     * @throws PermissionException
-     *      if either the Emote trying to update is fake or we do not have the required Permissions to update this emote
-     */
-    public RestAction<Void> setRoles(Set<Role> roles)
-    {
-        return updatable.setRoles(roles).update();
     }
 
     /**
@@ -116,4 +74,45 @@ public class EmoteManager
         return updatable.getEmote();
     }
 
+    /**
+     * Sets the name of this Emote.<p>
+     * <b>This is a <u>client only</u> function!</b>
+     *
+     * @param name
+     *      The name to set for this Emote (null to keep current name)
+     * @return
+     *      {@link net.dv8tion.jda.core.requests.RestAction RestAction} - <br>
+     *      &nbsp;&nbsp;&nbsp;&nbsp;<b>Type</b>: {@link java.lang.Void}<br>
+     *      &nbsp;&nbsp;&nbsp;&nbsp;<b>Value</b>: None
+     * @throws AccountTypeException
+     *      if the current AccountType is not Client
+     * @throws PermissionException
+     *      if either the Emote trying to update is fake or we do not have the required Permissions to update this emote
+     * @throws IllegalArgumentException
+     *      if the specified name has less than 2 chars or more than 32 chars.
+     */
+    public RestAction<Void> setName(String name)
+    {
+        return updatable.getNameField().setValue(name).update();
+    }
+
+    /**
+     * Set roles this emote is active for.<p>
+     * <b>This is a <u>client only</u> function!</b>
+     *
+     * @param roles
+     *      A set of roles (all within the same guild the emote is in) / null to keep current roles
+     * @return
+     *      {@link net.dv8tion.jda.core.requests.RestAction RestAction} - <br>
+     *      &nbsp;&nbsp;&nbsp;&nbsp;<b>Type</b>: {@link java.lang.Void}<br>
+     *      &nbsp;&nbsp;&nbsp;&nbsp;<b>Value</b>: None
+     * @throws AccountTypeException
+     *      if the current AccountType is not Client
+     * @throws PermissionException
+     *      if either the Emote trying to update is fake or we do not have the required Permissions to update this emote
+     */
+    public RestAction<Void> setRoles(Set<Role> roles)
+    {
+        return updatable.getRolesField().setValue(roles).update();
+    }
 }

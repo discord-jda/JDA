@@ -153,7 +153,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      * @return
      *      True, if the provided Member can use this Emote
      * @see net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Emote)
-     * @see net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Emote, MessageChannel)
+     * @see net.dv8tion.jda.core.utils.PermissionUtil#canInteract(User, Emote, MessageChannel)
      */
     default boolean canInteract(Member issuer)
     {
@@ -170,7 +170,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      * @return
      *      True, if the provided Member can use this Emote
      * @see net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Emote)
-     * @see net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Emote, MessageChannel)
+     * @see net.dv8tion.jda.core.utils.PermissionUtil#canInteract(User, Emote, MessageChannel)
      */
     default boolean canInteract(User issuer, MessageChannel channel)
     {
