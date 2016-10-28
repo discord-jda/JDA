@@ -21,10 +21,11 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
-import net.dv8tion.jda.core.entities.EntityBuilder;
-import net.dv8tion.jda.core.requests.*;
+import net.dv8tion.jda.core.requests.Request;
+import net.dv8tion.jda.core.requests.Response;
+import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.Route;
 import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
@@ -34,6 +35,8 @@ import java.util.regex.Pattern;
 
 public class MessageImpl implements Message
 {
+    private static final Pattern EMOTE_PATTERN = Pattern.compile("<:([^:]+):([0-9]+)>");
+
     private final JDAImpl api;
     private final String id;
     private final MessageType type;
@@ -53,6 +56,7 @@ public class MessageImpl implements Message
     private List<Role> mentionedRoles = new LinkedList<>();
     private List<Attachment> attachments = new LinkedList<>();
     private List<MessageEmbed> embeds = new LinkedList<>();
+    private List<Emote> emotes = null;
 
     public MessageImpl(String id, MessageChannel channel, boolean fromWebhook)
     {
@@ -181,6 +185,10 @@ public class MessageImpl implements Message
                             .replace("<@!" + user.getId() + '>', '@' + name);
                 }
             }
+            for (Emote emote : getEmotes())
+            {
+                tmp = tmp.replace(emote.getAsMention(), ":" + emote.getName() + ":");
+            }
             for (TextChannel mentionedChannel : mentionedChannels)
             {
                 tmp = tmp.replace("<#" + mentionedChannel.getId() + '>', '#' + mentionedChannel.getName());
@@ -252,6 +260,27 @@ public class MessageImpl implements Message
     public List<MessageEmbed> getEmbeds()
     {
         return Collections.unmodifiableList(embeds);
+    }
+
+    @Override
+    public List<Emote> getEmotes()
+    {
+        if (this.emotes == null)
+        {
+            emotes = new LinkedList<>();
+            Matcher matcher = EMOTE_PATTERN.matcher(getRawContent());
+            while (matcher.find())
+            {
+                String emoteId   = matcher.group(2);
+                String emoteName = matcher.group(1);
+                Emote emote = api.getEmoteById(emoteId);
+                if (emote == null)
+                    emote = new EmoteImpl(emoteId, api).setName(emoteName);
+                emotes.add(emote);
+            }
+            emotes = Collections.unmodifiableList(emotes);
+        }
+        return emotes;
     }
 
     @Override
