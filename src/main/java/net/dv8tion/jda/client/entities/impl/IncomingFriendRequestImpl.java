@@ -53,4 +53,26 @@ public class IncomingFriendRequestImpl implements IncomingFriendRequest
     {
         return null;
     }
+
+    @Override
+    public String toString()
+    {
+        return "IFR(" + user.toString() + ")";
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof IncomingFriendRequest))
+            return false;
+
+        IncomingFriendRequest oIFR = (IncomingFriendRequest) o;
+        return user.equals(oIFR.getUser());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return ("IFR " + user.getId()).hashCode();
+    }
 }

@@ -114,6 +114,28 @@ public class CallVoiceStateImpl implements CallVoiceState
         return getCall().getPrivateChannel();
     }
 
+    @Override
+    public String toString()
+    {
+        return "CallVS(" + cUser.toString() + ")";
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof CallVoiceState))
+            return false;
+
+        CallVoiceState oCVS = (CallVoiceState) o;
+        return cUser.equals(oCVS.getCallUser());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return ("CallVS " + cUser.toString()).hashCode();
+    }
+
     public CallVoiceStateImpl setSelfMuted(boolean selfMuted)
     {
         this.selfMuted = selfMuted;

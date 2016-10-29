@@ -74,6 +74,28 @@ public class FriendImpl implements Friend
         return game;
     }
 
+    @Override
+    public String toString()
+    {
+        return "Friend(" + user.toString() + ")";
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof Friend))
+            return false;
+
+        Friend oFriend = (Friend) o;
+        return user.equals(oFriend.getUser());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return ("Friend " + user.getId()).hashCode();
+    }
+
     public FriendImpl setOnlineStatus(OnlineStatus onlineStatus)
     {
         this.onlineStatus = onlineStatus;

@@ -301,6 +301,28 @@ public class GroupImpl implements Group
         };
     }
 
+    @Override
+    public String toString()
+    {
+        return String.format("G:%s(%s)", getName(), getId());
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof Group))
+            return false;
+
+        Group oGroup = (Group) o;
+        return id.equals(oGroup.getId());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return id.hashCode();
+    }
+
     public HashMap<String, User> getUserMap()
     {
         return userMap;

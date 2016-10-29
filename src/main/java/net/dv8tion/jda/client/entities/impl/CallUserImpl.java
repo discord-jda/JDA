@@ -60,6 +60,29 @@ public class CallUserImpl implements CallUser
         return ringing;
     }
 
+    @Override
+    public String toString()
+    {
+        return "CallUser:(" + user.toString() + " | " + call.toString() + ")";
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof CallUser))
+            return false;
+
+        CallUser oCU = (CallUser) o;
+
+        return user.equals(oCU.getUser()) && call.equals(oCU.getCall());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return ("CallUser " + user.getId() + call.getId()).hashCode();
+    }
+
     public CallUserImpl setRinging(boolean ringing)
     {
         this.ringing = ringing;

@@ -47,4 +47,26 @@ public class OutgoingFriendRequestImpl implements OutgoingFriendRequest
     {
         return null;
     }
+
+    @Override
+    public String toString()
+    {
+        return "OFR(" + user.toString() + ")";
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof OutgoingFriendRequest))
+            return false;
+
+        OutgoingFriendRequest oOFR = (OutgoingFriendRequest) o;
+        return user.equals(oOFR.getUser());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return ("OFR " + user.getId()).hashCode();
+    }
 }

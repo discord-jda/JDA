@@ -26,15 +26,11 @@ import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CallImpl implements Call
 {
-
     private final CallableChannel callableChannel;
     private final String messageId;
 
@@ -80,6 +76,12 @@ public class CallImpl implements Call
     }
 
     @Override
+    public String getMessageId()
+    {
+        return messageId;
+    }
+
+    @Override
     public List<CallUser> getRingingUsers()
     {
         return Collections.unmodifiableList(callUsers.values().stream()
@@ -113,6 +115,28 @@ public class CallImpl implements Call
     public String getId()
     {
         return callableChannel.getId();
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Call(" + getId() + ")";
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof Call))
+            return false;
+
+        Call oCall = (Call) o;
+        return getId().equals(oCall.getId()) && Objects.equals(messageId, oCall.getMessageId());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return ("Call " + getId()).hashCode();
     }
 
     public CallImpl setRegion(Region region)

@@ -47,4 +47,26 @@ public class BlockedUserImpl implements BlockedUser
     {
         return null;
     }
+
+    @Override
+    public String toString()
+    {
+        return "BlockedUser:" + user.getName() + "(" + user.getId() + ")";
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return ("BlockedUser " + user.getId()).hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof BlockedUser))
+            return false;
+
+        BlockedUser oBU = (BlockedUser) o;
+        return this.user.equals(oBU.getUser());
+    }
 }
