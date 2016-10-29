@@ -23,6 +23,9 @@ package net.dv8tion.jda.core;
 public enum Region
 {
     AMSTERDAM("amsterdam", "Amsterdam"),
+    BRAZIL("brazil", "Brazil"),
+    EU_WEST("eu-west", "EU West"),
+    EU_CENTRAL("eu-central", "EU Central"),
     FRANKFURT("frankfurt", "Frankfurt"),
     LONDON("london", "London"),
     SINGAPORE("singapore", "Singapore"),
@@ -31,6 +34,19 @@ public enum Region
     US_WEST("us-west", "US West"),
     US_CENTRAL("us-central", "US Central"),
     US_SOUTH("us-south", "US South"),
+
+    VIP_AMSTERDAM("vip-amsterdam", "Amsterdam (VIP)"),
+    VIP_BRAZIL("vip-brazil", "Brazil (VIP)"),
+    VIP_EU_WEST("vip-eu-west", "EU West (VIP)"),
+    VIP_EU_CENTRAL("vip-eu-central", "EU Central (VIP)"),
+    VIP_FRANKFURT("vip-frankfurt", "Frankfurt (VIP)"),
+    VIP_LONDON("vip-london", "London (VIP)"),
+    VIP_SINGAPORE("vip-singapore", "Singapore (VIP)"),
+    VIP_SYDNEY("vip-sydney", "Sydney (VIP)"),
+    VIP_US_EAST("vip-us-east", "US East (VIP)"),
+    VIP_US_WEST("vip-us-west", "US West (VIP)"),
+    VIP_US_CENTRAL("vip-us-central", "US Central (VIP)"),
+    VIP_US_SOUTH("vip-us-south", "US South (VIP)"),
     UNKNOWN("", "Unknown Region");
 
     private final String key;
