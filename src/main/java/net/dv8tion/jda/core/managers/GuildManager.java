@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.managers;
 
+import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
@@ -28,6 +29,11 @@ public class GuildManager
     public GuildManager(Guild guild)
     {
         this.updatable = new GuildManagerUpdatable(guild);
+    }
+
+    public JDA getJDA()
+    {
+        return updatable.getJDA();
     }
 
     /**

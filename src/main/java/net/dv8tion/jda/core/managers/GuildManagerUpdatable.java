@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.managers;
 
+import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.Guild;
@@ -48,6 +49,11 @@ public class GuildManagerUpdatable
     {
         this.guild = guild;
         setupFields();
+    }
+
+    public JDA getJDA()
+    {
+        return guild.getJDA();
     }
 
     public Guild getGuild()
