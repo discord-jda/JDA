@@ -29,6 +29,7 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.MiscUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
@@ -44,6 +45,7 @@ public class GuildImpl implements Guild
     private final HashMap<String, VoiceChannel> voiceChannels = new HashMap<>();
     private final HashMap<String, Member> members = new HashMap<>();
     private final HashMap<String, Role> roles = new HashMap<>();
+    private final HashMap<String, Emote> emotes = new HashMap<>();
 
     private final HashMap<String, JSONObject> cachedPresences = new HashMap<>();
 
@@ -276,6 +278,29 @@ public class GuildImpl implements Guild
                         ignoreCase
                         ? name.equalsIgnoreCase(r.getName())
                         : name.equals(r.getName()))
+                .collect(Collectors.toList()));
+    }
+
+    @Override
+    public Emote getEmoteById(String id)
+    {
+        return emotes.get(id);
+    }
+
+    @Override
+    public List<Emote> getEmotes()
+    {
+        return Collections.unmodifiableList(new LinkedList<>(emotes.values()));
+    }
+
+    @Override
+    public List<Emote> getEmotesByName(String name, boolean ignoreCase)
+    {
+        return Collections.unmodifiableList(emotes.values().parallelStream()
+                .filter(e ->
+                        ignoreCase
+                        ? StringUtils.equalsIgnoreCase(e.getName(), name)
+                        : StringUtils.equals(e.getName(), name))
                 .collect(Collectors.toList()));
     }
 
@@ -554,6 +579,12 @@ public class GuildImpl implements Guild
     {
         return cachedPresences;
     }
+
+    public HashMap<String, Emote> getEmoteMap()
+    {
+        return emotes;
+    }
+
 
     // -- Object overrides --
 

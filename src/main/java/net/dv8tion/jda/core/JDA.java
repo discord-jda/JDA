@@ -312,6 +312,40 @@ public interface JDA
     PrivateChannel getPrivateChannelById(String id);
 
     /**
+     * A collection of all to us known emotes (managed/restricted included)<br>
+     * <b>Hint</b>: To check whether you can use an {@link net.dv8tion.jda.core.entities.Emote Emote} you can use
+     * {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Emote) PermissionUtil#canInteract(Member, Emote)}.
+     *
+     * @return
+     *      An immutable list of Emotes (which may or may not be available to usage)
+     */
+    List<Emote> getEmotes();
+
+    /**
+     * An unmodifiable list of all {@link net.dv8tion.jda.core.entities.Emote Emotes} that have the same name as the one provided.<br>
+     * If there are no {@link net.dv8tion.jda.core.entities.Emote Emotes} with the provided name, then this returns an empty list.
+     *
+     * @param name
+     *          The name of the requested {@link net.dv8tion.jda.core.entities.Emotes Emotes}.
+     * @param ignoreCase
+     *          Whether to ignore case or not.
+     * @return
+     *      Possibly-empty list of all the {@link net.dv8tion.jda.core.entities.Emote Emotes} that all have the
+     *      same name as the provided name.
+     */
+    List<Emote> getEmotesByName(String name, boolean ignoreCase);
+
+    /**
+     * Retrieves an emote matching the specified <code>id</code> if one is available in our cache.
+     *
+     * @param id
+     *      The emote id to look for
+     * @return
+     *      An {@link net.dv8tion.jda.core.entities.Emote Emote} represented by this id or null if none is found in our cache
+     */
+    Emote getEmoteById(String id);
+
+    /**
      * Returns the currently logged in account represented by {@link net.dv8tion.jda.core.entities.SelfInfo SelfInfo}.<br>
      * Account settings <b>cannot</b> be modified using this object. If you wish to modify account settings please
      *   use the AccountManager.

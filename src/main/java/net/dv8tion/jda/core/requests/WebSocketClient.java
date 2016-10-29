@@ -732,7 +732,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         handlers.put("GUILD_BAN_REMOVE",    new GuildBanHandler(api, false));
         handlers.put("GUILD_CREATE",        new GuildCreateHandler(api));
         handlers.put("GUILD_DELETE",        new GuildDeleteHandler(api));
-        handlers.put("GUILD_UPDATE",        new GuildUpdateHandler(api));
+        handlers.put("GUILD_EMOJIS_UPDATE", new GuildEmojisUpdateHandler(api));
         handlers.put("GUILD_MEMBER_ADD",    new GuildMemberAddHandler(api));
         handlers.put("GUILD_MEMBER_REMOVE", new GuildMemberRemoveHandler(api));
         handlers.put("GUILD_MEMBER_UPDATE", new GuildMemberUpdateHandler(api));
@@ -741,6 +741,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         handlers.put("GUILD_ROLE_DELETE",   new GuildRoleDeleteHandler(api));
         handlers.put("GUILD_ROLE_UPDATE",   new GuildRoleUpdateHandler(api));
         handlers.put("GUILD_SYNC",          new GuildSyncHandler(api));
+        handlers.put("GUILD_UPDATE",        new GuildUpdateHandler(api));
         handlers.put("MESSAGE_CREATE",      new MessageCreateHandler(api));
         handlers.put("MESSAGE_DELETE",      new MessageDeleteHandler(api));
         handlers.put("MESSAGE_DELETE_BULK", new MessageBulkDeleteHandler(api));

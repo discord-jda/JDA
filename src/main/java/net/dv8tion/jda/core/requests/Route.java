@@ -70,6 +70,14 @@ public class Route
         public static final Route DELETE_GUILD =     new Route(POST,   "guilds/{guild_id}/delete");
     }
 
+    public static class Emotes
+    {
+        // These are all client endpoints and thus don't need defined major parameters
+        public static final Route MODIFY_EMOTE = new Route(PATCH,  "guilds/{guild_id}/emojis/{emote_id}");
+        public static final Route DELETE_EMOTE = new Route(DELETE, "guilds/{guild_id}/emojis/{emote_id}");
+        public static final Route CREATE_EMOTE = new Route(POST,   "guilds/{guild_id}/emojis");
+    }
+
     public static class Roles
     {
         public static final Route GET_ROLES =   new Route(GET,    "guilds/{guild_id}/roles",           "guild_id");

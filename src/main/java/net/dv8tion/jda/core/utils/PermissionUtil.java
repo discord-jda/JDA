@@ -17,10 +17,8 @@ package net.dv8tion.jda.core.utils;
 
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.entities.impl.GuildImpl;
-import net.dv8tion.jda.core.entities.impl.PermissionOverrideImpl;
-import net.dv8tion.jda.core.entities.impl.TextChannelImpl;
-import net.dv8tion.jda.core.entities.impl.VoiceChannelImpl;
+import net.dv8tion.jda.core.entities.impl.*;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -99,6 +97,71 @@ public class PermissionUtil
         if(!issuer.getGuild().equals(target.getGuild()))
             throw new IllegalArgumentException("The 2 Roles are not from same Guild!");
         return target.getPosition() < issuer.getPosition();
+    }
+
+    /**
+     * Check whether the provided {@link net.dv8tion.jda.core.entities.Member Member} can use the specified {@link net.dv8tion.jda.core.entities.Emote Emote}.<p>
+     * If the specified Member is not in the emote's guild or the emote provided is fake this will return false.
+     * Otherwise it will check if the emote is restricted to any roles and if that is the case if the Member has one of these.
+     * <br><b>Note</b>: This is not checking if the issuer owns the Guild or not.
+     *
+     * @param issuer
+     *      The member that tries to interact with the Emote
+     * @param emote
+     *      The emote that is the target interaction
+     * @return
+     *      True, if the issuer can interact with the emote
+     * @throws IllegalArgumentException
+     *      if the specified issuer is not in the same Guild the provided target is in
+     */
+    public static boolean canInteract(Member issuer, Emote emote)
+    {
+        checkNull(issuer, "issuer member");
+        checkNull(emote,  "target emote");
+
+        if (!issuer.getGuild().equals(emote.getGuild()))
+            throw new IllegalArgumentException("The issuer and target are not in the same Guild");
+        return !emote.isFake() // Fake emote -> can't use
+                && (emote.getRoles().isEmpty() // Emote restricted to roles -> check if the issuer has them
+                    || CollectionUtils.containsAny(issuer.getRoles(), emote.getRoles()));
+    }
+
+    /**
+     * Checks whether the specified {@link net.dv8tion.jda.core.entities.Emote Emote} can be used by the provided
+     * {@link net.dv8tion.jda.core.entities.User User} in the {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.<p>
+     *
+     * @param issuer
+     *      The user that tries to interact with the Emote
+     * @param emote
+     *      The emote that is the target interaction
+     * @param channel
+     *      The MessageChannel this emote should be interacted within
+     * @return
+     *      True, if the issuer can interact with the emote within the specified MessageChannel
+     * @throws IllegalArgumentException
+     *      if the specified issuer is not in the same Guild the provided target is in
+     */
+    public static boolean canInteract(User issuer, Emote emote, MessageChannel channel)
+    {
+        checkNull(issuer,  "issuer member");
+        checkNull(emote,   "target emote");
+        checkNull(channel, "target channel");
+
+        if (emote.isFake() || !emote.getGuild().isMember(issuer))
+            return false; // cannot use an emote if you're not in its guild
+        Member member = emote.getGuild().getMemberById(issuer.getId());
+        if (!canInteract(member, emote))
+            return false;
+        switch (channel.getType())
+        {
+            case TEXT:
+                TextChannel text = (TextChannel) channel;
+                member = text.getGuild().getMemberById(issuer.getId());
+                return emote.getGuild().equals(text.getGuild()) // within the same guild
+                    || (emote.isManaged() && checkPermission(text, member, Permission.MESSAGE_EXT_EMOJI)); // in different guild
+            default:
+                return emote.isManaged(); // In Group or Private it only needs to be managed
+        }
     }
 
     public static PermissionOverride getFullPermOverride()

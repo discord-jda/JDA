@@ -153,6 +153,38 @@ public interface Guild extends ISnowflake
     List<Role> getRolesByName(String name, boolean ignoreCase);
 
     /**
+     * An {@link net.dv8tion.jda.core.entities.Emote Emote} matching the specified ID.<br>
+     *
+     * @param id
+     *      the emote id
+     * @return
+     *      An Emote matching the specified ID.
+     */
+    Emote getEmoteById(String id);
+
+    /**
+     * An immutable linked list of the emotes contained in this Guild.
+     *
+     * @return
+     *      An immutable list of emotes
+     */
+    List<Emote> getEmotes();
+
+    /**
+     * An unmodifiable list of all {@link net.dv8tion.jda.core.entities.Emote Emotes} that have the same name as the one provided.<br>
+     * If there are no {@link net.dv8tion.jda.core.entities.Emote Emotes} with the provided name, then this returns an empty list.
+     *
+     * @param name
+     *          The name of the requested {@link net.dv8tion.jda.core.entities.Emote Emotes}.
+     * @param ignoreCase
+     *          Whether to ignore case or not.
+     * @return
+     *      Possibly-empty list of all the {@link net.dv8tion.jda.core.entities.Emote Emotes} that all have the
+     *      same name as the provided name.
+     */
+    List<Emote> getEmotesByName(String name, boolean ignoreCase);
+
+    /**
      * The @everyone {@link net.dv8tion.jda.core.entities.Role Role} of this {@link net.dv8tion.jda.core.entities.Guild Guild}
      *
      * @return The @everyone {@link net.dv8tion.jda.core.entities.Role Role}
