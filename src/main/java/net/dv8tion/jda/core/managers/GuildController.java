@@ -20,6 +20,8 @@ import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.impl.EmoteImpl;
+import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.entities.impl.MemberImpl;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
@@ -1076,8 +1078,8 @@ public class GuildController
      *      The {@link net.dv8tion.jda.core.entities.Role Roles} the new Emote should be restricted to
      * @return
      *      {@link net.dv8tion.jda.core.requests.RestAction RestAction} - <br>
-     *      &nbsp;&nbsp;&nbsp;&nbsp;<b>Type</b>: Void<br>
-     *      &nbsp;&nbsp;&nbsp;&nbsp;<b>Value</b>: None
+     *      &nbsp;&nbsp;&nbsp;&nbsp;<b>Type</b>: {@link net.dv8tion.jda.core.entities.Emote Emote}<br>
+     *      &nbsp;&nbsp;&nbsp;&nbsp;<b>Value</b>: The newly created {@link net.dv8tion.jda.core.entities.Emote Emote}
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *      if the guild is temporarily unavailable
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
@@ -1085,7 +1087,7 @@ public class GuildController
      * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
      *      if the logged in account is not from {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType#Client}
      */
-    public RestAction<Void> createEmote(String name, RenderedImage image, Role... roles)
+    public RestAction<Emote> createEmote(String name, RenderedImage image, Role... roles)
     {
         checkAvailable();
         checkPermission(Permission.MANAGE_EMOTES);
@@ -1103,13 +1105,31 @@ public class GuildController
         {
             ImageIO.write(image, "jpg", stream);
             body.put("image", "data:image/jpeg;base64," + newStringUtf8(Base64.getEncoder().encode(stream.toByteArray())));
-            return new RestAction<Void>(getJDA(), Route.Emotes.CREATE_EMOTE.compile(guild.getId()), body)
+            return new RestAction<Emote>(getJDA(), Route.Emotes.CREATE_EMOTE.compile(guild.getId()), body)
             {
                 @Override
                 protected void handleResponse(Response response, Request request)
                 {
                     if (response.isOk())
-                        request.onSuccess(null);
+                    {
+                        JSONObject obj = response.getObject();
+                        String id = obj.getString("id");
+                        String name = obj.getString("name");
+                        EmoteImpl emote = new EmoteImpl(id, guild).setName(name);
+                        // managed is false by default, should always be false for emotes created by client accounts.
+
+                        JSONArray rolesArr = obj.getJSONArray("roles");
+                        Set<Role> roleSet = emote.getRoleSet();
+                        for (int i = 0; i < rolesArr.length(); i++)
+                        {
+                            roleSet.add(guild.getRoleById(rolesArr.getString(i)));
+                        }
+
+                        // add emote to cache
+                        ((GuildImpl) guild).getEmoteMap().put(id, emote);
+
+                        request.onSuccess(emote);
+                    }
                     else
                         request.onFailure(response);
                 }
