@@ -16,20 +16,32 @@
 
 package net.dv8tion.jda.core.managers;
 
+import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.entities.impl.MemberImpl;
+import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
-import net.dv8tion.jda.core.requests.*;
+import net.dv8tion.jda.core.requests.Request;
+import net.dv8tion.jda.core.requests.Response;
+import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.imageio.ImageIO;
+import java.awt.image.RenderedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.apache.commons.codec.binary.StringUtils.newStringUtf8;
 
 public class GuildController
 {
@@ -981,7 +993,7 @@ public class GuildController
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *      if the guild is temporarily unavailable
      */
-    RestAction<Role> createRole()
+    public RestAction<Role> createRole()
     {
         checkAvailable();
         checkPermission(Permission.MANAGE_ROLES);
@@ -1022,11 +1034,11 @@ public class GuildController
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *      if the guild is temporarily unavailable
      */
-    RestAction<Role> createCopyOfRole(Role role)
+    public RestAction<Role> createCopyOfRole(Role role)
     {
         checkAvailable();
         checkPermission(Permission.MANAGE_ROLES);
-        role.getPermissions().forEach(perm -> checkPermission(perm));
+        role.getPermissions().forEach(this::checkPermission);
 
         Route.CompiledRoute route = Route.Roles.CREATE_ROLE.compile(guild.getId());
         return new RestAction<Role>(getJDA(), route, null)
@@ -1050,6 +1062,66 @@ public class GuildController
                 mng.update().queue(request.getOnSuccess(), request.getOnFailure());
             }
         };
+    }
+
+    /**
+     * Creates a new {@link net.dv8tion.jda.core.entities.Emote Emote} in this Guild.<br>
+     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES MANAGE_EMOTES Permission}.
+     *
+     * @param name
+     *      The name for the new Emote
+     * @param image
+     *      The {@link java.awt.image.RenderedImage RenderedImage} for the new Emote
+     * @param roles
+     *      The {@link net.dv8tion.jda.core.entities.Role Roles} the new Emote should be restricted to
+     * @return
+     *      {@link net.dv8tion.jda.core.requests.RestAction RestAction} - <br>
+     *      &nbsp;&nbsp;&nbsp;&nbsp;<b>Type</b>: Void<br>
+     *      &nbsp;&nbsp;&nbsp;&nbsp;<b>Value</b>: None
+     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
+     *      if the guild is temporarily unavailable
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *      if the logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES} permission.
+     * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
+     *      if the logged in account is not from {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType#Client}
+     */
+    public RestAction<Void> createEmote(String name, RenderedImage image, Role... roles)
+    {
+        checkAvailable();
+        checkPermission(Permission.MANAGE_EMOTES);
+        checkNull(name,  "emote name");
+        checkNull(image, "emote image");
+
+        if (getJDA().getAccountType() != AccountType.CLIENT)
+            throw new AccountTypeException(AccountType.CLIENT);
+
+        JSONObject body = new JSONObject();
+        body.put("name", name);
+        if (roles.length > 0)
+            body.put("roles", Stream.of(roles).filter(r -> r != null).map(ISnowflake::getId).collect(Collectors.toSet()));
+        try (ByteArrayOutputStream stream = new ByteArrayOutputStream())
+        {
+            ImageIO.write(image, "jpg", stream);
+            body.put("image", "data:image/jpeg;base64," + newStringUtf8(Base64.getEncoder().encode(stream.toByteArray())));
+            return new RestAction<Void>(getJDA(), Route.Emotes.CREATE_EMOTE.compile(guild.getId()), body)
+            {
+                @Override
+                protected void handleResponse(Response response, Request request)
+                {
+                    if (response.isOk())
+                        request.onSuccess(null);
+                    else
+                        request.onFailure(response);
+                }
+            };
+        }
+        catch (IOException e)
+        {
+            JDAImpl.LOG.log(e);
+        }
+
+        return new RestAction.EmptyRestAction<>(null);
+
     }
 
     protected void checkAvailable()
