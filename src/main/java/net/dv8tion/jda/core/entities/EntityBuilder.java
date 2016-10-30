@@ -716,7 +716,7 @@ public class EntityBuilder
             User user = member != null ? member.getUser() : null;
             if (user != null)
                 message.setAuthor(user);
-            else if (fromWebhook)
+            else if (fromWebhook || !exceptionOnMissingUser)
                 message.setAuthor(createFakeUser(author, false));
             else
                 throw new IllegalArgumentException(MISSING_USER);
