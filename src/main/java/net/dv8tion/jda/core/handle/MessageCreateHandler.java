@@ -77,7 +77,7 @@ public class MessageCreateHandler extends SocketHandler
                 }
                 case EntityBuilder.MISSING_USER:
                 {
-                    EventCache.get(api).cache(EventCache.Type.USER, content.getJSONObject("user").getString("id"), () ->
+                    EventCache.get(api).cache(EventCache.Type.USER, content.getJSONObject("author").getString("id"), () ->
                     {
                         handle(responseNumber, allContent);
                     });

@@ -34,6 +34,7 @@ import net.dv8tion.jda.core.requests.GuildLock;
 import net.dv8tion.jda.core.requests.WebSocketClient;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.awt.*;
@@ -612,7 +613,9 @@ public class EntityBuilder
 
     public PrivateChannel createPrivateChannel(JSONObject privatechat)
     {
-        JSONObject recipient = privatechat.getJSONArray("recipients").getJSONObject(0);
+        JSONObject recipient = privatechat.has("recipients") ? 
+            privatechat.getJSONArray("recipients").getJSONObject(0) :
+            privatechat.getJSONObject("recipient");
         UserImpl user = ((UserImpl) api.getUserMap().get(recipient.getString("id")));
         if (user == null)
         {   //The API can give us private channels connected to Users that we can no longer communicate with.
@@ -656,7 +659,7 @@ public class EntityBuilder
     public Message createMessage(JSONObject jsonObject, boolean exceptionOnMissingUser)
     {
         String id = jsonObject.getString("id");
-        String content = jsonObject.getString("content");
+        String content = !jsonObject.isNull("content") ? jsonObject.getString("content") : "";
         String channelId = jsonObject.getString("channel_id");
         JSONObject author = jsonObject.getJSONObject("author");
         String authorId = author.getString("id");
@@ -673,10 +676,10 @@ public class EntityBuilder
 
         MessageImpl message = new MessageImpl(id, chan, fromWebhook)
                 .setContent(content)
-                .setTime(OffsetDateTime.parse(jsonObject.getString("timestamp")))
-                .setMentionsEveryone(jsonObject.getBoolean("mention_everyone"))
-                .setTTS(jsonObject.getBoolean("tts"))
-                .setPinned(jsonObject.getBoolean("pinned"));
+                .setTime(!jsonObject.isNull("timestamp") ? OffsetDateTime.parse(jsonObject.getString("timestamp")) : OffsetDateTime.now())
+                .setMentionsEveryone(!jsonObject.isNull("mention_everyone") && jsonObject.getBoolean("mention_everyone"))
+                .setTTS(!jsonObject.isNull("tts") && jsonObject.getBoolean("tts"))
+                .setPinned(!jsonObject.isNull("pinned") && jsonObject.getBoolean("pinned"));
         if (chan instanceof PrivateChannel)
         {
             if (StringUtils.equals(authorId, api.getSelfInfo().getId()))
@@ -723,20 +726,23 @@ public class EntityBuilder
         }
 
         List<Message.Attachment> attachments = new LinkedList<>();
-        JSONArray jsonAttachments = jsonObject.getJSONArray("attachments");
-        for (int i = 0; i < jsonAttachments.length(); i++)
+        if (!jsonObject.isNull("attachments"))
         {
-            JSONObject jsonAttachment = jsonAttachments.getJSONObject(i);
-            attachments.add(new Message.Attachment(
-                    jsonAttachment.getString("id"),
-                    jsonAttachment.getString("url"),
-                    jsonAttachment.getString("proxy_url"),
-                    jsonAttachment.getString("filename"),
-                    jsonAttachment.getInt("size"),
-                    jsonAttachment.has("height") ? jsonAttachment.getInt("height") : 0,
-                    jsonAttachment.has("width") ? jsonAttachment.getInt("width") : 0,
-                    api
-            ));
+            JSONArray jsonAttachments = jsonObject.getJSONArray("attachments");
+            for (int i = 0; i < jsonAttachments.length(); i++)
+            {
+                JSONObject jsonAttachment = jsonAttachments.getJSONObject(i);
+                attachments.add(new Message.Attachment(
+                        jsonAttachment.getString("id"),
+                        jsonAttachment.getString("url"),
+                        jsonAttachment.getString("proxy_url"),
+                        jsonAttachment.getString("filename"),
+                        jsonAttachment.getInt("size"),
+                        jsonAttachment.has("height") ? jsonAttachment.getInt("height") : 0,
+                        jsonAttachment.has("width") ? jsonAttachment.getInt("width") : 0,
+                        api
+                ));
+            }
         }
         message.setAttachments(attachments);
 
@@ -755,30 +761,37 @@ public class EntityBuilder
         {
             TextChannel textChannel = message.getTextChannel();
             TreeMap<Integer, User> mentionedUsers = new TreeMap<>();
-            JSONArray mentions = jsonObject.getJSONArray("mentions");
-            for (int i = 0; i < mentions.length(); i++)
+            if (!jsonObject.isNull("mentions"))
             {
-                JSONObject mention = mentions.getJSONObject(i);
-                User u = api.getUserMap().get(mention.getString("id"));
-                if (u != null)
+                JSONArray mentions = jsonObject.getJSONArray("mentions");
+                for (int i = 0; i < mentions.length(); i++)
                 {
-                    //We do this to properly order the mentions. The array given by discord is out of order sometimes.
-                    int index = content.indexOf("<@" + mention.getString("id") + ">");
-                    mentionedUsers.put(index, u);
+                    JSONObject mention = mentions.getJSONObject(i);
+                    User u = api.getUserMap().get(mention.getString("id"));
+                    if (u != null)
+                    {
+                        //We do this to properly order the mentions. The array given by discord is out of order sometimes.
+
+                        int index = content.indexOf("<@" + mention.getString("id") + ">");
+                        mentionedUsers.put(index, u);
+                    }
                 }
             }
             message.setMentionedUsers(new LinkedList<User>(mentionedUsers.values()));
 
             TreeMap<Integer, Role> mentionedRoles = new TreeMap<>();
-            JSONArray roleMentions = jsonObject.getJSONArray("mention_roles");
-            for (int i = 0; i < roleMentions.length(); i++)
+            if (!jsonObject.isNull("mention_roles"))
             {
-                String roleId = roleMentions.getString(i);
-                Role r = textChannel.getGuild().getRoleById(roleId);
-                if (r != null)
+                JSONArray roleMentions = jsonObject.getJSONArray("mention_roles");
+                for (int i = 0; i < roleMentions.length(); i++)
                 {
-                    int index = content.indexOf("<@&" + roleId + ">");
-                    mentionedRoles.put(index, r);
+                    String roleId = roleMentions.getString(i);
+                    Role r = textChannel.getGuild().getRoleById(roleId);
+                    if (r != null)
+                    {
+                        int index = content.indexOf("<@&" + roleId + ">");
+                        mentionedRoles.put(index, r);
+                    }
                 }
             }
             message.setMentionedRoles(new LinkedList<Role>(mentionedRoles.values()));
@@ -801,17 +814,18 @@ public class EntityBuilder
 
     public MessageEmbed createMessageEmbed(JSONObject messageEmbed)
     {
+        if (messageEmbed.isNull("type"))
+            throw new JSONException("Encountered embed object with missing/null type field for Json: " + messageEmbed);
+        EmbedType type = EmbedType.fromKey(messageEmbed.getString("type"));
+       /* if (type == EmbedType.UNKNOWN)
+            throw new JSONException("Discord provided us an unknown embed type.  Json: " + messageEmbed);*/
         MessageEmbedImpl embed = new MessageEmbedImpl()
-                .setUrl(messageEmbed.getString("url"))
+                .setType(type)
+                .setUrl(messageEmbed.isNull("url") ? null : messageEmbed.getString("url"))
                 .setTitle(messageEmbed.isNull("title") ? null : messageEmbed.getString("title"))
                 .setDescription(messageEmbed.isNull("description") ? null : messageEmbed.getString("description"))
                 .setColor(messageEmbed.isNull("color") || messageEmbed.getInt("color") == 0 ? null : new Color(messageEmbed.getInt("color")))
                 .setTimestamp(messageEmbed.isNull("timestamp") ? null : OffsetDateTime.parse(messageEmbed.getString("timestamp")));
-
-        EmbedType type = EmbedType.fromKey(messageEmbed.getString("type"));
-//        if (type.equals(EmbedType.UNKNOWN))
-//            throw new IllegalArgumentException("Discord provided us an unknown embed type.  Json: " + messageEmbed);
-        embed.setType(type);
 
         if (messageEmbed.has("thumbnail"))
         {
@@ -875,7 +889,7 @@ public class EntityBuilder
                 fields.add(new Field(
                         fieldJson.isNull("name") ? null : fieldJson.getString("name"),
                         fieldJson.isNull("value") ? null : fieldJson.getString("value"),
-                        fieldJson.isNull("inline") ? false : fieldJson.getBoolean("inline")));
+                        !fieldJson.isNull("inline") && fieldJson.getBoolean("inline")));
             }
             embed.setFields(fields);
         }
