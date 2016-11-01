@@ -22,7 +22,6 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.EmoteImpl;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.entities.impl.MemberImpl;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
@@ -1086,8 +1085,10 @@ public class GuildController
      *      if the logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES} permission.
      * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
      *      if the logged in account is not from {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType#Client}
+     * @throws java.io.IOException
+     *      if the provided image causes an IO error
      */
-    public RestAction<Emote> createEmote(String name, RenderedImage image, Role... roles)
+    public RestAction<Emote> createEmote(String name, RenderedImage image, Role... roles) throws IOException
     {
         checkAvailable();
         checkPermission(Permission.MANAGE_EMOTES);
@@ -1099,9 +1100,9 @@ public class GuildController
 
         JSONObject body = new JSONObject();
         body.put("name", name);
-        if (roles.length > 0)
+        if (roles.length > 0) // making sure none of the provided roles are null before mapping them to the snowflake id
             body.put("roles", Stream.of(roles).filter(r -> r != null).map(ISnowflake::getId).collect(Collectors.toSet()));
-        try (ByteArrayOutputStream stream = new ByteArrayOutputStream())
+        try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) //using try block for resource cleanup
         {
             ImageIO.write(image, "jpg", stream);
             body.put("image", "data:image/jpeg;base64," + newStringUtf8(Base64.getEncoder().encode(stream.toByteArray())));
@@ -1125,7 +1126,7 @@ public class GuildController
                             roleSet.add(guild.getRoleById(rolesArr.getString(i)));
                         }
 
-                        // add emote to cache
+                        // put emote into cache
                         ((GuildImpl) guild).getEmoteMap().put(id, emote);
 
                         request.onSuccess(emote);
@@ -1135,13 +1136,6 @@ public class GuildController
                 }
             };
         }
-        catch (IOException e)
-        {
-            JDAImpl.LOG.log(e);
-        }
-
-        return new RestAction.EmptyRestAction<>(null);
-
     }
 
     protected void checkAvailable()
