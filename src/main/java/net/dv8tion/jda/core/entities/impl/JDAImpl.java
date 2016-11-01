@@ -28,6 +28,7 @@ import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.hooks.InterfacedEventManager;
+import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.requests.ratelimit.IBucket;
 import net.dv8tion.jda.core.utils.SimpleLog;
@@ -63,6 +64,7 @@ public class JDAImpl implements JDA
     protected Status status = Status.INITIALIZING;
     protected SelfInfo selfInfo;
     protected ShardInfo shardInfo;
+    protected Presence presence;
     protected String token = null;
     protected boolean audioEnabled;
     protected boolean useShutdownHook;
@@ -486,6 +488,14 @@ public class JDAImpl implements JDA
     public ShardInfo getShardInfo()
     {
         return shardInfo;
+    }
+
+    @Override
+    public Presence getPresence()
+    {
+        if (presence == null)
+            presence = new Presence(this);
+        return presence;
     }
 
     @Override

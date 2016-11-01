@@ -20,6 +20,7 @@ import net.dv8tion.jda.bot.JDABot;
 import net.dv8tion.jda.client.JDAClient;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.hooks.IEventManager;
+import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.requests.ratelimit.IBucket;
 import org.apache.http.HttpHost;
 
@@ -460,4 +461,6 @@ public interface JDA
     JDABot asBot();
 
     ShardInfo getShardInfo();
+
+    Presence getPresence();
 }
