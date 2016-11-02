@@ -22,6 +22,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.BaseRequest;
 import com.mashape.unirest.request.GetRequest;
 import com.mashape.unirest.request.HttpRequest;
+import com.mashape.unirest.request.body.MultipartBody;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDAInfo;
@@ -89,10 +90,22 @@ public class Requester
         if (retryAfter != null)
             return retryAfter;
 
+        BaseRequest request;
         Object body = apiRequest.getData();
 
-        String bodyData = body != null ? body.toString() : null;
-        BaseRequest request = createRequest(route, bodyData);
+        //Special case handling for MessageChannel#sendFile.
+        // If a MultipartBody request was passed as the body then we assume it was constructed correctly
+        // and just wrap it in auth headers and allow processing.
+        if (body instanceof MultipartBody)
+        {
+            request = addHeaders((MultipartBody) body);
+        }
+        else
+        {
+            String bodyData = body != null ? body.toString() : null;
+            request = createRequest(route, bodyData);
+        }
+
         try
         {
             HttpResponse<String> response = request.asString();
@@ -173,20 +186,22 @@ public class Requester
         return request;
     }
 
-    protected <T extends HttpRequest> T addHeaders(T request)
+    protected <T extends BaseRequest> T addHeaders(T baseRequest)
     {
+        HttpRequest request = baseRequest.getHttpRequest();
+
         //adding token to all requests to the discord api or cdn pages
         //can't check for startsWith(DISCORD_API_PREFIX) due to cdn endpoints
         if (api.getToken() != null && request.getUrl().contains("discordapp.com"))
         {
             request.header("authorization", api.getToken());
         }
-        if (!(request instanceof GetRequest))
+        if (!(request instanceof GetRequest) && !(baseRequest instanceof MultipartBody))
         {
             request.header("Content-Type", "application/json");
         }
         request.header("user-agent", USER_AGENT);
         request.header("Accept-Encoding", "gzip");
-        return request;
+        return baseRequest;
     }
 }

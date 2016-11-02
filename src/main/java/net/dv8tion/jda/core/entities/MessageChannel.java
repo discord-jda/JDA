@@ -21,6 +21,8 @@ import net.dv8tion.jda.core.requests.RestAction;
 //import net.dv8tion.jda.core.exceptions.VerificationLevelException;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -130,7 +132,9 @@ public interface MessageChannel extends ISnowflake
      *      If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      *      and you do not meet the required verification-level of the guild.
      */
-    RestAction<Message> sendFile(File file, Message message);
+    RestAction<Message> sendFile(File file, Message message) throws IOException;
+    RestAction<Message> sendFile(InputStream data, String fileName, Message message);
+    RestAction<Message> sendFile(byte[] data, String fileName, Message message);
 
     /**
      * Attempts to get a {@link net.dv8tion.jda.core.entities.Message Message} from the Discord servers that has

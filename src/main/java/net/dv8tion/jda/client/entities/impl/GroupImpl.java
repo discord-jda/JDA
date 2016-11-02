@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.client.entities.impl;
 
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.request.body.MultipartBody;
 import net.dv8tion.jda.client.entities.Call;
 import net.dv8tion.jda.client.entities.Friend;
 import net.dv8tion.jda.client.entities.Group;
@@ -28,14 +30,16 @@ import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.*;
+import org.apache.http.util.Args;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class GroupImpl implements Group
@@ -180,9 +184,80 @@ public class GroupImpl implements Group
     }
 
     @Override
-    public RestAction<Message> sendFile(File file, Message message)
+    public RestAction<Message> sendFile(File file, Message message) throws IOException
     {
-        return null;
+        checkNull(file, "file");
+
+        if(file == null || !file.exists() || !file.canRead())
+            throw new IllegalArgumentException("Provided file is either null, doesn't exist or is not readable!");
+        if (file.length() > 8<<20)   //8MB
+            throw new IllegalArgumentException("File is to big! Max file-size is 8MB");
+
+        return sendFile(Files.readAllBytes(Paths.get(file.getAbsolutePath())), file.getName(), message);
+    }
+
+    @Override
+    public RestAction<Message> sendFile(InputStream data, String fileName, Message message)
+    {
+        checkNull(data, "data InputStream");
+        checkNull(fileName, "fileName");
+
+        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(id);
+        MultipartBody body = Unirest.post(Requester.DISCORD_API_PREFIX + route.getCompiledRoute())
+                .field("", ""); //We use this to change from an HttpRequest to a MultipartBody
+
+        body.field("file", data, fileName);
+
+        if (message != null)
+        {
+            body.field("content", message.getRawContent());
+            body.field("tts", message.isTTS());
+        }
+
+        return new RestAction<Message>(getJDA(), route, body)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                    request.onSuccess(EntityBuilder.get(api).createMessage(response.getObject()));
+                else
+                    request.onFailure(response);
+            }
+        };
+    }
+
+    @Override
+    public RestAction<Message> sendFile(byte[] data, String fileName, Message message)
+    {
+        checkNull(fileName, "fileName");
+
+        if (data.length > 8<<20)   //8MB
+            throw new IllegalArgumentException("Provided data is too large! Max file-size is 8MB");
+
+        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(id);
+        MultipartBody body = Unirest.post(Requester.DISCORD_API_PREFIX + route.getCompiledRoute())
+                .field("", ""); //We use this to change from an HttpRequest to a MultipartBody
+
+        body.field("file", data, fileName);
+
+        if (message != null)
+        {
+            body.field("content", message.getRawContent());
+            body.field("tts", message.isTTS());
+        }
+
+        return new RestAction<Message>(getJDA(), route, body)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                    request.onSuccess(EntityBuilder.get(api).createMessage(response.getObject()));
+                else
+                    request.onFailure(response);
+            }
+        };
     }
 
     @Override
@@ -201,6 +276,7 @@ public class GroupImpl implements Group
             @Override
             protected void handleResponse(Response response, Request request)
             {
+                //TODO: check if the fail is due to a permission error
                 if (response.isOk())
                     request.onSuccess(null);
                 else

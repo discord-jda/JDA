@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
+import com.mashape.unirest.request.body.MultipartBody;
 import net.dv8tion.jda.client.exceptions.VerificationLevelException;
 import net.dv8tion.jda.core.*;
 import net.dv8tion.jda.core.entities.*;
@@ -29,6 +32,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -189,9 +196,86 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
-    public RestAction<Message> sendFile(File file, Message message)
+    public RestAction<Message> sendFile(File file, Message message) throws IOException
     {
-        return null;
+        checkNull(file, "file");
+
+        if(file == null || !file.exists() || !file.canRead())
+            throw new IllegalArgumentException("Provided file is either null, doesn't exist or is not readable!");
+        if (file.length() > 8<<20)   //8MB
+            throw new IllegalArgumentException("File is to big! Max file-size is 8MB");
+
+        return sendFile(Files.readAllBytes(Paths.get(file.getAbsolutePath())), file.getName(), message);
+    }
+
+    @Override
+    public RestAction<Message> sendFile(InputStream data, String fileName, Message message)
+    {
+        checkVerification();
+        checkPermission(Permission.MESSAGE_WRITE);
+        checkPermission(Permission.MESSAGE_ATTACH_FILES);
+        checkNull(data, "data InputStream");
+        checkNull(fileName, "fileName");
+
+        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(id);
+        MultipartBody body = Unirest.post(Requester.DISCORD_API_PREFIX + route.getCompiledRoute())
+                .field("", ""); //We use this to change from an HttpRequest to a MultipartBody
+
+        body.field("file", data, fileName);
+
+        if (message != null)
+        {
+            body.field("content", message.getRawContent());
+            body.field("tts", message.isTTS());
+        }
+
+        return new RestAction<Message>(getJDA(), route, body)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                    request.onSuccess(EntityBuilder.get(api).createMessage(response.getObject()));
+                else
+                    request.onFailure(response);
+            }
+        };
+    }
+
+    @Override
+    public RestAction<Message> sendFile(byte[] data, String fileName, Message message)
+    {
+        checkVerification();
+        checkPermission(Permission.MESSAGE_WRITE);
+        checkPermission(Permission.MESSAGE_ATTACH_FILES);
+        checkNull(fileName, "fileName");
+
+        if (data.length > 8<<20)   //8MB
+            throw new IllegalArgumentException("Provided data is too large! Max file-size is 8MB");
+
+        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(id);
+        MultipartBody body = Unirest.post(Requester.DISCORD_API_PREFIX + route.getCompiledRoute())
+                .field("", ""); //We use this to change from an HttpRequest to a MultipartBody
+
+        body.field("file", data, fileName);
+
+        if (message != null)
+        {
+            body.field("content", message.getRawContent());
+            body.field("tts", message.isTTS());
+        }
+
+        return new RestAction<Message>(getJDA(), route, body)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                    request.onSuccess(EntityBuilder.get(api).createMessage(response.getObject()));
+                else
+                    request.onFailure(response);
+            }
+        };
     }
 
     @Override
@@ -215,22 +299,8 @@ public class TextChannelImpl implements TextChannel
                     request.onSuccess(m);
                 }
                 else
-                {
-                    ErrorResponse error = ErrorResponse.fromJSON(response.getObject());
-                    if (error == ErrorResponse.MISSING_PERMISSIONS)
-                    {
-                        //Double check to make sure we still have permission to read.
-                        if (!guild.getSelfMember().hasPermission(Permission.MESSAGE_READ))
-                            request.onFailure(new PermissionException(Permission.MESSAGE_READ));
-                        else
-                            request.onFailure(new PermissionException(Permission.MESSAGE_MANAGE,
-                                    "You need MESSAGE_MANAGE permission to delete another users Messages"));
-                    }
-                    else
-                    {
-                        request.onFailure(new ErrorResponseException(error, response));
-                    }
-                }
+                    request.onFailure(response);
+
             }
         };
     }
@@ -249,7 +319,22 @@ public class TextChannelImpl implements TextChannel
                 if (response.isOk())
                     request.onSuccess(null);
                 else
-                    request.onFailure(response);
+                {
+                    ErrorResponse error = ErrorResponse.fromJSON(response.getObject());
+                    if (error == ErrorResponse.MISSING_PERMISSIONS)
+                    {
+                        //Double check to make sure we still have permission to read.
+                        if (!guild.getSelfMember().hasPermission(Permission.MESSAGE_READ))
+                            request.onFailure(new PermissionException(Permission.MESSAGE_READ));
+                        else
+                            request.onFailure(new PermissionException(Permission.MESSAGE_MANAGE,
+                                    "You need MESSAGE_MANAGE permission to delete another users Messages"));
+                    }
+                    else
+                    {
+                        request.onFailure(response);
+                    }
+                }
             }
         };
     }
