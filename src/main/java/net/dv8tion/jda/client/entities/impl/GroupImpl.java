@@ -263,7 +263,25 @@ public class GroupImpl implements Group
     @Override
     public RestAction<Message> getMessageById(String messageId)
     {
-        return null;
+        checkNull(messageId, "messageId");
+
+        Route.CompiledRoute route = Route.Messages.GET_MESSAGE.compile(getId(), messageId);
+        return new RestAction<Message>(getJDA(), route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                {
+                    Message m = EntityBuilder.get(getJDA()).createMessage(response.getObject());
+                    request.onSuccess(m);
+                }
+                else
+                {
+                    request.onFailure(response);
+                }
+            }
+        };
     }
 
     @Override
@@ -304,9 +322,20 @@ public class GroupImpl implements Group
     }
 
     @Override
-    public RestAction sendTyping()
+    public RestAction<Void> sendTyping()
     {
-        return null;
+        Route.CompiledRoute route = Route.Channels.SEND_TYPING.compile(id);
+        return new RestAction<Void>(getJDA(), route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
     }
 
     @Override
