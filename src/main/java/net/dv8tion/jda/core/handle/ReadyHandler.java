@@ -25,6 +25,7 @@ import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.WebSocketClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -64,6 +65,9 @@ public class ReadyHandler extends SocketHandler
             userSettingsObj
                     // TODO: set all information and handle updates
                     .setStatus(userSettingsJson.isNull("status") ? OnlineStatus.ONLINE : OnlineStatus.fromKey(userSettingsJson.getString("status")));
+            // update presence information unless the status is ONLINE
+            if (userSettingsObj.getStatus() != OnlineStatus.ONLINE)
+                ((PresenceImpl) api.getPresence()).setCacheStatus(userSettingsObj.getStatus());
         }
 
         //Keep a list of all guilds in incompleteGuilds that need to be setup (GuildMemberChunk / GuildSync)

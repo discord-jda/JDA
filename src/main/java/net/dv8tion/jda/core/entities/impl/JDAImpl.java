@@ -29,6 +29,7 @@ import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.hooks.InterfacedEventManager;
 import net.dv8tion.jda.core.managers.Presence;
+import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.requests.ratelimit.IBucket;
 import net.dv8tion.jda.core.utils.SimpleLog;
@@ -37,7 +38,10 @@ import org.json.JSONObject;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class JDAImpl implements JDA
@@ -54,6 +58,7 @@ public class JDAImpl implements JDA
     protected final HashMap<String, PrivateChannel> fakePrivateChannels = new HashMap<>();
 
     protected final AccountType accountType;
+    protected final PresenceImpl presence;
     protected final JDAClient jdaClient;
     protected final JDABot jdaBot;
 
@@ -64,7 +69,6 @@ public class JDAImpl implements JDA
     protected Status status = Status.INITIALIZING;
     protected SelfInfo selfInfo;
     protected ShardInfo shardInfo;
-    protected Presence presence;
     protected String token = null;
     protected boolean audioEnabled;
     protected boolean useShutdownHook;
@@ -74,6 +78,7 @@ public class JDAImpl implements JDA
 
     public JDAImpl(AccountType accountType, HttpHost proxy, boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled)
     {
+        this.presence = new PresenceImpl(this);
         this.accountType = accountType;
         this.proxy = proxy;
         this.autoReconnect = autoReconnect;
@@ -493,8 +498,6 @@ public class JDAImpl implements JDA
     @Override
     public Presence getPresence()
     {
-        if (presence == null)
-            presence = new Presence(this);
         return presence;
     }
 

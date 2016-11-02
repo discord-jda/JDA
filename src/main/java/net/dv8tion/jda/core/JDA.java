@@ -462,5 +462,11 @@ public interface JDA
 
     ShardInfo getShardInfo();
 
+    /**
+     * The {@link net.dv8tion.jda.core.managers.Presence Presence} of the current session
+     *
+     * @return
+     *      The never-null {@link net.dv8tion.jda.core.managers.Presence Presence} of this session
+     */
     Presence getPresence();
 }

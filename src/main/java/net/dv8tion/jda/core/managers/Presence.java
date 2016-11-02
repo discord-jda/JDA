@@ -16,40 +16,23 @@
 
 package net.dv8tion.jda.core.managers;
 
-import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Game;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import org.json.JSONObject;
 
 /**
  * The Presence associated with the provided JDA instance
  */
-public class Presence
+public interface Presence
 {
 
-    private final JDAImpl api;
-    private boolean idle = false;
-    private Game game = null;
-    private OnlineStatus status = OnlineStatus.ONLINE;
-
     /**
-     * Creates a new Presence representation for the provided JDAImpl instance
+     * The JDA instance of this Presence
      *
-     * @param jda
-     *      The not-null JDAImpl instance to use
+     * @return
+     *      The current JDA instance
      */
-    public Presence(JDAImpl jda)
-    {
-        this.api = jda;
-        if (jda.getAccountType() == AccountType.CLIENT)
-            status = jda.asClient().getSettings().getStatus();
-    }
-
-
-    /* -- Getters -- */
-
+    JDA getJDA();
 
     /**
      * The current OnlineStatus for this session.<br>
@@ -58,10 +41,7 @@ public class Presence
      * @return
      *      The {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} of the current session
      */
-    public OnlineStatus getStatus()
-    {
-        return status;
-    }
+    OnlineStatus getStatus();
 
     /**
      * The current Game for this session.<br>
@@ -70,10 +50,7 @@ public class Presence
      * @return
      *      The {@link net.dv8tion.jda.core.entities.Game Game} of the current session
      */
-    public Game getGame()
-    {
-        return game;
-    }
+    Game getGame();
 
     /**
      * Whether the current session is marked as afk or not
@@ -81,25 +58,7 @@ public class Presence
      * @return
      *      true if this session is marked as afk
      */
-    public boolean isIdle()
-    {
-        return idle;
-    }
-
-    /**
-     * The JDA instance of this Presence
-     *
-     * @return
-     *      The current JDA instance
-     */
-    public JDA getJDA()
-    {
-        return api;
-    }
-
-
-    /* -- Setters -- */
-
+    boolean isIdle();
 
     /**
      * Sets the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} for this session
@@ -109,17 +68,7 @@ public class Presence
      * @throws IllegalArgumentException
      *      if the provided OnlineStatus is {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}
      */
-    public void setStatus(OnlineStatus status)
-    {
-        if (status == OnlineStatus.UNKNOWN)
-            throw new IllegalArgumentException("Cannot set the presence status to an unknown OnlineStatus!");
-        if (status == OnlineStatus.OFFLINE || status == null)
-            status = OnlineStatus.INVISIBLE;
-        JSONObject object = getFullPresence();
-        object.put("status", status.getKey());
-        update(object);
-        this.status = status;
-    }
+    void setStatus(OnlineStatus status);
 
     /**
      * Sets the {@link net.dv8tion.jda.core.entities.Game Game} for this session
@@ -129,20 +78,7 @@ public class Presence
      * @see net.dv8tion.jda.core.entities.Game#of(String)
      * @see net.dv8tion.jda.core.entities.Game#of(String, String)
      */
-    public void setGame(Game game)
-    {
-        JSONObject gameObj = getGameJson(game);
-        if (gameObj == null)
-        {
-            update(getFullPresence().put("game", JSONObject.NULL));
-            this.game = null;
-            return;
-        }
-        JSONObject object = getFullPresence();
-        object.put("game", gameObj);
-        update(object);
-        this.game = game;
-    }
+    void setGame(Game game);
 
     /**
      * Sets whether this session should be marked as afk or not
@@ -150,50 +86,6 @@ public class Presence
      * @param idle
      *      boolean
      */
-    public void setIdle(boolean idle)
-    {
-        JSONObject object = getFullPresence();
-        object.put("afk", idle);
-        update(object);
-        this.idle = idle;
-    }
-
-
-    /* -- Private Methods -- */
-
-
-    private JSONObject getFullPresence()
-    {
-        JSONObject game = getGameJson(this.game);
-        return new JSONObject()
-              .put("afk", idle)
-              .put("since", System.currentTimeMillis())
-              .put("game", game == null ? JSONObject.NULL : game)
-              .put("status", getStatus().getKey());
-    }
-
-    private JSONObject getGameJson(Game game)
-    {
-        if (game == null || game.getName() == null || game.getType() == null)
-            return null;
-        JSONObject gameObj = new JSONObject();
-        gameObj.put("name", game.getName());
-        gameObj.put("type", game.getType().getKey());
-        if (game.getType() == Game.GameType.TWITCH && game.getUrl() != null)
-            gameObj.put("url", game.getUrl());
-
-        return gameObj;
-    }
-
-
-    /* -- Terminal -- */
-
-
-    protected void update(JSONObject data)
-    {
-        api.getClient().send(new JSONObject()
-            .put("d", data)
-            .put("op", 3).toString());
-    }
+    void setIdle(boolean idle);
 
 }
