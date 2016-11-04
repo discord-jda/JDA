@@ -16,8 +16,10 @@
 package net.dv8tion.jda.core.entities.impl;
 
 import net.dv8tion.jda.core.AccountType;
+import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.SelfUser;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
+import net.dv8tion.jda.core.requests.RestAction;
 
 public class SelfUserImpl extends UserImpl implements SelfUser
 {
@@ -30,6 +32,24 @@ public class SelfUserImpl extends UserImpl implements SelfUser
     public SelfUserImpl(String id, JDAImpl api)
     {
         super(id, api);
+    }
+
+    @Override
+    public boolean hasPrivateChannel()
+    {
+        return false;
+    }
+
+    @Override
+    public PrivateChannel getPrivateChannel()
+    {
+        throw new UnsupportedOperationException("You cannot get a PrivateChannel with yourself (SelfUser)");
+    }
+
+    @Override
+    public RestAction<PrivateChannel> openPrivateChannel()
+    {
+        throw new UnsupportedOperationException("You cannot open a PrivateChannel with yourself (SelfUser)");
     }
 
     @Override
