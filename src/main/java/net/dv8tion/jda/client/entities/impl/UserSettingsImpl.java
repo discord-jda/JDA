@@ -140,7 +140,7 @@ public class UserSettingsImpl implements UserSettings
     @Override
     public int hashCode()
     {
-        return getJDA().getSelfInfo().getId().hashCode();
+        return getJDA().getSelfUser().getId().hashCode();
     }
 
     @Override
@@ -152,6 +152,6 @@ public class UserSettingsImpl implements UserSettings
     @Override
     public String toString()
     {
-        return "UserSettings(" + getJDA().getSelfInfo() + ")";
+        return "UserSettings(" + getJDA().getSelfUser() + ")";
     }
 }
