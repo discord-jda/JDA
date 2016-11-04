@@ -18,7 +18,7 @@ package net.dv8tion.jda.core.handle;
 
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.entities.impl.SelfInfoImpl;
+import net.dv8tion.jda.core.entities.impl.SelfUserImpl;
 import net.dv8tion.jda.core.events.self.*;
 import org.json.JSONObject;
 
@@ -34,7 +34,7 @@ public class UserUpdateHandler extends SocketHandler
     @Override
     protected String handleInternally(JSONObject content)
     {
-        SelfInfoImpl self = (SelfInfoImpl) api.getSelfInfo();
+        SelfUserImpl self = (SelfUserImpl) api.getSelfUser();
 
         String name = content.getString("username");
         String discriminator = content.getString("discriminator");

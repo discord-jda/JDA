@@ -74,19 +74,19 @@ public class EntityBuilder
         this.api = (JDAImpl) api;
     }
 
-    public SelfInfo createSelfInfo(JSONObject self)
+    public SelfUser createSelfUser(JSONObject self)
     {
-        SelfInfoImpl selfInfo = ((SelfInfoImpl) api.getSelfInfo());
-        if (selfInfo == null)
+        SelfUserImpl selfUser = ((SelfUserImpl) api.getSelfUser());
+        if (selfUser == null)
         {
-            selfInfo = new SelfInfoImpl(self.getString("id"), api);
-            api.setSelfInfo(selfInfo);
+            selfUser = new SelfUserImpl(self.getString("id"), api);
+            api.setSelfUser(selfUser);
         }
-        if (!api.getUserMap().containsKey(selfInfo.getId()))
+        if (!api.getUserMap().containsKey(selfUser.getId()))
         {
-            api.getUserMap().put(selfInfo.getId(), selfInfo);
+            api.getUserMap().put(selfUser.getId(), selfUser);
         }
-        return (SelfInfo) selfInfo
+        return (SelfUser) selfUser
                 .setVerified(self.getBoolean("verified"))
                 .setMfaEnabled(self.getBoolean("mfa_enabled"))
                 .setEmail(!self.isNull("email") ? self.getString("email") : null)
@@ -682,8 +682,8 @@ public class EntityBuilder
                 .setPinned(!jsonObject.isNull("pinned") && jsonObject.getBoolean("pinned"));
         if (chan instanceof PrivateChannel)
         {
-            if (StringUtils.equals(authorId, api.getSelfInfo().getId()))
-                message.setAuthor(api.getSelfInfo());
+            if (StringUtils.equals(authorId, api.getSelfUser().getId()))
+                message.setAuthor(api.getSelfUser());
             else
                 message.setAuthor(((PrivateChannel) chan).getUser());
         }
@@ -1008,7 +1008,7 @@ public class EntityBuilder
         }
 
         HashMap<String, User> groupUsers = group.getUserMap();
-        groupUsers.put(api.getSelfInfo().getId(), api.getSelfInfo());
+        groupUsers.put(api.getSelfUser().getId(), api.getSelfUser());
         for (int i = 0; i < recipients.length(); i++)
         {
             JSONObject groupUser = recipients.getJSONObject(i);

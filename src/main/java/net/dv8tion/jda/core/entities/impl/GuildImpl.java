@@ -138,7 +138,7 @@ public class GuildImpl implements Guild
     @Override
     public Member getSelfMember()
     {
-        return getMember(getJDA().getSelfInfo());
+        return getMember(getJDA().getSelfUser());
     }
 
     @Override
@@ -448,10 +448,10 @@ public class GuildImpl implements Guild
                 if(ChronoUnit.MINUTES.between(getSelfMember().getJoinDate(), OffsetDateTime.now()) < 10)
                     break;
             case MEDIUM:
-                if(ChronoUnit.MINUTES.between(MiscUtil.getCreationTime(api.getSelfInfo()), OffsetDateTime.now()) < 5)
+                if(ChronoUnit.MINUTES.between(MiscUtil.getCreationTime(api.getSelfUser()), OffsetDateTime.now()) < 5)
                     break;
             case LOW:
-                if(!api.getSelfInfo().isVerified())
+                if(!api.getSelfUser().isVerified())
                     break;
             case NONE:
                 canSendVerification = true;

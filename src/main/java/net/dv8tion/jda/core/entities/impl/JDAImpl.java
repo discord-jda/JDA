@@ -61,7 +61,7 @@ public class JDAImpl implements JDA
     protected Requester requester = new Requester(this);
     protected IEventManager eventManager = new InterfacedEventManager();
     protected Status status = Status.INITIALIZING;
-    protected SelfInfo selfInfo;
+    protected SelfUser selfUser;
     protected ShardInfo shardInfo;
     protected String token = null;
     protected boolean audioEnabled;
@@ -404,10 +404,9 @@ public class JDAImpl implements JDA
         return null;
     }
 
-    @Override
-    public SelfInfo getSelfInfo()
+    public SelfUser getSelfUser()
     {
-        return selfInfo;
+        return selfUser;
     }
 
     @Override
@@ -576,9 +575,9 @@ public class JDAImpl implements JDA
         return fakePrivateChannels;
     }
 
-    public void setSelfInfo(SelfInfo selfInfo)
+    public void setSelfUser(SelfUser selfUser)
     {
-        this.selfInfo = selfInfo;
+        this.selfUser = selfUser;
     }
 
     public void setResponseTotal(int responseTotal)

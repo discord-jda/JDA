@@ -304,7 +304,7 @@ public class MessageImpl implements Message
     @Override
     public RestAction<Message> editMessage(Message newContent)
     {
-        if (!api.getSelfInfo().equals(getAuthor()))
+        if (!api.getSelfUser().equals(getAuthor()))
             throw new UnsupportedOperationException("Attempted to update message that was not sent by this account. You cannot modify other User's messages!");
 
 
@@ -338,11 +338,11 @@ public class MessageImpl implements Message
     @Override
     public RestAction<Void> deleteMessage()
     {
-        if (!getJDA().getSelfInfo().equals(getAuthor()))
+        if (!getJDA().getSelfUser().equals(getAuthor()))
         {
             if (isFromType(ChannelType.PRIVATE) || isFromType(ChannelType.GROUP))
                 throw new PermissionException("Cannot delete another User's messages in a Group or PrivateChannel.");
-            else if (!getGuild().getMember(getJDA().getSelfInfo())
+            else if (!getGuild().getMember(getJDA().getSelfUser())
                     .hasPermission((TextChannel) getChannel(), Permission.MESSAGE_MANAGE))
                 throw new PermissionException(Permission.MESSAGE_MANAGE);
         }

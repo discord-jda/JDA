@@ -20,7 +20,7 @@ import net.dv8tion.jda.core.exceptions.AccountTypeException;
 /**
  * Represents the currently logged in account.
  */
-public interface SelfInfo extends User
+public interface SelfUser extends User
 {
 
     /**

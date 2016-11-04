@@ -16,10 +16,10 @@
 package net.dv8tion.jda.core.entities.impl;
 
 import net.dv8tion.jda.core.AccountType;
-import net.dv8tion.jda.core.entities.SelfInfo;
+import net.dv8tion.jda.core.entities.SelfUser;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 
-public class SelfInfoImpl extends UserImpl implements SelfInfo
+public class SelfUserImpl extends UserImpl implements SelfUser
 {
     private boolean verified;
     private boolean mfaEnabled;
@@ -27,7 +27,7 @@ public class SelfInfoImpl extends UserImpl implements SelfInfo
     //Client only
     private String email;
 
-    public SelfInfoImpl(String id, JDAImpl api)
+    public SelfUserImpl(String id, JDAImpl api)
     {
         super(id, api);
     }
@@ -58,19 +58,19 @@ public class SelfInfoImpl extends UserImpl implements SelfInfo
 //        return ApplicationUtil.getAuthInvite(getJDA(), perms);
 //    }
 
-    public SelfInfoImpl setVerified(boolean verified)
+    public SelfUserImpl setVerified(boolean verified)
     {
         this.verified = verified;
         return this;
     }
 
-    public SelfInfoImpl setMfaEnabled(boolean enabled)
+    public SelfUserImpl setMfaEnabled(boolean enabled)
     {
         this.mfaEnabled = enabled;
         return this;
     }
 
-    public SelfInfoImpl setEmail(String email)
+    public SelfUserImpl setEmail(String email)
     {
         this.email = email;
         return this;

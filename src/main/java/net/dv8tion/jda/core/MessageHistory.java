@@ -24,7 +24,6 @@ import net.dv8tion.jda.core.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.core.events.message.MessageUpdateEvent;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.entities.EntityBuilder;
-import net.dv8tion.jda.core.hooks.*;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
@@ -47,7 +46,7 @@ public class MessageHistory implements net.dv8tion.jda.core.hooks.EventListener
         this.api = (JDAImpl) channel.getJDA();
         this.channel = channel;
         if (channel instanceof TextChannel &&
-                !((TextChannel) channel).getGuild().getMember(api.getSelfInfo()).hasPermission(Permission.MESSAGE_HISTORY))
+                !((TextChannel) channel).getGuild().getMember(api.getSelfUser()).hasPermission(Permission.MESSAGE_HISTORY))
             throw new PermissionException(Permission.MESSAGE_HISTORY);
     }
 

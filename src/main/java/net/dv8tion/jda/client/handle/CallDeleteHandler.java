@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.client.handle;
 
-import net.dv8tion.jda.client.entities.Call;
 import net.dv8tion.jda.client.entities.CallableChannel;
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.client.entities.impl.CallImpl;
@@ -72,7 +71,7 @@ public class CallDeleteHandler extends SocketHandler
             PrivateChannelImpl priv = (PrivateChannelImpl) channel;
             priv.setCurrentCall(null);
             ((JDAClientImpl) api.asClient()).getCallUserMap().remove(priv.getUser().getId());
-            ((JDAClientImpl) api.asClient()).getCallUserMap().remove(api.getSelfInfo().getId());
+            ((JDAClientImpl) api.asClient()).getCallUserMap().remove(api.getSelfUser().getId());
         }
 
         api.getEventManager().handle(

@@ -89,7 +89,7 @@ public class CallCreateHandler extends SocketHandler
                 WebSocketClient.LOG.fatal("Received a CALL_CREATE for a PrivateChannel that already has an active call cached! JSON: " + content);
             priv.setCurrentCall(call);
             callUsers.put(priv.getUser().getId(), new CallUserImpl(call, priv.getUser()));
-            callUsers.put(api.getSelfInfo().getId(), new CallUserImpl(call, api.getSelfInfo()));
+            callUsers.put(api.getSelfUser().getId(), new CallUserImpl(call, api.getSelfUser()));
         }
 
         for (int i = 0; i < voiceStates.length(); i++)

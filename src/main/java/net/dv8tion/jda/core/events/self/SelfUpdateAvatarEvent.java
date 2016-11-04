@@ -35,6 +35,6 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent
 
     public String getOldAvatarUrl()
     {
-        return oldAvatarId == null ? null : "https://cdn.discordapp.com/avatars/" + getSelfInfo().getId() + "/" + oldAvatarId + ".jpg";
+        return oldAvatarId == null ? null : "https://cdn.discordapp.com/avatars/" + getSelfUser().getId() + "/" + oldAvatarId + ".jpg";
     }
 }

@@ -346,14 +346,14 @@ public interface JDA
     Emote getEmoteById(String id);
 
     /**
-     * Returns the currently logged in account represented by {@link net.dv8tion.jda.core.entities.SelfInfo SelfInfo}.<br>
+     * Returns the currently logged in account represented by {@link net.dv8tion.jda.core.entities.SelfUser SelfUser}.<br>
      * Account settings <b>cannot</b> be modified using this object. If you wish to modify account settings please
      *   use the AccountManager.
      *
      * @return
      *      The currently logged in account.
      */
-    SelfInfo getSelfInfo();
+    SelfUser getSelfUser();
 
     /**
      * The login token that is currently being used for Discord authentication.

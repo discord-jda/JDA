@@ -17,7 +17,7 @@
 package net.dv8tion.jda.core.events.self;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.SelfInfo;
+import net.dv8tion.jda.core.entities.SelfUser;
 import net.dv8tion.jda.core.events.Event;
 
 public abstract class GenericSelfUpdateEvent extends Event
@@ -27,8 +27,8 @@ public abstract class GenericSelfUpdateEvent extends Event
         super(api, responseNumber);
     }
 
-    public SelfInfo getSelfInfo()
+    public SelfUser getSelfUser()
     {
-        return api.getSelfInfo();
+        return api.getSelfUser();
     }
 }
