@@ -27,6 +27,7 @@ import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.ReconnectedEvent;
 import net.dv8tion.jda.core.events.ResumedEvent;
 import net.dv8tion.jda.core.handle.*;
+import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import org.apache.http.HttpHost;
 import org.json.JSONArray;
@@ -398,9 +399,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected void sendIdentify()
     {
         LOG.debug("Sending Identify-packet...");
+        PresenceImpl presenceObj = (PresenceImpl) api.getPresence();
         JSONObject identify = new JSONObject()
                 .put("op", 2)
                 .put("d", new JSONObject()
+                        .put("presence", presenceObj.getFullPresence())
                         .put("token", api.getToken())
                         .put("properties", new JSONObject()
                                 .put("$os", System.getProperty("os.name"))

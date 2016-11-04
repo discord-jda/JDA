@@ -18,14 +18,11 @@ package net.dv8tion.jda.client.entities.impl;
 
 import net.dv8tion.jda.client.JDAClient;
 import net.dv8tion.jda.client.entities.*;
-import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import org.apache.http.HttpHost;
 
-import javax.management.relation.Relation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,10 +35,12 @@ public class JDAClientImpl implements JDAClient
     protected final HashMap<String, Group> groups = new HashMap<>();
     protected final HashMap<String, Relationship> relationships = new HashMap<>();
     protected final HashMap<String, CallUser> callUsers = new HashMap<>();
+    protected UserSettingsImpl userSettings;
 
     public JDAClientImpl(JDAImpl api)
     {
         this.api = api;
+        this.userSettings = new UserSettingsImpl(api);
     }
 
     @Override
@@ -170,6 +169,12 @@ public class JDAClientImpl implements JDAClient
     public Friend getFriendById(String id)
     {
         return (Friend) getRelationshipById(id, RelationshipType.FRIEND);
+    }
+
+    @Override
+    public UserSettings getSettings()
+    {
+        return userSettings;
     }
 
     public HashMap<String, Group> getGroupMap()

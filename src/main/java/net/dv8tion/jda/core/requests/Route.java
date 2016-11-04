@@ -41,6 +41,9 @@ public class Route
         public static final Route GET_PRIVATE_CHANNELS =   new Route(GET,    "users/@me/channels");
         public static final Route CREATE_PRIVATE_CHANNEL = new Route(POST,   "users/@me/channels");
         public static final Route GATEWAY =                new Route(GET,    "gateway");
+
+        // Client-only
+        public static final Route USER_SETTINGS =          new Route(GET,    "users/@me/settings");
     }
 
     public static class Users

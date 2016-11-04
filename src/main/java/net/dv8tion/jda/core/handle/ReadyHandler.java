@@ -18,11 +18,14 @@ package net.dv8tion.jda.core.handle;
 
 import net.dv8tion.jda.client.entities.Relationship;
 import net.dv8tion.jda.client.entities.impl.FriendImpl;
+import net.dv8tion.jda.client.entities.impl.UserSettingsImpl;
 import net.dv8tion.jda.core.AccountType;
+import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.WebSocketClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -53,6 +56,19 @@ public class ReadyHandler extends SocketHandler
         JSONObject selfJson = content.getJSONObject("user");
 
         builder.createSelfUser(selfJson);
+
+        if (api.getAccountType() == AccountType.CLIENT && !content.isNull("user_settings"))
+        {
+            // handle user settings
+            JSONObject userSettingsJson = content.getJSONObject("user_settings");
+            UserSettingsImpl userSettingsObj = (UserSettingsImpl) api.asClient().getSettings();
+            userSettingsObj
+                    // TODO: set all information and handle updates
+                    .setStatus(userSettingsJson.isNull("status") ? OnlineStatus.ONLINE : OnlineStatus.fromKey(userSettingsJson.getString("status")));
+            // update presence information unless the status is ONLINE
+            if (userSettingsObj.getStatus() != OnlineStatus.ONLINE)
+                ((PresenceImpl) api.getPresence()).setCacheStatus(userSettingsObj.getStatus());
+        }
 
         //Keep a list of all guilds in incompleteGuilds that need to be setup (GuildMemberChunk / GuildSync)
         //Send all guilds to the EntityBuilder's first pass to setup caching for when GUILD_CREATE comes

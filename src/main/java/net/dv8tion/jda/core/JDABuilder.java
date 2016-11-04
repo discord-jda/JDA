@@ -15,12 +15,12 @@
  */
 package net.dv8tion.jda.core;
 
-import net.dv8tion.jda.bot.entities.impl.JDABotImpl;
-import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.core.JDA.Status;
+import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.IEventManager;
+import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import org.apache.http.HttpHost;
 
 import javax.security.auth.login.LoginException;
@@ -51,8 +51,11 @@ public class JDABuilder
     protected boolean enableShutdownHook = true;
     protected boolean enableBulkDeleteSplitting = true;
     protected boolean autoReconnect = true;
+    protected boolean idle = false;
     protected IEventManager eventManager = null;
     protected JDA.ShardInfo shardInfo = null;
+    protected Game game = null;
+    protected OnlineStatus status = OnlineStatus.ONLINE;
 
     /**
      * Creates a completely empty JDABuilder.<br>
@@ -201,6 +204,60 @@ public class JDABuilder
     }
 
     /**
+     * Sets whether or not we should mark our session as afk<p>
+     * This value can be changed at any time in the {@link net.dv8tion.jda.core.managers.Presence Presence} from a JDA instance.
+     *
+     * @param idle
+     *      boolean value that will be provided with our IDENTIFY package to mark our session as afk or not. (default false)
+     * @return
+     *      Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @see net.dv8tion.jda.core.managers.Presence#setIdle(boolean)
+     */
+    public JDABuilder setIdle(boolean idle)
+    {
+        this.idle = idle;
+        return this;
+    }
+
+    /**
+     * Sets the {@link net.dv8tion.jda.core.entities.Game Game} for our session.<p>
+     * This value can be changed at any time in the {@link net.dv8tion.jda.core.managers.Presence Presence} from a JDA instance.
+     *
+     * @param game
+     *      An instance of {@link net.dv8tion.jda.core.entities.Game Game} (null allowed)
+     * @return
+     *      Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @see net.dv8tion.jda.core.managers.Presence#setGame(Game)
+     */
+    public JDABuilder setGame(Game game)
+    {
+        this.game = game;
+        return this;
+    }
+
+    /**
+     * Sets the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} our connection will display.<p>
+     * This value can be changed at any time in the {@link net.dv8tion.jda.core.managers.Presence Presence} from a JDA instance.<p>
+     * <b>This will not take affect for {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType#CLIENT} if the status specified in the user_settings
+     * is not "online" as it is overriding our identify status.</b>
+     *
+     * @param status
+     *      Not-null OnlineStatus (default online)
+     * @return
+     *      Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @throws IllegalArgumentException
+     *      if the provided OnlineStatus is null or {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}
+     * @see net.dv8tion.jda.core.managers.Presence#setStatus(OnlineStatus)
+     */
+    public JDABuilder setStatus(OnlineStatus status)
+    {
+        if (status == null || status == OnlineStatus.UNKNOWN)
+            throw new IllegalArgumentException("OnlineStatus cannot be null or unknown!");
+        this.status = status;
+        return this;
+    }
+
+    /**
      * Adds all provided listeners to the list of listeners that will be used to populate the {@link net.dv8tion.jda.core.JDA} object.
      * This uses the {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventListener} by default.
      * To switch to the {@link net.dv8tion.jda.core.hooks.AnnotatedEventManager AnnotatedEventManager},
@@ -290,6 +347,11 @@ public class JDABuilder
         listeners.forEach(jda::addEventListener);
         jda.setStatus(JDA.Status.INITIALIZED);  //This is already set by JDA internally, but this is to make sure the listeners catch it.
 //        jda.login(token, sharding);
+        // Set the presence information before connecting to have the correct information ready when sending IDENTIFY
+        ((PresenceImpl) jda.getPresence())
+                .setCacheGame(game)
+                .setCacheIdle(idle)
+                .setCacheStatus(status);
         jda.login(token, shardInfo);
         return jda;
     }
