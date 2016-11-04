@@ -206,7 +206,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 List<Role> collect = channel.getRoleOverrideMap().keySet().stream().filter(role -> !containedRoles.contains(role)).collect(Collectors.toList());
                 collect.forEach(role -> {
                     changedRoles.add(role);
-                    channel.getRolePermissionOverrides().remove(role);
+                    channel.getRoleOverrideMap().remove(role);
                 });
                 List<Member> collect1 = channel.getMemberOverrideMap().keySet().stream().filter(user -> !containedMembers.contains(user)).collect(Collectors.toList());
                 collect1.forEach(member -> {
