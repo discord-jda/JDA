@@ -22,18 +22,15 @@ import net.dv8tion.jda.client.entities.Call;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.MessageHistory;
-import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.requests.*;
+import net.dv8tion.jda.core.utils.DataUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -115,7 +112,7 @@ public class PrivateChannelImpl implements PrivateChannel
         if (file.length() > 8<<20)   //8MB
             throw new IllegalArgumentException("File is to big! Max file-size is 8MB");
 
-        return sendFile(Files.readAllBytes(Paths.get(file.getAbsolutePath())), file.getName(), message);
+        return sendFile(DataUtil.readFully(file), file.getName(), message);
     }
 
     @Override

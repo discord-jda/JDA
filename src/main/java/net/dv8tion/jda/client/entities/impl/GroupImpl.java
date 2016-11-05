@@ -31,6 +31,7 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.*;
+import net.dv8tion.jda.core.utils.DataUtil;
 import org.apache.http.util.Args;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -38,8 +39,6 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 
 public class GroupImpl implements Group
@@ -193,7 +192,7 @@ public class GroupImpl implements Group
         if (file.length() > 8<<20)   //8MB
             throw new IllegalArgumentException("File is to big! Max file-size is 8MB");
 
-        return sendFile(Files.readAllBytes(Paths.get(file.getAbsolutePath())), file.getName(), message);
+        return sendFile(DataUtil.readFully(file), file.getName(), message);
     }
 
     @Override
