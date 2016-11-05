@@ -24,7 +24,7 @@ import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.MessageHistory;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.requests.*;
-import net.dv8tion.jda.core.utils.DataUtil;
+import net.dv8tion.jda.core.utils.IOUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -112,7 +112,7 @@ public class PrivateChannelImpl implements PrivateChannel
         if (file.length() > 8<<20)   //8MB
             throw new IllegalArgumentException("File is to big! Max file-size is 8MB");
 
-        return sendFile(DataUtil.readFully(file), file.getName(), message);
+        return sendFile(IOUtil.readFully(file), file.getName(), message);
     }
 
     @Override

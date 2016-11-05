@@ -24,15 +24,13 @@ import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.MessageHistory;
-import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.*;
-import net.dv8tion.jda.core.utils.DataUtil;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.IOUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -192,7 +190,7 @@ public class GroupImpl implements Group
         if (file.length() > 8<<20)   //8MB
             throw new IllegalArgumentException("File is to big! Max file-size is 8MB");
 
-        return sendFile(DataUtil.readFully(file), file.getName(), message);
+        return sendFile(IOUtil.readFully(file), file.getName(), message);
     }
 
     @Override

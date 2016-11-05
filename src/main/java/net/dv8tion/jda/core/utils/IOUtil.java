@@ -20,7 +20,7 @@ import org.apache.http.util.Args;
 
 import java.io.*;
 
-public class DataUtil
+public class IOUtil
 {
 
     /**

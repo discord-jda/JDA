@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.core.entities;
 
-import net.dv8tion.jda.core.utils.DataUtil;
+import net.dv8tion.jda.core.utils.IOUtil;
 import org.apache.commons.codec.binary.StringUtils;
 import org.apache.http.util.Args;
 
@@ -44,14 +44,14 @@ public class Icon
         Args.notNull(file, "Provided File");
         Args.check(file.exists(), "Provided file does not exist!");
 
-        return from(DataUtil.readFully(file));
+        return from(IOUtil.readFully(file));
     }
 
     public static Icon from(InputStream stream) throws IOException
     {
         Args.notNull(stream, "InputStream");
 
-        return from(DataUtil.readFully(stream));
+        return from(IOUtil.readFully(stream));
     }
 
     public static Icon from(byte[] data)
