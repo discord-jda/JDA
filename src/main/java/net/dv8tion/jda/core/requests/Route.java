@@ -35,7 +35,7 @@ public class Route
     public static class Self
     {
         public static final Route GET_SELF =               new Route(GET,    "users/@me");
-        public static final Route UPDATE_SELF =            new Route(PATCH,  "users/@me");
+        public static final Route MODIFY_SELF =            new Route(PATCH,  "users/@me");
         public static final Route GET_GUILDS  =            new Route(GET,    "users/@me/guilds");
         public static final Route LEAVE_GUILD =            new Route(DELETE, "users/@me/guilds/{guild_id}");
         public static final Route GET_PRIVATE_CHANNELS =   new Route(GET,    "users/@me/channels");

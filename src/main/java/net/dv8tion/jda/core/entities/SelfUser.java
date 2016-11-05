@@ -16,6 +16,8 @@
 package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
+import net.dv8tion.jda.core.managers.AccountManager;
+import net.dv8tion.jda.core.managers.AccountManagerUpdatable;
 
 /**
  * Represents the currently logged in account.
@@ -53,6 +55,10 @@ public interface SelfUser extends User
      *      {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}. E.g: If the logged in account isn't a Client account!
      */
     String getEmail() throws AccountTypeException;
+
+    AccountManager getManager();
+
+    AccountManagerUpdatable getManagerUpdatable();
 
 //    /**
 //     * Creates a OAuth invite-link used to invite bot-accounts.<br>

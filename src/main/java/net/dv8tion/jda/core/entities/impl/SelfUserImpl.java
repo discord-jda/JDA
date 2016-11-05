@@ -19,10 +19,18 @@ import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.SelfUser;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
+import net.dv8tion.jda.core.managers.AccountManager;
+import net.dv8tion.jda.core.managers.AccountManagerUpdatable;
+import net.dv8tion.jda.core.managers.RoleManager;
+import net.dv8tion.jda.core.managers.RoleManagerUpdatable;
 import net.dv8tion.jda.core.requests.RestAction;
 
 public class SelfUserImpl extends UserImpl implements SelfUser
 {
+    protected volatile AccountManager manager;
+    protected volatile AccountManagerUpdatable managerUpdatable;
+    private Object mngLock = new Object();
+
     private boolean verified;
     private boolean mfaEnabled;
 
@@ -70,6 +78,38 @@ public class SelfUserImpl extends UserImpl implements SelfUser
         if (api.getAccountType() != AccountType.CLIENT)
             throw new AccountTypeException(AccountType.CLIENT, "Email retrieval can only be done on CLIENT accounts!");
         return email;
+    }
+
+    @Override
+    public AccountManager getManager()
+    {
+        AccountManager mng = manager;
+        if (mng == null)
+        {
+            synchronized (mngLock)
+            {
+                mng = manager;
+                if (mng == null)
+                    mng = manager = new AccountManager(this);
+            }
+        }
+        return mng;
+    }
+
+    @Override
+    public AccountManagerUpdatable getManagerUpdatable()
+    {
+        AccountManagerUpdatable mng = managerUpdatable;
+        if (mng == null)
+        {
+            synchronized (mngLock)
+            {
+                mng = managerUpdatable;
+                if (mng == null)
+                    mng = managerUpdatable = new AccountManagerUpdatable(this);
+            }
+        }
+        return mng;
     }
 
 //    @Override

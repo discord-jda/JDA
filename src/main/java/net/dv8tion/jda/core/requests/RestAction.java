@@ -33,13 +33,13 @@ public abstract class RestAction<T>
     public static final Consumer DEFAULT_SUCCESS = o -> {};
     public static final Consumer<Throwable> DEFAULT_FAILURE = t ->
     {
-        LOG.fatal("RestAction queue returned failure: [" + t.getClass().getSimpleName() + "] " + t.getMessage());
         if (LOG.getEffectiveLevel().getPriority() <= SimpleLog.Level.DEBUG.getPriority())
-            LOG.log(t);
-        if (t instanceof ErrorResponseException)
         {
-            ErrorResponseException ex = (ErrorResponseException) t;
-            LOG.fatal(ex.getResponse().getString());
+            LOG.log(t);
+        }
+        else
+        {
+            LOG.fatal("RestAction queue returned failure: [" + t.getClass().getSimpleName() + "] " + t.getMessage());
         }
     };
 

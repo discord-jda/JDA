@@ -38,12 +38,12 @@ public class UserUpdateHandler extends SocketHandler
 
         String name = content.getString("username");
         String discriminator = content.getString("discriminator");
-        String avatarId = content.getString("avatar");
+        String avatarId = !content.isNull("avatar") ? content.getString("avatar") : null;
         boolean verified = content.getBoolean("verified");
         boolean mfaEnabled = content.getBoolean("mfa_enabled");
 
         //Client only
-        String email = content.has("email") ? content.getString("email") : null;
+        String email = !content.isNull("email") ? content.getString("email") : null;
 
         if (!Objects.equals(name, self.getName()) || !Objects.equals(discriminator, self.getDiscriminator()))
         {
