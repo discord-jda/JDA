@@ -17,6 +17,7 @@
 package net.dv8tion.jda.core.managers;
 
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.entities.SelfUser;
 import net.dv8tion.jda.core.requests.RestAction;
 
@@ -47,6 +48,16 @@ public class AccountManager
     public RestAction<Void> setName(String name, String currentPassword)
     {
         return updatable.getNameField().setValue(name).update(currentPassword);
+    }
+
+    public RestAction<Void> setAvatar(Icon avatar)
+    {
+        return setAvatar(avatar, null);
+    }
+
+    public RestAction<Void> setAvatar(Icon avatar, String currentPassword)
+    {
+        return updatable.getAvatarField().setValue(avatar).update(currentPassword);
     }
 
     public RestAction<Void> setEmail(String email, String currentPassword)

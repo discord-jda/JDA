@@ -1071,8 +1071,8 @@ public class GuildController
      *
      * @param name
      *      The name for the new Emote
-     * @param image
-     *      The {@link java.awt.image.RenderedImage RenderedImage} for the new Emote
+     * @param icon
+     *      The {@link net.dv8tion.jda.core.entities.Icon} for the new Emote
      * @param roles
      *      The {@link net.dv8tion.jda.core.entities.Role Roles} the new Emote should be restricted to
      * @return
@@ -1088,54 +1088,52 @@ public class GuildController
      * @throws java.io.IOException
      *      if the provided image causes an IO error
      */
-    public RestAction<Emote> createEmote(String name, RenderedImage image, Role... roles) throws IOException
+    public RestAction<Emote> createEmote(String name, Icon icon, Role... roles) throws IOException
     {
         checkAvailable();
         checkPermission(Permission.MANAGE_EMOTES);
-        checkNull(name,  "emote name");
-        checkNull(image, "emote image");
+        checkNull(name, "emote name");
+        checkNull(icon, "emote icon");
 
         if (getJDA().getAccountType() != AccountType.CLIENT)
             throw new AccountTypeException(AccountType.CLIENT);
 
         JSONObject body = new JSONObject();
         body.put("name", name);
+        body.put("image", icon.getEncoding());
         if (roles.length > 0) // making sure none of the provided roles are null before mapping them to the snowflake id
             body.put("roles", Stream.of(roles).filter(r -> r != null).map(ISnowflake::getId).collect(Collectors.toSet()));
-        try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) //using try block for resource cleanup
+
+        Route.CompiledRoute route = Route.Emotes.CREATE_EMOTE.compile(guild.getId());
+        return new RestAction<Emote>(getJDA(), route, body)
         {
-            ImageIO.write(image, "jpg", stream);
-            body.put("image", "data:image/jpeg;base64," + newStringUtf8(Base64.getEncoder().encode(stream.toByteArray())));
-            return new RestAction<Emote>(getJDA(), Route.Emotes.CREATE_EMOTE.compile(guild.getId()), body)
+            @Override
+            protected void handleResponse(Response response, Request request)
             {
-                @Override
-                protected void handleResponse(Response response, Request request)
+                if (response.isOk())
                 {
-                    if (response.isOk())
+                    JSONObject obj = response.getObject();
+                    String id = obj.getString("id");
+                    String name = obj.getString("name");
+                    EmoteImpl emote = new EmoteImpl(id, guild).setName(name);
+                    // managed is false by default, should always be false for emotes created by client accounts.
+
+                    JSONArray rolesArr = obj.getJSONArray("roles");
+                    Set<Role> roleSet = emote.getRoleSet();
+                    for (int i = 0; i < rolesArr.length(); i++)
                     {
-                        JSONObject obj = response.getObject();
-                        String id = obj.getString("id");
-                        String name = obj.getString("name");
-                        EmoteImpl emote = new EmoteImpl(id, guild).setName(name);
-                        // managed is false by default, should always be false for emotes created by client accounts.
-
-                        JSONArray rolesArr = obj.getJSONArray("roles");
-                        Set<Role> roleSet = emote.getRoleSet();
-                        for (int i = 0; i < rolesArr.length(); i++)
-                        {
-                            roleSet.add(guild.getRoleById(rolesArr.getString(i)));
-                        }
-
-                        // put emote into cache
-                        ((GuildImpl) guild).getEmoteMap().put(id, emote);
-
-                        request.onSuccess(emote);
+                        roleSet.add(guild.getRoleById(rolesArr.getString(i)));
                     }
-                    else
-                        request.onFailure(response);
+
+                    // put emote into cache
+                    ((GuildImpl) guild).getEmoteMap().put(id, emote);
+
+                    request.onSuccess(emote);
                 }
-            };
-        }
+                else
+                    request.onFailure(response);
+            }
+        };
     }
 
     protected void checkAvailable()

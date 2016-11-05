@@ -19,6 +19,7 @@ package net.dv8tion.jda.core.managers;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.requests.RestAction;
 
@@ -57,10 +58,10 @@ public class GuildManager
         return updatable.getRegionField().setValue(region).update();
     }
 
-//    public RestAction<Void> setIcon(AvatarUtil.Avatar avatar)
-//    {
-//        return updatable.setIcon(avatar).update();
-//    }
+    public RestAction<Void> setIcon(Icon icon)
+    {
+        return updatable.getIconField().setValue(icon).update();
+    }
 
     public RestAction<Void> setAfkChannel(VoiceChannel afkChannel)
     {

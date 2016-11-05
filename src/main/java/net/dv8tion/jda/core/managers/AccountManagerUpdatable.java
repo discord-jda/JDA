@@ -18,6 +18,7 @@ package net.dv8tion.jda.core.managers;
 
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.entities.SelfUser;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
@@ -37,6 +38,7 @@ public class AccountManagerUpdatable
     protected final SelfUser selfUser;
 
     protected AccountField<String> name;
+    protected AccountField<Icon> avatar;
     protected AccountField<String> email;
     protected AccountField<String> password;
 //    protected AccountField<Avatar> avatar;
@@ -62,6 +64,11 @@ public class AccountManagerUpdatable
         return name;
     }
 
+    public AccountField<Icon> getAvatarField()
+    {
+        return avatar;
+    }
+
     public AccountField<String> getEmailField()
     {
         if (!isType(AccountType.CLIENT))
@@ -81,6 +88,7 @@ public class AccountManagerUpdatable
     public void reset()
     {
         name.reset();
+        avatar.reset();
 
         if (isType(AccountType.CLIENT))
         {
@@ -105,6 +113,8 @@ public class AccountManagerUpdatable
 
         if (name.shouldUpdate())
             body.put("username", name.getValue());
+        if (avatar.shouldUpdate())
+            body.put("avatar", avatar.getValue() != null ? avatar.getValue().getEncoding() : JSONObject.NULL);
 
         if (isType(AccountType.CLIENT))
         {
@@ -142,6 +152,7 @@ public class AccountManagerUpdatable
     protected boolean needToUpdate()
     {
         return name.shouldUpdate()
+                || avatar.shouldUpdate()
                 || (isType(AccountType.CLIENT) && email.shouldUpdate())
                 || (isType(AccountType.CLIENT) && password.shouldUpdate());
     }
@@ -156,6 +167,27 @@ public class AccountManagerUpdatable
                 checkNull(value, "account name");
                 if (value.length() < 2 || value.length() > 32)
                     throw new IllegalArgumentException("Provided name must be 2 to 32 characters in length");
+            }
+        };
+
+        avatar = new AccountField<Icon>(this, null)
+        {
+            @Override
+            public void checkValue(Icon value)
+            {
+                checkNull(value, "Avatar");
+            }
+
+            @Override
+            public Icon getOriginalValue()
+            {
+                throw new UnsupportedOperationException("Cannot easily provide the original Avatar. Use User#getIconUrl() and download it yourself.");
+            }
+
+            @Override
+            public boolean shouldUpdate()
+            {
+                return isSet();
             }
         };
 

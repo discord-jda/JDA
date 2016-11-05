@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
@@ -39,6 +40,7 @@ public class GuildManagerUpdatable
 
     protected GuildField<String> name;
     protected GuildField<Guild.Timeout> timeout;
+    protected GuildField<Icon> icon;
     protected GuildField<Region> region;
     protected GuildField<VoiceChannel> afkChannel;
     protected GuildField<Guild.VerificationLevel> verificationLevel;
@@ -77,30 +79,13 @@ public class GuildManagerUpdatable
         return region;
     }
 
-//    /**
-//     * Changes the icon of this Guild.<br>
-//     * You can create the icon via the {@link net.dv8tion.jda.utils.AvatarUtil AvatarUtil} class.
-//     * Passing in null will keep the current icon,
-//     * while {@link net.dv8tion.jda.utils.AvatarUtil#DELETE_AVATAR DELETE_AVATAR} removes the current one.
-//     *
-//     * This change will only be applied, if {@link #update()} is called.
-//     * So multiple changes can be made at once.
-//     *
-//     * @param avatar
-//     *          the new icon, null to keep current, or AvatarUtil.DELETE_AVATAR to delete
-//     * @return
-//     *      This {@link net.dv8tion.jda.core.managers.GuildManager GuildManager} instance. Useful for chaining.
-//     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-//     *      if the guild is temporarily unavailable
-//     */
-//    public GuildManager setIcon(AvatarUtil.Avatar avatar)
-//    {
-//        checkAvailable();
-//        checkPermission(Permission.MANAGE_SERVER);
-//
-//        this.icon = avatar;
-//        return this;
-//    }
+    public GuildField<Icon> getIconField()
+    {
+        checkAvailable();
+        checkPermission(Permission.MANAGE_SERVER);
+
+        return icon;
+    }
 
     public GuildField<VoiceChannel> getAfkChannelField()
     {
@@ -153,6 +138,7 @@ public class GuildManagerUpdatable
         this.name.reset();
         this.region.reset();
         this.timeout.reset();
+        this.icon.reset();
         this.afkChannel.reset();
         this.verificationLevel.reset();
         this.defaultNotificationLevel.reset();
@@ -180,8 +166,8 @@ public class GuildManagerUpdatable
             body.put("region", region.getValue().getKey());
         if (timeout.shouldUpdate())
             body.put("afk_timeout", timeout.getValue().getSeconds());
-//        if (icon != null)
-//            frame.put("icon", icon == AvatarUtil.DELETE_AVATAR ? JSONObject.NULL : icon.getEncoded());
+        if (icon.shouldUpdate())
+            body.put("icon", icon.getValue() == null ? JSONObject.NULL : icon.getValue().getEncoding());
         if (afkChannel.shouldUpdate())
             body.put("afk_channel_id", afkChannel.getValue() == null ? JSONObject.NULL : afkChannel.getValue().getId());
         if (verificationLevel.shouldUpdate())
@@ -213,7 +199,7 @@ public class GuildManagerUpdatable
         return name.shouldUpdate()
                 || region.shouldUpdate()
                 || timeout.shouldUpdate()
-//                || icon != null
+                || icon .shouldUpdate()
                 || afkChannel.shouldUpdate()
                 || verificationLevel.shouldUpdate()
                 || defaultNotificationLevel.shouldUpdate()
@@ -251,6 +237,27 @@ public class GuildManagerUpdatable
             public void checkValue(Guild.Timeout value)
             {
                 checkNull(value, "Timeout");
+            }
+        };
+
+        this.icon = new GuildField<Icon>(this, null)
+        {
+            @Override
+            public void checkValue(Icon value)
+            {
+                checkNull(value, "guild icon");
+            }
+
+            @Override
+            public Icon getOriginalValue()
+            {
+                throw new UnsupportedOperationException("Cannot easily provide the original Icon. Use Guild#getIconUrl() and download it yourself.");
+            }
+
+            @Override
+            public boolean shouldUpdate()
+            {
+                return isSet();
             }
         };
 
