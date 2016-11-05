@@ -35,12 +35,11 @@ import org.json.JSONObject;
 public class GuildManagerUpdatable
 {    
     protected final Guild guild;
-//    protected AvatarUtil.Avatar icon = null;
-//    protected AvatarUtil.Avatar splash
 
     protected GuildField<String> name;
     protected GuildField<Guild.Timeout> timeout;
     protected GuildField<Icon> icon;
+    protected GuildField<Icon> splash;
     protected GuildField<Region> region;
     protected GuildField<VoiceChannel> afkChannel;
     protected GuildField<Guild.VerificationLevel> verificationLevel;
@@ -85,6 +84,14 @@ public class GuildManagerUpdatable
         checkPermission(Permission.MANAGE_SERVER);
 
         return icon;
+    }
+
+    public GuildField<Icon> getSplashField()
+    {
+        checkAvailable();
+        checkPermission(Permission.MANAGE_SERVER);
+
+        return splash;
     }
 
     public GuildField<VoiceChannel> getAfkChannelField()
@@ -139,6 +146,7 @@ public class GuildManagerUpdatable
         this.region.reset();
         this.timeout.reset();
         this.icon.reset();
+        this.splash.reset();
         this.afkChannel.reset();
         this.verificationLevel.reset();
         this.defaultNotificationLevel.reset();
@@ -168,6 +176,8 @@ public class GuildManagerUpdatable
             body.put("afk_timeout", timeout.getValue().getSeconds());
         if (icon.shouldUpdate())
             body.put("icon", icon.getValue() == null ? JSONObject.NULL : icon.getValue().getEncoding());
+        if (splash.shouldUpdate())
+            body.put("splash", splash.getValue() == null ? JSONObject.NULL : splash.getValue().getEncoding());
         if (afkChannel.shouldUpdate())
             body.put("afk_channel_id", afkChannel.getValue() == null ? JSONObject.NULL : afkChannel.getValue().getId());
         if (verificationLevel.shouldUpdate())
@@ -199,7 +209,8 @@ public class GuildManagerUpdatable
         return name.shouldUpdate()
                 || region.shouldUpdate()
                 || timeout.shouldUpdate()
-                || icon .shouldUpdate()
+                || icon.shouldUpdate()
+                || splash.shouldUpdate()
                 || afkChannel.shouldUpdate()
                 || verificationLevel.shouldUpdate()
                 || defaultNotificationLevel.shouldUpdate()
@@ -252,6 +263,27 @@ public class GuildManagerUpdatable
             public Icon getOriginalValue()
             {
                 throw new UnsupportedOperationException("Cannot easily provide the original Icon. Use Guild#getIconUrl() and download it yourself.");
+            }
+
+            @Override
+            public boolean shouldUpdate()
+            {
+                return isSet();
+            }
+        };
+
+        this.splash = new GuildField<Icon>(this, null)
+        {
+            @Override
+            public void checkValue(Icon value)
+            {
+                checkNull(value, "guild splash");
+            }
+
+            @Override
+            public Icon getOriginalValue()
+            {
+                throw new UnsupportedOperationException("Cannot easily provide the original Splash. Use Guild#getSplashUrl() and download it yourself.");
             }
 
             @Override

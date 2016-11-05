@@ -63,6 +63,11 @@ public class GuildManager
         return updatable.getIconField().setValue(icon).update();
     }
 
+    public RestAction<Void> setSplash(Icon splash)
+    {
+        return updatable.getSplashField().setValue(splash).update();
+    }
+
     public RestAction<Void> setAfkChannel(VoiceChannel afkChannel)
     {
         return updatable.getAfkChannelField().setValue(afkChannel).update();
