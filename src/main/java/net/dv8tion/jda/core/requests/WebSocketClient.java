@@ -764,6 +764,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             handlers.put("CHANNEL_RECIPIENT_REMOVE", new ChannelRecipientRemoveHandler(api));
             handlers.put("RELATIONSHIP_ADD",         new RelationshipAddHandler(api));
             handlers.put("RELATIONSHIP_REMOVE",      new RelationshipRemoveHandler(api));
+            handlers.put("USER_SETTINGS_UPDATE",     new UserSettingsUpdateHandler(api));
 
             handlers.put("MESSAGE_ACK", new SocketHandler(api)
             {

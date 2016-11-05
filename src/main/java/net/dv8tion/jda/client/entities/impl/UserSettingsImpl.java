@@ -21,15 +21,30 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Guild;
 
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 public class UserSettingsImpl implements UserSettings
 {
 
     private final JDA api;
 
-    private OnlineStatus status = OnlineStatus.UNKNOWN;
+    private final Set<Guild> guildPositions = new LinkedHashSet<>(); //linked to keep order
+    private final Set<Guild> restrictedGuilds = new LinkedHashSet<>();
+
+    private OnlineStatus status = OnlineStatus.ONLINE;
+    private Locale locale = Locale.getDefault();
+    private DiscordTheme theme = DiscordTheme.UNKNOWN;
+
+    private boolean allowEmailFriendRequests = false;
+    private boolean convertEmoticons =         false;
+    private boolean detectPlatformAccounts =   false;
+    private boolean developerMode =            false;
+    private boolean enableTTS =                false;
+    private boolean showCurrentGame =          false;
+    private boolean renderEmbeds =             false;
+    private boolean messageDisplayCompact =    false;
+    private boolean inlineEmbedMedia =         false;
+    private boolean inlineAttachmentMedia =    false;
 
     public UserSettingsImpl(JDA api)
     {
@@ -52,79 +67,85 @@ public class UserSettingsImpl implements UserSettings
     @Override
     public Locale getLocale()
     {
-        return null;
+        return locale;
+    }
+
+    @Override
+    public DiscordTheme getTheme()
+    {
+        return theme;
     }
 
     @Override
     public List<Guild> getGuildPositions()
     {
-        return null;
+        return Collections.unmodifiableList(new LinkedList<>(guildPositions));
     }
 
     @Override
     public List<Guild> getRestrictedGuilds()
     {
-        return null;
+        return Collections.unmodifiableList(new LinkedList<>(restrictedGuilds));
     }
 
     @Override
     public boolean isAllowEmailFriendRequest()
     {
-        return false;
+        return allowEmailFriendRequests;
     }
 
     @Override
     public boolean isConvertEmoticons()
     {
-        return false;
+        return convertEmoticons;
     }
 
     @Override
     public boolean isDetectPlatformAccounts()
     {
-        return false;
+        return detectPlatformAccounts;
     }
 
     @Override
     public boolean isDeveloperMode()
     {
-        return false;
+        return developerMode;
     }
 
     @Override
     public boolean isEnableTTS()
     {
-        return false;
+        return enableTTS;
     }
 
     @Override
     public boolean isShowCurrentGame()
     {
-        return false;
+        return showCurrentGame;
     }
 
     @Override
     public boolean isRenderEmbeds()
     {
-        return false;
+        return renderEmbeds;
     }
 
     @Override
     public boolean isMessageDisplayCompact()
     {
-        return false;
+        return messageDisplayCompact;
     }
 
     @Override
     public boolean isInlineEmbedMedia()
     {
-        return false;
+        return inlineEmbedMedia;
     }
 
     @Override
     public boolean isInlineAttachmentMedia()
     {
-        return false;
+        return inlineAttachmentMedia;
     }
 
     /* -- Setters -- */
@@ -133,6 +154,90 @@ public class UserSettingsImpl implements UserSettings
     {
         this.status = status;
         return this;
+    }
+
+    public UserSettingsImpl setLocale(Locale locale)
+    {
+        this.locale = locale;
+        return this;
+    }
+
+    public UserSettingsImpl setTheme(DiscordTheme theme)
+    {
+        this.theme = theme;
+        return this;
+    }
+
+    public UserSettingsImpl setAllowEmailFriendRequest(boolean allow)
+    {
+        this.allowEmailFriendRequests = allow;
+        return this;
+    }
+
+    public UserSettingsImpl setConvertEmoticons(boolean convert)
+    {
+        this.convertEmoticons = convert;
+        return this;
+    }
+
+    public UserSettingsImpl setDetectPlatformAccounts(boolean detectPlatformAccounts)
+    {
+        this.detectPlatformAccounts = detectPlatformAccounts;
+        return this;
+    }
+
+    public UserSettingsImpl setDeveloperMode(boolean developerMode)
+    {
+        this.developerMode = developerMode;
+        return this;
+    }
+
+    public UserSettingsImpl setEnableTTS(boolean enableTTS)
+    {
+        this.enableTTS = enableTTS;
+        return this;
+    }
+
+    public UserSettingsImpl setShowCurrentGame(boolean showCurrentGame)
+    {
+        this.showCurrentGame = showCurrentGame;
+        return this;
+    }
+
+    public UserSettingsImpl setRenderEmbeds(boolean renderEmbeds)
+    {
+        this.renderEmbeds = renderEmbeds;
+        return this;
+    }
+
+    public UserSettingsImpl setMessageDisplayCompact(boolean messageDisplayCompact)
+    {
+        this.messageDisplayCompact = messageDisplayCompact;
+        return this;
+    }
+
+    public UserSettingsImpl setInlineEmbedMedia(boolean inlineEmbedMedia)
+    {
+        this.inlineEmbedMedia = inlineEmbedMedia;
+        return this;
+    }
+
+    public UserSettingsImpl setInlineAttachmentMedia(boolean inlineAttachmentMedia)
+    {
+        this.inlineAttachmentMedia = inlineAttachmentMedia;
+        return this;
+    }
+
+    /* -- Set Getters -- */
+
+    public Set<Guild> getGuildPositionSet()
+    {
+        return guildPositions;
+    }
+
+    public Set<Guild> getRestrictedGuildsSet()
+    {
+        return restrictedGuilds;
     }
 
     /* -- Object overrides -- */

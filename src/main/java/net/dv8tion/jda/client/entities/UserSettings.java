@@ -26,11 +26,14 @@ import java.util.Locale;
 public interface UserSettings
 {
 
+    // TODO: javadoc
+    // TODO: Managers
+
     JDA getJDA();
 
     OnlineStatus getStatus();
     Locale getLocale();
-    //getTheme() : ?
+    DiscordTheme getTheme();
 
     List<Guild> getGuildPositions();
     List<Guild> getRestrictedGuilds();
@@ -45,4 +48,30 @@ public interface UserSettings
     boolean isMessageDisplayCompact();
     boolean isInlineEmbedMedia();
     boolean isInlineAttachmentMedia();
+
+    enum DiscordTheme
+    {
+
+        UNKNOWN(""),
+        LIGHT("light"),
+        DARK("dark");
+
+        private final String key;
+
+        DiscordTheme(String key)
+        {
+            this.key = key;
+        }
+
+        public static DiscordTheme fromKey(String key)
+        {
+            for (DiscordTheme theme : values())
+            {
+                if (theme.key.equals(key))
+                    return theme;
+            }
+            return UNKNOWN;
+        }
+
+    }
 }

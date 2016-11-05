@@ -16,10 +16,7 @@
 
 package net.dv8tion.jda.core.entities;
 
-import net.dv8tion.jda.client.entities.Friend;
-import net.dv8tion.jda.client.entities.Group;
-import net.dv8tion.jda.client.entities.Relationship;
-import net.dv8tion.jda.client.entities.RelationshipType;
+import net.dv8tion.jda.client.entities.*;
 import net.dv8tion.jda.client.entities.impl.*;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
@@ -94,6 +91,73 @@ public class EntityBuilder
                 .setDiscriminator(self.getString("discriminator"))
                 .setAvatarId(self.isNull("avatar") ? null : self.getString("avatar"))
                 .setBot(self.has("bot") && self.getBoolean("bot"));
+    }
+
+    public void createUserSettingsFirstPass(JSONObject settings)
+    {
+        if (api.getAccountType() != AccountType.CLIENT)
+            return;
+        UserSettingsImpl settingsObj = (UserSettingsImpl) api.asClient().getSettings();
+
+        if (!settings.isNull("status"))
+            settingsObj.setStatus(OnlineStatus.fromKey(settings.getString("status")));
+        if (!settings.isNull("locale"))
+            settingsObj.setLocale(Locale.forLanguageTag(settings.getString("locale")));
+        if (!settings.isNull("theme"))
+            settingsObj.setTheme(UserSettings.DiscordTheme.fromKey(settings.getString("theme")));
+        if (!settings.isNull("guild_positions"))
+        {
+            JSONArray arr = settings.getJSONArray("guild_positions");
+            Set<Guild> guildSet = settingsObj.getGuildPositionSet();
+            for (int i = 0; i < arr.length(); i++)
+            {
+                String id = arr.getString(i);
+                Guild guild = api.getGuildById(id);
+                if (guild == null)
+                {
+                    WebSocketClient.LOG.debug("Received guild position id for non existing guild: " + id);
+                    continue;
+                }
+                guildSet.add(guild);
+            }
+        }
+        if (!settings.isNull("restricted_guilds"))
+        {
+            JSONArray arr = settings.getJSONArray("restricted_guilds");
+            Set<Guild> guildSet = settingsObj.getRestrictedGuildsSet();
+            for (int i = 0; i < arr.length(); i++)
+            {
+                String id = arr.getString(i);
+                Guild guild = api.getGuildById(id);
+                if (guild == null)
+                {
+                    WebSocketClient.LOG.debug("Received guild restricted guild id for non existing guild: " + id);
+                    continue;
+                }
+                guildSet.add(guild);
+            }
+        }
+
+        settingsObj.setAllowEmailFriendRequest(!settings.isNull("allow_email_friend_request") &&
+                settings.getBoolean("allow_email_friend_request"));
+        settingsObj.setConvertEmoticons(!settings.isNull("convert_emoticons") &&
+                settings.getBoolean("convert_emoticons"));
+        settingsObj.setDetectPlatformAccounts(!settings.isNull("detect_platform_accounts") &&
+                settings.getBoolean("detect_platform_accounts"));
+        settingsObj.setDeveloperMode(!settings.isNull("developer_mode") &&
+                settings.getBoolean("developer_mode"));
+        settingsObj.setEnableTTS(!settings.isNull("enable_tts_command") &&
+                settings.getBoolean("enable_tts_command"));
+        settingsObj.setShowCurrentGame(!settings.isNull("show_current_game") &&
+                settings.getBoolean("show_current_game"));
+        settingsObj.setRenderEmbeds(!settings.isNull("render_embeds") &&
+                settings.getBoolean("render_embeds"));
+        settingsObj.setMessageDisplayCompact(!settings.isNull("message_display_compact") &&
+                settings.getBoolean("message_display_compact"));
+        settingsObj.setInlineEmbedMedia(!settings.isNull("inline_embed_media") &&
+                settings.getBoolean("inline_embed_media"));
+        settingsObj.setInlineAttachmentMedia(!settings.isNull("inline_attachment_media") &&
+                settings.getBoolean("inline_attachment_media"));
     }
 
     public void createGuildFirstPass(JSONObject guild, Consumer<Guild> secondPassCallback)
