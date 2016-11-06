@@ -25,6 +25,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Base64;
 
+/**
+ * Icon containing a base64 encoded jpeg image.
+ */
 public class Icon
 {
     protected final String encoding;
@@ -34,11 +37,31 @@ public class Icon
         this.encoding = "data:image/jpeg;base64," + base64Encoding;
     }
 
+    /**
+     * The base64 encoded data for this Icon
+     *
+     * @return
+     *      String representation of the encoded data for this icon
+     */
     public String getEncoding()
     {
         return encoding;
     }
 
+    /**
+     * Creates an {@link Icon Icon} with the specified {@link java.io.File File}.<br>
+     * We here read the specified File and forward the retrieved byte data to {@link #from(byte[])}.
+     *
+     * @param file
+     *      An existing, not-null file.
+     * @return
+     *      An Icon instance representing the specified File
+     * @throws IllegalArgumentException
+     *      if the provided file is either null or does not exist
+     * @throws IOException
+     *      if there is a problem while reading the file.
+     * @see net.dv8tion.jda.core.utils.IOUtil#readFully(File)
+     */
     public static Icon from(File file) throws IOException
     {
         Args.notNull(file, "Provided File");
@@ -47,6 +70,21 @@ public class Icon
         return from(IOUtil.readFully(file));
     }
 
+    /**
+     * Creates an {@link Icon Icon} with the specified {@link java.io.InputStream InputStream}.<br>
+     * We here read the specified InputStream and forward the retrieved byte data to {@link #from(byte[])}.
+     *
+     * @param stream
+     *      A not-null InputStream.
+     * @return
+     *      An Icon instance representing the specified InputStream
+     * @throws IllegalArgumentException
+     *      if the provided stream is null
+     * @throws IOException
+     *      If the first byte cannot be read for any reason other than the end of the file,
+     *      if the input stream has been closed, or if some other I/O error occurs.
+     * @see net.dv8tion.jda.core.utils.IOUtil#readFully(InputStream)
+     */
     public static Icon from(InputStream stream) throws IOException
     {
         Args.notNull(stream, "InputStream");
@@ -54,6 +92,16 @@ public class Icon
         return from(IOUtil.readFully(stream));
     }
 
+    /**
+     * Creates an {@link Icon Icon} with the specified image data.
+     *
+     * @param data
+     *      not-null image data bytes.
+     * @return
+     *      An Icon instance representing the specified image data
+     * @throws IllegalArgumentException
+     *      if the provided data is null
+     */
     public static Icon from(byte[] data)
     {
         Args.notNull(data, "Provided byte[]");
