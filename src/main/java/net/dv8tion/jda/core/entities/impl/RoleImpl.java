@@ -21,8 +21,13 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.managers.*;
-import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.managers.RoleManager;
+import net.dv8tion.jda.core.managers.RoleManagerUpdatable;
+import net.dv8tion.jda.core.requests.Request;
+import net.dv8tion.jda.core.requests.Response;
+import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 
 import java.awt.*;
@@ -191,6 +196,30 @@ public class RoleImpl implements Role
             }
         }
         return mng;
+    }
+
+    @Override
+    public RestAction<Void> delete()
+    {
+        if (!PermissionUtil.checkPermission(getGuild(), getGuild().getSelfMember(), Permission.MANAGE_PERMISSIONS))
+            throw new PermissionException(Permission.MANAGE_PERMISSIONS);
+        if(!PermissionUtil.canInteract(getGuild().getSelfMember(), this))
+            throw new PermissionException("Can't delete role >= highest self-role");
+        if (managed)
+            throw new UnsupportedOperationException("Cannot delete a Role that is managed. ");
+
+        Route.CompiledRoute route = Route.Roles.DELETE_ROLE.compile(guild.getId(), id);
+        return new RestAction<Void>(getJDA(), route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
     }
 
     @Override

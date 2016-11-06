@@ -19,6 +19,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.managers.RoleManager;
 import net.dv8tion.jda.core.managers.RoleManagerUpdatable;
+import net.dv8tion.jda.core.requests.RestAction;
 
 import java.awt.*;
 import java.util.Collection;
@@ -172,6 +173,8 @@ public interface Role extends ISnowflake, IMentionable, Comparable<Role>
     RoleManager getManager();
 
     RoleManagerUpdatable getManagerUpdatable();
+
+    RestAction<Void> delete();
 
     /**
      * Returns the {@link net.dv8tion.jda.core.JDA JDA} instance of this Role
