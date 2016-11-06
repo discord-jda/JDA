@@ -34,15 +34,9 @@ import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.imageio.ImageIO;
-import java.awt.image.RenderedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static org.apache.commons.codec.binary.StringUtils.newStringUtf8;
 
 public class GuildController
 {
@@ -1085,10 +1079,8 @@ public class GuildController
      *      if the logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES} permission.
      * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
      *      if the logged in account is not from {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType#Client}
-     * @throws java.io.IOException
-     *      if the provided image causes an IO error
      */
-    public RestAction<Emote> createEmote(String name, Icon icon, Role... roles) throws IOException
+    public RestAction<Emote> createEmote(String name, Icon icon, Role... roles)
     {
         checkAvailable();
         checkPermission(Permission.MANAGE_EMOTES);
@@ -1163,12 +1155,12 @@ public class GuildController
     protected void checkPosition(Member member)
     {
         if(!PermissionUtil.canInteract(guild.getSelfMember(), member))
-            throw new PermissionException("Can't member a user with higher or equal highest role than yourself!");
+            throw new PermissionException("Can't modify a member with higher or equal highest role than yourself!");
     }
 
     protected void checkPosition(Role role)
     {
         if(!PermissionUtil.canInteract(guild.getSelfMember(), role))
-            throw new PermissionException("Can't modify a member with higher or equal highest role than yourself! Role: " + role.toString());
+            throw new PermissionException("Can't modify a role with higher or equal highest role than yourself! Role: " + role.toString());
     }
 }
