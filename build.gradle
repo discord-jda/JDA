@@ -166,22 +166,14 @@ task checksums (dependsOn: [assemble, install, shadowJar]) {
     doLast {
         project.configurations.getByName('archives').artifacts.each { artifact ->
             if (artifact.file.exists()) {
-                project.ant.checksum(file: artifact.file, algorithm: 'md2', todir: artifact.file.parent)    // We don't need all of them,
-                project.ant.checksum(file: artifact.file, algorithm: 'md5', todir: artifact.file.parent)    // still have to decide if 
-                project.ant.checksum(file: artifact.file, algorithm: 'sha1', todir: artifact.file.parent)   // and if which to create
-                project.ant.checksum(file: artifact.file, algorithm: 'sha256', todir: artifact.file.parent)
-                project.ant.checksum(file: artifact.file, algorithm: 'sha384', todir: artifact.file.parent)
-                project.ant.checksum(file: artifact.file, algorithm: 'sha512', todir: artifact.file.parent)
+                project.ant.checksum(file: artifact.file, algorithm: 'md5', todir: artifact.file.parent) 
+                project.ant.checksum(file: artifact.file, algorithm: 'sha1', todir: artifact.file.parent)
             }
         }
 
         def file = file('build/poms/pom-default.xml')
-        project.ant.checksum(file: file, algorithm: 'md2', todir: file.parent)
         project.ant.checksum(file: file, algorithm: 'md5', todir: file.parent)
         project.ant.checksum(file: file, algorithm: 'sha1', todir: file.parent)
-        project.ant.checksum(file: file, algorithm: 'sha256', todir: file.parent)
-        project.ant.checksum(file: file, algorithm: 'sha384', todir: file.parent)
-        project.ant.checksum(file: file, algorithm: 'sha512', todir: file.parent)
     }
 }
 
