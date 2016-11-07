@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.utils.PermissionUtil;
+import org.apache.http.util.Args;
 
 import java.awt.*;
 import java.time.OffsetDateTime;
@@ -145,7 +146,9 @@ public class MemberImpl implements Member
     @Override
     public boolean hasPermission(Collection<Permission> permissions)
     {
-        return hasPermission((Permission[]) permissions.toArray());
+        Args.notNull(permissions, "Permission Collection");
+
+        return hasPermission(permissions.toArray(new Permission[permissions.size()]));
     }
 
     @Override
@@ -157,7 +160,9 @@ public class MemberImpl implements Member
     @Override
     public boolean hasPermission(Channel channel, Collection<Permission> permissions)
     {
-        return hasPermission(channel, (Permission[]) permissions.toArray());
+        Args.notNull(permissions, "Permission Collection");
+
+        return hasPermission(channel, permissions.toArray(new Permission[permissions.size()]));
     }
 
     public MemberImpl setNickname(String nickname)

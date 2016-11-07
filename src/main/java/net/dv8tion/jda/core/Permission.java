@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.core;
 
+import org.apache.http.util.Args;
+
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -171,6 +173,8 @@ public enum Permission
 
     public static long getRaw(Collection<Permission> permissions)
     {
+        Args.notNull(permissions, "Permission Collection");
+
         return getRaw(permissions.toArray(new Permission[permissions.size()]));
     }
 }
