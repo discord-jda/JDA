@@ -171,6 +171,6 @@ public enum Permission
 
     public static long getRaw(Collection<Permission> permissions)
     {
-        return getRaw((Permission[]) permissions.toArray());
+        return getRaw(permissions.stream().toArray(Permission[]::new));
     }
 }
