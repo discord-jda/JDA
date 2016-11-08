@@ -167,7 +167,7 @@ public class PermissionUtil
     public static PermissionOverride getFullPermOverride()
     {
         PermissionOverrideImpl override = new PermissionOverrideImpl(null, null, null);
-        int allow = 0, deny = 0;
+        long allow = 0, deny = 0;
         for (Permission permission : Permission.values())
         {
             if(permission != Permission.UNKNOWN)
@@ -306,9 +306,9 @@ public class PermissionUtil
     }
 
     /**
-     * Gets the <code>int</code> representation of the effective permissions allowed for this {@link net.dv8tion.jda.core.entities.Member Member}
+     * Gets the <code>long</code> representation of the effective permissions allowed for this {@link net.dv8tion.jda.core.entities.Member Member}
      * in this {@link net.dv8tion.jda.core.entities.Channel Channel}. This can be used in conjunction with
-     * {@link net.dv8tion.jda.core.Permission#getPermissions(long) Permission.getPermissions(int)} to easily get a list of all
+     * {@link net.dv8tion.jda.core.Permission#getPermissions(long) Permission.getPermissions(long)} to easily get a list of all
      * {@link net.dv8tion.jda.core.Permission Permissions} that this member can use in this {@link net.dv8tion.jda.core.entities.Channel Channel}.<br>
      * This functions very similarly to how {@link net.dv8tion.jda.core.entities.Role#getPermissionsRaw() Role.getPermissionsRaw()}.
      *
@@ -317,7 +317,8 @@ public class PermissionUtil
      * @param member
      *          The {@link net.dv8tion.jda.core.entities.Member Member} whose permissions are being checked.
      * @return
-     *      The <code>long</code> representation of the literal permissions that this {@link net.dv8tion.jda.core.entities.Member Member} has in this {@link net.dv8tion.jda.core.entities.Channel Channel}.
+     *      The <code>long</code> representation of the effective permissions that this {@link net.dv8tion.jda.core.entities.Member Member}
+     *      has in this {@link net.dv8tion.jda.core.entities.Channel Channel}.
      */
     public static long getEffectivePermission(Channel channel, Member member)
     {
@@ -337,6 +338,49 @@ public class PermissionUtil
             return getEffectivePermission(member, ((GuildImpl) channel.getGuild()),
                     ((VoiceChannelImpl) channel).getRoleOverrideMap(), ((VoiceChannelImpl) channel).getMemberOverrideMap());
         }
+    }
+
+    /**
+     * Gets the <code>long</code> representation of the effective permissions allowed for this {@link net.dv8tion.jda.core.entities.Role Role}
+     * in this {@link net.dv8tion.jda.core.entities.Channel Channel}. This can be used in conjunction with
+     * {@link net.dv8tion.jda.core.Permission#getPermissions(long) Permission.getPermissions(long)} to easily get a list of all
+     * {@link net.dv8tion.jda.core.Permission Permissions} that this role can use in this {@link net.dv8tion.jda.core.entities.Channel Channel}.<br>
+     *
+     * @param channel
+     *          The {@link net.dv8tion.jda.core.entities.Channel Channel} in which permissions are being checked.
+     * @param role
+     *          The {@link net.dv8tion.jda.core.entities.Role Role} whose permissions are being checked.
+     * @return
+     *      The <code>long</code> representation of the effective permissions that this {@link net.dv8tion.jda.core.entities.Role Role}
+     *      has in this {@link net.dv8tion.jda.core.entities.Channel Channel}
+     */
+    public static long getEffectivePermission(Channel channel, Role role)
+    {
+        checkNull(channel, "channel");
+        checkNull(role, "role");
+
+        Guild guild = channel.getGuild();
+        if (!guild.equals(role.getGuild()))
+            throw new IllegalArgumentException("Provided channel and role are not of the same guild!");
+
+        long permissions = guild.getPublicRole().getPermissionsRaw() | role.getPermissionsRaw();
+
+        PermissionOverride publicOverride = channel.getOverrideForRole(guild.getPublicRole());
+        PermissionOverride roleOverride = channel.getOverrideForRole(role);
+
+        if (publicOverride != null)
+        {
+            permissions &= ~publicOverride.getDeniedRaw();
+            permissions |= publicOverride.getAllowedRaw();
+        }
+
+        if (roleOverride != null)
+        {
+            permissions &= ~roleOverride.getDeniedRaw();
+            permissions |= roleOverride.getAllowedRaw();
+        }
+
+        return permissions;
     }
 
     private static boolean checkPermission(Member member, Permission perm, GuildImpl guild, Map<Role, PermissionOverride> roleOverrides, Map<Member, PermissionOverride> memberOverrides)

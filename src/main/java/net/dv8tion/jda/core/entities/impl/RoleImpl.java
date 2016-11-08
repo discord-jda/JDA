@@ -121,12 +121,6 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public List<Permission> getPermissions(Channel channel)
-    {
-        return null;
-    }
-
-    @Override
     public Color getColor()
     {
         return color;
@@ -135,9 +129,10 @@ public class RoleImpl implements Role
     @Override
     public boolean hasPermission(Permission... permissions)
     {
+        long effectivePerms = rawPermissions | guild.getPublicRole().getPermissionsRaw();
         for (Permission perm : permissions)
         {
-            if (((rawPermissions >> perm.getOffset()) & 1) != 1)
+            if (((effectivePerms >> perm.getOffset()) & 1) != 1)
                 return false;
         }
         return true;
@@ -151,11 +146,16 @@ public class RoleImpl implements Role
         return hasPermission(permissions.toArray(new Permission[permissions.size()]));
     }
 
-    //TODO: Implement this >.>
     @Override
     public boolean hasPermission(Channel channel, Permission... permissions)
     {
-        return false;
+        long effectivePerms = PermissionUtil.getEffectivePermission(channel, this);
+        for (Permission perm : permissions)
+        {
+            if (((effectivePerms >> perm.getOffset()) & 1) != 1)
+                return false;
+        }
+        return true;
     }
 
     @Override

@@ -342,7 +342,7 @@ public class MessageImpl implements Message
         {
             if (isFromType(ChannelType.PRIVATE) || isFromType(ChannelType.GROUP))
                 throw new PermissionException("Cannot delete another User's messages in a Group or PrivateChannel.");
-            else if (!getGuild().getMember(getJDA().getSelfUser())
+            else if (!getGuild().getSelfMember()
                     .hasPermission((TextChannel) getChannel(), Permission.MESSAGE_MANAGE))
                 throw new PermissionException(Permission.MESSAGE_MANAGE);
         }

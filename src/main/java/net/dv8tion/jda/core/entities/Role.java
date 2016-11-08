@@ -102,8 +102,6 @@ public interface Role extends ISnowflake, IMentionable, Comparable<Role>
      */
     List<Permission> getPermissions();
 
-    List<Permission> getPermissions(Channel channel);
-
     /**
      * The color this {@link net.dv8tion.jda.core.entities.Role Role} is displayed in.
      *
@@ -113,8 +111,12 @@ public interface Role extends ISnowflake, IMentionable, Comparable<Role>
     Color getColor();
 
     /**
-     * Checks if this {@link net.dv8tion.jda.core.entities.Role Role} has the provided {@link net.dv8tion.jda.core.Permission Permissions}.<br>
+     * Checks if this {@link net.dv8tion.jda.core.entities.Role Role} has access to the provided {@link net.dv8tion.jda.core.Permission Permissions}.
      * This does not check the Channel-specific override {@link net.dv8tion.jda.core.Permission Permissions}.
+     * <p>
+     * <b>NOTE:</b> this is not the same as {@link net.dv8tion.jda.core.entities.Role#getPermissions()}{@link Collection#contains(Object) .contains(Permission)}
+     * as it does effective permission calculations. The correct usage of this method is to determine if a Role has
+     * the ability to do something.
      *
      * @param permissions
      *          The {@link net.dv8tion.jda.core.Permission Permissions} to check for
@@ -124,9 +126,13 @@ public interface Role extends ISnowflake, IMentionable, Comparable<Role>
     boolean hasPermission(Permission... permissions);
 
     /**
-     * Checks if this {@link net.dv8tion.jda.core.entities.Role Role} has the {@link net.dv8tion.jda.core.Permission Permissions}
+     * Checks if this {@link net.dv8tion.jda.core.entities.Role Role} has access to the {@link net.dv8tion.jda.core.Permission Permissions}
      * in the provided Collection&lt;Permission&gt;<br>
      * This does not check the Channel-specific override {@link net.dv8tion.jda.core.Permission Permissions}.
+     * <p>
+     * <b>NOTE:</b> this is not the same as {@link net.dv8tion.jda.core.entities.Role#getPermissions()}{@link Collection#contains(Object) .contains(Permission)}
+     * as it does effective permission calculations. The correct usage of this method is to determine if a Role has
+     * the ability to do something.
      *
      * @param permissions
      *          The {@link net.dv8tion.jda.core.Permission Permissions} to check for
@@ -136,7 +142,7 @@ public interface Role extends ISnowflake, IMentionable, Comparable<Role>
     boolean hasPermission(Collection<Permission> permissions);
 
     /**
-     * Checks if this {@link net.dv8tion.jda.core.entities.Role Role} has the provided {@link net.dv8tion.jda.core.Permission Permissions}
+     * Checks if this {@link net.dv8tion.jda.core.entities.Role Role} has access to the provided {@link net.dv8tion.jda.core.Permission Permissions}
      * in the specified {@link net.dv8tion.jda.core.entities.Channel Channel}.
      *
      * @param permissions
@@ -147,7 +153,7 @@ public interface Role extends ISnowflake, IMentionable, Comparable<Role>
     boolean hasPermission(Channel chanel, Permission... permissions);
 
     /**
-     * Checks if this {@link net.dv8tion.jda.core.entities.Role Role} has the {@link net.dv8tion.jda.core.Permission Permissions}
+     * Checks if this {@link net.dv8tion.jda.core.entities.Role Role} has access to the {@link net.dv8tion.jda.core.Permission Permissions}
      * in the provided Collection&lt;Permission&gt; in the specified {@link net.dv8tion.jda.core.entities.Channel Channel}.
      *
      * @param permissions
@@ -156,6 +162,7 @@ public interface Role extends ISnowflake, IMentionable, Comparable<Role>
      *      If the given {@link net.dv8tion.jda.core.Permission Permissions} are available to this {@link net.dv8tion.jda.core.entities.Role Role} in this Channel
      */
     boolean hasPermission(Channel channel, Collection<Permission> permissions);
+
     /**
      * Returns the {@link net.dv8tion.jda.core.entities.Guild Guild} this Role exists in
      * @return
