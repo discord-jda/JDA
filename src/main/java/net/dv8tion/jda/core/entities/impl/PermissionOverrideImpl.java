@@ -19,12 +19,20 @@ package net.dv8tion.jda.core.entities.impl;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.managers.ChannelManager;
+import net.dv8tion.jda.core.managers.ChannelManagerUpdatable;
+import net.dv8tion.jda.core.managers.PermOverrideManager;
+import net.dv8tion.jda.core.managers.PermOverrideManagerUpdatable;
 
 import java.util.Collections;
 import java.util.List;
 
 public class PermissionOverrideImpl implements PermissionOverride
 {
+    protected volatile PermOverrideManager manager;
+    protected volatile PermOverrideManagerUpdatable managerUpdatable;
+    protected volatile Object mngLock = new Object();
+
     private final Member member;
     private final Role role;
     private final Channel channel;
@@ -114,6 +122,38 @@ public class PermissionOverrideImpl implements PermissionOverride
     public boolean isRoleOverride()
     {
         return getRole() != null;
+    }
+
+    @Override
+    public PermOverrideManager getManager()
+    {
+        PermOverrideManager mng = manager;
+        if (mng == null)
+        {
+            synchronized (mngLock)
+            {
+                mng = manager;
+                if (mng == null)
+                    mng = manager = new PermOverrideManager(this);
+            }
+        }
+        return mng;
+    }
+
+    @Override
+    public PermOverrideManagerUpdatable getManagerUpdatable()
+    {
+        PermOverrideManagerUpdatable mng = managerUpdatable;
+        if (mng == null)
+        {
+            synchronized (mngLock)
+            {
+                mng = managerUpdatable;
+                if (mng == null)
+                    mng = managerUpdatable = new PermOverrideManagerUpdatable(this);
+            }
+        }
+        return mng;
     }
 
     public PermissionOverrideImpl setAllow(long allow)
