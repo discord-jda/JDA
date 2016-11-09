@@ -64,7 +64,7 @@ public class JDAImpl implements JDA
 
     protected HttpHost proxy;
     protected WebSocketClient client;
-    protected Requester requester = new Requester(this);
+    protected Requester requester;
     protected IEventManager eventManager = new InterfacedEventManager();
     protected Status status = Status.INITIALIZING;
     protected SelfUser selfUser;
@@ -80,6 +80,7 @@ public class JDAImpl implements JDA
     {
         this.presence = new PresenceImpl(this);
         this.accountType = accountType;
+        this.requester = new Requester(this);
         this.proxy = proxy;
         this.autoReconnect = autoReconnect;
         this.audioEnabled = audioEnabled;

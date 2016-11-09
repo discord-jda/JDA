@@ -52,6 +52,9 @@ public class Requester
 
     public Requester(JDA api, AccountType accountType)
     {
+        if (accountType == null)
+            throw new NullPointerException("Provided accountType was null!");
+
         this.api = api;
         if (accountType == AccountType.BOT)
             rateLimiter = new BotRateLimiter(this, 5);
