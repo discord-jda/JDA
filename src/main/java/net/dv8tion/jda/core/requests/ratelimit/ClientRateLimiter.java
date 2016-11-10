@@ -171,29 +171,57 @@ public class ClientRateLimiter extends RateLimiter
         @Override
         public void run()
         {
-            synchronized (requests)
+            try
             {
-                for (Iterator<Request> it = requests.iterator(); it.hasNext(); )
+                synchronized (requests)
                 {
-                    Request request = it.next();
-                    Long retryAfter = requester.execute(request);
-                    if (retryAfter != null)
+                    for (Iterator<Request> it = requests.iterator(); it.hasNext(); )
                     {
-                        break;
-                    } else
-                    {
-                        it.remove();
+                        Request request = null;
+                        try
+                        {
+                            request = it.next();
+                            Long retryAfter = requester.execute(request);
+                            if (retryAfter != null)
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                it.remove();
+                            }
+                        }
+                        catch (Throwable t)
+                        {
+                            Requester.LOG.fatal("Requester system encountered an internal error");
+                            Requester.LOG.log(t);
+                            it.remove();
+                            if (request != null)
+                                request.onFailure(t);
+                        }
                     }
-                }
 
-                synchronized (submittedBuckets)
-                {
-                    submittedBuckets.remove(this);
-                    if (!requests.isEmpty())
+                    synchronized (submittedBuckets)
                     {
-                        this.submitForProcessing();
+                        submittedBuckets.remove(this);
+                        if (!requests.isEmpty())
+                        {
+                            try
+                            {
+                                this.submitForProcessing();
+                            }
+                            catch (RejectedExecutionException e)
+                            {
+                                Requester.LOG.debug("Caught RejectedExecutionException when re-queuing a ratelimited request. The requester is probably shutdown, thus, this can be ignored.");
+                            }
+                        }
                     }
                 }
+            }
+            catch (Throwable err)
+            {
+                Requester.LOG.fatal("Requester system encountered an internal error from beyond the sychronized execution blocks. NOT GOOD!");
+                Requester.LOG.log(err);
             }
         }
 

@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.requests.RateLimiter;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.core.requests.Route.CompiledRoute;
+import net.dv8tion.jda.core.utils.SimpleLog;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -174,7 +175,13 @@ public class BotRateLimiter extends RateLimiter
             bucket.routeUsageRemaining = Integer.parseInt(headers.getFirst("x-ratelimit-remaining"));
 
         }
-        catch (NumberFormatException ignored) {}
+        catch (NumberFormatException ex)
+        {
+            if (Requester.LOG.getEffectiveLevel().getPriority() <= SimpleLog.Level.DEBUG.getPriority())
+            {
+                Requester.LOG.log(ex);
+            }
+        }
     }
 
     private class Bucket implements IBucket, Runnable
@@ -227,36 +234,57 @@ public class BotRateLimiter extends RateLimiter
         @Override
         public void run()
         {
-            synchronized (requests)
+            try
             {
-                for (Iterator<Request> it = requests.iterator(); it.hasNext(); )
+                synchronized (requests)
                 {
-                    Request request = it.next();
-                    Long retryAfter = requester.execute(request);
-                    if (retryAfter != null)
+                    for (Iterator<Request> it = requests.iterator(); it.hasNext(); )
                     {
-                        break;
-                    } else
-                    {
-                        it.remove();
-                    }
-                }
-
-                synchronized (submittedBuckets)
-                {
-                    submittedBuckets.remove(this);
-                    if (!requests.isEmpty())
-                    {
+                        Request request = null;
                         try
                         {
-                            this.submitForProcessing();
+                            request = it.next();
+                            Long retryAfter = requester.execute(request);
+                            if (retryAfter != null)
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                it.remove();
+                            }
                         }
-                        catch (RejectedExecutionException e)
+                        catch (Throwable t)
                         {
-                            Requester.LOG.debug("Caught RejectedExecutionException when re-queuing a ratelimited request. The requester is probably shutdown, thus, this can be ignored.");
+                            Requester.LOG.fatal("Requester system encountered an internal error");
+                            Requester.LOG.log(t);
+                            it.remove();
+                            if (request != null)
+                                request.onFailure(t);
+                        }
+                    }
+
+                    synchronized (submittedBuckets)
+                    {
+                        submittedBuckets.remove(this);
+                        if (!requests.isEmpty())
+                        {
+                            try
+                            {
+                                this.submitForProcessing();
+                            }
+                            catch (RejectedExecutionException e)
+                            {
+                                Requester.LOG.debug("Caught RejectedExecutionException when re-queuing a ratelimited request. The requester is probably shutdown, thus, this can be ignored.");
+                            }
                         }
                     }
                 }
+            }
+            catch (Throwable err)
+            {
+                Requester.LOG.fatal("Requester system encountered an internal error from beyond the sychronized execution blocks. NOT GOOD!");
+                Requester.LOG.log(err);
             }
         }
 
