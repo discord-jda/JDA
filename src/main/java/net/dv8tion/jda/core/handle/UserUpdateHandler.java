@@ -39,8 +39,8 @@ public class UserUpdateHandler extends SocketHandler
         String name = content.getString("username");
         String discriminator = content.getString("discriminator");
         String avatarId = !content.isNull("avatar") ? content.getString("avatar") : null;
-        boolean verified = content.getBoolean("verified");
-        boolean mfaEnabled = content.getBoolean("mfa_enabled");
+        Boolean verified = content.has("verified") ? content.getBoolean("verified") : null;
+        Boolean mfaEnabled = content.has("mfa_enabled") ? content.getBoolean("mfa_enabled") : null;
 
         //Client only
         String email = !content.isNull("email") ? content.getString("email") : null;
@@ -65,7 +65,7 @@ public class UserUpdateHandler extends SocketHandler
                             api, responseNumber,
                             oldAvatarId));
         }
-        if (verified != self.isVerified())
+        if (verified != null && verified != self.isVerified())
         {
             boolean wasVerified = self.isVerified();
             self.setVerified(verified);
@@ -74,7 +74,7 @@ public class UserUpdateHandler extends SocketHandler
                             api, responseNumber,
                             wasVerified));
         }
-        if (mfaEnabled != self.isMfaEnabled())
+        if (mfaEnabled != null && mfaEnabled != self.isMfaEnabled())
         {
             boolean wasMfaEnabled = self.isMfaEnabled();
             self.setMfaEnabled(mfaEnabled);
