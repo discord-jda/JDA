@@ -479,7 +479,7 @@ public class EntityBuilder
             api.getUserMap().put(selfInfo.getId(), selfInfo);
         }
         return (SelfInfo) selfInfo
-                .setVerified(self.getBoolean("verified"))
+                .setVerified(self.has("verified") ? self.getBoolean("verified") : selfInfo.isVerified())
                 .setUserName(self.getString("username"))
                 .setDiscriminator(self.getString("discriminator"))
                 .setAvatarId(self.isNull("avatar") ? null : self.getString("avatar"))
