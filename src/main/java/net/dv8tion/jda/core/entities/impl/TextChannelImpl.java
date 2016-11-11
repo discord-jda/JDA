@@ -27,6 +27,7 @@ import net.dv8tion.jda.core.managers.ChannelManager;
 import net.dv8tion.jda.core.managers.ChannelManagerUpdatable;
 import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.utils.IOUtil;
+import org.apache.http.util.Args;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -525,6 +526,72 @@ public class TextChannelImpl implements TextChannel
                     request.onSuccess(null);
                 else
                     request.onFailure(response);
+            }
+        };
+    }
+
+    @Override
+    public RestAction<PermissionOverride> createPermissionOverride(Member member)
+    {
+        checkPermission(Permission.MANAGE_PERMISSIONS);
+        Args.notNull(member, "member");
+        if (!guild.equals(member.getGuild()))
+            throw new IllegalArgumentException("Provided member is not from the same guild as this channel!");
+        if (getMemberOverrideMap().containsKey(member))
+            throw new IllegalStateException("Provided member already has a PermissionOverride in this channel!");
+
+        final PermissionOverride override = new PermissionOverrideImpl(this, member, null);
+
+        JSONObject body = new JSONObject()
+                .put("id", member.getUser().getId())
+                .put("type", "member")
+                .put("allow", 0)
+                .put("deny", 0);
+
+        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(id, member.getUser().getId());
+        return new RestAction<PermissionOverride>(getJDA(), route, body)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (!response.isOk())
+                    request.onFailure(response);
+
+                getMemberOverrideMap().put(member, override);
+                request.onSuccess(override);
+            }
+        };
+    }
+
+    @Override
+    public RestAction<PermissionOverride> createPermissionOverride(Role role)
+    {
+        checkPermission(Permission.MANAGE_PERMISSIONS);
+        Args.notNull(role, "role");
+        if (!guild.equals(role.getGuild()))
+            throw new IllegalArgumentException("Provided role is not from the same guild as this channel!");
+        if (getRoleOverrideMap().containsKey(role))
+            throw new IllegalStateException("Provided role already has a PermissionOverride in this channel!");
+
+        final PermissionOverride override = new PermissionOverrideImpl(this, null, role);
+
+        JSONObject body = new JSONObject()
+                .put("id", role.getId())
+                .put("type", "role")
+                .put("allow", 0)
+                .put("deny", 0);
+
+        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(id, role.getId());
+        return new RestAction<PermissionOverride>(getJDA(), route, body)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (!response.isOk())
+                    request.onFailure(response);
+
+                getRoleOverrideMap().put(role, override);
+                request.onSuccess(override);
             }
         };
     }

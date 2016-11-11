@@ -167,28 +167,10 @@ public interface Channel extends ISnowflake
 
     RestAction<Void> delete();
 
-//    /**
-//     * Creates a new {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride} for a given {@link net.dv8tion.jda.core.entities.Member Member}.
-//     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS Permission}
-//     *
-//     * @param member
-//     *      the Member to create an Override for
-//     * @return
-//     *      the PermissionOverrideManager for the created PermissionOverride
-//     */
-//    PermissionOverrideManager createPermissionOverride(Member member);
-//
-//    /**
-//     * Creates a new {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride} for a given {@link net.dv8tion.jda.core.entities.Role Role}.
-//     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS Permission}
-//     *
-//     * @param role
-//     *      the Role to create an Override for
-//     * @return
-//     *      the PermissionOverrideManager for the created PermissionOverride
-//     */
-//    PermissionOverrideManager createPermissionOverride(Role role);
-//
+    RestAction<PermissionOverride> createPermissionOverride(Member member);
+
+    RestAction<PermissionOverride> createPermissionOverride(Role role);
+
 //    /**
 //     * Provides a list of all {@link net.dv8tion.jda.utils.InviteUtil.AdvancedInvite Invites} for this Channel.
 //     *
