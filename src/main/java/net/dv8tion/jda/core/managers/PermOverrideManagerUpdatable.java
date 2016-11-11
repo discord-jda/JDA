@@ -113,9 +113,7 @@ public class PermOverrideManagerUpdatable
         });
         setupValues();
 
-        System.out.println("perms: " + permissions);
         long denyBits = Permission.getRaw(permissions);
-        System.out.println("deny bits: " + denyBits);
         allow &= ~denyBits;
         deny |= denyBits;
 
@@ -182,9 +180,6 @@ public class PermOverrideManagerUpdatable
 
     public boolean shouldUpdate()
     {
-        System.out.println("set: " + set);
-        System.out.println("allow: " + allow + "   : raw: " + override.getAllowedRaw());
-        System.out.println("deny: " + deny + "    : raw: " + override.getDeniedRaw());
         return set && (allow != override.getAllowedRaw() || deny != override.getDeniedRaw());
     }
 
