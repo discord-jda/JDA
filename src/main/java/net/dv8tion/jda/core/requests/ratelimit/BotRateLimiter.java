@@ -184,7 +184,9 @@ public class BotRateLimiter extends RateLimiter
         }
         catch (NumberFormatException ex)
         {
-            if (Requester.LOG.getEffectiveLevel().getPriority() <= SimpleLog.Level.DEBUG.getPriority())
+            if (!bucket.getRoute().equals("gateway")
+                    && !bucket.getRoute().equals("users/@me")
+                    && Requester.LOG.getEffectiveLevel().getPriority() <= SimpleLog.Level.DEBUG.getPriority())
             {
                 Requester.LOG.log(ex);
             }

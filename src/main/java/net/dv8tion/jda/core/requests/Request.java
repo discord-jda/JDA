@@ -17,6 +17,7 @@
 package net.dv8tion.jda.core.requests;
 
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
+import net.dv8tion.jda.core.exceptions.RateLimitedException;
 
 import java.util.function.Consumer;
 
@@ -50,8 +51,15 @@ public class Request<T>
 
     public void onFailure(Response response)
     {
-        onFailure(new ErrorResponseException(
-                ErrorResponse.fromJSON(response.getObject()), response));
+        if (response.code == 429)
+        {
+            onFailure(new RateLimitedException(getRoute(), response.retryAfter));
+        }
+        else
+        {
+            onFailure(new ErrorResponseException(
+                    ErrorResponse.fromJSON(response.getObject()), response));
+        }
     }
 
     public void onFailure(Throwable failException)
