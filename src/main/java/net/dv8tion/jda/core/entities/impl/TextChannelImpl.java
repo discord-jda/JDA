@@ -27,6 +27,7 @@ import net.dv8tion.jda.core.managers.ChannelManager;
 import net.dv8tion.jda.core.managers.ChannelManagerUpdatable;
 import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.utils.IOUtil;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.util.Args;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -198,12 +199,20 @@ public class TextChannelImpl implements TextChannel
     {
         checkNull(file, "file");
 
+        return sendFile(file, file.getName(), message);
+    }
+
+    @Override
+    public RestAction<Message> sendFile(File file, String fileName, Message message) throws IOException
+    {
+        checkNull(file, "file");
+
         if(file == null || !file.exists() || !file.canRead())
             throw new IllegalArgumentException("Provided file is either null, doesn't exist or is not readable!");
         if (file.length() > 8<<20)   //8MB
             throw new IllegalArgumentException("File is to big! Max file-size is 8MB");
 
-        return sendFile(IOUtil.readFully(file), file.getName(), message);
+        return sendFile(IOUtil.readFully(file), fileName, message);
     }
 
     @Override
@@ -217,7 +226,7 @@ public class TextChannelImpl implements TextChannel
 
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(id);
         MultipartBody body = Unirest.post(Requester.DISCORD_API_PREFIX + route.getCompiledRoute())
-                .field("", ""); //We use this to change from an HttpRequest to a MultipartBody
+                .fields(null); //We use this to change from an HttpRequest to a MultipartBody
 
         body.field("file", data, fileName);
 
@@ -253,7 +262,7 @@ public class TextChannelImpl implements TextChannel
 
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(id);
         MultipartBody body = Unirest.post(Requester.DISCORD_API_PREFIX + route.getCompiledRoute())
-                .field("", ""); //We use this to change from an HttpRequest to a MultipartBody
+                .fields(null); //We use this to change from an HttpRequest to a MultipartBody
 
         body.field("file", data, fileName);
 

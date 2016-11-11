@@ -185,12 +185,20 @@ public class GroupImpl implements Group
     {
         checkNull(file, "file");
 
+        return sendFile(file, file.getName(), message);
+    }
+
+    @Override
+    public RestAction<Message> sendFile(File file, String fileName, Message message) throws IOException
+    {
+        checkNull(file, "file");
+
         if(file == null || !file.exists() || !file.canRead())
             throw new IllegalArgumentException("Provided file is either null, doesn't exist or is not readable!");
         if (file.length() > 8<<20)   //8MB
             throw new IllegalArgumentException("File is to big! Max file-size is 8MB");
 
-        return sendFile(IOUtil.readFully(file), file.getName(), message);
+        return sendFile(IOUtil.readFully(file), fileName, message);
     }
 
     @Override
@@ -201,7 +209,7 @@ public class GroupImpl implements Group
 
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(id);
         MultipartBody body = Unirest.post(Requester.DISCORD_API_PREFIX + route.getCompiledRoute())
-                .field("", ""); //We use this to change from an HttpRequest to a MultipartBody
+                .fields(null); //We use this to change from an HttpRequest to a MultipartBody
 
         body.field("file", data, fileName);
 
@@ -234,7 +242,7 @@ public class GroupImpl implements Group
 
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(id);
         MultipartBody body = Unirest.post(Requester.DISCORD_API_PREFIX + route.getCompiledRoute())
-                .field("", ""); //We use this to change from an HttpRequest to a MultipartBody
+                .fields(null); //We use this to change from an HttpRequest to a MultipartBody
 
         body.field("file", data, fileName);
 

@@ -133,6 +133,7 @@ public interface MessageChannel extends ISnowflake
      *      and you do not meet the required verification-level of the guild.
      */
     RestAction<Message> sendFile(File file, Message message) throws IOException;
+    RestAction<Message> sendFile(File file, String fileName, Message message) throws IOException;
     RestAction<Message> sendFile(InputStream data, String fileName, Message message);
     RestAction<Message> sendFile(byte[] data, String fileName, Message message);
 
