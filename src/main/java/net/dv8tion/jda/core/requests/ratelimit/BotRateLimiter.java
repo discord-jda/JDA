@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.core.requests.Route.CompiledRoute;
 import net.dv8tion.jda.core.utils.SimpleLog;
+import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -99,7 +100,13 @@ public class BotRateLimiter extends RateLimiter
             if (code == 429)
             {
                 String global = headers.getFirst("x-ratelimit-global");
-                long retryAfter = Long.parseLong(headers.getFirst("retry-after"));
+                String retry = headers.getFirst("retry-after");
+                if (retry == null || retry.isEmpty())
+                {
+                    JSONObject limitObj = new JSONObject(response.getBody());
+                    retry = limitObj.getString("retry_after");
+                }
+                long retryAfter = Long.parseLong(retry);
                 if (!Boolean.parseBoolean(global))  //Not global ratelimit
                 {
                     updateBucket(bucket, headers);
