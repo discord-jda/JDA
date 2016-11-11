@@ -104,7 +104,7 @@ public class BotRateLimiter extends RateLimiter
                 if (retry == null || retry.isEmpty())
                 {
                     JSONObject limitObj = new JSONObject(response.getBody());
-                    retry = limitObj.getString("retry_after");
+                    retry = limitObj.get("retry_after").toString();
                 }
                 long retryAfter = Long.parseLong(retry);
                 if (!Boolean.parseBoolean(global))  //Not global ratelimit
