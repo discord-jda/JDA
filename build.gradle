@@ -1,17 +1,35 @@
-//to build everything:             "gradlew clean build"  
-//to build and upload everything:  "gradlew clean bintrayUpload"
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+//to build everything:             "gradlew build"
+//to build and upload everything:  "gradlew bintrayUpload"
+
 import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
     id 'com.jfrog.bintray' version '1.7.2'
     id 'java'
     id 'maven'
+    id 'maven-publish'
     id 'signing'
     id 'com.github.ben-manes.versions' version '0.13.0'
     id 'com.github.johnrengelman.shadow' version '1.2.4'
 }
 
-def versionObj = new Version(major: 3, minor: 0, revision: "ALPHA")
+def versionObj = new Version(major: 3, minor: 0, revision: "BETA")
 
 group = "net.dv8tion"
 archivesBaseName = "JDA"
@@ -21,7 +39,6 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 repositories {
-    mavenCentral()
     jcenter()
 }
 
@@ -68,25 +85,15 @@ jar {
     manifest {
         attributes 'Implementation-Version': version
     }
-    include "net/dv8tion/jda/**"
-    include "com/iwebpp/crypto/**"
-    include "org/tritonus/**"
-    include "tomp2p/opuswrapper/**"
-    include "natives/**"
 }
 
 shadowJar {
-    classifier = "withDepdendencies"
+    classifier = "withDependencies"
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
-    from sourceSets.main.allSource
     from "${buildDir}/filteredSrc"
-    include "net/dv8tion/jda/**"
-    include "com/iwebpp/crypto/**"
-    include "org/tritonus/**"
-    include "tomp2p/opuswrapper/**"
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
@@ -96,16 +103,27 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 
 javadoc {
     failOnError = false
+    options.memberLevel = JavadocMemberLevel.PUBLIC
     
     //### excludes ###
     //jda internals
-    exclude("net/dv8tion/jda/core/entities/impl/**")
-    exclude("net/dv8tion/jda/bot/entities/impl/**")
-    exclude("net/dv8tion/jda/client/entities/impl/**")
-    
+    exclude("net/dv8tion/jda/core/entities/impl")
+    exclude("net/dv8tion/jda/bot/entities/impl")
+    exclude("net/dv8tion/jda/client/entities/impl")
     exclude("net/dv8tion/jda/core/handle")
-    exclude("net/dv8tion/jda/core/requests")
-    
+    exclude("net/dv8tion/jda/bot/handle")
+    exclude("net/dv8tion/jda/client/handle")
+    exclude("net/dv8tion/jda/core/managers/impl")
+    exclude("net/dv8tion/jda/bot/managers/impl")
+    exclude("net/dv8tion/jda/client/managers/impl")
+    exclude("net/dv8tion/jda/core/requests/GuildLock.java",
+            "net/dv8tion/jda/core/requests/WebSocketClient.java",
+            "net/dv8tion/jda/core/requests/RateLimiter.java",
+            "net/dv8tion/jda/core/requests/Request.java",
+            "net/dv8tion/jda/core/requests/Requester.java",
+            "net/dv8tion/jda/core/requests/Response.java",
+            "net/dv8tion/jda/core/requests/ratelimit")
+
     //opuswrapper
     exclude("tomp2p/opuswrapper")
     
@@ -113,37 +131,32 @@ javadoc {
     exclude("com/iwebpp/crypto")
 }
 
-artifacts {
-    archives javadocJar, sourcesJar, shadowJar
-}
-
-signing {
-    sign configurations.archives
-}
-
 bintray {
     user = bintrayUsername
     key = bintrayApiKey
+    publications = ["BintrayRelease"]
     pkg {
         repo = 'maven'
         name = 'JDA'
         licenses = ['Apache-2.0']
         vcsUrl = 'https://github.com/DV8FromTheWorld/JDA.git'
-        filesSpec {
-            from ('build/libs') {
-                exclude "**withDependencies**"
-            }
-            from 'build/poms'
-            into "${project.group.replace(".", "/")}/${archivesBaseName}/${project.version}"
-
-            rename { String fileName ->
-                fileName.replace("pom-default.xml", "${archivesBaseName}-${project.version}.pom")
-            }
-        }
         publish = true
         version {
             name = project.version
             released = new Date()
+        }
+    }
+}
+
+publishing {
+    publications {
+        BintrayRelease(MavenPublication) {
+            from components.java
+            groupId group
+            artifactId archivesBaseName
+            version version
+            artifact javadocJar
+            artifact sourcesJar
         }
     }
 }
@@ -162,44 +175,30 @@ task wrapper(type: Wrapper) {
     gradleVersion = '3.1'
 }
 
-task checksums (dependsOn: [assemble, install, shadowJar]) {
-    doLast {
-        project.configurations.getByName('archives').artifacts.each { artifact ->
-            if (artifact.file.exists()) {
-                project.ant.checksum(file: artifact.file, algorithm: 'md5', todir: artifact.file.parent) 
-                project.ant.checksum(file: artifact.file, algorithm: 'sha1', todir: artifact.file.parent)
-            }
-        }
-
-        def file = file('build/poms/pom-default.xml')
-        project.ant.checksum(file: file, algorithm: 'md5', todir: file.parent)
-        project.ant.checksum(file: file, algorithm: 'sha1', todir: file.parent)
-    }
-}
 
 build {
-    dependsOn checksums
-}
+    dependsOn clean
+    dependsOn jar
+    dependsOn javadocJar
+    dependsOn sourcesJar
+    dependsOn shadowJar
 
-signArchives { 
-    onlyIf { !getProjectProperty("signing.keyId").empty }
-    onlyIf { !getProjectProperty("signing.password").empty }
-    onlyIf { !getProjectProperty("signing.secretKeyRingFile").empty }
+    jar.mustRunAfter clean
+    javadocJar.mustRunAfter jar
+    sourcesJar.mustRunAfter javadocJar
+    shadowJar.mustRunAfter sourcesJar
 }
 
 bintrayUpload {
     dependsOn build
-    dependsOn checksums
     
     onlyIf { !getProjectProperty("bintrayUsername").empty }
     onlyIf { !getProjectProperty("bintrayApiKey").empty }
     onlyIf { System.getenv("BUILD_NUMBER") }
 }
 
-// ## classes ## 
-
 class Version {
-    String major, minor, revision // To be changed to int after alpha
+    String major, minor, revision
 
     String getBuild() {
         System.getenv("BUILD_NUMBER") ?: System.getProperty("BUILD_NUMBER") ?: "DEV"
