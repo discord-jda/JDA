@@ -1,27 +1,26 @@
 # JDA (Java Discord API)
 JDA strives to provide a clean and full wrapping of the Discord REST api and its Websocket-Events for Java.<br>
 
-## JDA 2.x
-After the release of the official Discord API, we decided to split JDA into 2 seperate libraries.
-
-JDA will be continued with version 2.x and will only have Bot-features (for bot-accounts).
-Please see the [Discord docs](https://discordapp.com/developers/docs/reference) for more information about bot accounts.
+## JDA 3.x
+JDA will be continued with version 3.x and will support Bot-features (for bot-accounts) and Client-features (for user-accounts).
+_Please see the [Discord docs](https://discordapp.com/developers/docs/reference) for more information about bot accounts._
 
 
-We are also creating a new library called JDA-Client, which extends the functionality of JDA 2.x
-and add some client-only features like friends-list, acks, creating/owning Guilds,...<br/>
-You can find JDA-Client [Here](https://github.com/DV8FromTheWorld/JDA-Client)
+This officially makes [JDA-Client](https://github.com/DV8FromTheWorld/JDA-Client) deprecated.
+Please do not continue using it, and instead switch to the promoted 3.x version listed further below.
 
 ## Creating the JDA Object
-Creating the JDA Object is done via the JDABuilder class.
-After setting the bot-token via setter,
+Creating the JDA Object is done via the JDABuilder class by providing an AccountType (Bot/Client).
+After setting the token via setter,
 the JDA Object is then created by calling the `.buildBlocking()` or the `.buildAsync()` (non-blocking login) method.
 
 Example:
 
 ```java
-JDA jda = new JDABuilder().setBotToken("token").buildBlocking();
+JDA jda = new JDABuilder(AccountType.BOT).setToken("token").buildBlocking();
 ```
+
+**Note**: It is important to set the correct AccountType because Bot-accounts require a token prefix to login.
 
 ## Events
 There a TON of events in JDA that you can listen to.<br>
@@ -37,7 +36,7 @@ public class ReadyListener implements EventListener
 {
     public static void main(String[] args)
     {
-        JDA jda = new JDABuilder().setBotToken("token").addListener(new ReadyListener()).buildBlocking();
+        JDA jda = new JDABuilder(AccountType.BOT).setToken("token").addListener(new ReadyListener()).buildBlocking();
     }
 
     @Override
@@ -54,7 +53,7 @@ public class MessageListener extends ListenerAdapter
 {
     public static void main(String[] args)
     {
-        JDA jda = new JDABuilder().setBotToken("token").buildBlocking();
+        JDA jda = new JDABuilder(AccountType.BOT).setToken("token").buildBlocking();
         jda.addEventListener(new MessageListener());
     }
 
@@ -69,7 +68,7 @@ public class MessageListener extends ListenerAdapter
         else
         {
             System.out.printf("[%s][%s] %s: %s\n", event.getGuild().getName(),
-                        event.getTextChannel().getName(), event.getAuthor().getUsername(),
+                        event.getTextChannel().getName(), event.getMember().getEffectiveName(),
                         event.getMessage().getContent());
         }
     }
@@ -120,42 +119,26 @@ It is also highly recommended to get in touch with the Devs via the Discord API 
 This project requires **Java 8**.<br>
 All dependencies are managed automatically by Gradle.
  * NV Websocket Client
-   * Version: **1.16**
+   * Version: **1.30**
    * [Github](https://github.com/TakahikoKawasaki/nv-websocket-client)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/com.neovisionaries%3Anv-websocket-client/view)
  * Unirest
-   * Version: **1.4.7**
+   * Version: **1.4.9**
    * [Github](https://github.com/Mashape/unirest-java)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/com.mashape.unirest%3Aunirest-java/view)
  * Apache Commons Lang3
-   * Version: **3.4**
+   * Version: **3.5**
    * [Website](https://commons.apache.org/proper/commons-lang/)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/org.apache.commons%3Acommons-lang3/view)
- * json.org
-   * Version: **20150729**
+ * Apache Commons Collections4
+   * Version: **4.1**
+   * [Website](https://commons.apache.org/proper/commons-collections/)
+   * [JCenter Repository](https://bintray.com/bintray/jcenter/org.apache.commons%3Acommons-collections4/view)
+ * org.json
+   * Version: **20160810**
    * [Github](https://github.com/douglascrockford/JSON-java)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/org.json%3Ajson/view)
  * JNA
-   * Version: **4.2.1**
+   * Version: **4.2.2**
    * [Github](https://github.com/java-native-access/jna)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/net.java.dev.jna%3Ajna/view)
- * Tritonus-Share
-   * Version: **0.3.7-2**
-   * [Sourceforge](https://sourceforge.net/projects/tritonus/)
-   * [JCenter Repository](https://bintray.com/bintray/jcenter/com.googlecode.soundlibs%3Atritonus-share/view)
- * Tritonus-DSP
-   * Version: **0.3.6**
-   * [Sourceforge](https://sourceforge.net/projects/tritonus/)
-   * [JCenter Repository](https://bintray.com/dv8fromtheworld/maven/Tritonus-DSP/view)
- * MP3-SPI
-   * Version: **1.9.5-1**
-   * [Website](http://www.javazoom.net/mp3spi/mp3spi.html)
-   * [JCenter Repository](https://bintray.com/bintray/jcenter/com.googlecode.soundlibs%3Amp3spi/view)
- * jFLAC
-   * Version: **1.3**
-   * [Sourceforge](https://sourceforge.net/projects/jflac/)
-   * [JCenter Repository](https://bintray.com/dv8fromtheworld/maven/jFLAC/view)
- * JAADec
-   * Version: **0.8.5**
-   * [Github](https://github.com/DV8FromTheWorld/JAADec)
-   * [JCenter Repository](https://bintray.com/dv8fromtheworld/maven/JAADec/view)

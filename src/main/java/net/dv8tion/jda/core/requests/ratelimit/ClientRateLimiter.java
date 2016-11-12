@@ -1,0 +1,240 @@
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+
+package net.dv8tion.jda.core.requests.ratelimit;
+
+import com.mashape.unirest.http.HttpResponse;
+import net.dv8tion.jda.core.requests.RateLimiter;
+import net.dv8tion.jda.core.requests.Request;
+import net.dv8tion.jda.core.requests.Requester;
+import net.dv8tion.jda.core.requests.Route;
+import org.json.JSONObject;
+
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.stream.Collectors;
+
+public class ClientRateLimiter extends RateLimiter
+{
+    volatile Long globalCooldown = null;
+
+    public ClientRateLimiter(Requester requester, int poolSize)
+    {
+        super(requester, poolSize);
+    }
+
+    @Override
+    public Long getRateLimit(Route.CompiledRoute route)
+    {
+        Bucket bucket = getBucket(route.getBaseRoute().getRoute());
+        synchronized (bucket)
+        {
+            long now = System.currentTimeMillis();
+            if (globalCooldown != null) //Are we on global cooldown?
+            {
+                if (now > globalCooldown)   //Verify that we should still be on cooldown.
+                {
+                    globalCooldown = null;  //If we are done cooling down, reset the globalCooldown and continue.
+                } else
+                {
+                    return globalCooldown - now;    //If we should still be on cooldown, return when we can go again.
+                }
+            }
+            if (bucket.retryAfter > now)
+            {
+                return bucket.retryAfter - now;
+            }
+            else
+            {
+                return null;
+            }
+        }
+    }
+
+    @Override
+    protected void queueRequest(Request request)
+    {
+        if (isShutdown)
+            throw new RejectedExecutionException("Cannot queue a request after shutdown");
+        Bucket bucket = getBucket(request.getRoute().getBaseRoute().getRoute());
+        synchronized (bucket)
+        {
+            bucket.addToQueue(request);
+        }
+    }
+
+    @Override
+    protected Long handleResponse(Route.CompiledRoute route, HttpResponse<String> response)
+    {
+        Bucket bucket = getBucket(route.getBaseRoute().getRoute());
+        synchronized (bucket)
+        {
+            long now = System.currentTimeMillis();
+            int code = response.getStatus();
+            if (code == 429)
+            {
+                JSONObject limitObj = new JSONObject(response.getBody());
+                long retryAfter = limitObj.getLong("retry_after");
+                if (limitObj.has("global") && limitObj.getBoolean("global"))    //Global ratelimit
+                {
+                    globalCooldown = now + retryAfter;
+                }
+                else
+                {
+                    bucket.retryAfter = now + retryAfter;
+                }
+                return retryAfter;
+            }
+            else
+            {
+                return null;
+            }
+        }
+    }
+
+    private Bucket getBucket(String route)
+    {
+        Bucket bucket = (Bucket) buckets.get(route);
+        if (bucket == null)
+        {
+            synchronized (buckets)
+            {
+                bucket = (Bucket) buckets.get(route);
+                if (bucket == null)
+                {
+                    bucket = new Bucket(route);
+                    buckets.put(route, bucket);
+                }
+            }
+        }
+        return bucket;
+    }
+
+    private class Bucket implements IBucket, Runnable
+    {
+        final String route;
+        volatile long retryAfter = 0;
+        volatile ConcurrentLinkedQueue<Request> requests = new ConcurrentLinkedQueue<>();
+
+        public Bucket(String route)
+        {
+            this.route = route;
+        }
+
+        void addToQueue(Request request)
+        {
+            requests.add(request);
+            submitForProcessing();
+        }
+
+        void submitForProcessing()
+        {
+            synchronized (submittedBuckets)
+            {
+                if (!submittedBuckets.contains(this))
+                {
+                    submittedBuckets.add(this);
+                    pool.submit(this);
+                }
+            }
+        }
+
+        @Override
+        public boolean equals(Object o)
+        {
+            if (!(o instanceof Bucket))
+                return false;
+
+            Bucket oBucket = (Bucket) o;
+            return route.equals(((Bucket) o).route);
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return route.hashCode();
+        }
+
+        @Override
+        public void run()
+        {
+            try
+            {
+                synchronized (requests)
+                {
+                    for (Iterator<Request> it = requests.iterator(); it.hasNext(); )
+                    {
+                        Request request = null;
+                        try
+                        {
+                            request = it.next();
+                            Long retryAfter = requester.execute(request);
+                            if (retryAfter != null)
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                it.remove();
+                            }
+                        }
+                        catch (Throwable t)
+                        {
+                            Requester.LOG.fatal("Requester system encountered an internal error");
+                            Requester.LOG.log(t);
+                            it.remove();
+                            if (request != null)
+                                request.onFailure(t);
+                        }
+                    }
+
+                    synchronized (submittedBuckets)
+                    {
+                        submittedBuckets.remove(this);
+                        if (!requests.isEmpty())
+                        {
+                            try
+                            {
+                                this.submitForProcessing();
+                            }
+                            catch (RejectedExecutionException e)
+                            {
+                                Requester.LOG.debug("Caught RejectedExecutionException when re-queuing a ratelimited request. The requester is probably shutdown, thus, this can be ignored.");
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Throwable err)
+            {
+                Requester.LOG.fatal("Requester system encountered an internal error from beyond the sychronized execution blocks. NOT GOOD!");
+                Requester.LOG.log(err);
+            }
+        }
+
+        @Override
+        public String getRoute()
+        {
+            return route;
+        }
+
+        @Override
+        public Queue<Request> getRequests()
+        {
+            return requests;
+        }
+    }
+}
