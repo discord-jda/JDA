@@ -134,7 +134,7 @@ public class RoleManagerUpdatable
         if(name.shouldUpdate())
             body.put("name", name.getValue());
         if(color.shouldUpdate())
-            body.put("color", color.getValue() == null ? 0 : color.getValue().getRGB());
+            body.put("color", color.getValue() == null ? 0 : color.getValue().getRGB() & 0xFFFFFF);
         if(hoisted.shouldUpdate())
             body.put("hoist", hoisted.getValue().booleanValue());
         if(mentionable.shouldUpdate())
