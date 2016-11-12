@@ -42,6 +42,13 @@ repositories {
     jcenter()
 }
 
+sourceSets {
+    examples {
+        compileClasspath += main.output
+        runtimeClasspath += main.output
+    }
+}
+
 dependencies {
     //General Utility
     compile 'org.apache.commons:commons-lang3:3.5'
@@ -58,6 +65,10 @@ dependencies {
     }
 
     testCompile 'junit:junit:4.12'
+
+    //Sets the dependencies for the examples
+    examplesCompile configurations.compile
+    examplesRuntime configurations.runtime
 }
 
 task sourcesForRelease(type: Copy) {
@@ -79,6 +90,12 @@ compileJava {
 
     dependsOn sourcesForRelease
 }
+
+
+//configurations {
+//    examplesCompile.extendsFrom javaCompile
+//    examplesRuntime.extendsFrom javaRuntime
+//}
 
 jar {
     baseName = project.name
