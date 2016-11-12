@@ -167,6 +167,12 @@ public class RoleImpl implements Role
     }
 
     @Override
+    public boolean canInteract(Role role)
+    {
+        return PermissionUtil.canInteract(this, role);
+    }
+
+    @Override
     public Guild getGuild()
     {
         return guild;

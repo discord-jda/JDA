@@ -86,4 +86,8 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *      If this account does not have MANAGE_MESSAGES
      */
     RestAction<Void> deleteMessagesByIds(Collection<String> messageIds);
+
+    boolean canTalk();
+
+    boolean canTalk(Member member);
 }

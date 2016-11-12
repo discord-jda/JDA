@@ -103,6 +103,21 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
+    public boolean canTalk()
+    {
+        return canTalk(guild.getSelfMember());
+    }
+
+    @Override
+    public boolean canTalk(Member member)
+    {
+        if (!guild.equals(member.getGuild()))
+            throw new IllegalArgumentException("Provided Member is not from the Guild that this TextChannel is part of.");
+
+        return member.hasPermission(this, Permission.MESSAGE_READ, Permission.MESSAGE_WRITE);
+    }
+
+    @Override
     public String getName()
     {
         return name;

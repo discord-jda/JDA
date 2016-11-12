@@ -165,6 +165,24 @@ public class MemberImpl implements Member
         return hasPermission(channel, permissions.toArray(new Permission[permissions.size()]));
     }
 
+    @Override
+    public boolean canInteract(Member member)
+    {
+        return PermissionUtil.canInteract(this, member);
+    }
+
+    @Override
+    public boolean canInteract(Role role)
+    {
+        return PermissionUtil.canInteract(this, role);
+    }
+
+    @Override
+    public boolean canInteract(Emote emote)
+    {
+        return PermissionUtil.canInteract(this, emote);
+    }
+
     public MemberImpl setNickname(String nickname)
     {
         this.nickname = nickname;

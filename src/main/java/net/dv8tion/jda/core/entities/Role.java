@@ -163,6 +163,8 @@ public interface Role extends ISnowflake, IMentionable, Comparable<Role>
      */
     boolean hasPermission(Channel channel, Collection<Permission> permissions);
 
+    boolean canInteract(Role role);
+
     /**
      * Returns the {@link net.dv8tion.jda.core.entities.Guild Guild} this Role exists in
      * @return

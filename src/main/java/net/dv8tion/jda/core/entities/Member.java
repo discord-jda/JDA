@@ -188,4 +188,10 @@ public interface Member extends IMentionable
      *      True - if all of the specified Permissions are granted to this Member in the provided Channel.
      */
     boolean hasPermission(Channel channel, Collection<Permission> permissions);
+
+    boolean canInteract(Member member);
+
+    boolean canInteract(Role role);
+
+    boolean canInteract(Emote emote);
 }
