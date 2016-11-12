@@ -17,7 +17,10 @@ package net.dv8tion.jda.events.guild.member;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.entities.User;
+
+import java.util.List;
 
 /**
  * <b><u>GuildMemberLeaveEvent</u></b><br>
@@ -28,8 +31,27 @@ import net.dv8tion.jda.entities.User;
 public class GuildMemberLeaveEvent extends GenericGuildMemberEvent
 {
 
-    public GuildMemberLeaveEvent(JDA api, int responseNumber, Guild guild, User user)
+    private List<Role> oldRoles;
+    private String oldNick;
+
+    public GuildMemberLeaveEvent(JDA api, int responseNumber, Guild guild, User user, List<Role> oldRoles, String oldNick)
     {
         super(api, responseNumber, guild, user);
+        this.oldRoles = oldRoles;
+        this.oldNick = oldNick;
+    }
+
+    public List<Role> getOldRoles()
+    {
+        return oldRoles;
+    }
+
+    /**
+     * Possibly null Nickname for {@link net.dv8tion.jda.entities.User User} who left.
+     * @return Old nickname or null if none existed.
+     */
+    public String getOldNick()
+    {
+        return oldNick;
     }
 }

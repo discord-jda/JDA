@@ -41,7 +41,7 @@ public class EntityBuilder
     private static final HashMap<JDA, HashMap<String, JSONObject>> cachedJdaGuildJsons = new HashMap<>();
     private static final HashMap<JDA, HashMap<String, Consumer<Guild>>> cachedJdaGuildCallbacks = new HashMap<>();
     private static final Pattern channelMentionPattern = Pattern.compile("<#(\\d+)>");
-    private static final Pattern emotePatter = Pattern.compile("<:([^:]+):(\\d+)>");
+    private static final Pattern emotePattern = Pattern.compile("<:([^:]+):(\\d+)>");
     private final JDAImpl api;
 
     public EntityBuilder(JDAImpl api)
@@ -105,10 +105,9 @@ public class EntityBuilder
                 String emojID = obj.getString("id");
                 Emote emote = api.getEmoteById(emojID);
                 if (emote == null)
-                    emote = new EmoteImpl(obj.getString("name"), emojID);
+                    emote = new EmoteImpl(obj.getString("name"), emojID, guildObj);
                 api.getEmoteMap().putIfAbsent(emojID, emote);
                 guildObj.getEmoteMap().put(emojID, emote);
-                ((EmoteImpl) emote).addGuild(guildObj);
             }
         }
         else
@@ -137,11 +136,27 @@ public class EntityBuilder
                     continue;
                 }
                 Game presenceGame = null;
-                if (!presence.isNull("game") && !presence.getJSONObject("game").isNull("name"))
+                JSONObject gameJson = !presence.isNull("game") ? presence.getJSONObject("game") : null;
+                if (gameJson != null && !gameJson.isNull("name"))
                 {
-                    presenceGame = new GameImpl(presence.getJSONObject("game").get("name").toString(),
-                            presence.getJSONObject("game").isNull("url") ? null : presence.getJSONObject("game").get("url").toString(),
-                            presence.getJSONObject("game").isNull("type") ? Game.GameType.DEFAULT : Game.GameType.fromKey((int) presence.getJSONObject("game").get("type")));
+                    String gameName = gameJson.get("name").toString(); // Thanks discord :)
+                    String url = gameJson.isNull("url")
+                            ? null
+                            : gameJson.get("url").toString(); // Thanks discord :)
+                    Game.GameType gameType;
+                    try
+                    {
+                         gameType = gameJson.isNull("type")
+                                ? Game.GameType.DEFAULT
+                                : Game.GameType.fromKey(Integer.parseInt(gameJson.get("type").toString()));
+                        //we force the type value to be a string and parse it because sometimes discord is retarded and gives us a string for type
+                        // so we will deal with both int and string value cases by forcing int to be a string and parsing.
+                    }
+                    catch (NumberFormatException e)
+                    {
+                        gameType = Game.GameType.DEFAULT;
+                    }
+                    presenceGame = new GameImpl(gameName, url, gameType);
                 }
                 user
                         .setCurrentGame(presenceGame)
@@ -464,7 +479,7 @@ public class EntityBuilder
             api.getUserMap().put(selfInfo.getId(), selfInfo);
         }
         return (SelfInfo) selfInfo
-                .setVerified(self.getBoolean("verified"))
+                .setVerified(self.has("verified") ? self.getBoolean("verified") : selfInfo.isVerified())
                 .setUserName(self.getString("username"))
                 .setDiscriminator(self.getString("discriminator"))
                 .setAvatarId(self.isNull("avatar") ? null : self.getString("avatar"))
@@ -509,7 +524,7 @@ public class EntityBuilder
         }
         message.setEmbeds(embeds);
 
-        Matcher matcher = emotePatter.matcher(content);
+        Matcher matcher = emotePattern.matcher(content);
         List<Emote> emoteList = new LinkedList<>();
         while (matcher.find())
             emoteList.add(api.getEmoteById(matcher.group(2)) == null
@@ -536,6 +551,8 @@ public class EntityBuilder
                 {
                     //We do this to properly order the mentions. The array given by discord is out of order sometimes.
                     int index = content.indexOf("<@" + mention.getString("id") + ">");
+                    if(index < 0)
+                        index = content.indexOf("<@!" + mention.getString("id") + ">");
                     mentionedUsers.put(index, u);
                 }
             }

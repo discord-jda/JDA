@@ -15,12 +15,15 @@
  */
 package net.dv8tion.jda.handle;
 
+import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.entities.impl.*;
 import net.dv8tion.jda.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.events.voice.VoiceLeaveEvent;
 import net.dv8tion.jda.requests.GuildLock;
 import org.json.JSONObject;
+
+import java.util.List;
 
 public class GuildMemberRemoveHandler extends SocketHandler
 {
@@ -57,6 +60,9 @@ public class GuildMemberRemoveHandler extends SocketHandler
                             status, channel));
         }
         guild.getVoiceStatusMap().remove(user);
+        List<Role> oldRoles = guild.getRolesForUser(user);
+        String oldNick = guild.getNicknameForUser(user);
+        guild.getNickMap().remove(user);
         guild.getUserRoles().remove(user);
         guild.getJoinedAtMap().remove(user);
         if (!api.getGuildMap().values().stream().anyMatch(g -> ((GuildImpl) g).getUserRoles().containsKey(user)))
@@ -70,7 +76,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
         api.getEventManager().handle(
                 new GuildMemberLeaveEvent(
                         api, responseNumber,
-                        guild, user));
+                        guild, user, oldRoles, oldNick));
         return null;
     }
 }

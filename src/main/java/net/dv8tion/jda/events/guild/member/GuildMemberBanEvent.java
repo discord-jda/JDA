@@ -17,7 +17,10 @@ package net.dv8tion.jda.events.guild.member;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.entities.User;
+
+import java.util.List;
 
 /**
  * <b><u>GuildMemberBanEvent</u></b><br>
@@ -25,11 +28,11 @@ import net.dv8tion.jda.entities.User;
  * <br>
  * Use: Retrieve user who was banned (if available) and triggering guild.
  */
-public class GuildMemberBanEvent extends GuildMemberLeaveEvent
+public class GuildMemberBanEvent extends GuildMemberLeaveEvent // Rethink this hierarchy
 {
 
-    public GuildMemberBanEvent(JDA api, int responseNumber, Guild guild, User user)
+    public GuildMemberBanEvent(JDA api, int responseNumber, Guild guild, User user, List<Role> oldRoles, String oldNick)
     {
-        super(api, responseNumber, guild, user);
+        super(api, responseNumber, guild, user, oldRoles, oldNick);
     }
 }

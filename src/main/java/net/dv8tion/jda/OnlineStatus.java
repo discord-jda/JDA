@@ -23,6 +23,8 @@ public enum OnlineStatus
     ONLINE("online"),
     AWAY("idle"),
     OFFLINE("offline"),
+    DO_NOT_DISTURB("dnd"),
+    INVISIBLE("invisible"),
     UNKNOWN("");
 
     private final String key;
@@ -51,5 +53,10 @@ public enum OnlineStatus
             }
         }
         return UNKNOWN;
+    }
+
+    public String getKey()
+    {
+        return key;
     }
 }

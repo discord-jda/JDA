@@ -42,6 +42,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -411,12 +412,6 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
-    public boolean checkPermission(User user, Permission... permissions)
-    {
-        return PermissionUtil.checkPermission(this, user, permissions);
-    }
-
-    @Override
     public synchronized ChannelManager getManager()
     {
         if (manager == null)
@@ -577,11 +572,12 @@ public class TextChannelImpl implements TextChannel
     {
         private static final Map<JDA, Map<String, AsyncMessageSender>> instances = new HashMap<>();
         private final JDAImpl api;
-        private final String ratelimitIdentifier; //GuildId or GlobalPrivateChannel
+        private final String ratelimitIdentifier; // GuildId or GlobalPrivateChannel
         private Runner runner = null;
         private boolean runnerRunning = false;
         private boolean alive = true;
         private final Queue<Task> queue = new LinkedList<>();
+        private final ReentrantLock lock = new ReentrantLock();
 
         private AsyncMessageSender(JDAImpl api, String ratelimitIdentifier)
         {
@@ -612,18 +608,17 @@ public class TextChannelImpl implements TextChannel
             Map<String, AsyncMessageSender> senders = instances.get(api);
             if (senders != null && !senders.isEmpty())
             {
-                AsyncMessageSender sender = senders.get(ratelimitIdentifier);
+                AsyncMessageSender sender = senders.remove(ratelimitIdentifier);
                 if (sender != null)
                 {
                     sender.kill();
-                    senders.remove(ratelimitIdentifier);
                 }
             }
         }
 
         public synchronized static void stopAll(JDA api)
         {
-            Map<String, AsyncMessageSender> senders = instances.get(api);
+            Map<String, AsyncMessageSender> senders = instances.remove(api);
             if (senders != null && !senders.isEmpty())
             {
                 senders.values().forEach(sender ->
@@ -641,9 +636,11 @@ public class TextChannelImpl implements TextChannel
 
         public synchronized void enqueue(Task task)
         {
+            lock.lock();
             queue.add(task);
             if (runner == null)
             {
+                alive = true;
                 runnerRunning = true;
                 runner = new Runner(this);
                 runner.setDaemon(true);
@@ -654,6 +651,7 @@ public class TextChannelImpl implements TextChannel
                 runnerRunning = true;
                 notifyAll();
             }
+            lock.unlock();
         }
 
         public synchronized void kill()
@@ -666,11 +664,28 @@ public class TextChannelImpl implements TextChannel
         {
             if (!queue.isEmpty())
                 return;
+            
+            lock.lock();
             runnerRunning = false;
-            while(!runnerRunning) {
-                try {
+            lock.unlock();
+
+            while (!runnerRunning)
+            {
+                try
+                {
                     wait();
-                } catch(InterruptedException ignored) {}
+                    lock.lock();
+                    if (!runnerRunning)
+                    {
+                        runner = null;
+                        kill();
+                        return;
+                    }
+                    lock.unlock();
+                }
+                catch (InterruptedException ignored)
+                {
+                }
             }
         }
 

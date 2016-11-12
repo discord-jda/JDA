@@ -16,13 +16,14 @@
  */
 package net.dv8tion.jda.entities.impl;
 
+import java.util.Objects;
 import net.dv8tion.jda.entities.Game;
 
 public class GameImpl implements Game
 {
-    private String name;
-    private String url;
-    private GameType type;
+    private final String name;
+    private final String url;
+    private final GameType type;
 
     public GameImpl(String name, String url, GameType type)
     {
@@ -56,13 +57,17 @@ public class GameImpl implements Game
         if(!( obj instanceof Game ))
             return false;
         Game other = (Game) obj;
-        if(other.getType() != type)
-            return false;
-        if(name == null)
-            return other.getName() == null;
-        if(url == null)
-            return other.getUrl() == null;
-        return name.equals(other.getName()) && url.equals(other.getUrl());
+        return ( other.getType() == type ) && 
+               ( (name == null && other.getName() == null) || (name != null && name.equals(other.getName())) ) && 
+               ( (url == null && other.getUrl() == null) || (url != null && url.equals(other.getUrl())) );
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = Objects.hashCode(this.name);
+        hash = 31 * hash + Objects.hashCode(this.url);
+        hash = 31 * hash + Objects.hashCode(this.type);
+        return hash;
     }
 
     @Override

@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.handle;
 
+import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.impl.GuildImpl;
 import net.dv8tion.jda.entities.impl.JDAImpl;
@@ -23,6 +24,8 @@ import net.dv8tion.jda.events.guild.member.GuildMemberBanEvent;
 import net.dv8tion.jda.events.guild.member.GuildMemberUnbanEvent;
 import net.dv8tion.jda.requests.GuildLock;
 import org.json.JSONObject;
+
+import java.util.List;
 
 public class GuildMemberBanHandler extends SocketHandler
 {
@@ -55,10 +58,12 @@ public class GuildMemberBanHandler extends SocketHandler
         }
         if (banned)
         {
+            List<Role> oldRoles = guild.getRolesForUser(user);
+            String oldNick = guild.getNicknameForUser(user);
             api.getEventManager().handle(
                     new GuildMemberBanEvent(
                             api, responseNumber,
-                            guild, user));
+                            guild, user, oldRoles, oldNick));
         }
         else
         {
