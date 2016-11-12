@@ -119,42 +119,26 @@ It is also highly recommended to get in touch with the Devs via the Discord API 
 This project requires **Java 8**.<br>
 All dependencies are managed automatically by Gradle.
  * NV Websocket Client
-   * Version: **1.16**
+   * Version: **1.30**
    * [Github](https://github.com/TakahikoKawasaki/nv-websocket-client)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/com.neovisionaries%3Anv-websocket-client/view)
  * Unirest
-   * Version: **1.4.7**
+   * Version: **1.4.9**
    * [Github](https://github.com/Mashape/unirest-java)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/com.mashape.unirest%3Aunirest-java/view)
  * Apache Commons Lang3
-   * Version: **3.4**
+   * Version: **3.5**
    * [Website](https://commons.apache.org/proper/commons-lang/)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/org.apache.commons%3Acommons-lang3/view)
- * json.org
-   * Version: **20150729**
+ * Apache Commons Collections4
+   * Version: **4.1**
+   * [Website](https://commons.apache.org/proper/commons-collections/)
+   * [JCenter Repository](https://bintray.com/bintray/jcenter/org.apache.commons%3Acommons-collections4/view)
+ * org.json
+   * Version: **20160810**
    * [Github](https://github.com/douglascrockford/JSON-java)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/org.json%3Ajson/view)
  * JNA
-   * Version: **4.2.1**
+   * Version: **4.2.2**
    * [Github](https://github.com/java-native-access/jna)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/net.java.dev.jna%3Ajna/view)
- * Tritonus-Share
-   * Version: **0.3.7-2**
-   * [Sourceforge](https://sourceforge.net/projects/tritonus/)
-   * [JCenter Repository](https://bintray.com/bintray/jcenter/com.googlecode.soundlibs%3Atritonus-share/view)
- * Tritonus-DSP
-   * Version: **0.3.6**
-   * [Sourceforge](https://sourceforge.net/projects/tritonus/)
-   * [JCenter Repository](https://bintray.com/dv8fromtheworld/maven/Tritonus-DSP/view)
- * MP3-SPI
-   * Version: **1.9.5-1**
-   * [Website](http://www.javazoom.net/mp3spi/mp3spi.html)
-   * [JCenter Repository](https://bintray.com/bintray/jcenter/com.googlecode.soundlibs%3Amp3spi/view)
- * jFLAC
-   * Version: **1.3**
-   * [Sourceforge](https://sourceforge.net/projects/jflac/)
-   * [JCenter Repository](https://bintray.com/dv8fromtheworld/maven/jFLAC/view)
- * JAADec
-   * Version: **0.8.5**
-   * [Github](https://github.com/DV8FromTheWorld/JAADec)
-   * [JCenter Repository](https://bintray.com/dv8fromtheworld/maven/JAADec/view)
