@@ -1,16 +1,35 @@
-//use: gradlew clean build fatJar signArchives install bintrayUpload
+/*
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+//to build everything:             "gradlew build"
+//to build and upload everything:  "gradlew bintrayUpload"
+
 import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
-    id "com.jfrog.bintray" version "1.6"
+    id 'com.jfrog.bintray' version '1.7.2'
+    id 'java'
+    id 'maven'
+    id 'maven-publish'
+    id 'signing'
+    id 'com.github.ben-manes.versions' version '0.13.0'
+    id 'com.github.johnrengelman.shadow' version '1.2.4'
 }
 
-apply plugin: 'java'
-apply plugin: 'maven'
-apply plugin: 'signing'
-apply plugin: 'eclipse'
-
-def versionObj = new Version(major: 3, minor: 0, revision: "ALPHA")
+def versionObj = new Version(major: 3, minor: 0, revision: "BETA")
 
 group = "net.dv8tion"
 archivesBaseName = "JDA"
@@ -19,68 +38,46 @@ version = "$versionObj"
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-tasks.eclipse.dependsOn(cleanEclipse)
+repositories {
+    jcenter()
+}
 
-def filteredSourceDir = file("$buildDir/filtered")
+dependencies {
+    //General Utility
+    compile 'org.apache.commons:commons-lang3:3.5'
+    compile 'org.apache.commons:commons-collections4:4.1'
+    compile 'org.json:json:20160810'
 
-// This is to fix eclipse's stupidity when first setting up the project.
-// It thinks that "filtered" should be a development source folder and cries when it doesn't exist (gradlew clean)
-eclipse {
-    classpath {
-        file {
-            withXml {
-                def sb = it.asString()
-                sb.replace(0, sb.length(), sb.toString().replace("\n\t<classpathentry kind=\"src\" path=\"build/filtered\"/>", ""));
-            }
-        }
+    //Native Library Support
+    compile 'net.java.dev.jna:jna:4.2.2'
+
+    //Web Connection Support
+    compile 'com.neovisionaries:nv-websocket-client:1.30'
+    compile ( 'com.mashape.unirest:unirest-java:1.4.9' ) {
+        exclude group: 'junit', module: 'junit'
     }
+
+    testCompile 'junit:junit:4.12'
 }
 
-
-sourceSets {
-    // This source set will contain all sources that we filter
-    filtered {
-        java {
-            srcDirs = [
-                filteredSourceDir,
-                "src/test/java",
-                "src/examples/java"
-            ]
-        }
-    }
-}
-
-javadoc {
-    failOnError = false
-
-    //### excludes ###
-    //jda internals
-    exclude("net/dv8tion/jda/entities/impl")
-    exclude("net/dv8tion/jda/managers/impl")
-    exclude("net/dv8tion/jda/handle")
-    exclude("net/dv8tion/jda/requests")
-
-    exclude("net/dv8tion/jda/audio/AudioConnection.java")
-    exclude("net/dv8tion/jda/audio/AudioPacket.java")
-    exclude("net/dv8tion/jda/audio/AudioWebSocket.java")
-    //org.tritonus
-    exclude("org/tritonus")
-    //opuswrapper
-    exclude("tomp2p/opuswrapper")
-    //voice crypto
-    exclude("com/iwebpp/crypto")
-}
-
-// copy the main sources and filter any '@buildVersion@' occurences. 
-task processVersion (type: Copy) {
-    from sourceSets.main.java
-    into filteredSourceDir
+task sourcesForRelease(type: Copy) {
+    from 'src/main/java'
+    into 'build/filteredSrc'
     filter(ReplaceTokens, tokens: [
-        versionMajor: versionObj.major.toString(),
-        versionMinor: versionObj.minor.toString(),
-        versionRevision: versionObj.revision.toString(),
-        versionBuild: versionObj.build.toString()
-    ])
+            versionMajor: versionObj.major.toString(),
+            versionMinor: versionObj.minor.toString(),
+            versionRevision: versionObj.revision.toString(),
+            versionBuild: versionObj.build.toString()
+        ])
+}
+
+compileJava {
+    source = sourcesForRelease.destinationDir
+    classpath = sourceSets.main.compileClasspath
+
+    options.encoding = 'UTF-8'
+
+    dependsOn sourcesForRelease
 }
 
 jar {
@@ -88,110 +85,61 @@ jar {
     manifest {
         attributes 'Implementation-Version': version
     }
-    include "net/dv8tion/jda/**"
-    include "com/iwebpp/crypto/**"
-    include "org/tritonus/**"
-    include "tomp2p/opuswrapper/**"
-    include "natives/**"
 }
 
-task javadocJar(type: Jar) {
-    classifier = 'javadoc'
-    from javadoc
+shadowJar {
+    classifier = "withDependencies"
 }
 
-task sourcesJar(type: Jar) {
+task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
-    from sourceSets.filtered.java
-    include "net/dv8tion/jda/**"
-    include "com/iwebpp/crypto/**"
-    include "org/tritonus/**"
-    include "tomp2p/opuswrapper/**"
+    from "${buildDir}/filteredSrc"
 }
 
-// create a single Jar with all dependencies
-task fatJar(type: Jar) {
-    manifest {
-        attributes 'Implementation-Version': version
-    }
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+javadoc {
+    failOnError = false
+    options.memberLevel = JavadocMemberLevel.PUBLIC
     
-    baseName = project.name + '-withDependencies'
-    from { 
-        configurations.compile.collect {
-            dependency ->
-            if (dependency.directory) { // If it is a folder, just include the folder in its entirety
-                return dependency
-            } else {    // If it isn't a folder, put it in a zipTree. if it is a zip or jar the contents will be extracted.
-                return zipTree(dependency)
-            }
-        }
-    }
-    with jar
-}
+    //### excludes ###
+    //jda internals
+    exclude("net/dv8tion/jda/core/entities/impl")
+    exclude("net/dv8tion/jda/bot/entities/impl")
+    exclude("net/dv8tion/jda/client/entities/impl")
+    exclude("net/dv8tion/jda/core/handle")
+    exclude("net/dv8tion/jda/bot/handle")
+    exclude("net/dv8tion/jda/client/handle")
+    exclude("net/dv8tion/jda/core/managers/impl")
+    exclude("net/dv8tion/jda/bot/managers/impl")
+    exclude("net/dv8tion/jda/client/managers/impl")
+    exclude("net/dv8tion/jda/core/requests/GuildLock.java",
+            "net/dv8tion/jda/core/requests/WebSocketClient.java",
+            "net/dv8tion/jda/core/requests/RateLimiter.java",
+            "net/dv8tion/jda/core/requests/Request.java",
+            "net/dv8tion/jda/core/requests/Requester.java",
+            "net/dv8tion/jda/core/requests/Response.java",
+            "net/dv8tion/jda/core/requests/ratelimit")
 
-artifacts {
-    archives javadocJar, sourcesJar
-}
-
-signing {
-    sign configurations.archives
-}
-repositories {
-    jcenter()
-}
-
-dependencies {
-    //General Utility
-    compile 'org.apache.commons:commons-lang3:3.4'
-    compile 'org.apache.commons:commons-collections4:4.1'
-    compile 'org.json:json:20150729'
-
-    //Native Library Support
-    compile 'net.java.dev.jna:jna:4.2.1'
-
-    //Web Connection Support
-    compile 'com.neovisionaries:nv-websocket-client:1.16'
-    compile 'com.mashape.unirest:unirest-java:1.4.7'
-
-    //Audio Support
-    compile 'com.googlecode.soundlibs:tritonus-share:0.3.7-2'   //Shared audio code
-    compile 'org.tritonus:tritonus-dsp:0.3.6'                   //Volume control
-    compile 'com.googlecode.soundlibs:mp3spi:1.9.5-1'           //MP3 support
-    compile 'net.sourceforge.jaadec:jaad:0.8.5'                 //AAC supports
-    compile 'jflac:jflac:1.3'                                   //FLAC support
-}
-
-class Version {
-    String major, minor, revision
-
-    String getBuild() {
-        System.getenv("BUILD_NUMBER") ?: System.getProperty("BUILD_NUMBER") ?: "DEV"
-    }
-
-    String toString() {
-        "${major}.${minor}.${revision}_$build"
-    }
+    //opuswrapper
+    exclude("tomp2p/opuswrapper")
+    
+    //voice crypto
+    exclude("com/iwebpp/crypto")
 }
 
 bintray {
     user = bintrayUsername
     key = bintrayApiKey
+    publications = ["BintrayRelease"]
     pkg {
         repo = 'maven'
         name = 'JDA'
         licenses = ['Apache-2.0']
         vcsUrl = 'https://github.com/DV8FromTheWorld/JDA.git'
-        filesSpec {
-            from ('build/libs') {
-                exclude "**withDependencies**"
-            }
-            from 'build/poms'
-            into "${project.group.replace(".", "/")}/${archivesBaseName}/${project.version}"
-
-            rename { String fileName ->
-                fileName.replace("pom-default.xml", "${archivesBaseName}-${project.version}.pom")
-            }
-        }
         publish = true
         version {
             name = project.version
@@ -200,9 +148,16 @@ bintray {
     }
 }
 
-bintrayUpload {
-    onlyIf {
-        System.getenv("BUILD_NUMBER")
+publishing {
+    publications {
+        BintrayRelease(MavenPublication) {
+            from components.java
+            groupId group
+            artifactId archivesBaseName
+            version version
+            artifact javadocJar
+            artifact sourcesJar
+        }
     }
 }
 
@@ -216,16 +171,40 @@ String getProjectProperty(String propertyName)
     return property
 }
 
-// tell the compileJava task to compile the filtered source
-compileJava.source = sourceSets.filtered.java
-compileJava.dependsOn processVersion
+task wrapper(type: Wrapper) {
+    gradleVersion = '3.1'
+}
 
-//use: gradlew clean build fatJar signArchives install bintrayUpload
 
-// If we don't have the username and password for uploading, we probably also
-// can't sign the archives, so skip these tasks.
-signArchives.onlyIf {(!getProjectProperty("signing.keyId").empty
-        && !getProjectProperty("signing.password").empty
-        && !getProjectProperty("signing.secretKeyRingFile").empty) }
-bintrayUpload.onlyIf { (!getProjectProperty("bintrayUsername").empty
-        && !getProjectProperty("bintrayApiKey").empty) }
+build {
+    dependsOn clean
+    dependsOn jar
+    dependsOn javadocJar
+    dependsOn sourcesJar
+    dependsOn shadowJar
+
+    jar.mustRunAfter clean
+    javadocJar.mustRunAfter jar
+    sourcesJar.mustRunAfter javadocJar
+    shadowJar.mustRunAfter sourcesJar
+}
+
+bintrayUpload {
+    dependsOn build
+    
+    onlyIf { !getProjectProperty("bintrayUsername").empty }
+    onlyIf { !getProjectProperty("bintrayApiKey").empty }
+    onlyIf { System.getenv("BUILD_NUMBER") }
+}
+
+class Version {
+    String major, minor, revision
+
+    String getBuild() {
+        System.getenv("BUILD_NUMBER") ?: System.getProperty("BUILD_NUMBER") ?: "DEV"
+    }
+
+    String toString() {
+        "${major}.${minor}.${revision}_$build"
+    }
+}
