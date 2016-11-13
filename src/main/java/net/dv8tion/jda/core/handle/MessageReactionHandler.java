@@ -67,6 +67,7 @@ public class MessageReactionHandler extends SocketHandler
             EventCache.LOG.debug("Received a reaction for a channel that JDA does not currently have cached");
             return null;
         }
+
         MessageReaction.ReactionEmote rEmote;
         if (emojiId != null)
         {
@@ -76,19 +77,25 @@ public class MessageReactionHandler extends SocketHandler
             rEmote = new MessageReaction.ReactionEmote(emote);
         }
         else
+        {
             rEmote = new MessageReaction.ReactionEmote(emojiName, null, api);
+        }
         MessageReaction reaction = new MessageReaction(channel, rEmote, messageId, user.equals(api.getSelfUser()), -1);
 
         if (add)
+        {
             api.getEventManager().handle(
                     new MessageReactionAddEvent(
                             api, responseNumber,
                             messageId, channel, user, reaction));
+        }
         else
+        {
             api.getEventManager().handle(
                     new MessageReactionRemoveEvent(
                             api, responseNumber,
                             messageId, channel, user, reaction));
+        }
         return null;
     }
 }

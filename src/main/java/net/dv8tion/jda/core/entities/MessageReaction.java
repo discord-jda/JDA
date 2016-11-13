@@ -123,6 +123,7 @@ public class MessageReaction
         return removeReaction(getJDA().getSelfUser());
     }
 
+    @SuppressWarnings("deprecation")
     public RestAction<Void> removeReaction(User user)
     {
         if (user == null)
@@ -136,7 +137,9 @@ public class MessageReaction
                     throw new PermissionException(Permission.MESSAGE_MANAGE);
             }
             else
+            {
                 throw new PermissionException("Unable to remove Reaction of other user in non-text channel!");
+            }
         }
 
         String code = emote.isEmote() ? emote.getName() + ":" + emote.getId() : URLEncoder.encode(emote.getName());
@@ -156,10 +159,10 @@ public class MessageReaction
     @Override
     public boolean equals(Object obj)
     {
-        return obj instanceof MessageReaction &&
-                ((MessageReaction) obj).emote.equals(emote) &&
-                ((MessageReaction) obj).self && self &&
-                ((MessageReaction) obj).messageId.equals(messageId);
+        return obj instanceof MessageReaction
+                && ((MessageReaction) obj).emote.equals(emote)
+                && (((MessageReaction) obj).self == self)
+                && ((MessageReaction) obj).messageId.equals(messageId);
     }
 
     @Override
@@ -219,9 +222,9 @@ public class MessageReaction
         @Override
         public boolean equals(Object obj)
         {
-            return obj instanceof ReactionEmote &&
-                    (!isEmote() || ((ReactionEmote) obj).getId().equals(id)) &&
-                    ((ReactionEmote) obj).getName().equals(name);
+            return obj instanceof ReactionEmote
+                    && (!isEmote() || ((ReactionEmote) obj).getId().equals(id))
+                    && ((ReactionEmote) obj).getName().equals(name);
         }
 
         @Override
