@@ -115,13 +115,13 @@ public class VoiceChannelImpl implements VoiceChannel
     }
 
     @Override
-    public PermissionOverride getOverrideForMember(Member member)
+    public PermissionOverride getPermissionOverride(Member member)
     {
         return memberOverrides.get(member);
     }
 
     @Override
-    public PermissionOverride getOverrideForRole(Role role)
+    public PermissionOverride getPermissionOverride(Role role)
     {
         return roleOverrides.get(role);
     }

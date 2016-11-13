@@ -365,8 +365,8 @@ public class PermissionUtil
 
         long permissions = guild.getPublicRole().getPermissionsRaw() | role.getPermissionsRaw();
 
-        PermissionOverride publicOverride = channel.getOverrideForRole(guild.getPublicRole());
-        PermissionOverride roleOverride = channel.getOverrideForRole(role);
+        PermissionOverride publicOverride = channel.getPermissionOverride(guild.getPublicRole());
+        PermissionOverride roleOverride = channel.getPermissionOverride(role);
 
         if (publicOverride != null)
         {

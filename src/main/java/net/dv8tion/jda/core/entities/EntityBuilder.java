@@ -920,7 +920,7 @@ public class EntityBuilder
                 if (member == null)
                     throw new IllegalArgumentException("Attempted to create a PermissionOverride for a non-existent user. Guild: " + chan.getGuild() + ", Channel: " + chan + ", JSON: " + override);
 
-                permOverride = (PermissionOverrideImpl) chan.getOverrideForMember(member);
+                permOverride = (PermissionOverrideImpl) chan.getPermissionOverride(member);
                 if (permOverride == null)
                 {
                     permOverride = new PermissionOverrideImpl(chan, member, null);
@@ -935,7 +935,7 @@ public class EntityBuilder
                 if (role == null)
                     throw new IllegalArgumentException("Attempted to create a PermissionOverride for a non-existent role! JSON: " + override);
 
-                permOverride = (PermissionOverrideImpl) chan.getOverrideForRole(role);
+                permOverride = (PermissionOverrideImpl) chan.getPermissionOverride(role);
                 if (permOverride == null)
                 {
                     permOverride = new PermissionOverrideImpl(chan, null, role);
