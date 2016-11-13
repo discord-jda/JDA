@@ -186,6 +186,11 @@ public class MemberImpl implements Member
         return PermissionUtil.canInteract(this, emote);
     }
 
+    @Override
+    public boolean isOwner() {
+        return this.equals(guild.getOwner());
+    }
+
     public MemberImpl setNickname(String nickname)
     {
         this.nickname = nickname;
