@@ -194,4 +194,12 @@ public interface Member extends IMentionable
     boolean canInteract(Role role);
 
     boolean canInteract(Emote emote);
+
+    /**
+     * Checks whether this member is the owner of its related {@link net.dv8tion.jda.core.entities.Guild Guild}.
+     *
+     * @return
+     *      True - if this member is the owner of the attached Guild.
+     */
+    boolean isOwner();
 }
