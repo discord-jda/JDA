@@ -18,6 +18,7 @@ package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.impl.EmoteImpl;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
@@ -205,7 +206,10 @@ public class MessageReaction
 
         public Emote getEmote()
         {
-            return api.getEmoteById(id);
+            if (!isEmote())
+                return null;
+            Emote e = api.getEmoteById(id);
+            return e != null ? e : new EmoteImpl(id, api).setName(name);
         }
 
         public JDA getJDA()

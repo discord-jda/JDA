@@ -30,7 +30,6 @@ import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -106,7 +105,8 @@ public class MessageImpl implements Message
     {
         checkNull(emote, "Emote");
         checkFake(emote, "Emote");
-        checkPermission(Permission.MESSAGE_ADD_REACTION);
+        if (reactions.parallelStream().noneMatch(r -> r.getEmote().getId().equals(emote.getId())))
+            checkPermission(Permission.MESSAGE_ADD_REACTION);
 
         return new RestAction<Void>(getJDA(), Route.Messages.ADD_REACTION.compile(getChannel().getId(), getId(), String.format("%s:%s", emote.getName(), emote.getId())), null)
         {
@@ -123,18 +123,14 @@ public class MessageImpl implements Message
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public RestAction<Void> addReaction(String unicode)
     {
         if (StringUtils.isEmpty(unicode))
             throw new IllegalArgumentException("Cannot react with empty unicode!");
-        String encoded = "";
-        try
-        {
-            encoded = URLEncoder.encode(unicode, "UTF-8");
-        }
-        catch (UnsupportedEncodingException ignored)
-        {
-        }
+        if (reactions.parallelStream().noneMatch(r -> r.getEmote().getName().equals(unicode)))
+            checkPermission(Permission.MESSAGE_ADD_REACTION);
+        String encoded = URLEncoder.encode(unicode);
         return new RestAction<Void>(getJDA(), Route.Messages.ADD_REACTION.compile(getChannel().getId(), getId(), encoded), null)
         {
             @Override
