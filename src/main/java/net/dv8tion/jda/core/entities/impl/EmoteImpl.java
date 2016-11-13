@@ -197,7 +197,7 @@ public class EmoteImpl implements Emote
             return false;
 
         Emote oEmote = (Emote) obj;
-        return getId().equals(oEmote.getId());
+        return getId().equals(oEmote.getId()) && getName().equals(oEmote.getName());
     }
 
 

@@ -104,9 +104,11 @@ public class MessageImpl implements Message
     public RestAction<Void> addReaction(Emote emote)
     {
         checkNull(emote, "Emote");
-        checkFake(emote, "Emote");
-        if (reactions.parallelStream().noneMatch(r -> r.getEmote().getId().equals(emote.getId())))
+        if (reactions.parallelStream().noneMatch(r -> r.getEmote().equals(emote)))
+        {
+            checkFake(emote, "Emote");
             checkPermission(Permission.MESSAGE_ADD_REACTION);
+        }
 
         return new RestAction<Void>(getJDA(), Route.Messages.ADD_REACTION.compile(getChannel().getId(), getId(), String.format("%s:%s", emote.getName(), emote.getId())), null)
         {
