@@ -17,12 +17,16 @@ package net.dv8tion.jda.core.entities.impl;
 
 import java.awt.Color;
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import net.dv8tion.jda.core.entities.EmbedType;
 import net.dv8tion.jda.core.entities.MessageEmbed;
+import org.json.JSONArray; 
+import org.json.JSONObject;
+import org.json.JSONString;
 
-public class MessageEmbedImpl implements MessageEmbed
+public class MessageEmbedImpl implements MessageEmbed, JSONString
 {
     private String url;
     private String title;
@@ -208,5 +212,67 @@ public class MessageEmbedImpl implements MessageEmbed
     public String toString()
     {
         return "EmbedMessage";
+    }
+    
+    @Override
+    public String toJSONString()
+    {
+        JSONObject obj = new JSONObject();
+        if (url != null)
+            obj.put("url", url);
+        if (title != null)
+            obj.put("title", title);
+        if (description != null)
+            obj.put("description", description);
+        if (timestamp != null)
+            obj.put("timestamp", timestamp.format(DateTimeFormatter.ISO_INSTANT));
+        if (color != null)
+            obj.put("color", color.getRGB() & 0xFFFFFF);
+        if (thumbnail != null)
+            obj.put("thumbnail", new JSONObject().put("url", thumbnail.getUrl()));
+        if (siteProvider != null)
+        {
+            JSONObject siteProviderObj = new JSONObject();
+            if (siteProvider.getName() != null)
+                siteProviderObj.put("name", siteProvider.getName());
+            if (siteProvider.getUrl() != null)
+                siteProviderObj.put("url", siteProvider.getUrl());
+            obj.put("provider", siteProviderObj);
+        }
+        if (author != null)
+        {
+            JSONObject authorObj = new JSONObject();
+            if (author.getName() != null)
+                authorObj.put("name", author.getName());
+            if (author.getUrl() != null)
+                authorObj.put("url", author.getUrl());
+            if (author.getIconUrl() != null)
+                authorObj.put("icon_url", author.getIconUrl());
+            obj.put("author", authorObj);
+        }
+        if (videoInfo != null)
+            obj.put("video", new JSONObject().put("url", videoInfo.getUrl()));
+        if (footer != null)
+        {
+            JSONObject footerObj = new JSONObject();
+            if (footer.getText() != null)
+                footerObj.put("text", footer.getText());
+            if (footer.getIconUrl() != null)
+                footerObj.put("icon_url", footer.getIconUrl());
+            obj.put("footer", footerObj);
+        }
+        if (image != null)
+            obj.put("image", new JSONObject().put("url", image.getUrl()));
+        if (!fields.isEmpty())
+        {
+            JSONArray fieldsArray = new JSONArray();
+            fields.stream().forEach(field -> 
+                fieldsArray.put(new JSONObject()
+                    .put("name", field.getName())
+                    .put("value", field.getValue())
+                    .put("inline",field.isInline())));
+            obj.put("fields", fieldsArray);
+        }
+        return obj.toString();
     }
 }
