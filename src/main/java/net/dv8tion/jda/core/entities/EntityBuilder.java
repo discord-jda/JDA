@@ -757,6 +757,35 @@ public class EntityBuilder
         if (!jsonObject.isNull("edited_timestamp"))
             message.setEditedTime(OffsetDateTime.parse(jsonObject.getString("edited_timestamp")));
 
+        if (jsonObject.has("reactions"))
+        {
+            JSONArray reactions = jsonObject.getJSONArray("reactions");
+            List<MessageReaction> list = new LinkedList<>();
+            for (int i = 0; i < reactions.length(); i++)
+            {
+                JSONObject obj = reactions.getJSONObject(i);
+                JSONObject emoji = obj.getJSONObject("emoji");
+                String emojiId = emoji.isNull("id") ? null : emoji.getString("id");
+                String emojiName = emoji.getString("name");
+                boolean self = obj.has("self") && obj.getBoolean("self");
+                int count = obj.getInt("count");
+                Emote emote = null;
+                if (emojiId != null)
+                {
+                    emote = api.getEmoteById(emojiId);
+                    if (emote == null)
+                        emote = new EmoteImpl(emojiId, api).setName(emojiName);
+                }
+                MessageReaction.ReactionEmote reactionEmote;
+                if (emote == null)
+                    reactionEmote = new MessageReaction.ReactionEmote(emojiName, null, api);
+                else
+                    reactionEmote = new MessageReaction.ReactionEmote(emote);
+                list.add(new MessageReaction(chan, reactionEmote, message.getId(), self, count));
+            }
+            message.setReactions(list);
+        }
+
         if (message.isFromType(ChannelType.TEXT))
         {
             TextChannel textChannel = message.getTextChannel();

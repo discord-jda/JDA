@@ -26,8 +26,12 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.utils.PermissionUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -57,6 +61,7 @@ public class MessageImpl implements Message
     private List<Attachment> attachments = new LinkedList<>();
     private List<MessageEmbed> embeds = new LinkedList<>();
     private List<Emote> emotes = null;
+    private List<MessageReaction> reactions = new LinkedList<>();
 
     public MessageImpl(String id, MessageChannel channel, boolean fromWebhook)
     {
@@ -94,6 +99,72 @@ public class MessageImpl implements Message
     public RestAction<Void> unpin()
     {
         return channel.unpinMessageById(getId());
+    }
+
+    @Override
+    public RestAction<Void> addReaction(Emote emote)
+    {
+        checkNull(emote, "Emote");
+        checkFake(emote, "Emote");
+        checkPermission(Permission.MESSAGE_ADD_REACTION);
+
+        return new RestAction<Void>(getJDA(), Route.Messages.ADD_REACTION.compile(getChannel().getId(), getId(), String.format("%s:%s", emote.getName(), emote.getId())), null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                System.out.println(response.getString());
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
+    }
+
+    @Override
+    public RestAction<Void> addReaction(String unicode)
+    {
+        if (StringUtils.isEmpty(unicode))
+            throw new IllegalArgumentException("Cannot react with empty unicode!");
+        String encoded = "";
+        try
+        {
+            encoded = URLEncoder.encode(unicode, "UTF-8");
+        }
+        catch (UnsupportedEncodingException ignored)
+        {
+        }
+        return new RestAction<Void>(getJDA(), Route.Messages.ADD_REACTION.compile(getChannel().getId(), getId(), encoded), null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                System.out.println(response.getString());
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
+    }
+
+    @Override
+    public RestAction<Void> clearReactions()
+    {
+        checkPermission(Permission.MESSAGE_MANAGE);
+        return new RestAction<Void>(getJDA(), Route.Messages.REMOVE_ALL_REACTIONS.compile(getChannel().getId(), getId()), null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                System.out.println(response.getString());
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
     }
 
     public MessageImpl setPinned(boolean pinned)
@@ -284,6 +355,12 @@ public class MessageImpl implements Message
     }
 
     @Override
+    public List<MessageReaction> getReactions()
+    {
+        return Collections.unmodifiableList(new LinkedList<>(reactions));
+    }
+
+    @Override
     public boolean isWebhookMessage()
     {
         return fromWebhook;
@@ -415,6 +492,12 @@ public class MessageImpl implements Message
         return this;
     }
 
+    public MessageImpl setReactions(List<MessageReaction> reactions)
+    {
+        this.reactions = reactions;
+        return this;
+    }
+
     @Override
     public boolean equals(Object o)
     {
@@ -520,6 +603,28 @@ public class MessageImpl implements Message
             strippedContent = out.toString().replace("*", "\\*").replace("_", "\\_").replace("~", "\\~");
         }
         return strippedContent;
+    }
+
+    private void checkNull(Object o, String name)
+    {
+        if (o == null)
+            throw new IllegalArgumentException("Provided " + name + " was null!");
+    }
+
+    private void checkPermission(Permission permission)
+    {
+        if (channel.getType() == ChannelType.TEXT)
+        {
+            Channel location = (Channel) channel;
+            if (!PermissionUtil.checkPermission(location, location.getGuild().getSelfMember(), permission))
+                throw new PermissionException(permission);
+        }
+    }
+
+    private void checkFake(IFakeable o, String name)
+    {
+        if (o.isFake())
+            throw new IllegalArgumentException("Provided " + name + " is fake!");
     }
 
     private static class FormatToken {
