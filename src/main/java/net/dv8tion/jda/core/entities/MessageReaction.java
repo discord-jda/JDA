@@ -145,7 +145,6 @@ public class MessageReaction
             @Override
             protected void handleResponse(Response response, Request request)
             {
-                System.out.println(response.getString());
                 if (response.isOk())
                     request.onSuccess(null);
                 else
