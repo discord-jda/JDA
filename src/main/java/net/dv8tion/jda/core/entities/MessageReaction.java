@@ -28,6 +28,7 @@ import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.LinkedList;
 import java.util.List;
@@ -89,7 +90,9 @@ public class MessageReaction
     {
         if (amount < 1 || amount > 100)
             throw new IllegalArgumentException("Amount is out of range 1-100!");
-        String code = emote.isEmote() ? emote.getName() + ":" + emote.getId() : URLEncoder.encode(emote.getName());
+        String code = emote.isEmote()
+                ? emote.getName() + ":" + emote.getId()
+                : encode(emote.getName());
         return new RestAction<List<User>>(getJDA(), Route.Messages.GET_REACTION_USERS.compile(channel.getId(), messageId, code, String.valueOf(amount)), null)
         {
             @Override
@@ -123,7 +126,6 @@ public class MessageReaction
         return removeReaction(getJDA().getSelfUser());
     }
 
-    @SuppressWarnings("deprecation")
     public RestAction<Void> removeReaction(User user)
     {
         if (user == null)
@@ -142,7 +144,9 @@ public class MessageReaction
             }
         }
 
-        String code = emote.isEmote() ? emote.getName() + ":" + emote.getId() : URLEncoder.encode(emote.getName());
+        String code = emote.isEmote()
+                    ? emote.getName() + ":" + emote.getId()
+                    : encode(emote.getName());
         return new RestAction<Void>(getJDA(), Route.Messages.REMOVE_REACTION.compile(channel.getId(), messageId, code, user.getId()), null)
         {
             @Override
@@ -169,6 +173,18 @@ public class MessageReaction
     public String toString()
     {
         return "MR:(M:(" + messageId + ") / " + emote + ")";
+    }
+
+    private static String encode(String chars)
+    {
+        try
+        {
+            return URLEncoder.encode(chars, "UTF-8");
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            throw new RuntimeException(e); //thanks JDK 1.4
+        }
     }
 
     public static class ReactionEmote implements ISnowflake
