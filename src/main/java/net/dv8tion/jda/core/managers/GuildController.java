@@ -916,7 +916,10 @@ public class GuildController
             protected void handleResponse(Response response, Request request)
             {
                 if (!response.isOk())
+                {
                     request.onFailure(response);
+                    return;
+                }
 
                 JSONObject chanJson = response.getObject();
                 TextChannel tc = EntityBuilder.get(api).createTextChannel(chanJson, guild.getId());
@@ -963,7 +966,10 @@ public class GuildController
             protected void handleResponse(Response response, Request request)
             {
                 if (!response.isOk())
+                {
                     request.onFailure(response);
+                    return;
+                }
 
                 JSONObject chanJson = response.getObject();
                 VoiceChannel vc = EntityBuilder.get(api).createVoiceChannel(chanJson, guild.getId());
@@ -1000,7 +1006,10 @@ public class GuildController
             protected void handleResponse(Response response, Request request)
             {
                 if (!response.isOk())
+                {
                     request.onFailure(response);
+                    return;
+                }
 
                 JSONObject roleJson = response.getObject();
                 Role role = EntityBuilder.get(api).createRole(roleJson, guild.getId());
@@ -1042,7 +1051,10 @@ public class GuildController
             protected void handleResponse(Response response, Request request)
             {
                 if (!response.isOk())
+                {
                     request.onFailure(response);
+                    return;
+                }
 
                 JSONObject roleJson = response.getObject();
                 Role r = EntityBuilder.get(api).createRole(roleJson, guild.getId());

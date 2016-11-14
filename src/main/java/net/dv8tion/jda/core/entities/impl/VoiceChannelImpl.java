@@ -223,7 +223,10 @@ public class VoiceChannelImpl implements VoiceChannel
             protected void handleResponse(Response response, Request request)
             {
                 if (!response.isOk())
+                {
                     request.onFailure(response);
+                    return;
+                }
 
                 getMemberOverrideMap().put(member, override);
                 request.onSuccess(override);
@@ -256,7 +259,10 @@ public class VoiceChannelImpl implements VoiceChannel
             protected void handleResponse(Response response, Request request)
             {
                 if (!response.isOk())
+                {
                     request.onFailure(response);
+                    return;
+                };
 
                 getRoleOverrideMap().put(role, override);
                 request.onSuccess(override);

@@ -78,7 +78,10 @@ public class MessageHistory implements net.dv8tion.jda.core.hooks.EventListener
             protected void handleResponse(Response response, Request request)
             {
                 if (!response.isOk())
+                {
                     request.onFailure(response);
+                    return;
+                }
 
                 EntityBuilder builder = EntityBuilder.get(api);
                 LinkedList<Message> msgs  = new LinkedList<>();
@@ -112,7 +115,10 @@ public class MessageHistory implements net.dv8tion.jda.core.hooks.EventListener
             protected void handleResponse(Response response, Request request)
             {
                 if (!response.isOk())
+                {
                     request.onFailure(response);
+                    return;
+                }
 
                 EntityBuilder builder = EntityBuilder.get(api);
                 LinkedList<Message> msgs  = new LinkedList<>();
@@ -206,7 +212,10 @@ public class MessageHistory implements net.dv8tion.jda.core.hooks.EventListener
             protected void handleResponse(Response response, Request request)
             {
                 if (!response.isOk())
+                {
                     request.onFailure(response);
+                    return;
+                }
 
                 MessageHistory mHistory = new MessageHistory(channel);
                 mHistory.markerId = markerMessageId;
