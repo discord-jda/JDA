@@ -78,6 +78,8 @@ import net.dv8tion.jda.core.events.user.*;
  */
 public abstract class ListenerAdapter implements EventListener
 {
+    public void onGenericEvent(Event event) {}
+
     //JDA Events
     public void onReady(ReadyEvent event) {}
     public void onResume(ResumedEvent event) {}
@@ -284,6 +286,7 @@ public abstract class ListenerAdapter implements EventListener
     @Override
     public final void onEvent(Event event)
     {
+        onGenericEvent(event);
         //JDA Events
         if (event instanceof ReadyEvent)
             onReady((ReadyEvent) event);
