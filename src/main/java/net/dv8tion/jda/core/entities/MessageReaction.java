@@ -114,7 +114,7 @@ public class MessageReaction
                     if (user == null)
                         user = api.getFakeUserMap().get(userId);
                     if (user == null)
-                        user = EntityBuilder.get(api).createFakeUser(json, true);
+                        user = EntityBuilder.get(api).createFakeUser(json, false);
                     users.add(user);
                 }
                 request.onSuccess(users);
