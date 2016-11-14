@@ -27,11 +27,9 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.PermissionUtil;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.http.util.Args;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -105,52 +103,41 @@ public class MessageImpl implements Message
     public RestAction<Void> addReaction(Emote emote)
     {
         checkNull(emote, "Emote");
-        if (reactions.parallelStream().noneMatch(r -> r.getEmote().equals(emote)))
+
+        MessageReaction reaction = reactions.parallelStream()
+                .filter(r -> Objects.equals(r.getEmote().getId(), emote.getId()))
+                .findFirst().orElse(null);
+
+        if (reaction == null)
         {
             checkFake(emote, "Emote");
             checkPermission(Permission.MESSAGE_ADD_REACTION);
+            if (!PermissionUtil.canInteract(api.getSelfUser(), emote, channel))
+                throw new IllegalArgumentException("Cannot react with the provided emote because it is not available in the current channel.");
+        }
+        else if (reaction.isSelf())
+        {
+            return new RestAction.EmptyRestAction<>(null);
         }
 
-        return new RestAction<Void>(getJDA(), Route.Messages.ADD_REACTION.compile(getChannel().getId(), getId(), String.format("%s:%s", emote.getName(), emote.getId())), null)
-        {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return channel.addReactionById(id, emote);
     }
 
     @Override
     public RestAction<Void> addReaction(String unicode)
     {
-        if (StringUtils.isEmpty(unicode))
-            throw new IllegalArgumentException("Cannot react with empty unicode!");
-        if (reactions.parallelStream().noneMatch(r -> r.getEmote().getName().equals(unicode)))
+        Args.containsNoBlanks(unicode, "Provided Unicode");
+
+        MessageReaction reaction = reactions.parallelStream()
+                .filter(r -> r.getEmote().getName().equals(unicode))
+                .findFirst().orElse(null);
+
+        if (reaction == null)
             checkPermission(Permission.MESSAGE_ADD_REACTION);
-        String encoded;
-        try
-        {
-            encoded = URLEncoder.encode(unicode, "UTF-8");
-        }
-        catch (UnsupportedEncodingException e)
-        {
-            throw new RuntimeException(e); //thanks JDK 1.4
-        }
-        return new RestAction<Void>(getJDA(), Route.Messages.ADD_REACTION.compile(channel.getId(), id, encoded), null)
-        {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        else if (reaction.isSelf())
+            return new RestAction.EmptyRestAction<>(null);
+
+        return channel.addReactionById(id, unicode);
     }
 
     @Override
@@ -619,7 +606,7 @@ public class MessageImpl implements Message
         if (channel.getType() == ChannelType.TEXT)
         {
             Channel location = (Channel) channel;
-            if (!PermissionUtil.checkPermission(location, location.getGuild().getSelfMember(), permission))
+            if (!location.getGuild().getSelfMember().hasPermission(location, permission))
                 throw new PermissionException(permission);
         }
     }
@@ -627,7 +614,7 @@ public class MessageImpl implements Message
     private void checkFake(IFakeable o, String name)
     {
         if (o.isFake())
-            throw new IllegalArgumentException("Provided " + name + " is fake!");
+            throw new IllegalArgumentException("We are unable to use a fake " + name + " in this situation!");
     }
 
     private static class FormatToken {

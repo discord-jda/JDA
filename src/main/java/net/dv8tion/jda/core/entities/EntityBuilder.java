@@ -765,8 +765,10 @@ public class EntityBuilder
             {
                 JSONObject obj = reactions.getJSONObject(i);
                 JSONObject emoji = obj.getJSONObject("emoji");
+
                 String emojiId = emoji.isNull("id") ? null : emoji.getString("id");
                 String emojiName = emoji.getString("name");
+
                 boolean self = obj.has("self") && obj.getBoolean("self");
                 int count = obj.getInt("count");
                 Emote emote = null;

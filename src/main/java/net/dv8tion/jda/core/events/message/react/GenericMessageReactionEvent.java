@@ -25,28 +25,24 @@ import net.dv8tion.jda.core.events.Event;
 public class GenericMessageReactionEvent extends Event
 {
 
-    protected String messageId;
-    protected MessageChannel channel;
     protected User issuer;
     protected MessageReaction reaction;
 
-    public GenericMessageReactionEvent(JDA api, long responseNumber, String messageId, MessageChannel channel, User user, MessageReaction reaction)
+    public GenericMessageReactionEvent(JDA api, long responseNumber, User user, MessageReaction reaction)
     {
         super(api, responseNumber);
-        this.messageId = messageId;
-        this.channel = channel;
         this.issuer = user;
         this.reaction = reaction;
     }
 
     public String getMessageId()
     {
-        return messageId;
+        return reaction.getMessageId();
     }
 
     public MessageChannel getChannel()
     {
-        return channel;
+        return reaction.getChannel();
     }
 
     public User getUser()

@@ -17,14 +17,13 @@
 package net.dv8tion.jda.core.events.message.react;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.MessageReaction;
 import net.dv8tion.jda.core.entities.User;
 
 public class MessageReactionAddEvent extends GenericMessageReactionEvent
 {
-    public MessageReactionAddEvent(JDA api, long responseNumber, String messageId, MessageChannel channel, User user, MessageReaction reaction)
+    public MessageReactionAddEvent(JDA api, long responseNumber, User user, MessageReaction reaction)
     {
-        super(api, responseNumber, messageId, channel, user, reaction);
+        super(api, responseNumber, user, reaction);
     }
 }

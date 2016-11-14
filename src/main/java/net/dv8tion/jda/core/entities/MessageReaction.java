@@ -24,7 +24,6 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
-import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -32,6 +31,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 public class MessageReaction
 {
@@ -93,7 +93,8 @@ public class MessageReaction
         String code = emote.isEmote()
                 ? emote.getName() + ":" + emote.getId()
                 : encode(emote.getName());
-        return new RestAction<List<User>>(getJDA(), Route.Messages.GET_REACTION_USERS.compile(channel.getId(), messageId, code, String.valueOf(amount)), null)
+        Route.CompiledRoute route = Route.Messages.GET_REACTION_USERS.compile(channel.getId(), messageId, code, String.valueOf(amount));
+        return new RestAction<List<User>>(getJDA(), route, null)
         {
             @Override
             protected void handleResponse(Response response, Request request)
@@ -135,7 +136,7 @@ public class MessageReaction
             if (channel.getType() == ChannelType.TEXT)
             {
                 Channel channel = (Channel) this.channel;
-                if (!PermissionUtil.checkPermission(channel, channel.getGuild().getSelfMember(), Permission.MESSAGE_MANAGE))
+                if (!channel.getGuild().getSelfMember().hasPermission(channel, Permission.MESSAGE_MANAGE))
                     throw new PermissionException(Permission.MESSAGE_MANAGE);
             }
             else
@@ -147,7 +148,8 @@ public class MessageReaction
         String code = emote.isEmote()
                     ? emote.getName() + ":" + emote.getId()
                     : encode(emote.getName());
-        return new RestAction<Void>(getJDA(), Route.Messages.REMOVE_REACTION.compile(channel.getId(), messageId, code, user.getId()), null)
+        Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(channel.getId(), messageId, code, user.getId());
+        return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
             protected void handleResponse(Response response, Request request)
@@ -239,7 +241,7 @@ public class MessageReaction
         public boolean equals(Object obj)
         {
             return obj instanceof ReactionEmote
-                    && (!isEmote() || ((ReactionEmote) obj).getId().equals(id))
+                    && Objects.equals(((ReactionEmote) obj).getId(), id)
                     && ((ReactionEmote) obj).getName().equals(name);
         }
 

@@ -51,6 +51,18 @@ public class MessageReactionHandler extends SocketHandler
         String emojiName = emoji.getString("name");
 
         User user = api.getUserById(userId);
+        if (user == null)
+            user = api.getFakeUserMap().get(userId);
+        if (user == null)
+        {
+            EventCache.get(api).cache(EventCache.Type.USER, userId, () ->
+            {
+                handle(responseNumber, allContent);
+            });
+            EventCache.LOG.debug("Received a message for a user that JDA does not currently have cached");
+            return null;
+        }
+
         MessageChannel channel = api.getTextChannelById(channelId);
         if (channel == null)
             channel = api.getPrivateChannelById(channelId);
@@ -87,14 +99,14 @@ public class MessageReactionHandler extends SocketHandler
             api.getEventManager().handle(
                     new MessageReactionAddEvent(
                             api, responseNumber,
-                            messageId, channel, user, reaction));
+                            user, reaction));
         }
         else
         {
             api.getEventManager().handle(
                     new MessageReactionRemoveEvent(
                             api, responseNumber,
-                            messageId, channel, user, reaction));
+                            user, reaction));
         }
         return null;
     }
