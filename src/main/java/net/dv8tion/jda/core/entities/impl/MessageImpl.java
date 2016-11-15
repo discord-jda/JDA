@@ -26,6 +26,7 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
+import org.apache.http.util.Args;
 import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
@@ -96,12 +97,6 @@ public class MessageImpl implements Message
         return channel.unpinMessageById(getId());
     }
 
-    public MessageImpl setPinned(boolean pinned)
-    {
-        this.pinned = pinned;
-        return this;
-    }
-
     @Override
     public MessageType getType()
     {
@@ -160,6 +155,87 @@ public class MessageImpl implements Message
     public User getAuthor()
     {
         return author;
+    }
+
+    @Override
+    public String getStrippedContent()
+    {
+        if (strippedContent == null)
+        {
+            String tmp = getContent();
+            //all the formatting keys to keep track of
+            String[] keys = new String[] {"*", "_", "`", "~~"};
+
+            //find all tokens (formatting strings described above)
+            TreeSet<FormatToken> tokens = new TreeSet<>((t1, t2) -> Integer.compare(t1.start, t2.start));
+            for (String key : keys)
+            {
+                Matcher matcher = Pattern.compile(Pattern.quote(key)).matcher(tmp);
+                while (matcher.find())
+                {
+                    tokens.add(new FormatToken(key, matcher.start()));
+                }
+            }
+
+            //iterate over all tokens, find all matching pairs, and add them to the list toRemove
+            Stack<FormatToken> stack = new Stack<>();
+            List<FormatToken> toRemove = new ArrayList<>();
+            boolean inBlock = false;
+            for (FormatToken token : tokens)
+            {
+                if (stack.empty() || !stack.peek().format.equals(token.format) || stack.peek().start + token.format.length() == token.start)
+                {
+                    //we are at opening tag
+                    if (!inBlock)
+                    {
+                        //we are outside of block -> handle normally
+                        if (token.format.equals("`"))
+                        {
+                            //block start... invalidate all previous tags
+                            stack.clear();
+                            inBlock = true;
+                        }
+                        stack.push(token);
+                    }
+                    else if (token.format.equals("`"))
+                    {
+                        //we are inside of a block -> handle only block tag
+                        stack.push(token);
+                    }
+                }
+                else if (!stack.empty())
+                {
+                    //we found a matching close-tag
+                    toRemove.add(stack.pop());
+                    toRemove.add(token);
+                    if (token.format.equals("`") && stack.empty())
+                    {
+                        //close tag closed the block
+                        inBlock = false;
+                    }
+                }
+            }
+
+            //sort tags to remove by their start-index and iteratively build the remaining string
+            Collections.sort(toRemove, (t1, t2) -> Integer.compare(t1.start, t2.start));
+            StringBuilder out = new StringBuilder();
+            int currIndex = 0;
+            for (FormatToken formatToken : toRemove)
+            {
+                if (currIndex < formatToken.start)
+                {
+                    out.append(tmp.substring(currIndex, formatToken.start));
+                }
+                currIndex = formatToken.start + formatToken.format.length();
+            }
+            if (currIndex < tmp.length())
+            {
+                out.append(tmp.substring(currIndex));
+            }
+            //return the stripped text, escape all remaining formatting characters (did not have matching open/close before or were left/right of block
+            strippedContent = out.toString().replace("*", "\\*").replace("_", "\\_").replace("~", "\\~");
+        }
+        return strippedContent;
     }
 
     @Override
@@ -304,11 +380,12 @@ public class MessageImpl implements Message
     @Override
     public RestAction<Message> editMessage(Message newContent)
     {
+        Args.notNull(newContent, "New Message");
         if (!api.getSelfUser().equals(getAuthor()))
             throw new UnsupportedOperationException("Attempted to update message that was not sent by this account. You cannot modify other User's messages!");
 
 
-        JSONObject json = new JSONObject().put("content", newContent.getRawContent()).put("tts", newContent.isTTS());
+        JSONObject json = toJSONObject();
         Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getChannel().getId(), getId());
         return new RestAction<Message>(api, route, json)
         {
@@ -347,6 +424,12 @@ public class MessageImpl implements Message
                 throw new PermissionException(Permission.MESSAGE_MANAGE);
         }
         return channel.deleteMessageById(getId());
+    }
+
+    public MessageImpl setPinned(boolean pinned)
+    {
+        this.pinned = pinned;
+        return this;
     }
 
     public MessageImpl setMentionedUsers(List<User> mentionedUsers)
@@ -441,85 +524,14 @@ public class MessageImpl implements Message
         return "M:" + author.getName() + ':' + content + '(' + getId() + ')';
     }
 
-    @Override
-    public String getStrippedContent()
+    public JSONObject toJSONObject()
     {
-        if (strippedContent == null)
-        {
-            String tmp = getContent();
-            //all the formatting keys to keep track of
-            String[] keys = new String[] {"*", "_", "`", "~~"};
-
-            //find all tokens (formatting strings described above)
-            TreeSet<FormatToken> tokens = new TreeSet<>((t1, t2) -> Integer.compare(t1.start, t2.start));
-            for (String key : keys)
-            {
-                Matcher matcher = Pattern.compile(Pattern.quote(key)).matcher(tmp);
-                while (matcher.find())
-                {
-                    tokens.add(new FormatToken(key, matcher.start()));
-                }
-            }
-
-            //iterate over all tokens, find all matching pairs, and add them to the list toRemove
-            Stack<FormatToken> stack = new Stack<>();
-            List<FormatToken> toRemove = new ArrayList<>();
-            boolean inBlock = false;
-            for (FormatToken token : tokens)
-            {
-                if (stack.empty() || !stack.peek().format.equals(token.format) || stack.peek().start + token.format.length() == token.start)
-                {
-                    //we are at opening tag
-                    if (!inBlock)
-                    {
-                        //we are outside of block -> handle normally
-                        if (token.format.equals("`"))
-                        {
-                            //block start... invalidate all previous tags
-                            stack.clear();
-                            inBlock = true;
-                        }
-                        stack.push(token);
-                    }
-                    else if (token.format.equals("`"))
-                    {
-                        //we are inside of a block -> handle only block tag
-                        stack.push(token);
-                    }
-                }
-                else if (!stack.empty())
-                {
-                    //we found a matching close-tag
-                    toRemove.add(stack.pop());
-                    toRemove.add(token);
-                    if (token.format.equals("`") && stack.empty())
-                    {
-                        //close tag closed the block
-                        inBlock = false;
-                    }
-                }
-            }
-
-            //sort tags to remove by their start-index and iteratively build the remaining string
-            Collections.sort(toRemove, (t1, t2) -> Integer.compare(t1.start, t2.start));
-            StringBuilder out = new StringBuilder();
-            int currIndex = 0;
-            for (FormatToken formatToken : toRemove)
-            {
-                if (currIndex < formatToken.start)
-                {
-                    out.append(tmp.substring(currIndex, formatToken.start));
-                }
-                currIndex = formatToken.start + formatToken.format.length();
-            }
-            if (currIndex < tmp.length())
-            {
-                out.append(tmp.substring(currIndex));
-            }
-            //return the stripped text, escape all remaining formatting characters (did not have matching open/close before or were left/right of block
-            strippedContent = out.toString().replace("*", "\\*").replace("_", "\\_").replace("~", "\\~");
-        }
-        return strippedContent;
+        JSONObject obj = new JSONObject();
+        obj.put("content", content);
+        obj.put("tts",     isTTS);
+        if (!embeds.isEmpty())
+            obj.put("embed", ((MessageEmbedImpl) embeds.get(0)).toJSONObject());
+        return obj;
     }
 
     private static class FormatToken {
