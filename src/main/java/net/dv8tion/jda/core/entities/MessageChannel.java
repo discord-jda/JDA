@@ -16,8 +16,14 @@
 package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.MessageHistory;
+import net.dv8tion.jda.core.requests.Request;
+import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.Route;
+import org.apache.http.util.Args;
+import org.json.JSONObject;
 //import net.dv8tion.jda.core.exceptions.VerificationLevelException;
 
 import java.io.File;
@@ -242,4 +248,41 @@ public interface MessageChannel extends ISnowflake
      *          {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      */
     RestAction<List<Message>> getPinnedMessages();
+
+    default RestAction<Message> editMessageById(String id, String newContent)
+    {
+        return editMessageById(id, new MessageBuilder().appendString(newContent).build());
+    }
+
+    default RestAction<Message> editMessageById(String id, Message newContent)
+    {
+        Args.notNull(id, "id");
+        Args.notNull(newContent, "message");
+
+        JSONObject json = new JSONObject().put("content", newContent.getRawContent()).put("tts", newContent.isTTS());
+        Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getId(), id);
+        return new RestAction<Message>(getJDA(), route, json)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                {
+                    try
+                    {
+                        Message m = EntityBuilder.get(api).createMessage(response.getObject());
+                        request.onSuccess(m);
+                    }
+                    catch (IllegalArgumentException e)
+                    {
+                        request.onFailure(e);
+                    }
+                }
+                else
+                {
+                    request.onFailure(response);
+                }
+            }
+        };
+    }
 }

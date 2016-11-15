@@ -307,32 +307,7 @@ public class MessageImpl implements Message
         if (!api.getSelfUser().equals(getAuthor()))
             throw new UnsupportedOperationException("Attempted to update message that was not sent by this account. You cannot modify other User's messages!");
 
-
-        JSONObject json = new JSONObject().put("content", newContent.getRawContent()).put("tts", newContent.isTTS());
-        Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getChannel().getId(), getId());
-        return new RestAction<Message>(api, route, json)
-        {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                if (response.isOk())
-                {
-                    try
-                    {
-                        Message m = EntityBuilder.get(api).createMessage(response.getObject());
-                        request.onSuccess(m);
-                    }
-                    catch (IllegalArgumentException e)
-                    {
-                        request.onFailure(e);
-                    }
-                }
-                else
-                {
-                    request.onFailure(response);
-                }
-            }
-        };
+        return getChannel().editMessageById(getId(), newContent);
     }
 
     @Override
