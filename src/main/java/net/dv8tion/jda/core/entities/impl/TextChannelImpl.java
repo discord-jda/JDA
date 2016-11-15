@@ -191,6 +191,8 @@ public class TextChannelImpl implements TextChannel
 
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
         JSONObject json = new JSONObject().put("content", msg.getRawContent()).put("tts", msg.isTTS());
+        if (!msg.getEmbeds().isEmpty())
+            json.put("embed", ((MessageEmbedImpl) msg.getEmbeds().get(0)).toJSONObject());
         return new RestAction<Message>(getJDA(), route, json)
         {
             @Override

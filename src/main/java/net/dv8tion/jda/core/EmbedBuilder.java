@@ -44,12 +44,38 @@ public class EmbedBuilder
     private MessageEmbed.Footer footer;
     private MessageEmbed.ImageInfo image;
     private final List<MessageEmbed.Field> fields;
+    
     /**
      * Creates an EmbedBuilder to be used to creates an embed to send
      */
     public EmbedBuilder()
     {
+        this(null);
+    }
+    
+    /**
+     * Creates an EmbedBuilder using fields in an existing embed
+     * @param embed the existing embed
+     */
+    public EmbedBuilder(MessageEmbed embed)
+    {
         fields = new LinkedList<>();
+        if(embed != null)
+        {
+            this.url = embed.getUrl();
+            this.title = embed.getTitle();
+            this.description = embed.getDescription();
+            this.timestamp = embed.getTimestamp();
+            this.color = embed.getColor();
+            this.thumbnail = embed.getThumbnail();
+            this.siteProvider = embed.getSiteProvider();
+            this.author = embed.getAuthor();
+            this.videoInfo = embed.getVideoInfo();
+            this.footer = embed.getFooter();
+            this.image = embed.getImage();
+            if (embed.getFields() != null)
+                fields.addAll(embed.getFields());
+        }
     }
     
     /**

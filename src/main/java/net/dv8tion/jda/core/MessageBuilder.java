@@ -24,6 +24,7 @@ import net.dv8tion.jda.core.entities.impl.MessageImpl;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import net.dv8tion.jda.core.entities.MessageEmbed;
 
 public class MessageBuilder
 {
@@ -39,6 +40,7 @@ public class MessageBuilder
     protected boolean mentionEveryone = false;
     protected boolean isTTS = false;
     protected Pattern formatPattern;
+    protected MessageEmbed embed;
 
     public MessageBuilder()
     {
@@ -55,6 +57,18 @@ public class MessageBuilder
     public MessageBuilder setTTS(boolean tts)
     {
         this.isTTS = tts;
+        return this;
+    }
+    
+    /**
+     * Adds an embed to the Message
+     *
+     * @param embed the embed to add, or null to remove
+     * @return this instance
+     */
+    public MessageBuilder setEmbed(MessageEmbed embed)
+    {
+        this.embed = embed;
         return this;
     }
 
@@ -352,13 +366,14 @@ public class MessageBuilder
     public Message build()
     {
         String message = builder.toString();
-        if (message.isEmpty())
+        if (message.isEmpty() && embed == null)
             throw new UnsupportedOperationException("Cannot build a Message with no content. (You never added any content to the message)");
         if (message.length() > 2000)
             throw new UnsupportedOperationException("Cannot build a Message with more than 2000 characters. Please limit your input.");
 
         return new MessageImpl("", null, false).setContent(message).setTTS(isTTS).setMentionedUsers(mentioned)
-                .setMentionedChannels(mentionedTextChannels).setMentionedRoles(mentionedRoles).setMentionsEveryone(mentionEveryone);
+                .setMentionedChannels(mentionedTextChannels).setMentionedRoles(mentionedRoles).setMentionsEveryone(mentionEveryone)
+                .setEmbeds(embed == null ? new LinkedList<>() : Collections.singletonList(embed));
     }
 
     /**
