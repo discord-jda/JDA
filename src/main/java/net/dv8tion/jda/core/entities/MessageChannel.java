@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
+import org.apache.http.util.Args;
 import org.json.JSONObject;
 //import net.dv8tion.jda.core.exceptions.VerificationLevelException;
 
@@ -255,6 +256,9 @@ public interface MessageChannel extends ISnowflake
 
     default RestAction<Message> editMessageById(String id, Message newContent)
     {
+        Args.notNull(id, "id");
+        Args.notNull(newContent, "message");
+
         JSONObject json = new JSONObject().put("content", newContent.getRawContent()).put("tts", newContent.isTTS());
         Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getId(), id);
         return new RestAction<Message>(getJDA(), route, json)
