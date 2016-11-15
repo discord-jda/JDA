@@ -38,6 +38,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import net.dv8tion.jda.core.entities.impl.MessageEmbedImpl;
 
 public class GroupImpl implements Group
 {
@@ -162,6 +163,8 @@ public class GroupImpl implements Group
     {
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
         JSONObject json = new JSONObject().put("content", msg.getRawContent()).put("tts", msg.isTTS());
+        if (!msg.getEmbeds().isEmpty())
+            json.put("embed", ((MessageEmbedImpl) msg.getEmbeds().get(0)).toJSONObject());
         return new RestAction<Message>(getJDA(), route, json)
         {
             @Override
