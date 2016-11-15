@@ -24,9 +24,8 @@ import net.dv8tion.jda.core.entities.EmbedType;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import org.json.JSONArray; 
 import org.json.JSONObject;
-import org.json.JSONString;
 
-public class MessageEmbedImpl implements MessageEmbed, JSONString
+public class MessageEmbedImpl implements MessageEmbed
 {
     private String url;
     private String title;
@@ -214,8 +213,7 @@ public class MessageEmbedImpl implements MessageEmbed, JSONString
         return "EmbedMessage";
     }
     
-    @Override
-    public String toJSONString()
+    public JSONObject toJSONObject()
     {
         JSONObject obj = new JSONObject();
         if (url != null)
@@ -270,9 +268,9 @@ public class MessageEmbedImpl implements MessageEmbed, JSONString
                 fieldsArray.put(new JSONObject()
                     .put("name", field.getName())
                     .put("value", field.getValue())
-                    .put("inline",field.isInline())));
+                    .put("inline", field.isInline())));
             obj.put("fields", fieldsArray);
         }
-        return obj.toString();
+        return obj;
     }
 }
