@@ -376,6 +376,30 @@ public class MessageBuilder
                 .setEmbeds(embed == null ? new LinkedList<>() : Collections.singletonList(embed));
     }
 
+    public MessageBuilder replaceAll(String text, String replacement) {
+        int index;
+        while ((index = builder.indexOf(text)) != -1) {
+            builder.replace(index, index + text.length(), replacement);
+        }
+        return this;
+    }
+
+    public MessageBuilder replaceFirst(String text, String replacement) {
+        int index = builder.indexOf(text);
+        if (index != -1) {
+            builder.replace(index, index + text.length(), replacement);
+        }
+        return this;
+    }
+
+    public MessageBuilder replaceLast(String text, String replacement) {
+        int index = builder.lastIndexOf(text);
+        if (index != -1) {
+            builder.replace(index, index + text.length(), replacement);
+        }
+        return this;
+    }
+
     /**
      * Holds the Available formatting used in {@link #appendString(String, net.dv8tion.jda.core.MessageBuilder.Formatting...)}
      */
