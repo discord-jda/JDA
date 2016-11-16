@@ -182,6 +182,8 @@ public interface Message extends ISnowflake
      */
     List<Emote> getEmotes();
 
+    List<MessageReaction> getReactions();
+
     /**
      * Is this Message supposed to be TTS (Text-to-speach)
      *
@@ -253,6 +255,10 @@ public interface Message extends ISnowflake
      *      True - if the action completed successfully and this message was unpinned.
      */
     RestAction<Void> unpin();
+
+    RestAction<Void> addReaction(Emote emote);
+    RestAction<Void> addReaction(String unicode);
+    RestAction<Void> clearReactions();
 
     /**
      * This specifies the type of Message sent. Messages can represent more than just simple text sent by Users.<br>

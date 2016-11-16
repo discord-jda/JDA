@@ -26,6 +26,7 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.apache.http.util.Args;
 import org.json.JSONObject;
 
@@ -58,6 +59,7 @@ public class MessageImpl implements Message
     private List<Attachment> attachments = new LinkedList<>();
     private List<MessageEmbed> embeds = new LinkedList<>();
     private List<Emote> emotes = null;
+    private List<MessageReaction> reactions = new LinkedList<>();
 
     public MessageImpl(String id, MessageChannel channel, boolean fromWebhook)
     {
@@ -95,6 +97,70 @@ public class MessageImpl implements Message
     public RestAction<Void> unpin()
     {
         return channel.unpinMessageById(getId());
+    }
+
+    @Override
+    public RestAction<Void> addReaction(Emote emote)
+    {
+        checkNull(emote, "Emote");
+
+        MessageReaction reaction = reactions.parallelStream()
+                .filter(r -> Objects.equals(r.getEmote().getId(), emote.getId()))
+                .findFirst().orElse(null);
+
+        if (reaction == null)
+        {
+            checkFake(emote, "Emote");
+            checkPermission(Permission.MESSAGE_ADD_REACTION);
+            if (!PermissionUtil.canInteract(api.getSelfUser(), emote, channel))
+                throw new IllegalArgumentException("Cannot react with the provided emote because it is not available in the current channel.");
+        }
+        else if (reaction.isSelf())
+        {
+            return new RestAction.EmptyRestAction<>(null);
+        }
+
+        return channel.addReactionById(id, emote);
+    }
+
+    @Override
+    public RestAction<Void> addReaction(String unicode)
+    {
+        Args.containsNoBlanks(unicode, "Provided Unicode");
+
+        MessageReaction reaction = reactions.parallelStream()
+                .filter(r -> r.getEmote().getName().equals(unicode))
+                .findFirst().orElse(null);
+
+        if (reaction == null)
+            checkPermission(Permission.MESSAGE_ADD_REACTION);
+        else if (reaction.isSelf())
+            return new RestAction.EmptyRestAction<>(null);
+
+        return channel.addReactionById(id, unicode);
+    }
+
+    @Override
+    public RestAction<Void> clearReactions()
+    {
+        checkPermission(Permission.MESSAGE_MANAGE);
+        return new RestAction<Void>(getJDA(), Route.Messages.REMOVE_ALL_REACTIONS.compile(getChannel().getId(), getId()), null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
+    }
+
+    public MessageImpl setPinned(boolean pinned)
+    {
+        this.pinned = pinned;
+        return this;
     }
 
     @Override
@@ -360,6 +426,12 @@ public class MessageImpl implements Message
     }
 
     @Override
+    public List<MessageReaction> getReactions()
+    {
+        return Collections.unmodifiableList(new LinkedList<>(reactions));
+    }
+
+    @Override
     public boolean isWebhookMessage()
     {
         return fromWebhook;
@@ -498,6 +570,12 @@ public class MessageImpl implements Message
         return this;
     }
 
+    public MessageImpl setReactions(List<MessageReaction> reactions)
+    {
+        this.reactions = reactions;
+        return this;
+    }
+
     @Override
     public boolean equals(Object o)
     {
@@ -532,6 +610,28 @@ public class MessageImpl implements Message
         if (!embeds.isEmpty())
             obj.put("embed", ((MessageEmbedImpl) embeds.get(0)).toJSONObject());
         return obj;
+    }
+
+    private void checkNull(Object o, String name)
+    {
+        if (o == null)
+            throw new IllegalArgumentException("Provided " + name + " was null!");
+    }
+
+    private void checkPermission(Permission permission)
+    {
+        if (channel.getType() == ChannelType.TEXT)
+        {
+            Channel location = (Channel) channel;
+            if (!location.getGuild().getSelfMember().hasPermission(location, permission))
+                throw new PermissionException(permission);
+        }
+    }
+
+    private void checkFake(IFakeable o, String name)
+    {
+        if (o.isFake())
+            throw new IllegalArgumentException("We are unable to use a fake " + name + " in this situation!");
     }
 
     private static class FormatToken {
