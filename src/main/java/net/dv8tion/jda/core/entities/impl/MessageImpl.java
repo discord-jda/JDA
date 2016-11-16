@@ -102,7 +102,7 @@ public class MessageImpl implements Message
     @Override
     public RestAction<Void> addReaction(Emote emote)
     {
-        checkNull(emote, "Emote");
+        Args.notNull(emote, "Emote");
 
         MessageReaction reaction = reactions.parallelStream()
                 .filter(r -> Objects.equals(r.getEmote().getId(), emote.getId()))
@@ -126,7 +126,7 @@ public class MessageImpl implements Message
     @Override
     public RestAction<Void> addReaction(String unicode)
     {
-        Args.containsNoBlanks(unicode, "Provided Unicode");
+        Args.notEmpty(unicode, "Provided Unicode");
 
         MessageReaction reaction = reactions.parallelStream()
                 .filter(r -> r.getEmote().getName().equals(unicode))
@@ -155,12 +155,6 @@ public class MessageImpl implements Message
                     request.onFailure(response);
             }
         };
-    }
-
-    public MessageImpl setPinned(boolean pinned)
-    {
-        this.pinned = pinned;
-        return this;
     }
 
     @Override
@@ -610,12 +604,6 @@ public class MessageImpl implements Message
         if (!embeds.isEmpty())
             obj.put("embed", ((MessageEmbedImpl) embeds.get(0)).toJSONObject());
         return obj;
-    }
-
-    private void checkNull(Object o, String name)
-    {
-        if (o == null)
-            throw new IllegalArgumentException("Provided " + name + " was null!");
     }
 
     private void checkPermission(Permission permission)
