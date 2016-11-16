@@ -29,8 +29,8 @@ public class EmbedBuilder
     public final static int VALUE_MAX_LENGTH = 1024;
     public final static int TEXT_MAX_LENGTH = 2048;
     public final static int URL_MAX_LENGTH = 2000;
-    public final static Pattern URL_PATTERN = Pattern.compile("\\s*https?:\\/\\/[a-z0-9]+([a-z0-9-]*[a-z0-9]+)?\\.[a-z]{2,}\\s*");
-    public final static Pattern HTTPS_URL_PATTERN = Pattern.compile("\\s*https:\\/\\/[a-z0-9]+([a-z0-9-]*[a-z0-9]+)?\\.[a-z]{2,}\\s*");
+    public final static Pattern URL_PATTERN = Pattern.compile("\\s*https?:\\/\\/.+\\..{2,}\\s*", Pattern.CASE_INSENSITIVE);
+    public final static Pattern HTTPS_URL_PATTERN = Pattern.compile("\\s*https:\\/\\/.+\\..{2,}\\s*", Pattern.CASE_INSENSITIVE);
     
     private String url;
     private String title;
@@ -110,7 +110,7 @@ public class EmbedBuilder
     public EmbedBuilder setTitle(String title)
     {
         if (title != null && title.length() > TITLE_MAX_LENGTH)
-            throw new IllegalStateException("Title cannot be longer than " + TITLE_MAX_LENGTH + " characters.");
+            throw new IllegalArgumentException("Title cannot be longer than " + TITLE_MAX_LENGTH + " characters.");
         this.title = title;
         return this;
     }
@@ -123,7 +123,7 @@ public class EmbedBuilder
     public EmbedBuilder setDescription(String description)
     {
         if (description != null && description.length() > TEXT_MAX_LENGTH)
-            throw new IllegalStateException("Description cannot be longer than " + TEXT_MAX_LENGTH + " characters.");
+            throw new IllegalArgumentException("Description cannot be longer than " + TEXT_MAX_LENGTH + " characters.");
         this.description = description;
         return this;
     }
@@ -265,7 +265,7 @@ public class EmbedBuilder
         else
         {
             if (text != null && text.length() > TEXT_MAX_LENGTH)
-                throw new IllegalStateException("Text cannot be longer than " + TEXT_MAX_LENGTH + " characters.");
+                throw new IllegalArgumentException("Text cannot be longer than " + TEXT_MAX_LENGTH + " characters.");
             httpsCheck(iconUrl);
             this.footer = new MessageEmbed.Footer(text, iconUrl, null);
         }
@@ -284,11 +284,11 @@ public class EmbedBuilder
         if (name == null && value == null)
             return this;
         else if (name == null || value == null)
-            throw new IllegalStateException("Both Name and Value must be set!");
+            throw new IllegalArgumentException("Both Name and Value must be set!");
         else if (name.length() > TITLE_MAX_LENGTH)
-            throw new IllegalStateException("Name cannot be longer than " + TITLE_MAX_LENGTH + " characters.");
+            throw new IllegalArgumentException("Name cannot be longer than " + TITLE_MAX_LENGTH + " characters.");
         else if (value.length() > VALUE_MAX_LENGTH)
-            throw new IllegalStateException("Value cannot be longer than " + VALUE_MAX_LENGTH + " characters.");
+            throw new IllegalArgumentException("Value cannot be longer than " + VALUE_MAX_LENGTH + " characters.");
         this.fields.add(new MessageEmbed.Field(name, value, inline));
         return this;
     }
@@ -298,9 +298,9 @@ public class EmbedBuilder
         if (url == null)
             return;
         else if (url.length() > URL_MAX_LENGTH)
-            throw new IllegalStateException("URL cannot be longer than " + URL_MAX_LENGTH + " characters.");
+            throw new IllegalArgumentException("URL cannot be longer than " + URL_MAX_LENGTH + " characters.");
         else if (!URL_PATTERN.matcher(url).matches())
-            throw new IllegalStateException("URL must be a valid http or https url.");
+            throw new IllegalArgumentException("URL must be a valid http or https url.");
     }
     
     private void httpsCheck(String url)
@@ -308,8 +308,8 @@ public class EmbedBuilder
         if (url == null)
             return;
         else if (url.length() > URL_MAX_LENGTH)
-            throw new IllegalStateException("URL cannot be longer than " + URL_MAX_LENGTH + " characters.");
+            throw new IllegalArgumentException("URL cannot be longer than " + URL_MAX_LENGTH + " characters.");
         else if (!HTTPS_URL_PATTERN.matcher(url).matches())
-            throw new IllegalStateException("URL must be a valid https url.");
+            throw new IllegalArgumentException("URL must be a valid https url.");
     }
 }
