@@ -25,6 +25,7 @@ import net.dv8tion.jda.core.MessageHistory;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.utils.IOUtil;
+import org.apache.http.util.Args;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -82,10 +83,9 @@ public class PrivateChannelImpl implements PrivateChannel
     @Override
     public RestAction<Message> sendMessage(Message msg)
     {
+        Args.notNull(msg, "Message");
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
-        JSONObject json = new JSONObject().put("content", msg.getRawContent()).put("tts", msg.isTTS());
-        if (!msg.getEmbeds().isEmpty())
-            json.put("embed", ((MessageEmbedImpl) msg.getEmbeds().get(0)).toJSONObject());
+        JSONObject json = ((MessageImpl) msg).toJSONObject();
         return new RestAction<Message>(getJDA(), route, json)
         {
             @Override
