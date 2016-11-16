@@ -167,10 +167,10 @@ public class MessageBuilder
         int stringIndex = 0;
         StringBuilder sb = new StringBuilder();
         Matcher m = formatPattern.matcher(format);
-        List<Class> classes = Arrays.asList(User.class, TextChannel.class, Role.class);
+        List<Class< ? extends IMentionable>> classes = Arrays.asList(User.class, TextChannel.class, Role.class);
         while (m.find() && stringIndex < format.length())
         {
-            Class target = null;
+            Class<? extends IMentionable> target = null;
             boolean everyone = false;
             switch (m.group())
             {
@@ -480,6 +480,10 @@ public class MessageBuilder
         return this;
     }
 
+    public StringBuilder getStringBuilder() {
+        return this.builder;
+    }
+    
     public enum MentionType {
         EVERYONE,
         HERE,
