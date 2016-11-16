@@ -451,7 +451,7 @@ public class MessageImpl implements Message
             throw new UnsupportedOperationException("Attempted to update message that was not sent by this account. You cannot modify other User's messages!");
 
 
-        JSONObject json = toJSONObject();
+        JSONObject json = ((MessageImpl) newContent).toJSONObject();
         Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getChannel().getId(), getId());
         return new RestAction<Message>(api, route, json)
         {
