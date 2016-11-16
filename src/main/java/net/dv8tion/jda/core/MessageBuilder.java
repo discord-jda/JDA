@@ -15,16 +15,12 @@
  */
 package net.dv8tion.jda.core;
 
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.MessageImpl;
 
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import net.dv8tion.jda.core.entities.MessageEmbed;
 
 public class MessageBuilder
 {
@@ -41,6 +37,10 @@ public class MessageBuilder
     protected boolean isTTS = false;
     protected Pattern formatPattern;
     protected MessageEmbed embed;
+
+    public static final Pattern USER_MENTION_PATTERN = Pattern.compile("<@!{0,1}([0-9]+)>");
+    public static final Pattern CHANNEL_MENTION_PATTERN = Pattern.compile("<#!{0,1}([0-9]+)>");
+    public static final Pattern ROLE_MENTION_PATTERN = Pattern.compile("<@&!{0,1}([0-9]+)>");
 
     public MessageBuilder()
     {
@@ -400,6 +400,93 @@ public class MessageBuilder
         return this;
     }
 
+    public MessageBuilder stripMentions(JDA jda, MentionType... mentions) {
+        String string = null;
+        if (mentions != null)
+        {
+            for (MentionType mention : mentions)
+            {
+                switch (mention)
+                {
+                    case EVERYONE:
+                        replaceAll("@everyone", "@\u200Beveryone");
+                        break;
+                    case HERE:
+                        replaceAll("@here", "@\u200Bhere");
+                        break;
+                    case CHANNEL:
+                        {
+                            if (string == null)
+                            {
+                                string = builder.toString();
+                            }
+                            
+                            Matcher matcher = CHANNEL_MENTION_PATTERN.matcher(string);
+                            while (matcher.find())
+                            {
+                                TextChannel channel = jda.getTextChannelById(matcher.group(1));
+                                if (channel != null)
+                                {
+                                    
+                                    replaceAll(matcher.group(), "#" + channel.getName());
+                                }
+                            }
+                        }
+                        break;
+                    case ROLE:
+                        {
+                            if (string == null)
+                            {
+                                string = builder.toString();
+                            }
+                            
+                            Matcher matcher = ROLE_MENTION_PATTERN.matcher(string);
+                            while (matcher.find())
+                            {
+                                for (Guild guild : jda.getGuilds())
+                                {
+                                    Role role = guild.getRoleById(matcher.group(1));
+                                    if (role != null)
+                                    {
+                                        replaceAll(matcher.group(), "@"+role.getName());
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case USER:
+                        {
+                            if (string == null)
+                            {
+                                string = builder.toString();
+                            }
+                            
+                            Matcher matcher = USER_MENTION_PATTERN.matcher(string);
+                            while (matcher.find())
+                            {
+                                User user = jda.getUserById(matcher.group(1));
+                                if (user != null)
+                                {
+                                    replaceAll(matcher.group(), "@"+user.getName());
+                                }
+                            }
+                        }
+                        break;
+                }
+            }
+        }
+        
+        return this;
+    }
+
+    public enum MentionType {
+        EVERYONE,
+        HERE,
+        USER,
+        CHANNEL,
+        ROLE;
+    }
     /**
      * Holds the Available formatting used in {@link #appendString(String, net.dv8tion.jda.core.MessageBuilder.Formatting...)}
      */
@@ -422,6 +509,6 @@ public class MessageBuilder
         {
             return tag;
         }
-
     }
+
 }
