@@ -29,6 +29,7 @@ public enum Permission
     ADMINISTRATOR(3, true, false),
     MANAGE_CHANNEL(4, true, true),
     MANAGE_SERVER(5, true, false),
+    MESSAGE_ADD_REACTION(6, true, true),
 
     MESSAGE_READ(10, true, true),
     MESSAGE_WRITE(11, true, true),

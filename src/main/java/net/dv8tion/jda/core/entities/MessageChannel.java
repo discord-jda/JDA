@@ -17,12 +17,18 @@ package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.MessageHistory;
+import net.dv8tion.jda.core.requests.Request;
+import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.Route;
+import org.apache.http.util.Args;
 //import net.dv8tion.jda.core.exceptions.VerificationLevelException;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 
 /**
@@ -200,6 +206,54 @@ public interface MessageChannel extends ISnowflake
      *          {@link net.dv8tion.jda.core.requests.RestAction RestAction}.
      */
     RestAction<Void> sendTyping();
+
+    //TODO: doc
+    default RestAction<Void> addReactionById(String messageId, String unicode)
+    {
+        Args.notNull(messageId, "MessageId");
+        Args.containsNoBlanks(unicode, "Provided Unicode");
+        String encoded;
+        try
+        {
+            encoded = URLEncoder.encode(unicode, "UTF-8");
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            throw new RuntimeException(e); //thanks JDK 1.4
+        }
+        Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, encoded);
+        return new RestAction<Void>(getJDA(), route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
+    }
+
+    //TODO: doc
+    default RestAction<Void> addReactionById(String messageId, Emote emote)
+    {
+        Args.notNull(messageId, "MessageId");
+        Args.notNull(emote, "Emote");
+
+        Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, String.format("%s:%s", emote.getName(), emote.getId()));
+        return new RestAction<Void>(getJDA(), route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
+    }
 
     /**
      * Used to pin a message.<br>
