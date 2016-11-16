@@ -78,7 +78,7 @@ public class MessageBuilder
      * @param text the text to append
      * @return this instance
      */
-    public MessageBuilder appendString(String text)
+    public MessageBuilder appendString(CharSequence text)
     {
         builder.append(text);
         return this;
@@ -91,7 +91,7 @@ public class MessageBuilder
      * @param format the format(s) to apply to the text
      * @return this instance
      */
-    public MessageBuilder appendString(String text, Formatting... format)
+    public MessageBuilder appendString(CharSequence text, Formatting... format)
     {
         boolean blockPresent = false;
         for (Formatting formatting : format)
@@ -267,7 +267,7 @@ public class MessageBuilder
      * @param language the language of the code. If unknown use an empty string
      * @return this instance
      */
-    public MessageBuilder appendCodeBlock(String text, String language)
+    public MessageBuilder appendCodeBlock(CharSequence text, CharSequence language)
     {
         builder.append("```").append(language).append('\n').append(text).append("\n```");
         return this;
