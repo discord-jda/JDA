@@ -21,6 +21,7 @@ import net.dv8tion.jda.client.JDAClient;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.Presence;
+import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.ratelimit.IBucket;
 import org.apache.http.HttpHost;
 
@@ -155,6 +156,8 @@ public interface JDA
      *      Possibly-null {@link net.dv8tion.jda.core.entities.User User} with matching id.
      */
     User getUserById(String id);
+
+    RestAction<User> retrieveUser(String id);
 
     /**
      * This unmodifiable returns all {@link net.dv8tion.jda.core.entities.User Users} that have the same username as the one provided.<br>
