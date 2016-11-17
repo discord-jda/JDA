@@ -29,24 +29,22 @@ public class MessageBuilder
     public static final String TEXTCHANNEL_KEY = "%TC%";
     public static final String EVERYONE_KEY = "%E%";
     public static final String HERE_KEY = "%H%";
+
+    protected static final Pattern FORMAT_PATTERN = Pattern.compile(String.format("%s|%s|%s|%s|%s", USER_KEY, ROLE_KEY, TEXTCHANNEL_KEY, EVERYONE_KEY, HERE_KEY));
+    protected static final Pattern USER_MENTION_PATTERN = Pattern.compile("<@!{0,1}([0-9]+)>");
+    protected static final Pattern CHANNEL_MENTION_PATTERN = Pattern.compile("<#!{0,1}([0-9]+)>");
+    protected static final Pattern ROLE_MENTION_PATTERN = Pattern.compile("<@&!{0,1}([0-9]+)>");
+
     protected final StringBuilder builder = new StringBuilder();
     protected final List<User> mentioned = new LinkedList<>();
     protected final List<TextChannel> mentionedTextChannels = new LinkedList<>();
     protected final List<Role> mentionedRoles = new LinkedList<>();
+
     protected boolean mentionEveryone = false;
     protected boolean isTTS = false;
-    protected Pattern formatPattern;
     protected MessageEmbed embed;
 
-    public static final Pattern USER_MENTION_PATTERN = Pattern.compile("<@!{0,1}([0-9]+)>");
-    public static final Pattern CHANNEL_MENTION_PATTERN = Pattern.compile("<#!{0,1}([0-9]+)>");
-    public static final Pattern ROLE_MENTION_PATTERN = Pattern.compile("<@&!{0,1}([0-9]+)>");
-
-    public MessageBuilder()
-    {
-        formatPattern = Pattern.compile(String.format("%s|%s|%s|%s|%s",
-                USER_KEY, ROLE_KEY, TEXTCHANNEL_KEY, EVERYONE_KEY, HERE_KEY));
-    }
+    public MessageBuilder() {}
 
     /**
      * Makes the created Message a TTS message
@@ -166,7 +164,7 @@ public class MessageBuilder
         int index = 0;
         int stringIndex = 0;
         StringBuilder sb = new StringBuilder();
-        Matcher m = formatPattern.matcher(format);
+        Matcher m = FORMAT_PATTERN.matcher(format);
         List<Class< ? extends IMentionable>> classes = Arrays.asList(User.class, TextChannel.class, Role.class);
         while (m.find() && stringIndex < format.length())
         {
