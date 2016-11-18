@@ -41,6 +41,7 @@ public enum ErrorResponse
     MAX_MESSAGE_PINS(   30003, "Maximum number of pinned messages reached (50)"),
     MAX_USERS_PER_DM(   30004, "Maxiuum number of recipients reached. (10)"),
     MAX_ROLES_PER_GUILD(30005, "Maximum number of guild roles reached (250)"),
+    TOO_MANY_REACTIONS( 30010, "Too many reactions"),
     UNAUTHORIZED(       40001, "Unauthorized"),
     MISSING_ACCESS(     50001, "Missing Access"),
     INVALID_ACCOUNT_TYPE(50002,"Invalid Account Type"),
@@ -61,6 +62,7 @@ public enum ErrorResponse
     INVALID_MFA_LEVEL(  50017, "Provided MFA level was invalid."),
     INVALID_PASSWORD(   50018, "Provided password was invalid"),
     MFA_NOT_ENABLED(    60003, "MFA auth required but not enabled"),
+    REACTION_BLOCKED(   90001, "Reaction Blocked"),
 
     UNKNOWN_ERROR(         -1, "Discord returned an unknown error type"),
     UNDEFINED_ERROR(       -2, "Discord returned an error with no defined error-code");
