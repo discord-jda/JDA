@@ -154,9 +154,9 @@ public class ChannelManagerUpdatable
     protected boolean needToUpdate()
     {
         return name.shouldUpdate()
-                || topic.shouldUpdate()
-                || userLimit.shouldUpdate()
-                || bitrate.shouldUpdate();
+                || (topic != null && topic.shouldUpdate())
+                || (userLimit != null && userLimit.shouldUpdate())
+                || (bitrate != null && bitrate.shouldUpdate());
     }
 
     protected void checkPermission(Permission perm)
