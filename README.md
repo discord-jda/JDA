@@ -60,7 +60,7 @@ public class MessageListener extends ListenerAdapter
     @Override
     public void onMessageReceived(MessageReceivedEvent event)
     {
-        if (event.isPrivate())
+        if (event.isFromType(ChannelType.PRIVATE))
         {
             System.out.printf("[PM] %s: %s\n", event.getAuthor().getUsername(),
                                     event.getMessage().getContent());
