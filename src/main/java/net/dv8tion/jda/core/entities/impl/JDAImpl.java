@@ -34,6 +34,7 @@ import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.requests.ratelimit.IBucket;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import org.apache.http.HttpHost;
+import org.apache.http.util.Args;
 import org.json.JSONObject;
 
 import javax.security.auth.login.LoginException;
@@ -304,6 +305,34 @@ public class JDAImpl implements JDA
             ? name.equalsIgnoreCase(u.getName())
             : name.equals(u.getName()))
         .collect(Collectors.toList());
+    }
+
+    @Override
+    public RestAction<User> retrieveUserById(String id)
+    {
+        if (accountType != AccountType.BOT)
+            throw new AccountTypeException(AccountType.BOT);
+        Args.notNull(id, "User id");
+        // check cache
+        User user = this.getUserById(id);
+        if (user != null)
+            return new RestAction.EmptyRestAction<>(user);
+
+        Route.CompiledRoute route = Route.Users.GET_USER.compile(id);
+        return new RestAction<User>(this, route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (!response.isOk())
+                {
+                    request.onFailure(response);
+                    return;
+                }
+                JSONObject user = response.getObject();
+                request.onSuccess(EntityBuilder.get(api).createFakeUser(user, false));
+            }
+        };
     }
 
     @Override

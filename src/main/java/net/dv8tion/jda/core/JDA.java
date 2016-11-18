@@ -21,6 +21,7 @@ import net.dv8tion.jda.client.JDAClient;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.Presence;
+import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.ratelimit.IBucket;
 import org.apache.http.HttpHost;
 
@@ -168,6 +169,8 @@ public interface JDA
      *      Possibly-empty list of {@link net.dv8tion.jda.core.entities.User Users} that all have the same name as the provided name.
      */
     List<User> getUsersByName(String name, boolean ignoreCase);
+
+    RestAction<User> retrieveUserById(String id);
 
     /**
      * An unmodifiable list of all {@link net.dv8tion.jda.core.entities.Guild Guilds} that this account is connected to.<br>
