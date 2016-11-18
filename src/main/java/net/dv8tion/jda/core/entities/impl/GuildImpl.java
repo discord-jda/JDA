@@ -21,9 +21,11 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.GuildController;
 import net.dv8tion.jda.core.managers.GuildManager;
 import net.dv8tion.jda.core.managers.GuildManagerUpdatable;
+import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
@@ -402,6 +404,15 @@ public class GuildImpl implements Guild
                     request.onFailure(response);
             }
         };
+    }
+
+    AudioManager mng;
+    @Override
+    public AudioManager getAudioManager()
+    {
+        if (mng == null)
+            mng = new AudioManagerImpl(this);
+        return mng;
     }
 
     @Override
