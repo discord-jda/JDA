@@ -99,8 +99,8 @@ public class BotRateLimiter extends RateLimiter
 
             if (code == 429)
             {
-                String global = headers.getFirst("x-ratelimit-global");
-                String retry = headers.getFirst("retry-after");
+                String global = headers.getFirst("X-RateLimit-Global");
+                String retry = headers.getFirst("Retry-After");
                 if (retry == null || retry.isEmpty())
                 {
                     JSONObject limitObj = new JSONObject(response.getBody());
@@ -177,9 +177,9 @@ public class BotRateLimiter extends RateLimiter
     {
         try
         {
-            bucket.resetTime = Long.parseLong(headers.getFirst("x-ratelimit-reset")) * 1000; //Seconds to milliseconds
-            bucket.routeUsageLimit = Integer.parseInt(headers.getFirst("x-ratelimit-limit"));
-            bucket.routeUsageRemaining = Integer.parseInt(headers.getFirst("x-ratelimit-remaining"));
+            bucket.resetTime = Long.parseLong(headers.getFirst("X-RateLimit-Reset")) * 1000; //Seconds to milliseconds
+            bucket.routeUsageLimit = Integer.parseInt(headers.getFirst("X-RateLimit-Limit"));
+            bucket.routeUsageRemaining = Integer.parseInt(headers.getFirst("X-RateLimit-Remaining"));
 
         }
         catch (NumberFormatException ex)
@@ -188,8 +188,11 @@ public class BotRateLimiter extends RateLimiter
                     && !bucket.getRoute().equals("users/@me")
                     && Requester.LOG.getEffectiveLevel().getPriority() <= SimpleLog.Level.DEBUG.getPriority())
             {
+                Requester.LOG.fatal("Encountered issue with headers when updating bucket");
+                Requester.LOG.fatal("Headers: " + headers);
                 Requester.LOG.log(ex);
             }
+
         }
     }
 
