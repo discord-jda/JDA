@@ -298,15 +298,23 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public RestAction<User> retrieveUser(String id)
+    public List<User> getUsersByName(String name, boolean ignoreCase)
+    {
+        return users.values().stream().filter(u ->
+            ignoreCase
+            ? name.equalsIgnoreCase(u.getName())
+            : name.equals(u.getName()))
+        .collect(Collectors.toList());
+    }
+
+    @Override
+    public RestAction<User> retrieveUserById(String id)
     {
         if (accountType != AccountType.BOT)
             throw new AccountTypeException(AccountType.BOT);
         Args.notNull(id, "User id");
         // check cache
         User user = this.getUserById(id);
-        if (user == null)
-            user = this.fakeUsers.get(id);
         if (user != null)
             return new RestAction.EmptyRestAction<>(user);
 
@@ -325,16 +333,6 @@ public class JDAImpl implements JDA
                 request.onSuccess(EntityBuilder.get(api).createFakeUser(user, false));
             }
         };
-    }
-
-    @Override
-    public List<User> getUsersByName(String name, boolean ignoreCase)
-    {
-        return users.values().stream().filter(u ->
-            ignoreCase
-            ? name.equalsIgnoreCase(u.getName())
-            : name.equals(u.getName()))
-        .collect(Collectors.toList());
     }
 
     @Override

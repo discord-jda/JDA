@@ -157,8 +157,6 @@ public interface JDA
      */
     User getUserById(String id);
 
-    RestAction<User> retrieveUser(String id);
-
     /**
      * This unmodifiable returns all {@link net.dv8tion.jda.core.entities.User Users} that have the same username as the one provided.<br>
      * If there are no {@link net.dv8tion.jda.core.entities.User Users} with the provided name, then this returns an empty list.
@@ -171,6 +169,8 @@ public interface JDA
      *      Possibly-empty list of {@link net.dv8tion.jda.core.entities.User Users} that all have the same name as the provided name.
      */
     List<User> getUsersByName(String name, boolean ignoreCase);
+
+    RestAction<User> retrieveUserById(String id);
 
     /**
      * An unmodifiable list of all {@link net.dv8tion.jda.core.entities.Guild Guilds} that this account is connected to.<br>
