@@ -33,42 +33,25 @@ public interface AudioManager
     SimpleLog LOG = SimpleLog.getLog("JDAAudioManager");
 
     /**
-     * Starts the process to create an audio connection with a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}.<br>
+     * Starts the process to create an audio connection with a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
+     * or, if an audio connection is already open, JDA will move the connection to the provided VoiceChannel.<br>
      * Note: Currently you can only be connected to a single {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
      * per {@link net.dv8tion.jda.core.entities.Guild Guild}.
      *
      * @param channel
      *          The {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} to open an audio connection with.
      *
-     * @throws java.lang.IllegalStateException
-     *          If JDA is already has an active audio connection with a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
-     *          in the {@link net.dv8tion.jda.core.entities.Guild Guild} the this AudioManager handles then
-     *          this will be thrown. JDA can only have 1 audio connection per Guild at a time.<br>
-     *          This will also be thrown if JDA is currently attempting to setup an audio connection.<br>
-     *          For both of these situations, first checking {@link #isAttemptingToConnect()} and {@link #isConnected()}
-     *          is advised.
-     */
-    void openAudioConnection(VoiceChannel channel);
-
-    /**
-     * Moves the audio connection from one {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} to a different
-     * {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}. The destination channel MUST be in the
-     * {@link net.dv8tion.jda.core.entities.Guild Guild} that this AudioManager handles.<br>
-     * Note: if the VoiceChannel provided is the same as the channel that the audio connection is currently connected
-     * to, there will be no change.
-     *
-     * @param channel
-     *          The destination {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} to which the audio connection
-     *          will move to.
-     * @throws java.lang.IllegalStateException
-     *          If there is no open audio connection.
      * @throws java.lang.IllegalArgumentException
      *          <ul>
      *              <li>If the provided channel was <code>null</code>.</li>
      *              <li>If the provided channel is not part of the Guild that the current audio connection is connected to.</li>
      *          </ul>
+     * @throws java.lang.IllegalStateException
+     *          This will  be thrown if JDA is currently attempting to setup an audio connection.<br>
+     *          For this situation, first checking {@link #isAttemptingToConnect()} is advised.
+     *
      */
-    void moveAudioConnection(VoiceChannel channel);
+    void openAudioConnection(VoiceChannel channel);
 
     /**
      * Used to close down the audio connection and disconnect from the {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}.<br>

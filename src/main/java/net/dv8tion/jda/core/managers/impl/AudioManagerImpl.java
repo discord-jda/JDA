@@ -26,6 +26,7 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.utils.NativeUtil;
+import org.apache.http.util.Args;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -60,59 +61,53 @@ public class AudioManagerImpl implements AudioManager
     @Override
     public void openAudioConnection(VoiceChannel channel)
     {
+        Args.notNull(channel, "Provided VoiceChannel");
+
         if (!AUDIO_SUPPORTED)
             throw new UnsupportedOperationException("Sorry! Audio is disabled due to an internal JDA error! Contact Dev!");
-        if (audioConnection != null)
-            throw new IllegalStateException("Cannot have more than 1 audio connection at a time. Please close existing" +
-                    " connection before attempting to open a new connection.");
         if (queuedAudioConnection != null)
             throw new IllegalStateException("Already attempting to start an AudioConnection with a VoiceChannel!\n" +
                     "Currently Attempting Channel ID: " + queuedAudioConnection.getId() + "  |  New Attempt Channel ID: " + channel.getId());
+        if (!guild.equals(channel.getGuild()))
+            throw new IllegalArgumentException("The provided VoiceChannel is not a part of the Guild that this AudioManager handles." +
+                    "Please provide a VoiceChannel from the proper Guild");
         if (!guild.isAvailable())
             throw new GuildUnavailableException("Cannot open an Audio Connection with an unavailable guild. " +
                     "Please wait until this Guild is available to open a connection.");
-        queuedAudioConnection = channel;
-        JSONObject obj = new JSONObject()
-                .put("op", 4)
-                .put("d", new JSONObject()
-                        .put("guild_id", channel.getGuild().getId())
-                        .put("channel_id", channel.getId())
-                        .put("self_mute", false)
-                        .put("self_deaf", false)
-                );
-        api.getClient().send(obj.toString());
-    }
 
-    @Override
-    public void moveAudioConnection(VoiceChannel channel)
-    {
-        if (!isConnected())
-            throw new IllegalStateException("Cannot change to a different VoiceChannel when not currently connected. " +
-                    "Please use openAudioConnection(VoiceChannel) to start an audio connection.");
+        if (audioConnection == null)
+        {
+            //Start establishing connection, joining provided channel
+            queuedAudioConnection = channel;
+            JSONObject obj = new JSONObject()
+                    .put("op", 4)
+                    .put("d", new JSONObject()
+                            .put("guild_id", channel.getGuild().getId())
+                            .put("channel_id", channel.getId())
+                            .put("self_mute", false)
+                            .put("self_deaf", false)
+                    );
+            api.getClient().send(obj.toString());
+        }
+        else
+        {
+            //Connection is already established, move to specified channel
 
-        if (channel == null)
-            throw new IllegalArgumentException("The provided VoiceChannel was null! Cannot determine which VoiceChannel " +
-                    "to move to from a null VoiceChannel!");
+            //If we are already connected to this VoiceChannel, then do nothing.
+            if (channel.getId().equals(audioConnection.getChannel().getId()))
+                return;
 
-        if (!audioConnection.getChannel().getGuild().getId().equals(channel.getGuild().getId()))
-            throw new IllegalArgumentException("Cannot move to a VoiceChannel that isn't in the same Guild as the " +
-                    "active VoiceChannel audio connection. If you wish to open an audio connection with a VoiceChannel " +
-                    "on a different Guild, please close the active connection and start a new one.");
-
-        //If we are already connected to this VoiceChannel, then do nothing.
-        if (channel.getId().equals(audioConnection.getChannel().getId()))
-            return;
-
-        JSONObject obj = new JSONObject()
-                .put("op", 4)
-                .put("d", new JSONObject()
-                        .put("guild_id", channel.getGuild().getId())
-                        .put("channel_id", channel.getId())
-                        .put("self_mute", false)
-                        .put("self_deaf", false)
-                );
-        api.getClient().send(obj.toString());
-        audioConnection.setChannel(channel);
+            JSONObject obj = new JSONObject()
+                    .put("op", 4)
+                    .put("d", new JSONObject()
+                            .put("guild_id", channel.getGuild().getId())
+                            .put("channel_id", channel.getId())
+                            .put("self_mute", false)
+                            .put("self_deaf", false)
+                    );
+            api.getClient().send(obj.toString());
+            audioConnection.setChannel(channel);
+        }
     }
 
     @Override
