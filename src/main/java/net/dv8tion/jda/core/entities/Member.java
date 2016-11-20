@@ -20,9 +20,8 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.Permission;
 
-import java.awt.Color;
+import java.awt.*;
 import java.time.OffsetDateTime;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -30,7 +29,7 @@ import java.util.List;
  * <p>
  * Contains all guild-specific information about a User. (Roles, Nickname, VoiceStatus etc.)
  */
-public interface Member extends IMentionable
+public interface Member extends IMentionable, IPermissionHolder
 {
     /**
      * The user wrapped by this Entity.
@@ -127,69 +126,15 @@ public interface Member extends IMentionable
     Color getColor();
 
     /**
-     * The Guild-Wide Permissions this Member holds.
-     *
-     * @return
-     *      An immutable List of Permissions granted to this Member.
-     */
-    List<Permission> getPermissions();
-
-    /**
-     * The Permissions this Member holds in the specified {@link net.dv8tion.jda.core.entities.Channel Channel}.<br>
+     * The Permissions this PermissionHolder holds in the specified {@link net.dv8tion.jda.core.entities.Channel Channel}.<br>
      * Permissions returned by this may be different from {@link #getPermissions()} due to the Channel's {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides }.
      *
      * @param channel
      *      The {@link net.dv8tion.jda.core.entities.Channel Channel} of which to get Permissions for
      * @return
-     *      An immutable List of Permissions granted to this Member.
+     *      An immutable List of Permissions granted to this PermissionHolder.
      */
     List<Permission> getPermissions(Channel channel);
-
-    /**
-     * Checks whether or not this Member has the given {@link net.dv8tion.jda.core.Permission Permissions} in the Guild.
-     *
-     * @param permissions
-     *          Permissions to check for.
-     * @return
-     *      True - if all of the specified Permissions are granted to this Member.
-     */
-    boolean hasPermission(Permission... permissions);
-
-    /**
-     * Checks whether or not this Member has the {@link net.dv8tion.jda.core.Permission Permissions} in the provided
-     * Collection&lt;Permission&gt; in the Guild.
-     *
-     * @param permissions
-     *          Permissions to check for.
-     * @return
-     *      True - if all of the specified Permissions are granted to this Member.
-     */
-    boolean hasPermission(Collection<Permission> permissions);
-
-    /**
-     * Checks whether or not this Member has the given {@link net.dv8tion.jda.core.Permission Permissions} in the specified Channel.
-     *
-     * @param channel
-     *          The {@link net.dv8tion.jda.core.entities.Channel Channel} in which to check.
-     * @param permissions
-     *          Permissions to check for.
-     * @return
-     *      True - if all of the specified Permissions are granted to this Member in the provided Channel.
-     */
-    boolean hasPermission(Channel channel, Permission... permissions);
-
-    /**
-     * Checks whether or not this Member has the {@link net.dv8tion.jda.core.Permission Permissions} in the provided
-     * Collection&lt;Permission&gt; in the specified Channel.
-     *
-     * @param channel
-     *          The {@link net.dv8tion.jda.core.entities.Channel Channel} in which to check.
-     * @param permissions
-     *          Permissions to check for.
-     * @return
-     *      True - if all of the specified Permissions are granted to this Member in the provided Channel.
-     */
-    boolean hasPermission(Channel channel, Collection<Permission> permissions);
 
     boolean canInteract(Member member);
 
