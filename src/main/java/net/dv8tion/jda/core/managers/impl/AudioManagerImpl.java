@@ -20,6 +20,9 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.audio.AudioConnection;
 import net.dv8tion.jda.core.audio.AudioReceiveHandler;
 import net.dv8tion.jda.core.audio.AudioSendHandler;
+import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
+import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
+import net.dv8tion.jda.core.audio.hooks.ListenerProxy;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
@@ -47,6 +50,7 @@ public class AudioManagerImpl implements AudioManager
 
     protected AudioSendHandler sendHandler;
     protected AudioReceiveHandler receiveHandler;
+    protected ListenerProxy connectionListener = new ListenerProxy();
     protected long queueTimeout = 100;
 
     protected long timeout = DEFAULT_CONNECTION_TIMEOUT;
@@ -115,7 +119,7 @@ public class AudioManagerImpl implements AudioManager
     {
         if (audioConnection == null)
             return;
-        this.audioConnection.close(false);
+        this.audioConnection.close(ConnectionStatus.NOT_CONNECTED);
         this.audioConnection = null;
     }
 
@@ -195,6 +199,32 @@ public class AudioManagerImpl implements AudioManager
         return receiveHandler;
     }
 
+    @Override
+    public void setConnectionListener(ConnectionListener listener)
+    {
+        this.connectionListener.setListener(listener);
+    }
+
+    @Override
+    public ConnectionListener getConnectionListener()
+    {
+        return connectionListener.getListener();
+    }
+
+    @Override
+    public ConnectionStatus getConnectionStatus()
+    {
+        if (audioConnection != null)
+            return audioConnection.getWebSocket().getConnectionStatus();
+        else
+            return ConnectionStatus.NOT_CONNECTED;
+    }
+
+    public ConnectionListener getListenerProxy()
+    {
+        return connectionListener;
+    }
+
     public void setAudioConnection(AudioConnection audioConnection)
     {
         this.audioConnection = audioConnection;
@@ -211,7 +241,7 @@ public class AudioManagerImpl implements AudioManager
     public void prepareForRegionChange()
     {
         VoiceChannel queuedChannel = audioConnection.getChannel();
-        this.audioConnection.close(true);
+        this.audioConnection.close(ConnectionStatus.NOT_CONNECTED);
         this.audioConnection = null;
         this.queuedAudioConnection = queuedChannel;
     }

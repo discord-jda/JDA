@@ -17,13 +17,12 @@
 package net.dv8tion.jda.core.audio;
 
 import com.neovisionaries.ws.client.*;
+import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
+import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
-//import net.dv8tion.jda.core.events.audio.AudioDisconnectEvent;
-//import net.dv8tion.jda.core.events.audio.AudioRegionChangeEvent;
-//import net.dv8tion.jda.core.events.audio.AudioUnableToConnectEvent;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import org.apache.http.HttpHost;
@@ -36,10 +35,13 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class AudioWebSocket extends WebSocketAdapter
 {
     public static final SimpleLog LOG = SimpleLog.getLog("JDAAudioSocket");
+    public static final ScheduledThreadPoolExecutor KEEP_ALIVE_POOL = new ScheduledThreadPoolExecutor(0);
     public static final int DISCORD_SECRET_KEY_LENGTH = 32;
 
     public static final int INITIAL_CONNECTION_RESPONSE = 2;
@@ -52,14 +54,16 @@ public class AudioWebSocket extends WebSocketAdapter
     public static final int CONNECTION_SETUP_TIMEOUT = -41;
     public static final int UDP_UNABLE_TO_CONNECT = -42;
 
+    protected final ConnectionListener listener;
     protected AudioConnection audioConnection;
+    protected ConnectionStatus connectionStatus = ConnectionStatus.NOT_CONNECTED;
 
     private final JDAImpl api;
     private final Guild guild;
     private final HttpHost proxy;
     private boolean connected = false;
     private boolean ready = false;
-    private Thread keepAliveThread;
+    private Runnable keepAliveRunnable;
     public WebSocket socket;
     private String endpoint;
     private String wssEndpoint;
@@ -70,13 +74,12 @@ public class AudioWebSocket extends WebSocketAdapter
     private String token;
     private byte[] secretKey;
 
-
     private DatagramSocket udpSocket;
     private InetSocketAddress address;
-    private Thread udpKeepAliveThread;
 
-    public AudioWebSocket(String endpoint, JDAImpl api, Guild guild, String sessionId, String token)
+    public AudioWebSocket(ConnectionListener listener, String endpoint, JDAImpl api, Guild guild, String sessionId, String token)
     {
+        this.listener = listener;
         this.endpoint = endpoint;
         this.api = api;
         this.guild = guild;
@@ -104,6 +107,7 @@ public class AudioWebSocket extends WebSocketAdapter
         {
             socket = factory.createSocket(wssEndpoint)
                     .addListener(this);
+            changeStatus(ConnectionStatus.CONNECTING_AWAITING_WEBSOCKET_CONNECT);
             socket.connect();
         }
         catch (IOException | WebSocketException e)
@@ -131,6 +135,7 @@ public class AudioWebSocket extends WebSocketAdapter
                 );
         send(connectObj.toString());
         connected = true;
+        changeStatus(ConnectionStatus.CONNECTING_AWAITING_AUTHENTICATING);
     }
 
     @Override
@@ -152,6 +157,7 @@ public class AudioWebSocket extends WebSocketAdapter
                 //Find our external IP and Port using Discord
                 InetSocketAddress externalIpAndPort = null;
 
+                changeStatus(ConnectionStatus.CONNECTING_ATTEMPTING_UDP_DISCOVERY);
                 int tries = 0;
                 do
                 {
@@ -159,12 +165,10 @@ public class AudioWebSocket extends WebSocketAdapter
                     tries++;
                     if (externalIpAndPort == null && tries > 5)
                     {
-                        close(false, UDP_UNABLE_TO_CONNECT);
+                        close(ConnectionStatus.ERROR_UDP_UNABLE_TO_CONNECT);
                         return;
                     }
                 } while (externalIpAndPort == null);
-
-                setupUdpKeepAliveThread();
 
                 send(new JSONObject()
                         .put("op", 1)
@@ -177,13 +181,13 @@ public class AudioWebSocket extends WebSocketAdapter
                             )
                         )
                         .toString());
-                setupKeepAliveThread(heartbeatInterval);
 
+                setupKeepAlive(heartbeatInterval);
+                changeStatus(ConnectionStatus.CONNECTING_AWAITING_READY);
                 break;
             }
             case HEARTBEAT_START:
             {
-                System.out.println(contentAll);
                 break;
             }
             case HEARTBEAT_PING_RETURN:
@@ -192,7 +196,7 @@ public class AudioWebSocket extends WebSocketAdapter
                 {
                     long timePingSent  = contentAll.getLong("d");
                     long ping = System.currentTimeMillis() - timePingSent;
-                    LOG.trace("ping: " + ping + "ms");
+                    listener.onPing(ping);
                 }
                 break;
             }
@@ -207,6 +211,7 @@ public class AudioWebSocket extends WebSocketAdapter
 
                 LOG.trace("Audio connection has finished connecting!");
                 ready = true;
+                changeStatus(ConnectionStatus.CONNECTED);
                 break;
             }
             case USER_SPEAKING_UPDATE:
@@ -224,6 +229,10 @@ public class AudioWebSocket extends WebSocketAdapter
                 }
 
                 audioConnection.updateUserSSRC(ssrc, userId, speaking);
+                if (user != null)
+                {
+                    listener.onUserSpeaking(user, speaking);
+                }
                 if (speaking)
                     LOG.log(SimpleLog.Level.ALL, user.getName() + " started transmitting audio.");    //Replace with event.
                 else
@@ -250,10 +259,11 @@ public class AudioWebSocket extends WebSocketAdapter
         {
             LOG.debug("ClientReason: " + clientCloseFrame.getCloseReason());
             LOG.debug("ClientCode: " + clientCloseFrame.getCloseCode());
-            this.close(false, clientCloseFrame.getCloseCode());
+            if (clientCloseFrame.getCloseCode() != 1000)
+                this.close(ConnectionStatus.ERROR_LOST_CONNECTION);
         }
         else
-            this.close(false, -1);
+            this.close(ConnectionStatus.NOT_CONNECTED);
     }
 
     @Override
@@ -268,7 +278,7 @@ public class AudioWebSocket extends WebSocketAdapter
         LOG.log(cause);
     }
 
-    public void close(boolean regionChange, int disconnectCode)
+    public void close(ConnectionStatus closeStatus)
     {
         //Makes sure we don't run this method again after the socket.close(1000) call fires onDisconnect
         if (shutdown)
@@ -276,27 +286,22 @@ public class AudioWebSocket extends WebSocketAdapter
         connected = false;
         ready = false;
         shutdown = true;
-        if (!regionChange)
+        if (closeStatus != ConnectionStatus.AUDIO_REGION_CHANGE)
         {
             JSONObject obj = new JSONObject()
-                    .put("op", 4)
-                    .put("d", new JSONObject()
-                            .put("guild_id", guild.getId())
-                            .put("channel_id", JSONObject.NULL)
-                            .put("self_mute", false)
-                            .put("self_deaf", false)
-                    );
+                .put("op", 4)
+                .put("d", new JSONObject()
+                    .put("guild_id", guild.getId())
+                    .put("channel_id", JSONObject.NULL)
+                    .put("self_mute", false)
+                    .put("self_deaf", false)
+                );
             api.getClient().send(obj.toString());
         }
-        if (keepAliveThread != null)
+        if (keepAliveRunnable != null)
         {
-            keepAliveThread.interrupt();
-            keepAliveThread = null;
-        }
-        if (udpKeepAliveThread != null)
-        {
-            udpKeepAliveThread.interrupt();
-            udpKeepAliveThread = null;
+            KEEP_ALIVE_POOL.remove(keepAliveRunnable);
+            keepAliveRunnable = null;
         }
         if (udpSocket != null)
             udpSocket.close();
@@ -307,29 +312,14 @@ public class AudioWebSocket extends WebSocketAdapter
         VoiceChannel disconnectedChannel = manager.getConnectedChannel();
         manager.setAudioConnection(null);
 
-        if (disconnectCode == WEBSOCKET_READ_TIMEOUT || disconnectCode == UDP_UNABLE_TO_CONNECT)
+        if (connectionStatus == ConnectionStatus.ERROR_LOST_CONNECTION
+                || closeStatus == ConnectionStatus.ERROR_UDP_UNABLE_TO_CONNECT)
         {
             LOG.warn("Unexpected disconnect of Audio Connection to guild: " + guild.getId());
             manager.setUnexpectedDisconnectChannel(disconnectedChannel);
         }
-        if (regionChange)
-        {
-//            api.getEventManager().handle(new AudioRegionChangeEvent(api, disconnectedChannel));
-        }
-        else
-        {
-            switch (disconnectCode)
-            {
-                case CONNECTION_SETUP_TIMEOUT:
-                    //Handled in AudioConnection
-                    break;
-                case UDP_UNABLE_TO_CONNECT:
-//                    api.getEventManager().handle(new AudioUnableToConnectEvent(api, disconnectedChannel));
-                    break;
-                default:
-//                    api.getEventManager().handle(new AudioDisconnectEvent(api, disconnectedChannel));
-            }
-        }
+
+        changeStatus(closeStatus);
     }
 
     public DatagramSocket getUdpSocket()
@@ -426,79 +416,56 @@ public class AudioWebSocket extends WebSocketAdapter
         }
     }
 
-    private void setupUdpKeepAliveThread()
+    private void setupKeepAlive(int keepAliveInterval)
     {
-        udpKeepAliveThread = new Thread("AudioWebSocket UDP-KeepAlive Guild: " + guild.getId())
-        {
-            @Override
-            public void run()
-            {
-                while (socket.isOpen() && !udpSocket.isClosed() && !this.isInterrupted())
-                {
-                    long seq = 0;
-                    try
-                    {
-                        ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES + 1);
-                        buffer.put((byte)0xC9);
-                        buffer.putLong(seq);
-                        DatagramPacket keepAlivePacket = new DatagramPacket(buffer.array(), buffer.array().length, address);
-                        udpSocket.send(keepAlivePacket);
+        if (keepAliveRunnable != null)
+            LOG.fatal("Setting up a KeepAlive runnable while the previous one seems to still be active!!");
 
-                        Thread.sleep(5000); //Wait 5 seconds to send next keepAlivePacket.
-                    }
-                    catch (NoRouteToHostException e)
-                    {
-                        LOG.warn("Closing AudioConnection due to inability to ping audio packets.");
-                        LOG.warn("Cannot send audio packet because JDA navigate the route to Discord.\n" +
-                                "Are you sure you have internet connection? It is likely that you've lost connection.");
-                        AudioWebSocket.this.close(true, -1);
-                        break;
-                    }
-                    catch (IOException e)
-                    {
-                        LOG.log(e);
-                    }
-                    catch (InterruptedException e)
-                    {
-                        //We were asked to close.
-//                        e.printStackTrace();
-                    }
+        keepAliveRunnable = () ->
+        {
+            if (socket.isOpen() && socket.isOpen() && !udpSocket.isClosed())
+            {
+                send(new JSONObject()
+                        .put("op", 3)
+                        .put("d", System.currentTimeMillis())
+                        .toString());
+
+                long seq = 0;
+                try
+                {
+                    ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES + 1);
+                    buffer.put((byte)0xC9);
+                    buffer.putLong(seq);
+                    DatagramPacket keepAlivePacket = new DatagramPacket(buffer.array(), buffer.array().length, address);
+                    udpSocket.send(keepAlivePacket);
+
+                }
+                catch (NoRouteToHostException e)
+                {
+                    LOG.warn("Closing AudioConnection due to inability to ping audio packets.");
+                    LOG.warn("Cannot send audio packet because JDA navigate the route to Discord.\n" +
+                            "Are you sure you have internet connection? It is likely that you've lost connection.");
+                    AudioWebSocket.this.close(ConnectionStatus.ERROR_LOST_CONNECTION);
+                }
+                catch (IOException e)
+                {
+                    LOG.log(e);
                 }
             }
         };
-        udpKeepAliveThread.setPriority(Thread.NORM_PRIORITY + 1);
-        udpKeepAliveThread.setDaemon(true);
-        udpKeepAliveThread.start();
+
+        KEEP_ALIVE_POOL.scheduleAtFixedRate(keepAliveRunnable, 0, keepAliveInterval, TimeUnit.MILLISECONDS);
     }
 
-    private void setupKeepAliveThread(int keepAliveInterval)
+    public void changeStatus(ConnectionStatus newStatus)
     {
-        keepAliveThread = new Thread("AudioWebSocket WS-KeepAlive Guild: " + guild.getId())
-        {
-            @Override
-            public void run()
-            {
-                while (socket.isOpen() && !this.isInterrupted())
-                {
-                    send(new JSONObject()
-                            .put("op", 3)
-                            .put("d", System.currentTimeMillis())
-                            .toString());
-                    try
-                    {
-                        Thread.sleep(keepAliveInterval);
-                    }
-                    catch (InterruptedException e)
-                    {
-                        //We were asked to close.
-//                        e.printStackTrace();
-                    }
-                }
-            }
-        };
-        keepAliveThread.setPriority(Thread.MAX_PRIORITY);
-        keepAliveThread.setDaemon(true);
-        keepAliveThread.start();
+        connectionStatus = newStatus;
+        listener.onStatusChange(newStatus);
+    }
+
+    public ConnectionStatus getConnectionStatus()
+    {
+        return connectionStatus;
     }
 }
 

@@ -18,6 +18,8 @@ package net.dv8tion.jda.core.audio;
 
 import com.sun.jna.ptr.PointerByReference;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
+import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.VoiceChannel;
@@ -77,8 +79,7 @@ public class AudioConnection
         this.webSocket.audioConnection = this;
 
         IntBuffer error = IntBuffer.allocate(4);
-        opusEncoder =
-                Opus.INSTANCE.opus_encoder_create(OPUS_SAMPLE_RATE, OPUS_CHANNEL_COUNT, Opus.OPUS_APPLICATION_AUDIO, error);
+        opusEncoder = Opus.INSTANCE.opus_encoder_create(OPUS_SAMPLE_RATE, OPUS_CHANNEL_COUNT, Opus.OPUS_APPLICATION_AUDIO, error);
     }
 
     public void ready(long timeout)
@@ -117,7 +118,7 @@ public class AudioConnection
                 }
                 else
                 {
-                    webSocket.close(false, AudioWebSocket.CONNECTION_SETUP_TIMEOUT);
+                    webSocket.close(ConnectionStatus.ERROR_CONNECTION_TIMEOUT);
 //                    api.getEventManager().handle(new AudioTimeoutEvent(api, AudioConnection.this.channel, timeout));
                 }
             }
@@ -181,25 +182,16 @@ public class AudioConnection
             ssrcMap.put(ssrc, userId);
             opusDecoders.put(ssrc, new Decoder(ssrc));
         }
-        if (receiveHandler != null)
-        {
-            User user = getJDA().getUserById(userId);
-            if (user != null)
-            {
-                receiveHandler.handleUserTalking(user, talking);
-            }
-        }
-
     }
 
-    public void close(boolean regionChange)
+    public void close(ConnectionStatus closeStatus)
     {
 //        setSpeaking(false);
         if (sendThread != null)
             sendThread.interrupt();
         if (receiveThread != null)
             receiveThread.interrupt();
-        webSocket.close(regionChange, -1);
+        webSocket.close(closeStatus);
     }
 
     private void setupSendThread()
@@ -271,7 +263,7 @@ public class AudioConnection
                             LOG.warn("Closing AudioConnection due to inability to send audio packets.");
                             LOG.warn("Cannot send audio packet because JDA cannot navigate the route to Discord.\n" +
                                     "Are you sure you have internet connection? It is likely that you've lost connection.");
-                            webSocket.close(true, -1);
+                            webSocket.close(ConnectionStatus.ERROR_LOST_CONNECTION);
                         }
                         catch (SocketException e)
                         {
@@ -551,5 +543,10 @@ public class AudioConnection
     private void sendSilentPackets()
     {
         silenceCounter = 0;
+    }
+
+    public AudioWebSocket getWebSocket()
+    {
+        return webSocket;
     }
 }

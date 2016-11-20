@@ -19,6 +19,8 @@ package net.dv8tion.jda.core.managers;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.audio.AudioReceiveHandler;
 import net.dv8tion.jda.core.audio.AudioSendHandler;
+import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
+import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.utils.SimpleLog;
@@ -189,4 +191,10 @@ public interface AudioManager
      *      The currently active {@link net.dv8tion.jda.core.audio.AudioReceiveHandler AudioReceiveHandler} or <code>null</code>.
      */
     AudioReceiveHandler getReceiveHandler();
+
+    void setConnectionListener(ConnectionListener listener);
+
+    ConnectionListener getConnectionListener();
+
+    ConnectionStatus getConnectionStatus();
 }

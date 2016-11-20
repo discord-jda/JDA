@@ -89,23 +89,4 @@ public interface AudioReceiveHandler
      *      The user audio data
      */
     void handleUserAudio(UserAudio userAudio);
-
-    /**
-     * This method is an easy way to detect if a user is talking. Discord sends us an event when a user starts or stops
-     * talking and it is parallel to the audio socket, so this event could come milliseconds before or after audio begins
-     * or stops. This method is brilliant for clients wanting to display that a user is currently talking.<p>
-     *
-     * Unlike the {@link #handleCombinedAudio(CombinedAudio)} and {@link #handleUserAudio(UserAudio)} methods which are
-     * fired extremely often, this method is fired as a flag for the beginning and ending of audio transmission, and as such
-     * is only fired when that changes. So while the {@link #handleUserAudio(UserAudio)} method is fired every time JDA
-     * receives audio data from Discord, this is only fired when that stream starts and when it stops. If the user speaks
-     * for 3 minutes straight without ever stopping, then this would fire 2 times, once at the beginning and once after 3
-     * minutes when they stop talking even though the {@link #handleUserAudio(UserAudio)} method was fired thousands of times.
-     *
-     * @param user
-     *          Never-null {@link net.dv8tion.jda.core.entities.User User} who's talking status has changed.
-     * @param talking
-     *          If true, the user has begun transmitting audio.
-     */
-    void handleUserTalking(User user, boolean talking);
 }

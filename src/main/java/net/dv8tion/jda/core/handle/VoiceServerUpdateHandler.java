@@ -40,6 +40,12 @@ public class VoiceServerUpdateHandler extends SocketHandler
             return content.getString("guild_id");
         }
 
+        if (content.isNull("endpoint"))
+        {
+            //TODO: change audio state status.
+            return null;
+        }
+
         String endpoint = content.getString("endpoint");
         String token = content.getString("token");
         Guild guild = api.getGuildMap().get(content.getString("guild_id"));
@@ -66,7 +72,7 @@ public class VoiceServerUpdateHandler extends SocketHandler
 //            throw new IllegalStateException("Attempted to create an AudioConnection when we weren't expecting to create one.\n" +
 //                    "Did you attempt to start an audio connection...?");
 
-        AudioWebSocket socket = new AudioWebSocket(endpoint, api, guild, sessionId, token);
+        AudioWebSocket socket = new AudioWebSocket(audioManager.getListenerProxy(), endpoint, api, guild, sessionId, token);
         AudioConnection connection = new AudioConnection(socket, audioManager.getQueuedAudioConnection());
         audioManager.setAudioConnection(connection);
         return null;
