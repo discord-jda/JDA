@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
@@ -69,6 +70,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected boolean shouldReconnect = true;
     protected int reconnectTimeoutS = 2;
 
+    protected final LinkedBlockingDeque<String> ratelimitQueue = new LinkedBlockingDeque<>();
+    protected volatile Thread ratelimitThread = null;
+    protected volatile long ratelimitResetTime;
+    protected volatile int messagesSent;
+    protected volatile boolean printedRateLimitMessage = false;
+
 //    protected final List<VoiceChannel> dcAudioConnections = new LinkedList<>();
 //    protected final Map<String, AudioSendHandler> audioSendHandlers = new HashMap<>();
 //    protected final Map<String, AudioReceiveHandler> audioReceivedHandlers = new HashMap<>();
@@ -82,6 +89,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         this.proxy = api.getGlobalProxy();
         this.shouldReconnect = api.isAutoReconnect();
         setupHandlers();
+        setupSendingThread();
         connect();
     }
 
@@ -152,8 +160,68 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     public void send(String message)
     {
-        LOG.trace("<- " + message);
-        socket.sendText(message);
+        ratelimitQueue.addLast(message);
+    }
+
+    private boolean send(String message, boolean heartBeat)
+    {
+        if (!connected)
+            return false;
+
+        long now = System.currentTimeMillis();
+
+        if (this.ratelimitResetTime <= now)
+        {
+            this.messagesSent = 0;
+            this.ratelimitResetTime = now + 60000;//60 seconds
+            this.printedRateLimitMessage = false;
+        }
+
+        //Allows 115 messages to be sent before limiting.
+        if (this.messagesSent <= 115 || (heartBeat && this.messagesSent <= 119))   //technically we could go to 120, but we aren't going to chance it
+        {
+            LOG.trace("<- " + message);
+            socket.sendText(message);
+            this.messagesSent++;
+            return true;
+        }
+        else
+        {
+            if (!printedRateLimitMessage)
+            {
+                LOG.warn("Hit the WebSocket RateLimit! If you see this message a lot then you might need to talk to DV8FromTheWorld.");
+                printedRateLimitMessage = true;
+            }
+            return false;
+        }
+    }
+
+    private void setupSendingThread()
+    {
+        ratelimitThread = new Thread()
+        {
+            @Override
+            public void run()
+            {
+                while (!this.isInterrupted())
+                {
+                    try
+                    {
+                        String message = ratelimitQueue.takeFirst();
+                        if (!send(message, false))
+                        {
+                            ratelimitQueue.addFirst(message);
+                            Thread.sleep(1000);
+                        }
+                    }
+                    catch (InterruptedException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        ratelimitThread.start();
     }
 
     public void close()
@@ -235,6 +303,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         api.setStatus(JDA.Status.LOADING_SUBSYSTEMS);
         LOG.info("Connected to WebSocket");
+        ratelimitResetTime = System.currentTimeMillis() + 60000;
         if (sessionId == null)
         {
             sendIdentify();
@@ -256,15 +325,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             keepAliveThread.interrupt();
             keepAliveThread = null;
         }
+        if (serverCloseFrame != null && serverCloseFrame.getCloseCode() == 4008)
+        {
+            LOG.fatal("WebSocket connection closed due to ratelimit! Sent more than 120 websocket messages in under 60 seconds!");
+        }
         if (!shouldReconnect)        //we should not reconnect
         {
-            LOG.info("The connection was closed!");
-            LOG.info("By remote? " + closedByServer);
-            if (serverCloseFrame != null)
-            {
-                LOG.info("Reason: " + serverCloseFrame.getCloseReason());
-                LOG.info("Close code: " + serverCloseFrame.getCloseCode());
-            }
+            if (ratelimitThread != null)
+                ratelimitThread.interrupt();
+
             api.setStatus(JDA.Status.SHUTDOWN);
 //            api.getEventManager().handle(new ShutdownEvent(api, OffsetDateTime.now(), dcAudioConnections));
         }
@@ -393,7 +462,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected void sendKeepAlive()
     {
-        send(new JSONObject().put("op", 1).put("d", api.getResponseTotal()).toString());
+        String keepAlivePacket =
+                new JSONObject()
+                    .put("op", 1)
+                    .put("d", api.getResponseTotal()
+                ).toString();
+
+        if (!send(keepAlivePacket, true))
+            ratelimitQueue.addLast(keepAlivePacket);
+
     }
 
     protected void sendIdentify()
