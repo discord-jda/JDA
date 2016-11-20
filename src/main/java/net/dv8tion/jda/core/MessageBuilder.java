@@ -481,7 +481,218 @@ public class MessageBuilder
     public StringBuilder getStringBuilder() {
         return this.builder;
     }
-    
+
+    public int indexOf(CharSequence target, int fromIndex, int endIndex)
+    {
+        if (fromIndex < 0)
+        {
+            fromIndex = 0;
+        }
+        else if (fromIndex > builder.length() - 1)
+        {
+            throw new IndexOutOfBoundsException("fromIndex must be lower that length");
+        }
+
+        if (endIndex >= builder.length() || endIndex < 0)
+        {
+            endIndex = builder.length() - 1;
+        }
+
+        int targetCount = target.length();
+        if (targetCount == 0)
+        {
+            return fromIndex;
+        }
+
+        char strFirstChar = target.charAt(0);
+
+        int max = endIndex + targetCount - 1;
+
+        lastCharSearch: for (int i = fromIndex; i <= max; i++)
+        {
+            if (builder.charAt(i) == strFirstChar)
+            {
+                for (int j = 1; j < targetCount; j++)
+                {
+                    if (builder.charAt(i + j) != target.charAt(j))
+                    {
+                        continue lastCharSearch;
+                    }
+                }
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public int lastIndexOf(CharSequence target, int fromIndex, int endIndex)
+    {
+        if (fromIndex < 0)
+        {
+            fromIndex = 0;
+        }
+        else if (fromIndex > builder.length() - 1)
+        {
+            throw new IndexOutOfBoundsException("fromIndex must be lower that length (" + builder.length() + ")");
+        }
+
+        if (endIndex >= builder.length() || endIndex < 0)
+        {
+            endIndex = builder.length() - 1;
+        }
+        else if (endIndex < 0)
+        {
+            throw new IndexOutOfBoundsException("endIndex must be at least 0");
+        }
+
+        int targetCount = target.length();
+        if (targetCount == 0)
+        {
+            return endIndex;
+        }
+
+        int rightIndex = endIndex - targetCount;
+
+        if (fromIndex > rightIndex)
+        {
+            fromIndex = rightIndex;
+        }
+
+        int strLastIndex = targetCount - 1;
+        char strLastChar = target.charAt(strLastIndex);
+
+        int min = fromIndex + targetCount - 1;
+
+        lastCharSearch: for (int i = endIndex; i >= min; i--)
+        {
+            if (builder.charAt(i) == strLastChar)
+            {
+                for (int j = strLastIndex - 1, k = 1; j >= 0; j--, k++)
+                {
+                    if (builder.charAt(i - k) != target.charAt(j))
+                    {
+                        continue lastCharSearch;
+                    }
+                }
+                return i - target.length() + 1;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * This is not finished yet and just 
+     * Docs are also to be made.
+     */
+    public Queue<Message> buildAll(SplitPolicy... policy)
+    {
+        if (builder.length() == 0)
+            throw new UnsupportedOperationException("Cannot build a Message with no content. (You never added any content to the message)");
+
+        LinkedList<Message> messages = new LinkedList<Message>();
+
+        if (builder.length() <= 2000) {
+            messages.add(this.build());
+            return messages;
+        } 
+
+        int currentBeginIndex = 0;
+
+        messageLoop: while (currentBeginIndex < builder.length() - 2001)
+        {
+            for (int i = 0; i < policy.length; i++)
+            {
+                try
+                {
+                    int currentEndIndex = policy[i].nextMessage(currentBeginIndex, this);
+                    messages.add(build(currentBeginIndex, currentEndIndex));
+                    currentBeginIndex = currentEndIndex;
+                    continue messageLoop;
+                }
+                catch (Exception e) {}
+            }
+            throw new RuntimeException("failed to split the messages");
+        }
+
+        if (currentBeginIndex < builder.length() - 1)
+        {
+            messages.add(new MessageImpl("", null, false).setContent(builder.substring(currentBeginIndex, builder.length() - 1)).setTTS(isTTS)
+                    .setMentionedUsers(mentioned).setMentionedChannels(mentionedTextChannels).setMentionedRoles(mentionedRoles)
+                    .setMentionsEveryone(mentionEveryone));
+        }
+
+        if (this.embed != null)
+        {
+            ((MessageImpl) messages.get(messages.size() - 1)).setEmbeds(Collections.singletonList(embed));
+        }
+
+        return messages;
+    }
+
+    protected Message build(int beginIndex, int endIndex)
+    {
+        return new MessageImpl("", null, false).setContent(builder.substring(beginIndex, endIndex)).setTTS(isTTS).setMentionedUsers(mentioned)
+                .setMentionedChannels(mentionedTextChannels).setMentionedRoles(mentionedRoles).setMentionsEveryone(mentionEveryone);
+    }
+
+    public static abstract class SplitPolicy
+    {
+
+        public static SplitPolicy onChars(CharSequence chars, boolean remove)
+        {
+            return new CharSequenceSplitPolicy(chars, remove);
+        }
+
+        public static class CharSequenceSplitPolicy extends SplitPolicy
+        {
+            private final boolean remove;
+            private final CharSequence chars;
+
+            public CharSequenceSplitPolicy(final CharSequence chars, final boolean remove)
+            {
+                this.chars = chars;
+                this.remove = remove;
+            }
+
+            @Override
+            public int nextMessage(final int currentBeginIndex, final MessageBuilder builder)
+            {
+                int currentEndIndex = builder.lastIndexOf(this.chars, currentBeginIndex, currentBeginIndex + 2000 - (this.remove ? this.chars.length() : 0));
+                if (currentEndIndex < 0)
+                {
+                    throw new IllegalArgumentException("could not split the message");
+                }
+                else
+                {
+                    currentEndIndex += this.chars.length();
+                    return currentEndIndex;
+                }
+            }
+
+        }
+
+        public static final SplitPolicy NEWLINE = new CharSequenceSplitPolicy("\n", true);
+        public static final SplitPolicy SPACE = new CharSequenceSplitPolicy(" ", true);
+
+        public static final SplitPolicy ANYWHERE = new SplitPolicy()
+        {
+            @Override
+            public int nextMessage(final int currentBeginIndex, final MessageBuilder builder)
+            {
+                final int currentEndIndex = Math.min(currentBeginIndex + 2000, builder.getStringBuilder().length());
+                if (currentEndIndex < 0)
+                {
+                    throw new IllegalArgumentException("could not split the message");
+                }
+                return currentEndIndex;
+            }
+        };
+
+        public SplitPolicy() {}
+
+        public abstract int nextMessage(int currentBeginIndex, MessageBuilder builder);
+    }
+
     public enum MentionType {
         EVERYONE,
         HERE,
@@ -489,6 +700,7 @@ public class MessageBuilder
         CHANNEL,
         ROLE;
     }
+
     /**
      * Holds the Available formatting used in {@link #appendString(String, net.dv8tion.jda.core.MessageBuilder.Formatting...)}
      */
