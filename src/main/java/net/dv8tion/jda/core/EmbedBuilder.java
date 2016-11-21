@@ -16,7 +16,10 @@
 package net.dv8tion.jda.core;
 
 import java.awt.Color;
+import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.temporal.TemporalAccessor;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -29,6 +32,7 @@ public class EmbedBuilder
     public final static int VALUE_MAX_LENGTH = 1024;
     public final static int TEXT_MAX_LENGTH = 2048;
     public final static int URL_MAX_LENGTH = 2000;
+    public final static String ZERO_WIDTH_SPACE = "\u200E";
     public final static Pattern URL_PATTERN = Pattern.compile("\\s*https?:\\/\\/.+\\..{2,}\\s*", Pattern.CASE_INSENSITIVE);
     public final static Pattern HTTPS_URL_PATTERN = Pattern.compile("\\s*https:\\/\\/.+\\..{2,}\\s*", Pattern.CASE_INSENSITIVE);
     
@@ -156,13 +160,16 @@ public class EmbedBuilder
     
     /**
      * Sets the Timestamp of the embed.
-     * @param timestamp the timestamp of the embed
+     * @param temporal the temporal accessor of the timestamp
      * @return the builder after the timestamp has been set
      */
-    public EmbedBuilder setTimestamp(OffsetDateTime timestamp)
+    public EmbedBuilder setTimestamp(TemporalAccessor temporal)
     {
-        this.timestamp = timestamp;
-        return this;
+        if (temporal == null)
+            this.timestamp = null;
+        else
+            this.timestamp = OffsetDateTime.from(temporal);
+        return this; 
     }
     
     /**
@@ -315,7 +322,22 @@ public class EmbedBuilder
             throw new IllegalArgumentException("Name cannot be longer than " + TITLE_MAX_LENGTH + " characters.");
         else if (value.length() > VALUE_MAX_LENGTH)
             throw new IllegalArgumentException("Value cannot be longer than " + VALUE_MAX_LENGTH + " characters.");
+        if (name.isEmpty())
+            name = ZERO_WIDTH_SPACE;
+        if (value.isEmpty())
+            value = ZERO_WIDTH_SPACE;
         this.fields.add(new MessageEmbed.Field(name, value, inline));
+        return this;
+    }
+    
+    /**
+     * Adds a blank (empty) Field to the embed.
+     * @param inline whether or not this field should display inline
+     * @return the builder after the field has been added
+     */
+    public EmbedBuilder addBlankField(boolean inline)
+    {
+        this.fields.add(new MessageEmbed.Field(ZERO_WIDTH_SPACE, ZERO_WIDTH_SPACE, inline));
         return this;
     }
     

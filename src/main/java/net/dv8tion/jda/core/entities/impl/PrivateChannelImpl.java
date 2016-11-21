@@ -79,6 +79,12 @@ public class PrivateChannelImpl implements PrivateChannel
     {
         return sendMessage(new MessageBuilder().appendString(text).build());
     }
+    
+    @Override
+    public RestAction<Message> sendMessage(MessageEmbed embed)
+    {
+        return sendMessage(new MessageBuilder().setEmbed(embed).build());
+    }
 
     @Override
     public RestAction<Message> sendMessage(Message msg)

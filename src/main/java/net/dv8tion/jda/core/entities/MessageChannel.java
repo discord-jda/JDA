@@ -88,6 +88,31 @@ public interface MessageChannel extends ISnowflake
      *      and you do not meet the required verification-level of the guild.
      */
     RestAction<Message> sendMessage(String text);
+    
+    /**
+     * Sends a {@link net.dv8tion.jda.core.entities.Message Message} containing a rich embed to this channel.
+     * This will fail if the account of the api does not have the {@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Write-Permission}
+     * for this channel set
+     * After the Message has been sent, the created {@link net.dv8tion.jda.core.entities.Message Message} object is returned
+     * This Object will be null, if the sending failed.
+     * When the Rate-limit is reached (10 Messages in 10 secs), a {@link net.dv8tion.jda.core.exceptions.RateLimitedException RateLimitedException} is thrown
+     *
+     * @param embed
+     *          the embed to send
+     * @return
+     *      the Message created by this function
+     * @throws net.dv8tion.jda.core.exceptions.RateLimitedException
+     *      when rate-imit is reached
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *      If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does
+     *      not have {@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}.
+     * @throws net.dv8tion.jda.core.exceptions.BlockedException
+     *      If this is a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} and PMs are blocked
+     * @throws VerificationLevelException
+     *      If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
+     *      and you do not meet the required verification-level of the guild.
+     */
+    RestAction<Message> sendMessage(MessageEmbed embed);
 
     /**
      * Sends a given {@link net.dv8tion.jda.core.entities.Message Message} to this Channel

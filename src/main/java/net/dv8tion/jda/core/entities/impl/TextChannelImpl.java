@@ -182,6 +182,12 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
+    public RestAction<Message> sendMessage(MessageEmbed embed)
+    {
+        return sendMessage(new MessageBuilder().setEmbed(embed).build());
+    }
+    
+    @Override
     public RestAction<Message> sendMessage(Message msg)
     {
         Args.notNull(msg, "Message");
