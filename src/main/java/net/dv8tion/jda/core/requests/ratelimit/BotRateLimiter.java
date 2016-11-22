@@ -163,12 +163,12 @@ public class BotRateLimiter extends RateLimiter
         {
             //Get the date header provided by Discord.
             //Format:  "date" : "Fri, 16 Sep 2016 05:49:36 GMT"
-            String date = headers.getFirst("date");
+            String date = headers.getFirst("Date");
             if (date != null)
             {
                 OffsetDateTime tDate = OffsetDateTime.parse(date, DateTimeFormatter.RFC_1123_DATE_TIME);
-                long lDate = tDate.toEpochSecond() * 1000;             //We want to work in milliseconds, not seconds
-                timeOffset = Math.floorDiv(lDate - time, 1000) * 1000; //Get offset, convert to seconds, round it down, convert to milliseconds.
+                long lDate = tDate.toInstant().toEpochMilli(); //We want to work in milliseconds, not seconds
+                timeOffset = lDate - time; //Get offset in milliseconds.
             }
         }
     }
