@@ -218,7 +218,7 @@ public class MessageImpl implements Message
     }
 
     @Override
-    public String getStrippedContent()
+    public synchronized String getStrippedContent()
     {
         if (strippedContent == null)
         {
@@ -299,7 +299,7 @@ public class MessageImpl implements Message
     }
 
     @Override
-    public String getContent()
+    public synchronized String getContent()
     {
         if (subContent == null)
         {
@@ -399,7 +399,7 @@ public class MessageImpl implements Message
     }
 
     @Override
-    public List<Emote> getEmotes()
+    public synchronized List<Emote> getEmotes()
     {
         if (this.emotes == null)
         {
