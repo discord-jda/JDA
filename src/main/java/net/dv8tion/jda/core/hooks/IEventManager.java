@@ -281,4 +281,5 @@ public interface IEventManager
     void handle(Event event);
 
     List<Object> getRegisteredListeners();
+
 }
