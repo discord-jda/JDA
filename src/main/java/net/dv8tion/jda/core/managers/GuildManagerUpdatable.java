@@ -195,9 +195,7 @@ public class GuildManagerUpdatable
             protected void handleResponse(Response response, Request request)
             {
                 if (response.isOk())
-                {
                     request.onSuccess(null);
-                }
                 else
                     request.onFailure(response);
             }
