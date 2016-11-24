@@ -40,6 +40,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import net.dv8tion.jda.core.entities.MessageEmbed;
 
 public class GroupImpl implements Group
 {
@@ -157,6 +158,12 @@ public class GroupImpl implements Group
     public RestAction<Message> sendMessage(String text)
     {
         return sendMessage(new MessageBuilder().appendString(text).build());
+    }
+    
+    @Override
+    public RestAction<Message> sendMessage(MessageEmbed embed)
+    {
+        return sendMessage(new MessageBuilder().setEmbed(embed).build());
     }
 
     @Override
