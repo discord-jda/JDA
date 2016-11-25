@@ -485,15 +485,15 @@ public class MessageBuilder
     public int indexOf(CharSequence target, int fromIndex, int endIndex)
     {
         if (fromIndex < 0)
-        {
-            fromIndex = 0;
-        }
-        else if (fromIndex > builder.length() - 1)
-        {
-            throw new IndexOutOfBoundsException("fromIndex must be lower that length");
-        }
-
-        if (endIndex >= builder.length() || endIndex < 0)
+            throw new IndexOutOfBoundsException("index out of range: " + fromIndex);
+        if (endIndex < 0)
+            throw new IndexOutOfBoundsException("index out of range: " + endIndex);
+        if (fromIndex > getLength())
+            throw new IndexOutOfBoundsException("fromIndex > length()");
+        if (fromIndex > endIndex)
+            throw new IndexOutOfBoundsException("fromIndex > endIndex");
+        
+        if (endIndex >= builder.length())
         {
             endIndex = builder.length() - 1;
         }
@@ -528,21 +528,17 @@ public class MessageBuilder
     public int lastIndexOf(CharSequence target, int fromIndex, int endIndex)
     {
         if (fromIndex < 0)
-        {
-            fromIndex = 0;
-        }
-        else if (fromIndex > builder.length() - 1)
-        {
-            throw new IndexOutOfBoundsException("fromIndex must be lower that length (" + builder.length() + ")");
-        }
-
-        if (endIndex >= builder.length() || endIndex < 0)
+            throw new IndexOutOfBoundsException("index out of range: " + fromIndex);
+        if (endIndex < 0)
+            throw new IndexOutOfBoundsException("index out of range: " + endIndex);
+        if (fromIndex > getLength())
+            throw new IndexOutOfBoundsException("fromIndex > length()");
+        if (fromIndex > endIndex)
+            throw new IndexOutOfBoundsException("fromIndex > endIndex");
+        
+        if (endIndex >= builder.length())
         {
             endIndex = builder.length() - 1;
-        }
-        else if (endIndex < 0)
-        {
-            throw new IndexOutOfBoundsException("endIndex must be at least 0");
         }
 
         int targetCount = target.length();
