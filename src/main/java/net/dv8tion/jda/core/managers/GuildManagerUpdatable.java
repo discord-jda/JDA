@@ -102,7 +102,7 @@ public class GuildManagerUpdatable
         return afkChannel;
     }
 
-    /**
+    /*
      * Valid timeouts are: 60, 300, 900, 1800, 3600.
      */
     public GuildField<Guild.Timeout> getAfkTimeoutField()
@@ -153,7 +153,7 @@ public class GuildManagerUpdatable
         this.mfaLevel.reset();
     }
 
-    /**
+    /*
      * This method will apply all accumulated changes received by setters
      *
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException

@@ -116,7 +116,7 @@ public class ChannelManagerUpdatable
         }
     }
 
-    /**
+    /*
      * This method will apply all accumulated changes received by setters
      */
     public RestAction<Void> update()

@@ -20,9 +20,9 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.events.Event;
 
 /**
- * <b><u>UnavailableGuildJoinedEvent</u></b><br/>
- * Fired if you joined a {@link net.dv8tion.jda.core.entities.Guild Guild} that is not yet available.<br/>
- * <br/>
+ * <b><u>UnavailableGuildJoinedEvent</u></b><br>
+ * Fired if you joined a {@link net.dv8tion.jda.core.entities.Guild Guild} that is not yet available.<br>
+ * <br>
  * Use: Retrieve id of unavailable Guild.
  */
 public class UnavailableGuildJoinedEvent extends Event

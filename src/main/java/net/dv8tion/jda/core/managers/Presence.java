@@ -64,7 +64,7 @@ public interface Presence
      * Sets the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} for this session
      *
      * @param status
-     *      the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} to be used (OFFLINE/null -> INVISIBLE)
+     *      the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} to be used (OFFLINE/null {@literal ->} INVISIBLE)
      * @throws IllegalArgumentException
      *      if the provided OnlineStatus is {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}
      */

@@ -127,7 +127,7 @@ public interface Role extends ISnowflake, IMentionable, Comparable<Role>
 
     /**
      * Checks if this {@link net.dv8tion.jda.core.entities.Role Role} has access to the {@link net.dv8tion.jda.core.Permission Permissions}
-     * in the provided Collection&lt;Permission&gt;<br>
+     * in the provided {@literal Collection<Permission>}<br>
      * This does not check the Channel-specific override {@link net.dv8tion.jda.core.Permission Permissions}.
      * <p>
      * <b>NOTE:</b> this is not the same as {@link net.dv8tion.jda.core.entities.Role#getPermissions()}{@link Collection#contains(Object) .contains(Permission)}
@@ -145,19 +145,23 @@ public interface Role extends ISnowflake, IMentionable, Comparable<Role>
      * Checks if this {@link net.dv8tion.jda.core.entities.Role Role} has access to the provided {@link net.dv8tion.jda.core.Permission Permissions}
      * in the specified {@link net.dv8tion.jda.core.entities.Channel Channel}.
      *
+     * @param channel
+     *      The {@link net.dv8tion.jda.core.entities.Channel Channel} to check in
      * @param permissions
-     *          The {@link net.dv8tion.jda.core.Permission Permissions} to check for
+     *      The {@link net.dv8tion.jda.core.Permission Permissions} to check for
      * @return
      *      If the given {@link net.dv8tion.jda.core.Permission Permissions} are available to this {@link net.dv8tion.jda.core.entities.Role Role} in this Channel
      */
-    boolean hasPermission(Channel chanel, Permission... permissions);
+    boolean hasPermission(Channel channel, Permission... permissions);
 
     /**
      * Checks if this {@link net.dv8tion.jda.core.entities.Role Role} has access to the {@link net.dv8tion.jda.core.Permission Permissions}
-     * in the provided Collection&lt;Permission&gt; in the specified {@link net.dv8tion.jda.core.entities.Channel Channel}.
+     * in the provided {@literal Collection<Permission>} in the specified {@link net.dv8tion.jda.core.entities.Channel Channel}.
      *
+     * @param channel
+     *      The {@link net.dv8tion.jda.core.entities.Channel Channel} to check in
      * @param permissions
-     *          The {@link net.dv8tion.jda.core.Permission Permissions} to check for
+     *      The {@link net.dv8tion.jda.core.Permission Permissions} to check for
      * @return
      *      If the given {@link net.dv8tion.jda.core.Permission Permissions} are available to this {@link net.dv8tion.jda.core.entities.Role Role} in this Channel
      */
@@ -167,6 +171,7 @@ public interface Role extends ISnowflake, IMentionable, Comparable<Role>
 
     /**
      * Returns the {@link net.dv8tion.jda.core.entities.Guild Guild} this Role exists in
+     *
      * @return
      *      the Guild containing this Role
      */
@@ -187,6 +192,7 @@ public interface Role extends ISnowflake, IMentionable, Comparable<Role>
 
     /**
      * Returns the {@link net.dv8tion.jda.core.JDA JDA} instance of this Role
+     *
      * @return
      *      the corresponding JDA instance
      */

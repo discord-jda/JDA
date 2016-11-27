@@ -21,9 +21,9 @@ import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.Event;
 
 /**
- * <b><u>PrivateChannelDeleteEvent</u></b><br/>
- * Fired if a {@link net.dv8tion.jda.core.entities.PrivateChannel Private Channel} was deleted.<br/>
- * <br/>
+ * <b><u>PrivateChannelDeleteEvent</u></b><br>
+ * Fired if a {@link net.dv8tion.jda.core.entities.PrivateChannel Private Channel} was deleted.<br>
+ * <br>
  * Use: Retrieve the issuing {@link net.dv8tion.jda.core.entities.User User}.
  */
 public class PrivateChannelDeleteEvent extends Event

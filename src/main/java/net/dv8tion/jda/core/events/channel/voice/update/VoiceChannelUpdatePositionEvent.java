@@ -19,9 +19,9 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 
 /**
- * <b><u>VoiceChannelUpdatePositionEvent</u></b><br/>
- * Fired if a {@link VoiceChannel VoiceChannel}'s position changes.<br/>
- * <br/>
+ * <b><u>VoiceChannelUpdatePositionEvent</u></b><br>
+ * Fired if a {@link VoiceChannel VoiceChannel}'s position changes.<br>
+ * <br>
  * Use: Get affected VoiceChannel, affected Guild and previous position.
  */
 public class VoiceChannelUpdatePositionEvent extends GenericVoiceChannelUpdateEvent
