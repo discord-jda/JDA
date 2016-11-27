@@ -30,17 +30,24 @@ public class MessageBuilder
     public static final String EVERYONE_KEY = "%E%";
     public static final String HERE_KEY = "%H%";
 
+    /**
+     * A constant for <b>@everyone</b> mentions.
+     * Used in {@link #append(IMentionable)}
+     */
+    public static final IMentionable EVERYONE_MENTION = () -> "@everyone";
+    /**
+     * A constant for <b>@here</b> mentions.
+     * Used in {@link #append(IMentionable)}
+     */
+    public static final IMentionable HERE_MENTION = () -> "@here";
+
     protected static final Pattern FORMAT_PATTERN = Pattern.compile(String.format("%s|%s|%s|%s|%s", USER_KEY, ROLE_KEY, TEXTCHANNEL_KEY, EVERYONE_KEY, HERE_KEY));
     protected static final Pattern USER_MENTION_PATTERN = Pattern.compile("<@!{0,1}([0-9]+)>");
     protected static final Pattern CHANNEL_MENTION_PATTERN = Pattern.compile("<#!{0,1}([0-9]+)>");
     protected static final Pattern ROLE_MENTION_PATTERN = Pattern.compile("<@&!{0,1}([0-9]+)>");
 
     protected final StringBuilder builder = new StringBuilder();
-    protected final List<User> mentioned = new LinkedList<>();
-    protected final List<TextChannel> mentionedTextChannels = new LinkedList<>();
-    protected final List<Role> mentionedRoles = new LinkedList<>();
 
-    protected boolean mentionEveryone = false;
     protected boolean isTTS = false;
     protected MessageEmbed embed;
 
@@ -72,13 +79,40 @@ public class MessageBuilder
 
     /**
      * Appends a string to the Message
+     * 
+     * @deprecated use {@link #append(CharSequence)} instead
      *
      * @param text the text to append
      * @return this instance
      */
+    @Deprecated
     public MessageBuilder appendString(CharSequence text)
     {
+        return this.append(text);
+    }
+
+
+    /**
+     * Appends a string to the Message
+     *
+     * @param text the text to append
+     * @return this instance
+     */
+    public MessageBuilder append(CharSequence text)
+    {
         builder.append(text);
+        return this;
+    }
+
+    /**
+     * Appends a mention to the Message
+     *
+     * @param mention the mention to append
+     * @return this instance
+     */
+    public MessageBuilder append(IMentionable mention)
+    {
+        builder.append(mention.getAsMention());
         return this;
     }
 
@@ -89,7 +123,7 @@ public class MessageBuilder
      * @param format the format(s) to apply to the text
      * @return this instance
      */
-    public MessageBuilder appendString(CharSequence text, Formatting... format)
+    public MessageBuilder append(CharSequence text, Formatting... format)
     {
         boolean blockPresent = false;
         for (Formatting formatting : format)
@@ -114,6 +148,21 @@ public class MessageBuilder
             builder.append(format[i].getTag());
         }
         return this;
+    }
+
+    /**
+     * Appends a formatted string to the Message
+     * 
+     * @deprecated use {@link #append(CharSequence, Formatting...)} instead
+     *
+     * @param text   the text to append
+     * @param format the format(s) to apply to the text
+     * @return this instance
+     */
+    @Deprecated
+    public MessageBuilder appendString(CharSequence text, Formatting... format)
+    {
+        return this.append(text, format);
     }
 
     /**
@@ -211,19 +260,16 @@ public class MessageBuilder
                         {
                             User u = (User) arg;
                             args[i] = u.getAsMention();
-                            mentioned.add(u);
                         }
                         else if (arg instanceof TextChannel)
                         {
                             TextChannel tc = (TextChannel) arg;
                             args[i] = tc.getAsMention();
-                            mentionedTextChannels.add(tc);
                         }
                         else if (arg instanceof Role)
                         {
                             Role r = (Role) arg;
                             args[i] = r.getAsMention();
-                            mentionedRoles.add(r);
                         }
                         else
                             throw new IllegalArgumentException("When checking instances of arguments, something failed. Contact dev.");
@@ -242,12 +288,10 @@ public class MessageBuilder
                 if (everyone)
                 {
                     sb.append("@everyone");
-                    mentionEveryone = true;
                 }
                 else
                 {
                     sb.append("@here");
-                    mentionEveryone = true;
                 }
             }
         }
@@ -274,66 +318,71 @@ public class MessageBuilder
     /**
      * Appends a mention to the Message
      *
+     * @deprecated use {@link #append(IMentionable)} instead
+     *
      * @param user the user to mention
      * @return this instance
      */
+    @Deprecated
     public MessageBuilder appendMention(User user)
     {
-        builder.append("<@").append(user.getId()).append('>');
-        mentioned.add(user);
-        return this;
+        return this.append(user);
     }
 
     /**
      * Appends a @everyone mention to the Message
+     * 
+     * @deprecated use {@linkplain MessageBuilder#append(IMentionable)} with {@link MessageBuilder#EVERYONE_MENTION} instead
      *
      * @return this instance
      */
+    @Deprecated
     public MessageBuilder appendEveryoneMention()
     {
-        builder.append("@everyone");
-        mentionEveryone = true;
-        return this;
+        return this.append(EVERYONE_MENTION);
     }
     
     /**
      * Appends a @here mention to the Message
+     * 
+     * @deprecated use {@linkplain MessageBuilder#append(IMentionable)} with {@link MessageBuilder#HERE_MENTION} instead
      *
      * @return this instance
      */
+    @Deprecated
     public MessageBuilder appendHereMention()
     {
-        builder.append("@here");
-        mentionEveryone = true;
-        return this;
+        return this.append(HERE_MENTION);
     }
 
     /**
      * Appends a channel mention to the Message.
      * For this to work, the given TextChannel has to be from the Guild the mention is posted to.
      *
+     * @deprecated use {@link #append(IMentionable)} instead
+     *
      * @param channel the TextChannel to mention
      * @return this instance
      */
+    @Deprecated
     public MessageBuilder appendMention(TextChannel channel)
     {
-        builder.append("<#").append(channel.getId()).append('>');
-        mentionedTextChannels.add(channel);
-        return this;
+        return this.append(channel);
     }
 
     /**
      * Appends a Role mention to the Message.
      * For this to work, the given Role has to be from the Guild the mention is posted to.
      *
+     * @deprecated use {@link #append(IMentionable)} instead
+     *
      * @param role the Role to mention
      * @return this instance
      */
+    @Deprecated
     public MessageBuilder appendMention(Role role)
     {
-        builder.append("<@&").append(role.getId()).append('>');
-        mentionedRoles.add(role);
-        return this;
+        return this.append(role);
     }
 
     /**
@@ -369,8 +418,7 @@ public class MessageBuilder
         if (message.length() > 2000)
             throw new UnsupportedOperationException("Cannot build a Message with more than 2000 characters. Please limit your input.");
 
-        return new MessageImpl("", null, false).setContent(message).setTTS(isTTS).setMentionedUsers(mentioned)
-                .setMentionedChannels(mentionedTextChannels).setMentionedRoles(mentionedRoles).setMentionsEveryone(mentionEveryone)
+        return new MessageImpl("", null, false).setContent(message).setTTS(isTTS)
                 .setEmbeds(embed == null ? new LinkedList<>() : Collections.singletonList(embed));
     }
 
@@ -677,9 +725,7 @@ public class MessageBuilder
 
         if (currentBeginIndex < builder.length() - 1)
         {
-            messages.add(new MessageImpl("", null, false).setContent(builder.substring(currentBeginIndex, builder.length() - 1)).setTTS(isTTS)
-                    .setMentionedUsers(mentioned).setMentionedChannels(mentionedTextChannels).setMentionedRoles(mentionedRoles)
-                    .setMentionsEveryone(mentionEveryone));
+            messages.add(build(currentBeginIndex, builder.length() - 1));
         }
 
         if (this.embed != null)
@@ -692,8 +738,7 @@ public class MessageBuilder
 
     protected Message build(int beginIndex, int endIndex)
     {
-        return new MessageImpl("", null, false).setContent(builder.substring(beginIndex, endIndex)).setTTS(isTTS).setMentionedUsers(mentioned)
-                .setMentionedChannels(mentionedTextChannels).setMentionedRoles(mentionedRoles).setMentionsEveryone(mentionEveryone);
+        return new MessageImpl("", null, false).setContent(builder.substring(beginIndex, endIndex)).setTTS(isTTS);
     }
 
     public static abstract class SplitPolicy
@@ -753,7 +798,6 @@ public class MessageBuilder
 
         public abstract int nextMessage(int currentBeginIndex, MessageBuilder builder);
     }
-
 
     /**
      * Holds the available mention types used in {@link MessageBuilder#stripMentions(JDA, MentionType...)}
