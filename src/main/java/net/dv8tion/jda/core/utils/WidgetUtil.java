@@ -23,11 +23,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import net.dv8tion.jda.core.OnlineStatus;
+import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.IMentionable;
 import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.entities.impl.UserImpl;
+import net.dv8tion.jda.core.exceptions.RateLimitedException;
+import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.core.utils.WidgetUtil.Widget.Channel;
 import net.dv8tion.jda.core.utils.WidgetUtil.Widget.Member;
 import org.apache.http.util.Args;
@@ -38,10 +41,10 @@ import org.json.JSONObject;
  * The WidgetUtil is a class for interacting with various facets of Discord's
  * guild widgets
  */
-public class WidgetUtil {
-    
-    public static final String WIDGET_PNG = "https://discordapp.com/api/guilds/%s/widget.png?style=%s";
-    public static final String WIDGET_URL = "https://discordapp.com/api/guilds/%s/widget.json";
+public class WidgetUtil 
+{
+    public static final String WIDGET_PNG = Requester.DISCORD_API_PREFIX + "guilds/%s/widget.png?style=%s";
+    public static final String WIDGET_URL = Requester.DISCORD_API_PREFIX + "guilds/%s/widget.json";
     public static final String WIDGET_HTML = "<iframe src=\"https://discordapp.com/widget?id=%s&theme=%s\" width=\"%d\" height=\"%d\" allowtransparency=\"true\" frameborder=\"0\"></iframe>";
     
     /**
@@ -75,30 +78,6 @@ public class WidgetUtil {
         Args.notNull(type, "BannerType");
         return String.format(WIDGET_PNG, guildId, type.name().toLowerCase());
     }
-    
-    /**
-     * Represents the available banner types
-     * Each of these has a different appearance:
-     * 
-     * Shield - tiny, only contains Discord logo and online count
-     * 
-     * Banner1 - medium, contains server name, icon, and online count, and a 
-     * "Powered by Discord" bar on the bottom
-     * 
-     * Banner2 - small, contains server name, icon, and online count, and a 
-     * Discord logo on the side
-     * 
-     * Banner3 - medium, contains server name, icon, and online count, and a 
-     * Discord logo with a "Chat Now" bar on the bottom
-     * 
-     * Banner4 - large, contains a very big Discord logo, server name, icon, and 
-     * online count, and a big "Join My Server" button
-     */
-    public enum BannerType
-    {
-        SHIELD, BANNER1, BANNER2, BANNER3, BANNER4
-    }
-    
     
     /**
      * Gets the pre-made HTML Widget for the specified guild using the specified
@@ -139,17 +118,6 @@ public class WidgetUtil {
     }
     
     /**
-     * Represents the color scheme of the widget
-     * 
-     * These color themes match Discord's dark and light themes
-     */
-    public enum WidgetTheme
-    {
-        LIGHT, DARK
-    }
-    
-    
-    /**
      * Makes a GET request to get the information for a Guild's widget. This
      * widget (if available) contains information about the guild, including the
      * Guild's name, an invite code (if set), a list of voice channels, and a
@@ -165,26 +133,61 @@ public class WidgetUtil {
      * @return a filled-in Widget object if the guild ID is valid and the guild
      *         in question has the widget enabled.
      */
-    public static Widget getWidget(String guildId)
+    public static Widget getWidget(String guildId) throws RateLimitedException
     {
         Args.notNull(guildId, "GuildId");
-        // 400 - not valid snowflake
-        // 404 - guild not found
-        // 403 - widget disabled
-        // 200 - ok
         try
         {
             HttpResponse<JsonNode> result = Unirest.get(String.format(WIDGET_URL, guildId)).asJson();
-            if (result.getStatus() == 403)
-                return new Widget(guildId);
-            if( result.getStatus() == 200)
-                return new Widget(result.getBody().getObject());
-            return null;
+            switch(result.getStatus())
+            {
+                case 200:   return new Widget(result.getBody().getObject()); // ok
+                case 400:                // not valid snowflake
+                case 404:   return null; // guild not found
+                case 403:   return new Widget(guildId); // widget disabled
+                case 429:   // ratelimited
+                            {
+                                long retryAfter;
+                                try
+                                {
+                                    retryAfter = result.getBody().getObject().getLong("retry_after");
+                                }
+                                catch (Exception e)
+                                {
+                                    retryAfter = 0;
+                                }
+                                throw new RateLimitedException(WIDGET_URL, retryAfter);
+                            }
+                default:    throw new RuntimeException("An unknown status was returned: " + result.getStatus() + " " + result.getStatusText());
+            }
         }
         catch (UnirestException ex)
         {
             throw new RuntimeException(ex);
         }
+    }
+    
+    /**
+     * Represents the available banner types <br>
+     * Each of these has a different appearance: <br>
+     * <b>Shield</b> - tiny, only contains Discord logo and online count <br>
+     * <b>Banner1</b> - medium, contains server name, icon, and online count, and a "Powered by Discord" bar on the bottom <br>
+     * <b>Banner2</b> - small, contains server name, icon, and online count, and a Discord logo on the side <br>
+     * <b>Banner3</b> - medium, contains server name, icon, and online count, and a Discord logo with a "Chat Now" bar on the bottom <br>
+     * <b>Banner4</b> - large, contains a very big Discord logo, server name, icon, and online count, and a big "Join My Server" button
+     */
+    public enum BannerType
+    {
+        SHIELD, BANNER1, BANNER2, BANNER3, BANNER4
+    }
+    
+    /**
+     * Represents the color scheme of the widget <br>
+     * These color themes match Discord's dark and light themes
+     */
+    public enum WidgetTheme
+    {
+        LIGHT, DARK
     }
     
     public static class Widget implements ISnowflake
@@ -199,10 +202,10 @@ public class WidgetUtil {
         /**
          * Constructs an unavailable Widget
          */
-        private Widget(String id)
+        private Widget(String guildId)
         {
             isAvailable = false;
-            this.id = id;
+            id = guildId;
             name = null;
             invite = null;
             channels = null;
@@ -223,12 +226,12 @@ public class WidgetUtil {
             if (inviteCode != null)
                 inviteCode = inviteCode.substring(inviteCode.lastIndexOf("/") + 1);
             
-            this.isAvailable = true;
-            this.id = json.getString("id");
-            this.name = json.getString("name");
-            this.invite = inviteCode;
-            this.channels = new HashMap<>();
-            this.members = new ArrayList<>();
+            isAvailable = true;
+            id = json.getString("id");
+            name = json.getString("name");
+            invite = inviteCode;
+            channels = new HashMap<>();
+            members = new ArrayList<>();
             
             JSONArray channelsJson = json.getJSONArray("channels");
             for (int i = 0; i < channelsJson.length(); i++)
@@ -342,21 +345,21 @@ public class WidgetUtil {
             
             private Member(JSONObject json)
             {
-                this.bot = !json.isNull("bot") && json.getBoolean("bot");
-                this.id = json.getString("id");
-                this.username = json.getString("username");
-                this.discriminator = json.getString("discriminator");
-                this.avatar = json.isNull("avatar") ? null : json.getString("avatar");
-                this.nickname = json.isNull("nick") ? null : json.getString("nick");
-                this.status = OnlineStatus.fromKey(json.getString("status"));
-                this.game = json.isNull("game") ? null : 
+                bot = !json.isNull("bot") && json.getBoolean("bot");
+                id = json.getString("id");
+                username = json.getString("username");
+                discriminator = json.getString("discriminator");
+                avatar = json.isNull("avatar") ? null : json.getString("avatar");
+                nickname = json.isNull("nick") ? null : json.getString("nick");
+                status = OnlineStatus.fromKey(json.getString("status"));
+                game = json.isNull("game") ? null : 
                             json.getJSONObject("game").isNull("name") || json.getJSONObject("game").getString("name").isEmpty() ? null :
                             Game.of(json.getJSONObject("game").getString("name"));
             }
             
-            private void setVoiceState(VoiceState state)
+            private void setVoiceState(VoiceState voiceState)
             {
-                this.state = state;
+                state = voiceState;
             }
             
             /**
@@ -529,7 +532,7 @@ public class WidgetUtil {
             @Override
             public String toString()
             {
-                return "WM:" + getName() + '(' + getId() + ')';
+                return "W.M:" + getName() + '(' + getId() + ')';
             }
             
         }
@@ -544,15 +547,15 @@ public class WidgetUtil {
             
             private Channel(JSONObject json)
             {
-                this.position = json.getInt("position");
-                this.id = json.getString("id");
-                this.name = json.getString("name");
-                this.members = new ArrayList<>();
+                position = json.getInt("position");
+                id = json.getString("id");
+                name = json.getString("name");
+                members = new ArrayList<>();
             }
             
             private void addMember(Member member)
             {
-                this.members.add(member);
+                members.add(member);
             }
             
             /**
@@ -586,6 +589,16 @@ public class WidgetUtil {
             }
             
             /**
+             * Gets the type of the channel. This is always voice.
+             * 
+             * @return The type of the channel (voice)
+             */
+            public ChannelType getChannelType()
+            {
+                return ChannelType.VOICE;
+            }
+            
+            /**
              * Gets a list of all members in the channel
              * 
              * @return never-null, possibly-empty list of members in the channel
@@ -598,7 +611,7 @@ public class WidgetUtil {
             @Override
             public String toString()
             {
-                return "WC:" + getName() + '(' + getId() + ')';
+                return "W.C:" + getName() + '(' + getId() + ')';
             }
         }
         
