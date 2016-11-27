@@ -427,11 +427,18 @@ public class MessageBuilder
         return this;
     }
 
-    public MessageBuilder stripMentions(JDA jda, MentionType... mentions) {
+    /**
+     * Removes all mentions of the specified types and replaces them with the closest looking textual representation.
+     *
+     * @param  jda The JDA instance, only needed for {@link MentionType.USER User}, {@link MentionType.CHANNEL Channel} and {@link MentionType.GUILD Guild} mentions
+     * @param types The mention types that should be stripped
+     * @return this instance
+     */
+    public MessageBuilder stripMentions(JDA jda, MentionType... types) {
         String string = null;
-        if (mentions != null)
+        if (types != null)
         {
-            for (MentionType mention : mentions)
+            for (MentionType mention : types)
             {
                 switch (mention)
                 {
@@ -516,6 +523,18 @@ public class MessageBuilder
         return this.builder;
     }
 
+    /**
+     * Returns the index within this string of the first occurrence of the
+     * specified substring between the specified indices.
+     *
+     * If no such value of <i>k</i> exists, then {@code -1} is returned.
+     *
+     * @param   target the substring to search for.
+     * @param   fromIndex the index from which to start the search.
+     * @param   endIndex the index at which to end the search.
+     * @return  the index of the first occurrence of the specified substring between the specified indices
+     *          or {@code -1} if there is no such occurrence.
+     */
     public int indexOf(CharSequence target, int fromIndex, int endIndex)
     {
         if (fromIndex < 0)
@@ -559,6 +578,18 @@ public class MessageBuilder
         return -1;
     }
 
+    /**
+     * Returns the index within this string of the last occurrence of the
+     * specified substring between the specified indices.
+     *
+     * If no such value of <i>k</i> exists, then {@code -1} is returned.
+     *
+     * @param   target the substring to search for.
+     * @param   fromIndex the index from which to start the search.
+     * @param   endIndex the index at which to end the search.
+     * @return  the index of the last occurrence of the specified substring between the specified indices
+     *          or {@code -1} if there is no such occurrence.
+     */
     public int lastIndexOf(CharSequence target, int fromIndex, int endIndex)
     {
         if (fromIndex < 0)
