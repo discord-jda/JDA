@@ -484,6 +484,17 @@ public class MessageBuilder
         return this;
     }
 
+
+    /**
+     * Removes all mentions and replaces them with the closest looking textual representation.
+     *
+     * @param  jda The JDA instance
+     * @return this instance
+     */
+    public MessageBuilder stripMentions(JDA jda) {
+        return this.stripMentions(jda, MentionType.EVERYONE, MentionType.HERE, MentionType.CHANNEL, MentionType.ROLE, MentionType.USER);
+    }
+
     /**
      * Removes all mentions of the specified types and replaces them with the closest looking textual representation.
      *
