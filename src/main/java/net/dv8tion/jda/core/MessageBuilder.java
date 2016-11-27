@@ -374,26 +374,55 @@ public class MessageBuilder
                 .setEmbeds(embed == null ? new LinkedList<>() : Collections.singletonList(embed));
     }
 
-    public MessageBuilder replaceAll(String text, String replacement) {
+    /**
+     * Replaces each substring that matches the target string with the specified replacement string.
+     * The replacement proceeds from the beginning of the string to the end, for example, replacing
+     * "aa" with "b" in the message "aaa" will result in "ba" rather than "ab".
+     *
+     * @param  target The sequence of char values to be replaced
+     * @param  replacement The replacement sequence of char values
+     * @return this instance
+     */
+    public MessageBuilder replaceAll(String target, String replacement)
+    {
         int index;
-        while ((index = builder.indexOf(text)) != -1) {
-            builder.replace(index, index + text.length(), replacement);
+        while ((index = builder.indexOf(target)) != -1)
+        {
+            builder.replace(index, index + target.length(), replacement);
         }
         return this;
     }
 
-    public MessageBuilder replaceFirst(String text, String replacement) {
-        int index = builder.indexOf(text);
-        if (index != -1) {
-            builder.replace(index, index + text.length(), replacement);
+    /**
+     * Replaces the first substring that matches the target string with the specified replacement string.
+     *
+     * @param  target The sequence of char values to be replaced
+     * @param  replacement The replacement sequence of char values
+     * @return this instance
+     */
+    public MessageBuilder replaceFirst(String target, String replacement)
+    {
+        int index = builder.indexOf(target);
+        if (index != -1)
+        {
+            builder.replace(index, index + target.length(), replacement);
         }
         return this;
     }
 
-    public MessageBuilder replaceLast(String text, String replacement) {
-        int index = builder.lastIndexOf(text);
-        if (index != -1) {
-            builder.replace(index, index + text.length(), replacement);
+    /**
+     * Replaces the last substring that matches the target string with the specified replacement string.
+     *
+     * @param  target The sequence of char values to be replaced
+     * @param  replacement The replacement sequence of char values
+     * @return this instance
+     */
+    public MessageBuilder replaceLast(String target, String replacement)
+    {
+        int index = builder.lastIndexOf(target);
+        if (index != -1)
+        {
+            builder.replace(index, index + target.length(), replacement);
         }
         return this;
     }
@@ -478,6 +507,11 @@ public class MessageBuilder
         return this;
     }
 
+    /**
+     * Returns the underlying {@link StringBuilder}.
+     * 
+     * @return the {@link StringBuilder} used by this {@link MessageBuilder}
+     */
     public StringBuilder getStringBuilder() {
         return this.builder;
     }
@@ -689,16 +723,35 @@ public class MessageBuilder
         public abstract int nextMessage(int currentBeginIndex, MessageBuilder builder);
     }
 
+
+    /**
+     * Holds the available mention types used in {@link MessageBuilder#stripMentions(JDA, MentionType...)}
+     */
     public enum MentionType {
+        /**
+         * <b>@everyone</b> mentions 
+         */
         EVERYONE,
+        /**
+         * <b>@here</b> mentions
+         */
         HERE,
+        /**
+         * <b>@User</b> mentions
+         */
         USER,
+        /**
+         * <b>#channel</b> mentions
+         */
         CHANNEL,
+        /**
+         * <b>@Role</b> mentions
+         */
         ROLE;
     }
 
     /**
-     * Holds the Available formatting used in {@link #appendString(String, net.dv8tion.jda.core.MessageBuilder.Formatting...)}
+     * Holds the available formatting used in {@link MessageBuilder#appendString(String, net.dv8tion.jda.core.MessageBuilder.Formatting...)}
      */
     public enum Formatting
     {
