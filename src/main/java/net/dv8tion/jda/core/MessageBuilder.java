@@ -394,9 +394,18 @@ public class MessageBuilder
      * @return
      *      The currently length of the content that will be built into a Message.
      */
-    public int getLength()
+    public int length()
     {
         return builder.length();
+    }
+
+    /**
+     * Checks if the message contains any contend. This includes text as well as embeds.
+     * 
+     * @return weather the message contains content
+     */
+    public boolean isEmpty() {
+        return builder.length() == 0 && embed == null;
     }
 
     /**
@@ -413,7 +422,7 @@ public class MessageBuilder
     public Message build()
     {
         String message = builder.toString();
-        if (message.isEmpty() && embed == null)
+        if (message.isEmpty())
             throw new UnsupportedOperationException("Cannot build a Message with no content. (You never added any content to the message)");
         if (message.length() > 2000)
             throw new UnsupportedOperationException("Cannot build a Message with more than 2000 characters. Please limit your input.");
@@ -589,7 +598,7 @@ public class MessageBuilder
             throw new IndexOutOfBoundsException("index out of range: " + fromIndex);
         if (endIndex < 0)
             throw new IndexOutOfBoundsException("index out of range: " + endIndex);
-        if (fromIndex > getLength())
+        if (fromIndex > length())
             throw new IndexOutOfBoundsException("fromIndex > length()");
         if (fromIndex > endIndex)
             throw new IndexOutOfBoundsException("fromIndex > endIndex");
@@ -644,7 +653,7 @@ public class MessageBuilder
             throw new IndexOutOfBoundsException("index out of range: " + fromIndex);
         if (endIndex < 0)
             throw new IndexOutOfBoundsException("index out of range: " + endIndex);
-        if (fromIndex > getLength())
+        if (fromIndex > length())
             throw new IndexOutOfBoundsException("fromIndex > length()");
         if (fromIndex > endIndex)
             throw new IndexOutOfBoundsException("fromIndex > endIndex");
