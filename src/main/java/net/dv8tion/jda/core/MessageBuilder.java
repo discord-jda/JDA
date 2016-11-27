@@ -484,25 +484,52 @@ public class MessageBuilder
         return this;
     }
 
-
     /**
      * Removes all mentions and replaces them with the closest looking textual representation.
+     * Use this over {@link #stripMentions(Guild)} if {@link MentionType.USER User} mentions should be replaced with their user names
      *
      * @param  jda The JDA instance
      * @return this instance
      */
     public MessageBuilder stripMentions(JDA jda) {
-        return this.stripMentions(jda, MentionType.EVERYONE, MentionType.HERE, MentionType.CHANNEL, MentionType.ROLE, MentionType.USER);
+        return this.stripMentions(jda, (Guild) null, MentionType.EVERYONE, MentionType.HERE, MentionType.CHANNEL, MentionType.ROLE, MentionType.USER);
+    }
+
+    /**
+     * Removes all mentions and replaces them with the closest looking textual representation.
+     * Use this over {@link #stripMentions(JDA)} if {@link MentionType.USER User} mentions should be replaced with their nicknames in a specific guild
+     *
+     * @param guild the guild for {@link MentionType.USER User} mentions 
+     * @return this instance
+     */
+    public MessageBuilder stripMentions(Guild guild) {
+        return this.stripMentions(guild.getJDA(), guild, MentionType.EVERYONE, MentionType.HERE, MentionType.CHANNEL, MentionType.ROLE, MentionType.USER);
     }
 
     /**
      * Removes all mentions of the specified types and replaces them with the closest looking textual representation.
-     *
-     * @param  jda The JDA instance, only needed for {@link MentionType.USER User}, {@link MentionType.CHANNEL Channel} and {@link MentionType.GUILD Guild} mentions
+     * Use this over {@link #stripMentions(JDA, MentionType...)} if {@link MentionType.USER User} mentions should be replaced with their nicknames in a specific guild
+     * 
+     * @param guild the guild for {@link MentionType.USER User} mentions 
+     * @return this instance
+     */
+    public MessageBuilder stripMentions(Guild guild, MentionType... types) {
+        return this.stripMentions(guild.getJDA(), guild, types);
+    }
+
+    /**
+     * Removes all mentions of the specified types and replaces them with the closest looking textual representation.
+     * Use this over {@link #stripMentions(Guild, MentionType...)} if {@link MentionType.USER User} mentions should be replaced with their user names
+     * 
+     * @param jda The JDA instance, only needed for {@link MentionType.USER User}, {@link MentionType.CHANNEL Channel} and {@link MentionType.GUILD Guild} mentions
      * @param types The mention types that should be stripped
      * @return this instance
      */
     public MessageBuilder stripMentions(JDA jda, MentionType... types) {
+        return this.stripMentions(jda, (Guild) null, types);
+    }
+
+    private MessageBuilder stripMentions(JDA jda, Guild guild, MentionType... types) {
         String string = null;
         if (types != null)
         {
@@ -545,9 +572,9 @@ public class MessageBuilder
                             Matcher matcher = ROLE_MENTION_PATTERN.matcher(string);
                             while (matcher.find())
                             {
-                                for (Guild guild : jda.getGuilds())
+                                for (Guild g : jda.getGuilds())
                                 {
-                                    Role role = guild.getRoleById(matcher.group(1));
+                                    Role role = g.getRoleById(matcher.group(1));
                                     if (role != null)
                                     {
                                         replaceAll(matcher.group(), "@"+role.getName());
@@ -568,9 +595,18 @@ public class MessageBuilder
                             while (matcher.find())
                             {
                                 User user = jda.getUserById(matcher.group(1));
+                                String replacement = null;
+                                
                                 if (user != null)
                                 {
-                                    replaceAll(matcher.group(), "@"+user.getName());
+                                    Member member;
+
+                                    if (guild != null && (member = guild.getMember(user)) != null)
+                                        replacement = member.getEffectiveName();
+                                    else
+                                        replacement = user.getName();
+
+                                    replaceAll(matcher.group(), "@" + replacement);
                                 }
                             }
                         }
