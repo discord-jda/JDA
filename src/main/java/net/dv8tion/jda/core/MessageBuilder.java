@@ -758,8 +758,16 @@ public class MessageBuilder
         return -1;
     }
 
-    // TODO: jdoc
-    // TODO: testing
+    /**
+     * Creates a {@link java.util.Queue Queue} of {@link net.dv8tion.jda.core.entities.Message Message} objects from this MessageBuilder.
+     * <p>
+     * This method splits the content if it exceeds 2000 chars. The spltting behaviour can be customized using {@link SplitPolicy SplitPolicies}.
+     * The method will try the policies in the order they are passed to it.
+     * <p>
+     * This is not MarkDown safe. An easy workaround is to include Zero Witdh Spaces as predetermined breaking points to the message and only split on them.
+     * 
+     * @return the created {@link net.dv8tion.jda.core.entities.Message Messages}
+     */
     public Queue<Message> buildAll(SplitPolicy... policy)
     {
         if (builder.length() == 0)
@@ -772,6 +780,11 @@ public class MessageBuilder
             return messages;
         } 
 
+        if (policy.length == 0)
+        {
+            policy = new SplitPolicy[]{ SplitPolicy.ANYWHERE };
+        }
+        
         int currentBeginIndex = 0;
 
         messageLoop: while (currentBeginIndex < builder.length() - 2001)
@@ -808,23 +821,29 @@ public class MessageBuilder
         return new MessageImpl("", null, false).setContent(builder.substring(beginIndex, endIndex)).setTTS(isTTS);
     }
 
-    // TODO: jdoc
-    public static abstract class SplitPolicy
+    public static interface SplitPolicy
     {
 
-        // TODO: jdoc
+        /**
+         * Creates a new {@link SplitPolicy} splitting on the specified chars.
+         * @param chars the chars to split on
+         * @param remove weather to remove the chars when splitting on them
+         * @return a new {@link SplitPolicy}
+         */
         public static SplitPolicy onChars(CharSequence chars, boolean remove)
         {
             return new CharSequenceSplitPolicy(chars, remove);
         }
 
-        // TODO: jdoc
-        public static class CharSequenceSplitPolicy extends SplitPolicy
+        /**
+         * Default {@link SplitPolicy} implementation. Splits on a specified {@link CharSequence}.
+         */
+        public static class CharSequenceSplitPolicy implements SplitPolicy
         {
             private final boolean remove;
             private final CharSequence chars;
 
-            public CharSequenceSplitPolicy(final CharSequence chars, final boolean remove)
+            private CharSequenceSplitPolicy(final CharSequence chars, final boolean remove)
             {
                 this.chars = chars;
                 this.remove = remove;
@@ -847,25 +866,39 @@ public class MessageBuilder
 
         }
 
+        /**
+         * Splits on newline chars <code>\n</code>.
+         */
         public static final SplitPolicy NEWLINE = new CharSequenceSplitPolicy("\n", true);
+
+        /**
+         * Splits on space chars.
+         */
         public static final SplitPolicy SPACE = new CharSequenceSplitPolicy(" ", true);
 
-        public static final SplitPolicy ANYWHERE = new SplitPolicy()
+        /**
+         * Splits exactly after 2000 chars.
+         */
+        public static final SplitPolicy ANYWHERE = (i, b) ->
         {
-            @Override
-            public int nextMessage(final int currentBeginIndex, final MessageBuilder builder)
+            final int currentEndIndex = Math.min(i + 2000, b.length());
+            if (currentEndIndex < 0)
             {
-                final int currentEndIndex = Math.min(currentBeginIndex + 2000, builder.getStringBuilder().length());
-                if (currentEndIndex < 0)
-                {
-                    throw new IllegalArgumentException("could not split the message");
-                }
-                return currentEndIndex;
+                throw new IllegalArgumentException("could not split the message");
             }
+            return currentEndIndex;
         };
 
-        public SplitPolicy() {}
-
+        /**
+         * Calculates the endIndex for the next {@link net.dv8tion.jda.core.entities.Message Message}.
+         * 
+         * @param currentBeginIndex the index the next {@link net.dv8tion.jda.core.entities.Message Message} should start from
+         * @param builder the {@link net.dv8tion.jda.core.entities.MessageBuilder MessageBuilder}
+         * @return the end Index of the next {@link net.dv8tion.jda.core.entities.Message Message}
+         * 
+         * @throws Exception when splitting fails
+         * 
+         */
         public abstract int nextMessage(int currentBeginIndex, MessageBuilder builder);
     }
 
