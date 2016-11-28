@@ -91,7 +91,6 @@ public class MessageBuilder
         return this.append(text);
     }
 
-
     /**
      * Appends a string to the Message
      *
@@ -102,6 +101,18 @@ public class MessageBuilder
     {
         builder.append(text);
         return this;
+    }
+
+    /**
+     * Appends the string repesentation of an object to the Message.<p>
+     * This is the same as <code>append(String.valueOf(object))</code>
+     * 
+     * @param object the object to append
+     * @return this instance
+     */
+    public MessageBuilder append(Object object)
+    {
+        return append(String.valueOf(object));
     }
 
     /**
