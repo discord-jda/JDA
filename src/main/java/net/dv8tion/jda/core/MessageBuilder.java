@@ -119,7 +119,7 @@ public class MessageBuilder
     /**
      * Appends a formatted string to the Message
      *
-     * @param text   the text to append
+     * @param text the text to append
      * @param format the format(s) to apply to the text
      * @return this instance
      */
@@ -155,7 +155,7 @@ public class MessageBuilder
      * 
      * @deprecated use {@link #append(CharSequence, Formatting...)} instead
      *
-     * @param text   the text to append
+     * @param text the text to append
      * @param format the format(s) to apply to the text
      * @return this instance
      */
@@ -197,11 +197,10 @@ public class MessageBuilder
      * name was "Bob", it would say:<br>
      * <pre>  "Bob is really cool!"</pre>
      *
-     * @param format
-     *          A format string.
+     * @param format a format string.
      * @param args
-     *          An array objects that will be used to replace the tokens.
-     *          They must be provided in the order that the tokens appear in the provided format string.
+     *          an array objects that will be used to replace the tokens, they must be
+     *          provided in the order that the tokens appear in the provided format string.
      * @return
      *      this instance of the MessageBuilder. Useful for chaining.
      */
@@ -305,7 +304,7 @@ public class MessageBuilder
     /**
      * Appends a code-block to the Message
      *
-     * @param text     the code to append
+     * @param text the code to append
      * @param language the language of the code. If unknown use an empty string
      * @return this instance
      */
@@ -361,7 +360,7 @@ public class MessageBuilder
      *
      * @deprecated use {@link #append(IMentionable)} instead
      *
-     * @param channel the TextChannel to mention
+     * @param channel the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} to mention
      * @return this instance
      */
     @Deprecated
@@ -376,7 +375,7 @@ public class MessageBuilder
      *
      * @deprecated use {@link #append(IMentionable)} instead
      *
-     * @param role the Role to mention
+     * @param role the {@link net.dv8tion.jda.core.entities.Role Role} to mention
      * @return this instance
      */
     @Deprecated
@@ -391,8 +390,7 @@ public class MessageBuilder
      * If this value is <code>0</code> or greater than <code>2000</code> when {@link #build()} is called, an exception
      * will be raised.
      *
-     * @return
-     *      The currently length of the content that will be built into a Message.
+     * @return the currently length of the content that will be built into a Message.
      */
     public int length()
     {
@@ -409,7 +407,7 @@ public class MessageBuilder
     }
 
     /**
-     * Creates a {@link net.dv8tion.jda.core.entities.Message Message} object from this Builder
+     * Creates a {@link net.dv8tion.jda.core.entities.Message Message} object from this MessageBuilder
      *
      * @return the created {@link net.dv8tion.jda.core.entities.Message Message}
      *
@@ -436,8 +434,8 @@ public class MessageBuilder
      * The replacement proceeds from the beginning of the string to the end, for example, replacing
      * "aa" with "b" in the message "aaa" will result in "ba" rather than "ab".
      *
-     * @param  target The sequence of char values to be replaced
-     * @param  replacement The replacement sequence of char values
+     * @param target the sequence of char values to be replaced
+     * @param replacement the replacement sequence of char values
      * @return this instance
      */
     public MessageBuilder replaceAll(String target, String replacement)
@@ -453,8 +451,8 @@ public class MessageBuilder
     /**
      * Replaces the first substring that matches the target string with the specified replacement string.
      *
-     * @param  target The sequence of char values to be replaced
-     * @param  replacement The replacement sequence of char values
+     * @param target the sequence of char values to be replaced
+     * @param replacement the replacement sequence of char values
      * @return this instance
      */
     public MessageBuilder replaceFirst(String target, String replacement)
@@ -470,8 +468,8 @@ public class MessageBuilder
     /**
      * Replaces the last substring that matches the target string with the specified replacement string.
      *
-     * @param  target The sequence of char values to be replaced
-     * @param  replacement The replacement sequence of char values
+     * @param target the sequence of char values to be replaced
+     * @param replacement the replacement sequence of char values
      * @return this instance
      */
     public MessageBuilder replaceLast(String target, String replacement)
@@ -485,10 +483,11 @@ public class MessageBuilder
     }
 
     /**
-     * Removes all mentions and replaces them with the closest looking textual representation.
+     * Removes all mentions and replaces them with the closest looking textual representation.<p>
+     * <p>
      * Use this over {@link #stripMentions(Guild)} if {@link MentionType.USER User} mentions should be replaced with their user names
      *
-     * @param  jda The JDA instance
+     * @param jda the JDA instance
      * @return this instance
      */
     public MessageBuilder stripMentions(JDA jda) {
@@ -496,7 +495,8 @@ public class MessageBuilder
     }
 
     /**
-     * Removes all mentions and replaces them with the closest looking textual representation.
+     * Removes all mentions and replaces them with the closest looking textual representation.<p>
+     * <p>
      * Use this over {@link #stripMentions(JDA)} if {@link MentionType.USER User} mentions should be replaced with their nicknames in a specific guild
      *
      * @param guild the guild for {@link MentionType.USER User} mentions 
@@ -507,7 +507,8 @@ public class MessageBuilder
     }
 
     /**
-     * Removes all mentions of the specified types and replaces them with the closest looking textual representation.
+     * Removes all mentions of the specified types and replaces them with the closest looking textual representation.<p>
+     * <p>
      * Use this over {@link #stripMentions(JDA, MentionType...)} if {@link MentionType.USER User} mentions should be replaced with their nicknames in a specific guild
      * 
      * @param guild the guild for {@link MentionType.USER User} mentions 
@@ -518,11 +519,12 @@ public class MessageBuilder
     }
 
     /**
-     * Removes all mentions of the specified types and replaces them with the closest looking textual representation.
+     * Removes all mentions of the specified types and replaces them with the closest looking textual representation.<p>
+     * <p>
      * Use this over {@link #stripMentions(Guild, MentionType...)} if {@link MentionType.USER User} mentions should be replaced with their user names
      * 
-     * @param jda The JDA instance, only needed for {@link MentionType.USER User}, {@link MentionType.CHANNEL Channel} and {@link MentionType.GUILD Guild} mentions
-     * @param types The mention types that should be stripped
+     * @param jda the {@link net.dv8tion.jda.core.JDA JDA} instance, only needed for {@link MentionType.USER User}, {@link MentionType.CHANNEL Channel} and {@link MentionType.GUILD Guild} mentions
+     * @param types the {@link MentionType MentionTypes} that should be stripped
      * @return this instance
      */
     public MessageBuilder stripMentions(JDA jda, MentionType... types) {
@@ -633,11 +635,11 @@ public class MessageBuilder
      *
      * If no such value of <i>k</i> exists, then {@code -1} is returned.
      *
-     * @param   target the substring to search for.
-     * @param   fromIndex the index from which to start the search.
-     * @param   endIndex the index at which to end the search.
-     * @return  the index of the first occurrence of the specified substring between the specified indices
-     *          or {@code -1} if there is no such occurrence.
+     * @param target the substring to search for.
+     * @param fromIndex the index from which to start the search.
+     * @param endIndex the index at which to end the search.
+     * @return  the index of the first occurrence of the specified substring between
+     *          the specified indices or {@code -1} if there is no such occurrence.
      */
     public int indexOf(CharSequence target, int fromIndex, int endIndex)
     {
@@ -688,11 +690,11 @@ public class MessageBuilder
      *
      * If no such value of <i>k</i> exists, then {@code -1} is returned.
      *
-     * @param   target the substring to search for.
-     * @param   fromIndex the index from which to start the search.
-     * @param   endIndex the index at which to end the search.
-     * @return  the index of the last occurrence of the specified substring between the specified indices
-     *          or {@code -1} if there is no such occurrence.
+     * @param target the substring to search for.
+     * @param fromIndex the index from which to start the search.
+     * @param endIndex the index at which to end the search.
+     * @return  the index of the last occurrence of the specified substring between
+     *          the specified indices or {@code -1} if there is no such occurrence.
      */
     public int lastIndexOf(CharSequence target, int fromIndex, int endIndex)
     {
@@ -745,10 +747,8 @@ public class MessageBuilder
         return -1;
     }
 
-    /**
-     * This is not finished yet and just 
-     * Docs are also to be made.
-     */
+    // TODO: jdoc
+    // TODO: testing
     public Queue<Message> buildAll(SplitPolicy... policy)
     {
         if (builder.length() == 0)
@@ -797,14 +797,17 @@ public class MessageBuilder
         return new MessageImpl("", null, false).setContent(builder.substring(beginIndex, endIndex)).setTTS(isTTS);
     }
 
+    // TODO: jdoc
     public static abstract class SplitPolicy
     {
 
+        // TODO: jdoc
         public static SplitPolicy onChars(CharSequence chars, boolean remove)
         {
             return new CharSequenceSplitPolicy(chars, remove);
         }
 
+        // TODO: jdoc
         public static class CharSequenceSplitPolicy extends SplitPolicy
         {
             private final boolean remove;
@@ -856,7 +859,7 @@ public class MessageBuilder
     }
 
     /**
-     * Holds the available mention types used in {@link MessageBuilder#stripMentions(JDA, MentionType...)}
+     * Holds the available mention types used in {@link MessageBuilder#stripMentions(JDA, MentionType...) and {@link MessageBuilder#stripMentions(Guild, MentionType...)}
      */
     public enum MentionType {
         /**
