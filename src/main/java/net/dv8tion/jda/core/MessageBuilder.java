@@ -431,7 +431,7 @@ public class MessageBuilder
     public Message build()
     {
         String message = builder.toString();
-        if (message.isEmpty())
+        if (this.isEmpty())
             throw new UnsupportedOperationException("Cannot build a Message with no content. (You never added any content to the message)");
         if (message.length() > 2000)
             throw new UnsupportedOperationException("Cannot build a Message with more than 2000 characters. Please limit your input.");
@@ -501,7 +501,8 @@ public class MessageBuilder
      * @param jda the JDA instance
      * @return this instance
      */
-    public MessageBuilder stripMentions(JDA jda) {
+    public MessageBuilder stripMentions(JDA jda)
+    {
         return this.stripMentions(jda, (Guild) null, MentionType.EVERYONE, MentionType.HERE, MentionType.CHANNEL, MentionType.ROLE, MentionType.USER);
     }
 
@@ -513,7 +514,8 @@ public class MessageBuilder
      * @param guild the guild for {@link MentionType.USER User} mentions 
      * @return this instance
      */
-    public MessageBuilder stripMentions(Guild guild) {
+    public MessageBuilder stripMentions(Guild guild)
+    {
         return this.stripMentions(guild.getJDA(), guild, MentionType.EVERYONE, MentionType.HERE, MentionType.CHANNEL, MentionType.ROLE, MentionType.USER);
     }
 
@@ -525,7 +527,8 @@ public class MessageBuilder
      * @param guild the guild for {@link MentionType.USER User} mentions 
      * @return this instance
      */
-    public MessageBuilder stripMentions(Guild guild, MentionType... types) {
+    public MessageBuilder stripMentions(Guild guild, MentionType... types)
+    {
         return this.stripMentions(guild.getJDA(), guild, types);
     }
 
@@ -538,92 +541,97 @@ public class MessageBuilder
      * @param types the {@link MentionType MentionTypes} that should be stripped
      * @return this instance
      */
-    public MessageBuilder stripMentions(JDA jda, MentionType... types) {
+    public MessageBuilder stripMentions(JDA jda, MentionType... types)
+    {
         return this.stripMentions(jda, (Guild) null, types);
     }
 
-    private MessageBuilder stripMentions(JDA jda, Guild guild, MentionType... types) {
+    private MessageBuilder stripMentions(JDA jda, Guild guild, MentionType... types)
+    {
+        if (types == null)
+            return this;
+
         String string = null;
-        if (types != null)
+
+        for (MentionType mention : types)
         {
-            for (MentionType mention : types)
+            if (mention != null)
             {
                 switch (mention)
                 {
                     case EVERYONE:
-                        replaceAll("@everyone", "@\u200Beveryone");
+                        replaceAll("@everyone", "@\u0435veryone");
                         break;
                     case HERE:
-                        replaceAll("@here", "@\u200Bhere");
+                        replaceAll("@here", "@h\u0435re");
                         break;
                     case CHANNEL:
+                    {
+                        if (string == null)
                         {
-                            if (string == null)
+                            string = builder.toString();
+                        }
+                        
+                        Matcher matcher = CHANNEL_MENTION_PATTERN.matcher(string);
+                        while (matcher.find())
+                        {
+                            TextChannel channel = jda.getTextChannelById(matcher.group(1));
+                            if (channel != null)
                             {
-                                string = builder.toString();
-                            }
-                            
-                            Matcher matcher = CHANNEL_MENTION_PATTERN.matcher(string);
-                            while (matcher.find())
-                            {
-                                TextChannel channel = jda.getTextChannelById(matcher.group(1));
-                                if (channel != null)
-                                {
-                                    
-                                    replaceAll(matcher.group(), "#" + channel.getName());
-                                }
+                                replaceAll(matcher.group(), "#" + channel.getName());
                             }
                         }
                         break;
+                    }
                     case ROLE:
+                    {    
+                        if (string == null)
                         {
-                            if (string == null)
+                            string = builder.toString();
+                        }
+
+                        Matcher matcher = ROLE_MENTION_PATTERN.matcher(string);
+                        while (matcher.find())
+                        {
+                            for (Guild g : jda.getGuilds())
                             {
-                                string = builder.toString();
-                            }
-                            
-                            Matcher matcher = ROLE_MENTION_PATTERN.matcher(string);
-                            while (matcher.find())
-                            {
-                                for (Guild g : jda.getGuilds())
+                                Role role = g.getRoleById(matcher.group(1));
+                                if (role != null)
                                 {
-                                    Role role = g.getRoleById(matcher.group(1));
-                                    if (role != null)
-                                    {
-                                        replaceAll(matcher.group(), "@"+role.getName());
-                                        break;
-                                    }
+                                    replaceAll(matcher.group(), "@"+role.getName());
+                                    break;
                                 }
                             }
                         }
                         break;
+                    }
                     case USER:
+                    {
+                        if (string == null)
                         {
-                            if (string == null)
-                            {
-                                string = builder.toString();
-                            }
-                            
-                            Matcher matcher = USER_MENTION_PATTERN.matcher(string);
-                            while (matcher.find())
-                            {
-                                User user = jda.getUserById(matcher.group(1));
-                                String replacement = null;
-                                
-                                if (user != null)
-                                {
-                                    Member member;
+                            string = builder.toString();
+                        }
 
-                                    if (guild != null && (member = guild.getMember(user)) != null)
-                                        replacement = member.getEffectiveName();
-                                    else
-                                        replacement = user.getName();
+                        Matcher matcher = USER_MENTION_PATTERN.matcher(string);
+                        while (matcher.find())
+                        {
+                            User user = jda.getUserById(matcher.group(1));
+                            String replacement = null;
 
-                                    replaceAll(matcher.group(), "@" + replacement);
-                                }
-                            }
+                            if (user == null)
+                                continue;
+
+                            Member member;
+
+                            if (guild != null && (member = guild.getMember(user)) != null)
+                                replacement = member.getEffectiveName();
+                            else
+                                replacement = user.getName();
+
+                            replaceAll(matcher.group(), "@" + replacement);
                         }
                         break;
+                    }
                 }
             }
         }
@@ -636,7 +644,8 @@ public class MessageBuilder
      * 
      * @return the {@link StringBuilder} used by this {@link MessageBuilder}
      */
-    public StringBuilder getStringBuilder() {
+    public StringBuilder getStringBuilder()
+    {
         return this.builder;
     }
 
@@ -675,10 +684,10 @@ public class MessageBuilder
         }
 
         char strFirstChar = target.charAt(0);
-
         int max = endIndex + targetCount - 1;
 
-        lastCharSearch: for (int i = fromIndex; i <= max; i++)
+        lastCharSearch:
+        for (int i = fromIndex; i <= max; i++)
         {
             if (builder.charAt(i) == strFirstChar)
             {
@@ -741,7 +750,8 @@ public class MessageBuilder
 
         int min = fromIndex + targetCount - 1;
 
-        lastCharSearch: for (int i = endIndex; i >= min; i--)
+        lastCharSearch:
+        for (int i = endIndex; i >= min; i--)
         {
             if (builder.charAt(i) == strLastChar)
             {
@@ -761,8 +771,9 @@ public class MessageBuilder
     /**
      * Creates a {@link java.util.Queue Queue} of {@link net.dv8tion.jda.core.entities.Message Message} objects from this MessageBuilder.
      * <p>
-     * This method splits the content if it exceeds 2000 chars. The spltting behaviour can be customized using {@link SplitPolicy SplitPolicies}.
-     * The method will try the policies in the order they are passed to it.
+     * This method splits the content if it exceeds 2000 chars. The splitting behaviour can be customized using {@link SplitPolicy SplitPolicies}.
+     * The method will try the policies in the order they are passed to it.<p>
+     * If no SplitPolicy is provided the message will be splitted after exactly 2000 chars.
      * <p>
      * This is not MarkDown safe. An easy workaround is to include Zero Witdh Spaces as predetermined breaking points to the message and only split on them.
      * 
@@ -770,7 +781,7 @@ public class MessageBuilder
      */
     public Queue<Message> buildAll(SplitPolicy... policy)
     {
-        if (builder.length() == 0)
+        if (this.isEmpty())
             throw new UnsupportedOperationException("Cannot build a Message with no content. (You never added any content to the message)");
 
         LinkedList<Message> messages = new LinkedList<Message>();
@@ -778,27 +789,27 @@ public class MessageBuilder
         if (builder.length() <= 2000) {
             messages.add(this.build());
             return messages;
-        } 
+        }
 
-        if (policy.length == 0)
+        if (policy == null || policy.length == 0)
         {
             policy = new SplitPolicy[]{ SplitPolicy.ANYWHERE };
         }
-        
+
         int currentBeginIndex = 0;
 
-        messageLoop: while (currentBeginIndex < builder.length() - 2001)
+        messageLoop:
+        while (currentBeginIndex < builder.length() - 2001)
         {
             for (int i = 0; i < policy.length; i++)
             {
-                try
+                int currentEndIndex = policy[i].nextMessage(currentBeginIndex, this);
+                if (currentEndIndex != -1)
                 {
-                    int currentEndIndex = policy[i].nextMessage(currentBeginIndex, this);
                     messages.add(build(currentBeginIndex, currentEndIndex));
                     currentBeginIndex = currentEndIndex;
                     continue messageLoop;
                 }
-                catch (Exception e) {}
             }
             throw new RuntimeException("failed to split the messages");
         }
@@ -823,6 +834,20 @@ public class MessageBuilder
 
     public static interface SplitPolicy
     {
+        /**
+         * Splits on newline chars {@code \n}.
+         */
+        public static final SplitPolicy NEWLINE = new CharSequenceSplitPolicy("\n", true);
+
+        /**
+         * Splits on space chars {@code \u0020}.
+         */
+        public static final SplitPolicy SPACE = new CharSequenceSplitPolicy(" ", true);
+
+        /**
+         * Splits exactly after 2000 chars.
+         */
+        public static final SplitPolicy ANYWHERE = (i, b) -> Math.min(i + 2000, b.length());
 
         /**
          * Creates a new {@link SplitPolicy} splitting on the specified chars.
@@ -855,39 +880,14 @@ public class MessageBuilder
                 int currentEndIndex = builder.lastIndexOf(this.chars, currentBeginIndex, currentBeginIndex + 2000 - (this.remove ? this.chars.length() : 0));
                 if (currentEndIndex < 0)
                 {
-                    throw new IllegalArgumentException("could not split the message");
+                    return -1;
                 }
                 else
                 {
-                    currentEndIndex += this.chars.length();
-                    return currentEndIndex;
+                    return currentEndIndex + this.chars.length();
                 }
             }
-
         }
-
-        /**
-         * Splits on newline chars <code>\n</code>.
-         */
-        public static final SplitPolicy NEWLINE = new CharSequenceSplitPolicy("\n", true);
-
-        /**
-         * Splits on space chars.
-         */
-        public static final SplitPolicy SPACE = new CharSequenceSplitPolicy(" ", true);
-
-        /**
-         * Splits exactly after 2000 chars.
-         */
-        public static final SplitPolicy ANYWHERE = (i, b) ->
-        {
-            final int currentEndIndex = Math.min(i + 2000, b.length());
-            if (currentEndIndex < 0)
-            {
-                throw new IllegalArgumentException("could not split the message");
-            }
-            return currentEndIndex;
-        };
 
         /**
          * Calculates the endIndex for the next {@link net.dv8tion.jda.core.entities.Message Message}.
@@ -951,5 +951,4 @@ public class MessageBuilder
             return tag;
         }
     }
-
 }
