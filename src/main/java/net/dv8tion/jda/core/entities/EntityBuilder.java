@@ -803,7 +803,10 @@ public class EntityBuilder
                     {
                         //We do this to properly order the mentions. The array given by discord is out of order sometimes.
 
-                        int index = content.indexOf("<@" + mention.getString("id") + ">");
+                        String mentionId = mention.getString("id");
+                        int index = content.indexOf("<@" + mentionId + ">");
+                        if (index < 0)
+                            index = content.indexOf("<@!" + mentionId + ">");
                         mentionedUsers.put(index, u);
                     }
                 }
