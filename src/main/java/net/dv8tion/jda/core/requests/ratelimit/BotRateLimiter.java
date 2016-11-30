@@ -27,9 +27,9 @@ import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Iterator;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 
 public class BotRateLimiter extends RateLimiter
@@ -188,8 +188,9 @@ public class BotRateLimiter extends RateLimiter
                     && !bucket.getRoute().equals("users/@me")
                     && Requester.LOG.getEffectiveLevel().getPriority() <= SimpleLog.Level.DEBUG.getPriority())
             {
-                Requester.LOG.fatal("Encountered issue with headers when updating bucket");
-                Requester.LOG.fatal("Headers: " + headers);
+                Requester.LOG.fatal("Encountered issue with headers when updating a bucket"
+                                  + "\nRoute: " + bucket.getRoute()
+                                  + "\nHeaders: " + headers);
                 Requester.LOG.log(ex);
             }
 
