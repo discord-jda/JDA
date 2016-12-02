@@ -986,6 +986,42 @@ public class EntityBuilder
                 .setDeny(deny);
     }
 
+    public Webhook createWebhook(JSONObject object)
+    {
+        String id = object.getString("id");
+        String token = !object.isNull("token") ? object.getString("token") : null;
+        String guildId = object.getString("guild_id");
+        String channelId = object.getString("channel_id");
+
+        Object name = !object.isNull("name") ? object.get("name") : JSONObject.NULL;
+        Object avatar = !object.isNull("avatar") ? object.get("avatar") : JSONObject.NULL;
+
+        JSONObject fakeUser = new JSONObject()
+                    .put("username", name)
+                    .put("discriminator", "0000")
+                    .put("id", id)
+                    .put("avatar", avatar);
+        User defaultUser = createFakeUser(fakeUser, false);
+
+        JSONObject ownerJson = object.getJSONObject("user");
+        String userId = ownerJson.getString("id");
+
+        User owner = api.getUserById(userId);
+        if (owner == null)
+        {
+            fakeUser.put("id", userId);
+            fakeUser.put("username", ownerJson.getString("username"));
+            fakeUser.put("avatar", !ownerJson.isNull("avatar") ? ownerJson.getString("avatar") : JSONObject.NULL);
+            fakeUser.put("discriminator", ownerJson.getString("discriminator"));
+            owner = createFakeUser(fakeUser, false);
+        }
+
+        TextChannel channel = api.getTextChannelById(channelId);
+        if (channel == null)
+            throw new NullPointerException("");
+        return new WebhookImpl(channel, id).setToken(token).setOwner(channel.getGuild().getMember(owner)).setUser(defaultUser);
+    }
+
     public Relationship createRelationship(JSONObject relationshipJson)
     {
         if (api.getAccountType() != AccountType.CLIENT)

@@ -67,6 +67,7 @@ public class Route
         public static final Route MODIFY_SELF_NICK = new Route(PATCH,  "guilds/{guild_id}/members/@me/nick",  "guild_id");
         public static final Route PRUNABLE_COUNT =   new Route(GET,    "guilds/{guild_id}/prune?days={}",     "guild_id");
         public static final Route PRUNE_MEMBERS =    new Route(POST,   "guilds/{guild_id}/prune?days={}",     "guild_id");
+        public static final Route GET_WEBHOOKS =     new Route(GET,    "guilds/{guild_id}/webhooks",          "guild_id");
 
         //Client Only
         public static final Route CREATE_GUILD =     new Route(POST,   "guilds");
@@ -97,6 +98,7 @@ public class Route
         public static final Route SEND_TYPING =          new Route(POST,   "channels/{channel_id}/typing", "channel_id");
         public static final Route GET_PERMISSIONS =      new Route(GET,    "channels/{channel_id}/permissions",                   "channel_id");
         public static final Route GET_PERM_OVERRIDE =    new Route(GET,    "channels/{channel_id}/permissions/{permoverride_id}", "channel_id");
+        public static final Route GET_WEBHOOKS =         new Route(GET,    "channels/{channel_id}/webhooks",                      "channel_id");
         public static final Route CREATE_PERM_OVERRIDE = new Route(PUT,    "channels/{channel_id}/permissions/{permoverride_id}", "channel_id");
         public static final Route MODIFY_PERM_OVERRIDE = new Route(PUT,    "channels/{channel_id}/permissions/{permoverride_id}", "channel_id");
         public static final Route DELETE_PERM_OVERRIDE = new Route(DELETE, "channels/{channel_id}/permissions/{permoverride_id}", "channel_id");
