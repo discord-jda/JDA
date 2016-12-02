@@ -18,6 +18,7 @@ package net.dv8tion.jda.core.entities.impl;
 
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.PermissionException;
@@ -30,6 +31,8 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
@@ -109,6 +112,46 @@ public class GuildImpl implements Guild
     public VoiceChannel getAfkChannel()
     {
         return afkChannel;
+    }
+
+    @Override
+    public RestAction<List<Webhook>> getWebhooks()
+    {
+        if (!getSelfMember().hasPermission(Permission.MANAGE_WEBHOOKS))
+            throw new PermissionException(Permission.MANAGE_WEBHOOKS);
+
+        Route.CompiledRoute route = Route.Guilds.GET_WEBHOOKS.compile(id);
+
+        return new RestAction<List<Webhook>>(api, route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (!response.isOk())
+                {
+                    request.onFailure(response);
+                    return;
+                }
+
+                List<Webhook> webhooks = new LinkedList<>();
+                JSONArray array = response.getArray();
+                EntityBuilder builder = EntityBuilder.get(getJDA());
+
+                for (Object object : array)
+                {
+                    try
+                    {
+                        webhooks.add(builder.createWebhook((JSONObject) object));
+                    }
+                    catch (JSONException | NullPointerException e)
+                    {
+                        JDAImpl.LOG.log(e);
+                    }
+                }
+
+                request.onSuccess(webhooks);
+            }
+        };
     }
 
     @Override

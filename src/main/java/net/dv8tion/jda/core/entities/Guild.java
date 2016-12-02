@@ -60,6 +60,8 @@ public interface Guild extends ISnowflake
 
     VoiceChannel getAfkChannel();
 
+    RestAction<List<Webhook>> getWebhooks();
+
     /**
      * The {@link net.dv8tion.jda.core.entities.Member Member} object of the owner of this {@link net.dv8tion.jda.core.entities.Guild Guild}.
      *
