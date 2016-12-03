@@ -17,6 +17,7 @@
 package net.dv8tion.jda.core.requests;
 
 import com.mashape.unirest.http.HttpMethod;
+import net.dv8tion.jda.core.entities.Role;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -80,6 +81,14 @@ public class Route
         public static final Route MODIFY_EMOTE = new Route(PATCH,  "guilds/{guild_id}/emojis/{emote_id}");
         public static final Route DELETE_EMOTE = new Route(DELETE, "guilds/{guild_id}/emojis/{emote_id}");
         public static final Route CREATE_EMOTE = new Route(POST,   "guilds/{guild_id}/emojis");
+    }
+
+    public static class Webhooks
+    {
+        public static final Route DELETE_WEBHOOK       = new Route(DELETE, "webhooks/{webhook_id}");
+        public static final Route DELETE_TOKEN_WEBHOOK = new Route(DELETE, "webhooks/{webhook_id}/{token}");
+        public static final Route MODIFY_WEBHOOK       = new Route(PATCH,  "webhooks/{webhook_id}");
+        public static final Route MODIFY_TOKEN_WEBHOOK = new Route(PATCH,  "webhooks/{webhook_id}/{token}");
     }
 
     public static class Roles

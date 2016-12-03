@@ -141,6 +141,26 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
+    public RestAction<Void> deleteWebhookById(String id)
+    {
+        if (!guild.getSelfMember().hasPermission(this, Permission.MANAGE_WEBHOOKS))
+            throw new PermissionException(Permission.MANAGE_WEBHOOKS);
+
+        Route.CompiledRoute route = Route.Webhooks.DELETE_WEBHOOK.compile(id);
+        return new RestAction<Void>(getJDA(), route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
+    }
+
+    @Override
     public boolean canTalk()
     {
         return canTalk(guild.getSelfMember());

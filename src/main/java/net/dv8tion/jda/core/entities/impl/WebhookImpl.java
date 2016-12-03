@@ -16,7 +16,12 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
+import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.requests.Request;
+import net.dv8tion.jda.core.requests.Response;
+import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.Route;
 
 public class WebhookImpl implements Webhook
 {
@@ -32,6 +37,12 @@ public class WebhookImpl implements Webhook
     {
         this.channel = channel;
         this.id = id;
+    }
+
+    @Override
+    public JDA getJDA()
+    {
+        return channel.getJDA();
     }
 
     @Override
@@ -71,9 +82,26 @@ public class WebhookImpl implements Webhook
     }
 
     @Override
-    public String getPostUrl()
+    public String getUrl()
     {
         return "https://discordapp.com/api/webhooks/" + getId() + "/" + getToken();
+    }
+
+    @Override
+    public RestAction<Void> delete()
+    {
+        Route.CompiledRoute route = Route.Webhooks.DELETE_TOKEN_WEBHOOK.compile(id, token);
+        return new RestAction<Void>(getJDA(), route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
     }
 
     @Override

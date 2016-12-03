@@ -16,8 +16,13 @@
 
 package net.dv8tion.jda.core.entities;
 
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.requests.RestAction;
+
 public interface Webhook extends ISnowflake
 {
+
+    JDA getJDA();
 
     Guild getGuild();
 
@@ -31,6 +36,10 @@ public interface Webhook extends ISnowflake
 
     String getToken();
 
-    String getPostUrl();
+    String getUrl();
 
+    RestAction<Void> delete();
+
+    //WebhookManager getManager();
+    //WebhookManagerUpdatable getManagerUpdatable();
 }
