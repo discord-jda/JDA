@@ -76,16 +76,9 @@ public interface MessageChannel extends ISnowflake
      *          the text to send
      * @return
      *      the Message created by this function
-     * @throws net.dv8tion.jda.core.exceptions.RateLimitedException
-     *      when rate-imit is reached
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *      If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does
      *      not have {@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}.
-     * @throws net.dv8tion.jda.core.exceptions.BlockedException
-     *      If this is a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} and PMs are blocked
-     * @throws VerificationLevelException
-     *      If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
-     *      and you do not meet the required verification-level of the guild.
      */
     RestAction<Message> sendMessage(String text);
     
@@ -101,16 +94,9 @@ public interface MessageChannel extends ISnowflake
      *          the embed to send
      * @return
      *      the Message created by this function
-     * @throws net.dv8tion.jda.core.exceptions.RateLimitedException
-     *      when rate-imit is reached
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *      If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does
      *      not have {@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}.
-     * @throws net.dv8tion.jda.core.exceptions.BlockedException
-     *      If this is a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} and PMs are blocked
-     * @throws VerificationLevelException
-     *      If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
-     *      and you do not meet the required verification-level of the guild.
      */
     RestAction<Message> sendMessage(MessageEmbed embed);
 
@@ -126,16 +112,9 @@ public interface MessageChannel extends ISnowflake
      *          the {@link net.dv8tion.jda.core.entities.Message Message} to send
      * @return
      *      The created {@link net.dv8tion.jda.core.entities.Message Message} object or null if it failed
-     * @throws net.dv8tion.jda.core.exceptions.RateLimitedException
-     *          when rate-limit is reached
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *      If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does
      *      not have {@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}.
-     * @throws net.dv8tion.jda.core.exceptions.BlockedException
-     *      If this is a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} and PMs are blocked
-     * @throws VerificationLevelException
-     *      If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
-     *      and you do not meet the required verification-level of the guild.
      */
     RestAction<Message> sendMessage(Message msg);
 
@@ -162,9 +141,8 @@ public interface MessageChannel extends ISnowflake
      *              not have {@link net.dv8tion.jda.core.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}.
      *          </li>
      *      </ul>
-     * @throws VerificationLevelException
-     *      If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
-     *      and you do not meet the required verification-level of the guild.
+     * @throws IOException
+     *      If an I/O error occurs while reading the File.
      */
     RestAction<Message> sendFile(File file, Message message) throws IOException;
     RestAction<Message> sendFile(File file, String fileName, Message message) throws IOException;

@@ -62,7 +62,7 @@ public class MessageListener extends ListenerAdapter
     {
         if (event.isFromType(ChannelType.PRIVATE))
         {
-            System.out.printf("[PM] %s: %s\n", event.getAuthor().getUsername(),
+            System.out.printf("[PM] %s: %s\n", event.getAuthor().getName(),
                                     event.getMessage().getContent());
         }
         else
