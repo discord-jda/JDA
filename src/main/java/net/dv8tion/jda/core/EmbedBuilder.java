@@ -234,7 +234,7 @@ public class EmbedBuilder
         }
         else
         {
-            httpsCheck(url);
+            httpCheck(url);
             this.image = new MessageEmbed.ImageInfo(url, null, 0, 0);
         }
         return this;
