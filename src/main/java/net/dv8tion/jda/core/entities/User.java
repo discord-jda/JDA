@@ -55,7 +55,7 @@ public interface User extends ISnowflake, IMentionable, IFakeable
     String getAvatarId();
 
     /**
-     * The URL for the for the user's avatar image.
+     * The URL for the user's avatar image.
      * If the user has not set an image, this will return null.
      *
      * @return
@@ -79,6 +79,16 @@ public interface User extends ISnowflake, IMentionable, IFakeable
      */
     String getDefaultAvatarUrl();
 
+    /**
+     * The URL for the user's avatar image
+     * If they do not have an avatar set, this will return the URL of their
+     * default avatar
+     * 
+     * @return
+     *      Never-null String containing the {@link net.dv8tion.jda.core.entities.User User} effective avatar url.
+     */
+    String getEffectiveAvatarUrl();
+    
     /**
      * Whether or not the currently logged in user and this user have a currently open
      * {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} or not.
