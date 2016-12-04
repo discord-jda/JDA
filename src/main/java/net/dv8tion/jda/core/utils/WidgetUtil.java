@@ -31,6 +31,7 @@ import net.dv8tion.jda.core.entities.impl.UserImpl;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.core.utils.WidgetUtil.Widget.VoiceChannel;
+import net.dv8tion.jda.core.utils.WidgetUtil.Widget.VoiceState;
 import net.dv8tion.jda.core.utils.WidgetUtil.Widget.Member;
 import org.apache.http.util.Args;
 import org.json.JSONArray;
@@ -196,7 +197,7 @@ public class WidgetUtil
         private final String name;
         private final String invite;
         private final HashMap<String, VoiceChannel> channels;
-        private final List<Member> members;
+        private final HashMap<String, Member> members;
         
         /**
          * Constructs an unavailable Widget
@@ -230,20 +231,20 @@ public class WidgetUtil
             name = json.getString("name");
             invite = inviteCode;
             channels = new HashMap<>();
-            members = new ArrayList<>();
+            members = new HashMap<>();
             
             JSONArray channelsJson = json.getJSONArray("channels");
             for (int i = 0; i < channelsJson.length(); i++)
             {
                 JSONObject channel = channelsJson.getJSONObject(i);
-                channels.put(channel.getString("id"), new VoiceChannel(channel));
+                channels.put(channel.getString("id"), new VoiceChannel(channel, this));
             }
             
             JSONArray membersJson = json.getJSONArray("members");
             for (int i = 0; i<membersJson.length(); i++)
             {
                 JSONObject memberJson = membersJson.getJSONObject(i);
-                Member member = new Member(memberJson);
+                Member member = new Member(memberJson, this);
                 if (!memberJson.isNull("channel_id")) // voice state
                 {
                     VoiceChannel channel = channels.get(memberJson.getString("channel_id"));
@@ -252,10 +253,12 @@ public class WidgetUtil
                             memberJson.getBoolean("deaf"), 
                             memberJson.getBoolean("suppress"), 
                             memberJson.getBoolean("self_mute"), 
-                            memberJson.getBoolean("self_deaf")));
+                            memberJson.getBoolean("self_deaf"),
+                            member,
+                            this));
                     channel.addMember(member);
                 }
-                members.add(member);
+                members.put(member.getId(), member);
             }
         }
         
@@ -313,15 +316,50 @@ public class WidgetUtil
         }
         
         /**
+         * Gets a voice channel with the given ID, or null if the voice channel is not found
+         * 
+         * @param id the ID of the voice channel
+         * @return possibly-null VoiceChannel with the given ID. 
+         */
+        public VoiceChannel getVoiceChannelById(String id)
+        {
+            return channels.get(id);
+        }
+        
+        /**
          * Gets a list of online members in the guild
          * 
          * @return the list of members
          */
         public List<Member> getMembers()
         {
-            return members;
+            return new ArrayList<>(members.values());
+        }
+        
+        /**
+         * Gets a member with the given ID, or null if the member is not found
+         * 
+         * @param id the ID of the member
+         * @return possibly-null Member with the given ID. 
+         */
+        public Member getMemberById(String id)
+        {
+            return members.get(id);
         }
 
+        @Override
+        public int hashCode() {
+            return id.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (!(obj instanceof Widget))
+                return false;
+            Widget oWidget = (Widget) obj;
+            return this == oWidget || this.id.equals(oWidget.getId());
+        }
+        
         @Override
         public String toString()
         {
@@ -330,7 +368,7 @@ public class WidgetUtil
         
         
         
-        public class Member implements ISnowflake, IMentionable
+        public static class Member implements ISnowflake, IMentionable
         {
             private final boolean bot;
             private final String id;
@@ -340,18 +378,20 @@ public class WidgetUtil
             private final String nickname;
             private final OnlineStatus status;
             private final Game game;
+            private final Widget widget;
             private VoiceState state;
             
-            private Member(JSONObject json)
+            private Member(JSONObject json, Widget widget)
             {
-                bot = !json.isNull("bot") && json.getBoolean("bot");
-                id = json.getString("id");
-                username = json.getString("username");
-                discriminator = json.getString("discriminator");
-                avatar = json.isNull("avatar") ? null : json.getString("avatar");
-                nickname = json.isNull("nick") ? null : json.getString("nick");
-                status = OnlineStatus.fromKey(json.getString("status"));
-                game = json.isNull("game") ? null : 
+                this.widget = widget;
+                this.bot = !json.isNull("bot") && json.getBoolean("bot");
+                this.id = json.getString("id");
+                this.username = json.getString("username");
+                this.discriminator = json.getString("discriminator");
+                this.avatar = json.isNull("avatar") ? null : json.getString("avatar");
+                this.nickname = json.isNull("nick") ? null : json.getString("nick");
+                this.status = OnlineStatus.fromKey(json.getString("status"));
+                this.game = json.isNull("game") ? null : 
                             json.getJSONObject("game").isNull("name") || json.getJSONObject("game").getString("name").isEmpty() ? null :
                             Game.of(json.getJSONObject("game").getString("name"));
             }
@@ -507,6 +547,7 @@ public class WidgetUtil
             
             /**
             * The game that the member is currently playing.
+            * This game cannot be a stream.
             * If the user is not currently playing a game, this will return null.
             *
             * @return
@@ -519,15 +560,38 @@ public class WidgetUtil
             
             /**
              * The current voice state of the member.
-             * If the user is not in voice, this will return null.
+             * If the user is not in voice, this will return a VoiceState with a null channel.
              * 
-             * @return possibly-null VoiceState of the member
+             * @return never-null VoiceState of the member
              */
             public VoiceState getVoiceState()
             {
-                return state;
+                return state == null ? new VoiceState(this, widget) : state;
             }
 
+            /**
+             * Gets the widget that to which this member belongs
+             * 
+             * @return the Widget that holds this member
+             */
+            public Widget getWidget()
+            {
+                return widget;
+            }
+
+            @Override
+            public int hashCode() {
+                return (widget.getId() + ' ' + id).hashCode();
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                if (!(obj instanceof Member))
+                    return false;
+                Member oMember = (Member) obj;
+                return this == oMember || (this.id.equals(oMember.getId()) && this.widget.getId().equals(oMember.getWidget().getId()));
+            }
+            
             @Override
             public String toString()
             {
@@ -537,19 +601,21 @@ public class WidgetUtil
         }
         
         
-        public class VoiceChannel
+        public static class VoiceChannel
         {
             private final int position;
             private final String id;
             private final String name;
             private final List<Member> members;
+            private final Widget widget;
             
-            private VoiceChannel(JSONObject json)
+            private VoiceChannel(JSONObject json, Widget widget)
             {
-                position = json.getInt("position");
-                id = json.getString("id");
-                name = json.getString("name");
-                members = new ArrayList<>();
+                this.widget = widget;
+                this.position = json.getInt("position");
+                this.id = json.getString("id");
+                this.name = json.getString("name");
+                this.members = new ArrayList<>();
             }
             
             private void addMember(Member member)
@@ -597,14 +663,37 @@ public class WidgetUtil
                 return members;
             }
 
+            /**
+             * Gets the Widget to which this voice channel belongs
+             * 
+             * @return the Widget object that holds this voice channel
+             */
+            public Widget getWidget()
+            {
+                return widget;
+            }
+
+            @Override
+            public int hashCode() {
+                return id.hashCode();
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                if (!(obj instanceof VoiceChannel))
+                    return false;
+                VoiceChannel oVChannel = (VoiceChannel) obj;
+                return this == oVChannel || this.id.equals(oVChannel.getId());
+            }
+            
             @Override
             public String toString()
             {
-                return "W.C:" + getName() + '(' + getId() + ')';
+                return "W.VC:" + getName() + '(' + getId() + ')';
             }
         }
         
-        public class VoiceState
+        public static class VoiceState
         {
             private final VoiceChannel channel;
             private final boolean muted;
@@ -612,8 +701,15 @@ public class WidgetUtil
             private final boolean suppress;
             private final boolean selfMute;
             private final boolean selfDeaf;
+            private final Member member;
+            private final Widget widget;
             
-            private VoiceState(VoiceChannel channel, boolean muted, boolean deafened, boolean suppress, boolean selfMute, boolean selfDeaf)
+            private VoiceState(Member member, Widget widget)
+            {
+                this(null, false, false, false, false, false, member, widget);
+            }
+            
+            private VoiceState(VoiceChannel channel, boolean muted, boolean deafened, boolean suppress, boolean selfMute, boolean selfDeaf, Member member, Widget widget)
             {
                 this.channel = channel;
                 this.muted = muted;
@@ -621,6 +717,8 @@ public class WidgetUtil
                 this.suppress = suppress;
                 this.selfMute = selfMute;
                 this.selfDeaf = selfDeaf;
+                this.member = member;
+                this.widget = widget;
             }
             
             /**
@@ -634,21 +732,32 @@ public class WidgetUtil
             }
             
             /**
-             * Gets if the member is muted
+             * Used to determine if the member is currently in a voice channel.
+             * If this is false, getChannel() will return null
+             * 
+             * @return true if the member is in a voice channel
+             */
+            public boolean inVoiceChannel()
+            {
+                return channel != null;
+            }
+            
+            /**
+             * Gets if the member is muted by an admin
              * 
              * @return true if the member is muted
              */
-            public boolean isMuted()
+            public boolean isGuildMuted()
             {
                 return muted;
             }
             
             /**
-             * Gets if the member is deafened
+             * Gets if the member is deafened by an admin
              * 
              * @return true if the member is deafened
              */
-            public boolean isDeafened()
+            public boolean isGuildDeafened()
             {
                 return deafened;
             }
@@ -681,6 +790,54 @@ public class WidgetUtil
             public boolean isSelfDeafened()
             {
                 return selfDeaf;
+            }
+            
+            /**
+             * Gets if the member is muted, either by an admin or self-muted
+             * 
+             * @return true if the member is self-muted or guild-muted
+             */
+            public boolean isMuted()
+            {
+                return selfMute || muted;
+            }
+            
+            /**
+             * Gets if the member is deafened, either by an admin or self-deafened
+             * 
+             * @return true if the member is self-deafened or guild-deafened
+             */
+            public boolean isDeafened()
+            {
+                return selfDeaf || deafened;
+            }
+            
+            public Member getMember()
+            {
+                return member;
+            }
+            
+            public Widget getWidget()
+            {
+                return widget;
+            }
+
+            @Override
+            public int hashCode() {
+                return member.hashCode();
+            }
+            
+            @Override
+            public boolean equals(Object obj) {
+                if (!(obj instanceof VoiceState))
+                    return false;
+                VoiceState oState = (VoiceState) obj;
+                return this == oState || (this.member.equals(oState.getMember()) && this.widget.equals(oState.getWidget()));
+            }
+            
+            @Override
+            public String toString() {
+                return "VS:" + widget.getName() + ':' + member.getEffectiveName();
             }
         }
     }
