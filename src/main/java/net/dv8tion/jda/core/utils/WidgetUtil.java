@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import net.dv8tion.jda.core.OnlineStatus;
-import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.IMentionable;
@@ -31,7 +30,7 @@ import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.entities.impl.UserImpl;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.requests.Requester;
-import net.dv8tion.jda.core.utils.WidgetUtil.Widget.Channel;
+import net.dv8tion.jda.core.utils.WidgetUtil.Widget.VoiceChannel;
 import net.dv8tion.jda.core.utils.WidgetUtil.Widget.Member;
 import org.apache.http.util.Args;
 import org.json.JSONArray;
@@ -141,24 +140,24 @@ public class WidgetUtil
             HttpResponse<JsonNode> result = Unirest.get(String.format(WIDGET_URL, guildId)).asJson();
             switch(result.getStatus())
             {
-                case 200:   return new Widget(result.getBody().getObject()); // ok
-                case 400:                // not valid snowflake
-                case 404:   return null; // guild not found
-                case 403:   return new Widget(guildId); // widget disabled
-                case 429:   // ratelimited
-                            {
-                                long retryAfter;
-                                try
-                                {
-                                    retryAfter = result.getBody().getObject().getLong("retry_after");
-                                }
-                                catch (Exception e)
-                                {
-                                    retryAfter = 0;
-                                }
-                                throw new RateLimitedException(WIDGET_URL, retryAfter);
-                            }
-                default:    throw new RuntimeException("An unknown status was returned: " + result.getStatus() + " " + result.getStatusText());
+                case 200: return new Widget(result.getBody().getObject()); // ok
+                case 400:              // not valid snowflake
+                case 404: return null; // guild not found
+                case 403: return new Widget(guildId); // widget disabled
+                case 429: // ratelimited
+                {
+                    long retryAfter;
+                    try
+                    {
+                        retryAfter = result.getBody().getObject().getLong("retry_after");
+                    }
+                    catch (Exception e)
+                    {
+                        retryAfter = 0;
+                    }
+                    throw new RateLimitedException(WIDGET_URL, retryAfter);
+                }
+                default: throw new RuntimeException("An unknown status was returned: " + result.getStatus() + " " + result.getStatusText());
             }
         }
         catch (UnirestException ex)
@@ -196,7 +195,7 @@ public class WidgetUtil
         private final String id;
         private final String name;
         private final String invite;
-        private final HashMap<String, Channel> channels;
+        private final HashMap<String, VoiceChannel> channels;
         private final List<Member> members;
         
         /**
@@ -237,7 +236,7 @@ public class WidgetUtil
             for (int i = 0; i < channelsJson.length(); i++)
             {
                 JSONObject channel = channelsJson.getJSONObject(i);
-                channels.put(channel.getString("id"), new Channel(channel));
+                channels.put(channel.getString("id"), new VoiceChannel(channel));
             }
             
             JSONArray membersJson = json.getJSONArray("members");
@@ -247,7 +246,7 @@ public class WidgetUtil
                 Member member = new Member(memberJson);
                 if (!memberJson.isNull("channel_id")) // voice state
                 {
-                    Channel channel = channels.get(memberJson.getString("channel_id"));
+                    VoiceChannel channel = channels.get(memberJson.getString("channel_id"));
                     member.setVoiceState(new VoiceState(channel, 
                             memberJson.getBoolean("mute"), 
                             memberJson.getBoolean("deaf"), 
@@ -304,11 +303,11 @@ public class WidgetUtil
         }
         
         /**
-         * Gets the list of (voice) channels in the guild
+         * Gets the list of voice channels in the guild
          * 
          * @return the list of voice channels in the guild
          */
-        public List<Channel> getChannels()
+        public List<VoiceChannel> getVoiceChannels()
         {
             return new ArrayList<>(channels.values());
         }
@@ -538,14 +537,14 @@ public class WidgetUtil
         }
         
         
-        public class Channel
+        public class VoiceChannel
         {
             private final int position;
             private final String id;
             private final String name;
             private final List<Member> members;
             
-            private Channel(JSONObject json)
+            private VoiceChannel(JSONObject json)
             {
                 position = json.getInt("position");
                 id = json.getString("id");
@@ -589,16 +588,6 @@ public class WidgetUtil
             }
             
             /**
-             * Gets the type of the channel. This is always voice.
-             * 
-             * @return The type of the channel (voice)
-             */
-            public ChannelType getChannelType()
-            {
-                return ChannelType.VOICE;
-            }
-            
-            /**
              * Gets a list of all members in the channel
              * 
              * @return never-null, possibly-empty list of members in the channel
@@ -617,14 +606,14 @@ public class WidgetUtil
         
         public class VoiceState
         {
-            private final Channel channel;
+            private final VoiceChannel channel;
             private final boolean muted;
             private final boolean deafened;
             private final boolean suppress;
             private final boolean selfMute;
             private final boolean selfDeaf;
             
-            private VoiceState(Channel channel, boolean muted, boolean deafened, boolean suppress, boolean selfMute, boolean selfDeaf)
+            private VoiceState(VoiceChannel channel, boolean muted, boolean deafened, boolean suppress, boolean selfMute, boolean selfDeaf)
             {
                 this.channel = channel;
                 this.muted = muted;
@@ -637,9 +626,9 @@ public class WidgetUtil
             /**
              * Gets the channel the member is in
              * 
-             * @return never-null Channel
+             * @return never-null VoiceChannel
              */
-            public Channel getChannel()
+            public VoiceChannel getChannel()
             {
                 return channel;
             }
