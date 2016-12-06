@@ -117,7 +117,7 @@ public class RoleManagerUpdatable
         permissions.reset();
     }
 
-    /**
+    /*
      * This method will apply all accumulated changes received by setters
      */
     public RestAction<Void> update()

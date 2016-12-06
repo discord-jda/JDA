@@ -138,6 +138,8 @@ public interface Member extends IMentionable
      * The Permissions this Member holds in the specified {@link net.dv8tion.jda.core.entities.Channel Channel}.<br>
      * Permissions returned by this may be different from {@link #getPermissions()} due to the Channel's {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides }.
      *
+     * @param channel
+     *      The {@link net.dv8tion.jda.core.entities.Channel Channel} of which to get Permissions for
      * @return
      *      An immutable List of Permissions granted to this Member.
      */

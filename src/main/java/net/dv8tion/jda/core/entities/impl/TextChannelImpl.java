@@ -47,7 +47,7 @@ public class TextChannelImpl implements TextChannel
 
     private volatile ChannelManager manager;
     private volatile ChannelManagerUpdatable managerUpdatable;
-    private Object mngLock = new Object();
+    private final Object mngLock = new Object();
 
     private String name;
     private String topic;
@@ -178,9 +178,15 @@ public class TextChannelImpl implements TextChannel
     @Override
     public RestAction<Message> sendMessage(String text)
     {
-        return sendMessage(new MessageBuilder().appendString(text).build());
+        return sendMessage(new MessageBuilder().append(text).build());
     }
 
+    @Override
+    public RestAction<Message> sendMessage(MessageEmbed embed)
+    {
+        return sendMessage(new MessageBuilder().setEmbed(embed).build());
+    }
+    
     @Override
     public RestAction<Message> sendMessage(Message msg)
     {
@@ -188,6 +194,8 @@ public class TextChannelImpl implements TextChannel
         checkVerification();
         checkPermission(Permission.MESSAGE_READ);
         checkPermission(Permission.MESSAGE_WRITE);
+        if (msg.getRawContent().isEmpty() && !msg.getEmbeds().isEmpty())
+            checkPermission(Permission.MESSAGE_EMBED_LINKS);
 
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
         JSONObject json = ((MessageImpl) msg).toJSONObject();

@@ -17,6 +17,7 @@ package net.dv8tion.jda.core;
 
 import java.awt.Color;
 import java.time.OffsetDateTime;
+import java.time.temporal.TemporalAccessor;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -29,8 +30,8 @@ public class EmbedBuilder
     public final static int VALUE_MAX_LENGTH = 1024;
     public final static int TEXT_MAX_LENGTH = 2048;
     public final static int URL_MAX_LENGTH = 2000;
+    public final static String ZERO_WIDTH_SPACE = "\u200E";
     public final static Pattern URL_PATTERN = Pattern.compile("\\s*https?:\\/\\/.+\\..{2,}\\s*", Pattern.CASE_INSENSITIVE);
-    public final static Pattern HTTPS_URL_PATTERN = Pattern.compile("\\s*https:\\/\\/.+\\..{2,}\\s*", Pattern.CASE_INSENSITIVE);
     
     private String url;
     private String title;
@@ -86,18 +87,7 @@ public class EmbedBuilder
      */
     public MessageEmbed build()
     {
-        if (title == null
-                && url == null
-                && description == null
-                && timestamp == null
-                && color == null
-                && thumbnail == null
-                && siteProvider == null
-                && author == null
-                && videoInfo == null
-                && footer == null
-                && image == null
-                && fields.isEmpty())
+        if (isEmpty())
         {
             throw new IllegalStateException("Cannot build an empty embed!");
         }
@@ -114,6 +104,27 @@ public class EmbedBuilder
                 .setFooter(footer)
                 .setImage(image)
                 .setFields(fields);
+    }
+    
+    /**
+     * Checks if the given embed is empty. Empty embeds will throw an exception if built
+     * 
+     * @return true if the embed is empty and cannot be built
+     */
+    public boolean isEmpty()
+    {
+        return title == null
+                && url == null
+                && description == null
+                && timestamp == null
+                && color == null
+                && thumbnail == null
+                && siteProvider == null
+                && author == null
+                && videoInfo == null
+                && footer == null
+                && image == null
+                && fields.isEmpty();
     }
     
     /**
@@ -156,13 +167,16 @@ public class EmbedBuilder
     
     /**
      * Sets the Timestamp of the embed.
-     * @param timestamp the timestamp of the embed
+     * @param temporal the temporal accessor of the timestamp
      * @return the builder after the timestamp has been set
      */
-    public EmbedBuilder setTimestamp(OffsetDateTime timestamp)
+    public EmbedBuilder setTimestamp(TemporalAccessor temporal)
     {
-        this.timestamp = timestamp;
-        return this;
+        if (temporal == null)
+            this.timestamp = null;
+        else
+            this.timestamp = OffsetDateTime.from(temporal);
+        return this; 
     }
     
     /**
@@ -189,7 +203,7 @@ public class EmbedBuilder
         }
         else
         {
-            httpsCheck(url);
+            urlCheck(url);
             this.thumbnail = new MessageEmbed.Thumbnail(url, null, 0, 0);
         }
         return this;
@@ -227,7 +241,7 @@ public class EmbedBuilder
         }
         else
         {
-            httpsCheck(url);
+            urlCheck(url);
             this.image = new MessageEmbed.ImageInfo(url, null, 0, 0);
         }
         return this;
@@ -292,14 +306,26 @@ public class EmbedBuilder
         {
             if (text != null && text.length() > TEXT_MAX_LENGTH)
                 throw new IllegalArgumentException("Text cannot be longer than " + TEXT_MAX_LENGTH + " characters.");
-            httpsCheck(iconUrl);
+            urlCheck(iconUrl);
             this.footer = new MessageEmbed.Footer(text, iconUrl, null);
         }
         return this;
     }
     
     /**
+     * Adds a Field to the embed
+     * 
+     * @param field the field object to add
+     * @return the builder after the field has been added
+     */
+    public EmbedBuilder addField(MessageEmbed.Field field)
+    {
+        return addField(field.getName(), field.getValue(), field.isInline());
+    }
+    
+    /**
      * Adds a Field to the embed.
+     * 
      * @param name the name of the footer of the embed.
      * @param value the contents of the field
      * @param inline whether or not this field should display inline
@@ -315,7 +341,22 @@ public class EmbedBuilder
             throw new IllegalArgumentException("Name cannot be longer than " + TITLE_MAX_LENGTH + " characters.");
         else if (value.length() > VALUE_MAX_LENGTH)
             throw new IllegalArgumentException("Value cannot be longer than " + VALUE_MAX_LENGTH + " characters.");
+        if (name.isEmpty())
+            name = ZERO_WIDTH_SPACE;
+        if (value.isEmpty())
+            value = ZERO_WIDTH_SPACE;
         this.fields.add(new MessageEmbed.Field(name, value, inline));
+        return this;
+    }
+    
+    /**
+     * Adds a blank (empty) Field to the embed.
+     * @param inline whether or not this field should display inline
+     * @return the builder after the field has been added
+     */
+    public EmbedBuilder addBlankField(boolean inline)
+    {
+        this.fields.add(new MessageEmbed.Field(ZERO_WIDTH_SPACE, ZERO_WIDTH_SPACE, inline));
         return this;
     }
     
@@ -327,15 +368,5 @@ public class EmbedBuilder
             throw new IllegalArgumentException("URL cannot be longer than " + URL_MAX_LENGTH + " characters.");
         else if (!URL_PATTERN.matcher(url).matches())
             throw new IllegalArgumentException("URL must be a valid http or https url.");
-    }
-    
-    private void httpsCheck(String url)
-    {
-        if (url == null)
-            return;
-        else if (url.length() > URL_MAX_LENGTH)
-            throw new IllegalArgumentException("URL cannot be longer than " + URL_MAX_LENGTH + " characters.");
-        else if (!HTTPS_URL_PATTERN.matcher(url).matches())
-            throw new IllegalArgumentException("URL must be a valid https url.");
     }
 }

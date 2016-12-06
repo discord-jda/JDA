@@ -101,8 +101,6 @@ public class EmoteManagerUpdatable
      * Sets the name of this Emote<p>
      * <b>Must call {@link #update()} to finalize changes.</b>
      *
-     * @param name
-     *      The name to set for this Emote (null to keep current name)
      * @return
      *      Current instance of this Manager for chaining convenience.
      */
@@ -115,8 +113,6 @@ public class EmoteManagerUpdatable
      * Set roles this emote is active for.<p>
      * <b>Must call {@link #update()} to finalize changes.</b>
      *
-     * @param roles
-     *      A set of roles (all within the same guild the emote is in) / null to keep current roles
      * @return
      *      Current instance of this Manager for chaining convenience.
      */

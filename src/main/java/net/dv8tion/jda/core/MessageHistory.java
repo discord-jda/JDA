@@ -90,9 +90,6 @@ public class MessageHistory implements net.dv8tion.jda.core.hooks.EventListener
                 for (int i = 0; i < historyJson.length(); i++)
                     msgs.add(builder.createMessage(historyJson.getJSONObject(i)));
 
-                if (history.isEmpty())
-
-
                 msgs.forEach(msg -> history.put(msg.getId(), msg));
                 request.onSuccess(msgs);
             }

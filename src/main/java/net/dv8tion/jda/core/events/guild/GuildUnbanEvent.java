@@ -17,14 +17,12 @@ package net.dv8tion.jda.core.events.guild;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.guild.member.GenericGuildMemberEvent;
 
 /**
- * <b><u>GuildBanEvent</u></b><br/>
- * Fired if a {@link net.dv8tion.jda.core.entities.User User} is unbanned from a {@link net.dv8tion.jda.core.entities.Guild Guild}.<br/>
- * <br/>
+ * <b><u>GuildBanEvent</u></b><br>
+ * Fired if a {@link net.dv8tion.jda.core.entities.User User} is unbanned from a {@link net.dv8tion.jda.core.entities.Guild Guild}.<br>
+ * <br>
  * Use: Retrieve user who was unbanned (if available) and the guild which they were unbanned from.
  */
 public class GuildUnbanEvent extends GenericGuildEvent

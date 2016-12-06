@@ -27,9 +27,9 @@ import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Iterator;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 
 public class BotRateLimiter extends RateLimiter
@@ -163,12 +163,12 @@ public class BotRateLimiter extends RateLimiter
         {
             //Get the date header provided by Discord.
             //Format:  "date" : "Fri, 16 Sep 2016 05:49:36 GMT"
-            String date = headers.getFirst("date");
+            String date = headers.getFirst("Date");
             if (date != null)
             {
                 OffsetDateTime tDate = OffsetDateTime.parse(date, DateTimeFormatter.RFC_1123_DATE_TIME);
-                long lDate = tDate.toEpochSecond() * 1000;             //We want to work in milliseconds, not seconds
-                timeOffset = Math.floorDiv(lDate - time, 1000) * 1000; //Get offset, convert to seconds, round it down, convert to milliseconds.
+                long lDate = tDate.toInstant().toEpochMilli(); //We want to work in milliseconds, not seconds
+                timeOffset = lDate - time; //Get offset in milliseconds.
             }
         }
     }
@@ -188,8 +188,9 @@ public class BotRateLimiter extends RateLimiter
                     && !bucket.getRoute().equals("users/@me")
                     && Requester.LOG.getEffectiveLevel().getPriority() <= SimpleLog.Level.DEBUG.getPriority())
             {
-                Requester.LOG.fatal("Encountered issue with headers when updating bucket");
-                Requester.LOG.fatal("Headers: " + headers);
+                Requester.LOG.fatal("Encountered issue with headers when updating a bucket"
+                                  + "\nRoute: " + bucket.getRoute()
+                                  + "\nHeaders: " + headers);
                 Requester.LOG.log(ex);
             }
 
