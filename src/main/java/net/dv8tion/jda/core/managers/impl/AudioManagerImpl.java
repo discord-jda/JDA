@@ -17,6 +17,7 @@ package net.dv8tion.jda.core.managers.impl;
 
 import com.sun.jna.Platform;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.audio.AudioConnection;
 import net.dv8tion.jda.core.audio.AudioReceiveHandler;
 import net.dv8tion.jda.core.audio.AudioSendHandler;
@@ -27,6 +28,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
+import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.utils.NativeUtil;
 import org.apache.http.util.Args;
@@ -46,12 +48,15 @@ public class AudioManagerImpl implements AudioManager
     protected final Guild guild;
     protected AudioConnection audioConnection = null;
     protected VoiceChannel queuedAudioConnection = null;
-    protected VoiceChannel unexpectedDisconnectedChannel = null;
 
     protected AudioSendHandler sendHandler;
     protected AudioReceiveHandler receiveHandler;
     protected ListenerProxy connectionListener = new ListenerProxy();
     protected long queueTimeout = 100;
+    protected boolean shouldReconnect = true;
+
+    protected boolean selfMuted = false;
+    protected boolean selfDeafened = false;
 
     protected long timeout = DEFAULT_CONNECTION_TIMEOUT;
 
@@ -78,20 +83,14 @@ public class AudioManagerImpl implements AudioManager
         if (!guild.isAvailable())
             throw new GuildUnavailableException("Cannot open an Audio Connection with an unavailable guild. " +
                     "Please wait until this Guild is available to open a connection.");
+        if (!guild.getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT))
+            throw new PermissionException(Permission.VOICE_CONNECT);
 
         if (audioConnection == null)
         {
             //Start establishing connection, joining provided channel
             queuedAudioConnection = channel;
-            JSONObject obj = new JSONObject()
-                    .put("op", 4)
-                    .put("d", new JSONObject()
-                            .put("guild_id", channel.getGuild().getId())
-                            .put("channel_id", channel.getId())
-                            .put("self_mute", false)
-                            .put("self_deaf", false)
-                    );
-            api.getClient().send(obj.toString());
+            api.getClient().queueAudioConnect(channel);
         }
         else
         {
@@ -101,15 +100,7 @@ public class AudioManagerImpl implements AudioManager
             if (channel.getId().equals(audioConnection.getChannel().getId()))
                 return;
 
-            JSONObject obj = new JSONObject()
-                    .put("op", 4)
-                    .put("d", new JSONObject()
-                            .put("guild_id", channel.getGuild().getId())
-                            .put("channel_id", channel.getId())
-                            .put("self_mute", false)
-                            .put("self_deaf", false)
-                    );
-            api.getClient().send(obj.toString());
+            api.getClient().queueAudioConnect(channel);
             audioConnection.setChannel(channel);
         }
     }
@@ -117,9 +108,16 @@ public class AudioManagerImpl implements AudioManager
     @Override
     public void closeAudioConnection()
     {
+        closeAudioConnection(ConnectionStatus.NOT_CONNECTED);
+    }
+
+    public void closeAudioConnection(ConnectionStatus reason)
+    {
+        api.getClient().getQueuedAudioConnectionMap().remove(guild.getId());
+        this.queuedAudioConnection = null;
         if (audioConnection == null)
             return;
-        this.audioConnection.close(ConnectionStatus.NOT_CONNECTED);
+        this.audioConnection.close(reason);
         this.audioConnection = null;
     }
 
@@ -220,6 +218,53 @@ public class AudioManagerImpl implements AudioManager
             return ConnectionStatus.NOT_CONNECTED;
     }
 
+    @Override
+    public void setAutoReconnect(boolean shouldReconnect)
+    {
+        this.shouldReconnect = shouldReconnect;
+        if (audioConnection != null)
+            audioConnection.getWebSocket().setAutoReconnect(shouldReconnect);
+    }
+
+    @Override
+    public boolean isAutoReconnect()
+    {
+        return shouldReconnect;
+    }
+
+    @Override
+    public void setSelfMuted(boolean muted)
+    {
+        if (selfMuted != muted)
+        {
+            this.selfMuted = muted;
+            updateVoiceState();
+        }
+    }
+
+    @Override
+    public boolean isSelfMuted()
+    {
+        return selfMuted;
+    }
+
+    @Override
+    public void setSelfDeafened(boolean deafened)
+    {
+        if (selfDeafened != deafened)
+        {
+            this.selfDeafened = deafened;
+            updateVoiceState();
+        }
+
+    }
+
+    @Override
+    public boolean isSelfDeafened()
+    {
+        return selfDeafened;
+    }
+
     public ConnectionListener getListenerProxy()
     {
         return connectionListener;
@@ -241,24 +286,19 @@ public class AudioManagerImpl implements AudioManager
     public void prepareForRegionChange()
     {
         VoiceChannel queuedChannel = audioConnection.getChannel();
-        this.audioConnection.close(ConnectionStatus.NOT_CONNECTED);
-        this.audioConnection = null;
+        closeAudioConnection(ConnectionStatus.AUDIO_REGION_CHANGE);
         this.queuedAudioConnection = queuedChannel;
     }
 
-    public boolean wasUnexpectedlyDisconnected()
+    public void setQueuedAudioConnection(VoiceChannel channel)
     {
-        return unexpectedDisconnectedChannel != null;
+        queuedAudioConnection = channel;
     }
 
-    public void setUnexpectedDisconnectChannel(VoiceChannel channel)
+    public void setConnectedChannel(VoiceChannel channel)
     {
-        this.unexpectedDisconnectedChannel = channel;
-    }
-
-    public VoiceChannel getUnexpectedDisconnectedChannel()
-    {
-        return unexpectedDisconnectedChannel;
+        if (audioConnection != null)
+            audioConnection.setChannel(channel);
     }
 
     public void setQueueTimeout(long queueTimeout)
@@ -266,6 +306,25 @@ public class AudioManagerImpl implements AudioManager
         this.queueTimeout = queueTimeout;
         if (audioConnection != null)
             audioConnection.setQueueTimeout(queueTimeout);
+    }
+
+    protected void updateVoiceState()
+    {
+        if (isConnected() || isAttemptingToConnect())
+        {
+            VoiceChannel channel = isConnected() ? getConnectedChannel() : getQueuedAudioConnection();
+
+            //This is technically equivalent to an audio open/move packet.
+            JSONObject voiceStateChange = new JSONObject()
+                    .put("op", 4)
+                    .put("d", new JSONObject()
+                            .put("guild_id", guild.getId())
+                            .put("channel_id", channel.getId())
+                            .put("self_mute", isSelfMuted())
+                            .put("self_deaf", isSelfDeafened())
+                    );
+            api.getClient().send(voiceStateChange.toString());
+        }
     }
 
     //Load the Opus library.

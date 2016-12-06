@@ -26,10 +26,17 @@ public enum ConnectionStatus
     CONNECTING_AWAITING_READY,
     CONNECTED,
 
+    //Non-reconnectable statuses
+    DISCONNECTED_LOST_PERMISSION,
+    DISCONNECTED_CHANNEL_DELETED,
+    DISCONNECTED_REMOVED_FROM_GUILD,
+
+    //Attempts to reconnect regardless of autoReconnect status.
     AUDIO_REGION_CHANGE,
 
+    //All will attempt to reconnect unless autoReconnect is disabled
     ERROR_LOST_CONNECTION,
     ERROR_WEBSOCKET_UNABLE_TO_CONNECT,
     ERROR_UDP_UNABLE_TO_CONNECT,
-    ERROR_CONNECTION_TIMEOUT;
+    ERROR_CONNECTION_TIMEOUT
 }

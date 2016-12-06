@@ -17,8 +17,9 @@
 package net.dv8tion.jda.core.audio;
 
 import com.neovisionaries.ws.client.*;
-import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
+import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
+import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.VoiceChannel;
@@ -33,15 +34,17 @@ import java.io.IOException;
 import java.net.*;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class AudioWebSocket extends WebSocketAdapter
 {
     public static final SimpleLog LOG = SimpleLog.getLog("JDAAudioSocket");
-    public static final ScheduledThreadPoolExecutor KEEP_ALIVE_POOL = new ScheduledThreadPoolExecutor(0);
+    public static final HashMap<JDA, ScheduledThreadPoolExecutor> KEEP_ALIVE_POOLS = new HashMap<>();
     public static final int DISCORD_SECRET_KEY_LENGTH = 32;
 
     public static final int INITIAL_CONNECTION_RESPONSE = 2;
@@ -50,11 +53,8 @@ public class AudioWebSocket extends WebSocketAdapter
     public static final int USER_SPEAKING_UPDATE = 5;
     public static final int HEARTBEAT_START = 8;
 
-    public static final int WEBSOCKET_READ_TIMEOUT = 1008;
-    public static final int CONNECTION_SETUP_TIMEOUT = -41;
-    public static final int UDP_UNABLE_TO_CONNECT = -42;
-
     protected final ConnectionListener listener;
+    protected final ScheduledThreadPoolExecutor keepAlivePool;
     protected AudioConnection audioConnection;
     protected ConnectionStatus connectionStatus = ConnectionStatus.NOT_CONNECTED;
 
@@ -68,6 +68,7 @@ public class AudioWebSocket extends WebSocketAdapter
     private String endpoint;
     private String wssEndpoint;
     private boolean shutdown;
+    private boolean shouldReconnect;
 
     private int ssrc;
     private String sessionId;
@@ -77,7 +78,7 @@ public class AudioWebSocket extends WebSocketAdapter
     private DatagramSocket udpSocket;
     private InetSocketAddress address;
 
-    public AudioWebSocket(ConnectionListener listener, String endpoint, JDAImpl api, Guild guild, String sessionId, String token)
+    public AudioWebSocket(ConnectionListener listener, String endpoint, JDAImpl api, Guild guild, String sessionId, String token, boolean shouldReconnect)
     {
         this.listener = listener;
         this.endpoint = endpoint;
@@ -85,6 +86,13 @@ public class AudioWebSocket extends WebSocketAdapter
         this.guild = guild;
         this.sessionId = sessionId;
         this.token = token;
+        this.shouldReconnect = shouldReconnect;
+
+        synchronized (KEEP_ALIVE_POOLS)
+        {
+            KEEP_ALIVE_POOLS.putIfAbsent(api, new ScheduledThreadPoolExecutor(0));
+        }
+        keepAlivePool = KEEP_ALIVE_POOLS.get(api);
 
         //Append the Secure Websocket scheme so that our websocket library knows how to connect
         if (!endpoint.startsWith("wss://"))
@@ -148,7 +156,6 @@ public class AudioWebSocket extends WebSocketAdapter
         {
             case INITIAL_CONNECTION_RESPONSE:
             {
-                System.out.println(contentAll);
                 JSONObject content = contentAll.getJSONObject("d");
                 ssrc = content.getInt("ssrc");
                 int port = content.getInt("port");
@@ -192,12 +199,9 @@ public class AudioWebSocket extends WebSocketAdapter
             }
             case HEARTBEAT_PING_RETURN:
             {
-                if (LOG.getEffectiveLevel().getPriority() <= SimpleLog.Level.TRACE.getPriority())
-                {
-                    long timePingSent  = contentAll.getLong("d");
-                    long ping = System.currentTimeMillis() - timePingSent;
-                    listener.onPing(ping);
-                }
+                long timePingSent  = contentAll.getLong("d");
+                long ping = System.currentTimeMillis() - timePingSent;
+                listener.onPing(ping);
                 break;
             }
             case CONNECTING_COMPLETED:
@@ -233,10 +237,6 @@ public class AudioWebSocket extends WebSocketAdapter
                 {
                     listener.onUserSpeaking(user, speaking);
                 }
-                if (speaking)
-                    LOG.log(SimpleLog.Level.ALL, user.getName() + " started transmitting audio.");    //Replace with event.
-                else
-                    LOG.log(SimpleLog.Level.ALL, user.getName() + " stopped transmitting audio.");    //Replace with event.
                 break;
             }
             default:
@@ -300,7 +300,7 @@ public class AudioWebSocket extends WebSocketAdapter
         }
         if (keepAliveRunnable != null)
         {
-            KEEP_ALIVE_POOL.remove(keepAliveRunnable);
+            keepAlivePool.remove(keepAliveRunnable);
             keepAliveRunnable = null;
         }
         if (udpSocket != null)
@@ -312,14 +312,31 @@ public class AudioWebSocket extends WebSocketAdapter
         VoiceChannel disconnectedChannel = manager.getConnectedChannel();
         manager.setAudioConnection(null);
 
-        if (connectionStatus == ConnectionStatus.ERROR_LOST_CONNECTION
-                || closeStatus == ConnectionStatus.ERROR_UDP_UNABLE_TO_CONNECT)
+        //Verify that it is actually a lost of connection and not due the connected channel being deleted.
+        if (closeStatus == ConnectionStatus.ERROR_LOST_CONNECTION)
         {
-            LOG.warn("Unexpected disconnect of Audio Connection to guild: " + guild.getId());
-            manager.setUnexpectedDisconnectChannel(disconnectedChannel);
+            //Get guild from JDA, don't use [guild] field to make sure that we don't have
+            // a problem of an out of date guild stored in [guild] during a possible mWS invalidate.
+            Guild connGuild = api.getGuildById(guild.getId());
+            if (connGuild != null)
+            {
+                if (connGuild.getVoiceChannelById(audioConnection.getChannel().getId()) == null)
+                    closeStatus = ConnectionStatus.DISCONNECTED_CHANNEL_DELETED;
+            }
         }
 
         changeStatus(closeStatus);
+
+        //decide if we reconnect.
+        if (shouldReconnect
+                && closeStatus != ConnectionStatus.NOT_CONNECTED    //indicated that the connection was purposely closed. don't reconnect.
+                && closeStatus != ConnectionStatus.DISCONNECTED_CHANNEL_DELETED
+                && closeStatus != ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD
+                && closeStatus != ConnectionStatus.AUDIO_REGION_CHANGE) //Already handled.
+        {
+            manager.setQueuedAudioConnection(disconnectedChannel);
+            api.getClient().queueAudioConnect(disconnectedChannel);
+        }
     }
 
     public DatagramSocket getUdpSocket()
@@ -454,7 +471,12 @@ public class AudioWebSocket extends WebSocketAdapter
             }
         };
 
-        KEEP_ALIVE_POOL.scheduleAtFixedRate(keepAliveRunnable, 0, keepAliveInterval, TimeUnit.MILLISECONDS);
+        try
+        {
+            keepAlivePool.scheduleAtFixedRate(keepAliveRunnable, 0, keepAliveInterval, TimeUnit.MILLISECONDS);
+        }
+        catch (RejectedExecutionException ignored) {} //ignored because this is probably caused due to a race condition
+                                                      // related to the threadpool shutdown.
     }
 
     public void changeStatus(ConnectionStatus newStatus)
@@ -466,6 +488,11 @@ public class AudioWebSocket extends WebSocketAdapter
     public ConnectionStatus getConnectionStatus()
     {
         return connectionStatus;
+    }
+
+    public void setAutoReconnect(boolean shouldReconnect)
+    {
+        this.shouldReconnect = shouldReconnect;
     }
 }
 

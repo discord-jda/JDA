@@ -35,9 +35,12 @@ public class VoiceServerUpdateHandler extends SocketHandler
     @Override
     protected String handleInternally(JSONObject content)
     {
-        if (GuildLock.get(api).isLocked(content.getString("guild_id")))
+        String guildId = content.getString("guild_id");
+        api.getClient().getQueuedAudioConnectionMap().remove(guildId);
+
+        if (GuildLock.get(api).isLocked(guildId))
         {
-            return content.getString("guild_id");
+            return guildId;
         }
 
         if (content.isNull("endpoint"))
@@ -72,7 +75,7 @@ public class VoiceServerUpdateHandler extends SocketHandler
 //            throw new IllegalStateException("Attempted to create an AudioConnection when we weren't expecting to create one.\n" +
 //                    "Did you attempt to start an audio connection...?");
 
-        AudioWebSocket socket = new AudioWebSocket(audioManager.getListenerProxy(), endpoint, api, guild, sessionId, token);
+        AudioWebSocket socket = new AudioWebSocket(audioManager.getListenerProxy(), endpoint, api, guild, sessionId, token, audioManager.isAutoReconnect());
         AudioConnection connection = new AudioConnection(socket, audioManager.getQueuedAudioConnection());
         audioManager.setAudioConnection(connection);
         return null;

@@ -406,12 +406,26 @@ public class GuildImpl implements Guild
         };
     }
 
-    AudioManager mng;
     @Override
     public AudioManager getAudioManager()
     {
+        if (!api.isAudioEnabled())
+            throw new IllegalStateException("Audio is disabled. Cannot retrieve an AudioManager while audio is disabled.");
+
+        HashMap<String, AudioManager> audioManagers = ((JDAImpl) api).getAudioManagerMap();
+        AudioManager mng = audioManagers.get(id);
         if (mng == null)
-            mng = new AudioManagerImpl(this);
+        {
+            synchronized (audioManagers)
+            {
+                mng = audioManagers.get(id);
+                if (mng == null)
+                {
+                    mng = new AudioManagerImpl(this);
+                    audioManagers.put(id, mng);
+                }
+            }
+        }
         return mng;
     }
 

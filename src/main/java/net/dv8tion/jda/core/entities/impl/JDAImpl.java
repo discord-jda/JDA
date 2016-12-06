@@ -23,11 +23,13 @@ import net.dv8tion.jda.client.JDAClient;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.audio.AudioWebSocket;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.hooks.InterfacedEventManager;
+import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.*;
@@ -57,6 +59,8 @@ public class JDAImpl implements JDA
 
     protected final HashMap<String, User> fakeUsers = new HashMap<>();
     protected final HashMap<String, PrivateChannel> fakePrivateChannels = new HashMap<>();
+
+    protected final HashMap<String, AudioManager> audioManagers = new HashMap<>();
 
     protected final AccountType accountType;
     protected final PresenceImpl presence;
@@ -106,7 +110,6 @@ public class JDAImpl implements JDA
         this.shardInfo = shardInfo;
         LOG.info("Login Successful!");
 
-        //TODO: Implement sharding
         client = new WebSocketClient(this);
 
         if (useShutdownHook)
@@ -458,7 +461,9 @@ public class JDAImpl implements JDA
     {
         setStatus(Status.SHUTTING_DOWN);
         getRequester().shutdown();
-        //TODO: Shutdown audio connections.
+        audioManagers.forEach((guildId, mng) -> mng.closeAudioConnection());
+        if (AudioWebSocket.KEEP_ALIVE_POOLS.containsKey(this))
+            AudioWebSocket.KEEP_ALIVE_POOLS.get(this).shutdownNow();
         getClient().setAutoReconnect(false);
         getClient().close();
 
@@ -478,7 +483,9 @@ public class JDAImpl implements JDA
     {
         setStatus(Status.SHUTTING_DOWN);
         List<IBucket> buckets = getRequester().shutdownNow();
-        //TODO: Shutdown audio connections.
+        audioManagers.forEach((guildId, mng) -> mng.closeAudioConnection());
+        if (AudioWebSocket.KEEP_ALIVE_POOLS.containsKey(this))
+            AudioWebSocket.KEEP_ALIVE_POOLS.get(this).shutdownNow();
         getClient().setAutoReconnect(false);
         getClient().close();
 
@@ -616,6 +623,11 @@ public class JDAImpl implements JDA
     public HashMap<String, PrivateChannel> getFakePrivateChannelMap()
     {
         return fakePrivateChannels;
+    }
+
+    public HashMap<String, AudioManager> getAudioManagerMap()
+    {
+        return audioManagers;
     }
 
     public void setSelfUser(SelfUser selfUser)

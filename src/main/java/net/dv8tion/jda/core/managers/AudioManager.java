@@ -197,4 +197,16 @@ public interface AudioManager
     ConnectionListener getConnectionListener();
 
     ConnectionStatus getConnectionStatus();
+
+    void setAutoReconnect(boolean shouldReconnect);
+
+    boolean isAutoReconnect();
+
+    void setSelfMuted(boolean muted);
+
+    boolean isSelfMuted();
+
+    void setSelfDeafened(boolean deafened);
+
+    boolean isSelfDeafened();
 }

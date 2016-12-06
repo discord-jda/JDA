@@ -16,22 +16,26 @@
 
 package net.dv8tion.jda.core.handle;
 
-import net.dv8tion.jda.client.JDAClient;
-import net.dv8tion.jda.client.entities.Friend;
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.client.entities.Relationship;
 import net.dv8tion.jda.client.entities.RelationshipType;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.core.AccountType;
+import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.entities.impl.*;
+import net.dv8tion.jda.core.entities.impl.GuildImpl;
+import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.entities.impl.PrivateChannelImpl;
+import net.dv8tion.jda.core.entities.impl.UserImpl;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.guild.GuildUnavailableEvent;
+import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.requests.GuildLock;
 import org.json.JSONObject;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 
 public class GuildDeleteHandler extends SocketHandler
 {
@@ -49,9 +53,9 @@ public class GuildDeleteHandler extends SocketHandler
         }
 
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("id"));
-//        AudioManager manager = api.getAudioManagersMap().get(guild);
-//        if (manager != null)
-//            manager.closeAudioConnection();
+        AudioManagerImpl manager = (AudioManagerImpl) api.getAudioManagerMap().get(guild.getId());
+        if (manager != null)
+            manager.closeAudioConnection(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD);
 
         if (content.has("unavailable") && content.getBoolean("unavailable"))
         {
@@ -64,8 +68,8 @@ public class GuildDeleteHandler extends SocketHandler
             return null;
         }
 
-//        if (manager != null)
-//            api.getAudioManagersMap().remove(guild);
+        if (manager != null)
+            api.getAudioManagerMap().remove(guild.getId());
 
         //cleaning up all users that we do not share a guild with anymore
         // Anything left in memberIds will be removed from the main userMap

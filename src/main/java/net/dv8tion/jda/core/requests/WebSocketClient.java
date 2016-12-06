@@ -21,14 +21,19 @@ import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.client.handle.*;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.EntityBuilder;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.ReconnectedEvent;
 import net.dv8tion.jda.core.events.ResumedEvent;
 import net.dv8tion.jda.core.handle.*;
+import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.utils.SimpleLog;
+import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.http.HttpHost;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,15 +41,10 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.LinkedBlockingDeque;
+import java.util.*;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
-//TODO: reimplement events
 public class WebSocketClient extends WebSocketAdapter implements WebSocketListener
 {
     public static final SimpleLog LOG = SimpleLog.getLog("JDASocket");
@@ -70,15 +70,14 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected boolean shouldReconnect = true;
     protected int reconnectTimeoutS = 2;
 
-    protected final LinkedBlockingDeque<String> ratelimitQueue = new LinkedBlockingDeque<>();
+    //GuildId, <TimeOfNextAttempt, AudioConnection>
+    protected final HashMap<String, MutablePair<Long, VoiceChannel>> queuedAudioConnections = new HashMap<>();
+
+    protected final LinkedList<String> ratelimitQueue = new LinkedList<>();
     protected volatile Thread ratelimitThread = null;
     protected volatile long ratelimitResetTime;
     protected volatile int messagesSent;
     protected volatile boolean printedRateLimitMessage = false;
-
-//    protected final List<VoiceChannel> dcAudioConnections = new LinkedList<>();
-//    protected final Map<String, AudioSendHandler> audioSendHandlers = new HashMap<>();
-//    protected final Map<String, AudioReceiveHandler> audioReceivedHandlers = new HashMap<>();
 
     protected boolean firstInit = true;
 
@@ -108,7 +107,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         if (initiating)
         {
             initiating = false;
-            reconnectTimeoutS = 2;
             if (firstInit)
             {
                 firstInit = false;
@@ -163,7 +161,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         ratelimitQueue.addLast(message);
     }
 
-    private boolean send(String message, boolean heartBeat)
+    private boolean send(String message, boolean skipQueue)
     {
         if (!connected)
             return false;
@@ -178,7 +176,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
 
         //Allows 115 messages to be sent before limiting.
-        if (this.messagesSent <= 115 || (heartBeat && this.messagesSent <= 119))   //technically we could go to 120, but we aren't going to chance it
+        if (this.messagesSent <= 115 || (skipQueue && this.messagesSent <= 119))   //technically we could go to 120, but we aren't going to chance it
         {
             LOG.trace("<- " + message);
             socket.sendText(message);
@@ -198,25 +196,72 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     private void setupSendingThread()
     {
-        ratelimitThread = new Thread()
+        String shardString;
+        if (shardInfo != null)
+            shardString = " Shard [" + shardInfo.getShardId() + "\\" + shardInfo.getShardTotal() + "]";
+        else
+            shardString = "";
+
+        ratelimitThread = new Thread("JDA" + shardString + " Main-WS sending thread")
         {
+
             @Override
             public void run()
             {
+                boolean needRatelimit;
+                boolean attemptedToSend;
                 while (!this.isInterrupted())
                 {
                     try
                     {
-                        String message = ratelimitQueue.takeFirst();
-                        if (!send(message, false))
+                        attemptedToSend = false;
+                        needRatelimit = false;
+
+                        MutablePair<Long, VoiceChannel> audioRequest = getNextAudioConnectRequest();
+
+                        if (audioRequest != null)
                         {
-                            ratelimitQueue.addFirst(message);
+                            VoiceChannel channel = audioRequest.getRight();
+                            AudioManager audioManager = channel.getGuild().getAudioManager();
+                            JSONObject audioConnectPacket = new JSONObject()
+                                    .put("op", 4)
+                                    .put("d", new JSONObject()
+                                            .put("guild_id", channel.getGuild().getId())
+                                            .put("channel_id", channel.getId())
+                                            .put("self_mute", audioManager.isSelfMuted())
+                                            .put("self_deaf", audioManager.isSelfDeafened())
+                                    );
+                            needRatelimit = !send(audioConnectPacket.toString(), false);
+                            if (!needRatelimit)
+                            {
+                                //Next allowed connect request, 5 seconds from now
+                                audioRequest.setLeft(System.currentTimeMillis() + 2000);
+                            }
+                            attemptedToSend = true;
+                        }
+                        else
+                        {
+                            String message = ratelimitQueue.peekFirst();
+                            if (message != null)
+                            {
+                                needRatelimit = !send(message, false);
+                                if (!needRatelimit)
+                                {
+                                    ratelimitQueue.removeFirst();
+                                }
+                                attemptedToSend = true;
+                            }
+                        }
+
+                        if (needRatelimit || !attemptedToSend)
+                        {
                             Thread.sleep(1000);
                         }
                     }
-                    catch (InterruptedException e)
+                    catch (InterruptedException ignored)
                     {
-                        e.printStackTrace();
+                        LOG.debug("Main WS send thread interrupted. Most likely JDA is disconnecting the websocket.");
+                        break;
                     }
                 }
             }
@@ -303,6 +348,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         api.setStatus(JDA.Status.LOADING_SUBSYSTEMS);
         LOG.info("Connected to WebSocket");
+        connected = true;
+        reconnectTimeoutS = 2;
+        messagesSent = 0;
         ratelimitResetTime = System.currentTimeMillis() + 60000;
         if (sessionId == null)
         {
@@ -312,7 +360,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             sendResume();
         }
-        connected = true;
     }
 
     @Override
@@ -499,19 +546,20 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                         .put(shardInfo.getShardId())
                         .put(shardInfo.getShardTotal()));
         }
-        send(identify.toString());
+        send(identify.toString(), true);
     }
 
     protected void sendResume()
     {
         LOG.debug("Sending Resume-packet...");
-        send(new JSONObject()
+        JSONObject resume = new JSONObject()
                 .put("op", 6)
                 .put("d", new JSONObject()
                         .put("session_id", sessionId)
                         .put("token", api.getToken())
-                        .put("seq", api.getResponseTotal()))
-                .toString());
+                        .put("seq", api.getResponseTotal())
+                );
+        send(resume.toString(), true);
     }
 
     protected void invalidate()
@@ -792,6 +840,60 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         chunkingAndSyncing = active;
     }
 
+    public void queueAudioConnect(VoiceChannel channel)
+    {
+        queuedAudioConnections.put(channel.getGuild().getId(), new MutablePair<>(System.currentTimeMillis(), channel));
+    }
+
+    public HashMap<String, MutablePair<Long, VoiceChannel>> getQueuedAudioConnectionMap()
+    {
+        return queuedAudioConnections;
+    }
+
+    protected MutablePair<Long, VoiceChannel> getNextAudioConnectRequest()
+    {
+        synchronized (queuedAudioConnections)
+        {
+            long now = System.currentTimeMillis();
+            Iterator<MutablePair<Long, VoiceChannel>> it =  queuedAudioConnections.values().iterator();
+            while (it.hasNext())
+            {
+                MutablePair<Long, VoiceChannel> audioRequest = it.next();
+                if (audioRequest.getLeft() < now)
+                {
+                    VoiceChannel channel = audioRequest.getRight();
+                    Guild guild = channel.getGuild();
+
+                    Guild connGuild = api.getGuildById(guild.getId());
+                    if (connGuild == null)
+                    {
+                        //changeStatus(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD);
+                        it.remove();
+                        continue;
+                    }
+
+                    VoiceChannel connChannel = connGuild.getVoiceChannelById(channel.getId());
+                    if (connChannel == null)
+                    {
+                        //changeStatus(ConnectionStatus.DISCONNECTED_CHANNEL_DELETED);
+                        it.remove();
+                        continue;
+                    }
+
+                    if (!connGuild.getSelfMember().hasPermission(connChannel, Permission.VOICE_CONNECT))
+                    {
+                        //changeStatus(ConnectionStatus.DISCONNECTED_LOST_PERMISSION);
+                        it.remove();
+                        continue;
+                    }
+
+                    return audioRequest;
+                }
+            }
+        }
+
+        return null;
+    }
 
     public HashMap<String, SocketHandler> getHandlers()
     {
