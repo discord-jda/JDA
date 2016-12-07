@@ -18,6 +18,8 @@ package net.dv8tion.jda.core.entities.impl;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.managers.WebhookManager;
+import net.dv8tion.jda.core.managers.WebhookManagerUpdatable;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
@@ -26,12 +28,17 @@ import net.dv8tion.jda.core.requests.Route;
 public class WebhookImpl implements Webhook
 {
 
+    protected volatile WebhookManagerUpdatable managerUpdatable = null;
+    protected volatile WebhookManager manager = null;
+
+    private final Object mngLock = new Object();
     private final TextChannel channel;
     private final String id;
 
     private Member owner;
     private User user;
     private String token;
+
 
     public WebhookImpl(TextChannel channel, String id)
     {
@@ -102,6 +109,38 @@ public class WebhookImpl implements Webhook
                     request.onFailure(response);
             }
         };
+    }
+
+    @Override
+    public WebhookManager getManager()
+    {
+        WebhookManager mng = manager;
+        if (mng == null)
+        {
+            synchronized (mngLock)
+            {
+                mng = manager;
+                if (mng == null)
+                    mng = manager = new WebhookManager(this);
+            }
+        }
+        return mng;
+    }
+
+    @Override
+    public WebhookManagerUpdatable getManagerUpdatable()
+    {
+        WebhookManagerUpdatable mng = managerUpdatable;
+        if (mng == null)
+        {
+            synchronized (mngLock)
+            {
+                mng = managerUpdatable;
+                if (mng == null)
+                    mng = managerUpdatable = new WebhookManagerUpdatable(this);
+            }
+        }
+        return mng;
     }
 
     @Override
