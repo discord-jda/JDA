@@ -63,8 +63,6 @@ public interface Guild extends ISnowflake
 
     RestAction<List<Webhook>> getWebhooks();
 
-    // RestAction<Webhook> createWebhook();
-    // RestAction<Void> deleteWebhookById(String id); // should this be here?
     /**
      * The {@link net.dv8tion.jda.core.entities.Member Member} object of the owner of this {@link net.dv8tion.jda.core.entities.Guild Guild}.
      *

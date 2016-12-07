@@ -14,35 +14,16 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.entities;
+package net.dv8tion.jda.core.managers.fields;
 
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.managers.WebhookManager;
 import net.dv8tion.jda.core.managers.WebhookManagerUpdatable;
-import net.dv8tion.jda.core.requests.RestAction;
 
-public interface Webhook extends ISnowflake
+import java.util.function.Supplier;
+
+public abstract class WebhookField<T> extends Field<T, WebhookManagerUpdatable>
 {
-
-    JDA getJDA();
-
-    Guild getGuild();
-
-    TextChannel getChannel();
-
-    Member getOwner();
-
-    User getDefaultUser();
-
-    String getName();
-
-    String getToken();
-
-    String getUrl();
-
-    RestAction<Void> delete();
-
-    WebhookManager getManager();
-
-    WebhookManagerUpdatable getManagerUpdatable();
+    public WebhookField(WebhookManagerUpdatable manager, Supplier<T> originalValue)
+    {
+        super(manager, originalValue);
+    }
 }
