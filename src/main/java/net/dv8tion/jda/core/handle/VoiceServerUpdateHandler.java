@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.handle;
 
+import com.neovisionaries.ws.client.WebSocketException;
 import net.dv8tion.jda.core.audio.AudioConnection;
 import net.dv8tion.jda.core.audio.AudioWebSocket;
 import net.dv8tion.jda.core.entities.Guild;
@@ -24,6 +25,8 @@ import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.requests.GuildLock;
 import net.dv8tion.jda.core.requests.WebSocketClient;
 import org.json.JSONObject;
+
+import java.io.IOException;
 
 public class VoiceServerUpdateHandler extends SocketHandler
 {
@@ -45,7 +48,9 @@ public class VoiceServerUpdateHandler extends SocketHandler
 
         if (content.isNull("endpoint"))
         {
-            //TODO: change audio state status.
+            //Discord did not provide an endpoint yet, we are to wait until discord has resources to provide
+            // an endpoint, which will result in them sending another VOICE_SERVER_UPDATE which we will handle
+            // to actually connect to the audio server.
             return null;
         }
 
@@ -71,13 +76,14 @@ public class VoiceServerUpdateHandler extends SocketHandler
             return null;
         }
 
-//        if (!audioManager.isAttemptingToConnect())
-//            throw new IllegalStateException("Attempted to create an AudioConnection when we weren't expecting to create one.\n" +
-//                    "Did you attempt to start an audio connection...?");
+        try
+        {
+            AudioWebSocket socket = new AudioWebSocket(audioManager.getListenerProxy(), endpoint, api, guild, sessionId, token, audioManager.isAutoReconnect());
+            AudioConnection connection = new AudioConnection(socket, audioManager.getQueuedAudioConnection());
+            audioManager.setAudioConnection(connection);
+        }
+        catch (WebSocketException | IOException ignored) {} // handled in AudioWebSocket
 
-        AudioWebSocket socket = new AudioWebSocket(audioManager.getListenerProxy(), endpoint, api, guild, sessionId, token, audioManager.isAutoReconnect());
-        AudioConnection connection = new AudioConnection(socket, audioManager.getQueuedAudioConnection());
-        audioManager.setAudioConnection(connection);
         return null;
     }
 }

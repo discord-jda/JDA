@@ -80,7 +80,7 @@ public class AudioWebSocket extends WebSocketAdapter
     private DatagramSocket udpSocket;
     private InetSocketAddress address;
 
-    public AudioWebSocket(ConnectionListener listener, String endpoint, JDAImpl api, Guild guild, String sessionId, String token, boolean shouldReconnect)
+    public AudioWebSocket(ConnectionListener listener, String endpoint, JDAImpl api, Guild guild, String sessionId, String token, boolean shouldReconnect) throws WebSocketException, IOException
     {
         this.listener = listener;
         this.endpoint = endpoint;
@@ -115,6 +115,7 @@ public class AudioWebSocket extends WebSocketAdapter
             settings.setHost(proxy.getHostName());
             settings.setPort(proxy.getPort());
         }
+
         try
         {
             socket = factory.createSocket(wssEndpoint)
@@ -122,10 +123,19 @@ public class AudioWebSocket extends WebSocketAdapter
             changeStatus(ConnectionStatus.CONNECTING_AWAITING_WEBSOCKET_CONNECT);
             socket.connect();
         }
-        catch (IOException | WebSocketException e)
+        catch (WebSocketException e)
         {
-            //Completely fail here. We couldn't make the connection.
-            throw new RuntimeException(e);
+            LOG.warn("Failed to establish websocket connection: " + e.getError() + " - " + e.getMessage()
+                    + "\nClosing connection and attempting to reconnect.");
+            this.close(ConnectionStatus.ERROR_WEBSOCKET_UNABLE_TO_CONNECT);
+            throw e;
+        }
+        catch (IOException e)
+        {
+            LOG.warn("Encountered IOException while attempting to connect: " + e.getMessage()
+                    + "\nClosing connection and attempting to reconnect.");
+            this.close(ConnectionStatus.ERROR_WEBSOCKET_UNABLE_TO_CONNECT);
+            throw e;
         }
     }
 
