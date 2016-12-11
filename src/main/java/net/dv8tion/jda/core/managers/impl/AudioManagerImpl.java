@@ -74,9 +74,6 @@ public class AudioManagerImpl implements AudioManager
 
         if (!AUDIO_SUPPORTED)
             throw new UnsupportedOperationException("Sorry! Audio is disabled due to an internal JDA error! Contact Dev!");
-        if (queuedAudioConnection != null)
-            throw new IllegalStateException("Already attempting to start an AudioConnection with a VoiceChannel!\n" +
-                    "Currently Attempting Channel ID: " + queuedAudioConnection.getId() + "  |  New Attempt Channel ID: " + channel.getId());
         if (!guild.equals(channel.getGuild()))
             throw new IllegalArgumentException("The provided VoiceChannel is not a part of the Guild that this AudioManager handles." +
                     "Please provide a VoiceChannel from the proper Guild");
@@ -97,7 +94,7 @@ public class AudioManagerImpl implements AudioManager
             //Connection is already established, move to specified channel
 
             //If we are already connected to this VoiceChannel, then do nothing.
-            if (channel.getId().equals(audioConnection.getChannel().getId()))
+            if (channel.equals(audioConnection.getChannel()))
                 return;
 
             api.getClient().queueAudioConnect(channel);

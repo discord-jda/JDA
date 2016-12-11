@@ -16,12 +16,14 @@
 package net.dv8tion.jda.core;
 
 import net.dv8tion.jda.core.JDA.Status;
+import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import org.apache.http.HttpHost;
+import org.apache.http.util.Args;
 
 import javax.security.auth.login.LoginException;
 import java.util.Arrays;
@@ -53,6 +55,7 @@ public class JDABuilder
     protected boolean autoReconnect = true;
     protected boolean idle = false;
     protected IEventManager eventManager = null;
+    protected IAudioSendFactory audioSendFactory = null;
     protected JDA.ShardInfo shardInfo = null;
     protected Game game = null;
     protected OnlineStatus status = OnlineStatus.ONLINE;
@@ -203,6 +206,12 @@ public class JDABuilder
         return this;
     }
 
+    public JDABuilder setAudioSendFactory(IAudioSendFactory factory)
+    {
+        this.audioSendFactory = factory;
+        return this;
+    }
+
     /**
      * Sets whether or not we should mark our session as afk<p>
      * This value can be changed at any time in the {@link net.dv8tion.jda.core.managers.Presence Presence} from a JDA instance.
@@ -338,12 +347,15 @@ public class JDABuilder
     {
         jdaCreated = true;
 
-        JDAImpl jda = new JDAImpl(accountType, proxy, autoReconnect, enableVoice, enableShutdownHook, enableBulkDeleteSplitting);
+        JDAImpl jda = new JDAImpl(accountType, proxy, autoReconnect, enableVoice, enableShutdownHook,
+                enableBulkDeleteSplitting);
 
         if (eventManager != null)
-        {
             jda.setEventManager(eventManager);
-        }
+
+        if (audioSendFactory != null)
+            jda.setAudioSendFactory(audioSendFactory);
+
         listeners.forEach(jda::addEventListener);
         jda.setStatus(JDA.Status.INITIALIZED);  //This is already set by JDA internally, but this is to make sure the listeners catch it.
 //        jda.login(token, sharding);

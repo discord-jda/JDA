@@ -24,6 +24,8 @@ import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.audio.AudioWebSocket;
+import net.dv8tion.jda.core.audio.factory.DefaultSendFactory;
+import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
@@ -71,6 +73,7 @@ public class JDAImpl implements JDA
     protected WebSocketClient client;
     protected Requester requester;
     protected IEventManager eventManager = new InterfacedEventManager();
+    protected IAudioSendFactory audioSendFactory = new DefaultSendFactory();
     protected Status status = Status.INITIALIZING;
     protected SelfUser selfUser;
     protected ShardInfo shardInfo;
@@ -575,6 +578,17 @@ public class JDAImpl implements JDA
         return Collections.unmodifiableList(eventManager.getRegisteredListeners());
     }
 
+    public IAudioSendFactory getAudioSendFactory()
+    {
+        return audioSendFactory;
+    }
+
+    public void setAudioSendFactory(IAudioSendFactory factory)
+    {
+        Args.notNull(factory, "Provided IAudioSendFactory");
+        this.audioSendFactory = factory;
+    }
+
     public Requester getRequester()
     {
         return requester;
@@ -638,6 +652,14 @@ public class JDAImpl implements JDA
     public void setResponseTotal(int responseTotal)
     {
         this.responseTotal = responseTotal;
+    }
+
+    public String getIdentifierString()
+    {
+        if (shardInfo != null)
+            return "JDA " + shardInfo.getShardString();
+        else
+            return "JDA";
     }
 
 }

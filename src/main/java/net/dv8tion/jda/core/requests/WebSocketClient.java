@@ -197,13 +197,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     private void setupSendingThread()
     {
-        String shardString;
-        if (shardInfo != null)
-            shardString = " Shard [" + shardInfo.getShardId() + "\\" + shardInfo.getShardTotal() + "]";
-        else
-            shardString = "";
-
-        ratelimitThread = new Thread("JDA" + shardString + " Main-WS sending thread")
+        ratelimitThread = new Thread(api.getIdentifierString() + " MainWS-Sending Thread")
         {
 
             @Override
@@ -479,9 +473,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 }
             }
         });
-        keepAliveThread.setName("JDA MainWS-KeepAlive" + (shardInfo != null
-                ? " Shard [" + shardInfo.getShardId() + " / " + shardInfo.getShardTotal() + "]"
-                : ""));
+        keepAliveThread.setName(api.getIdentifierString() + " MainWS-KeepAlive Thread");
         keepAliveThread.setPriority(Thread.MAX_PRIORITY);
         keepAliveThread.setDaemon(true);
         keepAliveThread.start();

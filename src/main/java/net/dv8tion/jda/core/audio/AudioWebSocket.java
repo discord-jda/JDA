@@ -39,7 +39,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class AudioWebSocket extends WebSocketAdapter
 {
@@ -90,8 +92,10 @@ public class AudioWebSocket extends WebSocketAdapter
 
         synchronized (KEEP_ALIVE_POOLS)
         {
-            KEEP_ALIVE_POOLS.putIfAbsent(api, new ScheduledThreadPoolExecutor(0));
+            KEEP_ALIVE_POOLS.computeIfAbsent(api, jda ->
+                    new ScheduledThreadPoolExecutor(1, new KeepAliveThreadFactory(api)));
         }
+
         keepAlivePool = KEEP_ALIVE_POOLS.get(api);
 
         //Append the Secure Websocket scheme so that our websocket library knows how to connect
@@ -433,7 +437,7 @@ public class AudioWebSocket extends WebSocketAdapter
         }
     }
 
-    private void setupKeepAlive(int keepAliveInterval)
+    private void setupKeepAlive(final int keepAliveInterval)
     {
         if (keepAliveRunnable != null)
             LOG.fatal("Setting up a KeepAlive runnable while the previous one seems to still be active!!");
@@ -493,6 +497,26 @@ public class AudioWebSocket extends WebSocketAdapter
     public void setAutoReconnect(boolean shouldReconnect)
     {
         this.shouldReconnect = shouldReconnect;
+    }
+
+    private class KeepAliveThreadFactory implements ThreadFactory
+    {
+        final String identifier;
+        AtomicInteger threadCount = new AtomicInteger(1);
+
+        public KeepAliveThreadFactory(JDAImpl api)
+        {
+            identifier = api.getIdentifierString() + " Audio-KeepAlive Pool";
+        }
+
+        @Override
+        public Thread newThread(Runnable r)
+        {
+            Thread t = new Thread(r, identifier + " - Thread " + threadCount.getAndIncrement());
+            t.setDaemon(true);
+
+            return t;
+        }
     }
 }
 
