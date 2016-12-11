@@ -23,11 +23,15 @@ import net.dv8tion.jda.client.JDAClient;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.audio.AudioWebSocket;
+import net.dv8tion.jda.core.audio.factory.DefaultSendFactory;
+import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.hooks.InterfacedEventManager;
+import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.*;
@@ -58,6 +62,8 @@ public class JDAImpl implements JDA
     protected final HashMap<String, User> fakeUsers = new HashMap<>();
     protected final HashMap<String, PrivateChannel> fakePrivateChannels = new HashMap<>();
 
+    protected final HashMap<String, AudioManager> audioManagers = new HashMap<>();
+
     protected final AccountType accountType;
     protected final PresenceImpl presence;
     protected final JDAClient jdaClient;
@@ -67,6 +73,7 @@ public class JDAImpl implements JDA
     protected WebSocketClient client;
     protected Requester requester;
     protected IEventManager eventManager = new InterfacedEventManager();
+    protected IAudioSendFactory audioSendFactory = new DefaultSendFactory();
     protected Status status = Status.INITIALIZING;
     protected SelfUser selfUser;
     protected ShardInfo shardInfo;
@@ -106,7 +113,6 @@ public class JDAImpl implements JDA
         this.shardInfo = shardInfo;
         LOG.info("Login Successful!");
 
-        //TODO: Implement sharding
         client = new WebSocketClient(this);
 
         if (useShutdownHook)
@@ -458,7 +464,9 @@ public class JDAImpl implements JDA
     {
         setStatus(Status.SHUTTING_DOWN);
         getRequester().shutdown();
-        //TODO: Shutdown audio connections.
+        audioManagers.forEach((guildId, mng) -> mng.closeAudioConnection());
+        if (AudioWebSocket.KEEP_ALIVE_POOLS.containsKey(this))
+            AudioWebSocket.KEEP_ALIVE_POOLS.get(this).shutdownNow();
         getClient().setAutoReconnect(false);
         getClient().close();
 
@@ -478,7 +486,9 @@ public class JDAImpl implements JDA
     {
         setStatus(Status.SHUTTING_DOWN);
         List<IBucket> buckets = getRequester().shutdownNow();
-        //TODO: Shutdown audio connections.
+        audioManagers.forEach((guildId, mng) -> mng.closeAudioConnection());
+        if (AudioWebSocket.KEEP_ALIVE_POOLS.containsKey(this))
+            AudioWebSocket.KEEP_ALIVE_POOLS.get(this).shutdownNow();
         getClient().setAutoReconnect(false);
         getClient().close();
 
@@ -568,6 +578,17 @@ public class JDAImpl implements JDA
         return Collections.unmodifiableList(eventManager.getRegisteredListeners());
     }
 
+    public IAudioSendFactory getAudioSendFactory()
+    {
+        return audioSendFactory;
+    }
+
+    public void setAudioSendFactory(IAudioSendFactory factory)
+    {
+        Args.notNull(factory, "Provided IAudioSendFactory");
+        this.audioSendFactory = factory;
+    }
+
     public Requester getRequester()
     {
         return requester;
@@ -618,6 +639,11 @@ public class JDAImpl implements JDA
         return fakePrivateChannels;
     }
 
+    public HashMap<String, AudioManager> getAudioManagerMap()
+    {
+        return audioManagers;
+    }
+
     public void setSelfUser(SelfUser selfUser)
     {
         this.selfUser = selfUser;
@@ -626,6 +652,14 @@ public class JDAImpl implements JDA
     public void setResponseTotal(int responseTotal)
     {
         this.responseTotal = responseTotal;
+    }
+
+    public String getIdentifierString()
+    {
+        if (shardInfo != null)
+            return "JDA " + shardInfo.getShardString();
+        else
+            return "JDA";
     }
 
 }

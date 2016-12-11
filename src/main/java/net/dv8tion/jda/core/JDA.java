@@ -87,6 +87,11 @@ public interface JDA
         {
             return shardTotal;
         }
+
+        public String getShardString()
+        {
+            return "[" + shardId + " / " + shardTotal + "]";
+        }
     }
 
     /**
