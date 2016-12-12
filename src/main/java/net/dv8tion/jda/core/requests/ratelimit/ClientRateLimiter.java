@@ -42,25 +42,7 @@ public class ClientRateLimiter extends RateLimiter
         Bucket bucket = getBucket(route.getBaseRoute().getRoute());
         synchronized (bucket)
         {
-            long now = System.currentTimeMillis();
-            if (globalCooldown != null) //Are we on global cooldown?
-            {
-                if (now > globalCooldown)   //Verify that we should still be on cooldown.
-                {
-                    globalCooldown = null;  //If we are done cooling down, reset the globalCooldown and continue.
-                } else
-                {
-                    return globalCooldown - now;    //If we should still be on cooldown, return when we can go again.
-                }
-            }
-            if (bucket.retryAfter > now)
-            {
-                return bucket.retryAfter - now;
-            }
-            else
-            {
-                return null;
-            }
+           return bucket.getRateLimit();
         }
     }
 
@@ -146,9 +128,36 @@ public class ClientRateLimiter extends RateLimiter
             {
                 if (!submittedBuckets.contains(this))
                 {
+                    Long delay = getRateLimit();
+                    if (delay == null)
+                        delay = 0L;
+
+                    pool.schedule(this, delay, TimeUnit.MILLISECONDS);
                     submittedBuckets.add(this);
-                    pool.submit(this);
                 }
+            }
+        }
+
+        Long getRateLimit()
+        {
+            long now = System.currentTimeMillis();
+            if (globalCooldown != null) //Are we on global cooldown?
+            {
+                if (now > globalCooldown)   //Verify that we should still be on cooldown.
+                {
+                    globalCooldown = null;  //If we are done cooling down, reset the globalCooldown and continue.
+                } else
+                {
+                    return globalCooldown - now;    //If we should still be on cooldown, return when we can go again.
+                }
+            }
+            if (this.retryAfter > now)
+            {
+                return this.retryAfter - now;
+            }
+            else
+            {
+                return null;
             }
         }
 
@@ -159,7 +168,7 @@ public class ClientRateLimiter extends RateLimiter
                 return false;
 
             Bucket oBucket = (Bucket) o;
-            return route.equals(((Bucket) o).route);
+            return route.equals(oBucket.route);
         }
 
         @Override

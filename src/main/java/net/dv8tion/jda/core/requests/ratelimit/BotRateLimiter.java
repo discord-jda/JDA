@@ -31,6 +31,7 @@ import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.TimeUnit;
 
 public class BotRateLimiter extends RateLimiter
 {
@@ -48,29 +49,7 @@ public class BotRateLimiter extends RateLimiter
         Bucket bucket = getBucket(route.getRatelimitRoute());
         synchronized (bucket)
         {
-            if (globalCooldown != null) //Are we on global cooldown?
-            {
-                long now = getNow();
-                if (now > globalCooldown)   //Verify that we should still be on cooldown.
-                {
-                    globalCooldown = null;  //If we are done cooling down, reset the globalCooldown and continue.
-                } else
-                {
-                    return globalCooldown - now;    //If we should still be on cooldown, return when we can go again.
-                }
-            }
-            if (bucket.routeUsageRemaining <= 0)
-            {
-                if (getNow() > bucket.resetTime)
-                {
-                    bucket.routeUsageRemaining = bucket.routeUsageLimit;
-                    bucket.resetTime = 0;
-                }
-            }
-            if (bucket.routeUsageRemaining > 0)
-                return null;
-            else
-                return bucket.resetTime - getNow();
+            return bucket.getRateLimit();
         }
     }
 
@@ -222,10 +201,41 @@ public class BotRateLimiter extends RateLimiter
             {
                 if (!submittedBuckets.contains(this))
                 {
-                    pool.submit(this);
+                    Long delay = getRateLimit();
+                    if (delay == null)
+                        delay = 0L;
+
+                    pool.schedule(this, delay, TimeUnit.MILLISECONDS);
                     submittedBuckets.add(this);
                 }
             }
+        }
+
+        Long getRateLimit()
+        {
+            if (globalCooldown != null) //Are we on global cooldown?
+            {
+                long now = getNow();
+                if (now > globalCooldown)   //Verify that we should still be on cooldown.
+                {
+                    globalCooldown = null;  //If we are done cooling down, reset the globalCooldown and continue.
+                } else
+                {
+                    return globalCooldown - now;    //If we should still be on cooldown, return when we can go again.
+                }
+            }
+            if (this.routeUsageRemaining <= 0)
+            {
+                if (getNow() > this.resetTime)
+                {
+                    this.routeUsageRemaining = this.routeUsageLimit;
+                    this.resetTime = 0;
+                }
+            }
+            if (this.routeUsageRemaining > 0)
+                return null;
+            else
+                return this.resetTime - getNow();
         }
 
         @Override
@@ -235,7 +245,7 @@ public class BotRateLimiter extends RateLimiter
                 return false;
 
             Bucket oBucket = (Bucket) o;
-            return route.equals(((Bucket) o).route);
+            return route.equals(oBucket.route);
         }
 
         @Override
