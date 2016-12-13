@@ -136,7 +136,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         else
         {
-            updateAudioManagerReferences();
             JDAImpl.LOG.info("Successfully resumed Session!");
             api.getEventManager().handle(new ResumedEvent(api, api.getResponseTotal()));
         }
@@ -229,8 +228,17 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                             needRatelimit = !send(audioConnectPacket.toString(), false);
                             if (!needRatelimit)
                             {
-                                //Next allowed connect request, 5 seconds from now
+                                //If we didn't get RateLimited, Next allowed connect request will be 2 seconds from now
                                 audioRequest.setLeft(System.currentTimeMillis() + 2000);
+
+                                //If the connection is already established, then the packet just sent
+                                // was a move channel packet, thus, it won't trigger the removal from
+                                // queuedAudioConnections in VoiceServerUpdateHandler because we won't receive
+                                // that event just for a move, so we remove it here after successfully sending.
+                                if (audioManager.isConnected())
+                                {
+                                    queuedAudioConnections.remove(channel.getGuild().getId());
+                                }
                             }
                             attemptedToSend = true;
                         }
