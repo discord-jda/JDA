@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.*;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.requests.GuildLock;
+import net.dv8tion.jda.core.requests.WebSocketClient;
 import org.json.JSONObject;
 
 //import net.dv8tion.jda.core.events.voice.VoiceLeaveEvent;
@@ -36,20 +37,28 @@ public class GuildMemberRemoveHandler extends SocketHandler
     @Override
     protected String handleInternally(JSONObject content)
     {
-        if (GuildLock.get(api).isLocked(content.getString("guild_id")))
+        String guildId = content.getString("guild_id");
+        if (GuildLock.get(api).isLocked(guildId))
         {
-            return content.getString("guild_id");
+            return guildId;
         }
 
-        GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("guild_id"));
-        if(guild == null)
+        GuildImpl guild = (GuildImpl) api.getGuildMap().get(guildId);
+        String userId = content.getJSONObject("user").getString("id");
+        if(guild == null || userId.equals(api.getSelfUser().getId()))
         {
             //We probably just left the guild and this event is trying to remove us from the guild, therefore ignore
             return null;
         }
 
-        String userId = content.getJSONObject("user").getString("id");
         MemberImpl member = (MemberImpl) guild.getMembersMap().remove(userId);
+        if (member == null)
+        {
+            // The member is not in the guild?!
+            WebSocketClient.LOG.warn(String.format("Received a GUILD_MEMBER_REMOVE for a member that was not in the guild." +
+                    " GuildId: %s UserId: %s", guildId, userId));
+            return null;
+        }
 
         if (member.getVoiceState().inVoiceChannel())//If this user was in a VoiceChannel, fire VoiceLeaveEvent.
         {
