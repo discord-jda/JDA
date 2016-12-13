@@ -32,22 +32,15 @@ import java.util.List;
 public class ShutdownEvent extends Event
 {
     protected final OffsetDateTime shutdownTime;
-    protected final List<VoiceChannel> dcAudioConnections;
 
-    public ShutdownEvent(JDA api, OffsetDateTime shutdownTime, List<VoiceChannel> dcAudioConnections)
+    public ShutdownEvent(JDA api, OffsetDateTime shutdownTime)
     {
         super(api, -1);
         this.shutdownTime = shutdownTime;
-        this.dcAudioConnections = Collections.unmodifiableList(new LinkedList<>(dcAudioConnections));
     }
 
     public OffsetDateTime getShutdownTime()
     {
         return shutdownTime;
-    }
-
-    public List<VoiceChannel> getDisconnectedAudioConnections()
-    {
-        return dcAudioConnections;
     }
 }

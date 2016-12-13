@@ -19,6 +19,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.managers.PermOverrideManager;
 import net.dv8tion.jda.core.managers.PermOverrideManagerUpdatable;
+import net.dv8tion.jda.core.requests.RestAction;
 //import net.dv8tion.jda.core.managers.PermissionOverrideManager;
 
 import java.util.List;
@@ -149,4 +150,6 @@ public interface PermissionOverride
     PermOverrideManager getManager();
 
     PermOverrideManagerUpdatable getManagerUpdatable();
+
+    RestAction<Void> delete();
 }

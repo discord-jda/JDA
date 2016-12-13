@@ -108,7 +108,7 @@ public interface Channel extends ISnowflake
      * @return
      *      Possibly-null {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride} relating to the provided {@link net.dv8tion.jda.core.entities.User User}.
      */
-    PermissionOverride getOverrideForMember(Member member);
+    PermissionOverride getPermissionOverride(Member member);
 
     /**
      * The {@link PermissionOverride} relating to the specified {@link net.dv8tion.jda.core.entities.Role Role}.
@@ -120,7 +120,7 @@ public interface Channel extends ISnowflake
      * @return
      *      Possibly-null {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride} relating to the provided {@link net.dv8tion.jda.core.entities.Role Role}.
      */
-    PermissionOverride getOverrideForRole(Role role);
+    PermissionOverride getPermissionOverride(Role role);
 
     /**
      * Gets all of the {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides} that are part

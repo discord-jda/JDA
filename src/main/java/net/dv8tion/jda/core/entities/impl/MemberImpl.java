@@ -32,7 +32,7 @@ public class MemberImpl implements Member
 {
     private final Guild guild;
     private final User user;
-    private final TreeSet<Role> roles = new TreeSet<>((r1, r2) -> r2.compareTo(r1));
+    private final HashSet<Role> roles = new HashSet<>();
     private final GuildVoiceState voiceState;
 
     private String nickname;
@@ -104,7 +104,10 @@ public class MemberImpl implements Member
     @Override
     public List<Role> getRoles()
     {
-        return Collections.unmodifiableList(new ArrayList<>(roles));
+        List<Role> roleList = new ArrayList<>(roles);
+        roleList.sort((r1, r2) -> r2.compareTo(r1));
+
+        return Collections.unmodifiableList(roleList);
     }
 
     @Override
@@ -183,6 +186,11 @@ public class MemberImpl implements Member
         return PermissionUtil.canInteract(this, emote);
     }
 
+    @Override
+    public boolean isOwner() {
+        return this.equals(guild.getOwner());
+    }
+
     public MemberImpl setNickname(String nickname)
     {
         this.nickname = nickname;
@@ -207,7 +215,7 @@ public class MemberImpl implements Member
         return this;
     }
 
-    public TreeSet<Role> getRoleSet()
+    public Set<Role> getRoleSet()
     {
         return roles;
     }

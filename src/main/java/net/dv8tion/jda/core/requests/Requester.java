@@ -26,6 +26,7 @@ import com.mashape.unirest.request.body.MultipartBody;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDAInfo;
+import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.Route.CompiledRoute;
 import net.dv8tion.jda.core.requests.ratelimit.BotRateLimiter;
 import net.dv8tion.jda.core.requests.ratelimit.ClientRateLimiter;
@@ -42,7 +43,7 @@ public class Requester
     public static String USER_AGENT = "JDA DiscordBot (" + JDAInfo.GITHUB + ", " + JDAInfo.VERSION + ")";
     public static final String DISCORD_API_PREFIX = "https://discordapp.com/api/";
 
-    private final JDA api;
+    private final JDAImpl api;
     private final RateLimiter rateLimiter;
 
     public Requester(JDA api)
@@ -55,11 +56,16 @@ public class Requester
         if (accountType == null)
             throw new NullPointerException("Provided accountType was null!");
 
-        this.api = api;
+        this.api = (JDAImpl) api;
         if (accountType == AccountType.BOT)
             rateLimiter = new BotRateLimiter(this, 5);
         else
             rateLimiter = new ClientRateLimiter(this, 5);
+    }
+
+    public JDAImpl getJDA()
+    {
+        return api;
     }
 
     public void request(Request apiRequest)

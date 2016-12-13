@@ -27,10 +27,11 @@ import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Iterator;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.TimeUnit;
 
 public class BotRateLimiter extends RateLimiter
 {
@@ -48,29 +49,7 @@ public class BotRateLimiter extends RateLimiter
         Bucket bucket = getBucket(route.getRatelimitRoute());
         synchronized (bucket)
         {
-            if (globalCooldown != null) //Are we on global cooldown?
-            {
-                long now = getNow();
-                if (now > globalCooldown)   //Verify that we should still be on cooldown.
-                {
-                    globalCooldown = null;  //If we are done cooling down, reset the globalCooldown and continue.
-                } else
-                {
-                    return globalCooldown - now;    //If we should still be on cooldown, return when we can go again.
-                }
-            }
-            if (bucket.routeUsageRemaining <= 0)
-            {
-                if (getNow() > bucket.resetTime)
-                {
-                    bucket.routeUsageRemaining = bucket.routeUsageLimit;
-                    bucket.resetTime = 0;
-                }
-            }
-            if (bucket.routeUsageRemaining > 0)
-                return null;
-            else
-                return bucket.resetTime - getNow();
+            return bucket.getRateLimit();
         }
     }
 
@@ -99,8 +78,8 @@ public class BotRateLimiter extends RateLimiter
 
             if (code == 429)
             {
-                String global = headers.getFirst("x-ratelimit-global");
-                String retry = headers.getFirst("retry-after");
+                String global = headers.getFirst("X-RateLimit-Global");
+                String retry = headers.getFirst("Retry-After");
                 if (retry == null || retry.isEmpty())
                 {
                     JSONObject limitObj = new JSONObject(response.getBody());
@@ -163,12 +142,12 @@ public class BotRateLimiter extends RateLimiter
         {
             //Get the date header provided by Discord.
             //Format:  "date" : "Fri, 16 Sep 2016 05:49:36 GMT"
-            String date = headers.getFirst("date");
+            String date = headers.getFirst("Date");
             if (date != null)
             {
                 OffsetDateTime tDate = OffsetDateTime.parse(date, DateTimeFormatter.RFC_1123_DATE_TIME);
-                long lDate = tDate.toEpochSecond() * 1000;             //We want to work in milliseconds, not seconds
-                timeOffset = Math.floorDiv(lDate - time, 1000) * 1000; //Get offset, convert to seconds, round it down, convert to milliseconds.
+                long lDate = tDate.toInstant().toEpochMilli(); //We want to work in milliseconds, not seconds
+                timeOffset = lDate - time; //Get offset in milliseconds.
             }
         }
     }
@@ -177,9 +156,9 @@ public class BotRateLimiter extends RateLimiter
     {
         try
         {
-            bucket.resetTime = Long.parseLong(headers.getFirst("x-ratelimit-reset")) * 1000; //Seconds to milliseconds
-            bucket.routeUsageLimit = Integer.parseInt(headers.getFirst("x-ratelimit-limit"));
-            bucket.routeUsageRemaining = Integer.parseInt(headers.getFirst("x-ratelimit-remaining"));
+            bucket.resetTime = Long.parseLong(headers.getFirst("X-RateLimit-Reset")) * 1000; //Seconds to milliseconds
+            bucket.routeUsageLimit = Integer.parseInt(headers.getFirst("X-RateLimit-Limit"));
+            bucket.routeUsageRemaining = Integer.parseInt(headers.getFirst("X-RateLimit-Remaining"));
 
         }
         catch (NumberFormatException ex)
@@ -188,8 +167,12 @@ public class BotRateLimiter extends RateLimiter
                     && !bucket.getRoute().equals("users/@me")
                     && Requester.LOG.getEffectiveLevel().getPriority() <= SimpleLog.Level.DEBUG.getPriority())
             {
+                Requester.LOG.fatal("Encountered issue with headers when updating a bucket"
+                                  + "\nRoute: " + bucket.getRoute()
+                                  + "\nHeaders: " + headers);
                 Requester.LOG.log(ex);
             }
+
         }
     }
 
@@ -218,10 +201,41 @@ public class BotRateLimiter extends RateLimiter
             {
                 if (!submittedBuckets.contains(this))
                 {
-                    pool.submit(this);
+                    Long delay = getRateLimit();
+                    if (delay == null)
+                        delay = 0L;
+
+                    pool.schedule(this, delay, TimeUnit.MILLISECONDS);
                     submittedBuckets.add(this);
                 }
             }
+        }
+
+        Long getRateLimit()
+        {
+            if (globalCooldown != null) //Are we on global cooldown?
+            {
+                long now = getNow();
+                if (now > globalCooldown)   //Verify that we should still be on cooldown.
+                {
+                    globalCooldown = null;  //If we are done cooling down, reset the globalCooldown and continue.
+                } else
+                {
+                    return globalCooldown - now;    //If we should still be on cooldown, return when we can go again.
+                }
+            }
+            if (this.routeUsageRemaining <= 0)
+            {
+                if (getNow() > this.resetTime)
+                {
+                    this.routeUsageRemaining = this.routeUsageLimit;
+                    this.resetTime = 0;
+                }
+            }
+            if (this.routeUsageRemaining > 0)
+                return null;
+            else
+                return this.resetTime - getNow();
         }
 
         @Override
@@ -231,7 +245,7 @@ public class BotRateLimiter extends RateLimiter
                 return false;
 
             Bucket oBucket = (Bucket) o;
-            return route.equals(((Bucket) o).route);
+            return route.equals(oBucket.route);
         }
 
         @Override

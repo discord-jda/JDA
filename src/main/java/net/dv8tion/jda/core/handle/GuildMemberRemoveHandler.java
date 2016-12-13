@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.*;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
+import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.core.requests.GuildLock;
 import org.json.JSONObject;
 
@@ -58,12 +59,10 @@ public class GuildMemberRemoveHandler extends SocketHandler
             VoiceChannel channel = vState.getChannel();
             vState.setConnectedChannel(null);
             ((VoiceChannelImpl) channel).getConnectedMembersMap().remove(member);
-            //TODO: Implement after deciding how to handle VoiceChannel vs GroupCall for VoiceState.
-            //  After further study, might not need to actually have the event or the above code.
-//            api.getEventManager().handle(
-//                    new VoiceLeaveEvent(
-//                            api, responseNumber,
-//                            vState, channel));
+            api.getEventManager().handle(
+                    new GuildVoiceLeaveEvent(
+                            api, responseNumber,
+                            member, channel));
         }
 
         //The user is not in a different guild that we share

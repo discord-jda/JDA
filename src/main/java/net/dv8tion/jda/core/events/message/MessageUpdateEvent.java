@@ -21,9 +21,9 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.Event;
 
 /**
- * <b><u>MessageUpdateEvent</u></b><br/>
- * Fired if a Message is edited in a {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.<br/>
- * <br/>
+ * <b><u>MessageUpdateEvent</u></b><br>
+ * Fired if a Message is edited in a {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.<br>
+ * <br>
  * Use: This event indicates that a Message is edited in either a private or guild channel. Providing a MessageChannel and Message.
  */
 public class MessageUpdateEvent extends Event

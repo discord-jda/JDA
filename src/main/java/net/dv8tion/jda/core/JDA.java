@@ -21,6 +21,7 @@ import net.dv8tion.jda.client.JDAClient;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.Presence;
+import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.ratelimit.IBucket;
 import org.apache.http.HttpHost;
 
@@ -85,6 +86,11 @@ public interface JDA
         public int getShardTotal()
         {
             return shardTotal;
+        }
+
+        public String getShardString()
+        {
+            return "[" + shardId + " / " + shardTotal + "]";
         }
     }
 
@@ -168,6 +174,8 @@ public interface JDA
      *      Possibly-empty list of {@link net.dv8tion.jda.core.entities.User Users} that all have the same name as the provided name.
      */
     List<User> getUsersByName(String name, boolean ignoreCase);
+
+    RestAction<User> retrieveUserById(String id);
 
     /**
      * An unmodifiable list of all {@link net.dv8tion.jda.core.entities.Guild Guilds} that this account is connected to.<br>
@@ -327,7 +335,7 @@ public interface JDA
      * If there are no {@link net.dv8tion.jda.core.entities.Emote Emotes} with the provided name, then this returns an empty list.
      *
      * @param name
-     *          The name of the requested {@link net.dv8tion.jda.core.entities.Emotes Emotes}.
+     *          The name of the requested {@link net.dv8tion.jda.core.entities.Emote Emotes}.
      * @param ignoreCase
      *          Whether to ignore case or not.
      * @return
@@ -337,7 +345,7 @@ public interface JDA
     List<Emote> getEmotesByName(String name, boolean ignoreCase);
 
     /**
-     * Retrieves an emote matching the specified <code>id</code> if one is available in our cache.
+     * Retrieves an emote matching the specified {@code id} if one is available in our cache.
      *
      * @param id
      *      The emote id to look for
@@ -410,13 +418,13 @@ public interface JDA
 
     /**
      * Used to determine if JDA will process MESSAGE_DELETE_BULK messages received from Discord as a single
-     * {@link net.dv8tion.jda.events.message.MessageBulkDeleteEvent MessageBulkDeleteEvent} or split
-     * the deleted messages up and fire multiple {@link net.dv8tion.jda.events.message.MessageDeleteEvent MessageDeleteEvents},
+     * {@link net.dv8tion.jda.core.events.message.MessageBulkDeleteEvent MessageBulkDeleteEvent} or split
+     * the deleted messages up and fire multiple {@link net.dv8tion.jda.core.events.message.MessageDeleteEvent MessageDeleteEvents},
      * one for each deleted message.
      * <p>
      * By default, JDA will separate the bulk delete event into individual delete events, but this isn't as efficient as
      * handling a single event would be. It is recommended that BulkDelete Splitting be disabled and that the developer
-     * should instead handle the {@link net.dv8tion.jda.events.message.MessageBulkDeleteEvent MessageBulkDeleteEvent}
+     * should instead handle the {@link net.dv8tion.jda.core.events.message.MessageBulkDeleteEvent MessageBulkDeleteEvent}
      *
      * @return
      *      Whether or not JDA currently handles the BULK_MESSAGE_DELETE event by splitting it into individual MessageDeleteEvents or not.
@@ -449,8 +457,10 @@ public interface JDA
     /**
      * Installs an auxiliary cable into your system.
      *
-     * @param port the port
+     * @param port
+     *      the port
      * @throws UnsupportedOperationException
+     *      when you don't read the docs
      */
     void installAuxiliaryCable(int port) throws UnsupportedOperationException;
 

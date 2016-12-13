@@ -29,8 +29,10 @@ import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.entities.impl.MessageImpl;
 import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.utils.IOUtil;
+import org.apache.http.util.Args;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -38,6 +40,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import net.dv8tion.jda.core.entities.MessageEmbed;
 
 public class GroupImpl implements Group
 {
@@ -156,12 +159,19 @@ public class GroupImpl implements Group
     {
         return sendMessage(new MessageBuilder().appendString(text).build());
     }
+    
+    @Override
+    public RestAction<Message> sendMessage(MessageEmbed embed)
+    {
+        return sendMessage(new MessageBuilder().setEmbed(embed).build());
+    }
 
     @Override
     public RestAction<Message> sendMessage(Message msg)
     {
+        Args.notNull(msg, "Message");
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
-        JSONObject json = new JSONObject().put("content", msg.getRawContent()).put("tts", msg.isTTS());
+        JSONObject json = ((MessageImpl) msg).toJSONObject();
         return new RestAction<Message>(getJDA(), route, json)
         {
             @Override

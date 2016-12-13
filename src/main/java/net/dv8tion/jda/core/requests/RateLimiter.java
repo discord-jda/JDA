@@ -17,6 +17,7 @@
 package net.dv8tion.jda.core.requests;
 
 import com.mashape.unirest.http.HttpResponse;
+import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Route.CompiledRoute;
 import net.dv8tion.jda.core.requests.ratelimit.IBucket;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public abstract class RateLimiter
@@ -32,7 +34,7 @@ public abstract class RateLimiter
     //Implementations of this class exist in the net.dv8tion.jda.core.requests.ratelimit package.
 
     protected final Requester requester;
-    protected final ExecutorService pool;
+    protected final ScheduledExecutorService pool;
     protected volatile boolean isShutdown;
     protected volatile ConcurrentHashMap<String, IBucket> buckets = new ConcurrentHashMap<>();
     protected volatile ConcurrentLinkedQueue<IBucket> submittedBuckets = new ConcurrentLinkedQueue<>();
@@ -40,8 +42,8 @@ public abstract class RateLimiter
     protected RateLimiter(Requester requester, int poolSize)
     {
         this.requester = requester;
-        this.pool = Executors.newFixedThreadPool(poolSize);
         this.isShutdown = false;
+        this.pool = Executors.newScheduledThreadPool(poolSize, new RateLimitThreadFactory(requester.getJDA()));
     }
 
 
@@ -102,5 +104,25 @@ public abstract class RateLimiter
         catch (InterruptedException ignored) {}
 
         return buckets.values().stream().filter(b -> !b.getRequests().isEmpty()).collect(Collectors.toList());
+    }
+
+    private class RateLimitThreadFactory implements ThreadFactory
+    {
+        final String identifier;
+        AtomicInteger threadCount = new AtomicInteger(1);
+
+        public RateLimitThreadFactory(JDAImpl api)
+        {
+            identifier = api.getIdentifierString() + " RateLimit-Queue Pool";
+        }
+
+        @Override
+        public Thread newThread(Runnable r)
+        {
+            Thread t = new Thread(r, identifier + " - Thread " + threadCount.getAndIncrement());
+            t.setDaemon(true);
+
+            return t;
+        }
     }
 }

@@ -26,6 +26,8 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.utils.PermissionUtil;
+import org.apache.http.util.Args;
 import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
@@ -57,6 +59,7 @@ public class MessageImpl implements Message
     private List<Attachment> attachments = new LinkedList<>();
     private List<MessageEmbed> embeds = new LinkedList<>();
     private List<Emote> emotes = null;
+    private List<MessageReaction> reactions = new LinkedList<>();
 
     public MessageImpl(String id, MessageChannel channel, boolean fromWebhook)
     {
@@ -96,10 +99,62 @@ public class MessageImpl implements Message
         return channel.unpinMessageById(getId());
     }
 
-    public MessageImpl setPinned(boolean pinned)
+    @Override
+    public RestAction<Void> addReaction(Emote emote)
     {
-        this.pinned = pinned;
-        return this;
+        Args.notNull(emote, "Emote");
+
+        MessageReaction reaction = reactions.parallelStream()
+                .filter(r -> Objects.equals(r.getEmote().getId(), emote.getId()))
+                .findFirst().orElse(null);
+
+        if (reaction == null)
+        {
+            checkFake(emote, "Emote");
+            checkPermission(Permission.MESSAGE_ADD_REACTION);
+            if (!PermissionUtil.canInteract(api.getSelfUser(), emote, channel))
+                throw new IllegalArgumentException("Cannot react with the provided emote because it is not available in the current channel.");
+        }
+        else if (reaction.isSelf())
+        {
+            return new RestAction.EmptyRestAction<>(null);
+        }
+
+        return channel.addReactionById(id, emote);
+    }
+
+    @Override
+    public RestAction<Void> addReaction(String unicode)
+    {
+        Args.notEmpty(unicode, "Provided Unicode");
+
+        MessageReaction reaction = reactions.parallelStream()
+                .filter(r -> r.getEmote().getName().equals(unicode))
+                .findFirst().orElse(null);
+
+        if (reaction == null)
+            checkPermission(Permission.MESSAGE_ADD_REACTION);
+        else if (reaction.isSelf())
+            return new RestAction.EmptyRestAction<>(null);
+
+        return channel.addReactionById(id, unicode);
+    }
+
+    @Override
+    public RestAction<Void> clearReactions()
+    {
+        checkPermission(Permission.MESSAGE_MANAGE);
+        return new RestAction<Void>(getJDA(), Route.Messages.REMOVE_ALL_REACTIONS.compile(getChannel().getId(), getId()), null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
     }
 
     @Override
@@ -163,7 +218,88 @@ public class MessageImpl implements Message
     }
 
     @Override
-    public String getContent()
+    public synchronized String getStrippedContent()
+    {
+        if (strippedContent == null)
+        {
+            String tmp = getContent();
+            //all the formatting keys to keep track of
+            String[] keys = new String[] {"*", "_", "`", "~~"};
+
+            //find all tokens (formatting strings described above)
+            TreeSet<FormatToken> tokens = new TreeSet<>((t1, t2) -> Integer.compare(t1.start, t2.start));
+            for (String key : keys)
+            {
+                Matcher matcher = Pattern.compile(Pattern.quote(key)).matcher(tmp);
+                while (matcher.find())
+                {
+                    tokens.add(new FormatToken(key, matcher.start()));
+                }
+            }
+
+            //iterate over all tokens, find all matching pairs, and add them to the list toRemove
+            Stack<FormatToken> stack = new Stack<>();
+            List<FormatToken> toRemove = new ArrayList<>();
+            boolean inBlock = false;
+            for (FormatToken token : tokens)
+            {
+                if (stack.empty() || !stack.peek().format.equals(token.format) || stack.peek().start + token.format.length() == token.start)
+                {
+                    //we are at opening tag
+                    if (!inBlock)
+                    {
+                        //we are outside of block -> handle normally
+                        if (token.format.equals("`"))
+                        {
+                            //block start... invalidate all previous tags
+                            stack.clear();
+                            inBlock = true;
+                        }
+                        stack.push(token);
+                    }
+                    else if (token.format.equals("`"))
+                    {
+                        //we are inside of a block -> handle only block tag
+                        stack.push(token);
+                    }
+                }
+                else if (!stack.empty())
+                {
+                    //we found a matching close-tag
+                    toRemove.add(stack.pop());
+                    toRemove.add(token);
+                    if (token.format.equals("`") && stack.empty())
+                    {
+                        //close tag closed the block
+                        inBlock = false;
+                    }
+                }
+            }
+
+            //sort tags to remove by their start-index and iteratively build the remaining string
+            Collections.sort(toRemove, (t1, t2) -> Integer.compare(t1.start, t2.start));
+            StringBuilder out = new StringBuilder();
+            int currIndex = 0;
+            for (FormatToken formatToken : toRemove)
+            {
+                if (currIndex < formatToken.start)
+                {
+                    out.append(tmp.substring(currIndex, formatToken.start));
+                }
+                currIndex = formatToken.start + formatToken.format.length();
+            }
+            if (currIndex < tmp.length())
+            {
+                out.append(tmp.substring(currIndex));
+            }
+            //return the stripped text, escape all remaining formatting characters (did not have matching open/close before or were left/right of block
+            strippedContent = out.toString().replace("*", "\\*").replace("_", "\\_").replace("~", "\\~");
+        }
+        return strippedContent;
+    }
+
+    @Override
+    public synchronized String getContent()
     {
         if (subContent == null)
         {
@@ -263,7 +399,7 @@ public class MessageImpl implements Message
     }
 
     @Override
-    public List<Emote> getEmotes()
+    public synchronized List<Emote> getEmotes()
     {
         if (this.emotes == null)
         {
@@ -281,6 +417,12 @@ public class MessageImpl implements Message
             emotes = Collections.unmodifiableList(emotes);
         }
         return emotes;
+    }
+
+    @Override
+    public List<MessageReaction> getReactions()
+    {
+        return Collections.unmodifiableList(new LinkedList<>(reactions));
     }
 
     @Override
@@ -307,32 +449,7 @@ public class MessageImpl implements Message
         if (!api.getSelfUser().equals(getAuthor()))
             throw new UnsupportedOperationException("Attempted to update message that was not sent by this account. You cannot modify other User's messages!");
 
-
-        JSONObject json = new JSONObject().put("content", newContent.getRawContent()).put("tts", newContent.isTTS());
-        Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getChannel().getId(), getId());
-        return new RestAction<Message>(api, route, json)
-        {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                if (response.isOk())
-                {
-                    try
-                    {
-                        Message m = EntityBuilder.get(api).createMessage(response.getObject());
-                        request.onSuccess(m);
-                    }
-                    catch (IllegalArgumentException e)
-                    {
-                        request.onFailure(e);
-                    }
-                }
-                else
-                {
-                    request.onFailure(response);
-                }
-            }
-        };
+        return getChannel().editMessageById(getId(), newContent);
     }
 
     @Override
@@ -347,6 +464,12 @@ public class MessageImpl implements Message
                 throw new PermissionException(Permission.MESSAGE_MANAGE);
         }
         return channel.deleteMessageById(getId());
+    }
+
+    public MessageImpl setPinned(boolean pinned)
+    {
+        this.pinned = pinned;
+        return this;
     }
 
     public MessageImpl setMentionedUsers(List<User> mentionedUsers)
@@ -415,6 +538,12 @@ public class MessageImpl implements Message
         return this;
     }
 
+    public MessageImpl setReactions(List<MessageReaction> reactions)
+    {
+        this.reactions = reactions;
+        return this;
+    }
+
     @Override
     public boolean equals(Object o)
     {
@@ -441,85 +570,30 @@ public class MessageImpl implements Message
         return "M:" + author.getName() + ':' + content + '(' + getId() + ')';
     }
 
-    @Override
-    public String getStrippedContent()
+    public JSONObject toJSONObject()
     {
-        if (strippedContent == null)
+        JSONObject obj = new JSONObject();
+        obj.put("content", content);
+        obj.put("tts",     isTTS);
+        if (!embeds.isEmpty())
+            obj.put("embed", ((MessageEmbedImpl) embeds.get(0)).toJSONObject());
+        return obj;
+    }
+
+    private void checkPermission(Permission permission)
+    {
+        if (channel.getType() == ChannelType.TEXT)
         {
-            String tmp = getContent();
-            //all the formatting keys to keep track of
-            String[] keys = new String[] {"*", "_", "`", "~~"};
-
-            //find all tokens (formatting strings described above)
-            TreeSet<FormatToken> tokens = new TreeSet<>((t1, t2) -> Integer.compare(t1.start, t2.start));
-            for (String key : keys)
-            {
-                Matcher matcher = Pattern.compile(Pattern.quote(key)).matcher(tmp);
-                while (matcher.find())
-                {
-                    tokens.add(new FormatToken(key, matcher.start()));
-                }
-            }
-
-            //iterate over all tokens, find all matching pairs, and add them to the list toRemove
-            Stack<FormatToken> stack = new Stack<>();
-            List<FormatToken> toRemove = new ArrayList<>();
-            boolean inBlock = false;
-            for (FormatToken token : tokens)
-            {
-                if (stack.empty() || !stack.peek().format.equals(token.format) || stack.peek().start + token.format.length() == token.start)
-                {
-                    //we are at opening tag
-                    if (!inBlock)
-                    {
-                        //we are outside of block -> handle normally
-                        if (token.format.equals("`"))
-                        {
-                            //block start... invalidate all previous tags
-                            stack.clear();
-                            inBlock = true;
-                        }
-                        stack.push(token);
-                    }
-                    else if (token.format.equals("`"))
-                    {
-                        //we are inside of a block -> handle only block tag
-                        stack.push(token);
-                    }
-                }
-                else if (!stack.empty())
-                {
-                    //we found a matching close-tag
-                    toRemove.add(stack.pop());
-                    toRemove.add(token);
-                    if (token.format.equals("`") && stack.empty())
-                    {
-                        //close tag closed the block
-                        inBlock = false;
-                    }
-                }
-            }
-
-            //sort tags to remove by their start-index and iteratively build the remaining string
-            Collections.sort(toRemove, (t1, t2) -> Integer.compare(t1.start, t2.start));
-            StringBuilder out = new StringBuilder();
-            int currIndex = 0;
-            for (FormatToken formatToken : toRemove)
-            {
-                if (currIndex < formatToken.start)
-                {
-                    out.append(tmp.substring(currIndex, formatToken.start));
-                }
-                currIndex = formatToken.start + formatToken.format.length();
-            }
-            if (currIndex < tmp.length())
-            {
-                out.append(tmp.substring(currIndex));
-            }
-            //return the stripped text, escape all remaining formatting characters (did not have matching open/close before or were left/right of block
-            strippedContent = out.toString().replace("*", "\\*").replace("_", "\\_").replace("~", "\\~");
+            Channel location = (Channel) channel;
+            if (!location.getGuild().getSelfMember().hasPermission(location, permission))
+                throw new PermissionException(permission);
         }
-        return strippedContent;
+    }
+
+    private void checkFake(IFakeable o, String name)
+    {
+        if (o.isFake())
+            throw new IllegalArgumentException("We are unable to use a fake " + name + " in this situation!");
     }
 
     private static class FormatToken {

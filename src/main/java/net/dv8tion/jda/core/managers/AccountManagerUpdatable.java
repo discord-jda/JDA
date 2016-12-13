@@ -135,16 +135,17 @@ public class AccountManagerUpdatable
             @Override
             protected void handleResponse(Response response, Request request)
             {
-                if (response.isOk())
+                if (!response.isOk())
                 {
-                    String newToken = response.getObject().getString("token");
-                    newToken = newToken.replace("Bot ", "");
-
-                    ((JDAImpl) getJDA()).setToken(newToken);
-                    request.onSuccess(null);
-                }
-                else
                     request.onFailure(response);
+                    return;
+                }
+
+                String newToken = response.getObject().getString("token");
+                newToken = newToken.replace("Bot ", "");
+
+                ((JDAImpl) getJDA()).setToken(newToken);
+                request.onSuccess(null);
             }
         };
     }

@@ -27,7 +27,6 @@ import net.dv8tion.jda.core.managers.ChannelManager;
 import net.dv8tion.jda.core.managers.ChannelManagerUpdatable;
 import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.utils.IOUtil;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.util.Args;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -48,7 +47,7 @@ public class TextChannelImpl implements TextChannel
 
     private volatile ChannelManager manager;
     private volatile ChannelManagerUpdatable managerUpdatable;
-    private Object mngLock = new Object();
+    private final Object mngLock = new Object();
 
     private String name;
     private String topic;
@@ -179,18 +178,27 @@ public class TextChannelImpl implements TextChannel
     @Override
     public RestAction<Message> sendMessage(String text)
     {
-        return sendMessage(new MessageBuilder().appendString(text).build());
+        return sendMessage(new MessageBuilder().append(text).build());
     }
 
     @Override
+    public RestAction<Message> sendMessage(MessageEmbed embed)
+    {
+        return sendMessage(new MessageBuilder().setEmbed(embed).build());
+    }
+    
+    @Override
     public RestAction<Message> sendMessage(Message msg)
     {
+        Args.notNull(msg, "Message");
         checkVerification();
         checkPermission(Permission.MESSAGE_READ);
         checkPermission(Permission.MESSAGE_WRITE);
+        if (msg.getRawContent().isEmpty() && !msg.getEmbeds().isEmpty())
+            checkPermission(Permission.MESSAGE_EMBED_LINKS);
 
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
-        JSONObject json = new JSONObject().put("content", msg.getRawContent()).put("tts", msg.isTTS());
+        JSONObject json = ((MessageImpl) msg).toJSONObject();
         return new RestAction<Message>(getJDA(), route, json)
         {
             @Override
@@ -471,13 +479,13 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
-    public PermissionOverride getOverrideForMember(Member member)
+    public PermissionOverride getPermissionOverride(Member member)
     {
         return memberOverrides.get(member);
     }
 
     @Override
-    public PermissionOverride getOverrideForRole(Role role)
+    public PermissionOverride getPermissionOverride(Role role)
     {
         return roleOverrides.get(role);
     }
@@ -579,7 +587,10 @@ public class TextChannelImpl implements TextChannel
             protected void handleResponse(Response response, Request request)
             {
                 if (!response.isOk())
+                {
                     request.onFailure(response);
+                    return;
+                }
 
                 getMemberOverrideMap().put(member, override);
                 request.onSuccess(override);
@@ -612,7 +623,10 @@ public class TextChannelImpl implements TextChannel
             protected void handleResponse(Response response, Request request)
             {
                 if (!response.isOk())
+                {
                     request.onFailure(response);
+                    return;
+                }
 
                 getRoleOverrideMap().put(role, override);
                 request.onSuccess(override);

@@ -44,6 +44,10 @@ import net.dv8tion.jda.core.events.guild.voice.*;
 import net.dv8tion.jda.core.events.message.*;
 import net.dv8tion.jda.core.events.message.guild.*;
 import net.dv8tion.jda.core.events.message.priv.*;
+import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent;
+import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
+import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveAllEvent;
+import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.core.events.role.GenericRoleEvent;
 import net.dv8tion.jda.core.events.role.RoleCreateEvent;
 import net.dv8tion.jda.core.events.role.RoleDeleteEvent;
@@ -74,6 +78,8 @@ import net.dv8tion.jda.core.events.user.*;
  */
 public abstract class ListenerAdapter implements EventListener
 {
+    public void onGenericEvent(Event event) {}
+
     //JDA Events
     public void onReady(ReadyEvent event) {}
     public void onResume(ResumedEvent event) {}
@@ -115,6 +121,9 @@ public abstract class ListenerAdapter implements EventListener
     public void onMessageDelete(MessageDeleteEvent event) {}
     public void onMessageBulkDelete(MessageBulkDeleteEvent event) {}
     public void onMessageEmbed(MessageEmbedEvent event) {}
+    public void onMessageReactionAdd(MessageReactionAddEvent event) {}
+    public void onMessageReactionRemove(MessageReactionRemoveEvent event) {}
+    public void onMessageReactionRemoveAll(MessageReactionRemoveAllEvent event) {}
 
 //    public void onInviteReceived(InviteReceivedEvent event) {}
 
@@ -200,6 +209,7 @@ public abstract class ListenerAdapter implements EventListener
 
     //Generic Events
     public void onGenericMessage(GenericMessageEvent event) {}
+    public void onGenericMessageReaction(GenericMessageReactionEvent event) {}
     public void onGenericGuildMessage(GenericGuildMessageEvent event) {}
     public void onGenericPrivateMessage(GenericPrivateMessageEvent event) {}
     public void onGenericUser(GenericUserEvent event) {}
@@ -276,6 +286,7 @@ public abstract class ListenerAdapter implements EventListener
     @Override
     public final void onEvent(Event event)
     {
+        onGenericEvent(event);
         //JDA Events
         if (event instanceof ReadyEvent)
             onReady((ReadyEvent) event);
@@ -322,6 +333,12 @@ public abstract class ListenerAdapter implements EventListener
             onMessageBulkDelete((MessageBulkDeleteEvent) event);
         else if (event instanceof MessageEmbedEvent)
             onMessageEmbed((MessageEmbedEvent) event);
+        else if (event instanceof MessageReactionAddEvent)
+            onMessageReactionAdd((MessageReactionAddEvent) event);
+        else if (event instanceof MessageReactionRemoveEvent)
+            onMessageReactionRemove((MessageReactionRemoveEvent) event);
+        else if (event instanceof MessageReactionRemoveAllEvent)
+            onMessageReactionRemoveAll((MessageReactionRemoveAllEvent) event);
 //        //Invite Messages
 //        else if (event instanceof InviteReceivedEvent)
 //            onInviteReceived(((InviteReceivedEvent) event));
@@ -500,6 +517,8 @@ public abstract class ListenerAdapter implements EventListener
         //Start a new if statement so that these are no overridden by the above events.
         if (event instanceof GenericGuildMessageEvent)
             onGenericGuildMessage((GenericGuildMessageEvent) event);
+        else if (event instanceof GenericMessageReactionEvent)
+            onGenericMessageReaction((GenericMessageReactionEvent) event);
         else if (event instanceof GenericPrivateMessageEvent)
             onGenericPrivateMessage((GenericPrivateMessageEvent) event);
         else if (event instanceof GenericTextChannelUpdateEvent)

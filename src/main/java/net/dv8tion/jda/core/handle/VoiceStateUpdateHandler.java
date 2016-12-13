@@ -16,7 +16,9 @@
 
 package net.dv8tion.jda.core.handle;
 
-import net.dv8tion.jda.client.entities.*;
+import net.dv8tion.jda.client.entities.Call;
+import net.dv8tion.jda.client.entities.CallUser;
+import net.dv8tion.jda.client.entities.CallableChannel;
 import net.dv8tion.jda.client.entities.impl.CallImpl;
 import net.dv8tion.jda.client.entities.impl.CallVoiceStateImpl;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
@@ -30,6 +32,7 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.entities.impl.MemberImpl;
 import net.dv8tion.jda.core.entities.impl.VoiceChannelImpl;
 import net.dv8tion.jda.core.events.guild.voice.*;
+import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.requests.GuildLock;
 import net.dv8tion.jda.core.requests.WebSocketClient;
 import org.json.JSONObject;
@@ -144,6 +147,15 @@ public class VoiceStateUpdateHandler extends SocketHandler
             }
             else
             {
+                //If the connect account is the one that is being moved, and this instance of JDA
+                // is connected or attempting to connect, them change the channel we expect to be connected to.
+                if (guild.getSelfMember().equals(member))
+                {
+                    AudioManagerImpl mng = (AudioManagerImpl) api.getAudioManagerMap().get(guildId);
+                    if (mng != null && (mng.isConnected() || mng.isAttemptingToConnect()))
+                        mng.setConnectedChannel(channel);
+                }
+
                 channel.getConnectedMembersMap().put(userId, member);
                 oldChannel.getConnectedMembersMap().remove(userId);
                 api.getEventManager().handle(

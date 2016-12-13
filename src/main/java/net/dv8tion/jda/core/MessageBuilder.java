@@ -15,10 +15,7 @@
  */
 package net.dv8tion.jda.core;
 
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.MessageImpl;
 
 import java.util.*;
@@ -32,19 +29,29 @@ public class MessageBuilder
     public static final String TEXTCHANNEL_KEY = "%TC%";
     public static final String EVERYONE_KEY = "%E%";
     public static final String HERE_KEY = "%H%";
-    protected final StringBuilder builder = new StringBuilder();
-    protected final List<User> mentioned = new LinkedList<>();
-    protected final List<TextChannel> mentionedTextChannels = new LinkedList<>();
-    protected final List<Role> mentionedRoles = new LinkedList<>();
-    protected boolean mentionEveryone = false;
-    protected boolean isTTS = false;
-    protected Pattern formatPattern;
 
-    public MessageBuilder()
-    {
-        formatPattern = Pattern.compile(String.format("%s|%s|%s|%s|%s",
-                USER_KEY, ROLE_KEY, TEXTCHANNEL_KEY, EVERYONE_KEY, HERE_KEY));
-    }
+    /**
+     * A constant for <b>@everyone</b> mentions.
+     * Used in {@link #append(IMentionable)}
+     */
+    public static final IMentionable EVERYONE_MENTION = () -> "@everyone";
+    /**
+     * A constant for <b>@here</b> mentions.
+     * Used in {@link #append(IMentionable)}
+     */
+    public static final IMentionable HERE_MENTION = () -> "@here";
+
+    protected static final Pattern FORMAT_PATTERN = Pattern.compile(String.format("%s|%s|%s|%s|%s", USER_KEY, ROLE_KEY, TEXTCHANNEL_KEY, EVERYONE_KEY, HERE_KEY));
+    protected static final Pattern USER_MENTION_PATTERN = Pattern.compile("<@!{0,1}([0-9]+)>");
+    protected static final Pattern CHANNEL_MENTION_PATTERN = Pattern.compile("<#!{0,1}([0-9]+)>");
+    protected static final Pattern ROLE_MENTION_PATTERN = Pattern.compile("<@&!{0,1}([0-9]+)>");
+
+    protected final StringBuilder builder = new StringBuilder();
+
+    protected boolean isTTS = false;
+    protected MessageEmbed embed;
+
+    public MessageBuilder() {}
 
     /**
      * Makes the created Message a TTS message
@@ -57,6 +64,32 @@ public class MessageBuilder
         this.isTTS = tts;
         return this;
     }
+    
+    /**
+     * Adds an embed to the Message
+     *
+     * @param embed the embed to add, or null to remove
+     * @return this instance
+     */
+    public MessageBuilder setEmbed(MessageEmbed embed)
+    {
+        this.embed = embed;
+        return this;
+    }
+
+    /**
+     * Appends a string to the Message
+     * 
+     * @deprecated use {@link #append(CharSequence)} instead
+     *
+     * @param text the text to append
+     * @return this instance
+     */
+    @Deprecated
+    public MessageBuilder appendString(CharSequence text)
+    {
+        return this.append(text);
+    }
 
     /**
      * Appends a string to the Message
@@ -64,20 +97,44 @@ public class MessageBuilder
      * @param text the text to append
      * @return this instance
      */
-    public MessageBuilder appendString(String text)
+    public MessageBuilder append(CharSequence text)
     {
         builder.append(text);
         return this;
     }
 
     /**
+     * Appends the string repesentation of an object to the Message.<p>
+     * This is the same as <code>append(String.valueOf(object))</code>
+     * 
+     * @param object the object to append
+     * @return this instance
+     */
+    public MessageBuilder append(Object object)
+    {
+        return append(String.valueOf(object));
+    }
+
+    /**
+     * Appends a mention to the Message
+     *
+     * @param mention the mention to append
+     * @return this instance
+     */
+    public MessageBuilder append(IMentionable mention)
+    {
+        builder.append(mention.getAsMention());
+        return this;
+    }
+
+    /**
      * Appends a formatted string to the Message
      *
-     * @param text   the text to append
+     * @param text the text to append
      * @param format the format(s) to apply to the text
      * @return this instance
      */
-    public MessageBuilder appendString(String text, Formatting... format)
+    public MessageBuilder append(CharSequence text, Formatting... format)
     {
         boolean blockPresent = false;
         for (Formatting formatting : format)
@@ -102,6 +159,21 @@ public class MessageBuilder
             builder.append(format[i].getTag());
         }
         return this;
+    }
+
+    /**
+     * Appends a formatted string to the Message
+     * 
+     * @deprecated use {@link #append(CharSequence, Formatting...)} instead
+     *
+     * @param text the text to append
+     * @param format the format(s) to apply to the text
+     * @return this instance
+     */
+    @Deprecated
+    public MessageBuilder appendString(CharSequence text, Formatting... format)
+    {
+        return this.append(text, format);
     }
 
     /**
@@ -136,11 +208,10 @@ public class MessageBuilder
      * name was "Bob", it would say:<br>
      * <pre>  "Bob is really cool!"</pre>
      *
-     * @param format
-     *          A format string.
+     * @param format a format string.
      * @param args
-     *          An array objects that will be used to replace the tokens.
-     *          They must be provided in the order that the tokens appear in the provided format string.
+     *          an array objects that will be used to replace the tokens, they must be
+     *          provided in the order that the tokens appear in the provided format string.
      * @return
      *      this instance of the MessageBuilder. Useful for chaining.
      */
@@ -152,11 +223,11 @@ public class MessageBuilder
         int index = 0;
         int stringIndex = 0;
         StringBuilder sb = new StringBuilder();
-        Matcher m = formatPattern.matcher(format);
-        List<Class> classes = Arrays.asList(User.class, TextChannel.class, Role.class);
+        Matcher m = FORMAT_PATTERN.matcher(format);
+        List<Class< ? extends IMentionable>> classes = Arrays.asList(User.class, TextChannel.class, Role.class);
         while (m.find() && stringIndex < format.length())
         {
-            Class target = null;
+            Class<? extends IMentionable> target = null;
             boolean everyone = false;
             switch (m.group())
             {
@@ -199,19 +270,16 @@ public class MessageBuilder
                         {
                             User u = (User) arg;
                             args[i] = u.getAsMention();
-                            mentioned.add(u);
                         }
                         else if (arg instanceof TextChannel)
                         {
                             TextChannel tc = (TextChannel) arg;
                             args[i] = tc.getAsMention();
-                            mentionedTextChannels.add(tc);
                         }
                         else if (arg instanceof Role)
                         {
                             Role r = (Role) arg;
                             args[i] = r.getAsMention();
-                            mentionedRoles.add(r);
                         }
                         else
                             throw new IllegalArgumentException("When checking instances of arguments, something failed. Contact dev.");
@@ -230,12 +298,10 @@ public class MessageBuilder
                 if (everyone)
                 {
                     sb.append("@everyone");
-                    mentionEveryone = true;
                 }
                 else
                 {
                     sb.append("@here");
-                    mentionEveryone = true;
                 }
             }
         }
@@ -249,11 +315,11 @@ public class MessageBuilder
     /**
      * Appends a code-block to the Message
      *
-     * @param text     the code to append
+     * @param text the code to append
      * @param language the language of the code. If unknown use an empty string
      * @return this instance
      */
-    public MessageBuilder appendCodeBlock(String text, String language)
+    public MessageBuilder appendCodeBlock(CharSequence text, CharSequence language)
     {
         builder.append("```").append(language).append('\n').append(text).append("\n```");
         return this;
@@ -262,66 +328,71 @@ public class MessageBuilder
     /**
      * Appends a mention to the Message
      *
+     * @deprecated use {@link #append(IMentionable)} instead
+     *
      * @param user the user to mention
      * @return this instance
      */
+    @Deprecated
     public MessageBuilder appendMention(User user)
     {
-        builder.append("<@").append(user.getId()).append('>');
-        mentioned.add(user);
-        return this;
+        return this.append(user);
     }
 
     /**
      * Appends a @everyone mention to the Message
+     * 
+     * @deprecated use {@linkplain MessageBuilder#append(IMentionable)} with {@link MessageBuilder#EVERYONE_MENTION} instead
      *
      * @return this instance
      */
+    @Deprecated
     public MessageBuilder appendEveryoneMention()
     {
-        builder.append("@everyone");
-        mentionEveryone = true;
-        return this;
+        return this.append(EVERYONE_MENTION);
     }
     
     /**
      * Appends a @here mention to the Message
+     * 
+     * @deprecated use {@linkplain MessageBuilder#append(IMentionable)} with {@link MessageBuilder#HERE_MENTION} instead
      *
      * @return this instance
      */
+    @Deprecated
     public MessageBuilder appendHereMention()
     {
-        builder.append("@here");
-        mentionEveryone = true;
-        return this;
+        return this.append(HERE_MENTION);
     }
 
     /**
      * Appends a channel mention to the Message.
      * For this to work, the given TextChannel has to be from the Guild the mention is posted to.
      *
-     * @param channel the TextChannel to mention
+     * @deprecated use {@link #append(IMentionable)} instead
+     *
+     * @param channel the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} to mention
      * @return this instance
      */
+    @Deprecated
     public MessageBuilder appendMention(TextChannel channel)
     {
-        builder.append("<#").append(channel.getId()).append('>');
-        mentionedTextChannels.add(channel);
-        return this;
+        return this.append(channel);
     }
 
     /**
      * Appends a Role mention to the Message.
      * For this to work, the given Role has to be from the Guild the mention is posted to.
      *
-     * @param role the Role to mention
+     * @deprecated use {@link #append(IMentionable)} instead
+     *
+     * @param role the {@link net.dv8tion.jda.core.entities.Role Role} to mention
      * @return this instance
      */
+    @Deprecated
     public MessageBuilder appendMention(Role role)
     {
-        builder.append("<@&").append(role.getId()).append('>');
-        mentionedRoles.add(role);
-        return this;
+        return this.append(role);
     }
 
     /**
@@ -330,16 +401,24 @@ public class MessageBuilder
      * If this value is <code>0</code> or greater than <code>2000</code> when {@link #build()} is called, an exception
      * will be raised.
      *
-     * @return
-     *      The currently length of the content that will be built into a Message.
+     * @return the currently length of the content that will be built into a Message.
      */
-    public int getLength()
+    public int length()
     {
         return builder.length();
     }
 
     /**
-     * Creates a {@link net.dv8tion.jda.core.entities.Message Message} object from this Builder
+     * Checks if the message contains any contend. This includes text as well as embeds.
+     * 
+     * @return weather the message contains content
+     */
+    public boolean isEmpty() {
+        return builder.length() == 0 && embed == null;
+    }
+
+    /**
+     * Creates a {@link net.dv8tion.jda.core.entities.Message Message} object from this MessageBuilder
      *
      * @return the created {@link net.dv8tion.jda.core.entities.Message Message}
      *
@@ -352,17 +431,505 @@ public class MessageBuilder
     public Message build()
     {
         String message = builder.toString();
-        if (message.isEmpty())
+        if (this.isEmpty())
             throw new UnsupportedOperationException("Cannot build a Message with no content. (You never added any content to the message)");
         if (message.length() > 2000)
             throw new UnsupportedOperationException("Cannot build a Message with more than 2000 characters. Please limit your input.");
 
-        return new MessageImpl("", null, false).setContent(message).setTTS(isTTS).setMentionedUsers(mentioned)
-                .setMentionedChannels(mentionedTextChannels).setMentionedRoles(mentionedRoles).setMentionsEveryone(mentionEveryone);
+        return new MessageImpl("", null, false).setContent(message).setTTS(isTTS)
+                .setEmbeds(embed == null ? new LinkedList<>() : Collections.singletonList(embed));
     }
 
     /**
-     * Holds the Available formatting used in {@link #appendString(String, net.dv8tion.jda.core.MessageBuilder.Formatting...)}
+     * Replaces each substring that matches the target string with the specified replacement string.
+     * The replacement proceeds from the beginning of the string to the end, for example, replacing
+     * "aa" with "b" in the message "aaa" will result in "ba" rather than "ab".
+     *
+     * @param target the sequence of char values to be replaced
+     * @param replacement the replacement sequence of char values
+     * @return this instance
+     */
+    public MessageBuilder replaceAll(String target, String replacement)
+    {
+        int index;
+        while ((index = builder.indexOf(target)) != -1)
+        {
+            builder.replace(index, index + target.length(), replacement);
+        }
+        return this;
+    }
+
+    /**
+     * Replaces the first substring that matches the target string with the specified replacement string.
+     *
+     * @param target the sequence of char values to be replaced
+     * @param replacement the replacement sequence of char values
+     * @return this instance
+     */
+    public MessageBuilder replaceFirst(String target, String replacement)
+    {
+        int index = builder.indexOf(target);
+        if (index != -1)
+        {
+            builder.replace(index, index + target.length(), replacement);
+        }
+        return this;
+    }
+
+    /**
+     * Replaces the last substring that matches the target string with the specified replacement string.
+     *
+     * @param target the sequence of char values to be replaced
+     * @param replacement the replacement sequence of char values
+     * @return this instance
+     */
+    public MessageBuilder replaceLast(String target, String replacement)
+    {
+        int index = builder.lastIndexOf(target);
+        if (index != -1)
+        {
+            builder.replace(index, index + target.length(), replacement);
+        }
+        return this;
+    }
+
+    /**
+     * Removes all mentions and replaces them with the closest looking textual representation.<p>
+     * <p>
+     * Use this over {@link #stripMentions(Guild)} if {@link MentionType.USER User} mentions should be replaced with their user names
+     *
+     * @param jda the JDA instance
+     * @return this instance
+     */
+    public MessageBuilder stripMentions(JDA jda)
+    {
+        return this.stripMentions(jda, (Guild) null, MentionType.EVERYONE, MentionType.HERE, MentionType.CHANNEL, MentionType.ROLE, MentionType.USER);
+    }
+
+    /**
+     * Removes all mentions and replaces them with the closest looking textual representation.<p>
+     * <p>
+     * Use this over {@link #stripMentions(JDA)} if {@link MentionType.USER User} mentions should be replaced with their nicknames in a specific guild
+     *
+     * @param guild the guild for {@link MentionType.USER User} mentions 
+     * @return this instance
+     */
+    public MessageBuilder stripMentions(Guild guild)
+    {
+        return this.stripMentions(guild.getJDA(), guild, MentionType.EVERYONE, MentionType.HERE, MentionType.CHANNEL, MentionType.ROLE, MentionType.USER);
+    }
+
+    /**
+     * Removes all mentions of the specified types and replaces them with the closest looking textual representation.<p>
+     * <p>
+     * Use this over {@link #stripMentions(JDA, MentionType...)} if {@link MentionType.USER User} mentions should be replaced with their nicknames in a specific guild
+     * 
+     * @param guild the guild for {@link MentionType.USER User} mentions 
+     * @return this instance
+     */
+    public MessageBuilder stripMentions(Guild guild, MentionType... types)
+    {
+        return this.stripMentions(guild.getJDA(), guild, types);
+    }
+
+    /**
+     * Removes all mentions of the specified types and replaces them with the closest looking textual representation.<p>
+     * <p>
+     * Use this over {@link #stripMentions(Guild, MentionType...)} if {@link MentionType.USER User} mentions should be replaced with their user names
+     * 
+     * @param jda the {@link net.dv8tion.jda.core.JDA JDA} instance, only needed for {@link MentionType.USER User}, {@link MentionType.CHANNEL Channel} and {@link MentionType.GUILD Guild} mentions
+     * @param types the {@link MentionType MentionTypes} that should be stripped
+     * @return this instance
+     */
+    public MessageBuilder stripMentions(JDA jda, MentionType... types)
+    {
+        return this.stripMentions(jda, (Guild) null, types);
+    }
+
+    private MessageBuilder stripMentions(JDA jda, Guild guild, MentionType... types)
+    {
+        if (types == null)
+            return this;
+
+        String string = null;
+
+        for (MentionType mention : types)
+        {
+            if (mention != null)
+            {
+                switch (mention)
+                {
+                    case EVERYONE:
+                        replaceAll("@everyone", "@\u0435veryone");
+                        break;
+                    case HERE:
+                        replaceAll("@here", "@h\u0435re");
+                        break;
+                    case CHANNEL:
+                    {
+                        if (string == null)
+                        {
+                            string = builder.toString();
+                        }
+                        
+                        Matcher matcher = CHANNEL_MENTION_PATTERN.matcher(string);
+                        while (matcher.find())
+                        {
+                            TextChannel channel = jda.getTextChannelById(matcher.group(1));
+                            if (channel != null)
+                            {
+                                replaceAll(matcher.group(), "#" + channel.getName());
+                            }
+                        }
+                        break;
+                    }
+                    case ROLE:
+                    {    
+                        if (string == null)
+                        {
+                            string = builder.toString();
+                        }
+
+                        Matcher matcher = ROLE_MENTION_PATTERN.matcher(string);
+                        while (matcher.find())
+                        {
+                            for (Guild g : jda.getGuilds())
+                            {
+                                Role role = g.getRoleById(matcher.group(1));
+                                if (role != null)
+                                {
+                                    replaceAll(matcher.group(), "@"+role.getName());
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    }
+                    case USER:
+                    {
+                        if (string == null)
+                        {
+                            string = builder.toString();
+                        }
+
+                        Matcher matcher = USER_MENTION_PATTERN.matcher(string);
+                        while (matcher.find())
+                        {
+                            User user = jda.getUserById(matcher.group(1));
+                            String replacement = null;
+
+                            if (user == null)
+                                continue;
+
+                            Member member;
+
+                            if (guild != null && (member = guild.getMember(user)) != null)
+                                replacement = member.getEffectiveName();
+                            else
+                                replacement = user.getName();
+
+                            replaceAll(matcher.group(), "@" + replacement);
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        
+        return this;
+    }
+
+    /**
+     * Returns the underlying {@link StringBuilder}.
+     * 
+     * @return the {@link StringBuilder} used by this {@link MessageBuilder}
+     */
+    public StringBuilder getStringBuilder()
+    {
+        return this.builder;
+    }
+
+    /**
+     * Returns the index within this string of the first occurrence of the
+     * specified substring between the specified indices.
+     *
+     * If no such value of <i>k</i> exists, then {@code -1} is returned.
+     *
+     * @param target the substring to search for.
+     * @param fromIndex the index from which to start the search.
+     * @param endIndex the index at which to end the search.
+     * @return  the index of the first occurrence of the specified substring between
+     *          the specified indices or {@code -1} if there is no such occurrence.
+     */
+    public int indexOf(CharSequence target, int fromIndex, int endIndex)
+    {
+        if (fromIndex < 0)
+            throw new IndexOutOfBoundsException("index out of range: " + fromIndex);
+        if (endIndex < 0)
+            throw new IndexOutOfBoundsException("index out of range: " + endIndex);
+        if (fromIndex > length())
+            throw new IndexOutOfBoundsException("fromIndex > length()");
+        if (fromIndex > endIndex)
+            throw new IndexOutOfBoundsException("fromIndex > endIndex");
+        
+        if (endIndex >= builder.length())
+        {
+            endIndex = builder.length() - 1;
+        }
+
+        int targetCount = target.length();
+        if (targetCount == 0)
+        {
+            return fromIndex;
+        }
+
+        char strFirstChar = target.charAt(0);
+        int max = endIndex + targetCount - 1;
+
+        lastCharSearch:
+        for (int i = fromIndex; i <= max; i++)
+        {
+            if (builder.charAt(i) == strFirstChar)
+            {
+                for (int j = 1; j < targetCount; j++)
+                {
+                    if (builder.charAt(i + j) != target.charAt(j))
+                    {
+                        continue lastCharSearch;
+                    }
+                }
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Returns the index within this string of the last occurrence of the
+     * specified substring between the specified indices.
+     *
+     * If no such value of <i>k</i> exists, then {@code -1} is returned.
+     *
+     * @param target the substring to search for.
+     * @param fromIndex the index from which to start the search.
+     * @param endIndex the index at which to end the search.
+     * @return  the index of the last occurrence of the specified substring between
+     *          the specified indices or {@code -1} if there is no such occurrence.
+     */
+    public int lastIndexOf(CharSequence target, int fromIndex, int endIndex)
+    {
+        if (fromIndex < 0)
+            throw new IndexOutOfBoundsException("index out of range: " + fromIndex);
+        if (endIndex < 0)
+            throw new IndexOutOfBoundsException("index out of range: " + endIndex);
+        if (fromIndex > length())
+            throw new IndexOutOfBoundsException("fromIndex > length()");
+        if (fromIndex > endIndex)
+            throw new IndexOutOfBoundsException("fromIndex > endIndex");
+        
+        if (endIndex >= builder.length())
+        {
+            endIndex = builder.length() - 1;
+        }
+
+        int targetCount = target.length();
+        if (targetCount == 0)
+        {
+            return endIndex;
+        }
+
+        int rightIndex = endIndex - targetCount;
+
+        if (fromIndex > rightIndex)
+        {
+            fromIndex = rightIndex;
+        }
+
+        int strLastIndex = targetCount - 1;
+        char strLastChar = target.charAt(strLastIndex);
+
+        int min = fromIndex + targetCount - 1;
+
+        lastCharSearch:
+        for (int i = endIndex; i >= min; i--)
+        {
+            if (builder.charAt(i) == strLastChar)
+            {
+                for (int j = strLastIndex - 1, k = 1; j >= 0; j--, k++)
+                {
+                    if (builder.charAt(i - k) != target.charAt(j))
+                    {
+                        continue lastCharSearch;
+                    }
+                }
+                return i - target.length() + 1;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Creates a {@link java.util.Queue Queue} of {@link net.dv8tion.jda.core.entities.Message Message} objects from this MessageBuilder.
+     * <p>
+     * This method splits the content if it exceeds 2000 chars. The splitting behaviour can be customized using {@link SplitPolicy SplitPolicies}.
+     * The method will try the policies in the order they are passed to it.<p>
+     * If no SplitPolicy is provided the message will be splitted after exactly 2000 chars.
+     * <p>
+     * This is not MarkDown safe. An easy workaround is to include Zero Witdh Spaces as predetermined breaking points to the message and only split on them.
+     * 
+     * @return the created {@link net.dv8tion.jda.core.entities.Message Messages}
+     */
+    public Queue<Message> buildAll(SplitPolicy... policy)
+    {
+        if (this.isEmpty())
+            throw new UnsupportedOperationException("Cannot build a Message with no content. (You never added any content to the message)");
+
+        LinkedList<Message> messages = new LinkedList<Message>();
+
+        if (builder.length() <= 2000) {
+            messages.add(this.build());
+            return messages;
+        }
+
+        if (policy == null || policy.length == 0)
+        {
+            policy = new SplitPolicy[]{ SplitPolicy.ANYWHERE };
+        }
+
+        int currentBeginIndex = 0;
+
+        messageLoop:
+        while (currentBeginIndex < builder.length() - 2001)
+        {
+            for (int i = 0; i < policy.length; i++)
+            {
+                int currentEndIndex = policy[i].nextMessage(currentBeginIndex, this);
+                if (currentEndIndex != -1)
+                {
+                    messages.add(build(currentBeginIndex, currentEndIndex));
+                    currentBeginIndex = currentEndIndex;
+                    continue messageLoop;
+                }
+            }
+            throw new RuntimeException("failed to split the messages");
+        }
+
+        if (currentBeginIndex < builder.length() - 1)
+        {
+            messages.add(build(currentBeginIndex, builder.length() - 1));
+        }
+
+        if (this.embed != null)
+        {
+            ((MessageImpl) messages.get(messages.size() - 1)).setEmbeds(Collections.singletonList(embed));
+        }
+
+        return messages;
+    }
+
+    protected Message build(int beginIndex, int endIndex)
+    {
+        return new MessageImpl("", null, false).setContent(builder.substring(beginIndex, endIndex)).setTTS(isTTS);
+    }
+
+    public static interface SplitPolicy
+    {
+        /**
+         * Splits on newline chars {@code \n}.
+         */
+        public static final SplitPolicy NEWLINE = new CharSequenceSplitPolicy("\n", true);
+
+        /**
+         * Splits on space chars {@code \u0020}.
+         */
+        public static final SplitPolicy SPACE = new CharSequenceSplitPolicy(" ", true);
+
+        /**
+         * Splits exactly after 2000 chars.
+         */
+        public static final SplitPolicy ANYWHERE = (i, b) -> Math.min(i + 2000, b.length());
+
+        /**
+         * Creates a new {@link SplitPolicy} splitting on the specified chars.
+         * @param chars the chars to split on
+         * @param remove weather to remove the chars when splitting on them
+         * @return a new {@link SplitPolicy}
+         */
+        public static SplitPolicy onChars(CharSequence chars, boolean remove)
+        {
+            return new CharSequenceSplitPolicy(chars, remove);
+        }
+
+        /**
+         * Default {@link SplitPolicy} implementation. Splits on a specified {@link CharSequence}.
+         */
+        public static class CharSequenceSplitPolicy implements SplitPolicy
+        {
+            private final boolean remove;
+            private final CharSequence chars;
+
+            private CharSequenceSplitPolicy(final CharSequence chars, final boolean remove)
+            {
+                this.chars = chars;
+                this.remove = remove;
+            }
+
+            @Override
+            public int nextMessage(final int currentBeginIndex, final MessageBuilder builder)
+            {
+                int currentEndIndex = builder.lastIndexOf(this.chars, currentBeginIndex, currentBeginIndex + 2000 - (this.remove ? this.chars.length() : 0));
+                if (currentEndIndex < 0)
+                {
+                    return -1;
+                }
+                else
+                {
+                    return currentEndIndex + this.chars.length();
+                }
+            }
+        }
+
+        /**
+         * Calculates the endIndex for the next {@link net.dv8tion.jda.core.entities.Message Message}.
+         * 
+         * @param currentBeginIndex the index the next {@link net.dv8tion.jda.core.entities.Message Message} should start from
+         * @param builder the {@link net.dv8tion.jda.core.entities.MessageBuilder MessageBuilder}
+         * @return the end Index of the next {@link net.dv8tion.jda.core.entities.Message Message}
+         * 
+         * @throws Exception when splitting fails
+         * 
+         */
+        public abstract int nextMessage(int currentBeginIndex, MessageBuilder builder);
+    }
+
+    /**
+     * Holds the available mention types used in {@link MessageBuilder#stripMentions(JDA, MentionType...) and {@link MessageBuilder#stripMentions(Guild, MentionType...)}
+     */
+    public enum MentionType {
+        /**
+         * <b>@everyone</b> mentions 
+         */
+        EVERYONE,
+        /**
+         * <b>@here</b> mentions
+         */
+        HERE,
+        /**
+         * <b>@User</b> mentions
+         */
+        USER,
+        /**
+         * <b>#channel</b> mentions
+         */
+        CHANNEL,
+        /**
+         * <b>@Role</b> mentions
+         */
+        ROLE;
+    }
+
+    /**
+     * Holds the available formatting used in {@link MessageBuilder#appendString(String, net.dv8tion.jda.core.MessageBuilder.Formatting...)}
      */
     public enum Formatting
     {
@@ -383,6 +950,5 @@ public class MessageBuilder
         {
             return tag;
         }
-
     }
 }

@@ -83,6 +83,13 @@ public class UserImpl implements User
     }
 
     @Override
+    public String getEffectiveAvatarUrl()
+    {
+        return getAvatarUrl() == null ? getDefaultAvatarUrl() : getAvatarUrl();
+    }
+    
+
+    @Override
     public boolean hasPrivateChannel()
     {
         return privateChannel != null;
@@ -216,7 +223,7 @@ public class UserImpl implements User
         return this;
     }
 
-    private enum DefaultAvatar
+    public enum DefaultAvatar
     {
         BLURPLE("6debd47ed13483642cf09e832ed0bc1b"),
         GREY("322c936a8c8be1b803cd94861bdfa868"),

@@ -16,13 +16,22 @@
 package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.MessageHistory;
+import net.dv8tion.jda.core.entities.impl.MessageImpl;
+import net.dv8tion.jda.core.requests.Request;
+import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.Route;
+import org.apache.http.util.Args;
+import org.json.JSONObject;
 //import net.dv8tion.jda.core.exceptions.VerificationLevelException;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 
 /**
@@ -67,18 +76,29 @@ public interface MessageChannel extends ISnowflake
      *          the text to send
      * @return
      *      the Message created by this function
-     * @throws net.dv8tion.jda.core.exceptions.RateLimitedException
-     *      when rate-imit is reached
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *      If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does
      *      not have {@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}.
-     * @throws net.dv8tion.jda.core.exceptions.BlockedException
-     *      If this is a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} and PMs are blocked
-     * @throws VerificationLevelException
-     *      If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
-     *      and you do not meet the required verification-level of the guild.
      */
     RestAction<Message> sendMessage(String text);
+    
+    /**
+     * Sends a {@link net.dv8tion.jda.core.entities.Message Message} containing a rich embed to this channel.
+     * This will fail if the account of the api does not have the {@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Write-Permission}
+     * for this channel set
+     * After the Message has been sent, the created {@link net.dv8tion.jda.core.entities.Message Message} object is returned
+     * This Object will be null, if the sending failed.
+     * When the Rate-limit is reached (10 Messages in 10 secs), a {@link net.dv8tion.jda.core.exceptions.RateLimitedException RateLimitedException} is thrown
+     *
+     * @param embed
+     *          the embed to send
+     * @return
+     *      the Message created by this function
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *      If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does
+     *      not have {@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}.
+     */
+    RestAction<Message> sendMessage(MessageEmbed embed);
 
     /**
      * Sends a given {@link net.dv8tion.jda.core.entities.Message Message} to this Channel
@@ -92,16 +112,9 @@ public interface MessageChannel extends ISnowflake
      *          the {@link net.dv8tion.jda.core.entities.Message Message} to send
      * @return
      *      The created {@link net.dv8tion.jda.core.entities.Message Message} object or null if it failed
-     * @throws net.dv8tion.jda.core.exceptions.RateLimitedException
-     *          when rate-limit is reached
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *      If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does
      *      not have {@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}.
-     * @throws net.dv8tion.jda.core.exceptions.BlockedException
-     *      If this is a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} and PMs are blocked
-     * @throws VerificationLevelException
-     *      If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
-     *      and you do not meet the required verification-level of the guild.
      */
     RestAction<Message> sendMessage(Message msg);
 
@@ -128,9 +141,8 @@ public interface MessageChannel extends ISnowflake
      *              not have {@link net.dv8tion.jda.core.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}.
      *          </li>
      *      </ul>
-     * @throws VerificationLevelException
-     *      If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
-     *      and you do not meet the required verification-level of the guild.
+     * @throws IOException
+     *      If an I/O error occurs while reading the File.
      */
     RestAction<Message> sendFile(File file, Message message) throws IOException;
     RestAction<Message> sendFile(File file, String fileName, Message message) throws IOException;
@@ -201,6 +213,54 @@ public interface MessageChannel extends ISnowflake
      */
     RestAction<Void> sendTyping();
 
+    //TODO: doc
+    default RestAction<Void> addReactionById(String messageId, String unicode)
+    {
+        Args.notNull(messageId, "MessageId");
+        Args.containsNoBlanks(unicode, "Provided Unicode");
+        String encoded;
+        try
+        {
+            encoded = URLEncoder.encode(unicode, "UTF-8");
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            throw new RuntimeException(e); //thanks JDK 1.4
+        }
+        Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, encoded);
+        return new RestAction<Void>(getJDA(), route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
+    }
+
+    //TODO: doc
+    default RestAction<Void> addReactionById(String messageId, Emote emote)
+    {
+        Args.notNull(messageId, "MessageId");
+        Args.notNull(emote, "Emote");
+
+        Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, String.format("%s:%s", emote.getName(), emote.getId()));
+        return new RestAction<Void>(getJDA(), route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
+    }
+
     /**
      * Used to pin a message.<br>
      * If the provided messageId is invalid or not in this channel, this does nothing.
@@ -242,4 +302,41 @@ public interface MessageChannel extends ISnowflake
      *          {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      */
     RestAction<List<Message>> getPinnedMessages();
+
+    default RestAction<Message> editMessageById(String id, String newContent)
+    {
+        return editMessageById(id, new MessageBuilder().appendString(newContent).build());
+    }
+
+    default RestAction<Message> editMessageById(String id, Message newContent)
+    {
+        Args.notNull(id, "id");
+        Args.notNull(newContent, "message");
+
+        JSONObject json = ((MessageImpl) newContent).toJSONObject();
+        Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getId(), id);
+        return new RestAction<Message>(getJDA(), route, json)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                {
+                    try
+                    {
+                        Message m = EntityBuilder.get(api).createMessage(response.getObject());
+                        request.onSuccess(m);
+                    }
+                    catch (IllegalArgumentException e)
+                    {
+                        request.onFailure(e);
+                    }
+                }
+                else
+                {
+                    request.onFailure(response);
+                }
+            }
+        };
+    }
 }
