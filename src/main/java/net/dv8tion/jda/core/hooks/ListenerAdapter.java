@@ -200,13 +200,6 @@ public abstract class ListenerAdapter implements EventListener
     public void onRoleUpdatePermissions(RoleUpdatePermissionsEvent event) {}
     public void onRoleUpdatePosition(RoleUpdatePositionEvent event) {}
 
-//    //Audio System Events
-//    public void onAudioConnect(AudioConnectEvent event) {}
-//    public void onAudioDisconnect(AudioDisconnectEvent event) {}
-//    public void onAudioUnableToConnect(AudioUnableToConnectEvent event) {}
-//    public void onAudioTimeout(AudioTimeoutEvent event) {}
-//    public void onAudioRegionChange(AudioRegionChangeEvent event) {}
-
     //Generic Events
     public void onGenericMessage(GenericMessageEvent event) {}
     public void onGenericMessageReaction(GenericMessageReactionEvent event) {}
@@ -224,7 +217,6 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericGuildVoice(GenericGuildVoiceEvent event) {}
     public void onGenericRole(GenericRoleEvent event) {}
     public void onGenericRoleUpdate(GenericRoleUpdateEvent event) {}
-//    public void onGenericAudio(GenericAudioEvent event) {}
 
 
     // ==========================================================================================
@@ -495,24 +487,6 @@ public abstract class ListenerAdapter implements EventListener
         else if (event instanceof RoleUpdatePositionEvent)
             onRoleUpdatePosition(((RoleUpdatePositionEvent) event));
 
-//        //Audio System Events
-//        else if (event instanceof AudioConnectEvent)
-//            onAudioConnect((AudioConnectEvent) event);
-//        else if (event instanceof AudioDisconnectEvent)
-//            onAudioDisconnect((AudioDisconnectEvent) event);
-//        else if (event instanceof AudioUnableToConnectEvent)
-//            onAudioUnableToConnect((AudioUnableToConnectEvent) event);
-//        else if (event instanceof AudioTimeoutEvent)
-//            onAudioTimeout((AudioTimeoutEvent) event);
-//        else if (event instanceof AudioRegionChangeEvent)
-//            onAudioRegionChange((AudioRegionChangeEvent) event);
-//
-//        //Grouped Mute/Deaf events
-//        if (event instanceof VoiceMuteEvent)
-//            onVoiceMute((VoiceMuteEvent) event);
-//        else if (event instanceof VoiceDeafEvent)
-//            onVoiceDeaf((VoiceDeafEvent) event);
-
         //Generic Events
         //Start a new if statement so that these are no overridden by the above events.
         if (event instanceof GenericGuildMessageEvent)
@@ -533,11 +507,8 @@ public abstract class ListenerAdapter implements EventListener
             onGenericGuildVoice((GenericGuildVoiceEvent) event);
         else if (event instanceof GenericRoleUpdateEvent)
             onGenericRoleUpdate(((GenericRoleUpdateEvent) event));
-//        else if (event instanceof GenericAudioEvent)
-//            onGenericAudio((GenericAudioEvent) event);
-//
-        //Generic events that have generic subclasses (the subclasses as above).
 
+        //Generic events that have generic subclasses (the subclasses as above).
         if (event instanceof GenericMessageEvent)
             onGenericMessage((GenericMessageEvent) event);
         else if (event instanceof GenericUserEvent)
