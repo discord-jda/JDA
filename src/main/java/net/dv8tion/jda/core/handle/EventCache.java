@@ -16,7 +16,8 @@
 package net.dv8tion.jda.core.handle;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.utils.SimpleLog;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -24,7 +25,7 @@ import java.util.List;
 
 public class EventCache
 {
-    public static final SimpleLog LOG = SimpleLog.getLog("EventCache");
+    public static final Logger LOG = LoggerFactory.getLogger("EventCache");
     private static HashMap<JDA, EventCache> caches = new HashMap<>();
     private HashMap<Type, HashMap<String, List<Runnable>>> eventCache = new HashMap<>();
 

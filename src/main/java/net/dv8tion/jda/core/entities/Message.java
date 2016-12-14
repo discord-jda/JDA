@@ -370,7 +370,7 @@ public interface Message extends ISnowflake
             }
             catch (Exception e)
             {
-                JDAImpl.LOG.log(e);
+                JDAImpl.LOG.error("Got unexpected exception while trying to download attachment.", e);
             }
             finally
             {

@@ -33,12 +33,13 @@ import net.dv8tion.jda.core.handle.*;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
-import net.dv8tion.jda.core.utils.SimpleLog;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.http.HttpHost;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -49,7 +50,7 @@ import java.util.zip.Inflater;
 
 public class WebSocketClient extends WebSocketAdapter implements WebSocketListener
 {
-    public static final SimpleLog LOG = SimpleLog.getLog("JDASocket");
+    public static final Logger LOG = LoggerFactory.getLogger("JDASocket");
     public static final int DISCORD_GATEWAY_VERSION = 6;
 
     protected final JDAImpl api;
@@ -377,7 +378,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         if (serverCloseFrame != null && serverCloseFrame.getCloseCode() == 4008)
         {
-            LOG.fatal("WebSocket connection closed due to ratelimit! Sent more than 120 websocket messages in under 60 seconds!");
+            LOG.error("WebSocket connection closed due to ratelimit! Sent more than 120 websocket messages in under 60 seconds!");
         }
         if (!shouldReconnect)        //we should not reconnect
         {
@@ -697,7 +698,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         catch (Exception ex)
         {
-            LOG.log(ex);
+            LOG.error("Got unexpected exception while handling WebSocket event.", ex);
         }
     }
 

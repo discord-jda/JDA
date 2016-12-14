@@ -26,9 +26,10 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.utils.SimpleLog;
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tomp2p.opuswrapper.Opus;
 
 import java.net.DatagramPacket;
@@ -46,7 +47,7 @@ import java.util.concurrent.TimeUnit;
 
 public class AudioConnection
 {
-    public static final SimpleLog LOG = SimpleLog.getLog("JDAAudioConn");
+    public static final Logger LOG = LoggerFactory.getLogger("JDAAudioConn");
     public static final int OPUS_SAMPLE_RATE = 48000;   //(Hz) We want to use the highest of qualities! All the bandwidth!
     public static final int OPUS_FRAME_SIZE = 960;      //An opus frame size of 960 at 48000hz represents 20 milliseconds of audio.
     public static final int OPUS_FRAME_TIME_AMOUNT = 20;//This is 20 milliseconds. We are only dealing with 20ms opus packets.
@@ -112,7 +113,7 @@ public class AudioConnection
                     }
                     catch (InterruptedException e)
                     {
-                        LOG.log(e);
+                        LOG.error("Interrupted!", e);
                         Thread.currentThread().interrupt();
                     }
                 }
@@ -179,8 +180,8 @@ public class AudioConnection
             {
                 //Different User already existed with this ssrc. What should we do? Just replace? Probably should nuke the old opusDecoder.
                 //Log for now and see if any user report the error.
-                LOG.fatal("Yeah.. So.. JDA received a UserSSRC update for an ssrc that already had a User set. Inform DV8FromTheWorld.\n" +
-                        "ChannelId: " + channel.getId() + " SSRC: " + ssrc + " oldId: " + previousId + " newId: " + userId);
+                LOG.error("Yeah.. So.. JDA received a UserSSRC update for an ssrc that already had a User set. Inform DV8FromTheWorld.\n" +
+                          "ChannelId: " + channel.getId() + " SSRC: " + ssrc + " oldId: " + previousId + " newId: " + userId);
             }
         }
         else
@@ -257,7 +258,7 @@ public class AudioConnection
                     }
                     catch (SocketException e)
                     {
-                        LOG.log(e);
+                        LOG.error("udpSocket.setSoTimeout(): Got SocketException.", e);
                     }
                     while (!udpSocket.isClosed() && !this.isInterrupted())
                     {
@@ -342,7 +343,7 @@ public class AudioConnection
                         }
                         catch (Exception e)
                         {
-                            LOG.log(e);
+                            LOG.error("Got unexpected exception in audio receive thread.", e);
                         }
                     }
                 }
@@ -425,7 +426,7 @@ public class AudioConnection
                 }
                 catch (Exception e)
                 {
-                    LOG.log(e);
+                    LOG.error("Got unexpected exception in combined audio executor thread.", e);
                 }
             }, 0, 20, TimeUnit.MILLISECONDS);
         }
@@ -510,7 +511,7 @@ public class AudioConnection
             }
             catch (Exception e)
             {
-                LOG.log(e);
+                LOG.error("Got unexpected exception.", e);
             }
 
             if (nextPacket != null)

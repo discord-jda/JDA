@@ -36,10 +36,11 @@ import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.requests.ratelimit.IBucket;
-import net.dv8tion.jda.core.utils.SimpleLog;
 import org.apache.http.HttpHost;
 import org.apache.http.util.Args;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
@@ -51,7 +52,7 @@ import java.util.stream.Collectors;
 
 public class JDAImpl implements JDA
 {
-    public static final SimpleLog LOG = SimpleLog.getLog("JDA");
+    public static final Logger LOG = LoggerFactory.getLogger("JDA");
 
     protected final HashMap<String, User> users = new HashMap<>(200);
     protected final HashMap<String, Guild> guilds = new HashMap<>(10);

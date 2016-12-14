@@ -17,14 +17,15 @@ package net.dv8tion.jda.core.requests;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.utils.SimpleLog;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public class GuildLock
 {
-    public static SimpleLog LOG = SimpleLog.getLog("JDAGuildLock");
+    public static Logger LOG = LoggerFactory.getLogger("JDAGuildLock");
     private static Map<JDA, GuildLock> locks = new HashMap<>();
 
     public static synchronized GuildLock get(JDA jda)
