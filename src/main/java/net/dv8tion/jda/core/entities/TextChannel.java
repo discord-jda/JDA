@@ -90,8 +90,6 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
 
     RestAction<List<Webhook>> getWebhooks();
 
-    // RestAction<Webhook> createWebhook();
-
     RestAction<Void> deleteWebhookById(String id);
 
     boolean canTalk();

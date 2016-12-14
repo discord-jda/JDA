@@ -17,7 +17,6 @@
 package net.dv8tion.jda.core.requests;
 
 import com.mashape.unirest.http.HttpMethod;
-import net.dv8tion.jda.core.entities.Role;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
