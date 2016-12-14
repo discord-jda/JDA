@@ -30,7 +30,7 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
-import net.dv8tion.jda.core.requests.impl.WebhookAction;
+import net.dv8tion.jda.core.requests.restaction.WebhookAction;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -995,7 +995,7 @@ public class GuildController
      *         If you do not hold the permission {@link net.dv8tion.jda.core.Permission#MANAGE_WEBHOOKS Manage Webhooks}
      *         on the selected channel.
      *
-     * @return A specified {@link net.dv8tion.jda.core.requests.impl.WebhookAction WebhookAction}
+     * @return A specified {@link net.dv8tion.jda.core.requests.restaction.WebhookAction WebhookAction}
      *         This action allows you to set fields for the new webhook before creating it.
      */
     public WebhookAction createWebhook(TextChannel channel, String name)

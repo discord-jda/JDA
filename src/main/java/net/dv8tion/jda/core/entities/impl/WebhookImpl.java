@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.managers.WebhookManager;
 import net.dv8tion.jda.core.managers.WebhookManagerUpdatable;
 import net.dv8tion.jda.core.requests.Request;
+import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
@@ -91,7 +92,7 @@ public class WebhookImpl implements Webhook
     @Override
     public String getUrl()
     {
-        return "https://discordapp.com/api/webhooks/" + getId() + "/" + getToken();
+        return Requester.DISCORD_API_PREFIX + "webhooks/" + getId() + "/" + getToken();
     }
 
     @Override
@@ -180,7 +181,7 @@ public class WebhookImpl implements Webhook
     @Override
     public boolean equals(Object obj)
     {
-        return obj instanceof ISnowflake
+        return obj instanceof Webhook
                 && ((Webhook) obj).getId().equals(id);
     }
 

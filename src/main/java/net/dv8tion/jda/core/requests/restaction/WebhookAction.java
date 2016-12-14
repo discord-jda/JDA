@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.requests.impl;
+package net.dv8tion.jda.core.requests.restaction;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.EntityBuilder;

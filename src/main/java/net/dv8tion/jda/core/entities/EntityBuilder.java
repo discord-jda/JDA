@@ -993,6 +993,11 @@ public class EntityBuilder
         String guildId = object.getString("guild_id");
         String channelId = object.getString("channel_id");
 
+        TextChannel channel = api.getTextChannelById(channelId);
+        if (channel == null)
+            throw new NullPointerException(String.format("Tried to create Webhook for an un-cached TextChannel! WebhookId: %s ChannelId: %s GuildId: %s",
+                    id, channelId, guildId));
+
         Object name = !object.isNull("name") ? object.get("name") : JSONObject.NULL;
         Object avatar = !object.isNull("avatar") ? object.get("avatar") : JSONObject.NULL;
 
@@ -1009,16 +1014,10 @@ public class EntityBuilder
         User owner = api.getUserById(userId);
         if (owner == null)
         {
-            fakeUser.put("id", userId);
-            fakeUser.put("username", ownerJson.getString("username"));
-            fakeUser.put("avatar", !ownerJson.isNull("avatar") ? ownerJson.getString("avatar") : JSONObject.NULL);
-            fakeUser.put("discriminator", ownerJson.getString("discriminator"));
-            owner = createFakeUser(fakeUser, false);
+            ownerJson.put("id", userId);
+            owner = createFakeUser(ownerJson, false);
         }
 
-        TextChannel channel = api.getTextChannelById(channelId);
-        if (channel == null)
-            throw new NullPointerException("");
         return new WebhookImpl(channel, id).setToken(token).setOwner(channel.getGuild().getMember(owner)).setUser(defaultUser);
     }
 
