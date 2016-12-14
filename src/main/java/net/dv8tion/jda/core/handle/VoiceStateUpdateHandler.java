@@ -234,7 +234,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
             CallUser cUser = ((JDAClientImpl) api.asClient()).getCallUserMap().get(userId);
             if (cUser != null && !channelId.equals(cUser.getCall().getCallableChannel().getId()))
             {
-                WebSocketClient.LOG.fatal("Received a VOICE_STATE_UPDATE for a user joining a call, but the user was already in a different call! Big error! JSON: " + content);
+                WebSocketClient.LOG.error("Received a VOICE_STATE_UPDATE for a user joining a call, but the user was already in a different call! Big error! JSON: " + content);
                 ((CallVoiceStateImpl) cUser.getVoiceState()).setInCall(false);
             }
 

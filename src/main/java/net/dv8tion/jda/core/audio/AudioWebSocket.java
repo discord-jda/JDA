@@ -25,10 +25,11 @@ import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
-import net.dv8tion.jda.core.utils.SimpleLog;
 import org.apache.http.HttpHost;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.*;
@@ -45,7 +46,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class AudioWebSocket extends WebSocketAdapter
 {
-    public static final SimpleLog LOG = SimpleLog.getLog("JDAAudioSocket");
+    public static final Logger LOG = LoggerFactory.getLogger("JDAAudioSocket");
     public static final HashMap<JDA, ScheduledThreadPoolExecutor> KEEP_ALIVE_POOLS = new HashMap<>();
     public static final int DISCORD_SECRET_KEY_LENGTH = 32;
 
@@ -289,7 +290,7 @@ public class AudioWebSocket extends WebSocketAdapter
     @Override
     public void handleCallbackError(WebSocket websocket, Throwable cause)
     {
-        LOG.log(cause);
+        LOG.error("Got callback error in AudioWebSocket.", cause);
     }
 
     public void close(ConnectionStatus closeStatus)
@@ -442,7 +443,7 @@ public class AudioWebSocket extends WebSocketAdapter
         }
         catch (IOException e)
         {
-            LOG.log(e);
+            LOG.error("Got IOException in handleUdpDiscovery().", e);
             return null;
         }
     }
@@ -450,7 +451,7 @@ public class AudioWebSocket extends WebSocketAdapter
     private void setupKeepAlive(final int keepAliveInterval)
     {
         if (keepAliveRunnable != null)
-            LOG.fatal("Setting up a KeepAlive runnable while the previous one seems to still be active!!");
+            LOG.error("Setting up a KeepAlive runnable while the previous one seems to still be active!!");
 
         keepAliveRunnable = () ->
         {
@@ -480,7 +481,7 @@ public class AudioWebSocket extends WebSocketAdapter
                 }
                 catch (IOException e)
                 {
-                    LOG.log(e);
+                    LOG.error("Got IOException while setting up keep-alive.", e);
                 }
             }
         };

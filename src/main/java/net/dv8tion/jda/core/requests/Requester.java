@@ -31,15 +31,14 @@ import net.dv8tion.jda.core.requests.Route.CompiledRoute;
 import net.dv8tion.jda.core.requests.ratelimit.BotRateLimiter;
 import net.dv8tion.jda.core.requests.ratelimit.ClientRateLimiter;
 import net.dv8tion.jda.core.requests.ratelimit.IBucket;
-import net.dv8tion.jda.core.utils.SimpleLog;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class Requester
 {
-    public static final SimpleLog LOG = SimpleLog.getLog("JDARequester");
+    public static final Logger LOG = LoggerFactory.getLogger("JDARequester");
     public static String USER_AGENT = "JDA DiscordBot (" + JDAInfo.GITHUB + ", " + JDAInfo.VERSION + ")";
     public static final String DISCORD_API_PREFIX = "https://discordapp.com/api/";
 
@@ -149,7 +148,7 @@ public class Requester
         }
         catch (UnirestException e)
         {
-            LOG.log(e); //This originally only printed on DEBUG in 2.x
+            LOG.info("Got UnirestException while performing API request.", e); //This originally only printed on DEBUG in 2.x
             apiRequest.getRestAction().handleResponse(new Response(e), apiRequest);
             return null;
         }

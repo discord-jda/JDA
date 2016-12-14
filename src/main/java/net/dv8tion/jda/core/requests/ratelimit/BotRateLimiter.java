@@ -22,7 +22,6 @@ import net.dv8tion.jda.core.requests.RateLimiter;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.core.requests.Route.CompiledRoute;
-import net.dv8tion.jda.core.utils.SimpleLog;
 import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
@@ -165,12 +164,11 @@ public class BotRateLimiter extends RateLimiter
         {
             if (!bucket.getRoute().equals("gateway")
                     && !bucket.getRoute().equals("users/@me")
-                    && Requester.LOG.getEffectiveLevel().getPriority() <= SimpleLog.Level.DEBUG.getPriority())
+                    && Requester.LOG.isDebugEnabled())
             {
-                Requester.LOG.fatal("Encountered issue with headers when updating a bucket"
+                Requester.LOG.error("Encountered issue with headers when updating a bucket"
                                   + "\nRoute: " + bucket.getRoute()
-                                  + "\nHeaders: " + headers);
-                Requester.LOG.log(ex);
+                                  + "\nHeaders: " + headers, ex);
             }
 
         }
@@ -279,8 +277,7 @@ public class BotRateLimiter extends RateLimiter
                         }
                         catch (Throwable t)
                         {
-                            Requester.LOG.fatal("Requester system encountered an internal error");
-                            Requester.LOG.log(t);
+                            Requester.LOG.error("Requester system encountered an internal error", t);
                             it.remove();
                             if (request != null)
                                 request.onFailure(t);
@@ -306,8 +303,7 @@ public class BotRateLimiter extends RateLimiter
             }
             catch (Throwable err)
             {
-                Requester.LOG.fatal("Requester system encountered an internal error from beyond the sychronized execution blocks. NOT GOOD!");
-                Requester.LOG.log(err);
+                Requester.LOG.error("Requester system encountered an internal error from beyond the sychronized execution blocks. NOT GOOD!", err);
             }
         }
 

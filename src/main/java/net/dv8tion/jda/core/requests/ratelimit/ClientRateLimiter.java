@@ -202,8 +202,7 @@ public class ClientRateLimiter extends RateLimiter
                         }
                         catch (Throwable t)
                         {
-                            Requester.LOG.fatal("Requester system encountered an internal error");
-                            Requester.LOG.log(t);
+                            Requester.LOG.error("Requester system encountered an internal error", t);
                             it.remove();
                             if (request != null)
                                 request.onFailure(t);
@@ -229,8 +228,7 @@ public class ClientRateLimiter extends RateLimiter
             }
             catch (Throwable err)
             {
-                Requester.LOG.fatal("Requester system encountered an internal error from beyond the sychronized execution blocks. NOT GOOD!");
-                Requester.LOG.log(err);
+                Requester.LOG.error("Requester system encountered an internal error from beyond the sychronized execution blocks. NOT GOOD!", err);
             }
         }
 

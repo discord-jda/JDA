@@ -21,25 +21,26 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
-import net.dv8tion.jda.core.utils.SimpleLog;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.*;
 import java.util.function.Consumer;
 
 public abstract class RestAction<T>
 {
-    public static final SimpleLog LOG = SimpleLog.getLog("RestAction");
+    public static final Logger LOG = LoggerFactory.getLogger("RestAction");
 
     public static final Consumer DEFAULT_SUCCESS = o -> {};
     public static final Consumer<Throwable> DEFAULT_FAILURE = t ->
     {
-        if (LOG.getEffectiveLevel().getPriority() <= SimpleLog.Level.DEBUG.getPriority())
+        if (LOG.isDebugEnabled())
         {
-            LOG.log(t);
+            LOG.debug("RestAction queue returned failure.", t);
         }
         else
         {
-            LOG.fatal("RestAction queue returned failure: [" + t.getClass().getSimpleName() + "] " + t.getMessage());
+            LOG.error("RestAction queue returned failure: [" + t.getClass().getSimpleName() + "] " + t.getMessage(), t);
         }
     };
 

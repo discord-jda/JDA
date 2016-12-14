@@ -70,7 +70,7 @@ public class DefaultSendSystem implements IAudioSendSystem
                     }
                     catch (Exception e)
                     {
-                        AudioConnection.LOG.log(e);
+                        AudioConnection.LOG.error("Unexpected exception in AudioSendSystem.", e);
                     }
                     finally
                     {
