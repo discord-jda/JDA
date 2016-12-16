@@ -27,7 +27,10 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.core.utils.PermissionUtil;
+
 import org.apache.http.util.Args;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
@@ -371,5 +374,37 @@ public class VoiceChannelImpl implements VoiceChannel
             else
                 throw new PermissionException(permission);
         }
+    }
+
+    @Override
+    public RestAction<List<Invite>> getInvites()
+    {
+        if (!PermissionUtil.checkPermission(this, this.guild.getSelfMember(), Permission.MANAGE_SERVER))
+            throw new PermissionException(Permission.MANAGE_SERVER);
+
+        final Route.CompiledRoute route = Route.Invites.GET_CHANNEL_INVITES.compile(getId());
+
+        return new RestAction<List<Invite>>(getJDA(), route, null)
+        {
+            @Override
+            protected void handleResponse(final Response response, final Request request)
+            {
+                if (response.isOk())
+                {
+                    EntityBuilder entityBuilder = EntityBuilder.get(this.api);
+                    JSONArray array = response.getArray();
+                    List<Invite> invites = new ArrayList<>(array.length());
+                    for (int i = 0; i < array.length(); i++)
+                    {
+                        invites.add(entityBuilder.createInvite(array.getJSONObject(i)));
+                    }
+                    request.onSuccess(invites);
+                }
+                else
+                {
+                    request.onFailure(response);
+                }
+            }
+        };
     }
 }

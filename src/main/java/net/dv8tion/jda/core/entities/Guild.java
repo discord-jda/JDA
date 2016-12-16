@@ -463,4 +463,6 @@ public interface Guild extends ISnowflake
             return UNKNOWN;
         }
     }
+
+    RestAction<List<Invite>> getInvites();
 }

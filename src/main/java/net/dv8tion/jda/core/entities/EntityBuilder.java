@@ -27,6 +27,7 @@ import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.MessageEmbed.*;
 import net.dv8tion.jda.core.entities.impl.*;
+import net.dv8tion.jda.core.events.channel.text.update.GenericTextChannelUpdateEvent;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.handle.GuildMembersChunkHandler;
 import net.dv8tion.jda.core.handle.ReadyHandler;
@@ -1094,6 +1095,58 @@ public class EntityBuilder
         return group.setOwner(owner)
                 .setName(name)
                 .setIconId(iconId);
+    }
+
+    public Invite createInvite(JSONObject object)
+    {
+        final String code = object.getString("code");
+
+        final JSONObject channel = object.getJSONObject("channel");
+        final String channelTypeName = channel.getString("type");
+
+        final ChannelType channelType = channelTypeName.equals("text") ? ChannelType.TEXT
+                : channelTypeName.equals("voice") ? ChannelType.VOICE : ChannelType.UNKNOWN;
+        final String channelId = channel.getString("id");
+        final String channelName = channel.getString("name");
+
+        JSONObject guild = object.getJSONObject("guild");
+
+        final String guildIconId = guild.getString("icon");
+        final String guildId = guild.getString("id");
+        final String guildName = guild.getString("name");
+        final String guildSplashId = guild.isNull("splash") ? null : guild.getString("splash");
+
+        final User inviter;
+        final int maxAge;
+        final int maxUses;
+        final boolean temporary;
+        final OffsetDateTime timeCreated;
+        final int uses;
+        final boolean expanded;
+
+        if (object.has("inviter"))
+        {
+            expanded = true;
+            inviter = this.createFakeUser(object.getJSONObject("inviter"), false);
+            maxAge = object.getInt("max_age");
+            maxUses = object.getInt("max_uses");
+            uses = object.getInt("uses");
+            temporary = object.getBoolean("temporary");
+            timeCreated = OffsetDateTime.parse(object.getString("created_at"));
+        }
+        else
+        {
+            expanded = false;
+            inviter = null;
+            maxAge = -1;
+            maxUses = -1;
+            uses = -1;
+            temporary = false;
+            timeCreated = null;
+        }
+
+        return new InviteImpl(api, channelId, channelName, channelType, code, guildIconId, guildId, guildName, guildSplashId, temporary, uses, timeCreated,
+                maxUses, maxAge, inviter, expanded);
     }
 
     public void clearCache()

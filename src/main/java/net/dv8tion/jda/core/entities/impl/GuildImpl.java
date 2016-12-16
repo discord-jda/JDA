@@ -16,10 +16,7 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
-import net.dv8tion.jda.core.AccountType;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.Region;
+import net.dv8tion.jda.core.*;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.managers.AudioManager;
@@ -32,10 +29,10 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.core.utils.PermissionUtil;
+
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.*;
 
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
@@ -676,4 +673,37 @@ public class GuildImpl implements Guild
     {
         return "G:" + getName() + '(' + getId() + ')';
     }
+
+    @Override
+    public RestAction<List<Invite>> getInvites()
+    {
+        if (!PermissionUtil.checkPermission(this, getSelfMember(), Permission.MANAGE_SERVER))
+            throw new PermissionException(Permission.MANAGE_SERVER);
+
+        final Route.CompiledRoute route = Route.Invites.GET_GUILD_INVITES.compile(getId());
+
+        return new RestAction<List<Invite>>(api, route, null)
+        {
+            @Override
+            protected void handleResponse(final Response response, final Request request)
+            {
+                if (response.isOk())
+                {
+                    EntityBuilder entityBuilder = EntityBuilder.get(this.api);
+                    JSONArray array = response.getArray();
+                    List<Invite> invites = new ArrayList<>(array.length());
+                    for (int i = 0; i < array.length(); i++)
+                    {
+                        invites.add(entityBuilder.createInvite(array.getJSONObject(i)));
+                    }
+                    request.onSuccess(invites);
+                }
+                else
+                {
+                    request.onFailure(response);
+                }
+            }
+        };
+    }
+
 }
