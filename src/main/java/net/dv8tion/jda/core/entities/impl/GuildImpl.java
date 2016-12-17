@@ -677,7 +677,7 @@ public class GuildImpl implements Guild
     @Override
     public RestAction<List<Invite>> getInvites()
     {
-        if (!PermissionUtil.checkPermission(this, getSelfMember(), Permission.MANAGE_SERVER))
+        if (!this.getSelfMember().hasPermission(Permission.MANAGE_SERVER))
             throw new PermissionException(Permission.MANAGE_SERVER);
 
         final Route.CompiledRoute route = Route.Invites.GET_GUILD_INVITES.compile(getId());

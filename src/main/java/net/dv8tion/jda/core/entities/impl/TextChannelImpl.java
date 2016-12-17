@@ -798,8 +798,8 @@ public class TextChannelImpl implements TextChannel
     @Override
     public RestAction<List<Invite>> getInvites()
     {
-        if (!PermissionUtil.checkPermission(this, this.guild.getSelfMember(), Permission.MANAGE_SERVER))
-            throw new PermissionException(Permission.MANAGE_SERVER);
+        if (!this.guild.getSelfMember().hasPermission(this, Permission.MANAGE_CHANNEL))
+            throw new PermissionException(Permission.MANAGE_CHANNEL);
 
         final Route.CompiledRoute route = Route.Invites.GET_CHANNEL_INVITES.compile(getId());
 
