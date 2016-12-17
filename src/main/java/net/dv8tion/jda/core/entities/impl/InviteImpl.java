@@ -5,12 +5,13 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.requests.*;
-import net.dv8tion.jda.core.utils.PermissionUtil;
+import net.dv8tion.jda.core.requests.Route.CompiledRoute;
 
 import org.apache.http.util.Args;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
-import java.util.List;
 
 public class InviteImpl implements Invite
 {
@@ -89,18 +90,18 @@ public class InviteImpl implements Invite
 
         final Member member = guild.getSelfMember();
 
-        RestAction<List<Invite>> action;
+        CompiledRoute route;
 
-        if (PermissionUtil.checkPermission(guild, member, Permission.MANAGE_SERVER))
+        if (member.hasPermission(Permission.MANAGE_SERVER))
         {
-            action = guild.getInvites();
+            route = Route.Invites.GET_GUILD_INVITES.compile(guild.getId());
         }
         else
         {
             final Channel channel = this.channelType == ChannelType.TEXT ? guild.getTextChannelById(this.channelId) : guild.getVoiceChannelById(this.channelId);
-            if (PermissionUtil.checkPermission(channel, member, Permission.MANAGE_CHANNEL))
+            if (member.hasPermission(channel, Permission.MANAGE_CHANNEL))
             {
-                action = channel.getInvites();
+                route = Route.Invites.GET_CHANNEL_INVITES.compile(channel.getId());
             }
             else
             {
@@ -108,18 +109,32 @@ public class InviteImpl implements Invite
             }
         }
 
-        return new RestAction.WrapperRestAction<>(action, invites ->
+        return new RestAction<Invite>(this.api, route, null)
         {
-            for (final Invite invite : invites)
+            @Override
+            protected void handleResponse(final Response response, final Request request)
             {
-                if (invite.getCode().equals(this.code))
+                if (response.isOk())
                 {
-                    return invite;
+                    final EntityBuilder entityBuilder = EntityBuilder.get(this.api);
+                    final JSONArray array = response.getArray();
+                    for (int i = 0; i < array.length(); i++)
+                    {
+                        final JSONObject object = array.getJSONObject(i);
+                        if (InviteImpl.this.code.equals(object.getString("code")))
+                        {
+                            request.onSuccess(entityBuilder.createInvite(object));
+                            return;
+                        }
+                    }
+                    request.onFailure(new RuntimeException("Missing the invite in the channel/guild invite list"));
+                }
+                else
+                {
+                    request.onFailure(response);
                 }
             }
-            throw new RuntimeException("Missing the invite in the channel/guild invite list");
-        });
-
+        };
     }
 
     @Override
@@ -173,30 +188,55 @@ public class InviteImpl implements Invite
     @Override
     public User getInviter()
     {
+        if (!this.expanded)
+        {
+            throw new IllegalStateException("Only valid for expanded invites");
+        }
         return this.inviter;
+    }
+
+    public JDAImpl getJDA()
+    {
+        return this.api;
     }
 
     @Override
     public int getMaxAge()
     {
+        if (!this.expanded)
+        {
+            throw new IllegalStateException("Only valid for expanded invites");
+        }
         return this.maxAge;
     }
 
     @Override
     public int getMaxUses()
     {
+        if (!this.expanded)
+        {
+            throw new IllegalStateException("Only valid for expanded invites");
+        }
         return this.maxUses;
     }
 
     @Override
     public OffsetDateTime getTimeCreated()
     {
+        if (!this.expanded)
+        {
+            throw new IllegalStateException("Only valid for expanded invites");
+        }
         return this.timeCreated;
     }
 
     @Override
     public int getUses()
     {
+        if (!this.expanded)
+        {
+            throw new IllegalStateException("Only valid for expanded invites");
+        }
         return this.uses;
     }
 
@@ -209,6 +249,10 @@ public class InviteImpl implements Invite
     @Override
     public boolean isTemporary()
     {
+        if (!this.expanded)
+        {
+            throw new IllegalStateException("Only valid for expanded invites");
+        }
         return this.temporary;
     }
 

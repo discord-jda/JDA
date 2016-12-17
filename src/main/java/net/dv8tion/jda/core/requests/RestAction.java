@@ -296,32 +296,4 @@ public abstract class RestAction<T>
         @Override
         protected void handleResponse(Response response, Request request) { }
     }
-
-    public static class WrapperRestAction<T, R> extends RestAction<T>
-    {
-        private final  Function<R, T> function;
-        private final RestAction<R> restAction;
-
-        public WrapperRestAction(RestAction<R> restAction, Function<R, T> function)
-        {
-            super(null, null, null);
-            this.restAction = restAction;
-            this.function = function;
-        }
-
-        @Override
-        public void queue(Consumer<T> success, Consumer<Throwable> failure)
-        {
-            restAction.queue(o -> success.accept(function.apply(o)), failure);
-        }
-
-        @Override
-        public T block() throws RateLimitedException
-        {
-            return function.apply(restAction.block());
-        }
-
-        @Override
-        protected void handleResponse(Response response, Request request) { }
-    }
 }
