@@ -11,6 +11,25 @@ import java.time.OffsetDateTime;
 @Immutable
 public interface Invite
 {
+    static interface Channel extends ISnowflake
+    {
+
+        String getName();
+
+        ChannelType getType();
+
+    }
+
+    static interface Guild extends ISnowflake
+    {
+
+        String getIconId();
+
+        String getName();
+
+        String getSplashId();
+    }
+
     public static RestAction<Invite> resolve(final JDA api, final String code)
     {
         return InviteImpl.resolve(api, code);
@@ -18,21 +37,11 @@ public interface Invite
 
     public RestAction<Invite> expand();
 
-    String getChannelId();
-
-    String getChannelName();
-
-    ChannelType getChannelType();
+    Channel getChannel();
 
     String getCode();
 
-    String getGuildIconId();
-
-    String getGuildId();
-
-    String getGuildName();
-
-    String getGuildSplashId();
+    Guild getGuild();
 
     User getInviter();
 

@@ -7,6 +7,7 @@ import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.requests.Route.CompiledRoute;
 
+import org.apache.http.annotation.Immutable;
 import org.apache.http.util.Args;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -15,16 +16,83 @@ import java.time.OffsetDateTime;
 
 public class InviteImpl implements Invite
 {
+    public static class ChannelImpl implements Channel
+    {
+        private final String id, name;
+        private final ChannelType type;
+
+        public ChannelImpl(final String id, final String name, final ChannelType type)
+        {
+            this.id = id;
+            this.name = name;
+            this.type = type;
+        }
+
+        @Override
+        public String getId()
+        {
+            return this.id;
+        }
+
+        @Override
+        public String getName()
+        {
+            return this.name;
+        }
+
+        @Override
+        public ChannelType getType()
+        {
+            return this.type;
+        }
+
+    }
+
+    @Immutable
+    public static class GuildImpl implements Guild
+    {
+
+        private final String id, iconId, name, splashId;
+
+        public GuildImpl(final String id, final String iconId, final String name, final String splashId)
+        {
+            this.id = id;
+            this.iconId = iconId;
+            this.name = name;
+            this.splashId = splashId;
+        }
+
+        @Override
+        public String getIconId()
+        {
+            return this.iconId;
+        }
+
+        @Override
+        public String getId()
+        {
+            return this.id;
+        }
+
+        @Override
+        public String getName()
+        {
+            return this.name;
+        }
+
+        @Override
+        public String getSplashId()
+        {
+            return this.splashId;
+        }
+
+    }
+
     private final JDAImpl api;
-    private final String channelId;
-    private final String channelName;
-    private final ChannelType channelType;
+    private final Channel channel;
     private final String code;
     private final boolean expanded;
-    private final String guildIconId;
-    private final String guildId;
-    private final String guildName;
-    private final String guildSplashId;
+    private final Guild guild;
     private final User inviter;
     private final int maxAge;
     private final int maxUses;
@@ -32,26 +100,20 @@ public class InviteImpl implements Invite
     private final OffsetDateTime timeCreated;
     private final int uses;
 
-    public InviteImpl(final JDA api, final String channelId, final String channelName, final ChannelType channelType, final String code,
-            final String guildIconId, final String guildId, final String guildName, final String guildSplashId, final boolean temporary, final int uses,
-            final OffsetDateTime timeCreated, final int maxUses, final int maxAge, final User inviter, final boolean expanded)
+    public InviteImpl(final JDAImpl api, final String code, final boolean expanded, final User inviter, final int maxAge, final int maxUses,
+            final boolean temporary, final OffsetDateTime timeCreated, final int uses, final Channel channel, final Guild guild)
     {
-        this.api = (JDAImpl) api;
-        this.channelId = channelId;
-        this.channelName = channelName;
-        this.channelType = channelType;
+        this.api = api;
         this.code = code;
-        this.guildIconId = guildIconId;
-        this.guildId = guildId;
-        this.guildName = guildName;
-        this.guildSplashId = guildSplashId;
-        this.temporary = temporary;
-        this.uses = uses;
-        this.timeCreated = timeCreated;
-        this.maxUses = maxUses;
-        this.maxAge = maxAge;
-        this.inviter = inviter;
         this.expanded = expanded;
+        this.inviter = inviter;
+        this.maxAge = maxAge;
+        this.maxUses = maxUses;
+        this.temporary = temporary;
+        this.timeCreated = timeCreated;
+        this.uses = uses;
+        this.channel = channel;
+        this.guild = guild;
     }
 
     public static RestAction<Invite> resolve(final JDA api, final String code)
@@ -82,7 +144,7 @@ public class InviteImpl implements Invite
     @Override
     public RestAction<Invite> expand()
     {
-        final Guild guild = this.api.getGuildById(this.guildId);
+        final net.dv8tion.jda.core.entities.Guild guild = this.api.getGuildById(this.guild.getId());
         if (guild == null)
         {
             throw new UnsupportedOperationException("You're not in the guild this invite points to");
@@ -98,7 +160,8 @@ public class InviteImpl implements Invite
         }
         else
         {
-            final Channel channel = this.channelType == ChannelType.TEXT ? guild.getTextChannelById(this.channelId) : guild.getVoiceChannelById(this.channelId);
+            final net.dv8tion.jda.core.entities.Channel channel = this.channel.getType() == ChannelType.TEXT ? guild.getTextChannelById(this.channel.getId())
+                    : guild.getVoiceChannelById(this.channel.getId());
             if (member.hasPermission(channel, Permission.MANAGE_CHANNEL))
             {
                 route = Route.Invites.GET_CHANNEL_INVITES.compile(channel.getId());
@@ -138,21 +201,9 @@ public class InviteImpl implements Invite
     }
 
     @Override
-    public String getChannelId()
+    public Channel getChannel()
     {
-        return this.channelId;
-    }
-
-    @Override
-    public String getChannelName()
-    {
-        return this.channelName;
-    }
-
-    @Override
-    public ChannelType getChannelType()
-    {
-        return this.channelType;
+        return this.channel;
     }
 
     @Override
@@ -162,27 +213,9 @@ public class InviteImpl implements Invite
     }
 
     @Override
-    public String getGuildIconId()
+    public Guild getGuild()
     {
-        return this.guildIconId;
-    }
-
-    @Override
-    public String getGuildId()
-    {
-        return this.guildId;
-    }
-
-    @Override
-    public String getGuildName()
-    {
-        return this.guildName;
-    }
-
-    @Override
-    public String getGuildSplashId()
-    {
-        return this.guildSplashId;
+        return this.guild;
     }
 
     @Override

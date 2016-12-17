@@ -1101,20 +1101,24 @@ public class EntityBuilder
     {
         final String code = object.getString("code");
 
-        final JSONObject channel = object.getJSONObject("channel");
-        final String channelTypeName = channel.getString("type");
+        final JSONObject channelObject = object.getJSONObject("channel");
+        final String channelTypeName = channelObject.getString("type");
 
         final ChannelType channelType = channelTypeName.equals("text") ? ChannelType.TEXT
                 : channelTypeName.equals("voice") ? ChannelType.VOICE : ChannelType.UNKNOWN;
-        final String channelId = channel.getString("id");
-        final String channelName = channel.getString("name");
+        final String channelId = channelObject.getString("id");
+        final String channelName = channelObject.getString("name");
 
-        JSONObject guild = object.getJSONObject("guild");
+        final Invite.Channel channel = new InviteImpl.ChannelImpl(channelId, channelName, channelType);
 
-        final String guildIconId = guild.getString("icon");
-        final String guildId = guild.getString("id");
-        final String guildName = guild.getString("name");
-        final String guildSplashId = guild.isNull("splash") ? null : guild.getString("splash");
+        final JSONObject guildObject = object.getJSONObject("guild");
+
+        final String guildIconId = guildObject.getString("icon");
+        final String guildId = guildObject.getString("id");
+        final String guildName = guildObject.getString("name");
+        final String guildSplashId = guildObject.isNull("splash") ? null : guildObject.getString("splash");
+
+        final Invite.Guild guild = new InviteImpl.GuildImpl(guildId, guildIconId, guildName, guildSplashId);
 
         final User inviter;
         final int maxAge;
@@ -1145,8 +1149,7 @@ public class EntityBuilder
             timeCreated = null;
         }
 
-        return new InviteImpl(api, channelId, channelName, channelType, code, guildIconId, guildId, guildName, guildSplashId, temporary, uses, timeCreated,
-                maxUses, maxAge, inviter, expanded);
+        return new InviteImpl(api, code, expanded, inviter, maxAge, maxUses, temporary, timeCreated, uses, channel, guild);
     }
 
     public void clearCache()
