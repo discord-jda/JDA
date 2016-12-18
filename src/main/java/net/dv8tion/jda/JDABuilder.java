@@ -74,7 +74,7 @@ public class JDABuilder
      *      Returns the {@link net.dv8tion.jda.JDABuilder JDABuilder} instance. Useful for chaining.
      */
     public JDABuilder setBotToken(String botToken) {
-        this.token = "Bot " + botToken;
+        this.token = botToken;
         return this;
     }
 

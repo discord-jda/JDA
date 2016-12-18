@@ -17,7 +17,13 @@ package net.dv8tion.jda.entities.impl;
 
 import com.mashape.unirest.http.Unirest;
 import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.entities.*;
+import net.dv8tion.jda.entities.Emote;
+import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.entities.PrivateChannel;
+import net.dv8tion.jda.entities.SelfInfo;
+import net.dv8tion.jda.entities.TextChannel;
+import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.events.Event;
 import net.dv8tion.jda.events.StatusChangeEvent;
 import net.dv8tion.jda.events.guild.GuildJoinEvent;
@@ -34,12 +40,15 @@ import net.dv8tion.jda.requests.Requester;
 import net.dv8tion.jda.requests.WebSocketClient;
 import net.dv8tion.jda.utils.SimpleLog;
 import org.apache.http.HttpHost;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -149,7 +158,7 @@ public class JDAImpl implements JDA
     //Code backported from JDAImpl#verifyToken(String) in the JDA 3.0 branch
     public void verifyToken(String token) throws LoginException
     {
-        this.authToken = token;
+        setAuthToken(token);
         Requester.Response response = getRequester().get(Requester.DISCORD_API_PREFIX + "users/@me");
 
         if (response.isOk())
@@ -182,6 +191,8 @@ public class JDAImpl implements JDA
 
     public void setAuthToken(String token)
     {
+        if (!token.startsWith("Bot "))
+            token = "Bot " + token;
         this.authToken = token;
     }
 
