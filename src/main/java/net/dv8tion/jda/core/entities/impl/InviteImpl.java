@@ -7,7 +7,6 @@ import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.requests.Route.CompiledRoute;
 
-import org.apache.http.annotation.Immutable;
 import org.apache.http.util.Args;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -16,80 +15,10 @@ import java.time.OffsetDateTime;
 
 public class InviteImpl implements Invite
 {
-    public static class ChannelImpl implements Channel
-    {
-        private final String id, name;
-        private final ChannelType type;
-
-        public ChannelImpl(final String id, final String name, final ChannelType type)
-        {
-            this.id = id;
-            this.name = name;
-            this.type = type;
-        }
-
-        @Override
-        public String getId()
-        {
-            return this.id;
-        }
-
-        @Override
-        public String getName()
-        {
-            return this.name;
-        }
-
-        @Override
-        public ChannelType getType()
-        {
-            return this.type;
-        }
-
-    }
-
-    @Immutable
-    public static class GuildImpl implements Guild
-    {
-
-        private final String id, iconId, name, splashId;
-
-        public GuildImpl(final String id, final String iconId, final String name, final String splashId)
-        {
-            this.id = id;
-            this.iconId = iconId;
-            this.name = name;
-            this.splashId = splashId;
-        }
-
-        @Override
-        public String getIconId()
-        {
-            return this.iconId;
-        }
-
-        @Override
-        public String getId()
-        {
-            return this.id;
-        }
-
-        @Override
-        public String getName()
-        {
-            return this.name;
-        }
-
-        @Override
-        public String getSplashId()
-        {
-            return this.splashId;
-        }
-
-    }
-
     private final JDAImpl api;
+
     private final Channel channel;
+
     private final String code;
     private final boolean expanded;
     private final Guild guild;
@@ -144,11 +73,12 @@ public class InviteImpl implements Invite
     @Override
     public RestAction<Invite> expand()
     {
+        if (this.expanded)
+            return new RestAction.EmptyRestAction<>(this);
+
         final net.dv8tion.jda.core.entities.Guild guild = this.api.getGuildById(this.guild.getId());
         if (guild == null)
-        {
             throw new UnsupportedOperationException("You're not in the guild this invite points to");
-        }
 
         final Member member = guild.getSelfMember();
 
@@ -167,9 +97,7 @@ public class InviteImpl implements Invite
                 route = Route.Invites.GET_CHANNEL_INVITES.compile(channel.getId());
             }
             else
-            {
                 throw new PermissionException("You don't have the permission to view the full invite info");
-            }
         }
 
         return new RestAction<Invite>(this.api, route, null)
@@ -222,9 +150,7 @@ public class InviteImpl implements Invite
     public User getInviter()
     {
         if (!this.expanded)
-        {
             throw new IllegalStateException("Only valid for expanded invites");
-        }
         return this.inviter;
     }
 
@@ -237,9 +163,7 @@ public class InviteImpl implements Invite
     public int getMaxAge()
     {
         if (!this.expanded)
-        {
             throw new IllegalStateException("Only valid for expanded invites");
-        }
         return this.maxAge;
     }
 
@@ -247,9 +171,7 @@ public class InviteImpl implements Invite
     public int getMaxUses()
     {
         if (!this.expanded)
-        {
             throw new IllegalStateException("Only valid for expanded invites");
-        }
         return this.maxUses;
     }
 
@@ -257,9 +179,7 @@ public class InviteImpl implements Invite
     public OffsetDateTime getTimeCreated()
     {
         if (!this.expanded)
-        {
             throw new IllegalStateException("Only valid for expanded invites");
-        }
         return this.timeCreated;
     }
 
@@ -267,9 +187,7 @@ public class InviteImpl implements Invite
     public int getUses()
     {
         if (!this.expanded)
-        {
             throw new IllegalStateException("Only valid for expanded invites");
-        }
         return this.uses;
     }
 
@@ -283,9 +201,7 @@ public class InviteImpl implements Invite
     public boolean isTemporary()
     {
         if (!this.expanded)
-        {
             throw new IllegalStateException("Only valid for expanded invites");
-        }
         return this.temporary;
     }
 
@@ -293,6 +209,77 @@ public class InviteImpl implements Invite
     public String toString()
     {
         return "Invite(" + this.code + ")";
+    }
+
+    public static class ChannelImpl implements Channel
+    {
+        private final String id, name;
+        private final ChannelType type;
+
+        public ChannelImpl(final String id, final String name, final ChannelType type)
+        {
+            this.id = id;
+            this.name = name;
+            this.type = type;
+        }
+
+        @Override
+        public String getId()
+        {
+            return this.id;
+        }
+
+        @Override
+        public String getName()
+        {
+            return this.name;
+        }
+
+        @Override
+        public ChannelType getType()
+        {
+            return this.type;
+        }
+
+    }
+
+    public static class GuildImpl implements Guild
+    {
+
+        private final String id, iconId, name, splashId;
+
+        public GuildImpl(final String id, final String iconId, final String name, final String splashId)
+        {
+            this.id = id;
+            this.iconId = iconId;
+            this.name = name;
+            this.splashId = splashId;
+        }
+
+        @Override
+        public String getIconId()
+        {
+            return this.iconId;
+        }
+
+        @Override
+        public String getId()
+        {
+            return this.id;
+        }
+
+        @Override
+        public String getName()
+        {
+            return this.name;
+        }
+
+        @Override
+        public String getSplashId()
+        {
+            return this.splashId;
+        }
+
     }
 
 }
