@@ -131,10 +131,7 @@ public class WebhookManagerUpdatable
         avatar = new WebhookField<Icon>(this, null)
         {
             @Override
-            public void checkValue(Icon value)
-            {
-                checkNull(value, "default avatar icon");
-            }
+            public void checkValue(Icon value) { }
 
             @Override
             public Icon getOriginalValue()
