@@ -259,7 +259,7 @@ public interface JDA
      * <p>If the developer is sharding ({@link net.dv8tion.jda.core.JDABuilder#useSharding(int, int)},
      * then this list will only contain the {@link net.dv8tion.jda.core.entities.Guild Guilds} that the shard is
      * actually connected to. Discord determines which guilds a shard is connect to using the following format:
-     * <br>Guild connected if shardId == (guildId >> 22) % totalShards;
+     * <br>Guild connected if shardId == (guildId {@literal >>} 22) % totalShards;
      * <br>Source for formula: <a href="https://discordapp.com/developers/docs/topics/gateway#sharding">Discord Documentation</a>
      *
      * @return Possibly-empty list of all the {@link net.dv8tion.jda.core.entities.Guild Guilds} that this account is connected to.

@@ -16,15 +16,16 @@
 package net.dv8tion.jda.core;
 
 /**
- * Represents the online presence of a {@link net.dv8tion.jda.core.entities.User User}.
+ * Represents the online presence of a {@link net.dv8tion.jda.core.entities.Member Member} or
+ * {@link net.dv8tion.jda.client.entities.Friend Friend}.
  */
 public enum OnlineStatus
 {
     ONLINE("online"),
     IDLE("idle"),
     DO_NOT_DISTURB("dnd"),
-    OFFLINE("offline"),
     INVISIBLE("invisible"),
+    OFFLINE("offline"),
     UNKNOWN("");
 
     private final String key;
@@ -37,9 +38,9 @@ public enum OnlineStatus
     /**
      * The valid API key for this OnlineStatus
      *
-     * @return
-     *      String representation of the valid API key for this OnlineStatus
-     * @see <a href="https://discordapp.com/developers/docs/topics/gateway#presence-update">PRESENCE_UPDATE</a>
+     * @return String representation of the valid API key for this OnlineStatus
+     *
+     * @see    <a href="https://discordapp.com/developers/docs/topics/gateway#presence-update">PRESENCE_UPDATE</a>
      */
     public String getKey()
     {
@@ -47,13 +48,13 @@ public enum OnlineStatus
     }
 
     /**
-     * Will get the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} from the provided key.<br>
-     * If the provided key does no match a presence, this will return {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKONWN}
+     * Will get the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} from the provided key.
+     * <br>If the provided key does not have a matching OnlineStatus, this will return {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKONWN}
      *
-     * @param key
-     *          The key relating to the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} we wish to retrieve.
-     * @return
-     *      The matching {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus}. If there is no match, returns {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKONWN}.
+     * @param  key
+     *         The key relating to the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} we wish to retrieve.
+     *
+     * @return The matching {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus}. If there is no match, returns {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKONWN}.
      */
     public static OnlineStatus fromKey(String key)
     {
