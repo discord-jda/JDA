@@ -16,6 +16,10 @@
 
 package net.dv8tion.jda.core;
 
+/**
+ * Represents the type of account that is logged in.
+ * <br>Used to differentiate between Bots and Client accounts.
+ */
 public enum AccountType
 {
     BOT, CLIENT;

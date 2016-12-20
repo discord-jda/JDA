@@ -24,6 +24,9 @@ import java.util.regex.Pattern;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.impl.MessageEmbedImpl;
 
+/**
+ * Builder system used to build {@link net.dv8tion.jda.core.entities.MessageEmbed MessageImbeds}.
+ */
 public class EmbedBuilder 
 {
     public final static int TITLE_MAX_LENGTH = 256;

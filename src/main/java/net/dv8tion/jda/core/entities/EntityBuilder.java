@@ -308,10 +308,10 @@ public class EntityBuilder
         GuildImpl guildObj = (GuildImpl) api.getGuildMap().get(guildId);
 
         if (guildObj == null)
-            throw new IllegalStateException("Attempted to preform a second pass on an unknown Guild. Guild not in JDA " +
+            throw new IllegalStateException("Attempted to perform a second pass on an unknown Guild. Guild not in JDA " +
                     "mapping. GuildId: " + guildId);
         if (guildJson == null)
-            throw new IllegalStateException("Attempted to preform a second pass on an unknown Guild. No cached Guild " +
+            throw new IllegalStateException("Attempted to perform a second pass on an unknown Guild. No cached Guild " +
                     "for second pass. GuildId: " + guildId);
         if (secondPassCallback == null)
             throw new IllegalArgumentException("No callback provided for the second pass on the Guild!");

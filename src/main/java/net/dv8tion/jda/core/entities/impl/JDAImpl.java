@@ -318,7 +318,8 @@ public class JDAImpl implements JDA
     {
         if (accountType != AccountType.BOT)
             throw new AccountTypeException(AccountType.BOT);
-        Args.notNull(id, "User id");
+        Args.notEmpty(id, "User id");
+
         // check cache
         User user = this.getUserById(id);
         if (user != null)
