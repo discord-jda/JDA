@@ -31,10 +31,10 @@ public class MiscUtil
      * Gets the creation-time of a JDA-entity by doing the reverse snowflake algorithm on its id.
      * This returns the creation-time of the actual entity on Discords side, not inside JDA.
      *
-     * @param entityId
-     *      The id of the JDA entity where the creation-time should be determined for
-     * @return
-     *      The creation time of the JDA entity as OffsetDateTime
+     * @param  entityId
+     *         The id of the JDA entity where the creation-time should be determined for
+     *
+     * @return The creation time of the JDA entity as OffsetDateTime
      */
     public static OffsetDateTime getCreationTime(String entityId) {
         try
@@ -55,10 +55,10 @@ public class MiscUtil
      * This returns the creation-time of the actual entity on Discords side, not inside JDA.
      * This will not work on entities, that do not have a getId() method and will return null in those cases!
      *
-     * @param entity
-     *      The JDA entity where the creation-time should be determined for
-     * @return
-     *      The creation time of the JDA entity as OffsetDateTime
+     * @param  entity
+     *         The JDA entity where the creation-time should be determined for
+     *
+     * @return The creation time of the JDA entity as OffsetDateTime
      */
     public static OffsetDateTime getCreationTime(Object entity)
     {
@@ -81,10 +81,10 @@ public class MiscUtil
     /**
      * Returns a prettier String-representation of a OffsetDateTime object
      *
-     * @param time
-     *      The OffsetDateTime object to format
-     * @return
-     *      The String of the formatted OffsetDateTime
+     * @param  time
+     *         The OffsetDateTime object to format
+     *
+     * @return The String of the formatted OffsetDateTime
      */
     public static String getDateTimeString(OffsetDateTime time)
     {
