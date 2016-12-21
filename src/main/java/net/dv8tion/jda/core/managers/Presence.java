@@ -22,6 +22,9 @@ import net.dv8tion.jda.core.entities.Game;
 
 /**
  * The Presence associated with the provided JDA instance
+ *
+ * @since  JDA 3.0
+ * @author Florian Spieß
  */
 public interface Presence
 {
@@ -29,54 +32,57 @@ public interface Presence
     /**
      * The JDA instance of this Presence
      *
-     * @return
-     *      The current JDA instance
+     * @return The current JDA instance
      */
     JDA getJDA();
 
     /**
-     * The current OnlineStatus for this session.<br>
-     * This might not be what the Discord Client displays due to session clashing!
+     * The current OnlineStatus for this session.
+     * <br>This might not be what the Discord Client displays due to session clashing!
      *
-     * @return
-     *      The {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} of the current session
+     * @return The {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus}
+     *         of the current session
      */
     OnlineStatus getStatus();
 
     /**
-     * The current Game for this session.<br>
-     * This might not be what the Discord Client displays due to session clashing!
+     * The current Game for this session.
+     * <br>This might not be what the Discord Client displays due to session clashing!
      *
-     * @return
-     *      The {@link net.dv8tion.jda.core.entities.Game Game} of the current session
+     * @return The {@link net.dv8tion.jda.core.entities.Game Game}
+     *         of the current session
      */
     Game getGame();
 
     /**
      * Whether the current session is marked as afk or not
      *
-     * @return
-     *      true if this session is marked as afk
+     * @return True if this session is marked as afk
      */
     boolean isIdle();
 
     /**
      * Sets the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} for this session
      *
-     * @param status
-     *      the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} to be used (OFFLINE/null {@literal ->} INVISIBLE)
+     * @param  status
+     *         the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus}
+     *         to be used (OFFLINE/null {@literal ->} INVISIBLE)
+     *
      * @throws IllegalArgumentException
-     *      if the provided OnlineStatus is {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}
+     *         if the provided OnlineStatus is {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}
      */
     void setStatus(OnlineStatus status);
 
     /**
-     * Sets the {@link net.dv8tion.jda.core.entities.Game Game} for this session
+     * Sets the {@link net.dv8tion.jda.core.entities.Game Game} for this session.
+     * <br>A Game can be retrieved via {@link net.dv8tion.jda.core.entities.Game#of(String)}.
+     * For streams you provide a valid streaming url as second parameter
      *
-     * @param game
-     *      A {@link net.dv8tion.jda.core.entities.Game Game} instance or null to reset
-     * @see net.dv8tion.jda.core.entities.Game#of(String)
-     * @see net.dv8tion.jda.core.entities.Game#of(String, String)
+     * @param  game
+     *         A {@link net.dv8tion.jda.core.entities.Game Game} instance or null to reset
+     *
+     * @see    net.dv8tion.jda.core.entities.Game#of(String)
+     * @see    net.dv8tion.jda.core.entities.Game#of(String, String)
      */
     void setGame(Game game);
 
@@ -84,7 +90,7 @@ public interface Presence
      * Sets whether this session should be marked as afk or not
      *
      * @param idle
-     *      boolean
+     *        boolean
      */
     void setIdle(boolean idle);
 

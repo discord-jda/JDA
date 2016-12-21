@@ -57,8 +57,10 @@ import net.dv8tion.jda.core.events.user.*;
 
 /**
  * An abstract implementation of {@link net.dv8tion.jda.core.hooks.EventListener EventListener} which divides {@link net.dv8tion.jda.core.events.Event Events}
- * for the you.<p>
- * <b>Example:</b><br>
+ * for the you.
+ *
+ * <p><b>Example:</b>
+ * <br>
  * <pre><code>
  * public class MyReadyListener extends ListenerAdapter
  * {
@@ -74,6 +76,7 @@ import net.dv8tion.jda.core.events.user.*;
  *         System.out.printf("[%s]: %s\n", event.getAuthor().getName(), event.getMessage().getContent());
  *     }
  * }</code></pre>
+ *
  * @see net.dv8tion.jda.core.hooks.EventListener
  */
 public abstract class ListenerAdapter implements EventListener

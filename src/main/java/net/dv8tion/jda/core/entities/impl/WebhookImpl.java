@@ -26,6 +26,12 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 
+/**
+ * The implementation for {@link net.dv8tion.jda.core.entities.Webhook Webhook}
+ *
+ * @since  JDA 3.0
+ * @author Florian Spieß
+ */
 public class WebhookImpl implements Webhook
 {
 
