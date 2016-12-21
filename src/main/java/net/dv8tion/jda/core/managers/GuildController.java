@@ -30,6 +30,7 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.restaction.WebhookAction;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -977,6 +978,35 @@ public class GuildController
                 request.onSuccess(vc);
             }
         };
+    }
+
+    /**
+     * Creates a new {@link net.dv8tion.jda.core.entities.Webhook Webhook} for the specified
+     * {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
+     *
+     * @param  channel
+     *         The target TextChannel to attach a new Webhook to.
+     * @param  name
+     *         The default name for the new Webhook.
+     *
+     * @throws IllegalArgumentException
+     *         If any of the provided arguments is null.
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If you do not hold the permission {@link net.dv8tion.jda.core.Permission#MANAGE_WEBHOOKS Manage Webhooks}
+     *         on the selected channel.
+     *
+     * @return A specified {@link net.dv8tion.jda.core.requests.restaction.WebhookAction WebhookAction}
+     *         This action allows you to set fields for the new webhook before creating it.
+     */
+    public WebhookAction createWebhook(TextChannel channel, String name)
+    {
+        checkNull(name, "Webhook name");
+        checkNull(channel, "TextChannel");
+        if (!guild.getSelfMember().hasPermission(channel, Permission.MANAGE_WEBHOOKS))
+            throw new PermissionException(Permission.MANAGE_WEBHOOKS);
+
+        Route.CompiledRoute route = Route.Channels.CREATE_WEBHOOK.compile(channel.getId());
+        return new WebhookAction(getJDA(), route, name);
     }
 
     /**

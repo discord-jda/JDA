@@ -45,7 +45,7 @@ public abstract class RestAction<T>
 
     protected final JDAImpl api;
     protected final Route.CompiledRoute route;
-    protected final Object data;
+    protected Object data;
 
     public RestAction(JDA api, Route.CompiledRoute route, Object data)
     {
