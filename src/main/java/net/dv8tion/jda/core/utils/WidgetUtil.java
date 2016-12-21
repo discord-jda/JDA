@@ -560,7 +560,7 @@ public class WidgetUtil
             * If the user is not currently playing a game, this will return null.
             *
             * @return Possibly-null {@link net.dv8tion.jda.core.entities.Game Game} containing the game
-             *        that the member is currently playing.
+            *         that the member is currently playing.
             */
             public Game getGame()
             {

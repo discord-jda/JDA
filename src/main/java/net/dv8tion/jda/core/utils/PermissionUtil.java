@@ -60,10 +60,10 @@ public class PermissionUtil
      * Checks if a given Member can interact with a given Role - in a permission sense (kick/ban/modify perms).
      * This only checks the Role-Position and does not check the actual permission (kick/ban/manage_role/...)
      *
-     * @param issuer
-     *        The member that tries to interact with the role
-     * @param target
-     *        The role that is the target of the interaction
+     * @param  issuer
+     *         The member that tries to interact with the role
+     * @param  target
+     *         The role that is the target of the interaction
      *
      * @throws NullPointerException
      *         if any of the provided parameters is null

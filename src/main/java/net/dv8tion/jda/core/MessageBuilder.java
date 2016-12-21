@@ -27,6 +27,9 @@ import java.util.regex.Pattern;
  * <br>Internally the builder uses a {@link java.lang.StringBuilder} to take advantage of the efficiencies offered by the
  * StringBuilder, and the methods provided by this class are a combination of those offered by the StringBuilder and
  * {@link String#format(String, Object...)}.
+ *
+ * @since  JDA 1.0
+ * @author Michael Ritter & Aljoscha Grebe
  */
 public class MessageBuilder
 {

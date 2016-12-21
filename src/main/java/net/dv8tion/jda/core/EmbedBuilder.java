@@ -15,18 +15,22 @@
  */
 package net.dv8tion.jda.core;
 
+import net.dv8tion.jda.core.entities.MessageEmbed;
+import net.dv8tion.jda.core.entities.impl.MessageEmbedImpl;
+
 import java.awt.Color;
 import java.time.OffsetDateTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
-import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.entities.impl.MessageEmbedImpl;
 
 /**
  * Builder system used to build {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbeds}.
  * <br>A visual breakdown of an Embed and how it relates to this class is available <a href="http://imgur.com/a/yOb5n">here</a>.
+ *
+ * @since  JDA 3.0
+ * @author John A. Grosh
  */
 public class EmbedBuilder 
 {

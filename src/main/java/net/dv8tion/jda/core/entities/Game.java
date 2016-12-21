@@ -19,7 +19,11 @@ import net.dv8tion.jda.core.entities.impl.GameImpl;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Represents a Discord {@link net.dv8tion.jda.core.entities.Game Game}. This should contain all information provided from Discord about a Game.
+ * Represents a Discord {@link net.dv8tion.jda.core.entities.Game Game}.
+ * <br>This should contain all information provided from Discord about a Game.
+ *
+ * @since  JDA 2.1
+ * @author John A. Grosh
  */
 public interface Game
 {
@@ -27,36 +31,34 @@ public interface Game
     /**
      * The displayed name of the {@link net.dv8tion.jda.core.entities.Game Game}. If no name has been set, this returns null.
      *
-     * @return
-     *      Possibly-null String containing the Game's name.
+     * @return Possibly-null String containing the Game's name.
      */
     String getName();
 
     /**
      * The URL of the {@link net.dv8tion.jda.core.entities.Game Game}. This will return null for regular games.
      *
-     * @return
-     *      Possibly-null String containing the Game's URL.
+     * @return Possibly-null String containing the Game's URL.
      */
     String getUrl();
 
     /**
      * The type of {@link net.dv8tion.jda.core.entities.Game Game}. This will return null for regular games.
      *
-     * @return
-     *      Possibly-null int representing the type of Game
+     * @return Possibly-null int representing the type of Game
      */
     GameType getType();
 
     /**
      * Creates a new Game instance with the specified name.
      *
-     * @param name
-     *      The not-null name of the newly created game
-     * @return
-     *      A valid Game instance with the provided name with {@link GameType#DEFAULT}
+     * @param  name
+     *         The not-null name of the newly created game
+     *
      * @throws IllegalArgumentException
-     *      if the specified name is null or empty
+     *         if the specified name is null or empty
+     *
+     * @return A valid Game instance with the provided name with {@link GameType#DEFAULT}
      */
     static Game of(String name)
     {
@@ -66,15 +68,17 @@ public interface Game
     /**
      * Creates a new Game instance with the specified name and url.
      *
-     * @param name
-     *      The not-null name of the newly created game
-     * @param url
-     *      The streaming url to use, invalid for {@link GameType#DEFAULT GameType#DEFAULT}
-     * @return
-     *      A valid Game instance with the provided name and url
+     * @param  name
+     *         The not-null name of the newly created game
+     * @param  url
+     *         The streaming url to use, invalid for {@link GameType#DEFAULT GameType#DEFAULT}
+     *
      * @throws IllegalArgumentException
-     *      if the specified name is null or empty
-     * @see #isValidStreamingUrl(String)
+     *         if the specified name is null or empty
+     *
+     * @return A valid Game instance with the provided name and url
+     *
+     * @see    #isValidStreamingUrl(String)
      */
     static Game of(String name, String url)
     {
@@ -90,10 +94,10 @@ public interface Game
     /**
      * Checks if a given String is a valid Twitch url (ie, one that will display "Streaming" on the Discord client).
      *
-     * @param url
-     *      The url to check.
-     * @return
-     *          boolean
+     * @param  url
+     *         The url to check.
+     *
+     * @return boolean
      */
     static boolean isValidStreamingUrl(String url)
     {
