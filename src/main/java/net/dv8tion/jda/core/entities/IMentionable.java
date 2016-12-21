@@ -16,13 +16,17 @@
 
 package net.dv8tion.jda.core.entities;
 
+/**
+ * Marks a mentionable entity
+ *
+ * @since JDA 3.0
+ */
 public interface IMentionable
 {
     /**
      * Retrieve a Mention for this Entity.
      *
-     * @return
-     *      A resolvable mention.
+     * @return A resolvable mention.
      */
     String getAsMention();
 }

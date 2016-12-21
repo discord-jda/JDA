@@ -26,49 +26,47 @@ import java.util.List;
 
 /**
  * Represents a Guild-specific User.
- * <p>
- * Contains all guild-specific information about a User. (Roles, Nickname, VoiceStatus etc.)
+ *
+ * <p>Contains all guild-specific information about a User. (Roles, Nickname, VoiceStatus etc.)
+ *
+ * @since JDA 3.0
  */
 public interface Member extends IMentionable, IPermissionHolder
 {
     /**
      * The user wrapped by this Entity.
      *
-     * @return
-     *      {@link net.dv8tion.jda.core.entities.User User}
+     * @return {@link net.dv8tion.jda.core.entities.User User}
      */
     User getUser();
 
     /**
      * The Guild in which this Member is represented.
      *
-     * @return
-     *      {@link net.dv8tion.jda.core.entities.Guild Guild}
+     * @return {@link net.dv8tion.jda.core.entities.Guild Guild}
      */
     Guild getGuild();
 
     /**
      * The JDA instance.
      *
-     * @return
-     *      The current JDA instance.
+     * @return The current JDA instance.
      */
     JDA getJDA();
 
     /**
      * The {@link java.time.OffsetDateTime Time} this Member joined the Guild.
      *
-     * @return
-     *      The Join Date.
+     * @return The Join Date.
      */
     OffsetDateTime getJoinDate();
 
     /**
-     * The {@link net.dv8tion.jda.core.entities.GuildVoiceState VoiceState} of this Member.<p>
-     * This can be used to get the Member's VoiceChannel.
+     * The {@link net.dv8tion.jda.core.entities.GuildVoiceState VoiceState} of this Member.
      *
-     * @return
-     *      {@link net.dv8tion.jda.core.entities.GuildVoiceState VoiceState}
+     * <p>This can be used to get the Member's VoiceChannel.
+     *
+     * @return {@link net.dv8tion.jda.core.entities.GuildVoiceState VoiceState}
      */
     GuildVoiceState getVoiceState();
 
@@ -76,77 +74,120 @@ public interface Member extends IMentionable, IPermissionHolder
      * The game that the user is currently playing.
      * If the user is not currently playing a game, this will return null.
      *
-     * @return
-     *      Possibly-null {@link net.dv8tion.jda.core.entities.Game Game} containing the game that the {@link net.dv8tion.jda.core.entities.User User} is currently playing.
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.Game Game} containing the game
+     *         that the {@link net.dv8tion.jda.core.entities.User User} is currently playing.
      */
     Game getGame();
 
     /**
-     * Returns the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} of the User.<br>
-     * If the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} is unrecognized, will return {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}.
+     * Returns the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} of the User.
+     * <br>If the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} is unrecognized, will return {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}.
      *
-     * @return
-     *      The current {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} of the {@link net.dv8tion.jda.core.entities.User User}.
+     * @return The current {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} of the {@link net.dv8tion.jda.core.entities.User User}.
      */
     OnlineStatus getOnlineStatus();
 
     /**
      * Returns the current nickname of this Member for the parent Guild.
      *
-     * @return
-     *      The nickname or null, if no nickname is set.
+     * @return The nickname or null, if no nickname is set.
      */
     String getNickname();
 
     /**
      * Retrieves the Name displayed in the official Discord Client.
      *
-     * @return
-     *      The Nickname of this Member or the Username if no Nickname is present.
+     * @return The Nickname of this Member or the Username if no Nickname is present.
      */
     String getEffectiveName();
 
     /**
      * The roles applied to this Member.
      *
-     * @return
-     *      An immutable List of {@link net.dv8tion.jda.core.entities.Role Roles} for this Member.
+     * @return An immutable List of {@link net.dv8tion.jda.core.entities.Role Roles} for this Member.
      */
     List<Role> getRoles();
 
     /**
      * The {@link java.awt.Color Color} of this Member's name in a Guild.
-     * <p>
-     * This is determined by the color of the highest role assigned to them that does not have the default color.<br>
-     * If all roles have default color, this returns null.
      *
-     * @return
-     *      The display Color for this Member.
+     * <p>This is determined by the color of the highest role assigned to them that does not have the default color.
+     * <br>If all roles have default color, this returns null.
+     *
+     * @return The display Color for this Member.
      */
     Color getColor();
 
     /**
-     * The Permissions this PermissionHolder holds in the specified {@link net.dv8tion.jda.core.entities.Channel Channel}.<br>
-     * Permissions returned by this may be different from {@link #getPermissions()} due to the Channel's {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides }.
+     * The Permissions this PermissionHolder holds in the specified {@link net.dv8tion.jda.core.entities.Channel Channel}.
+     * <br>Permissions returned by this may be different from {@link #getPermissions()}
+     * due to the Channel's {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides}.
      *
-     * @param channel
-     *      The {@link net.dv8tion.jda.core.entities.Channel Channel} of which to get Permissions for
-     * @return
-     *      An immutable List of Permissions granted to this PermissionHolder.
+     * @param  channel
+     *         The {@link net.dv8tion.jda.core.entities.Channel Channel} of which to get Permissions for
+     *
+     * @return An immutable List of Permissions granted to this PermissionHolder.
      */
     List<Permission> getPermissions(Channel channel);
 
+    /**
+     * Whether this Member can interact with the provided Member
+     * (kick/ban/etc.)
+     *
+     * @param  member
+     *         The target Member to check
+     *
+     * @throws NullPointerException
+     *         if the specified Member is null
+     * @throws IllegalArgumentException
+     *         if the specified Member is not from the same guild
+     *
+     * @return True, if this Member is able to interact with the specified Member
+     *
+     * @see    net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member)
+     */
     boolean canInteract(Member member);
 
+    /**
+     * Whether this Member can interact with the provided {@link net.dv8tion.jda.core.entities.Role Role}
+     * (kick/ban/move/modify/delete/etc.)
+     *
+     * @param  role
+     *         The target Role to check
+     *
+     * @throws NullPointerException
+     *         if the specified Role is null
+     * @throws IllegalArgumentException
+     *         if the specified Role is not from the same guild
+     *
+     * @return True, if this member is able to interact with the specified Role
+     *
+     * @see    net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Role)
+     */
     boolean canInteract(Role role);
 
+    /**
+     * Whether this Member can interact with the provided {@link net.dv8tion.jda.core.entities.Emote Emote}
+     * (delete/modify)
+     *
+     * @param  emote
+     *         The target Emote to check
+     *
+     * @throws NullPointerException
+     *         if the specified Emote is null
+     * @throws IllegalArgumentException
+     *         if the specified Emote is not from the same guild
+     *
+     * @return True, if this Member is able to interact with the specified Emote
+     *
+     * @see    net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Emote)
+     */
     boolean canInteract(Emote emote);
 
     /**
      * Checks whether this member is the owner of its related {@link net.dv8tion.jda.core.entities.Guild Guild}.
      *
-     * @return
-     *      True - if this member is the owner of the attached Guild.
+     * @return True, if this member is the owner of the attached Guild.
      */
     boolean isOwner();
 }

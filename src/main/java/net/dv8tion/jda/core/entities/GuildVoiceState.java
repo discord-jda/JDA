@@ -20,35 +20,31 @@ public interface GuildVoiceState extends VoiceState
 {
     /**
      * Returns whether the {@link net.dv8tion.jda.core.entities.Member Member} is muted, either
-     * by choice {@link #isSelfMuted()} ()} or deafened by an admin {@link #isGuildMuted()}
+     * by choice {@link #isSelfMuted()} or deafened by an admin {@link #isGuildMuted()}
      *
-     * @return
-     *      the Member's mute status
+     * @return the Member's mute status
      */
     boolean isMuted();
 
     /**
      * Returns whether the {@link net.dv8tion.jda.core.entities.Member Member} is deafened, either
-     * by choice {@link #isSelfDeafened()} ()} or deafened by an admin {@link #isGuildDeafened()}
+     * by choice {@link #isSelfDeafened()} or deafened by an admin {@link #isGuildDeafened()}
      *
-     * @return
-     *      the Member's deaf status
+     * @return the Member's deaf status
      */
     boolean isDeafened();
 
     /**
      * Returns whether the {@link net.dv8tion.jda.core.entities.Member Member} got muted by an Admin
      *
-     * @return
-     *      the Member's guild-mute status
+     * @return the Member's guild-mute status
      */
     boolean isGuildMuted();
 
     /**
      * Returns whether the {@link net.dv8tion.jda.core.entities.Member Member} got deafened by an Admin
      *
-     * @return
-     *      the Member's guild-deaf status
+     * @return the Member's guild-deaf status
      */
     boolean isGuildDeafened();
 
@@ -59,8 +55,7 @@ public interface GuildVoiceState extends VoiceState
      * {@link net.dv8tion.jda.core.Permission#VOICE_SPEAK Permission#VOICE_SPEAK} or if the channel is the
      * designated AFK channel.
      *
-     * @return
-     *      True if this {@link net.dv8tion.jda.core.entities.Member Member's} audio is being suppressed.
+     * @return True, if this {@link net.dv8tion.jda.core.entities.Member Member's} audio is being suppressed.
      */
     boolean isSuppressed();
 
@@ -69,38 +64,34 @@ public interface GuildVoiceState extends VoiceState
      * is in. If the {@link net.dv8tion.jda.core.entities.Member Member} is currently not in a
      * {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}, this returns null.
      *
-     * @return
-     *      The VoiceChannel that the Member is in, or null.
+     * @return The VoiceChannel that the Member is in, or null.
      */
     VoiceChannel getChannel();
 
     /**
      * Returns the current {@link net.dv8tion.jda.core.entities.Guild Guild} of the {@link net.dv8tion.jda.core.entities.Member Member's}
-     * {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
-     * If the {@link net.dv8tion.jda.core.entities.User User} is currently not in a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}, this returns null
+     * {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}. If the {@link net.dv8tion.jda.core.entities.Member Member} is currently
+     * not in a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}, this returns null
      *
-     * @return
-     *      the User's VoiceChannel's Guild or null
+     * @return the Member's Guild
      */
     Guild getGuild();
 
     /**
-     * Returns the {@link net.dv8tion.jda.core.entities.Member Member} corresponding to this VoiceState Object
+     * Returns the {@link net.dv8tion.jda.core.entities.Member Member} corresponding to this GuildVoiceState instance
      * (Backreference)
      *
-     * @return
-     *      the Member that holds this VoiceState
+     * @return the Member that holds this GuildVoiceState
      */
     Member getMember();
 
     /**
-     * Used to determine if the {@link net.dv8tion.jda.core.entities.User User} is currently in a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
+     * Used to determine if the {@link net.dv8tion.jda.core.entities.Member Member} is currently in a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
      * in the {@link net.dv8tion.jda.core.entities.Guild Guild} returned from {@link #getGuild() getGuild()}.<br>
-     * If this is <code>false</code>, {@link #getChannel() getChannel()} will return <code>null</code>.
+     * If this is {@code false}, {@link #getChannel() getChannel()} will return {@code null}.
      *
-     * @return
-     *      True if the {@link net.dv8tion.jda.core.entities.User User} is currently in a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
-     *      in this {@link net.dv8tion.jda.core.entities.Guild Guild}.
+     * @return True, if the {@link net.dv8tion.jda.core.entities.Member Member} is currently in a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
+     *         in this {@link net.dv8tion.jda.core.entities.Guild Guild}.
      */
     boolean inVoiceChannel();
 }

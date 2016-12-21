@@ -20,21 +20,26 @@ import net.dv8tion.jda.core.utils.MiscUtil;
 
 import java.time.OffsetDateTime;
 
+/**
+ * Marks a snowflake entity
+ *
+ * @since JDA 3.0
+ */
 public interface ISnowflake
 {
     /**
      * The Snowflake id of this entity. This is unique to every entity and will never change.
      *
-     * @return
-     *      Never-null String containing the Id.
+     * @return Never-null String containing the Id.
      */
     String getId();
 
     /**
      * The time this entity was created. Calculated through the Snowflake in {@link #getId}.
      *
-     * @return
-     *      OffsetDateTime - Time this entity was created at.
+     * @return OffsetDateTime - Time this entity was created at.
+     *
+     * @see    net.dv8tion.jda.core.utils.MiscUtil#getCreationTime(Object)
      */
     default OffsetDateTime getCreationTime()
     {

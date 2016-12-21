@@ -27,25 +27,23 @@ public interface PrivateChannel extends MessageChannel, CallableChannel, IFakeab
     /**
      * The {@link net.dv8tion.jda.core.entities.User User} that this {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} communicates with.
      *
-     * @return
-     *      A non-null {@link net.dv8tion.jda.core.entities.User User}.
+     * @return A non-null {@link net.dv8tion.jda.core.entities.User User}.
      */
     User getUser();
 
     /**
      * Returns the {@link net.dv8tion.jda.core.JDA JDA} instance of this PrivateChannel
-     * @return
-     *      the corresponding JDA instance
+     *
+     * @return the corresponding JDA instance
      */
     JDA getJDA();
 
     /**
-     * Closes a PrivateChannel. After being closed successfully the PrivateChannel is removed from the JDA mapping.<br>
-     * As a note, this does not remove the history of the PrivateChannel. If the channel is reoppened the history will
+     * Closes a PrivateChannel. After being closed successfully the PrivateChannel is removed from the JDA mapping.
+     * <br>As a note, this does not remove the history of the PrivateChannel. If the channel is reopened the history will
      * still be present.
      *
-     * @return
-     *          {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
      */
     RestAction<Void> close();
 }

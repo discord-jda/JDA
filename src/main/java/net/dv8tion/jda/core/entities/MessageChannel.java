@@ -25,7 +25,6 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import org.apache.http.util.Args;
 import org.json.JSONObject;
-//import net.dv8tion.jda.core.exceptions.VerificationLevelException;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,10 +33,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
 
+//import net.dv8tion.jda.core.exceptions.VerificationLevelException;
+
 /**
  * Represents a Discord channel that can have messages and files sent to it.
  */
-public interface MessageChannel extends ISnowflake
+public interface MessageChannel extends ISnowflake //todo: doc error responses on rest actions
 {
     /**
      * This method is a shortcut method to return the following information in the following situation:
@@ -48,152 +49,256 @@ public interface MessageChannel extends ISnowflake
      *     <li><b>Group</b> - Returns {@link net.dv8tion.jda.client.entities.Group#getName()}</li>
      * </ul>
      *
-     * @return
-     *      Possibly-null "name" of the MessageChannel. Different implementations determine what the name is.
+     * @return Possibly-null "name" of the MessageChannel. Different implementations determine what the name is.
      */
     String getName();
 
-    //TODO: doc
+    /**
+     * The {@link net.dv8tion.jda.core.entities.ChannelType ChannelType}
+     * of this MessageChannel.
+     *
+     * @return The ChannelType for this channel
+     */
     ChannelType getType();
 
     /**
      * Returns the {@link net.dv8tion.jda.core.JDA JDA} instance of this MessageChannel
      *
-     * @return
-     *      the corresponding JDA instance
+     * @return the corresponding JDA instance
      */
     JDA getJDA();
 
     /**
      * Sends a plain text {@link net.dv8tion.jda.core.entities.Message Message} to this channel.
-     * This will fail if the account of the api does not have the {@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Write-Permission}
-     * for this channel set
-     * After the Message has been sent, the created {@link net.dv8tion.jda.core.entities.Message Message} object is returned
-     * This Object will be null, if the sending failed.
-     * When the Rate-limit is reached (10 Messages in 10 secs), a {@link net.dv8tion.jda.core.exceptions.RateLimitedException RateLimitedException} is thrown
+     * <br>This will fail if this channel is an instance of {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and
+     * the account of the api does not have permissions to send a message to this channel.
+     * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
+     * use {@link net.dv8tion.jda.core.entities.TextChannel#canTalk() TextChannel#canTalk}.
      *
-     * @param text
-     *          the text to send
-     * @return
-     *      the Message created by this function
+     * @param  text
+     *         the text to send
+     *
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *      If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does
-     *      not have {@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}.
+     *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does
+     *         not have {@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}
+     *         or {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}.
+     * @throws java.lang.IllegalArgumentException
+     *         if the provided text is null, empty or longer than 2000 characters
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
+     *         <br>The newly created message
      */
     RestAction<Message> sendMessage(String text);
-    
+
     /**
-     * Sends a {@link net.dv8tion.jda.core.entities.Message Message} containing a rich embed to this channel.
-     * This will fail if the account of the api does not have the {@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Write-Permission}
-     * for this channel set
-     * After the Message has been sent, the created {@link net.dv8tion.jda.core.entities.Message Message} object is returned
-     * This Object will be null, if the sending failed.
-     * When the Rate-limit is reached (10 Messages in 10 secs), a {@link net.dv8tion.jda.core.exceptions.RateLimitedException RateLimitedException} is thrown
+     * Sends a specified {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} as a {@link net.dv8tion.jda.core.entities.Message Message}
+     * to this channel.
+     * <br>This will fail if this channel is an instance of {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and
+     * the account of the api does not have permissions to send a message to this channel.
+     * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
+     * use {@link net.dv8tion.jda.core.entities.TextChannel#canTalk() TextChannel#canTalk}.
      *
-     * @param embed
-     *          the embed to send
-     * @return
-     *      the Message created by this function
+     * @param  embed
+     *         the {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} to send
+     *
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *      If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does
-     *      not have {@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}.
+     *         <br>If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does
+     *         not have {@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}
+     *         or {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}.
+     * @throws java.lang.IllegalArgumentException
+     *         if the provided embed is null
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
+     *         <br>The newly created message
+     *
+     * @see    net.dv8tion.jda.core.MessageBuilder
+     * @see    net.dv8tion.jda.core.EmbedBuilder
      */
     RestAction<Message> sendMessage(MessageEmbed embed);
 
     /**
-     * Sends a given {@link net.dv8tion.jda.core.entities.Message Message} to this Channel
-     * This method only extracts the mentions, text and tts status out of the given Message-Object
-     * Therefore this can also be used to resend already received Messages
-     * To allow above behaviour, this method returns a new {@link net.dv8tion.jda.core.entities.Message Message} instance. The passed one is not modified!
-     * If the sending of the Message failed (probably Permissions), this method returns null.
-     * When the Rate-limit is reached (10 Messages in 10 secs), a {@link net.dv8tion.jda.core.exceptions.RateLimitedException RateLimitedException} is thrown
+     * Sends a specified {@link net.dv8tion.jda.core.entities.Message Message} to this channel.
+     * <br>This will fail if this channel is an instance of {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and
+     * the account of the api does not have permissions to send a message to this channel.
+     * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
+     * use {@link net.dv8tion.jda.core.entities.TextChannel#canTalk() TextChannel#canTalk}.
      *
-     * @param msg
-     *          the {@link net.dv8tion.jda.core.entities.Message Message} to send
-     * @return
-     *      The created {@link net.dv8tion.jda.core.entities.Message Message} object or null if it failed
+     * @param  msg
+     *         the {@link net.dv8tion.jda.core.entities.Message Message} to send
+     *
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *      If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does
-     *      not have {@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}.
+     *         <br>If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does
+     *         not have {@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}
+     *         or {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}.
+     * @throws java.lang.IllegalArgumentException
+     *         if the provided message is null
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
+     *         <br>The newly created message
+     *
+     * @see    net.dv8tion.jda.core.MessageBuilder
      */
     RestAction<Message> sendMessage(Message msg);
 
     /**
-     * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
-     * Sends the provided {@link net.dv8tion.jda.core.entities.Message Message} with the uploaded file.<br>
-     * If you do not wish to send a Message with the uploaded file, you can provide <code>null</code> for
-     * the <code>message</code> parameter.
+     * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.
+     * Sends the provided {@link net.dv8tion.jda.core.entities.Message Message} with the uploaded file.
+     * <br>If you do not wish to send a Message with the uploaded file, you can provide {@code null} for
+     * the {@code message} parameter.
      *
-     * @param file
-     *          The file to upload to the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
-     * @param message
-     *          The message to be sent along with the uploaded file. This value can be <code>null</code>.
-     * @return
-     *      The {@link net.dv8tion.jda.core.entities.Message Message} created from this upload.
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *      <ul>
-     *          <li>
-     *              If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does
-     *              not have {@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}.
-     *          </li>
-     *          <li>
-     *              If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does
-     *              not have {@link net.dv8tion.jda.core.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}.
-     *          </li>
-     *      </ul>
+     * @param  file
+     *         The file to upload to the {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.
+     * @param  message
+     *         The message to be sent along with the uploaded file. This value can be {@code null}.
+     *
      * @throws IOException
-     *      If an I/O error occurs while reading the File.
+     *         If an I/O error occurs while reading the File.
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided file is larger than {@code 8MB} or {@code null}.
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}</li>
+     *         </ul>
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
+     *         <br>The {@link net.dv8tion.jda.core.entities.Message Message} created from this upload.
      */
     RestAction<Message> sendFile(File file, Message message) throws IOException;
+
+    /**
+     * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.
+     * Sends the provided {@link net.dv8tion.jda.core.entities.Message Message} with the uploaded file.
+     * <br>If you do not wish to send a Message with the uploaded file, you can provide {@code null} for
+     * the {@code message} parameter.
+     *
+     * @param  file
+     *         The file to upload to the {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.
+     * @param  fileName
+     *         The name that should be sent to discord
+     * @param  message
+     *         The message to be sent along with the uploaded file. This value can be {@code null}.
+     *
+     * @throws IOException
+     *         If an I/O error occurs while reading the File.
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided file is larger than {@code 8MB} or file/filename is {@code null} or {@code empty}.
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}</li>
+     *         </ul>
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
+     *         <br>The {@link net.dv8tion.jda.core.entities.Message Message} created from this upload.
+     */
     RestAction<Message> sendFile(File file, String fileName, Message message) throws IOException;
+
+    /**
+     * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.
+     * Sends the provided {@link net.dv8tion.jda.core.entities.Message Message} with the uploaded file.
+     * <br>If you do not wish to send a Message with the uploaded file, you can provide {@code null} for
+     * the {@code message} parameter.
+     * <br>This allows you to send an {@link java.io.InputStream InputStream} as substitute to a file.
+     *
+     * @param  data
+     *         The InputStream data to upload to the {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.
+     * @param  fileName
+     *         The name that should be sent to discord
+     * @param  message
+     *         The message to be sent along with the uploaded file. This value can be {@code null}.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided filename is {@code null} or {@code empty}.
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}</li>
+     *         </ul>
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
+     *         <br>The {@link net.dv8tion.jda.core.entities.Message Message} created from this upload.
+     */
     RestAction<Message> sendFile(InputStream data, String fileName, Message message);
+
+    /**
+     * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.
+     * Sends the provided {@link net.dv8tion.jda.core.entities.Message Message} with the uploaded file.
+     * <br>If you do not wish to send a Message with the uploaded file, you can provide {@code null} for
+     * the {@code message} parameter.
+     * <br>This allows you to send an {@code byte[]} as substitute to a file.
+     *
+     * @param  data
+     *         The {@code byte[]} data to upload to the {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.
+     * @param  fileName
+     *         The name that should be sent to discord
+     * @param  message
+     *         The message to be sent along with the uploaded file. This value can be {@code null}.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided filename is {@code null} or {@code empty} or the provided data is larger than 8MB.
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}</li>
+     *         </ul>
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
+     *         <br>The {@link net.dv8tion.jda.core.entities.Message Message} created from this upload.
+     */
     RestAction<Message> sendFile(byte[] data, String fileName, Message message);
 
     /**
      * Attempts to get a {@link net.dv8tion.jda.core.entities.Message Message} from the Discord servers that has
-     * the same id as the id provided.<br>
+     * the same id as the id provided.
      *
-     * @param messageId
-     *          The id of the sought after Message
-     * @return
-     *      The Message defined by the provided id. `Null` if the message doesn't exist.
+     * @param  messageId
+     *         The id of the sought after Message
+     *
+     * @throws IllegalArgumentException
+     *         if the provided messageId is null
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *      Thrown if:
-     *      <ul>
-     *          <li>Attempt to get a message from a channel which this account doesn't have access to.
-     *              ({@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ})</li>
-     *          <li>Attempt to get a message from a channel that this account cannot read the history of.
-     *              ({@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY})</li>
-     *      </ul>
+     *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *         </ul>
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Message
+     *         <br>The Message defined by the provided id.
      */
     RestAction<Message> getMessageById(String messageId);
 
     /**
-     * Attempts to delete a {@link net.dv8tion.jda.core.entities.Message Message} from the Discord servers
-     * that has the same id as the id provided.<br>
+     * Attempts to delete a {@link net.dv8tion.jda.core.entities.Message Message} from the Discord servers that has
+     * the same id as the id provided.
      *
-     * @param messageId
-     *          The id of the Message which should be deleted
-     * @return
-     *      True if the message was successfully deleted. False if the message didn't exist.
+     * @param  messageId
+     *         The id of the Message that should be deleted
+     *
+     * @throws IllegalArgumentException
+     *         if the provided messageId is null
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *      Thrown if:
-     *      <ul>
-     *          <li>Attempt to get a message from a channel which this account doesn't have access to.
-     *              ({@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ})</li>
-     *          <li>Attempt to delete another user's message in a channel that this account doesn't have permission to manage.
-     *              ({@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE})</li>
-     *          <li>Attempt to delete another user's message in a PrivateChannel.</li>
-     *      </ul>
+     *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}</li>
+     *         </ul>
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
      */
     RestAction<Void> deleteMessageById(String messageId);
 
     /**
-     * Creates a new {@link net.dv8tion.jda.core.MessageHistory MessageHistory} object for each call of this method.<br>
-     * This is <b>NOT</b> and internal message cache, but rather it queries the Discord servers for old messages.
+     * Creates a new {@link net.dv8tion.jda.core.MessageHistory MessageHistory} object for each call of this method.
+     * <br>This is <b>NOT</b> and internal message cache, but rather it queries the Discord servers for old messages.
      *
-     * @return
-     *      The MessageHistory for this channel.
+     * @return The {@link net.dv8tion.jda.core.MessageHistory MessageHistory} for this channel.
      */
     MessageHistory getHistory();
 
@@ -202,18 +307,39 @@ public interface MessageChannel extends ISnowflake
     RestAction<MessageHistory> getHistoryAround(String messageId, int limit);
 
     /**
-     * Sends the typing status to discord. This is what is used to make the message "X is typing..." appear.<br>
-     * The typing status only lasts for 10 seconds or until a message is sent.<br>
-     * So if you wish to show continuous typing you will need to call this method once every 10 seconds.
-     * <p>
-     * The official discord client sends this every 5 seconds even though the typing status lasts 10.
+     * Sends the typing status to discord. This is what is used to make the message "X is typing..." appear.
+     * <br>The typing status only lasts for 10 seconds or until a message is sent.
+     * <br>So if you wish to show continuous typing you will need to call this method once every 10 seconds.
      *
-     * @return
-     *          {@link net.dv8tion.jda.core.requests.RestAction RestAction}.
+     * <p>The official discord client sends this every 5 seconds even though the typing status lasts 10.
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
      */
     RestAction<Void> sendTyping();
 
-    //TODO: doc
+    /**
+     * Attempts to react to a message represented by the specified {@code messageId}
+     * in this MessageChannel.
+     *
+     * <p>The unicode provided has to be a UTF-8 representation of the emoji
+     * that is supposed to be represented by the Reaction.
+     * <br>To retrieve the characters needed you can use an api or
+     * the official discord client by escaping the emoji (\:emoji-name:)
+     * and copying the resulting emoji from the sent message.
+     *
+     * <p>This method encodes the provided unicode for you.
+     * <b>Do not encode the emoji before providing the unicode.</b>
+     *
+     * @param  messageId
+     *         The not-null messageId to attach the reaction to
+     * @param  unicode
+     *         The UTF-8 characters to react with
+     *
+     * @throws IllegalArgumentException
+     *         if any of the provided parameters is null
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: Void
+     */
     default RestAction<Void> addReactionById(String messageId, String unicode)
     {
         Args.notNull(messageId, "MessageId");
@@ -241,7 +367,23 @@ public interface MessageChannel extends ISnowflake
         };
     }
 
-    //TODO: doc
+    /**
+     * Attempts to react to a message represented by the specified {@code messageId}
+     * in this MessageChannel.
+     *
+     * <p><b>An Emote is not the same as an emoji!</b>
+     * <br>Emotes are custom guild-specific images unlike global unicode emojis!
+     *
+     * @param  messageId
+     *         The not-null messageId to attach the reaction to
+     * @param  emote
+     *         The not-null {@link net.dv8tion.jda.core.entities.Emote} to react with
+     *
+     * @throws IllegalArgumentException
+     *         if any of the provided parameters is null
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: Void
+     */
     default RestAction<Void> addReactionById(String messageId, Emote emote)
     {
         Args.notNull(messageId, "MessageId");
@@ -262,52 +404,103 @@ public interface MessageChannel extends ISnowflake
     }
 
     /**
-     * Used to pin a message.<br>
-     * If the provided messageId is invalid or not in this channel, this does nothing.
+     * Used to pin a message.
+     * <br>If the provided messageId is invalid or not in this channel, this does nothing.
      *
-     * @param messageId
-     *          The message to pin.
-     * @return
-     *      {@link net.dv8tion.jda.core.requests.RestAction RestAction}&lt;{@link Void}&gt;
+     * @param  messageId
+     *         The message to pin.
+     *
+     * @throws IllegalArgumentException
+     *         if the provided messageId is null
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *          If this is a TextChannel and this account does not have both
-     *          {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ} and
-     *          {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
+     *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}</li>
+     *         </ul>
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
      */
     RestAction<Void> pinMessageById(String messageId);
 
     /**
-     * Used to unpin a message.<br>
-     * If the provided messageId is invalid or not in this channel, this does nothing.
+     * Used to unpin a message.
+     * <br>If the provided messageId is invalid or not in this channel, this does nothing.
      *
-     * @param messageId
-     *          The message to pin.
-     * @return
-     *      True - if the message was successfully unpinned. If false, the message id probably didn't exist or wasn't a message from this channel.
+     * @param  messageId
+     *         The message to unpin.
+     *
+     * @throws IllegalArgumentException
+     *         if the provided messageId is null
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *          If this is a TextChannel and this account does not have both
-     *          {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ} and
-     *          {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
+     *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}</li>
+     *         </ul>
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
      */
     RestAction<Void> unpinMessageById(String messageId);
 
     /**
-     * Gets a List of {@link net.dv8tion.jda.core.entities.Message Messages} that have been pinned in this channel.<br>
-     * If no messages have been pinned, this returns an empty List.
+     * Retrieves a List of {@link net.dv8tion.jda.core.entities.Message Messages} that have been pinned in this channel.
+     * <br>If no messages have been pinned, this retrieves an empty List.
      *
-     * @return
-     *      {@link net.dv8tion.jda.core.requests.RestAction RestAction&lt;List&lt;Message&gt;&gt;}
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *          If this is a TextChannel and this account does not have
-     *          {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     *         If this is a TextChannel and this account does not have
+     *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.core.entities.Message}{@literal >}
+     *         <br>An immutable list of pinned messages
      */
     RestAction<List<Message>> getPinnedMessages();
 
+    /**
+     * Attempts to edit a message by its id in this MessageChannel.
+     *
+     * @param  id
+     *         The id referencing the Message that should be edited
+     * @param  newContent
+     *         The new content for the edited message
+     *
+     * @throws IllegalArgumentException
+     *         if the provided content is {@code null}, {@code empty} or larger than 2000 characters
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         if this is a TextChannel and the currently logged in account does not have:
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
+     *             <br>And the message is by another user</li>
+     *         </ul>
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message}
+     *         <br>The modified Message
+     */
     default RestAction<Message> editMessageById(String id, String newContent)
     {
         return editMessageById(id, new MessageBuilder().appendString(newContent).build());
     }
 
+    /**
+     * Attempts to edit a message by its id in this MessageChannel.
+     *
+     * @param  id
+     *         The id referencing the Message that should be edited
+     * @param  newContent
+     *         The new content for the edited message
+     *
+     * @throws IllegalArgumentException
+     *         if the provided message or id is {@code null}
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         if this is a TextChannel and the currently logged in account does not have:
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
+     *             <br>And the message is by another user</li>
+     *         </ul>
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message}
+     *         <br>The modified Message
+     */
     default RestAction<Message> editMessageById(String id, Message newContent)
     {
         Args.notNull(id, "id");
