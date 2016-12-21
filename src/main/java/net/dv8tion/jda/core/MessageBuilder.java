@@ -22,6 +22,12 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Builder system used to build {@link net.dv8tion.jda.core.entities.Message Messages}.
+ * <br>Internally the builder uses a {@link java.lang.StringBuilder} to take advantage of the efficiencies offered by the
+ * StringBuilder, and the methods provided by this class are a combination of those offered by the StringBuilder and
+ * {@link String#format(String, Object...)}.
+ */
 public class MessageBuilder
 {
     public static final String USER_KEY = "%U%";
@@ -31,13 +37,12 @@ public class MessageBuilder
     public static final String HERE_KEY = "%H%";
 
     /**
-     * A constant for <b>@everyone</b> mentions.
-     * Used in {@link #append(IMentionable)}
+     * A constant for <b>@everyone</b> mentions. Used in {@link #append(IMentionable)}
      */
     public static final IMentionable EVERYONE_MENTION = () -> "@everyone";
+
     /**
-     * A constant for <b>@here</b> mentions.
-     * Used in {@link #append(IMentionable)}
+     * A constant for <b>@here</b> mentions. Used in {@link #append(IMentionable)}
      */
     public static final IMentionable HERE_MENTION = () -> "@here";
 
@@ -54,10 +59,14 @@ public class MessageBuilder
     public MessageBuilder() {}
 
     /**
-     * Makes the created Message a TTS message
+     * Makes the created Message a TTS message.
+     * <br>TTS stands for Text-To-Speech. When a TTS method is received by the Discord client,
+     * it is vocalized so long as the user has not disabled TTS.
      *
-     * @param tts whether the created Message should be a tts message
-     * @return this instance
+     * @param  tts
+     *         whether the created Message should be a tts message
+     *
+     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
      */
     public MessageBuilder setTTS(boolean tts)
     {
@@ -66,10 +75,13 @@ public class MessageBuilder
     }
     
     /**
-     * Adds an embed to the Message
+     * Adds a {@link net.dv8tion.jda.core.entities.MessageEmbed} to the Message. Embeds can be built using
+     * the {@link net.dv8tion.jda.core.EmbedBuilder} and offer specialized formatting.
      *
-     * @param embed the embed to add, or null to remove
-     * @return this instance
+     * @param  embed
+     *         the embed to add, or null to remove
+     *
+     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
      */
     public MessageBuilder setEmbed(MessageEmbed embed)
     {
@@ -79,11 +91,13 @@ public class MessageBuilder
 
     /**
      * Appends a string to the Message
-     * 
-     * @deprecated use {@link #append(CharSequence)} instead
      *
-     * @param text the text to append
-     * @return this instance
+     * @param  text
+     *         the text to append
+     *
+     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
+     *
+     * @deprecated use {@link #append(CharSequence)} instead.
      */
     @Deprecated
     public MessageBuilder appendString(CharSequence text)
@@ -92,10 +106,12 @@ public class MessageBuilder
     }
 
     /**
-     * Appends a string to the Message
+     * Appends a String to the Message.
      *
-     * @param text the text to append
-     * @return this instance
+     * @param  text
+     *         the text to append
+     *
+     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
      */
     public MessageBuilder append(CharSequence text)
     {
@@ -104,11 +120,13 @@ public class MessageBuilder
     }
 
     /**
-     * Appends the string repesentation of an object to the Message.<p>
-     * This is the same as <code>append(String.valueOf(object))</code>
+     * Appends the string repesentation of an object to the Message.
+     * <br>This is the same as {@link #append(CharSequence) append(String.valueOf(object))}
      * 
-     * @param object the object to append
-     * @return this instance
+     * @param  object
+     *         the object to append
+     *
+     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
      */
     public MessageBuilder append(Object object)
     {
@@ -116,10 +134,14 @@ public class MessageBuilder
     }
 
     /**
-     * Appends a mention to the Message
+     * Appends a mention to the Message.
+     * <br>Typical usage would be providing an {@link net.dv8tion.jda.core.entities.IMentionable IMentionable} like
+     * {@link net.dv8tion.jda.core.entities.User User} or {@link net.dv8tion.jda.core.MessageBuilder#EVERYONE_MENTION}.
      *
-     * @param mention the mention to append
-     * @return this instance
+     * @param  mention
+     *         the mention to append
+     *
+     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
      */
     public MessageBuilder append(IMentionable mention)
     {
@@ -128,11 +150,14 @@ public class MessageBuilder
     }
 
     /**
-     * Appends a formatted string to the Message
+     * Appends a String using the specified chat {@link net.dv8tion.jda.core.MessageBuilder.Formatting Formatting(s)}.
      *
-     * @param text the text to append
-     * @param format the format(s) to apply to the text
-     * @return this instance
+     * @param  text
+     *         the text to append.
+     * @param  format
+     *         the format(s) to apply to the text.
+     *
+     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
      */
     public MessageBuilder append(CharSequence text, Formatting... format)
     {
@@ -163,12 +188,15 @@ public class MessageBuilder
 
     /**
      * Appends a formatted string to the Message
-     * 
-     * @deprecated use {@link #append(CharSequence, Formatting...)} instead
      *
-     * @param text the text to append
-     * @param format the format(s) to apply to the text
-     * @return this instance
+     * @param  text
+     *         the text to append
+     * @param  format
+     *         the format(s) to apply to the text
+     *
+     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
+     *
+     * @deprecated use {@link #append(CharSequence, Formatting...)} instead
      */
     @Deprecated
     public MessageBuilder appendString(CharSequence text, Formatting... format)
@@ -180,24 +208,31 @@ public class MessageBuilder
      * This method is an extended form of {@link String#format(String, Object...)}. It allows for all of
      * the token replacement functionality that String.format(String, Object...) supports, but it also supports
      * specialized token replacement specific to JDA objects.
-     * <p>
-     * Current tokens:
-     * <ul>
-     *     <li><b>%U%</b> - Used to mention a {@link net.dv8tion.jda.core.entities.User User}.
-     *          Same as {@link #appendMention(net.dv8tion.jda.core.entities.User)}</li>
-     *     <li><b>%R%</b> - Used to mention a {@link net.dv8tion.jda.core.entities.Role Role}.
-     *          Same as {@link #appendMention(net.dv8tion.jda.core.entities.Role)}</li>
-     *     <li><b>%TC%</b> - Used to mention a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
-     *          Same as {@link #appendMention(net.dv8tion.jda.core.entities.TextChannel)}</li>
-     *     <li><b>%E%</b> - Used to mention @everyone. Same as {@link #appendEveryoneMention()}</li>
-     *     <li><b>%H%</b> - Used to mention @here. Same as {@link #appendHereMention()}</li>
-     * </ul>
-     * <p>
-     * Example: <br>
-     * If you placed the following code in an method handling a
-     * {@link net.dv8tion.jda.core.events.message.MessageReceivedEvent MessageReceivedEvent}<br>
      *
-     * <pre>{@code
+     * <p>Current tokens:
+     * <ul>
+     *     <li><b>%U%</b> - Defined as {@link net.dv8tion.jda.core.MessageBuilder#USER_KEY}
+     *          Used to mention a {@link net.dv8tion.jda.core.entities.User User}.
+     *          Same as {@link #appendMention(net.dv8tion.jda.core.entities.User)}
+     *          </li>
+     *     <li><b>%R%</b> - Defined as {@link net.dv8tion.jda.core.MessageBuilder#ROLE_KEY}
+     *          Used to mention a {@link net.dv8tion.jda.core.entities.Role Role}.
+     *          Same as {@link #appendMention(net.dv8tion.jda.core.entities.Role)}</li>
+     *     <li><b>%TC%</b> - Defined as {@link net.dv8tion.jda.core.MessageBuilder#TEXTCHANNEL_KEY}
+     *          Used to mention a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
+     *          Same as {@link #appendMention(net.dv8tion.jda.core.entities.TextChannel)}</li>
+     *     <li><b>%E%</b> - Defined as {@link net.dv8tion.jda.core.MessageBuilder#EVERYONE_KEY}
+     *          Used to mention {@code @everyone}.
+     *          Same as {@link #appendEveryoneMention()}</li>
+     *     <li><b>%H%</b> - Defined as {@link net.dv8tion.jda.core.MessageBuilder#HERE_KEY}
+     *          Used to mention {@code @here}.
+     *          Same as {@link #appendHereMention()}</li>
+     * </ul>
+     *
+     * <p>Example:
+     * <br>If you placed the following code in an method handling a
+     * {@link net.dv8tion.jda.core.events.message.MessageReceivedEvent MessageReceivedEvent}
+     * <br><pre>{@code
      * User user = event.getAuthor();
      * MessageBuilder builder = new MessageBuilder();
      * builder.appendFormat("%U% is really cool!", user);
@@ -205,15 +240,19 @@ public class MessageBuilder
      * }</pre>
      *
      * It would build a message that mentions the author and says that he is really cool!. If the user's
-     * name was "Bob", it would say:<br>
-     * <pre>  "Bob is really cool!"</pre>
+     * name was "Bob", it would say:
+     * <br><pre>  "Bob is really cool!"</pre>
      *
-     * @param format a format string.
-     * @param args
-     *          an array objects that will be used to replace the tokens, they must be
-     *          provided in the order that the tokens appear in the provided format string.
-     * @return
-     *      this instance of the MessageBuilder. Useful for chaining.
+     * @param  format
+     *         a format string.
+     * @param  args
+     *         an array objects that will be used to replace the tokens, they must be
+     *         provided in the order that the tokens appear in the provided format string.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If an object is provided for a key that it does not match.
+     *
+     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
      */
     public MessageBuilder appendFormat(String format, Object... args)
     {
@@ -313,11 +352,16 @@ public class MessageBuilder
     }
 
     /**
-     * Appends a code-block to the Message
+     * Appends a code-block to the Message.
+     * <br>Discord uses <a href="https://highlightjs.org/">Highlight.js</a> for its language highlighting support. You can find out what
+     * specific languages are supported <a href="https://github.com/isagalaev/highlight.js/tree/master/src/languages">here</a>.
      *
-     * @param text the code to append
-     * @param language the language of the code. If unknown use an empty string
-     * @return this instance
+     * @param  text
+     *         the code to append
+     * @param  language
+     *         the language of the code. If unknown use an empty string
+     *
+     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
      */
     public MessageBuilder appendCodeBlock(CharSequence text, CharSequence language)
     {
@@ -326,12 +370,14 @@ public class MessageBuilder
     }
 
     /**
-     * Appends a mention to the Message
+     * Appends a mention to the Message.
+     *
+     * @param user
+     *        the user to mention
+     *
+     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
      *
      * @deprecated use {@link #append(IMentionable)} instead
-     *
-     * @param user the user to mention
-     * @return this instance
      */
     @Deprecated
     public MessageBuilder appendMention(User user)
@@ -342,9 +388,9 @@ public class MessageBuilder
     /**
      * Appends a @everyone mention to the Message
      * 
-     * @deprecated use {@linkplain MessageBuilder#append(IMentionable)} with {@link MessageBuilder#EVERYONE_MENTION} instead
+     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
      *
-     * @return this instance
+     * @deprecated use {@link MessageBuilder#append(IMentionable)} with {@link MessageBuilder#EVERYONE_MENTION} instead.
      */
     @Deprecated
     public MessageBuilder appendEveryoneMention()
@@ -354,10 +400,10 @@ public class MessageBuilder
     
     /**
      * Appends a @here mention to the Message
-     * 
-     * @deprecated use {@linkplain MessageBuilder#append(IMentionable)} with {@link MessageBuilder#HERE_MENTION} instead
      *
-     * @return this instance
+     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
+     *
+     * @deprecated use {@linkplain MessageBuilder#append(IMentionable)} with {@link MessageBuilder#HERE_MENTION} instead
      */
     @Deprecated
     public MessageBuilder appendHereMention()
@@ -367,12 +413,14 @@ public class MessageBuilder
 
     /**
      * Appends a channel mention to the Message.
-     * For this to work, the given TextChannel has to be from the Guild the mention is posted to.
+     * <br>For this to work, the given TextChannel has to be from the Guild the mention is posted to.
      *
-     * @deprecated use {@link #append(IMentionable)} instead
+     * @param  channel
+     *         The {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} to mention.
      *
-     * @param channel the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} to mention
-     * @return this instance
+     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
+     *
+     * @deprecated use {@link #append(IMentionable)} instead.
      */
     @Deprecated
     public MessageBuilder appendMention(TextChannel channel)
@@ -382,12 +430,14 @@ public class MessageBuilder
 
     /**
      * Appends a Role mention to the Message.
-     * For this to work, the given Role has to be from the Guild the mention is posted to.
+     * <br>For this to work, the given Role has to be from the Guild the mention is posted to.
      *
-     * @deprecated use {@link #append(IMentionable)} instead
+     * @param  role
+     *         The {@link net.dv8tion.jda.core.entities.Role Role} to mention.
      *
-     * @param role the {@link net.dv8tion.jda.core.entities.Role Role} to mention
-     * @return this instance
+     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
+     *
+     * @deprecated use {@link #append(IMentionable)} instead.
      */
     @Deprecated
     public MessageBuilder appendMention(Role role)
@@ -397,11 +447,15 @@ public class MessageBuilder
 
     /**
      * Returns the current length of the content that will be built into a {@link net.dv8tion.jda.core.entities.Message Message}
-     * when {@link #build()} is called.<br>
-     * If this value is <code>0</code> or greater than <code>2000</code> when {@link #build()} is called, an exception
-     * will be raised.
+     * when {@link #build()} is called.
+     * <br>If this value is {@code 0} (and there is no embed) or greater than {@code 2000} when {@link #build()} is called, an exception
+     * will be raised as you cannot send an empty message to Discord and Discord has a hard limit of 2000 characters per message.
      *
-     * @return the currently length of the content that will be built into a Message.
+     * <p><b>Hint:</b> You can use {@link #build(int, int)} or
+     * {@link #buildAll(net.dv8tion.jda.core.MessageBuilder.SplitPolicy...) buildAll(SplitPolicy...)} as possible ways to
+     * deal with the 2000 character cap.
+     *
+     * @return the current length of the content that will be built into a Message.
      */
     public int length()
     {
@@ -420,13 +474,18 @@ public class MessageBuilder
     /**
      * Creates a {@link net.dv8tion.jda.core.entities.Message Message} object from this MessageBuilder
      *
-     * @return the created {@link net.dv8tion.jda.core.entities.Message Message}
+     * <p><b>Hint:</b> You can use {@link #build(int, int)} or
+     * {@link #buildAll(net.dv8tion.jda.core.MessageBuilder.SplitPolicy...) buildAll(SplitPolicy...)} as possible ways to
+     * deal with the 2000 character cap.
      *
      * @throws UnsupportedOperationException
-     *      <ul>
-     *          <li>If you attempt to build() an empty Message (no content added to the Message)</li>
-     *          <li>If you attempt to build() a Message with more than 2000 characters of content.</li>
-     *      </ul>
+     *         <ul>
+     *             <li>If you attempt to build() an empty Message ({@link #length()} is {@code 0} and no
+     *             {@link net.dv8tion.jda.core.entities.MessageEmbed} was provided to {@link #setEmbed(net.dv8tion.jda.core.entities.MessageEmbed)})</li>
+     *             <li>If you attempt to build() a Message with more than 2000 characters of content.</li>
+     *         </ul>
+     *
+     * @return the created {@link net.dv8tion.jda.core.entities.Message Message}
      */
     public Message build()
     {
@@ -445,9 +504,12 @@ public class MessageBuilder
      * The replacement proceeds from the beginning of the string to the end, for example, replacing
      * "aa" with "b" in the message "aaa" will result in "ba" rather than "ab".
      *
-     * @param target the sequence of char values to be replaced
-     * @param replacement the replacement sequence of char values
-     * @return this instance
+     * @param  target
+     *         the sequence of char values to be replaced
+     * @param  replacement
+     *         the replacement sequence of char values
+     *
+     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
      */
     public MessageBuilder replaceAll(String target, String replacement)
     {
@@ -462,9 +524,12 @@ public class MessageBuilder
     /**
      * Replaces the first substring that matches the target string with the specified replacement string.
      *
-     * @param target the sequence of char values to be replaced
-     * @param replacement the replacement sequence of char values
-     * @return this instance
+     * @param  target
+     *         the sequence of char values to be replaced
+     * @param  replacement
+     *         the replacement sequence of char values
+     *
+     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
      */
     public MessageBuilder replaceFirst(String target, String replacement)
     {
@@ -479,9 +544,12 @@ public class MessageBuilder
     /**
      * Replaces the last substring that matches the target string with the specified replacement string.
      *
-     * @param target the sequence of char values to be replaced
-     * @param replacement the replacement sequence of char values
-     * @return this instance
+     * @param  target
+     *         the sequence of char values to be replaced
+     * @param  replacement
+     *         the replacement sequence of char values
+     *
+     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
      */
     public MessageBuilder replaceLast(String target, String replacement)
     {
@@ -494,12 +562,15 @@ public class MessageBuilder
     }
 
     /**
-     * Removes all mentions and replaces them with the closest looking textual representation.<p>
-     * <p>
-     * Use this over {@link #stripMentions(Guild)} if {@link MentionType.USER User} mentions should be replaced with their user names
+     * Removes all mentions and replaces them with the closest looking textual representation.
      *
-     * @param jda the JDA instance
-     * @return this instance
+     * <p>Use this over {@link #stripMentions(Guild)} if {@link net.dv8tion.jda.core.entities.User User} mentions
+     * should be replaced with their {@link net.dv8tion.jda.core.entities.User#getName()} instead of their Nicknames.
+     *
+     * @param jda
+     *        The JDA instance used to resolve the mentions.
+     *
+     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
      */
     public MessageBuilder stripMentions(JDA jda)
     {
@@ -507,12 +578,16 @@ public class MessageBuilder
     }
 
     /**
-     * Removes all mentions and replaces them with the closest looking textual representation.<p>
-     * <p>
-     * Use this over {@link #stripMentions(JDA)} if {@link MentionType.USER User} mentions should be replaced with their nicknames in a specific guild
+     * Removes all mentions and replaces them with the closest looking textual representation.
      *
-     * @param guild the guild for {@link MentionType.USER User} mentions 
-     * @return this instance
+     * <p>Use this over {@link #stripMentions(JDA)} if {@link net.dv8tion.jda.core.entities.User User} mentions should
+     * be replaced with their nicknames in a specific guild based.
+     * <br>Uses {@link net.dv8tion.jda.core.entities.Member#getEffectiveName()}
+     *
+     * @param  guild
+     *         the guild for {@link net.dv8tion.jda.core.entities.User User} mentions
+     *
+     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
      */
     public MessageBuilder stripMentions(Guild guild)
     {
@@ -520,12 +595,16 @@ public class MessageBuilder
     }
 
     /**
-     * Removes all mentions of the specified types and replaces them with the closest looking textual representation.<p>
-     * <p>
-     * Use this over {@link #stripMentions(JDA, MentionType...)} if {@link MentionType.USER User} mentions should be replaced with their nicknames in a specific guild
-     * 
-     * @param guild the guild for {@link MentionType.USER User} mentions 
-     * @return this instance
+     * Removes all mentions of the specified types and replaces them with the closest looking textual representation.
+     *
+     * <p>Use this over {@link #stripMentions(JDA, MentionType...)} if {@link net.dv8tion.jda.core.entities.User User} mentions should
+     * be replaced with their nicknames in a specific guild based.
+     * <br>Uses {@link net.dv8tion.jda.core.entities.Member#getEffectiveName()}
+     *
+     * @param  guild
+     *         the guild for {@link net.dv8tion.jda.core.entities.User User} mentions
+     *
+     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
      */
     public MessageBuilder stripMentions(Guild guild, MentionType... types)
     {
@@ -533,13 +612,17 @@ public class MessageBuilder
     }
 
     /**
-     * Removes all mentions of the specified types and replaces them with the closest looking textual representation.<p>
-     * <p>
-     * Use this over {@link #stripMentions(Guild, MentionType...)} if {@link MentionType.USER User} mentions should be replaced with their user names
+     * Removes all mentions of the specified types and replaces them with the closest looking textual representation.
+     *
+     * <p>Use this over {@link #stripMentions(Guild, MentionType...)} if {@link net.dv8tion.jda.core.entities.User User}
+     * mentions should be replaced with their {@link net.dv8tion.jda.core.entities.User#getName()}.
      * 
-     * @param jda the {@link net.dv8tion.jda.core.JDA JDA} instance, only needed for {@link MentionType.USER User}, {@link MentionType.CHANNEL Channel} and {@link MentionType.GUILD Guild} mentions
-     * @param types the {@link MentionType MentionTypes} that should be stripped
-     * @return this instance
+     * @param  jda
+     *         The JDA instance used to resolve the mentions.
+     * @param  types
+     *         the {@link MentionType MentionTypes} that should be stripped
+     *
+     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
      */
     public MessageBuilder stripMentions(JDA jda, MentionType... types)
     {
@@ -653,13 +736,24 @@ public class MessageBuilder
      * Returns the index within this string of the first occurrence of the
      * specified substring between the specified indices.
      *
-     * If no such value of <i>k</i> exists, then {@code -1} is returned.
+     * <p>If no such value of {@code target} exists, then {@code -1} is returned.
      *
-     * @param target the substring to search for.
-     * @param fromIndex the index from which to start the search.
-     * @param endIndex the index at which to end the search.
-     * @return  the index of the first occurrence of the specified substring between
-     *          the specified indices or {@code -1} if there is no such occurrence.
+     * @param  target
+     *         the substring to search for.
+     * @param  fromIndex
+     *         the index from which to start the search.
+     * @param  endIndex
+     *         the index at which to end the search.
+     *
+     * @throws java.lang.IndexOutOfBoundsException
+     *         <ul>
+     *             <li>If the {@code fromIndex} is outside of the range of {@code 0} to {@link #length()}</li>
+     *             <li>If the {@code endIndex} is outside of the range of {@code 0} to {@link #length()}</li>
+     *             <li>If the {@code fromIndex} is greater than {@code endIndex}</li>
+     *         </ul>
+     *
+     * @return the index of the first occurrence of the specified substring between
+     *         the specified indices or {@code -1} if there is no such occurrence.
      */
     public int indexOf(CharSequence target, int fromIndex, int endIndex)
     {
@@ -708,13 +802,24 @@ public class MessageBuilder
      * Returns the index within this string of the last occurrence of the
      * specified substring between the specified indices.
      *
-     * If no such value of <i>k</i> exists, then {@code -1} is returned.
+     * If no such value of {@code target} exists, then {@code -1} is returned.
      *
-     * @param target the substring to search for.
-     * @param fromIndex the index from which to start the search.
-     * @param endIndex the index at which to end the search.
-     * @return  the index of the last occurrence of the specified substring between
-     *          the specified indices or {@code -1} if there is no such occurrence.
+     * @param  target
+     *         the substring to search for.
+     * @param  fromIndex
+     *         the index from which to start the search.
+     * @param  endIndex
+     *         the index at which to end the search.
+     *
+     * @throws java.lang.IndexOutOfBoundsException
+     *         <ul>
+     *             <li>If the {@code fromIndex} is outside of the range of {@code 0} to {@link #length()}</li>
+     *             <li>If the {@code endIndex} is outside of the range of {@code 0} to {@link #length()}</li>
+     *             <li>If the {@code fromIndex} is greater than {@code endIndex}</li>
+     *         </ul>
+     *
+     * @return the index of the last occurrence of the specified substring between
+     *         the specified indices or {@code -1} if there is no such occurrence.
      */
     public int lastIndexOf(CharSequence target, int fromIndex, int endIndex)
     {
@@ -770,12 +875,17 @@ public class MessageBuilder
 
     /**
      * Creates a {@link java.util.Queue Queue} of {@link net.dv8tion.jda.core.entities.Message Message} objects from this MessageBuilder.
-     * <p>
-     * This method splits the content if it exceeds 2000 chars. The splitting behaviour can be customized using {@link SplitPolicy SplitPolicies}.
-     * The method will try the policies in the order they are passed to it.<p>
-     * If no SplitPolicy is provided the message will be splitted after exactly 2000 chars.
-     * <p>
-     * This is not MarkDown safe. An easy workaround is to include Zero Witdh Spaces as predetermined breaking points to the message and only split on them.
+     *
+     * <p>This method splits the content if it exceeds 2000 chars. The splitting behaviour can be customized using {@link SplitPolicy SplitPolicies}.
+     * The method will try the policies in the order they are passed to it.
+     * <br>If no SplitPolicy is provided each message will be split after exactly 2000 chars.
+     *
+     * <p><b>This is not Markdown safe.</b> An easy workaround is to include <a href="https://en.wikipedia.org/wiki/Zero-width_space">Zero Witdh Spaces</a>
+     * as predetermined breaking points to the message and only split on them.
+     *
+     * @param  policy
+     *         The {@link net.dv8tion.jda.core.MessageBuilder.SplitPolicy} defining how to split the text in the
+     *         MessageBuilder into different, individual messages.
      * 
      * @return the created {@link net.dv8tion.jda.core.entities.Message Messages}
      */
@@ -832,30 +942,38 @@ public class MessageBuilder
         return new MessageImpl("", null, false).setContent(builder.substring(beginIndex, endIndex)).setTTS(isTTS);
     }
 
-    public static interface SplitPolicy
+    /**
+     * Interface to allow custom implementation of Splitting rules for
+     * {@link #buildAll(net.dv8tion.jda.core.MessageBuilder.SplitPolicy...) MessageBuilder.buildAll(SplitPolicy...)}.
+     */
+    public interface SplitPolicy
     {
         /**
-         * Splits on newline chars {@code \n}.
+         * Splits on newline chars {@code `\n`}.
          */
-        public static final SplitPolicy NEWLINE = new CharSequenceSplitPolicy("\n", true);
+        SplitPolicy NEWLINE = new CharSequenceSplitPolicy("\n", true);
 
         /**
-         * Splits on space chars {@code \u0020}.
+         * Splits on space chars {@code `\u0020`}.
          */
-        public static final SplitPolicy SPACE = new CharSequenceSplitPolicy(" ", true);
+        SplitPolicy SPACE = new CharSequenceSplitPolicy(" ", true);
 
         /**
          * Splits exactly after 2000 chars.
          */
-        public static final SplitPolicy ANYWHERE = (i, b) -> Math.min(i + 2000, b.length());
+        SplitPolicy ANYWHERE = (i, b) -> Math.min(i + 2000, b.length());
 
         /**
          * Creates a new {@link SplitPolicy} splitting on the specified chars.
-         * @param chars the chars to split on
-         * @param remove weather to remove the chars when splitting on them
+         *
+         * @param  chars
+         *         the chars to split on
+         * @param  remove
+         *         weather to remove the chars when splitting on them
+         *
          * @return a new {@link SplitPolicy}
          */
-        public static SplitPolicy onChars(CharSequence chars, boolean remove)
+        static SplitPolicy onChars(CharSequence chars, boolean remove)
         {
             return new CharSequenceSplitPolicy(chars, remove);
         }
@@ -863,7 +981,7 @@ public class MessageBuilder
         /**
          * Default {@link SplitPolicy} implementation. Splits on a specified {@link CharSequence}.
          */
-        public static class CharSequenceSplitPolicy implements SplitPolicy
+        class CharSequenceSplitPolicy implements SplitPolicy
         {
             private final boolean remove;
             private final CharSequence chars;
@@ -892,18 +1010,22 @@ public class MessageBuilder
         /**
          * Calculates the endIndex for the next {@link net.dv8tion.jda.core.entities.Message Message}.
          * 
-         * @param currentBeginIndex the index the next {@link net.dv8tion.jda.core.entities.Message Message} should start from
-         * @param builder the {@link net.dv8tion.jda.core.entities.MessageBuilder MessageBuilder}
+         * @param  currentBeginIndex
+         *         the index the next {@link net.dv8tion.jda.core.entities.Message Message} should start from
+         * @param  builder
+         *         the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder}
+         *
          * @return the end Index of the next {@link net.dv8tion.jda.core.entities.Message Message}
          * 
-         * @throws Exception when splitting fails
+         * @throws java.lang.RuntimeException when splitting fails
          * 
          */
-        public abstract int nextMessage(int currentBeginIndex, MessageBuilder builder);
+        int nextMessage(int currentBeginIndex, MessageBuilder builder);
     }
 
     /**
-     * Holds the available mention types used in {@link MessageBuilder#stripMentions(JDA, MentionType...) and {@link MessageBuilder#stripMentions(Guild, MentionType...)}
+     * Holds the strippable mention types used in {@link MessageBuilder#stripMentions(JDA, MentionType...)
+     * and {@link MessageBuilder#stripMentions(Guild, MentionType...)}
      */
     public enum MentionType {
         /**
@@ -929,7 +1051,7 @@ public class MessageBuilder
     }
 
     /**
-     * Holds the available formatting used in {@link MessageBuilder#appendString(String, net.dv8tion.jda.core.MessageBuilder.Formatting...)}
+     * Holds the available formatting used in {@link MessageBuilder#append(java.lang.CharSequence, net.dv8tion.jda.core.MessageBuilder.Formatting...)}
      */
     public enum Formatting
     {
