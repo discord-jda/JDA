@@ -29,6 +29,7 @@ import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.utils.IOUtil;
 import org.apache.http.util.Args;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -89,6 +90,64 @@ public class TextChannelImpl implements TextChannel
         JSONObject body = new JSONObject().put("messages", messageIds);
         Route.CompiledRoute route = Route.Messages.DELETE_MESSAGES.compile(id);
         return new RestAction<Void>(getJDA(), route, body)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
+    }
+
+    @Override
+    public RestAction<List<Webhook>> getWebhooks()
+    {
+        checkPermission(Permission.MANAGE_WEBHOOKS);
+
+        Route.CompiledRoute route = Route.Channels.GET_WEBHOOKS.compile(id);
+        return new RestAction<List<Webhook>>(getJDA(), route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (!response.isOk())
+                {
+                    request.onFailure(response);
+                    return;
+                }
+
+                List<Webhook> webhooks = new LinkedList<>();
+                JSONArray array = response.getArray();
+                EntityBuilder builder = EntityBuilder.get(getJDA());
+
+                for (Object object : array)
+                {
+                    try
+                    {
+                        webhooks.add(builder.createWebhook((JSONObject) object));
+                    }
+                    catch (JSONException | NullPointerException e)
+                    {
+                        JDAImpl.LOG.log(e);
+                    }
+                }
+
+                request.onSuccess(webhooks);
+            }
+        };
+    }
+
+    @Override
+    public RestAction<Void> deleteWebhookById(String id)
+    {
+        if (!guild.getSelfMember().hasPermission(this, Permission.MANAGE_WEBHOOKS))
+            throw new PermissionException(Permission.MANAGE_WEBHOOKS);
+
+        Route.CompiledRoute route = Route.Webhooks.DELETE_WEBHOOK.compile(id);
+        return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
             protected void handleResponse(Response response, Request request)

@@ -18,6 +18,7 @@ package net.dv8tion.jda.core.entities;
 import net.dv8tion.jda.core.requests.RestAction;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Represents a Discord Text Channel. See {@link net.dv8tion.jda.core.entities.Channel Channel} and
@@ -86,6 +87,10 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *      If this account does not have MANAGE_MESSAGES
      */
     RestAction<Void> deleteMessagesByIds(Collection<String> messageIds);
+
+    RestAction<List<Webhook>> getWebhooks();
+
+    RestAction<Void> deleteWebhookById(String id);
 
     boolean canTalk();
 
