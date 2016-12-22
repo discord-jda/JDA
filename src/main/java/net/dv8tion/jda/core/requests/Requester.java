@@ -117,6 +117,10 @@ public class Requester
 
         try
         {
+            //If the request has been canceled via the Future, don't execute.
+            if (apiRequest.isCanceled())
+                return null;
+
             HttpResponse<String> response = request.asString();
             int attempt = 1;
             while (attempt < 4 && response.getStatus() != 429 && response.getBody() != null && response.getBody().startsWith("<"))
@@ -129,9 +133,11 @@ public class Requester
                 {
                     Thread.sleep(50 * attempt);
                 }
-                catch (InterruptedException ignored)
-                {
-                }
+                catch (InterruptedException ignored) {}
+
+                //If the request has been canceled via the Future, don't execute.
+                if (apiRequest.isCanceled())
+                    return null;
                 response = request.asString();
                 attempt++;
             }
