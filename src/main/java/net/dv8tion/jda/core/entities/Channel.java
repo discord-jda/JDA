@@ -171,13 +171,6 @@ public interface Channel extends ISnowflake
 
     RestAction<PermissionOverride> createPermissionOverride(Role role);
 
+    // TODO javadoc
     RestAction<List<Invite>> getInvites();
-
-//    /**
-//     * Provides a list of all {@link net.dv8tion.jda.utils.InviteUtil.AdvancedInvite Invites} for this Channel.
-//     *
-//     * @return
-//     *      An Immutable List of {@link net.dv8tion.jda.utils.InviteUtil.AdvancedInvite Invites} for this channel.
-//     */
-//    List<InviteUtil.AdvancedInvite> getInvites();
 }

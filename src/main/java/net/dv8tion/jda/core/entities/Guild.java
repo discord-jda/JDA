@@ -239,6 +239,9 @@ public interface Guild extends ISnowflake
      */
     JDA getJDA();
 
+    // TODO javadoc
+    RestAction<List<Invite>> getInvites();
+
     /**
      * A list containing the {@link net.dv8tion.jda.core.entities.VoiceState VoiceState} of every {@link net.dv8tion.jda.core.entities.Member Member}
      * in this {@link net.dv8tion.jda.core.entities.Guild Guild}.<br>
@@ -293,14 +296,6 @@ public interface Guild extends ISnowflake
      *      If the Guild is available
      */
     boolean isAvailable();
-
-//    /**
-//     * Provides a list of all {@link net.dv8tion.jda.utils.InviteUtil.AdvancedInvite Invites} for this Guild.
-//     *
-//     * @return
-//     *      An Immutable List of {@link net.dv8tion.jda.utils.InviteUtil.AdvancedInvite Invites} for this guild.
-//     */
-//    List<AdvancedInvite> getInvites();
 
     /**
      * Represents the idle time allowed until a user is moved to the
@@ -463,6 +458,4 @@ public interface Guild extends ISnowflake
             return UNKNOWN;
         }
     }
-
-    RestAction<List<Invite>> getInvites();
 }
