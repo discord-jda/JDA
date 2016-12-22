@@ -29,6 +29,8 @@ public class Request<T>
     private final Consumer<Throwable> onFailure;
     private final boolean shouldQueue;
 
+    private boolean isCanceled = false;
+
     public Request(RestAction<T> restAction, Consumer<T> onSuccess, Consumer<Throwable> onFailure, boolean shouldQueue)
     {
         this.restAction = restAction;
@@ -105,5 +107,15 @@ public class Request<T>
     public boolean shouldQueue()
     {
         return shouldQueue;
+    }
+
+    public void cancel()
+    {
+        this.isCanceled = true;
+    }
+
+    public boolean isCanceled()
+    {
+        return isCanceled;
     }
 }

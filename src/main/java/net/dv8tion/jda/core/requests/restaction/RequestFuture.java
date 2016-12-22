@@ -35,7 +35,7 @@ public class RequestFuture<T> extends CompletableFuture<T>
     @Override
     public boolean cancel(boolean mayInterrupt)
     {
-        //cancel request
+        request.cancel();
         return super.cancel(mayInterrupt);
     }
 }
