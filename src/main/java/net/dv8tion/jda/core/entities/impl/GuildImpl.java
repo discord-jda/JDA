@@ -29,8 +29,6 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.MiscUtil;
-import net.dv8tion.jda.core.utils.PermissionUtil;
-
 import org.apache.commons.lang3.StringUtils;
 import org.json.*;
 

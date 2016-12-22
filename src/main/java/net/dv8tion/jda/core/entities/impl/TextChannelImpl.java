@@ -27,8 +27,6 @@ import net.dv8tion.jda.core.managers.ChannelManager;
 import net.dv8tion.jda.core.managers.ChannelManagerUpdatable;
 import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.utils.IOUtil;
-import net.dv8tion.jda.core.utils.PermissionUtil;
-
 import org.apache.http.util.Args;
 import org.json.JSONArray;
 import org.json.JSONException;

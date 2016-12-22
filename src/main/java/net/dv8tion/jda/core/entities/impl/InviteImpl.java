@@ -77,6 +77,7 @@ public class InviteImpl implements Invite
             return new RestAction.EmptyRestAction<>(this);
 
         final net.dv8tion.jda.core.entities.Guild guild = this.api.getGuildById(this.guild.getId());
+
         if (guild == null)
             throw new UnsupportedOperationException("You're not in the guild this invite points to");
 
@@ -84,21 +85,19 @@ public class InviteImpl implements Invite
 
         CompiledRoute route;
 
-        if (member.hasPermission(Permission.MANAGE_SERVER))
+        final net.dv8tion.jda.core.entities.Channel channel = this.channel.getType() == ChannelType.TEXT
+                ? guild.getTextChannelById(this.channel.getId()) : guild.getVoiceChannelById(this.channel.getId());
+
+        if (member.hasPermission(channel, Permission.MANAGE_CHANNEL))
+        {
+            route = Route.Invites.GET_CHANNEL_INVITES.compile(channel.getId());
+        }
+        else if (member.hasPermission(Permission.MANAGE_SERVER))
         {
             route = Route.Invites.GET_GUILD_INVITES.compile(guild.getId());
         }
         else
-        {
-            final net.dv8tion.jda.core.entities.Channel channel = this.channel.getType() == ChannelType.TEXT ? guild.getTextChannelById(this.channel.getId())
-                    : guild.getVoiceChannelById(this.channel.getId());
-            if (member.hasPermission(channel, Permission.MANAGE_CHANNEL))
-            {
-                route = Route.Invites.GET_CHANNEL_INVITES.compile(channel.getId());
-            }
-            else
-                throw new PermissionException("You don't have the permission to view the full invite info");
-        }
+            throw new PermissionException("You don't have the permission to view the full invite info");
 
         return new RestAction<Invite>(this.api, route, null)
         {
@@ -141,6 +140,14 @@ public class InviteImpl implements Invite
     }
 
     @Override
+    public OffsetDateTime getCreationTime()
+    {
+        if (!this.expanded)
+            throw new IllegalStateException("Only valid for expanded invites");
+        return this.timeCreated;
+    }
+
+    @Override
     public Guild getGuild()
     {
         return this.guild;
@@ -173,14 +180,6 @@ public class InviteImpl implements Invite
         if (!this.expanded)
             throw new IllegalStateException("Only valid for expanded invites");
         return this.maxUses;
-    }
-
-    @Override
-    public OffsetDateTime getTimeCreated()
-    {
-        if (!this.expanded)
-            throw new IllegalStateException("Only valid for expanded invites");
-        return this.timeCreated;
     }
 
     @Override
@@ -263,6 +262,13 @@ public class InviteImpl implements Invite
         }
 
         @Override
+        public String getIconUrl()
+        {
+            return this.iconId == null ? null
+                    : "https://cdn.discordapp.com/icons/" + this.id + "/" + this.iconId + ".jpg";
+        }
+
+        @Override
         public String getId()
         {
             return this.id;
@@ -278,6 +284,13 @@ public class InviteImpl implements Invite
         public String getSplashId()
         {
             return this.splashId;
+        }
+
+        @Override
+        public String getSplashUrl()
+        {
+            return this.splashId == null ? null
+                    : "https://cdn.discordapp.com/splashes/" + this.id + "/" + this.splashId + ".jpg";
         }
 
     }
