@@ -18,8 +18,8 @@ package net.dv8tion.jda.client;
 
 import net.dv8tion.jda.client.entities.*;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.requests.RestAction;
 
 import java.util.List;
 
@@ -47,4 +47,7 @@ public interface JDAClient
     Friend getFriendById(String id);
 
     UserSettings getSettings();
+
+    // TODO javadoc
+    RestAction<Invite> acceptInvite(Invite invite);
 }

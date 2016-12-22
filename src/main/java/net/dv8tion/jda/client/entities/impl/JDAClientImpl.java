@@ -19,9 +19,11 @@ package net.dv8tion.jda.client.entities.impl;
 import net.dv8tion.jda.client.JDAClient;
 import net.dv8tion.jda.client.entities.*;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.requests.*;
+
+import org.apache.http.util.Args;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -190,5 +192,30 @@ public class JDAClientImpl implements JDAClient
     public HashMap<String, CallUser> getCallUserMap()
     {
         return callUsers;
+    }
+
+    @Override
+    public RestAction<Invite> acceptInvite(Invite invite)
+    {
+        Args.notNull(invite, "invite");
+
+        final Route.CompiledRoute route = Route.Invites.ACCEPT_INVITE.compile(invite.getCode());
+
+        return new RestAction<Invite>(api, route, null)
+        {
+            @Override
+            protected void handleResponse(final Response response, final Request request)
+            {
+                if (response.isOk())
+                {
+                    final Invite invite = EntityBuilder.get(this.api).createInvite(response.getObject());
+                    request.onSuccess(invite);
+                }
+                else
+                {
+                    request.onFailure(response);
+                }
+            }
+        };
     }
 }
