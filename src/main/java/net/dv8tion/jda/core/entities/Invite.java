@@ -44,6 +44,23 @@ public interface Invite
     }
 
     /**
+     * Deletes this invite.
+     * <br>Requires {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} in the invite's channel.
+     * Will throw a {@link net.dv8tion.jda.core.exceptions.PermissionException PermissionException} otherwise.
+     *
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         if the account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER MANAGE_SERVER} in the invite's channel
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} -
+     *
+     *         <pre>
+     * Type: {@link net.dv8tion.jda.core.entities.Invite Invite}
+     *         <br>Value: {@code The deleted Invite object}
+     *         </pre>
+     */
+    public RestAction<Invite> delete();
+
+    /**
      * Tries to return a new expanded {@link Invite} with more info.
      * <br>Requires either {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER MANAGE_SERVER} in the invite's guild or
      * {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} in the invite's channel.

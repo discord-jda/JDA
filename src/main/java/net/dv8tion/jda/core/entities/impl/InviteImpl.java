@@ -71,6 +71,29 @@ public class InviteImpl implements Invite
     }
 
     @Override
+    public RestAction<Invite> delete()
+    {
+        final Route.CompiledRoute route = Route.Invites.DELETE_INVITE.compile(this.code);
+
+        return new RestAction<Invite>(this.api, route, null)
+        {
+            @Override
+            protected void handleResponse(final Response response, final Request request)
+            {
+                if (response.isOk())
+                {
+                    final Invite invite = EntityBuilder.get(this.api).createInvite(response.getObject());
+                    request.onSuccess(invite);
+                }
+                else
+                {
+                    request.onFailure(response);
+                }
+            }
+        };
+    }
+
+    @Override
     public RestAction<Invite> expand()
     {
         if (this.expanded)
