@@ -1113,7 +1113,7 @@ public class EntityBuilder
 
         final JSONObject guildObject = object.getJSONObject("guild");
 
-        final String guildIconId = guildObject.getString("icon");
+        final String guildIconId = guildObject.isNull("icon") ? null : guildObject.getString("icon");
         final String guildId = guildObject.getString("id");
         final String guildName = guildObject.getString("name");
         final String guildSplashId = guildObject.isNull("splash") ? null : guildObject.getString("splash");
