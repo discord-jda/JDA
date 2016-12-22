@@ -21,6 +21,8 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
+import net.dv8tion.jda.core.requests.restaction.CompletedFuture;
+import net.dv8tion.jda.core.requests.restaction.RequestFuture;
 import net.dv8tion.jda.core.utils.SimpleLog;
 
 import java.util.concurrent.*;
@@ -54,6 +56,11 @@ public abstract class RestAction<T>
         this.data = data != null ? data : "";
     }
 
+    public JDA getJDA()
+    {
+        return api;
+    }
+
     public void queue()
     {
         queue(null, null);
@@ -66,6 +73,7 @@ public abstract class RestAction<T>
 
     public void queue(Consumer<T> success, Consumer<Throwable> failure)
     {
+        finalizeData();
         if (success == null)
             success = DEFAULT_SUCCESS;
         if (failure == null)
@@ -73,19 +81,39 @@ public abstract class RestAction<T>
         api.getRequester().request(new Request<T>(this, success, failure, true));
     }
 
-
-    public T block() throws RateLimitedException
+    public Future<T> submit()
     {
-        CompletableFuture<T> future = new CompletableFuture<T>();
-        api.getRequester().request(new Request<T>(this,
-                successReturn -> future.complete(successReturn),
-                failThrowable -> future.completeExceptionally(failThrowable),
-                false));
+        return submit(true);
+    }
+
+    public Future<T> submit(boolean shouldQueue)
+    {
+        finalizeData();
+        return new RequestFuture<T>(this, shouldQueue);
+    }
+
+    public T complete()
+    {
         try
         {
-            return future.get();
+            return complete(true);
         }
-        catch (Exception e)
+        catch (RateLimitedException ignored)
+        {
+            //This is so beyond impossible, but on the off chance that the laws of nature are rewritten
+            // after the writing of this code, I'm placing this here.
+            //Better safe than sorry?
+            throw new RuntimeException(ignored);
+        }
+    }
+
+    public T complete(boolean shouldQueue) throws RateLimitedException
+    {
+        try
+        {
+            return submit(shouldQueue).get();
+        }
+        catch (Throwable e)
         {
             if (e instanceof ExecutionException)
             {
@@ -101,37 +129,13 @@ public abstract class RestAction<T>
         }
     }
 
-    public T block(long timeout, TimeUnit timeUnit) throws RateLimitedException, TimeoutException
+    @Deprecated
+    public T block() throws RateLimitedException
     {
-        CompletableFuture<T> future = new CompletableFuture<T>();
-        api.getRequester().request(new Request<T>(this,
-                successReturn -> future.complete(successReturn),
-                failThrowable -> future.completeExceptionally(failThrowable),
-                false));
-
-        try
-        {
-            return future.get(timeout, timeUnit);
-        }
-        catch (Exception e)
-        {
-            if (e instanceof ExecutionException)
-            {
-                Throwable t = e.getCause();
-                if (t instanceof RateLimitedException)
-                    throw (RateLimitedException) t;
-                else if (t instanceof PermissionException)
-                    throw (PermissionException) t;
-                else if (t instanceof ErrorResponseException)
-                    throw (ErrorResponseException) t;
-            }
-            else if (e instanceof TimeoutException)
-            {
-                throw (TimeoutException) e;
-            }
-            throw new RuntimeException(e);
-        }
+        return complete(false);
     }
+
+    protected void finalizeData() { }
 
     protected abstract void handleResponse(Response response, Request request);
 
@@ -153,13 +157,13 @@ public abstract class RestAction<T>
         }
 
         @Override
-        public T block()
+        public Future<T> submit(boolean shouldQueue)
         {
-            return returnObj;
+            return new CompletedFuture<>(returnObj);
         }
 
         @Override
-        public T block(long timeout, TimeUnit timeUnit)
+        public T complete(boolean shouldQueue)
         {
             return returnObj;
         }
@@ -167,4 +171,6 @@ public abstract class RestAction<T>
         @Override
         protected void handleResponse(Response response, Request request) { }
     }
+
+
 }
