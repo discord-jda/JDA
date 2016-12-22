@@ -436,11 +436,17 @@ public class MessageImpl implements Message
     {
         return isTTS;
     }
-
+    
     @Override
     public RestAction<Message> editMessage(String newContent)
     {
-        return editMessage(new MessageBuilder().appendString(newContent).build());
+        return editMessage(new MessageBuilder().append(newContent).build());
+    }
+    
+    @Override
+    public RestAction<Message> editMessage(MessageEmbed embed)
+    {
+        return editMessage(new MessageBuilder().setEmbed(embed).build());
     }
 
     @Override

@@ -305,7 +305,12 @@ public interface MessageChannel extends ISnowflake
 
     default RestAction<Message> editMessageById(String id, String newContent)
     {
-        return editMessageById(id, new MessageBuilder().appendString(newContent).build());
+        return editMessageById(id, new MessageBuilder().append(newContent).build());
+    }
+    
+    default RestAction<Message> editMessageById(String id, MessageEmbed newContent)
+    {
+        return editMessageById(id, new MessageBuilder().setEmbed(newContent).build());
     }
 
     default RestAction<Message> editMessageById(String id, Message newContent)

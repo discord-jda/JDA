@@ -16,7 +16,11 @@
 package net.dv8tion.jda.core;
 
 import java.awt.Color;
+import java.time.DateTimeException;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.temporal.TemporalAccessor;
 import java.util.LinkedList;
 import java.util.List;
@@ -140,15 +144,25 @@ public class EmbedBuilder
     }
     
     /**
-     * Sets the Title of the embed
+     * Sets the Title and URL of the embed
      * @param title the title of the embed
-     * @return the builder after the title has been set
+     * @param url the url of the embed
+     * @return the builder after the title and url have been set
      */
-    public EmbedBuilder setTitle(String title)
+    public EmbedBuilder setTitle(String title, String url)
     {
-        if (title != null && title.length() > TITLE_MAX_LENGTH)
+        if (title == null)
+        {
+            if (url != null)
+                throw new IllegalArgumentException("URL can only be set if title is non-null");
+        }
+        else if (title.length() > TITLE_MAX_LENGTH)
+        {
             throw new IllegalArgumentException("Title cannot be longer than " + TITLE_MAX_LENGTH + " characters.");
+        }
+        urlCheck(url);
         this.title = title;
+        this.url = url;
         return this;
     }
     
@@ -173,9 +187,43 @@ public class EmbedBuilder
     public EmbedBuilder setTimestamp(TemporalAccessor temporal)
     {
         if (temporal == null)
+        {
             this.timestamp = null;
+        }
+        else if (temporal instanceof OffsetDateTime)
+        {
+            this.timestamp = (OffsetDateTime) temporal;
+        }
         else
-            this.timestamp = OffsetDateTime.from(temporal);
+        {
+            ZoneOffset offset;
+            try
+            {
+                offset = ZoneOffset.from(temporal);
+            }
+            catch (DateTimeException ignore)
+            {
+                offset = ZoneOffset.UTC;
+            }
+            try
+            {
+                LocalDateTime ldt = LocalDateTime.from(temporal);
+                this.timestamp = OffsetDateTime.of(ldt, offset);
+            }
+            catch (DateTimeException ignore)
+            {
+                try
+                {
+                    Instant instant = Instant.from(temporal);
+                    this.timestamp = OffsetDateTime.ofInstant(instant, offset);
+                }
+                catch (DateTimeException ex)
+                {
+                    throw new DateTimeException("Unable to obtain OffsetDateTime from TemporalAccessor: " +
+                            temporal + " of type " + temporal.getClass().getName(), ex);
+                }
+            }
+        }
         return this; 
     }
     
@@ -210,25 +258,6 @@ public class EmbedBuilder
     }
     
     /**
-     * Sets the Video of the embed.
-     * @param url the url of the video of the embed
-     * @return the builder after the video has been set
-     */
-    public EmbedBuilder setVideo(String url)
-    {
-        if (url == null)
-        {
-            this.videoInfo = null;
-        }
-        else
-        {
-            urlCheck(url);
-            this.videoInfo = new MessageEmbed.VideoInfo(url, 0, 0);
-        }
-        return this;
-    }
-    
-    /**
      * Sets the Image of the embed.
      * @param url the url of the image of the embed
      * @return the builder after the image has been set
@@ -243,26 +272,6 @@ public class EmbedBuilder
         {
             urlCheck(url);
             this.image = new MessageEmbed.ImageInfo(url, null, 0, 0);
-        }
-        return this;
-    }
-    
-    /**
-     * Sets the Provider of the embed.
-     * @param name the name of the provider of the embed
-     * @param url the url of the provider of the embed
-     * @return the builder after the provider has been set
-     */
-    public EmbedBuilder setProvider(String name, String url)
-    {
-        if (name == null && url == null)
-        {
-            this.siteProvider = null;
-        }
-        else
-        {
-            urlCheck(url);
-            this.siteProvider = new MessageEmbed.Provider(name, url);
         }
         return this;
     }
@@ -284,6 +293,7 @@ public class EmbedBuilder
         else
         {
             urlCheck(url);
+            urlCheck(iconUrl);
             this.author = new MessageEmbed.AuthorInfo(name, url, iconUrl, null);
         }
         return this;
@@ -313,18 +323,20 @@ public class EmbedBuilder
     }
     
     /**
-     * Adds a Field to the embed
+     * Adds a Field to the embed. Only the first 25 fields are displayed within Discord; 
+     * any fields after the 25th are not shown.
      * 
      * @param field the field object to add
      * @return the builder after the field has been added
      */
     public EmbedBuilder addField(MessageEmbed.Field field)
     {
-        return addField(field.getName(), field.getValue(), field.isInline());
+        return field == null ? this : addField(field.getName(), field.getValue(), field.isInline());
     }
     
     /**
-     * Adds a Field to the embed.
+     * Adds a Field to the embed. Only the first 25 fields are displayed within Discord; 
+     * any fields after the 25th are not shown.
      * 
      * @param name the name of the footer of the embed.
      * @param value the contents of the field
@@ -350,7 +362,9 @@ public class EmbedBuilder
     }
     
     /**
-     * Adds a blank (empty) Field to the embed.
+     * Adds a blank (empty) Field to the embed. UOnly the first 25 fields are displayed within Discord; 
+     * any fields after the 25th are not shown.
+     * 
      * @param inline whether or not this field should display inline
      * @return the builder after the field has been added
      */
