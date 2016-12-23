@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.requests.RestAction;
 //import net.dv8tion.jda.core.managers.ChannelManager;
 //import net.dv8tion.jda.core.managers.PermissionOverrideManager;
 //import net.dv8tion.jda.core.utils.InviteUtil;
+import net.dv8tion.jda.core.requests.restaction.InviteAction;
 
 import java.util.List;
 
@@ -170,6 +171,9 @@ public interface Channel extends ISnowflake
     RestAction<PermissionOverride> createPermissionOverride(Member member);
 
     RestAction<PermissionOverride> createPermissionOverride(Role role);
+
+    // TODO javadoc
+    InviteAction createInvite();
 
     // TODO javadoc
     RestAction<List<Invite>> getInvites();

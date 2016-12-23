@@ -26,6 +26,7 @@ import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.managers.ChannelManager;
 import net.dv8tion.jda.core.managers.ChannelManagerUpdatable;
 import net.dv8tion.jda.core.requests.*;
+import net.dv8tion.jda.core.requests.restaction.InviteAction;
 import net.dv8tion.jda.core.utils.IOUtil;
 import org.apache.http.util.Args;
 import org.json.JSONArray;
@@ -823,5 +824,14 @@ public class TextChannelImpl implements TextChannel
                 }
             }
         };
+    }
+
+    @Override
+    public InviteAction createInvite()
+    {
+        if (!this.guild.getSelfMember().hasPermission(this, Permission.CREATE_INSTANT_INVITE))
+            throw new PermissionException(Permission.CREATE_INSTANT_INVITE);
+
+        return new InviteAction(this.getJDA(), this.getId());
     }
 }

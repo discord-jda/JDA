@@ -29,8 +29,9 @@ public class InviteImpl implements Invite
     private final OffsetDateTime timeCreated;
     private final int uses;
 
-    public InviteImpl(final JDAImpl api, final String code, final boolean expanded, final User inviter, final int maxAge, final int maxUses,
-            final boolean temporary, final OffsetDateTime timeCreated, final int uses, final Channel channel, final Guild guild)
+    public InviteImpl(final JDAImpl api, final String code, final boolean expanded, final User inviter,
+            final int maxAge, final int maxUses, final boolean temporary, final OffsetDateTime timeCreated,
+            final int uses, final Channel channel, final Guild guild)
     {
         this.api = api;
         this.code = code;

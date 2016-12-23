@@ -26,6 +26,8 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.restaction.InviteAction;
+
 import org.apache.http.util.Args;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -403,5 +405,14 @@ public class VoiceChannelImpl implements VoiceChannel
                 }
             }
         };
+    }
+
+    @Override
+    public InviteAction createInvite()
+    {
+        if (!this.guild.getSelfMember().hasPermission(this, Permission.CREATE_INSTANT_INVITE))
+            throw new PermissionException(Permission.CREATE_INSTANT_INVITE);
+
+        return new InviteAction(this.getJDA(), this.getId());
     }
 }
