@@ -64,7 +64,7 @@ public interface Invite
      * Tries to return a new expanded {@link Invite} with more info.
      * <br>Requires either {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER MANAGE_SERVER} in the invite's guild or
      * {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} in the invite's channel.
-     * Will thorw a {@link net.dv8tion.jda.core.exceptions.PermissionException PermissionException} otherwise.
+     * Will throw a {@link net.dv8tion.jda.core.exceptions.PermissionException PermissionException} otherwise.
      *
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         if the account neither has {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER MANAGE_SERVER} in the invite's guild nor
@@ -98,7 +98,7 @@ public interface Invite
     /**
         * Returns creation date of this invite.
         * <br>
-        * <br>This works only for expanded invites and will thorw a {@link IllegalStateException} otherwise!
+        * <br>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
         *
         * @throws IllegalStateException if this invite is not expanded
         *
@@ -119,7 +119,7 @@ public interface Invite
     /**
      * Returns the user who created this invite. This may be a fake user.
      * <br>
-     * <br>This works only for expanded invites and will thorw a {@link IllegalStateException} otherwise!
+     * <br>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
      *
      * @throws IllegalStateException if this invite is not expanded
      *
@@ -131,9 +131,16 @@ public interface Invite
     User getInviter();
 
     /**
+     * Returns the {@link net.dv8tion.jda.core.JDA JDA} instance used to create this
+     * @return
+     *      the corresponding JDA instance
+     */
+    JDA getJDA();
+
+    /**
      * Returns the max age of this invite in seconds.
      * <br>
-     * <br>This works only for expanded invites and will thorw a {@link IllegalStateException} otherwise!
+     * <br>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
      *
      * @throws IllegalStateException if this invite is not expanded
      *
@@ -147,12 +154,12 @@ public interface Invite
     /**
     * Returns the max uses of this invite. If there is no limit thius will return {@code 0}.
     * <br>
-    * <br>This works only for expanded invites and will thorw a {@link IllegalStateException} otherwise!
-    * 
+    * <br>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
+    *
     * @throws IllegalStateException if this invite is not expanded
-    * 
+    *
     * @return The max uses of this invite or {@code 0} if there is no limit
-    * 
+    *
     * @see Invite#expand()
     * @see Invite#isExpanded()
     */
@@ -161,7 +168,7 @@ public interface Invite
     /**
      * Returns how often this invite has been used.
      * <br>
-     * <br>This works only for expanded invites and will thorw a {@link IllegalStateException} otherwise!
+     * <br>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
      *
      * @throws IllegalStateException if this invite is not expanded
      *
