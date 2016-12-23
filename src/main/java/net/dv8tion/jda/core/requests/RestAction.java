@@ -28,6 +28,37 @@ import net.dv8tion.jda.core.utils.SimpleLog;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
 
+/**
+ * A class representing a terminal between the user and the discord API.
+ * <br>This is used to offer users the ability to decide how JDA should limit
+ * a Request.
+ *
+ * <p>Methods that return an instance of RestAction require an additional step
+ * to complete the execution. Thus the user needs to append a follow-up method.
+ *
+ * <p>A default RestAction is issued with the following operations:
+ * <ul>
+ *     <li>{@link #queue()}, {@link #queue(Consumer)}, {@link #queue(Consumer, Consumer)}
+ *     <br>The fastest and most simplistic way to execute a RestAction is to queue it.
+ *     <br>This method has two optional callback functions, one with the generic type and another with a failure exception.</li>
+ *
+ *     <li>{@link #submit()}, {@link #submit(boolean)}
+ *     <br>Provides a Future representing the pending request.
+ *     <br>An optional parameter from the type boolean can be passed to disable automated rate limit handling. (not recommended)</li>
+ *
+ *     <li>{@link #complete()}, {@link #complete(boolean)}
+ *     <br>Blocking execution building up on {@link #submit()}.
+ *     <br>This will simply block the thread and return the Request result, or throw an exception</li>
+ * </ul>
+ *
+ * The most efficient way to use a RestAction is by using the asynchronous {@link #queue()} operations.
+ * <br>These allow users to provide success and failure callbacks which will be called at a convenient time.
+ *
+ * @param <T>
+ *        The generic response type for this RestAction
+ *
+ * @since JDA 3.0
+ */
 public abstract class RestAction<T>
 {
     public static final SimpleLog LOG = SimpleLog.getLog("RestAction");
@@ -49,6 +80,17 @@ public abstract class RestAction<T>
     protected final Route.CompiledRoute route;
     protected Object data;
 
+    /**
+     * Creates a new RestAction instance
+     *
+     * @param  api
+     *         The current JDA instance
+     * @param  route
+     *         The {@link net.dv8tion.jda.core.requests.Route.CompiledRoute Route.CompiledRoute}
+     *         to be used for rate limit handling
+     * @param  data
+     *         The data that should be sent to the specified route. (can be null)
+     */
     public RestAction(JDA api, Route.CompiledRoute route, Object data)
     {
         this.api = (JDAImpl) api;
@@ -56,21 +98,56 @@ public abstract class RestAction<T>
         this.data = data != null ? data : "";
     }
 
+    /**
+     * The current JDA instance
+     *
+     * @return The corresponding JDA instance
+     */
     public JDA getJDA()
     {
         return api;
     }
 
+    /**
+     * Submits a Request for execution.
+     * <br>Using the default callback functions:
+     * {@link #DEFAULT_SUCCESS DEFAULT_SUCCESS} and
+     * {@link #DEFAULT_FAILURE DEFAULT_FAILURE}
+     *
+     * <p><b>This method is asynchronous</b>
+     */
     public void queue()
     {
         queue(null, null);
     }
 
+    /**
+     * Submits a Request for execution.
+     * <br>Using the default failure callback function.
+     *
+     * <p><b>This method is asynchronous</b>
+     *
+     * @param  success
+     *         The success callback that will be called at a convenient time
+     *         for the API. (can be null)
+     */
     public void queue(Consumer<T> success)
     {
         queue(success, null);
     }
 
+    /**
+     * Submits a Request for execution.
+     *
+     * <p><b>This method is asynchronous</b>
+     *
+     * @param  success
+     *         The success callback that will be called at a convenient time
+     *         for the API. (can be null)
+     * @param  failure
+     *         The failure callback that will be called if the Request
+     *         encounters an exception at its execution point.
+     */
     public void queue(Consumer<T> success, Consumer<Throwable> failure)
     {
         finalizeData();
@@ -81,17 +158,47 @@ public abstract class RestAction<T>
         api.getRequester().request(new Request<T>(this, success, failure, true));
     }
 
+    /**
+     * Submits a Request for execution and provides
+     * an {@link java.util.concurrent.Future Future} representing
+     * its completion task.
+     * <br>Cancelling the returned Future will result in the cancellation
+     * of the Request!
+     *
+     * @return Never-null {@link java.util.concurrent.Future Future} task representing the completion promise
+     */
     public Future<T> submit()
     {
         return submit(true);
     }
 
+    /**
+     * Submits a Request for execution and provides
+     * an {@link java.util.concurrent.Future Future} representing
+     * its completion task.
+     * <br>Cancelling the returned Future will result in the cancellation
+     * of the Request!
+     *
+     * @param  shouldQueue
+     *         Whether the Request should automatically handle rate limitations. (default true)
+     *
+     * @return Never-null {@link java.util.concurrent.Future Future} task representing the completion promise
+     */
     public Future<T> submit(boolean shouldQueue)
     {
         finalizeData();
         return new RequestFuture<T>(this, shouldQueue);
     }
 
+    /**
+     * Blocks the current Thread and awaits the completion
+     * of an {@link #submit()} request.
+     * <br>Used for synchronous logic.
+     *
+     * <p><b>This might throw {@link java.lang.RuntimeException RuntimeExceptions}</b>
+     *
+     * @return The never-null response value
+     */
     public T complete()
     {
         try
@@ -107,6 +214,20 @@ public abstract class RestAction<T>
         }
     }
 
+    /**
+     * Blocks the current Thread and awaits the completion
+     * of an {@link #submit()} request.
+     * <br>Used for synchronous logic.
+     *
+     * @param  shouldQueue
+     *         Whether this should automatically handle rate limitations (default true)
+     *
+     * @throws RateLimitedException
+     *         If we were rate limited and the {@code shouldQueue} is false
+     *         <br>Use {@link #complete()} to avoid this Exception.
+     *
+     * @return The never-null response value
+     */
     public T complete(boolean shouldQueue) throws RateLimitedException
     {
         try
@@ -129,6 +250,9 @@ public abstract class RestAction<T>
         }
     }
 
+    /**
+     * @deprecated use {@link #complete(boolean)} instead!
+     */
     @Deprecated
     public T block() throws RateLimitedException
     {
