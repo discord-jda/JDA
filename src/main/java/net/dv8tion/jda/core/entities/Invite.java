@@ -21,7 +21,7 @@ public interface Invite
      * <br>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses}:
      * <ul>
      * <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_INVITE Unknown Invite} <br>
-     * The Message did not exist (possibly deleted)</li>
+     * The Invite did not exist (possibly deleted)</li>
      * </ul>
      *
      * @param api

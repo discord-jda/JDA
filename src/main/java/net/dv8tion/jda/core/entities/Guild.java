@@ -239,7 +239,23 @@ public interface Guild extends ISnowflake
      */
     JDA getJDA();
 
-    // TODO javadoc
+    /**
+     * Returns all invites for this guild.
+     * <br>Requires {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER MANAGE_SERVER} in this guild.
+     * Will throw a {@link net.dv8tion.jda.core.exceptions.PermissionException PermissionException} otherwise.
+     *
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         if the account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER MANAGE_SERVER} in this guild
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} -
+     *
+     *         <pre>
+     *Type: {@link java.util.List List}<{@link net.dv8tion.jda.core.entities.Invite Invite}>
+     *         <br>Value: {@code The list of expanded Invite objects}
+     *         </pre>
+     *
+     * @see net.dv8tion.jda.core.entities.Channel#getInvites()
+     */
     RestAction<List<Invite>> getInvites();
 
     /**

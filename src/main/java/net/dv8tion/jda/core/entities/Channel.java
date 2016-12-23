@@ -172,9 +172,36 @@ public interface Channel extends ISnowflake
 
     RestAction<PermissionOverride> createPermissionOverride(Role role);
 
-    // TODO javadoc
+    /**
+     * Creates a new {@link net.dv8tion.jda.core.requests.restaction.InviteAction InviteAction} which can be used to create a
+     * new {@link net.dv8tion.jda.core.entities.Invite Invite}. 
+     * <br>Requires {@link net.dv8tion.jda.core.Permission#CREATE_INSTANT_INVITE CREATE_INSTANT_INVITE} in this channel.
+     *
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         if the account does not have {@link net.dv8tion.jda.core.Permission#CREATE_INSTANT_INVITE CREATE_INSTANT_INVITE} in this channel
+     *
+     * @return A new {@link net.dv8tion.jda.core.requests.restaction.InviteAction InviteAction}
+     * 
+     * @see net.dv8tion.jda.core.requests.restaction.InviteAction
+     */
     InviteAction createInvite();
 
-    // TODO javadoc
+    /**
+     * Returns all invites for this channel.
+     * <br>Requires {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} in this channel.
+     * Will throw a {@link net.dv8tion.jda.core.exceptions.PermissionException PermissionException} otherwise.
+     *
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         if the account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} in this channel
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} -
+     *
+     *         <pre>
+     *Type: {@link java.util.List List}<{@link net.dv8tion.jda.core.entities.Invite Invite}>
+     *         <br>Value: {@code The list of expanded Invite objects}
+     *         </pre>
+     *
+     * @see net.dv8tion.jda.core.entities.Guild#getInvites()
+     */
     RestAction<List<Invite>> getInvites();
 }

@@ -48,6 +48,28 @@ public interface JDAClient
 
     UserSettings getSettings();
 
-    // TODO javadoc
+    /**
+     * Accepts the given invite and joins the guild.
+     *
+     * <br>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses}:
+     * <ul>
+     * <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_INVITE Unknown Invite} <br>
+     * The Message did not exist (possibly deleted)</li>
+     * </ul>
+     *
+     * @param code
+     *        The invite to accept
+     *
+     * @throws net.dv8tion.jda.core.exceptions.ErrorResponseException
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} -
+     *
+     *         <pre>
+     *Type: {@link net.dv8tion.jda.core.entities.Invite Invite}
+     *         <br>Value: {@code The Invite object}
+     *         </pre>
+     *
+     * @see net.dv8tion.jda.core.entities.Invite
+     */
     RestAction<Invite> acceptInvite(Invite invite);
 }
