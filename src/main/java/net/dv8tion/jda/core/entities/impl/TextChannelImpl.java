@@ -265,7 +265,7 @@ public class TextChannelImpl implements TextChannel
             {
                 if (response.isOk())
                 {
-                    Message m = EntityBuilder.get(getJDA()).createMessage(response.getObject());
+                    Message m = EntityBuilder.get(getJDA()).createMessage(response.getObject(), TextChannelImpl.this, false);
                     request.onSuccess(m);
                 }
                 else
