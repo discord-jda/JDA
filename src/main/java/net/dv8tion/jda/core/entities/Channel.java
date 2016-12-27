@@ -178,7 +178,7 @@ public interface Channel extends ISnowflake
      *
      * @return A new {@link net.dv8tion.jda.core.requests.restaction.InviteAction InviteAction}
      * 
-     * @see net.dv8tion.jda.core.requests.restaction.InviteAction
+     * @see    net.dv8tion.jda.core.requests.restaction.InviteAction
      */
     InviteAction createInvite();
 
@@ -190,14 +190,10 @@ public interface Channel extends ISnowflake
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         if the account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} in this channel
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} -
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.core.entities.Invite Invite}{@literal >}
+     *         <br>The list of expanded Invite objects
      *
-     *         <pre>
-     *Type: {@link java.util.List List}<{@link net.dv8tion.jda.core.entities.Invite Invite}>
-     *         <br>Value: {@code The list of expanded Invite objects}
-     *         </pre>
-     *
-     * @see net.dv8tion.jda.core.entities.Guild#getInvites()
+     * @see    net.dv8tion.jda.core.entities.Guild#getInvites()
      */
     RestAction<List<Invite>> getInvites();
 }

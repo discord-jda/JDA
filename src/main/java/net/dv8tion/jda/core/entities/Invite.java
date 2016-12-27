@@ -32,25 +32,22 @@ import java.time.OffsetDateTime;
 public interface Invite
 {
     /**
-     * Returns a new {@link Invite} for the given invite code.
+     * Retrieves a new {@link net.dv8tion.jda.core.entities.Invite Invite} instance for the given invite code.
+     * <br><b>You cannot resolve invites if you were banned from the origin Guild!</b>
      *
-     * <br>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses}:
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} include:
      * <ul>
-     * <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_INVITE Unknown Invite} <br>
-     * The Invite did not exist (possibly deleted) or the account is banned in the guild.</li>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_INVITE Unknown Invite}
+     *     <br>The Invite did not exist (possibly deleted) or the account is banned in the guild.</li>
      * </ul>
      *
-     * @param api
-     *        The JDA object
-     * @param code
-     *        The invite code
+     * @param  api
+     *         The JDA instance
+     * @param  code
+     *         A valid invite code
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} -
-     *
-     *         <pre>
-     * Type: {@link net.dv8tion.jda.core.entities.Invite Invite}
-     *         <br>Value: {@code The Invite object}
-     *         </pre>
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Invite Invite}
+     *         <br>The Invite object
      */
     static RestAction<Invite> resolve(final JDA api, final String code)
     {
@@ -58,23 +55,22 @@ public interface Invite
     }
 
     /**
-     * Accepts this invite and joins the guild. <b>This works only on client accounts!</b>
+     * Accepts this invite and joins the guild.
+     * <b>This works only on client accounts!</b>
      *
-     * <br>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses}:
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} include:
      * <ul>
-     * <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_INVITE Unknown Invite} <br>
-     * The Invite did not exist (possibly deleted) or the account is banned in the guild.</li>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_INVITE Unknown Invite}
+     *     <br>The Invite did not exist (possibly deleted) or the account is banned in the guild.</li>
      * </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} -
+     * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
+     *         if the currently logged in account is not from {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType#CLIENT}
      *
-     *         <pre>
-     *Type: {@link net.dv8tion.jda.core.entities.Invite Invite}
-     *         <br>Value: {@code The Invite object}
-     *         </pre>
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Invite Invite}
+     *         <br>The Invite object
      *
-     * @see #acceptInvite(Invite)
-     * @see net.dv8tion.jda.core.entities.Invite
+     * @see    net.dv8tion.jda.client.JDAClient#acceptInvite(Invite)
      */
     RestAction<Invite> accept();
 
@@ -86,17 +82,13 @@ public interface Invite
     * @throws net.dv8tion.jda.core.exceptions.PermissionException
     *         if the account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER MANAGE_SERVER} in the invite's channel
     *
-    * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} -
-    *
-    *         <pre>
-    * Type: {@link net.dv8tion.jda.core.entities.Invite Invite}
-    *         <br>Value: {@code The deleted Invite object}
-    *         </pre>
+    * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Invite Invite}
+    *         <br>The deleted Invite object
     */
     RestAction<Invite> delete();
 
     /**
-     * Tries to return a new expanded {@link Invite} with more info.
+     * Tries to retrieve a new expanded {@link net.dv8tion.jda.core.entities.Invite Invite} with more info.
      * <br>Requires either {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER MANAGE_SERVER} in the invite's guild or
      * {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} in the invite's channel.
      * Will throw a {@link net.dv8tion.jda.core.exceptions.PermissionException PermissionException} otherwise.
@@ -105,164 +97,166 @@ public interface Invite
      *         if the account neither has {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER MANAGE_SERVER} in the invite's guild nor
      *         {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} in the invite's channel
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} -
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Invite Invite}
+     *         <br>The expanded Invite object
      *
-     *         <pre>
-     * Type: {@link net.dv8tion.jda.core.entities.Invite Invite}
-     *         <br>Value: {@code The expanded Invite object}
-     *         </pre>
-     *
-     * @see Invite#isExpanded()
+     * @see    #isExpanded()
      */
     RestAction<Invite> expand();
 
     /**
-     * Returns an {@link Invite.Channel} object containing info about the invite's channel.
+     * An {@link net.dv8tion.jda.core.entities.Invite.Channel Invite.Channel} object
+     * containing information about this invite's origin channel.
      *
-     * @return The info about the invite's channel
+     * @return Information about this invite's origin channel
      * 
-     * @see Invite.Channel
+     * @see    net.dv8tion.jda.core.entities.Invite.Channel
      */
     Channel getChannel();
 
     /**
-     * Returns the invite code
+     * The invite code
      *
      * @return the invite code
      */
     String getCode();
 
     /**
-        * Returns creation date of this invite.
-        * <br>
-        * <br>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
-        *
-        * @throws IllegalStateException if this invite is not expanded
-        *
-        * @return The creation date of this invite
-        *
-        * @see Invite#expand()
-        * @see Invite#isExpanded()
-        */
+     * Returns creation date of this invite.
+     *
+     * <p>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
+     *
+     * @throws IllegalStateException
+     *         if this invite is not expanded
+     *
+     * @return The creation date of this invite
+     *
+     * @see    #expand()
+     * @see    #isExpanded()
+     */
     OffsetDateTime getCreationTime();
 
     /**
-     * Returns an {@link Invite.Guild} object containing info about the invite's guild.
+     * An {@link net.dv8tion.jda.core.entities.Invite.Guild Invite.Guild} object
+     * containing information about this invite's origin guild.
      *
-     * @return The info about the invite's guild
+     * @return Information about this invite's origin guild
      * 
-     * @see Invite.Guild
+     * @see    net.dv8tion.jda.core.entities.Invite.Guild
      */
     Guild getGuild();
 
     /**
-     * Returns the user who created this invite. This may be a fake user.
-     * <br>
-     * <br>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
+     * The user who created this invite. This may be a fake user.
      *
-     * @throws IllegalStateException if this invite is not expanded
+     * <p>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
+     *
+     * @throws IllegalStateException
+     *         if this invite is not expanded
      *
      * @return The user who created this invite
      *
-     * @see Invite#expand()
-     * @see Invite#isExpanded()
+     * @see    #expand()
+     * @see    #isExpanded()
      */
     User getInviter();
 
     /**
-     * Returns the {@link net.dv8tion.jda.core.JDA JDA} instance used to create this
-     * @return
-     *      the corresponding JDA instance
+     * The {@link net.dv8tion.jda.core.JDA JDA} instance used to create this Invite
+     *
+     * @return the corresponding JDA instance
      */
     JDA getJDA();
 
     /**
-     * Returns the max age of this invite in seconds.
-     * <br>
-     * <br>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
+     * The max age of this invite in seconds.
      *
-     * @throws IllegalStateException if this invite is not expanded
+     * <p>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
+     *
+     * @throws IllegalStateException
+     *         if this invite is not expanded
      *
      * @return The max age of this invite in seconds
      *
-     * @see Invite#expand()
-     * @see Invite#isExpanded()
+     * @see    #expand()
+     * @see    #isExpanded()
      */
     int getMaxAge();
 
     /**
-    * Returns the max uses of this invite. If there is no limit thius will return {@code 0}.
-    * <br>
-    * <br>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
+    * The max uses of this invite. If there is no limit thius will return {@code 0}.
     *
-    * @throws IllegalStateException if this invite is not expanded
+    * <p>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
+    *
+    * @throws IllegalStateException
+     *        if this invite is not expanded
     *
     * @return The max uses of this invite or {@code 0} if there is no limit
     *
-    * @see Invite#expand()
-    * @see Invite#isExpanded()
+    * @see    #expand()
+    * @see    #isExpanded()
     */
     int getMaxUses();
 
     /**
-     * Returns how often this invite has been used.
-     * <br>
-     * <br>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
+     * How often this invite has been used.
      *
-     * @throws IllegalStateException if this invite is not expanded
+     * <p>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
+     *
+     * @throws IllegalStateException
+     *         if this invite is not expanded
      *
      * @return The uses of this invite
      *
-     * @see Invite#expand()
-     * @see Invite#isExpanded()
+     * @see    #expand()
+     * @see    #isExpanded()
      */
     int getUses();
 
     /**
-     * Returns whether is invite expanded or not. Expanded invites contain more infos, but they can only be
+     * Whether this Invite is expanded or not. Expanded invites contain more information, but they can only be
      * obtained be {@link net.dv8tion.jda.core.entities.Guild#getInvites() Guild#getInvites()} (requires
      * {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL Permission.MANAGE_CHANNEL}) or
      * {@link net.dv8tion.jda.core.entities.Channel#getInvites() Channel#getInvites()} (requires
      * {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER Permission.MANAGE_SERVER}).
      *
-     * <br>There's a covenience method {@link Invite#expand()} to get the expanded invite for an unexpanded one.
+     * <p>There is a convenience method {@link #expand()} to get the expanded invite for an unexpanded one.
      *
-     * @throws IllegalStateException if this invite is not expanded
+     * @return Whether is invite expanded or not
      *
-     * @return whether is invite expanded or not
-     *
-     * @see Invite#expand()
+     * @see    #expand()
      */
     boolean isExpanded();
 
     /**
-     * Only expanded
+     * Whether this Invite grants only temporary access or not
+     *
+     * @throws IllegalStateException
+     *         if this invite is not expanded
+     *
+     * @return Whether is invite expanded or not
      */
     boolean isTemporary();
 
     /**
      * POJO for the channel information provided by an invite.
      * 
-     * @see Invite#getChannel()
+     * @see #getChannel()
      */
     interface Channel extends ISnowflake
     {
         /**
-         * Returns the name of this channel.
+         * The name of this channel.
          *
          * @return The channels's name
-         *
-         * @see {@link net.dv8tion.jda.core.entities.Channel#getName()}
          */
         String getName();
 
         /**
-         * Returns the {@link net.dv8tion.jda.core.entities.ChannelType ChannelType} of this channel. <br>
-         * Valid values are only {@link net.dv8tion.jda.core.entities.ChannelType#TEXT TEXT} or {@link net.dv8tion.jda.core.entities.ChannelType#VOICE VOICE}
+         * The {@link net.dv8tion.jda.core.entities.ChannelType ChannelType} of this channel.
+         * <br>Valid values are only {@link net.dv8tion.jda.core.entities.ChannelType#TEXT TEXT} or {@link net.dv8tion.jda.core.entities.ChannelType#VOICE VOICE}
          *
          * @return The channel's type
-         *
-         * @see {@link net.dv8tion.jda.core.entities.Channel#get}
          */
         ChannelType getType();
     }
@@ -270,44 +264,41 @@ public interface Invite
     /**
      * POJO for the guild information provided by an invite.
      * 
-     * @see Invite#getGuild()
+     * @see #getGuild()
      */
     interface Guild extends ISnowflake
     {
         /**
-         * Returns the icon id of this guild.
+         * The icon id of this guild.
          *
          * @return The guild's icon id
          *
-         * @see {@link net.dv8tion.jda.core.entities.Guild#getIconId()}
+         * @see    #getIconUrl()
          */
         String getIconId();
 
         /**
-         * Returns the icon url of this guild.
+         * The icon url of this guild.
          *
          * @return The guild's icon url
          *
-         * @see {@link net.dv8tion.jda.core.entities.Guild#getIconId()}
+         * @see    #getIconId()
          */
         String getIconUrl();
 
         /**
-         * Returns the name of this guild.
+         * The name of this guild.
          *
          * @return The guilds's name
-         *
-         * @see {@link net.dv8tion.jda.core.entities.Guild#getName()}
          */
         String getName();
 
         /**
-         * Returns the splash image id of this guild.
+         * The splash image id of this guild.
          *
          * @return The guild's splash image id or {@code null} if the guild has no splash image
          *
-         * @see {@link net.dv8tion.jda.core.entities.Guild#getSplashId()}
-         * @see {@link Invite.Guild#getSplashUrl()}
+         * @see    #getSplashUrl()
          */
         String getSplashId();
 
@@ -316,8 +307,7 @@ public interface Invite
          *
          * @return The guild's splash image url or {@code null} if the guild has no splash image
          *
-         * @see {@link net.dv8tion.jda.core.entities.Guild#getSplashId()}
-         * @see {@link Invite.Guild#getSplashId()}
+         * @see    #getSplashId()
          */
         String getSplashUrl();
     }
