@@ -94,10 +94,10 @@ public class InviteAction extends RestAction<Invite>
     }
 
     /**
-     * Sets weather the invite should only grant temporary membership. Default is {@code false}.
+     * Sets whether the invite should only grant temporary membership. Default is {@code false}.
      *
      * @param  temporary
-     *         Weather the invite should only grant temporary membership or {@code null} to use the default value.
+     *         whether the invite should only grant temporary membership or {@code null} to use the default value.
      *
      * @return The current InviteAction for chaining.
      */
@@ -108,10 +108,10 @@ public class InviteAction extends RestAction<Invite>
     }
 
     /**
-     * Sets weather discord should reuse a similar invite. Default is {@code false}.
+     * Sets whether discord should reuse a similar invite. Default is {@code false}.
      *
      * @param  temporary
-     *         Weather discord should reuse a similar invite or {@code null} to use the default value.
+     *         whether discord should reuse a similar invite or {@code null} to use the default value.
      *
      * @return The current InviteAction for chaining.
      */

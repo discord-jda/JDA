@@ -50,17 +50,16 @@ public interface JDAClient
 
     /**
      * Accepts the given invite and joins the guild.
+     * <br> Same as {@code acceptInvite(invite.getCode())}.
      *
      * <br>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses}:
      * <ul>
      * <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_INVITE Unknown Invite} <br>
-     * The Message did not exist (possibly deleted)</li>
+     * The Invite did not exist (possibly deleted) or the account is banned in the guild.</li>
      * </ul>
      *
-     * @param code
+     * @param invite
      *        The invite to accept
-     *
-     * @throws net.dv8tion.jda.core.exceptions.ErrorResponseException
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} -
      *
@@ -69,7 +68,32 @@ public interface JDAClient
      *         <br>Value: {@code The Invite object}
      *         </pre>
      *
+     * @see #acceptInvite(String)
      * @see net.dv8tion.jda.core.entities.Invite
      */
     RestAction<Invite> acceptInvite(Invite invite);
+
+    /**
+     * Accepts the invite behind the given code and joins the guild.
+     *
+     * <br>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses}:
+     * <ul>
+     * <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_INVITE Unknown Invite} <br>
+     * The Invite did not exist (possibly deleted) or the account is banned in the guild.</li>
+     * </ul>
+     *
+     * @param code
+     *        The invite code to accept
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} -
+     *
+     *         <pre>
+     *Type: {@link net.dv8tion.jda.core.entities.Invite Invite}
+     *         <br>Value: {@code The Invite object}
+     *         </pre>
+     *
+     * @see #acceptInvite(Invite)
+     * @see net.dv8tion.jda.core.entities.Invite
+     */
+    RestAction<Invite> acceptInvite(String code);
 }

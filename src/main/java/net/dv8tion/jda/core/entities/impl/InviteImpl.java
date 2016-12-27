@@ -32,9 +32,7 @@ import java.time.OffsetDateTime;
 public class InviteImpl implements Invite
 {
     private final JDAImpl api;
-
     private final Channel channel;
-
     private final String code;
     private final boolean expanded;
     private final Guild guild;
@@ -88,6 +86,12 @@ public class InviteImpl implements Invite
     }
 
     @Override
+    public RestAction<Invite> accept()
+    {
+        return api.asClient().acceptInvite(this);
+    }
+
+    @Override
     public RestAction<Invite> delete()
     {
         final Route.CompiledRoute route = Route.Invites.DELETE_INVITE.compile(this.code);
@@ -126,7 +130,8 @@ public class InviteImpl implements Invite
         CompiledRoute route;
 
         final net.dv8tion.jda.core.entities.Channel channel = this.channel.getType() == ChannelType.TEXT
-                ? guild.getTextChannelById(this.channel.getId()) : guild.getVoiceChannelById(this.channel.getId());
+                ? guild.getTextChannelById(this.channel.getId())
+                : guild.getVoiceChannelById(this.channel.getId());
 
         if (member.hasPermission(channel, Permission.MANAGE_CHANNEL))
         {
@@ -137,7 +142,9 @@ public class InviteImpl implements Invite
             route = Route.Invites.GET_GUILD_INVITES.compile(guild.getId());
         }
         else
+        {
             throw new PermissionException("You don't have the permission to view the full invite info");
+        }
 
         return new RestAction<Invite>(this.api, route, null)
         {
@@ -201,6 +208,7 @@ public class InviteImpl implements Invite
         return this.inviter;
     }
 
+    @Override
     public JDAImpl getJDA()
     {
         return this.api;

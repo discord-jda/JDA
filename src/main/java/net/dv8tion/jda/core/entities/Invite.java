@@ -37,15 +37,13 @@ public interface Invite
      * <br>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses}:
      * <ul>
      * <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_INVITE Unknown Invite} <br>
-     * The Invite did not exist (possibly deleted)</li>
+     * The Invite did not exist (possibly deleted) or the account is banned in the guild.</li>
      * </ul>
      *
      * @param api
      *        The JDA object
      * @param code
      *        The invite code
-     *
-     * @throws net.dv8tion.jda.core.exceptions.ErrorResponseException
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} -
      *
@@ -54,27 +52,48 @@ public interface Invite
      *         <br>Value: {@code The Invite object}
      *         </pre>
      */
-    public static RestAction<Invite> resolve(final JDA api, final String code)
+    static RestAction<Invite> resolve(final JDA api, final String code)
     {
         return InviteImpl.resolve(api, code);
     }
 
     /**
-     * Deletes this invite.
-     * <br>Requires {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} in the invite's channel.
-     * Will throw a {@link net.dv8tion.jda.core.exceptions.PermissionException PermissionException} otherwise.
+     * Accepts this invite and joins the guild. <b>This works only on client accounts!</b>
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *         if the account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER MANAGE_SERVER} in the invite's channel
+     * <br>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses}:
+     * <ul>
+     * <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_INVITE Unknown Invite} <br>
+     * The Invite did not exist (possibly deleted) or the account is banned in the guild.</li>
+     * </ul>
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} -
      *
      *         <pre>
-     * Type: {@link net.dv8tion.jda.core.entities.Invite Invite}
-     *         <br>Value: {@code The deleted Invite object}
+     *Type: {@link net.dv8tion.jda.core.entities.Invite Invite}
+     *         <br>Value: {@code The Invite object}
      *         </pre>
+     *
+     * @see #acceptInvite(Invite)
+     * @see net.dv8tion.jda.core.entities.Invite
      */
-    public RestAction<Invite> delete();
+    RestAction<Invite> accept();
+
+   /**
+    * Deletes this invite.
+    * <br>Requires {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} in the invite's channel.
+    * Will throw a {@link net.dv8tion.jda.core.exceptions.PermissionException PermissionException} otherwise.
+    *
+    * @throws net.dv8tion.jda.core.exceptions.PermissionException
+    *         if the account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER MANAGE_SERVER} in the invite's channel
+    *
+    * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} -
+    *
+    *         <pre>
+    * Type: {@link net.dv8tion.jda.core.entities.Invite Invite}
+    *         <br>Value: {@code The deleted Invite object}
+    *         </pre>
+    */
+    RestAction<Invite> delete();
 
     /**
      * Tries to return a new expanded {@link Invite} with more info.
@@ -95,12 +114,14 @@ public interface Invite
      *
      * @see Invite#isExpanded()
      */
-    public RestAction<Invite> expand();
+    RestAction<Invite> expand();
 
     /**
      * Returns an {@link Invite.Channel} object containing info about the invite's channel.
      *
      * @return The info about the invite's channel
+     * 
+     * @see Invite.Channel
      */
     Channel getChannel();
 
@@ -129,6 +150,8 @@ public interface Invite
      * Returns an {@link Invite.Guild} object containing info about the invite's guild.
      *
      * @return The info about the invite's guild
+     * 
+     * @see Invite.Guild
      */
     Guild getGuild();
 
@@ -196,7 +219,7 @@ public interface Invite
     int getUses();
 
     /**
-     * Returns weather is invite expanded or not. Expanded invites contain more infos, but they can only be
+     * Returns whether is invite expanded or not. Expanded invites contain more infos, but they can only be
      * obtained be {@link net.dv8tion.jda.core.entities.Guild#getInvites() Guild#getInvites()} (requires
      * {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL Permission.MANAGE_CHANNEL}) or
      * {@link net.dv8tion.jda.core.entities.Channel#getInvites() Channel#getInvites()} (requires
@@ -206,18 +229,23 @@ public interface Invite
      *
      * @throws IllegalStateException if this invite is not expanded
      *
-     * @return weather is invite expanded or not
+     * @return whether is invite expanded or not
      *
      * @see Invite#expand()
      */
-    public boolean isExpanded();
+    boolean isExpanded();
 
     /**
      * Only expanded
      */
     boolean isTemporary();
 
-    static interface Channel extends ISnowflake
+    /**
+     * POJO for the channel information provided by an invite.
+     * 
+     * @see Invite#getChannel()
+     */
+    interface Channel extends ISnowflake
     {
         /**
          * Returns the name of this channel.
@@ -239,7 +267,12 @@ public interface Invite
         ChannelType getType();
     }
 
-    static interface Guild extends ISnowflake
+    /**
+     * POJO for the guild information provided by an invite.
+     * 
+     * @see Invite#getGuild()
+     */
+    interface Guild extends ISnowflake
     {
         /**
          * Returns the icon id of this guild.

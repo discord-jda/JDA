@@ -1103,8 +1103,11 @@ public class EntityBuilder
         final JSONObject channelObject = object.getJSONObject("channel");
         final String channelTypeName = channelObject.getString("type");
 
-        final ChannelType channelType = channelTypeName.equals("text") ? ChannelType.TEXT
-                : channelTypeName.equals("voice") ? ChannelType.VOICE : ChannelType.UNKNOWN;
+        final ChannelType channelType = channelTypeName.equals("text")
+            ? ChannelType.TEXT
+            : channelTypeName.equals("voice")
+                ? ChannelType.VOICE
+                : ChannelType.UNKNOWN;
         final String channelId = channelObject.getString("id");
         final String channelName = channelObject.getString("name");
 
