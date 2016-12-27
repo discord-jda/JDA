@@ -27,7 +27,6 @@ import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.MessageEmbed.*;
 import net.dv8tion.jda.core.entities.impl.*;
-import net.dv8tion.jda.core.events.channel.text.update.GenericTextChannelUpdateEvent;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.handle.GuildMembersChunkHandler;
 import net.dv8tion.jda.core.handle.ReadyHandler;
