@@ -25,6 +25,7 @@ import net.dv8tion.jda.core.entities.impl.EmoteImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent;
+import net.dv8tion.jda.core.requests.WebSocketClient;
 import org.json.JSONObject;
 
 public class MessageReactionHandler extends SocketHandler
@@ -48,7 +49,13 @@ public class MessageReactionHandler extends SocketHandler
         String channelId = content.getString("channel_id");
 
         String emojiId = emoji.isNull("id") ? null : emoji.getString("id");
-        String emojiName = emoji.getString("name");
+        String emojiName = emoji.isNull("name") ? null : emoji.getString("name");
+
+        if (emojiId == null && emojiName == null)
+        {
+            WebSocketClient.LOG.debug("Received a reaction " + (add ? "add" : "remove") + " with no name nor id. json: " + content);
+            return null;
+        }
 
         User user = api.getUserById(userId);
         if (user == null)
@@ -59,7 +66,7 @@ public class MessageReactionHandler extends SocketHandler
             {
                 handle(responseNumber, allContent);
             });
-            EventCache.LOG.debug("Received a message for a user that JDA does not currently have cached");
+            EventCache.LOG.debug("Received a reaction for a user that JDA does not currently have cached");
             return null;
         }
 
@@ -85,7 +92,17 @@ public class MessageReactionHandler extends SocketHandler
         {
             Emote emote = api.getEmoteById(emojiId);
             if (emote == null)
-                emote = new EmoteImpl(emojiId, api).setName(emojiName);
+            {
+                if (emojiName != null)
+                {
+                    emote = new EmoteImpl(emojiId, api).setName(emojiName);
+                }
+                else
+                {
+                    WebSocketClient.LOG.debug("Received a reaction " + (add ? "add" : "remove") + " with a null name. json: " + content);
+                    return null;
+                }
+            }
             rEmote = new MessageReaction.ReactionEmote(emote);
         }
         else
