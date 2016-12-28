@@ -1102,6 +1102,64 @@ public class EntityBuilder
                 .setIconId(iconId);
     }
 
+    public Invite createInvite(JSONObject object)
+    {
+        final String code = object.getString("code");
+
+        final JSONObject channelObject = object.getJSONObject("channel");
+        final String channelTypeName = channelObject.getString("type");
+
+        final ChannelType channelType = channelTypeName.equals("text")
+            ? ChannelType.TEXT
+            : channelTypeName.equals("voice")
+                ? ChannelType.VOICE
+                : ChannelType.UNKNOWN;
+        final String channelId = channelObject.getString("id");
+        final String channelName = channelObject.getString("name");
+
+        final Invite.Channel channel = new InviteImpl.ChannelImpl(channelId, channelName, channelType);
+
+        final JSONObject guildObject = object.getJSONObject("guild");
+
+        final String guildIconId = guildObject.isNull("icon") ? null : guildObject.getString("icon");
+        final String guildId = guildObject.getString("id");
+        final String guildName = guildObject.getString("name");
+        final String guildSplashId = guildObject.isNull("splash") ? null : guildObject.getString("splash");
+
+        final Invite.Guild guild = new InviteImpl.GuildImpl(guildId, guildIconId, guildName, guildSplashId);
+
+        final User inviter;
+        final int maxAge;
+        final int maxUses;
+        final boolean temporary;
+        final OffsetDateTime timeCreated;
+        final int uses;
+        final boolean expanded;
+
+        if (object.has("inviter"))
+        {
+            expanded = true;
+            inviter = this.createFakeUser(object.getJSONObject("inviter"), false);
+            maxAge = object.getInt("max_age");
+            maxUses = object.getInt("max_uses");
+            uses = object.getInt("uses");
+            temporary = object.getBoolean("temporary");
+            timeCreated = OffsetDateTime.parse(object.getString("created_at"));
+        }
+        else
+        {
+            expanded = false;
+            inviter = null;
+            maxAge = -1;
+            maxUses = -1;
+            uses = -1;
+            temporary = false;
+            timeCreated = null;
+        }
+
+        return new InviteImpl(api, code, expanded, inviter, maxAge, maxUses, temporary, timeCreated, uses, channel, guild);
+    }
+
     public void clearCache()
     {
         cachedGuildJsons.clear();

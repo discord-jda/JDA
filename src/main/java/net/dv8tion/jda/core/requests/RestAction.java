@@ -295,6 +295,4 @@ public abstract class RestAction<T>
         @Override
         protected void handleResponse(Response response, Request request) { }
     }
-
-
 }
