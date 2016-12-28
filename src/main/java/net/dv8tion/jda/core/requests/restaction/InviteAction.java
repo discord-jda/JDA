@@ -21,7 +21,10 @@ import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Invite;
 import net.dv8tion.jda.core.requests.*;
 
+import org.apache.http.util.Args;
 import org.json.JSONObject;
+
+import java.util.concurrent.TimeUnit;
 
 public class InviteAction extends RestAction<Invite>
 {
@@ -63,32 +66,65 @@ public class InviteAction extends RestAction<Invite>
 
     /**
      * Sets the max age in seconds for the invite. Set this to {@code 0} if the invite should never expire. Default is {@code 86400} (24 hours).
+     * {@code null} will reset this to the default value.
      *
      * @param  maxAge
      *         The max age for this invite or {@code null} to use the default value.
+     *
+     * @throws IllegalArgumentException
+     *         If maxAge is negative.
      *
      * @return The current InviteAction for chaining.
      */
     public final InviteAction setMaxAge(final Integer maxAge)
     {
-        if (maxAge < 0)
-            throw new IllegalArgumentException("maxAge must be grater than 0!");
+        if (maxAge != null)
+            Args.notNegative(maxAge, "maxAge");
+
         this.maxAge = maxAge;
         return this;
     }
 
     /**
+     * Sets the max age for the invite. Set this to {@code 0} if the invite should never expire. Default is {@code 86400} (24 hours).
+     * {@code null} will reset this to the default value.
+     *
+     * @param  maxAge
+     *         The max age for this invite or {@code null} to use the default value.
+     *
+     * @throws IllegalArgumentException
+     *         If maxAge is negative or maxAge is positive and timeUnit is null.
+     *
+     * @return The current InviteAction for chaining.
+     */
+    public final InviteAction setMaxAge(final Long maxAge, final TimeUnit timeUnit)
+    {
+        if (maxAge == null)
+            return this.setMaxAge(null);
+
+        Args.notNegative(maxAge, "maxAge");
+        Args.notNull(timeUnit, "timeUnit");
+
+        return this.setMaxAge(Math.toIntExact(timeUnit.toSeconds(maxAge)));
+    }
+
+    /**
      * Sets the max uses for the invite. Set this to {@code 0} if the invite should have unlimited uses. Default is {@code 0}.
+     * {@code null} will reset this to the default value.
      *
      * @param  maxUses
      *         The max uses for this invite or {@code null} to use the default value.
+     *
+     * @throws IllegalArgumentException
+     *         If maxUses is negative.
      *
      * @return The current InviteAction for chaining.
      */
     public final InviteAction setMaxUses(final Integer maxUses)
     {
-        if (maxUses < 0)
-            throw new IllegalArgumentException("maxAge must be grater than 0!");
+        if (maxUses != null)
+            Args.notNegative(maxUses, "maxUses");
+
         this.maxUses = maxUses;
         return this;
     }
@@ -97,7 +133,7 @@ public class InviteAction extends RestAction<Invite>
      * Sets whether the invite should only grant temporary membership. Default is {@code false}.
      *
      * @param  temporary
-     *         whether the invite should only grant temporary membership or {@code null} to use the default value.
+     *         Whether the invite should only grant temporary membership or {@code null} to use the default value.
      *
      * @return The current InviteAction for chaining.
      */
@@ -111,7 +147,7 @@ public class InviteAction extends RestAction<Invite>
      * Sets whether discord should reuse a similar invite. Default is {@code false}.
      *
      * @param  temporary
-     *         whether discord should reuse a similar invite or {@code null} to use the default value.
+     *         Whether discord should reuse a similar invite or {@code null} to use the default value.
      *
      * @return The current InviteAction for chaining.
      */
