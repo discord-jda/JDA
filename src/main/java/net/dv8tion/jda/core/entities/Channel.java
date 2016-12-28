@@ -16,13 +16,10 @@
 package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.managers.ChannelManager;
 import net.dv8tion.jda.core.managers.ChannelManagerUpdatable;
 import net.dv8tion.jda.core.requests.RestAction;
-//import net.dv8tion.jda.core.managers.ChannelManager;
-//import net.dv8tion.jda.core.managers.PermissionOverrideManager;
-//import net.dv8tion.jda.core.utils.InviteUtil;
+import net.dv8tion.jda.core.requests.restaction.InviteAction;
 
 import java.util.List;
 
@@ -171,11 +168,32 @@ public interface Channel extends ISnowflake
 
     RestAction<PermissionOverride> createPermissionOverride(Role role);
 
-//    /**
-//     * Provides a list of all {@link net.dv8tion.jda.utils.InviteUtil.AdvancedInvite Invites} for this Channel.
-//     *
-//     * @return
-//     *      An Immutable List of {@link net.dv8tion.jda.utils.InviteUtil.AdvancedInvite Invites} for this channel.
-//     */
-//    List<InviteUtil.AdvancedInvite> getInvites();
+    /**
+     * Creates a new {@link net.dv8tion.jda.core.requests.restaction.InviteAction InviteAction} which can be used to create a
+     * new {@link net.dv8tion.jda.core.entities.Invite Invite}. 
+     * <br>Requires {@link net.dv8tion.jda.core.Permission#CREATE_INSTANT_INVITE CREATE_INSTANT_INVITE} in this channel.
+     *
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         if the account does not have {@link net.dv8tion.jda.core.Permission#CREATE_INSTANT_INVITE CREATE_INSTANT_INVITE} in this channel
+     *
+     * @return A new {@link net.dv8tion.jda.core.requests.restaction.InviteAction InviteAction}
+     * 
+     * @see    net.dv8tion.jda.core.requests.restaction.InviteAction
+     */
+    InviteAction createInvite();
+
+    /**
+     * Returns all invites for this channel.
+     * <br>Requires {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} in this channel.
+     * Will throw a {@link net.dv8tion.jda.core.exceptions.PermissionException PermissionException} otherwise.
+     *
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         if the account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} in this channel
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.core.entities.Invite Invite}{@literal >}
+     *         <br>The list of expanded Invite objects
+     *
+     * @see    net.dv8tion.jda.core.entities.Guild#getInvites()
+     */
+    RestAction<List<Invite>> getInvites();
 }

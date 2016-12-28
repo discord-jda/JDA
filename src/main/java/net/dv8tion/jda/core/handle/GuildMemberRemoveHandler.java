@@ -25,8 +25,6 @@ import net.dv8tion.jda.core.requests.GuildLock;
 import net.dv8tion.jda.core.requests.WebSocketClient;
 import org.json.JSONObject;
 
-//import net.dv8tion.jda.core.events.voice.VoiceLeaveEvent;
-
 public class GuildMemberRemoveHandler extends SocketHandler
 {
 

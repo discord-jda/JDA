@@ -18,8 +18,8 @@ package net.dv8tion.jda.client;
 
 import net.dv8tion.jda.client.entities.*;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.requests.RestAction;
 
 import java.util.List;
 
@@ -47,4 +47,45 @@ public interface JDAClient
     Friend getFriendById(String id);
 
     UserSettings getSettings();
+
+    /**
+     * Accepts the given invite and joins the guild.
+     * <br>Same as {@code acceptInvite(invite.getCode())}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_INVITE Unknown Invite}
+     *     <br>The Invite did not exist (possibly deleted) or the account is banned in the guild.</li>
+     * </ul>
+     *
+     * @param  invite
+     *         The invite to accept
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Invite Invite}
+     *         <br>The Invite object
+     *
+     * @see    #acceptInvite(String)
+     * @see    net.dv8tion.jda.core.entities.Invite
+     */
+    RestAction<Invite> acceptInvite(Invite invite);
+
+    /**
+     * Accepts the invite behind the given code and joins the guild.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses}:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_INVITE Unknown Invite}
+     *     <br>The Invite did not exist (possibly deleted) or the account is banned in the guild.</li>
+     * </ul>
+     *
+     * @param  code
+     *         The invite code to accept
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Invite Invite}
+     *         <br>The Invite object
+     *
+     * @see    #acceptInvite(Invite)
+     * @see    net.dv8tion.jda.core.entities.Invite
+     */
+    RestAction<Invite> acceptInvite(String code);
 }
