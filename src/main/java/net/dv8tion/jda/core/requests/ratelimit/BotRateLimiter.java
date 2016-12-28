@@ -32,11 +32,12 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class BotRateLimiter extends RateLimiter
 {
     volatile Long timeOffset = null;
-    volatile Long globalCooldown = null;
+    volatile AtomicLong globalCooldown = new AtomicLong(Long.MIN_VALUE);
 
     public BotRateLimiter(Requester requester, int poolSize)
     {
@@ -93,7 +94,7 @@ public class BotRateLimiter extends RateLimiter
                 else
                 {
                     //If it is global, lock down the threads.
-                    globalCooldown = getNow() + retryAfter;
+                    globalCooldown.set(getNow() + retryAfter);
                 }
                 return retryAfter;
             }
@@ -167,10 +168,9 @@ public class BotRateLimiter extends RateLimiter
                     && !bucket.getRoute().equals("users/@me")
                     && Requester.LOG.getEffectiveLevel().getPriority() <= SimpleLog.Level.DEBUG.getPriority())
             {
-                Requester.LOG.fatal("Encountered issue with headers when updating a bucket"
+                Requester.LOG.debug("Encountered issue with headers when updating a bucket"
                                   + "\nRoute: " + bucket.getRoute()
                                   + "\nHeaders: " + headers);
-                Requester.LOG.log(ex);
             }
 
         }
@@ -213,15 +213,17 @@ public class BotRateLimiter extends RateLimiter
 
         Long getRateLimit()
         {
-            if (globalCooldown != null) //Are we on global cooldown?
+            long gCooldown = globalCooldown.get();
+            if (gCooldown != Long.MIN_VALUE) //Are we on global cooldown?
             {
                 long now = getNow();
-                if (now > globalCooldown)   //Verify that we should still be on cooldown.
+                if (now > gCooldown)   //Verify that we should still be on cooldown.
                 {
-                    globalCooldown = null;  //If we are done cooling down, reset the globalCooldown and continue.
-                } else
+                    globalCooldown.set(Long.MIN_VALUE);  //If we are done cooling down, reset the globalCooldown and continue.
+                }
+                else
                 {
-                    return globalCooldown - now;    //If we should still be on cooldown, return when we can go again.
+                    return gCooldown - now;    //If we should still be on cooldown, return when we can go again.
                 }
             }
             if (this.routeUsageRemaining <= 0)
