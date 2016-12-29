@@ -198,7 +198,7 @@ public interface JDA
 
     /**
      * This returns the {@link net.dv8tion.jda.core.entities.User User} which has the same id as the one provided.
-     * <br>If there is no visible user with an id that matches the provided one, this this returns {@code null}.
+     * <br>If there is no visible user with an id that matches the provided one, this returns {@code null}.
      *
      * @param  id
      *         The id of the requested {@link net.dv8tion.jda.core.entities.User User}.
