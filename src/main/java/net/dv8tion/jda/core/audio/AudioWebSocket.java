@@ -317,6 +317,9 @@ public class AudioWebSocket extends WebSocketAdapter
             keepAlivePool.remove(keepAliveRunnable);
             keepAliveRunnable = null;
         }
+
+        if (audioConnection != null)
+            audioConnection.shutdown();
         if (udpSocket != null)
             udpSocket.close();
         if (socket != null && socket.isOpen())
