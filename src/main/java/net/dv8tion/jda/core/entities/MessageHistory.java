@@ -74,13 +74,13 @@ public class MessageHistory
      * <br>Can only retrieve a <b>maximum</b> of {@code 100} messages at a time.
      * <br>This method has 2 modes of operation: initial retrieval and additional retrieval.
      * <ul>
-     *     <li>Initial Retrieval
+     *     <li><b>Initial Retrieval</b>
      *     <br>This mode is what is used when no {@link net.dv8tion.jda.core.entities.Message Messages} have been retrieved
      *         yet ({@link #getRetrievedHistory()}'s size is 0). Initial retrival starts from the most recent message sent
      *         to the channel and retrieves backwards from there. So, if 50 messages are retrieved during this mode, the
      *         most recent 50 messages will be retrieved.</li>
-     *     <br>
-     *     <li>Additional Retrieval
+     *
+     *     <li><b>Additional Retrieval</b>
      *     <br>This mode is used once some {@link net.dv8tion.jda.core.entities.Message Messages} have already been retrieved
      *         from Discord and are stored in MessageHistory's history ({@link #getRetrievedHistory()}). When retrieving
      *         messages in this mode, MessageHistory will retrieve previous messages starting from the oldest message
@@ -159,8 +159,8 @@ public class MessageHistory
      * <br>This method works in the same way as {@link #retrievePast(int)}'s Additional Retrieval mode.
      * <p>
      * <b>Note:</b> This method can only be used after {@link net.dv8tion.jda.core.entities.Message Messages} have already
-     * been retrieved from Discord. The use case for this
-     *
+     * been retrieved from Discord.
+     * <p>
      * Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} include:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
