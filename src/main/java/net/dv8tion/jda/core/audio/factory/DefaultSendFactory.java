@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.core.audio.factory;
 
+/**
+ * The default implementation of the {@link net.dv8tion.jda.core.audio.factory.IAudioSendFactory IAudioSendFactory}.
+ */
 public class DefaultSendFactory implements IAudioSendFactory
 {
     @Override

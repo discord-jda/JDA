@@ -27,6 +27,10 @@ import java.net.SocketException;
 
 import static net.dv8tion.jda.core.audio.AudioConnection.OPUS_FRAME_TIME_AMOUNT;
 
+/**
+ * The default implementation of the {@link net.dv8tion.jda.core.audio.factory.IAudioSendSystem IAudioSendSystem}.
+ * <br>This implementation uses a Java thread, named based on: {@link IPacketProvider#getIdentifier()} + " Sending Thread".
+ */
 public class DefaultSendSystem implements IAudioSendSystem
 {
     private final IPacketProvider packetProvider;
