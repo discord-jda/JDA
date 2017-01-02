@@ -28,8 +28,8 @@ import java.util.regex.Pattern;
  * StringBuilder, and the methods provided by this class are a combination of those offered by the StringBuilder and
  * {@link String#format(String, Object...)}.
  *
- * @since  JDA 1.0
- * @author Michael Ritter & Aljoscha Grebe
+ * @since  1.0
+ * @author Michael Ritter and Aljoscha Grebe
  */
 public class MessageBuilder
 {
@@ -606,6 +606,8 @@ public class MessageBuilder
      *
      * @param  guild
      *         the guild for {@link net.dv8tion.jda.core.entities.User User} mentions
+     * @param  types
+     *         the {@link MentionType MentionTypes} that should be stripped
      *
      * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
      */
@@ -1027,7 +1029,7 @@ public class MessageBuilder
     }
 
     /**
-     * Holds the strippable mention types used in {@link MessageBuilder#stripMentions(JDA, MentionType...)
+     * Holds the strippable mention types used in {@link MessageBuilder#stripMentions(JDA, MentionType...)}
      * and {@link MessageBuilder#stripMentions(Guild, MentionType...)}
      */
     public enum MentionType {

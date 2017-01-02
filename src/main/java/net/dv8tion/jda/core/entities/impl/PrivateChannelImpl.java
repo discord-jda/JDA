@@ -21,7 +21,7 @@ import com.mashape.unirest.request.body.MultipartBody;
 import net.dv8tion.jda.client.entities.Call;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.MessageHistory;
+import net.dv8tion.jda.core.entities.MessageHistory;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.utils.IOUtil;
@@ -242,18 +242,6 @@ public class PrivateChannelImpl implements PrivateChannel
     public MessageHistory getHistory()
     {
         return new MessageHistory(this);
-    }
-
-    @Override
-    public RestAction<MessageHistory> getHistoryAround(Message markerMessage, int limit)
-    {
-        return MessageHistory.getHistoryAround(this, markerMessage, limit);
-    }
-
-    @Override
-    public RestAction<MessageHistory> getHistoryAround(String markedMessageId, int limit)
-    {
-        return MessageHistory.getHistoryAround(this, markedMessageId, limit);
     }
 
     @Override

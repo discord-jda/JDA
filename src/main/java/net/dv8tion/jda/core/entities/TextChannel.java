@@ -49,7 +49,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * <br><p>You must have the Permission {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE MESSAGE_MANAGE} in this channel to use
      * this function.
      *
-     * <p>This method is best used when using {@link net.dv8tion.jda.core.MessageHistory MessageHistory} to delete a large amount
+     * <p>This method is best used when using {@link MessageHistory MessageHistory} to delete a large amount
      * of messages. If you have a large amount of messages but only their message Ids, please use {@link #deleteMessagesByIds(Collection)}
      *
      * <p>Possible ErrorResponses include:
@@ -90,7 +90,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * this function.
      *
      * <p>This method is best used when you have a large amount of messages but only their message Ids. If you are using
-     * {@link net.dv8tion.jda.core.MessageHistory MessageHistory} or have {@link net.dv8tion.jda.core.entities.Message Message}
+     * {@link MessageHistory MessageHistory} or have {@link net.dv8tion.jda.core.entities.Message Message}
      * objects, it would be easier to use {@link #deleteMessages(java.util.Collection)}.
      *
      * <p>Possible ErrorResponses include:

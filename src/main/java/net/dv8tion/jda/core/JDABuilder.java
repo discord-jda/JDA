@@ -352,7 +352,7 @@ public class JDABuilder
      * <br>The shardId that receives all stuff related to given bot is calculated as follows: shardId == (guildId {@literal >>} 22) % shardTotal;
      * <br><b>PMs are only sent to shard 0.</b>
      *
-     * <p></p>Please note, that a shard will not even know about guilds not assigned to.
+     * <p>Please note, that a shard will not even know about guilds not assigned to.
      *
      * @param  shardId
      *         The id of this shard (starting at 0).

@@ -21,6 +21,8 @@ import java.util.List;
 
 /**
  * Represents an embed displayed by Discord.
+ * <br>A visual representation of an Embed can be found at:
+ * <a href="http://imgur.com/a/yOb5n" target="_blank">http://imgur.com/a/yOb5n</a>
  * <br>This class has many possibilities for null values, so be careful!
  */
 public interface MessageEmbed

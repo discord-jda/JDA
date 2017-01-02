@@ -17,13 +17,13 @@ package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.MessageHistory;
 import net.dv8tion.jda.core.entities.impl.MessageImpl;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import org.apache.http.util.Args;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.LinkedList;
 import java.util.List;
 
 //import net.dv8tion.jda.core.exceptions.VerificationLevelException;
@@ -295,16 +296,52 @@ public interface MessageChannel extends ISnowflake //todo: doc error responses o
     RestAction<Void> deleteMessageById(String messageId);
 
     /**
-     * Creates a new {@link net.dv8tion.jda.core.MessageHistory MessageHistory} object for each call of this method.
-     * <br>This is <b>NOT</b> and internal message cache, but rather it queries the Discord servers for old messages.
+     * Creates a new {@link MessageHistory MessageHistory} object for each call of this method.
+     * <br>This is <b>NOT</b> an internal message cache, but rather it queries the Discord servers for previously sent messages.
      *
-     * @return The {@link net.dv8tion.jda.core.MessageHistory MessageHistory} for this channel.
+     * @return The {@link MessageHistory MessageHistory} for this channel.
      */
     MessageHistory getHistory();
 
-    //TODO: doc
-    RestAction<MessageHistory> getHistoryAround(Message message, int limit);
-    RestAction<MessageHistory> getHistoryAround(String messageId, int limit);
+    default RestAction<MessageHistory> getHistoryAround(Message message, int limit)
+    {
+        Args.notNull(message, "Provided target message");
+        Args.check(message.getChannel().equals(this), "The provided Message is not from the MessageChannel!");
+
+        return getHistoryAround(message.getId(), limit);
+    }
+
+    default RestAction<MessageHistory> getHistoryAround(String messageId, int limit)
+    {
+        Args.notEmpty(messageId, "Provided messageId");
+        Args.check(limit > 100 || limit < 1, "Provided limit was out of bounds. Minimum: 1, Max: 100. Provided: %d", limit);
+
+        Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY_AROUND.compile(this.getId(), Integer.toString(limit), messageId);
+        return new RestAction<MessageHistory>(getJDA(), route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (!response.isOk())
+                {
+                    request.onFailure(response);
+                    return;
+                }
+
+                MessageHistory mHistory = new MessageHistory(MessageChannel.this);
+
+                EntityBuilder builder = EntityBuilder.get(api);
+                LinkedList<Message> msgs  = new LinkedList<>();
+                JSONArray historyJson = response.getArray();
+
+                for (int i = 0; i < historyJson.length(); i++)
+                    msgs.add(builder.createMessage(historyJson.getJSONObject(i)));
+
+                msgs.forEach(msg -> mHistory.history.put(msg.getId(), msg));
+                request.onSuccess(mHistory);
+            }
+        };
+    }
 
     /**
      * Sends the typing status to discord. This is what is used to make the message "X is typing..." appear.

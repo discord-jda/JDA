@@ -247,7 +247,7 @@ public interface JDA
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.User User}
-     *         <br>On request, gets the User with id matching provided id from Discord.</pre>
+     *         <br>On request, gets the User with id matching provided id from Discord.
      */
     RestAction<User> retrieveUserById(String id);
 

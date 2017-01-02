@@ -23,7 +23,7 @@ import net.dv8tion.jda.client.entities.Friend;
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.MessageHistory;
+import net.dv8tion.jda.core.entities.MessageHistory;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Message;
@@ -322,18 +322,6 @@ public class GroupImpl implements Group
     public MessageHistory getHistory()
     {
         return new MessageHistory(this);
-    }
-
-    @Override
-    public RestAction<MessageHistory> getHistoryAround(Message markerMessage, int limit)
-    {
-        return MessageHistory.getHistoryAround(this, markerMessage, limit);
-    }
-
-    @Override
-    public RestAction<MessageHistory> getHistoryAround(String markedMessageId, int limit)
-    {
-        return MessageHistory.getHistoryAround(this, markedMessageId, limit);
     }
 
     @Override

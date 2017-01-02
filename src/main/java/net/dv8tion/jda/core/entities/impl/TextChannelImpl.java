@@ -435,18 +435,6 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
-    public RestAction<MessageHistory> getHistoryAround(Message markerMessage, int limit)
-    {
-        return MessageHistory.getHistoryAround(this, markerMessage, limit);
-    }
-
-    @Override
-    public RestAction<MessageHistory> getHistoryAround(String markedMessageId, int limit)
-    {
-        return MessageHistory.getHistoryAround(this, markedMessageId, limit);
-    }
-
-    @Override
     public RestAction<Void> sendTyping()
     {
         Route.CompiledRoute route = Route.Channels.SEND_TYPING.compile(id);
