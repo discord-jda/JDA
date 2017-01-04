@@ -35,8 +35,7 @@ public class UserAudio
     /**
      * The {@link net.dv8tion.jda.core.entities.User User} that provided the audio data.
      *
-     * @return
-     *      Never-null {@link net.dv8tion.jda.core.entities.User User} object.
+     * @return Never-null {@link net.dv8tion.jda.core.entities.User User} object.
      */
     public User getUser()
     {
@@ -44,16 +43,16 @@ public class UserAudio
     }
 
     /**
-     * Provides 20 Milliseconds of combined audio data in 48KHz 16bit stereo signed BigEndian PCM.<br>
-     * Format defined by: {@link net.dv8tion.jda.core.audio.AudioReceiveHandler#OUTPUT_FORMAT AudioReceiveHandler.OUTPUT_FORMAT}.<p>
+     * Provides 20 Milliseconds of combined audio data in 48KHz 16bit stereo signed BigEndian PCM.
+     * <br>Format defined by: {@link net.dv8tion.jda.core.audio.AudioReceiveHandler#OUTPUT_FORMAT AudioReceiveHandler.OUTPUT_FORMAT}.
+     * <p>
+     * The output volume of the data can be modified by the provided {@code `volume`} parameter. {@code `1.0`} is considered to be 100% volume.
+     * <br>Going above {@code `1.0`} can increase the volume further, but you run the risk of audio distortion.
      *
-     * The output volume of the data can be modifed by the provided `volume` parameter. `1.0`is considered to be 100% volume.<br>
-     * Going above `1.0` can increase the volume further, but you run the risk of audio distortion.<p>
+     * @param  volume
+     *         Value used to modify the "volume" of the returned audio data. 1.0 is normal volume.
      *
-     * @param volume
-     *          Value used to modify the "volume" of the returned audio data. 1.0 is normal volume.
-     * @return
-     *      Never-null byte array of PCM data defined by {@link net.dv8tion.jda.core.audio.AudioReceiveHandler#OUTPUT_FORMAT AudioReceiveHandler.OUTPUT_FORMAT}
+     * @return Never-null byte array of PCM data defined by {@link net.dv8tion.jda.core.audio.AudioReceiveHandler#OUTPUT_FORMAT AudioReceiveHandler.OUTPUT_FORMAT}
      */
     public byte[] getAudioData(double volume)
     {
