@@ -135,7 +135,8 @@ javadoc {
     exclude("net/dv8tion/jda/core/audio/AudioConnection.java",
             "net/dv8tion/jda/core/audio/AudioWebSocket.java",
             "net/dv8tion/jda/core/audio/AudioPacket.java",
-            "net/dv8tion/jda/core/audio/Decoder.java")
+            "net/dv8tion/jda/core/audio/Decoder.java",
+            "net/dv8tion/jda/core/audio/hooks/ListenerProxy.java")
     exclude("net/dv8tion/jda/core/entities/impl")
     exclude("net/dv8tion/jda/core/handle")
     exclude("net/dv8tion/jda/core/managers/impl")
