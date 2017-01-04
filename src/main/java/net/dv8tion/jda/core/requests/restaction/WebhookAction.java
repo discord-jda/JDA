@@ -77,35 +77,8 @@ public class WebhookAction extends RestAction<Webhook>
         return this;
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
-    public void queue(Consumer<Webhook> success, Consumer<Throwable> failure)
-    {
-        this.setData();
-        super.queue(success, failure);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Webhook block() throws RateLimitedException
-    {
-        this.setData();
-        return super.block();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Webhook block(long timeout, TimeUnit timeUnit) throws TimeoutException, RateLimitedException
-    {
-        this.setData();
-        return super.block(timeout, timeUnit);
-    }
-
-    private void setData()
+    @Override
+    public void finalizeData()
     {
         JSONObject data = new JSONObject();
         data.put("name",   name);
@@ -113,7 +86,6 @@ public class WebhookAction extends RestAction<Webhook>
 
         super.data = data;
     }
-
 
     @Override
     protected void handleResponse(Response response, Request request)

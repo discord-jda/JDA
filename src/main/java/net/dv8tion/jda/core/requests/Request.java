@@ -24,13 +24,17 @@ import java.util.function.Consumer;
 public class Request<T>
 {
     private final RestAction<T> restAction;
+    private final Object data;
     private final Consumer<T> onSuccess;
     private final Consumer<Throwable> onFailure;
     private final boolean shouldQueue;
 
-    Request(RestAction<T> restAction, Consumer<T> onSuccess, Consumer<Throwable> onFailure, boolean shouldQueue)
+    private boolean isCanceled = false;
+
+    public Request(RestAction<T> restAction, Consumer<T> onSuccess, Consumer<Throwable> onFailure, boolean shouldQueue)
     {
         this.restAction = restAction;
+        this.data = restAction.data;
         this.onSuccess = onSuccess;
         this.onFailure = onFailure;
         this.shouldQueue = shouldQueue;
@@ -97,11 +101,21 @@ public class Request<T>
 
     public Object getData()
     {
-        return restAction.data;
+        return data;
     }
 
     public boolean shouldQueue()
     {
         return shouldQueue;
+    }
+
+    public void cancel()
+    {
+        this.isCanceled = true;
+    }
+
+    public boolean isCanceled()
+    {
+        return isCanceled;
     }
 }

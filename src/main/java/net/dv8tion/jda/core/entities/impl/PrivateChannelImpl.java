@@ -77,7 +77,7 @@ public class PrivateChannelImpl implements PrivateChannel
     @Override
     public RestAction<Message> sendMessage(String text)
     {
-        return sendMessage(new MessageBuilder().appendString(text).build());
+        return sendMessage(new MessageBuilder().append(text).build());
     }
     
     @Override
@@ -99,7 +99,7 @@ public class PrivateChannelImpl implements PrivateChannel
             {
                 if (response.isOk())
                 {
-                    Message m = EntityBuilder.get(getJDA()).createMessage(response.getObject());
+                    Message m = EntityBuilder.get(getJDA()).createMessage(response.getObject(), PrivateChannelImpl.this, false);
                     request.onSuccess(m);
                 }
                 else

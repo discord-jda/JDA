@@ -658,12 +658,7 @@ public class EntityBuilder
     public Message createMessage(JSONObject jsonObject) { return createMessage(jsonObject, false); }
     public Message createMessage(JSONObject jsonObject, boolean exceptionOnMissingUser)
     {
-        String id = jsonObject.getString("id");
-        String content = !jsonObject.isNull("content") ? jsonObject.getString("content") : "";
         String channelId = jsonObject.getString("channel_id");
-        JSONObject author = jsonObject.getJSONObject("author");
-        String authorId = author.getString("id");
-        boolean fromWebhook = jsonObject.has("webhook_id");
         MessageChannel chan = api.getTextChannelById(channelId);
         if (chan == null)
             chan = api.getPrivateChannelById(channelId);
@@ -673,6 +668,17 @@ public class EntityBuilder
             chan = api.asClient().getGroupById(channelId);
         if (chan == null)
             throw new IllegalArgumentException(MISSING_CHANNEL);
+
+        return createMessage(jsonObject, chan, exceptionOnMissingUser);
+    }
+    public Message createMessage(JSONObject jsonObject, MessageChannel chan, boolean exceptionOnMissingUser)
+    {
+        String id = jsonObject.getString("id");
+        String content = !jsonObject.isNull("content") ? jsonObject.getString("content") : "";
+
+        JSONObject author = jsonObject.getJSONObject("author");
+        String authorId = author.getString("id");
+        boolean fromWebhook = jsonObject.has("webhook_id");
 
         MessageImpl message = new MessageImpl(id, chan, fromWebhook)
                 .setContent(content)
@@ -1094,6 +1100,64 @@ public class EntityBuilder
         return group.setOwner(owner)
                 .setName(name)
                 .setIconId(iconId);
+    }
+
+    public Invite createInvite(JSONObject object)
+    {
+        final String code = object.getString("code");
+
+        final JSONObject channelObject = object.getJSONObject("channel");
+        final String channelTypeName = channelObject.getString("type");
+
+        final ChannelType channelType = channelTypeName.equals("text")
+            ? ChannelType.TEXT
+            : channelTypeName.equals("voice")
+                ? ChannelType.VOICE
+                : ChannelType.UNKNOWN;
+        final String channelId = channelObject.getString("id");
+        final String channelName = channelObject.getString("name");
+
+        final Invite.Channel channel = new InviteImpl.ChannelImpl(channelId, channelName, channelType);
+
+        final JSONObject guildObject = object.getJSONObject("guild");
+
+        final String guildIconId = guildObject.isNull("icon") ? null : guildObject.getString("icon");
+        final String guildId = guildObject.getString("id");
+        final String guildName = guildObject.getString("name");
+        final String guildSplashId = guildObject.isNull("splash") ? null : guildObject.getString("splash");
+
+        final Invite.Guild guild = new InviteImpl.GuildImpl(guildId, guildIconId, guildName, guildSplashId);
+
+        final User inviter;
+        final int maxAge;
+        final int maxUses;
+        final boolean temporary;
+        final OffsetDateTime timeCreated;
+        final int uses;
+        final boolean expanded;
+
+        if (object.has("inviter"))
+        {
+            expanded = true;
+            inviter = this.createFakeUser(object.getJSONObject("inviter"), false);
+            maxAge = object.getInt("max_age");
+            maxUses = object.getInt("max_uses");
+            uses = object.getInt("uses");
+            temporary = object.getBoolean("temporary");
+            timeCreated = OffsetDateTime.parse(object.getString("created_at"));
+        }
+        else
+        {
+            expanded = false;
+            inviter = null;
+            maxAge = -1;
+            maxUses = -1;
+            uses = -1;
+            temporary = false;
+            timeCreated = null;
+        }
+
+        return new InviteImpl(api, code, expanded, inviter, maxAge, maxUses, temporary, timeCreated, uses, channel, guild);
     }
 
     public void clearCache()

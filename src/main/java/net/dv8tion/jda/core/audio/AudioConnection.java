@@ -192,15 +192,28 @@ public class AudioConnection
 
     public void close(ConnectionStatus closeStatus)
     {
+        shutdown();
+        webSocket.close(closeStatus);
+    }
+
+    public void shutdown()
+    {
 //        setSpeaking(false);
         if (sendSystem != null)
+        {
             sendSystem.shutdown();
+            sendSystem = null;
+        }
         if (receiveThread != null)
+        {
             receiveThread.interrupt();
+            receiveThread = null;
+        }
         if (combinedAudioExecutor != null)
+        {
             combinedAudioExecutor.shutdownNow();
-
-        webSocket.close(closeStatus);
+            combinedAudioExecutor = null;
+        }
     }
 
     private synchronized void setupSendSystem()
