@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.requests.RestAction;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface JDAClient
@@ -49,6 +50,12 @@ public interface JDAClient
     Friend getFriendById(String id);
 
     UserSettings getSettings();
+
+    RestAction<Collection<Application>> getApplications();
+    RestAction<Application> getApplicationById(String id);
+    
+    RestAction<Collection<AuthorizedApplication>> getAuthorizedApplications();
+    RestAction<AuthorizedApplication> getAuthorizedApplicationById(String id);    
 
     /**
      * Accepts the given invite and joins the guild.

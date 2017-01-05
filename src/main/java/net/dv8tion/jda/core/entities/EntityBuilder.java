@@ -16,10 +16,9 @@
 
 package net.dv8tion.jda.core.entities;
 
-import net.dv8tion.jda.client.entities.Friend;
-import net.dv8tion.jda.client.entities.Group;
-import net.dv8tion.jda.client.entities.Relationship;
-import net.dv8tion.jda.client.entities.RelationshipType;
+import net.dv8tion.jda.bot.entities.ApplicationInfo;
+import net.dv8tion.jda.bot.entities.impl.ApplicationInfoImpl;
+import net.dv8tion.jda.client.entities.*;
 import net.dv8tion.jda.client.entities.impl.*;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
@@ -32,6 +31,7 @@ import net.dv8tion.jda.core.handle.GuildMembersChunkHandler;
 import net.dv8tion.jda.core.handle.ReadyHandler;
 import net.dv8tion.jda.core.requests.GuildLock;
 import net.dv8tion.jda.core.requests.WebSocketClient;
+
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -1163,5 +1163,55 @@ public class EntityBuilder
     {
         cachedGuildJsons.clear();
         cachedGuildCallbacks.clear();
+    }
+
+    public ApplicationInfo createApplicationInfo(JSONObject object)
+    {
+        final String description = object.getString("description");
+        final String iconId = object.has("icon") ? null : object.getString("icon");
+        final String id = object.getString("id");
+        final String name = object.getString("name");
+        final User owner = createFakeUser(object.getJSONObject("owner"), false);
+
+        JSONArray rpcOriginArray = object.getJSONArray("rpc_origins");
+        List<String> rpcOrigins = new ArrayList<>(rpcOriginArray.length());
+        for (int i = 0; i < rpcOriginArray.length(); i++)
+        {
+            rpcOrigins.add(rpcOriginArray.getString(i));
+        }
+
+        return new ApplicationInfoImpl(api, description, iconId, id, name, owner, rpcOrigins);
+    }
+
+    public Application createApplication(JSONObject object)
+    {
+        return new ApplicationImpl(api, object);
+    }
+
+    public AuthorizedApplication createAuthorizedApplication(JSONObject object)
+    {
+        final String authId = object.getString("id");
+
+        JSONArray scopeArray = object.getJSONArray("scopes");
+        List<String> scopes = new ArrayList<>(scopeArray.length());
+        for (int i = 0; i < scopeArray.length(); i++)
+        {
+            scopes.add(scopeArray.getString(i));
+        }
+        JSONObject application = object.getJSONObject("application");
+
+        final String description = application.getString("description");
+        final String iconId = application.has("icon") ? null : application.getString("icon");
+        final String id = application.getString("id");
+        final String name = application.getString("name");
+
+        JSONArray rpcOriginArray = application.getJSONArray("rpc_origins");
+        List<String> rpcOrigins = new ArrayList<>(rpcOriginArray.length());
+        for (int i = 0; i < rpcOriginArray.length(); i++)
+        {
+            rpcOrigins.add(rpcOriginArray.getString(i));
+        }
+
+        return new AuthorizedApplicationImpl(api, authId, description, iconId, id, name, rpcOrigins, scopes);
     }
 }

@@ -17,8 +17,14 @@
 package net.dv8tion.jda.bot.entities.impl;
 
 import net.dv8tion.jda.bot.JDABot;
+import net.dv8tion.jda.bot.entities.ApplicationInfo;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.requests.Request;
+import net.dv8tion.jda.core.requests.Response;
+import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.Route;
 
 public class JDABotImpl implements JDABot
 {
@@ -33,5 +39,22 @@ public class JDABotImpl implements JDABot
     public JDA getJDA()
     {
         return api;
+    }
+
+    @Override
+    public RestAction<ApplicationInfo> getApplicationInfo()
+    {
+        Route.CompiledRoute route = Route.Applications.GET_BOT_APPLICATION.compile();
+        return new RestAction<ApplicationInfo>(getJDA(), route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                    request.onSuccess(EntityBuilder.get(api).createApplicationInfo(response.getObject()));
+                else
+                    request.onFailure(response);
+            }
+        };
     }
 }

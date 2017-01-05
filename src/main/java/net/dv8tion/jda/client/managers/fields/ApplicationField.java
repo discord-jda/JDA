@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter
+ *     Copyright 2015-2016 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.bot;
+package net.dv8tion.jda.client.managers.fields;
 
-import net.dv8tion.jda.bot.entities.ApplicationInfo;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.client.managers.ApplicationManagerUpdatable;
+import net.dv8tion.jda.core.managers.fields.Field;
 
-public interface JDABot
+import java.util.function.Supplier;
+
+public abstract class ApplicationField<T> extends Field<T, ApplicationManagerUpdatable>
 {
-    JDA getJDA();
-
-    /**
-     * Retrieves the application that owns the logged in Bot-account.
-     *
-     * @return
-     *      The {@link ApplicationInfo} of the bot account.
-     */
-    public RestAction<ApplicationInfo> getApplicationInfo();
+    public ApplicationField(final ApplicationManagerUpdatable manager, final Supplier<T> originalValue)
+    {
+        super(manager, originalValue);
+    }
 }

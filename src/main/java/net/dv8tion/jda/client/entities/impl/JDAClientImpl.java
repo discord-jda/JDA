@@ -30,10 +30,10 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import org.apache.http.util.Args;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class JDAClientImpl implements JDAClient
@@ -197,6 +197,94 @@ public class JDAClientImpl implements JDAClient
     public HashMap<String, CallUser> getCallUserMap()
     {
         return callUsers;
+    }
+
+    @Override
+    public RestAction<Collection<Application>> getApplications()
+    {
+        return new RestAction<Collection<Application>>(api, Route.Applications.GET_APPLICATIONS.compile(), null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                {
+                    JSONArray array = response.getArray();
+                    List<Application> applications = new ArrayList<>(array.length());
+                    EntityBuilder entityBuilder = EntityBuilder.get(getJDA());
+
+                    for (int i = 0; i < array.length(); i++)
+                        applications.add(entityBuilder.createApplication(array.getJSONObject(i)));
+
+                    request.onSuccess(applications);
+                }
+                else
+                {
+                    request.onFailure(response);
+                }
+            }
+        };
+    }
+
+    @Override
+    public RestAction<Application> getApplicationById(String id)
+    {
+        return new RestAction<Application>(api, Route.Applications.GET_APPLICATION.compile(id), null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                    request.onSuccess(EntityBuilder.get(getJDA()).createApplication(response.getObject()));
+                else
+                    request.onFailure(response);
+            }
+        };
+    }
+
+    @Override
+    public RestAction<Collection<AuthorizedApplication>> getAuthorizedApplications()
+    {
+        return new RestAction<Collection<AuthorizedApplication>>(api,
+                Route.Applications.GET_AUTHORIZED_APPLICATIONS.compile(), null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                {
+                    JSONArray array = response.getArray();
+                    List<AuthorizedApplication> applications = new ArrayList<>(array.length());
+                    EntityBuilder entityBuilder = EntityBuilder.get(getJDA());
+
+                    for (int i = 0; i < array.length(); i++)
+                        applications.add(entityBuilder.createAuthorizedApplication(array.getJSONObject(i)));
+
+                    request.onSuccess(applications);
+                }
+                else
+                {
+                    request.onFailure(response);
+                }
+            }
+        };
+    }
+
+    @Override
+    public RestAction<AuthorizedApplication> getAuthorizedApplicationById(String id)
+    {
+        return new RestAction<AuthorizedApplication>(api, Route.Applications.GET_AUTHORIZED_APPLICATION.compile(id),
+                null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                    request.onSuccess(EntityBuilder.get(getJDA()).createAuthorizedApplication(response.getObject()));
+                else
+                    request.onFailure(response);
+            }
+        };
     }
 
     @Override
