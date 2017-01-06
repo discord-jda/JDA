@@ -451,7 +451,6 @@ public class AudioWebSocket extends WebSocketAdapter
         }
         catch (IOException e)
         {
-            LOG.log(e);
             return null;
         }
     }
