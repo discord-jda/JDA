@@ -23,6 +23,20 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * An {@link net.dv8tion.jda.core.hooks.IEventManager IEventManager} implementation
+ * that uses the {@link net.dv8tion.jda.core.hooks.EventListener EventListener} interface for
+ * event listeners.
+ *
+ * <p>This only accepts listeners that implement {@link net.dv8tion.jda.core.hooks.EventListener EventListener}
+ * <br>An adapter implementation is {@link net.dv8tion.jda.core.hooks.ListenerAdapter ListenerAdapter} which
+ * provides methods for each individual {@link net.dv8tion.jda.core.events.Event}.
+ *
+ * <p><b>This is the default IEventManager used by JDA</b>
+ *
+ * @see net.dv8tion.jda.core.hooks.AnnotatedEventManager
+ * @see net.dv8tion.jda.core.hooks.IEventManager
+ */
 public class InterfacedEventManager implements IEventManager
 {
     private final CopyOnWriteArrayList<EventListener> listeners = new CopyOnWriteArrayList<>();
@@ -32,6 +46,12 @@ public class InterfacedEventManager implements IEventManager
 
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalArgumentException
+     *         If the provided listener does not implement {@link net.dv8tion.jda.core.hooks.EventListener EventListener}
+     */
     @Override
     public void register(Object listener)
     {

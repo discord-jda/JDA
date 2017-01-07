@@ -64,13 +64,13 @@ import net.dv8tion.jda.core.events.user.*;
  * <pre><code>
  * public class MyReadyListener extends ListenerAdapter
  * {
- *    &nbsp;@Override
+ *    {@literal @Override}
  *     public void onReady(ReadyEvent event)
  *     {
  *         System.out.println("I am ready to go!");
  *     }
  *
- *    &nbsp;@Override
+ *    {@literal @Override}
  *     public void onMessageReceived(MessageReceivedEvent event)
  *     {
  *         System.out.printf("[%s]: %s\n", event.getAuthor().getName(), event.getMessage().getContent());

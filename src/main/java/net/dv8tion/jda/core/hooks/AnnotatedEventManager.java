@@ -23,6 +23,28 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
+/**
+ * Implementation for {@link net.dv8tion.jda.core.hooks.IEventManager IEventManager}
+ * which checks for {@link net.dv8tion.jda.core.hooks.SubscribeEvent SubscribeEvent} annotations on both
+ * <b>static</b> and <b>member</b> methods.
+ *
+ * <p>Listeners for this manager do <u>not</u> need to implement {@link net.dv8tion.jda.core.hooks.EventListener EventListener}
+ * <br>Example
+ * <pre><code>
+ *     public class Foo
+ *     {
+ *        {@literal @SubscribeEvent}
+ *         public void onMsg(MessageReceivedEvent event)
+ *         {
+ *             System.out.printf("%s: %s\n", event.getAuthor().getName(), event.getMessage().getContent());
+ *         }
+ *     }
+ * </code></pre>
+ *
+ * @see net.dv8tion.jda.core.hooks.InterfacedEventManager
+ * @see net.dv8tion.jda.core.hooks.IEventManager
+ * @see net.dv8tion.jda.core.hooks.SubscribeEvent
+ */
 public class AnnotatedEventManager implements IEventManager
 {
     private final Set<Object> listeners = new HashSet<>();

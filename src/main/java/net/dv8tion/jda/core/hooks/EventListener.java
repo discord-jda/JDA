@@ -31,6 +31,7 @@ import net.dv8tion.jda.core.events.Event;
  * </code>
  *
  * @see net.dv8tion.jda.core.hooks.ListenerAdapter
+ * @see net.dv8tion.jda.core.hooks.InterfacedEventManager
  */
 @FunctionalInterface
 public interface EventListener
@@ -40,7 +41,8 @@ public interface EventListener
      * Handles any {@link net.dv8tion.jda.core.events.Event Event}.
      *
      * <p>To get specific events with Methods like {@code onMessageReceived(MessageReceivedEvent event)}
-     * take a look at: {@link net.dv8tion.jda.core.hooks.ListenerAdapter}
+     * take a look at: {@link net.dv8tion.jda.core.hooks.ListenerAdapter ListenerAdapter}
+     *
      * @param  event
      *         The Event to handle.
      */
