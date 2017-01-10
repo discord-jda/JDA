@@ -200,8 +200,8 @@ public class ChannelManagerUpdatable
                 public void checkValue(Integer value)
                 {
                     checkNull(value, "user limit");
-                    if (value < 1 || value > 99)
-                        throw new IllegalArgumentException("Provided user limit must be 1 to 99.");
+                    if (value < 0 || value > 99)
+                        throw new IllegalArgumentException("Provided user limit must be 0 to 99.");
                 }
             };
 
@@ -211,7 +211,7 @@ public class ChannelManagerUpdatable
                 public void checkValue(Integer value)
                 {
                     checkNull(value, "bitrate");
-                    if (value < 8000 || value > 96000)
+                    if (value < 8000 || value > 96000) // TODO: vip servers can go up to 128000
                         throw new IllegalArgumentException("Provided bitrate must be 8000 to 96000");
                 }
             };
