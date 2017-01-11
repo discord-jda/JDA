@@ -34,140 +34,172 @@ import java.util.List;
 
 /**
  * Represents a Text message received from Discord.<br>
- * This repsents message received from both {@link net.dv8tion.jda.core.entities.TextChannel TextChannels}
+ * This represents messages received from both {@link net.dv8tion.jda.core.entities.TextChannel TextChannels}
  * and from {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannels}.
  */
 public interface Message extends ISnowflake
 {
 
     /**
-     * A immutable list of all mentioned users. if noone was mentioned, this list is empty
-     * In {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel's}, this always returns an empty List
+     * An immutable list of all mentioned Users. If no one was mentioned, this list is empty.
+     * In {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannels}, this always returns an empty List.
      *
-     * @return immutable list of mentioned users
+     * @return An immutable list of mentioned Users.
      */
     List<User> getMentionedUsers();
 
     /**
-     * Checks if given user was mentioned in this message in any way (@User, @everyone, @here).
+     * Checks if the given User was mentioned in this message in any way (@User, @everyone, @here).
      *
      * @param user
-     *      The user to check on.
+     *      The User to check on.
      * @return
-     *      True if the given user was mentioned in this message.
+     *      True if the given User was mentioned in this message.
      */
     boolean isMentioned(User user);
 
     /**
-     * A immutable list of all mentioned {@link net.dv8tion.jda.core.entities.TextChannel TextChannels}. if none were mentioned, this list is empty
-     * In {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel's}, this always returns an empty List
+     * An immutable list of all mentioned {@link net.dv8tion.jda.core.entities.TextChannel TextChannels}. If none were mentioned, this list is empty.
+     * In {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannels}, this always returns an empty List.
      *
-     * @return immutable list of mentioned TextChannels
+     * @return An immutable list of mentioned TextChannels.
      */
     List<TextChannel> getMentionedChannels();
 
     /**
-     * A immutable list of all mentioned {@link net.dv8tion.jda.core.entities.Role Roles}. if none were mentioned, this list is empty
-     * In {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel's}, this always returns an empty List
+     * An immutable list of all mentioned {@link net.dv8tion.jda.core.entities.Role Roles}. If none were mentioned, this list is empty.
+     * In {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannels}, this always returns an empty List.
      *
-     * @return immutable list of mentioned Roles
+     * @return An immutable list of mentioned Roles.
      */
     List<Role> getMentionedRoles();
 
     /**
-     * Is this Message mentioning everyone using @everyone or @here?
-     * In {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel's}, this always returns false
+     * Checks if this Message mentioning everyone using @everyone or @here.
+     * In {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannels}, this always returns false.
      *
-     * @return if mentioning everyone
+     * @return True if the message mentions everyone.
      */
     boolean mentionsEveryone();
 
     /**
-     * Returns true, if this Message was edited as least once
+     * Returns true if this Message was edited as least once.
      *
-     * @return if edited
+     * @return True if the Message was edited.
      */
     boolean isEdited();
 
     /**
-     * Gives a copy of the Object holding the time this message was last recently updated
-     * If this message was never updated ({@link #isEdited()} returns false), this will be NULL
+     * Returns a copy of the Object holding the time this Message was last edited.
+     * If this Message was never edited ({@link #isEdited()} returns false), this will be null.
      *
-     * @return time of most recent update
+     * @return The time that the Message was last edited.
      */
     OffsetDateTime getEditedTime();
 
     /**
-     * The author of this Message
+     * The author of this Message.
      *
-     * @return Message author
+     * @return The Message author as a User object.
      */
     User getAuthor();
 
     /**
-     * The textual content of this message.
+     * The text content of this Message.
      * Mentioned users will get returned as @Username
-     * If you want the actual Content (mentions as &lt;@id&gt;), use {@link #getRawContent()} instead
+     * If you want the raw content (mentions as &lt;@id&gt;), use {@link #getRawContent()} instead.
      *
-     * @return message-text
+     * @return The text content of the Message.
      */
     String getContent();
 
     /**
-     * The raw textual content of this message.
+     * The raw text content of this Message.
      * Mentioned users will get returned as &lt;@id&gt;
      *
-     * @return raw message-text
+     * @return The raw text content of the Message.
      */
     String getRawContent();
 
     /**
      * The content, with all its formatting characters stripped.
-     * All remaining characters used in formatting (the ones that did not have a matching partner) are getting escaped.
+     * All remaining characters used in formatting (the ones that did not have a matching partner) get escaped.
      *
      * Mentioned users will get returned as @Username
      *
-     * @return message-text with stripped formatting
+     * @return The text content of the Message that has been stripped of formatting.
      */
     String getStrippedContent();
 
-
+    /**
+    * Checks whether the given Message is from the given ChannelType.
+    *
+    * @param type The ChannelType you are comparing the Message's ChannelType against.
+    * @return True if the Message is from the given ChannelType.
+    */
     boolean isFromType(ChannelType type);
 
+    /**
+    * Returns the ChannelType of the Channel this message was sent in.
+    *
+    * @return The ChannelType of the Channel this Message was sent in.
+    */
     ChannelType getChannelType();
 
+    /**
+    * Returns a boolean based on whether this Message is a Webhook.
+    *
+    * @return True is this Message is a Webhook.
+    */
     boolean isWebhookMessage();
 
     /**
-     * Returns the {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel} that this message was sent in
+     * Returns the {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel} that this message was sent in.
      *
-     * @return
-     *      The MessageChannel of this Message
+     * @return The MessageChannel of this Message.
      */
     MessageChannel getChannel();
 
+    /**
+    * Returns the {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} that this message was sent in.
+    *
+    * @return The PrivateChannel of this Message.
+    */
     PrivateChannel getPrivateChannel();
 
+    /**
+    * Returns the {@link net.dv8tion.jda.core.entities.Group Group} that this message was sent in.
+    *
+    * @return The Group of this Message.
+    */
     Group getGroup();
 
+    /**
+    * Returns the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} that this message was sent in.
+    *
+    * @return The TextChannel of this Message.
+    */
     TextChannel getTextChannel();
 
+    /**
+    * Returns the {@link net.dv8tion.jda.core.entities.Guild Guild} that this message was sent in.
+    *
+    * @return The Guild of this Message.
+    */
     Guild getGuild();
 
     /**
-     * An unmodifiable list of {@link net.dv8tion.jda.core.entities.Message.Attachment Attachment} that are attached to this message.<br>
-     * Most likely this will only ever be 1 {@link net.dv8tion.jda.core.entities.Message.Attachment Attachment} at most.
+     * An unmodifiable list of {@link net.dv8tion.jda.core.entities.Message.Attachment Attachments} that are attached to this message.<br>
+     * Most likely, this will only ever be 1 {@link net.dv8tion.jda.core.entities.Message.Attachment Attachment} at most.
      *
-     * @return
-     *      Unmodifiable list of {@link net.dv8tion.jda.core.entities.Message.Attachment Attachments}.
+     * @return Unmodifiable list of {@link net.dv8tion.jda.core.entities.Message.Attachment Attachments}.
      */
     List<Attachment> getAttachments();
 
     /**
      * An unmodifiable list of {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbeds} that are available to this message.
      *
-     * @return
-     *      Unmodifiable list of all given embeds
+     * @return An unmodifiable list of all given embeds.
      */
     List<MessageEmbed> getEmbeds();
 
@@ -177,62 +209,59 @@ public interface Message extends ISnowflake
      * <b>This may or may not contain fake Emotes.
      * To check whether an Emote is fake you can test if {@link net.dv8tion.jda.core.entities.Emote#getGuild() Emote#getGuild} returns null.</b>
      *
-     * @return
-     *      An immutable list of the Emotes used in this message (example match &lt;:jda:230988580904763393&gt;)
+     * @return An immutable list of the Emotes used in this message (example match &lt;:jda:230988580904763393&gt;)
      */
     List<Emote> getEmotes();
 
     List<MessageReaction> getReactions();
 
     /**
-     * Is this Message supposed to be TTS (Text-to-speach)
+     * Checks if this Message is a TTS (Text-to-speech) Message.
      *
-     * @return if message is tts
+     * @return True is this Message is a TTS Message.
      */
     boolean isTTS();
 
     /**
-     * Edits this Messages content to the provided String.
-     * If The Message was not created by this account, this will result in a PermissionException.
-     * If this method failed, null gets returned
+     * Edits this Message's content to the provided String.
+     * If the Message was not created by this account, this will result in a PermissionException.
+     * If this method failed, null gets returned.
      *
-     * @param newContent the new content of the Message
-     * @return a new Message-Object for the edited message
+     * @param newContent The new content of the Message.
+     * @return A new Message-Object for the edited message.
      */
     RestAction<Message> editMessage(String newContent);
 
     /**
-     * Edits this Messages content to be the content of the provide message.
-     * If The Message was not created by this account, this will result in a PermissionException.
-     * If this method failed, null gets returned
+     * Edits this Message's content to be the content of the provided message.
+     * If the Message was not created by this account, this will result in a PermissionException.
+     * If this method fails, null gets returned.
      *
-     * @param newContent the new content of the Message
-     * @return a new Message-Object for the edited message
+     * @param newContent The new content of the Message.
+     * @return A new Message-Object for the edited message.
      */
     RestAction<Message> editMessage(Message newContent);
 
     /**
      * Deletes this Message from the server.
      * Calling this function on a Message created by another User while not having the
-     * {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE MESSAGE_MANAGE Permission} will have no effect
+     * {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE MESSAGE_MANAGE Permission} will have no effect.
      *
-     * @return
-     *          {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
      */
     RestAction<Void> deleteMessage();
 
     /**
-     * Returns the {@link net.dv8tion.jda.core.JDA JDA} instance of this Message
-     * @return
-     *      the corresponding JDA instance
+     * Returns the {@link net.dv8tion.jda.core.JDA JDA} instance of this Message.
+     *
+     * @return The corresponding JDA instance.
      */
     JDA getJDA();
 
     /**
-     * Whether or not this Message has been pinned in its parent channel.
+     * Checks whether this Message has been pinned in its parent Channel.
      *
-     * @return
-     *      True - if this message has been pinned.
+     * @return True if this Message has been pinned.
      */
     boolean isPinned();
 
@@ -241,8 +270,7 @@ public interface Message extends ISnowflake
      * If this method returns true, then the action was successful and this Message's
      * {@link #isPinned()} will now return true.
      *
-     * @return
-     *      True - if the action completed successfully and this message became pinned.
+     * @return True if the action completed successfully and this Message became pinned.
      */
     RestAction<Void> pin();
 
@@ -251,8 +279,7 @@ public interface Message extends ISnowflake
      * If this method returns true, then the action was successful and this Message's
      * {@link #isPinned()} will now return false.
      *
-     * @return
-     *      True - if the action completed successfully and this message was unpinned.
+     * @return True if the action completed successfully and this Message was unpinned.
      */
     RestAction<Void> unpin();
 
@@ -265,7 +292,7 @@ public interface Message extends ISnowflake
      * Messages can also be sent as special actions like Calls, GroupIcon changes and more.
      *
      * @return
-     *      The type of message this is.
+     *      The type of Message this is.
      */
     MessageType getType();
 
@@ -298,8 +325,7 @@ public interface Message extends ISnowflake
         /**
          * The id of the attachment. This is not the id of the message that the attachment was attached to.
          *
-         * @return
-         *      Non-null String containing the Attachment ID.
+         * @return Non-null String containing the Attachment ID.
          */
         public String getId()
         {
@@ -309,8 +335,7 @@ public interface Message extends ISnowflake
         /**
          * The url of the Attachment, most likely on the Discord servers.
          *
-         * @return
-         *      Non-null String containing the Attachment URL.
+         * @return Non-null String containing the Attachment URL.
          */
         public String getUrl()
         {
@@ -320,8 +345,7 @@ public interface Message extends ISnowflake
         /**
          * The url of the Attachment, proxied by Discord.
          *
-         * @return
-         *      Non-null String containing the proxied Attachment url.
+         * @return Non-null String containing the proxied Attachment url.
          */
         public String getProxyUrl()
         {
@@ -331,8 +355,7 @@ public interface Message extends ISnowflake
         /**
          * The file name of the Attachment when it was first uploaded.
          *
-         * @return
-         *      Non-null String containing the Attachment file name.
+         * @return Non-null String containing the Attachment file name.
          */
         public String getFileName()
         {
@@ -340,12 +363,10 @@ public interface Message extends ISnowflake
         }
 
         /**
-         * Downloads this attachment to given File
+         * Downloads this attachment to given File.
          *
-         * @param file
-         *      The file, where the attachment will get downloaded to
-         * @return
-         *      boolean true, if successful, otherwise false
+         * @param file The file, where the attachment will get downloaded to.
+         * @return boolean true, if successful, otherwise false
          */
         public boolean download(File file)
         {
@@ -386,8 +407,7 @@ public interface Message extends ISnowflake
          * The size of the attachment in bytes.<br>
          * Example: if {@link #getSize() getSize()} returns 1024, then the attachment is 1024 bytes, or 1KB, in size.
          *
-         * @return
-         *      Positive int containing the size of the Attachment.
+         * @return Positive int containing the size of the Attachment.
          */
         public int getSize()
         {
@@ -398,8 +418,7 @@ public interface Message extends ISnowflake
          * The height of the Attachment if this Attachment is an image.<br>
          * If this Attachment is not an image, this returns 0.
          *
-         * @return
-         *      Never-negative int containing image Attachment height.
+         * @return Never-negative int containing image Attachment height.
          */
         public int getHeight()
         {
@@ -410,8 +429,7 @@ public interface Message extends ISnowflake
          * The width of the Attachment if this Attachment is an image.<br>
          * If this Attachment is not an image, this returns 0.
          *
-         * @return
-         *      Never-negative int containing image Attachment width.
+         * @return Never-negative int containing image Attachment width.
          */
         public int getWidth()
         {
@@ -419,10 +437,9 @@ public interface Message extends ISnowflake
         }
 
         /**
-         * Based on the values of getHeight and getWidth being larger than zero.
+         * Returns a boolean based on the values of getHeight and getWidth being larger than zero.
          *
-         * @return
-         *      True if width and height are greater than zero.
+         * @return True if width and height are greater than zero.
          */
         public boolean isImage()
         {
