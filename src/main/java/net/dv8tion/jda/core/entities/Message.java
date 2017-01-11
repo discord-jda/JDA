@@ -192,27 +192,32 @@ public interface Message extends ISnowflake
      * An unmodifiable list of {@link net.dv8tion.jda.core.entities.Message.Attachment Attachments} that are attached to this message.<br>
      * Most likely, this will only ever be 1 {@link net.dv8tion.jda.core.entities.Message.Attachment Attachment} at most.
      *
-     * @return Unmodifiable list of {@link net.dv8tion.jda.core.entities.Message.Attachment Attachments}.
+     * @return An unmodifiable list of {@link net.dv8tion.jda.core.entities.Message.Attachment Attachments}. Returns an empty list if there are none.
      */
     List<Attachment> getAttachments();
 
     /**
      * An unmodifiable list of {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbeds} that are available to this message.
      *
-     * @return An unmodifiable list of all given embeds.
+     * @return An unmodifiable list of all given embeds. Returns an empty list if there are none.
      */
     List<MessageEmbed> getEmbeds();
 
     /**
-     * All emotes used in this Message.
+     * All emotes used in this Message. Note that in this context, emotes are custom server emoji, not the default Unicode 9 emoji used by Discord.
      * <p>
      * <b>This may or may not contain fake Emotes.
      * To check whether an Emote is fake you can test if {@link net.dv8tion.jda.core.entities.Emote#getGuild() Emote#getGuild} returns null.</b>
      *
-     * @return An immutable list of the Emotes used in this message (example match &lt;:jda:230988580904763393&gt;)
+     * @return An immutable list of the Emotes used in this message. Returns an empty list if there are none. (example match &lt;:jda:230988580904763393&gt;)
      */
     List<Emote> getEmotes();
 
+    /**
+    * Returns a list of the reactions this Message has.
+    *
+    * @return The list of MessageReactions this Message has. Returns an empty list if there are none.
+    */
     List<MessageReaction> getReactions();
 
     /**
@@ -291,8 +296,7 @@ public interface Message extends ISnowflake
      * This specifies the type of Message sent. Messages can represent more than just simple text sent by Users.<br>
      * Messages can also be sent as special actions like Calls, GroupIcon changes and more.
      *
-     * @return
-     *      The type of Message this is.
+     * @return The type of Message this is.
      */
     MessageType getType();
 
