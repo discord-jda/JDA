@@ -185,7 +185,7 @@ public interface Message extends ISnowflake
     List<MessageReaction> getReactions();
 
     /**
-     * Is this Message supposed to be TTS (Text-to-speach)
+     * Is this Message supposed to be TTS (Text-to-speech)
      *
      * @return if message is tts
      */
