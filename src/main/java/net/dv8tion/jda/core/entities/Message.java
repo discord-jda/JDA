@@ -168,7 +168,7 @@ public interface Message extends ISnowflake
     PrivateChannel getPrivateChannel();
 
     /**
-    * Returns the {@link net.dv8tion.jda.core.entities.Group Group} that this message was sent in.
+    * Returns the {@link net.dv8tion.jda.client.entities.Group Group} that this message was sent in.
     *
     * @return The Group of this Message.
     */
