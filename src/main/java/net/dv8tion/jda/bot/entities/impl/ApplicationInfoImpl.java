@@ -16,14 +16,13 @@
 
 package net.dv8tion.jda.bot.entities.impl;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import net.dv8tion.jda.bot.entities.ApplicationInfo;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.User;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 public class ApplicationInfoImpl implements ApplicationInfo
 {
@@ -80,9 +79,21 @@ public class ApplicationInfoImpl implements ApplicationInfo
     }
 
     @Override
+    public String getInviteUrl(final Collection<Permission> permissions)
+    {
+        return this.getInviteUrl(null, permissions);
+    }
+
+    @Override
+    public String getInviteUrl(final Permission... permissions)
+    {
+        return this.getInviteUrl(null, permissions);
+    }
+
+    @Override
     public String getInviteUrl(final String guildId, final Collection<Permission> permissions)
     {
-        return "https://discordapp.com/api/oauth2/authorize?client_id=" + this.getId() + "&scope=bot"
+        return "https://discordapp.com/oauth2/authorize?client_id=" + this.getId() + "&scope=bot"
                 + (permissions == null || permissions.isEmpty() ? "" : "&permissions=" + Permission.getRaw(permissions))
                 + (guildId == null ? "" : "&guild_id=" + guildId);
     }
@@ -90,7 +101,7 @@ public class ApplicationInfoImpl implements ApplicationInfo
     @Override
     public String getInviteUrl(final String guildId, final Permission... permissions)
     {
-        return "https://discordapp.com/api/oauth2/authorize?client_id=" + this.getId() + "&scope=bot"
+        return "https://discordapp.com/oauth2/authorize?client_id=" + this.getId() + "&scope=bot"
                 + (permissions == null || permissions.length == 0 ? ""
                         : "&permissions=" + Permission.getRaw(permissions))
                 + (guildId == null ? "" : "&guild_id=" + guildId);

@@ -200,9 +200,9 @@ public class JDAClientImpl implements JDAClient
     }
 
     @Override
-    public RestAction<Collection<Application>> getApplications()
+    public RestAction<List<Application>> getApplications()
     {
-        return new RestAction<Collection<Application>>(api, Route.Applications.GET_APPLICATIONS.compile(), null)
+        return new RestAction<List<Application>>(api, Route.Applications.GET_APPLICATIONS.compile(), null)
         {
             @Override
             protected void handleResponse(Response response, Request request)
@@ -243,9 +243,9 @@ public class JDAClientImpl implements JDAClient
     }
 
     @Override
-    public RestAction<Collection<AuthorizedApplication>> getAuthorizedApplications()
+    public RestAction<List<AuthorizedApplication>> getAuthorizedApplications()
     {
-        return new RestAction<Collection<AuthorizedApplication>>(api,
+        return new RestAction<List<AuthorizedApplication>>(api,
                 Route.Applications.GET_AUTHORIZED_APPLICATIONS.compile(), null)
         {
             @Override

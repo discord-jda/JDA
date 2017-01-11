@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.client.entities;
 
+import java.util.Collection;
+import java.util.List;
 import net.dv8tion.jda.client.managers.ApplicationManager;
 import net.dv8tion.jda.client.managers.ApplicationManagerUpdatable;
 import net.dv8tion.jda.core.JDA;
@@ -23,75 +25,105 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.requests.RestAction;
 
-import java.util.Collection;
-import java.util.List;
-
-/**
- * Represents a Application
- *
- * @see
+/** 
+ * Represents a Discord Application from it's owning client point of view
+ * 
+ * @since  JDA 3.0
+ * @author Aljoscha Grebe
+ * 
+ * @see <a href="https://discordapp.com/developers/applications/me">Discord Documentation - My Apps</a>
+ * @see {@link net.dv8tion.jda.client.JDAClient#getApplications() JDAClient#getApplications()}
+ * @see {@link net.dv8tion.jda.client.JDAClient#getApplicationById(String) JDAClient#getApplicationById(String)}
  */
 public interface Application extends ISnowflake
 {
 
     /**
      * Creates a new Bot for this Application.
-     * This is only possible, if no bot-account is already assigned.
-     * The created Bot-account will have its name set to the name of the Application
+     * <b>This cannot be undone!</b>
+     * A new Bot will only be created if no bot-account is already assigned, otherwise the existing one is returned.
+     * A newly created Bot-account will have its name set to the name of the Application.
      *
-     * @return
-     *      The created Bot
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} -
+     *         Type: {@link Application.Bot}
+     *         <br>The created bot account of this application. 
      */
-    RestAction<Bot> createBot();
+    RestAction<Application.Bot> createBot();
 
     /**
-     * Deletes this Application <b>and its assigned Bot (if present)</b>.
+     * Deletes this Application and its assigned Bot (if present).
+     * <b>This cannot be undone!</b>
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} -
+     *         Type: {@link Void}
+     *         <br>The RestAction to delete this Application.
      */
     RestAction<Void> delete();
 
+    /**
+     * Whether the bot requires code grant to invite or not. 
+     * If your application requires multiple scopes then you may need the full OAuth2 flow to ensure a
+     * bot doesn't join before your application is granted a token.
+     * <br>
+     * <br><b>TODO</b>:  Wait for <a href="https://github.com/hammerandchisel/discord-api-docs/issues/204">Discord
+     * Documentation Github - Missing fields when viewing a bot's own application #204</a> as this might be moved into the bot object
+     * 
+     * @return whether the bot requires code grant
+     */
     boolean doesBotRequireCodeGrant();
 
     /**
      * Returns the Bot assigned to this Application
-     * @return
-     *      The Bot assigned to this application, or null if no bot is assigned
+     * 
+     * @return The {@link Application.Bot} assigned to this application, or null if no bot is assigned
      */
     Application.Bot getBot();
 
     /**
-     * Returns the description of this Application
-     * @return
-     *      The description of this Application
+     * Returns the description of the application.
+     * 
+     * @return The description of the application or an empty {@link String} if no description is defined.
      */
     String getDescription();
 
-    // TODO find out what this is used for
+    /**
+     * Returns the flags for this application. It's used for whitelisted apps.
+     * 
+     * @return The application flags.
+     */
     int getFlags();
 
     /**
-     * Returns the iconId of this Application
-     * @return
-     *      The iconId of this Application or null, if no icon is defined
+     * Returns the icon id of the application.
+     * 
+     * @return The iconId of the application or null if no icon is defined.
      */
     String getIconId();
 
     /**
-     * Returns the icon-url of this Application
-     * @return
-     *      The icon-url of this Application or null, if no icon is defined
+     * Returns the icon-url of the application.
+     * 
+     * @return The icon-url of the application or null if no icon is defined.
      */
     String getIconUrl();
 
+    /**
+     * The {@link net.dv8tion.jda.core.JDA JDA} instance of this Application
+     * (the one owning this application).
+     * 
+     * @return The JDA instance of this Application.
+     */
     JDA getJDA();
 
     ApplicationManager getManager();
 
     ApplicationManagerUpdatable getManagerUpdatable();
 
+
     /**
-     * Returns the name of this Application
-     * @return
-     *      The name of this Application
+     * Returns the name of the application.
+     * 
+     * @return The name of the application.
      */
     String getName();
 
@@ -100,9 +132,9 @@ public interface Application extends ISnowflake
     int getRpcApplicationState();
 
     /**
-     * Returns a {@link java.util.List List<}{@link String String}{@link java.util.List >} of RPC origins of the Application
-     * @return
-     *      The name of the bot's Application
+     * Returns a {@link java.util.List List} of {@link String Strings} containing the RPC origins of the application.
+     * 
+     * @return The RPC origins of the application, possibly empty.
      */
     List<String> getRpcOrigins();
 
@@ -120,13 +152,29 @@ public interface Application extends ISnowflake
      */
     boolean hasBot();
 
+    /**
+     * Whether the bot is public or not. 
+     * Public bots can be added by anyone. When false only the owner can invite the bot to servers.
+     * <br>
+     * <br><b>TODO</b>:  Wait for <a href="https://github.com/hammerandchisel/discord-api-docs/issues/204">Discord
+     * Documentation Github - Missing fields when viewing a bot's own application #204</a> as this might be moved into the bot object
+     * 
+     * @return Whether the bot is public
+     */
     boolean isBotPublic();
 
+    /**
+     * Generates a new client secret for this Application. This invalidates the old one.
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} -
+     *         Type: {@link Application}
+     *         <br>This application with the updated secret.
+     */
     RestAction<Application> resetSecret();
 
     /**
      * Represents a Bot assigned to an Application
-     * To change its Username, login to JDA and use the {@link net.dv8tion.jda.managers.AccountManager AccountManager}.
+     * To change its Username, login to JDA and use the {@link net.dv8tion.jda.core.managers.AccountManager AccountManager}.
      */
     interface Bot extends ISnowflake
     {
@@ -139,9 +187,9 @@ public interface Application extends ISnowflake
         Application getApplication();
 
         /**
-         * Returns the avatarId of this Bot
+         * Returns the avatar id of this Bot
          * @return
-         *      The avatarId of this Bot or null, if no avatar is set
+         *      The avatar id of this Bot or null, if no avatar is set
          */
         String getAvatarId();
 
@@ -160,24 +208,50 @@ public interface Application extends ISnowflake
         String getDiscriminator();
 
         /**
-         * Creates a OAuth invite-link used to invite bot-accounts.
-         * This requires a JDA instance of a bot account for which it retrieves the parent application.
-         *
-         * @param permissions
-         *      Possibly empty list of Permissions that should be requested via invite
-         * @return
-         *      The link used to invite the bot or null on failure
+         * Creates a OAuth invite-link used to invite the bot.
+         *  
+         * @param  permissions
+         *         Possibly empty {@link java.util.List List} of {@link net.dv8tion.jda.core.Permission Permissions}
+         *         that should be requested via invite.
+         * 
+         * @return The link used to invite the bot.
+         */
+        String getInviteUrl(Collection<Permission> permissions);
+
+        /**
+         * Creates a OAuth invite-link used to invite the bot.
+         * 
+         * @param  permissions
+         *         Possibly empty array of {@link net.dv8tion.jda.core.Permission Permissions}
+         *         that should be requested via invite.
+         * 
+         * @return The link used to invite the bot.
+         */
+        String getInviteUrl(Permission... permissions);
+
+        /**
+         * Creates a OAuth invite-link used to invite the bot.
+         * 
+         * @param  guildId
+         *         The id of the pre-selected guild.
+         * @param  permissions
+         *         Possibly empty {@link java.util.List List} of {@link net.dv8tion.jda.core.Permission Permissions} 
+         *         that should be requested via invite.
+         * 
+         * @return The link used to invite the bot.
          */
         String getInviteUrl(String guildId, Collection<Permission> permissions);
 
         /**
-         * Creates a OAuth invite-link used to invite bot-accounts.
-         * This requires a JDA instance of a bot account for which it retrieves the parent application.
-         *
-         * @param permissions
-         *      Possibly empty list of Permissions that should be requested via invite
-         * @return
-         *      The link used to invite the bot or null on failure
+         * Creates a OAuth invite-link used to invite the bot. 
+         * 
+         * @param  guildId 
+         *         The id of the pre-selected guild.
+         * @param  permissions 
+         *         Possibly empty array of {@link net.dv8tion.jda.core.Permission Permissions} 
+         *         that should be requested via invite.
+         * 
+         * @return The link used to invite the bot.
          */
         String getInviteUrl(String guildId, Permission... permissions);
 
@@ -195,6 +269,13 @@ public interface Application extends ISnowflake
          */
         String getToken();
 
+        /**
+         * Generates a new token for this bot. This invalidates the old one.
+         *
+         * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} -
+         *         Type: {@link Application.Bot}
+         *         <br>This bot with the updated token.
+         */
         RestAction<Application.Bot> resetToken();
     }
 }

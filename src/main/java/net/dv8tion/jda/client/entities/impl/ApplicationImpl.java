@@ -16,6 +16,10 @@
 
 package net.dv8tion.jda.client.entities.impl;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import net.dv8tion.jda.client.entities.Application;
 import net.dv8tion.jda.client.managers.ApplicationManager;
 import net.dv8tion.jda.client.managers.ApplicationManagerUpdatable;
@@ -25,14 +29,8 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 public class ApplicationImpl implements Application
 {
@@ -337,18 +335,29 @@ public class ApplicationImpl implements Application
         }
 
         @Override
+        public String getInviteUrl(final Collection<Permission> permissions)
+        {
+            return this.getInviteUrl(null, permissions);
+        }
+
+        @Override
+        public String getInviteUrl(final Permission... permissions)
+        {
+            return this.getInviteUrl(null, permissions);
+        }
+
+        @Override
         public String getInviteUrl(final String guildId, final Collection<Permission> permissions)
         {
-            return "https://discordapp.com/api/oauth2/authorize?client_id=" + this.getId() + "&scope=bot"
-                    + (permissions == null || permissions.isEmpty() ? ""
-                            : "&permissions=" + Permission.getRaw(permissions))
+            return "https://discordapp.com/oauth2/authorize?client_id=" + this.getId() + "&scope=bot"
+                    + (permissions == null || permissions.isEmpty() ? "" : "&permissions=" + Permission.getRaw(permissions))
                     + (guildId == null ? "" : "&guild_id=" + guildId);
         }
 
         @Override
         public String getInviteUrl(final String guildId, final Permission... permissions)
         {
-            return "https://discordapp.com/api/oauth2/authorize?client_id=" + this.getId() + "&scope=bot"
+            return "https://discordapp.com/oauth2/authorize?client_id=" + this.getId() + "&scope=bot"
                     + (permissions == null || permissions.length == 0 ? ""
                             : "&permissions=" + Permission.getRaw(permissions))
                     + (guildId == null ? "" : "&guild_id=" + guildId);

@@ -51,10 +51,10 @@ public interface JDAClient
 
     UserSettings getSettings();
 
-    RestAction<Collection<Application>> getApplications();
+    RestAction<List<Application>> getApplications();
     RestAction<Application> getApplicationById(String id);
     
-    RestAction<Collection<AuthorizedApplication>> getAuthorizedApplications();
+    RestAction<List<AuthorizedApplication>> getAuthorizedApplications();
     RestAction<AuthorizedApplication> getAuthorizedApplicationById(String id);    
 
     /**

@@ -22,13 +22,18 @@ import net.dv8tion.jda.core.requests.RestAction;
 
 public interface JDABot
 {
+    /**
+     * Returns the {@link net.dv8tion.jda.core.JDA JDA} instance of this {@link JDABot}
+     * @return
+     *      the corresponding JDA instance
+     */
     JDA getJDA();
 
     /**
-     * Retrieves the application that owns the logged in Bot-account.
+     * Retrieves the {@link net.dv8tion.jda.bot.entities.ApplicationInfo ApplicationInfo} for
+     * the application that owns the logged in Bot-account.
      *
-     * @return
-     *      The {@link ApplicationInfo} of the bot account.
+     * @return The {@link net.dv8tion.jda.bot.entities.ApplicationInfo ApplicationInfo} of the bot's application.
      */
     public RestAction<ApplicationInfo> getApplicationInfo();
 }

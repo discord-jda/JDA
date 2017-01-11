@@ -6,6 +6,7 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.Route.CompiledRoute;
 
 import java.util.Collections;
 import java.util.List;
@@ -38,8 +39,9 @@ public class AuthorizedApplicationImpl implements AuthorizedApplication
     @Override
     public RestAction<Void> delete()
     {
-        return new RestAction<Void>(this.api, Route.Applications.DELETE_AUTHORIZED_APPLICATION.compile(this.authId),
-                null)
+        CompiledRoute route = Route.Applications.DELETE_AUTHORIZED_APPLICATION.compile(this.authId);
+
+        return new RestAction<Void>(this.api, route, null)
         {
             @Override
             protected void handleResponse(final Response response, final Request request)
@@ -108,7 +110,7 @@ public class AuthorizedApplicationImpl implements AuthorizedApplication
     }
 
     @Override
-    public List<String> getScpoes()
+    public List<String> getScopes()
     {
         return Collections.unmodifiableList(this.scopes);
     }
