@@ -21,7 +21,7 @@ package net.dv8tion.jda.core.entities;
  *
  * @see   net.dv8tion.jda.core.entities.VoiceChannel
  * @see   net.dv8tion.jda.client.entities.Call
- * @since JDA 3.0
+ * @since 3.0
  */
 public interface AudioChannel extends ISnowflake
 {

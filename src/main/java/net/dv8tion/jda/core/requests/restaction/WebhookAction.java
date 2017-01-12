@@ -25,12 +25,17 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
+import org.apache.http.util.Args;
 import org.json.JSONObject;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
+/**
+ * {@link net.dv8tion.jda.core.entities.Webhook Webhook} Builder system created as an extension of {@link net.dv8tion.jda.core.requests.RestAction}
+ * <br>Provides an easy way to gather and deliver information to Discord to create {@link net.dv8tion.jda.core.entities.Webhook Webhooks}.
+ */
 public class WebhookAction extends RestAction<Webhook>
 {
 
@@ -56,8 +61,10 @@ public class WebhookAction extends RestAction<Webhook>
      */
     public WebhookAction setName(String name)
     {
-        if (name == null || name.length() < 2 || name.length() > 100)
+        Args.notNull(name, "Webhook name");
+        if (name.length() < 2 || name.length() > 100)
             throw new IllegalArgumentException("The webhook name must be in the range of 2-100!");
+
         this.name = name;
         return this;
     }

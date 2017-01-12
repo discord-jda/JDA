@@ -17,8 +17,8 @@
 package net.dv8tion.jda.core.entities;
 
 /**
- * Represents the embedded resource type.<br>
- * These are typically either Images, Videos or Links.
+ * Represents the embedded resource type.
+ * <br>These are typically either Images, Videos or Links.
  */
 public enum EmbedType
 {
@@ -35,15 +35,15 @@ public enum EmbedType
     }
 
     /**
-     * Attempts to find the EmbedType from the provided key.<br>
-     * If the provided key doesn't match any known {@link net.dv8tion.jda.core.entities.EmbedType EmbedType},
+     * Attempts to find the EmbedType from the provided key.
+     * <br>If the provided key doesn't match any known {@link net.dv8tion.jda.core.entities.EmbedType EmbedType},
      * this will return {@link net.dv8tion.jda.core.entities.EmbedType#UNKNOWN UNKNOWN}.
      *
-     * @param key
-     *          The key related to the {@link net.dv8tion.jda.core.entities.EmbedType EmbedType}.
-     * @return
-     *      The {@link net.dv8tion.jda.core.entities.EmbedType EmbedType} matching the provided key,
-     *      or {@link net.dv8tion.jda.core.entities.EmbedType#UNKNOWN UNKNOWN}.
+     * @param  key
+     *         The key related to the {@link net.dv8tion.jda.core.entities.EmbedType EmbedType}.
+     *
+     * @return The {@link net.dv8tion.jda.core.entities.EmbedType EmbedType} matching the provided key,
+     *         or {@link net.dv8tion.jda.core.entities.EmbedType#UNKNOWN UNKNOWN}.
      */
     public static EmbedType fromKey(String key)
     {

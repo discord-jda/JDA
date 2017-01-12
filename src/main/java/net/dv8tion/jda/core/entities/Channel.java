@@ -76,15 +76,6 @@ public interface Channel extends ISnowflake
      */
     int getPositionRaw();
 
-//    /**
-//     * Returns the {@link net.dv8tion.jda.managers.ChannelManager ChannelManager} for this Channel.
-//     * In the ChannelManager, you can modify the name, topic and position of this Channel.
-//     *
-//     * @return
-//     *      The ChannelManager of this Channel
-//     */
-//    ChannelManager getManager();
-
     /**
      * Returns the {@link net.dv8tion.jda.core.JDA JDA} instance of this Channel
      *
@@ -93,16 +84,16 @@ public interface Channel extends ISnowflake
     JDA getJDA();
 
     /**
-     * The {@link PermissionOverride} relating to the specified {@link net.dv8tion.jda.core.entities.User User}.
+     * The {@link PermissionOverride} relating to the specified {@link net.dv8tion.jda.core.entities.Member Member}.
      * If there is no {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride} for this {@link net.dv8tion.jda.core.entities.Channel Channel}
-     * relating to the provided {@link net.dv8tion.jda.core.entities.User User}, then this returns {@code null}.
+     * relating to the provided {@link net.dv8tion.jda.core.entities.Member Member}, then this returns {@code null}.
      *
      * @param  member
      *         The {@link net.dv8tion.jda.core.entities.Member Member} whose
      *         {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride} is requested.
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
-     *         relating to the provided {@link net.dv8tion.jda.core.entities.User User}.
+     *         relating to the provided {@link net.dv8tion.jda.core.entities.Member Member}.
      */
     PermissionOverride getPermissionOverride(Member member);
 
@@ -210,7 +201,9 @@ public interface Channel extends ISnowflake
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         if we don't have the permission to {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS}
      * @throws IllegalArgumentException
-     *         if the specified Member is null
+     *         if the specified Member is null or the Member is not from {@link #getGuild()}
+     * @throws java.lang.IllegalStateException
+     *         If the specified Member already has a PermissionOverride. Use {@link #getPermissionOverride(Member)} to retrieve it.
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: {@link net.dv8tion.jda.core.entities.PermissionOverride}
      *         The newly created PermissionOverride for the specified Role
@@ -238,7 +231,9 @@ public interface Channel extends ISnowflake
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         if we don't have the permission to {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS}
      * @throws IllegalArgumentException
-     *         if the specified Role is null
+     *         if the specified Role is null or the Role is not from {@link #getGuild()}
+     * @throws java.lang.IllegalStateException
+     *         If the specified Role already has a PermissionOverride. Use {@link #getPermissionOverride(Role)} to retrieve it.
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: {@link net.dv8tion.jda.core.entities.PermissionOverride}
      *         The newly created PermissionOverride for the specified Role

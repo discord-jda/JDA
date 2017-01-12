@@ -146,7 +146,9 @@ javadoc {
             "net/dv8tion/jda/core/requests/Request.java",
             "net/dv8tion/jda/core/requests/Requester.java",
             "net/dv8tion/jda/core/requests/Response.java",
-            "net/dv8tion/jda/core/requests/ratelimit")
+            "net/dv8tion/jda/core/requests/ratelimit",
+            "net/dv8tion/jda/core/requests/restaction/CompletedFuture.java",
+            "net/dv8tion/jda/core/requests/restaction/RequestFuture.java")
 
     //opuswrapper
     exclude("tomp2p/opuswrapper")

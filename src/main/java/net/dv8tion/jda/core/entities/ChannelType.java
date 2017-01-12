@@ -15,12 +15,31 @@
  */
 package net.dv8tion.jda.core.entities;
 
+/**
+ * Enum used to differentiate between the different types of Discord channels.
+ */
 public enum ChannelType
 {
+    /**
+     * A {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}, Guild-Only.
+     */
     TEXT(0),
+    /**
+     * A {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}.
+     */
     PRIVATE(1),
+    /**
+     * A {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}, Guild-Only.
+     */
     VOICE(2),
+    /**
+     * A {@link net.dv8tion.jda.client.entities.Group Group}. {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT} only.
+     */
     GROUP(3),
+    /**
+     * Unknown Discord channel type. Should never happen and would only possibly happen if Discord implemented a new
+     * channel type and JDA had yet to implement support for it.
+     */
     UNKNOWN(-1);
 
     protected final int id;
@@ -30,11 +49,24 @@ public enum ChannelType
         this.id = id;
     }
 
+    /**
+     * The Discord id key used to represent the channel type.
+     *
+     * @return The id key used by discord for this channel type.
+     */
     public int getId()
     {
         return id;
     }
 
+    /**
+     * Static accessor for retrieving a channel type based on its Discord id key.
+     *
+     * @param  id
+     *         The id key of the requested channel type.
+     *
+     * @return The ChannelType that is refered to by the provided key. If the id key is unknown, {@link #UNKNOWN} is returned.
+     */
     public static ChannelType fromId(int id)
     {
         for (ChannelType type : values())

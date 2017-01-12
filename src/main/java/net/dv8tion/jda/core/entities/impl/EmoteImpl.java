@@ -157,10 +157,12 @@ public class EmoteImpl implements Emote
         if (isFake())
             throw new IllegalStateException("The emote you are trying to delete is not an actual emote we have access to (it is fake)!");
         if (managed)
-            throw new IllegalStateException("You cannot delete a managed emote!");
+            throw new UnsupportedOperationException("You cannot delete a managed emote!");
         if (!PermissionUtil.checkPermission(guild, guild.getSelfMember(), Permission.MANAGE_EMOTES))
             throw new PermissionException(Permission.MANAGE_EMOTES);
-        return new RestAction<Void>(getJDA(), Route.Emotes.DELETE_EMOTE.compile(getGuild().getId(), getId()), null)
+
+        Route.CompiledRoute route = Route.Emotes.DELETE_EMOTE.compile(getGuild().getId(), getId());
+        return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
             protected void handleResponse(Response response, Request request)

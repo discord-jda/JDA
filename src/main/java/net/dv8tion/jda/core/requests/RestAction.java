@@ -30,8 +30,7 @@ import java.util.function.Consumer;
 
 /**
  * A class representing a terminal between the user and the discord API.
- * <br>This is used to offer users the ability to decide how JDA should limit
- * a Request.
+ * <br>This is used to offer users the ability to decide how JDA should limit a Request.
  *
  * <p>Methods that return an instance of RestAction require an additional step
  * to complete the execution. Thus the user needs to append a follow-up method.
@@ -44,11 +43,12 @@ import java.util.function.Consumer;
  *
  *     <li>{@link #submit()}, {@link #submit(boolean)}
  *     <br>Provides a Future representing the pending request.
- *     <br>An optional parameter from the type boolean can be passed to disable automated rate limit handling. (not recommended)</li>
+ *     <br>An optional parameter of type boolean can be passed to disable automated rate limit handling. (not recommended)</li>
  *
  *     <li>{@link #complete()}, {@link #complete(boolean)}
  *     <br>Blocking execution building up on {@link #submit()}.
- *     <br>This will simply block the thread and return the Request result, or throw an exception</li>
+ *     <br>This will simply block the thread and return the Request result, or throw an exception.
+ *     <br>An optional parameter of type boolean can be passed to disable automated rate limit handling. (not recommended)</li>
  * </ul>
  *
  * The most efficient way to use a RestAction is by using the asynchronous {@link #queue()} operations.
@@ -63,8 +63,8 @@ public abstract class RestAction<T>
 {
     public static final SimpleLog LOG = SimpleLog.getLog("RestAction");
 
-    public static final Consumer DEFAULT_SUCCESS = o -> {};
-    public static final Consumer<Throwable> DEFAULT_FAILURE = t ->
+    public static Consumer DEFAULT_SUCCESS = o -> {};
+    public static Consumer<Throwable> DEFAULT_FAILURE = t ->
     {
         if (LOG.getEffectiveLevel().getPriority() <= SimpleLog.Level.DEBUG.getPriority())
         {
@@ -252,6 +252,11 @@ public abstract class RestAction<T>
 
     /**
      * @deprecated use {@link #complete(boolean)} instead!
+     *
+     * @throws net.dv8tion.jda.core.exceptions.RateLimitedException
+     *         If the request was ratelimited.
+     *
+     * @return The never-null response value
      */
     @Deprecated
     public T block() throws RateLimitedException
@@ -263,6 +268,14 @@ public abstract class RestAction<T>
 
     protected abstract void handleResponse(Response response, Request request);
 
+    /**
+     * Specialized form of {@link net.dv8tion.jda.core.requests.RestAction} that is used to provide information that
+     * has already been retrieved or generated so that another request does not need to be made to Discord.
+     * <br>Basically: Allows you to provide a value directly to the success returns.
+     *
+     * @param <T>
+     *        The generic response type for this RestAction
+     */
     public static class EmptyRestAction<T> extends RestAction<T>
     {
         private final T returnObj;

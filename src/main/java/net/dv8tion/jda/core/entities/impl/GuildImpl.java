@@ -30,6 +30,7 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.util.Args;
 import org.json.*;
 
 import java.time.OffsetDateTime;
@@ -202,6 +203,7 @@ public class GuildImpl implements Guild
     @Override
     public List<Member> getMembersByName(String name, boolean ignoreCase)
     {
+        Args.notNull(name, "name");
         return Collections.unmodifiableList(members.values().stream()
                 .filter(m ->
                     ignoreCase
@@ -213,6 +215,7 @@ public class GuildImpl implements Guild
     @Override
     public List<Member> getMembersByNickname(String nickname, boolean ignoreCase)
     {
+        Args.notNull(nickname, "nickname");
         return Collections.unmodifiableList(members.values().stream()
                 .filter(m ->
                     ignoreCase
@@ -224,6 +227,7 @@ public class GuildImpl implements Guild
     @Override
     public List<Member> getMembersByEffectiveName(String name, boolean ignoreCase)
     {
+        Args.notNull(name, "name");
         return Collections.unmodifiableList(members.values().stream()
                 .filter(m ->
                     ignoreCase
@@ -235,12 +239,21 @@ public class GuildImpl implements Guild
     @Override
     public List<Member> getMembersWithRoles(Role... roles)
     {
+        Args.notNull(roles, "roles");
         return getMembersWithRoles(Arrays.asList(roles));
     }
 
     @Override
     public List<Member> getMembersWithRoles(Collection<Role> roles)
     {
+        Args.notNull(roles, "roles");
+        for (Role r : roles)
+        {
+            Args.notNull(r, "Role provided in collection");
+            if (!r.getGuild().equals(this))
+                throw new IllegalArgumentException("Role provided was from a different Guild! Role: " + r);
+        }
+
         return Collections.unmodifiableList(members.values().stream()
                         .filter(m -> m.getRoles().containsAll(roles))
                         .collect(Collectors.toList()));
@@ -255,6 +268,7 @@ public class GuildImpl implements Guild
     @Override
     public List<TextChannel> getTextChannelsByName(String name, boolean ignoreCase)
     {
+        Args.notNull(name, "name");
         return Collections.unmodifiableList(textChannels.values().stream()
                 .filter(tc ->
                     ignoreCase
@@ -280,6 +294,7 @@ public class GuildImpl implements Guild
     @Override
     public List<VoiceChannel> getVoiceChannelsByName(String name, boolean ignoreCase)
     {
+        Args.notNull(name, "name");
         return Collections.unmodifiableList(voiceChannels.values().stream()
             .filter(vc ->
                     ignoreCase
@@ -313,6 +328,7 @@ public class GuildImpl implements Guild
     @Override
     public List<Role> getRolesByName(String name, boolean ignoreCase)
     {
+        Args.notNull(name, "name");
         return Collections.unmodifiableList(roles.values().stream()
                 .filter(r ->
                         ignoreCase
@@ -336,6 +352,7 @@ public class GuildImpl implements Guild
     @Override
     public List<Emote> getEmotesByName(String name, boolean ignoreCase)
     {
+        Args.notNull(name, "name");
         return Collections.unmodifiableList(emotes.values().parallelStream()
                 .filter(e ->
                         ignoreCase
@@ -427,11 +444,27 @@ public class GuildImpl implements Guild
     @Override
     public RestAction<Void> delete()
     {
+        if (api.getSelfUser().isMfaEnabled())
+            throw new IllegalStateException("Cannot delete a guild without providing MFA code. Use Guild#delete(String)");
+
+        return delete(null);
+    }
+
+    @Override
+    public RestAction<Void> delete(String mfaCode)
+    {
         if (!owner.equals(getSelfMember()))
             throw new PermissionException("Cannot delete a guild that you do not own!");
 
+        JSONObject mfaBody = null;
+        if (api.getSelfUser().isMfaEnabled())
+        {
+            Args.notEmpty(mfaCode, "Provided MultiFactor Auth code");
+            mfaBody = new JSONObject().put("code", mfaCode);
+        }
+
         Route.CompiledRoute route = Route.Guilds.DELETE_GUILD.compile(id);
-        return new RestAction<Void>(api, route, null)
+        return new RestAction<Void>(api, route, mfaBody)
         {
             @Override
             protected void handleResponse(Response response, Request request)
@@ -474,10 +507,10 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public List<VoiceState> getVoiceStates()
+    public List<GuildVoiceState> getVoiceStates()
     {
         return Collections.unmodifiableList(
-                members.values().stream().<VoiceState>map(Member::getVoiceState).collect(Collectors.toList()));
+                members.values().stream().map(Member::getVoiceState).collect(Collectors.toList()));
     }
 
     @Override

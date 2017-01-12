@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * Represents a Custom Emote. (Emoji in official Discord API terminology)
  *
- * @since  JDA 2.2
+ * @since  2.2
  * @author Florian Spieß
  */
 public interface Emote extends ISnowflake, IMentionable, IFakeable
@@ -44,10 +44,10 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
 
     /**
      * Roles this emote is active for
-     * <br><a href="https://discordapp.com/developers/docs/resources/guild#emoji-object">Learn More</a>
+     * <br><a href="https://discordapp.com/developers/docs/resources/guild#emoji-object" target="_blank">Learn More</a>
      *
      * @throws IllegalStateException
-     *         if this emotes is fake
+     *         If this Emote is fake ({@link #isFake()})
      *
      * @return An immutable list of the roles this emote is active for (all roles if empty)
      */
@@ -61,8 +61,9 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
     String getName();
 
     /**
-     * Whether this emote is managed
-     * <br><a href="https://discordapp.com/developers/docs/resources/guild#emoji-object">Learn More</a>
+     * Whether this emote is managed. A managed Emote is controlled by Discord, not the Guild administrator, typical
+     * via a service like BBTV in conjunction with Twitch.
+     * <br><a href="https://discordapp.com/developers/docs/resources/guild#emoji-object" target="_blank">Learn More</a>
      *
      * @return True, if this emote is managed
      */
@@ -91,7 +92,9 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      * </ul>
      *
      * @throws IllegalStateException
-     *         if this Emote is fake
+     *         if this Emote is fake ({@link #isFake()})
+     * @throws java.lang.UnsupportedOperationException
+     *         If this emote is managed by discord ({@link #isManaged()})
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         if the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES MANAGE_EMOTES} is not given
      * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
@@ -103,10 +106,10 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
     RestAction<Void> delete();
 
     /**
-     * The {@link net.dv8tion.jda.client.managers.EmoteManager Manager} for this emote
+     * The {@link net.dv8tion.jda.client.managers.EmoteManager Manager} for this emote, used to modify
+     * properties of the emote like name and role restrictions.
      *
-     * <p>This will only work for the client account type.
-     * <br>With the EmoteManager returned you can modify this Emote's properties or delete it.
+     * <p>This will only work for {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}.
      *
      * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
      *         if this is not used with {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType#CLIENT}
@@ -118,10 +121,9 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
     EmoteManager getManager();
 
     /**
-     * An <b>updatable</b> manager for this Emote.
+     * An <b>updatable</b> manager for this Emote, used to modify properties of the emote like name and role restrictions.
      *
      * <p>This will only work for the client account type.
-     * <br>With the EmoteManager returned you can modify this Emote's properties or delete it.
      *
      * <p>This specific Manager is used to modify multiple properties at once
      * by setting the property and calling {@link EmoteManagerUpdatable#update()}
