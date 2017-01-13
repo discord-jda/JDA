@@ -30,6 +30,8 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.restaction.ChannelAction;
+import net.dv8tion.jda.core.requests.restaction.RoleAction;
 import net.dv8tion.jda.core.requests.restaction.WebhookAction;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.json.JSONArray;
@@ -898,7 +900,7 @@ public class GuildController
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *      if the guild is temporarily unavailable
      */
-    public RestAction<TextChannel> createTextChannel(String name)
+    public ChannelAction createTextChannel(String name)
     {
         checkAvailable();
         checkPermission(Permission.MANAGE_CHANNEL);
@@ -911,23 +913,7 @@ public class GuildController
                 .put("type", "text")
                 .put("name", name);
         Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(guild.getId());
-        return new RestAction<TextChannel>(getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                if (!response.isOk())
-                {
-                    request.onFailure(response);
-                    return;
-                }
-
-                JSONObject chanJson = response.getObject();
-                TextChannel tc = EntityBuilder.get(api).createTextChannel(chanJson, guild.getId());
-
-                request.onSuccess(tc);
-            }
-        };
+        return new ChannelAction(getJDA(), route, name, guild, false);
     }
 
     /**
@@ -948,7 +934,7 @@ public class GuildController
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *      if the guild is temporarily unavailable
      */
-    public RestAction<VoiceChannel> createVoiceChannel(String name)
+    public ChannelAction createVoiceChannel(String name)
     {
         checkAvailable();
         checkPermission(Permission.MANAGE_CHANNEL);
@@ -961,23 +947,7 @@ public class GuildController
                 .put("type", "voice")
                 .put("name", name);
         Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(guild.getId());
-        return new RestAction<VoiceChannel>(getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                if (!response.isOk())
-                {
-                    request.onFailure(response);
-                    return;
-                }
-
-                JSONObject chanJson = response.getObject();
-                VoiceChannel vc = EntityBuilder.get(api).createVoiceChannel(chanJson, guild.getId());
-
-                request.onSuccess(vc);
-            }
-        };
+        return new ChannelAction(getJDA(), route, name, guild, true);
     }
 
     /**
@@ -1024,29 +994,13 @@ public class GuildController
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *      if the guild is temporarily unavailable
      */
-    public RestAction<Role> createRole()
+    public RoleAction createRole()
     {
         checkAvailable();
         checkPermission(Permission.MANAGE_ROLES);
 
         Route.CompiledRoute route = Route.Roles.CREATE_ROLE.compile(guild.getId());
-        return new RestAction<Role>(getJDA(), route, null)
-        {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                if (!response.isOk())
-                {
-                    request.onFailure(response);
-                    return;
-                }
-
-                JSONObject roleJson = response.getObject();
-                Role role = EntityBuilder.get(api).createRole(roleJson, guild.getId());
-
-                request.onSuccess(role);
-            }
-        };
+        return new RoleAction(getJDA(), route, guild);
     }
 
     /**
