@@ -50,6 +50,10 @@ public class ChannelAction extends RestAction<Channel> //todo documentation
     protected final boolean voice;
     protected String name;
 
+    // --voice only--
+    protected Integer bitrate = null;
+    protected Integer userlimit = null;
+
     public ChannelAction(JDA api, Route.CompiledRoute route, String name, Guild guild, boolean voice)
     {
         super(api, route, null);
@@ -91,6 +95,23 @@ public class ChannelAction extends RestAction<Channel> //todo documentation
         return this;
     }
 
+    // --voice only--
+    public ChannelAction setBitrate(Integer bitrate)
+    {
+        if (bitrate != null && bitrate < 8000)
+            throw new IllegalArgumentException("Bitrate must be greater than 8000.");
+        this.bitrate = bitrate;
+        return this;
+    }
+
+    public ChannelAction setUserlimit(Integer userlimit)
+    {
+        if (userlimit != null && (userlimit < 0 || userlimit > 99))
+            throw new IllegalArgumentException("Userlimit must be between 0-99!");
+        this.userlimit = userlimit;
+        return this;
+    }
+
     @Override
     protected void finalizeData()
     {
@@ -98,6 +119,13 @@ public class ChannelAction extends RestAction<Channel> //todo documentation
         data.put("name", name);
         data.put("type", voice ? 2 : 0);
         data.put("permission_overwrites", new JSONArray(overrides));
+        if (voice)
+        {
+            if (bitrate != null)
+                data.put("bitrate", bitrate.intValue());
+            if (userlimit != null)
+                data.put("user_limit", userlimit.intValue());
+        }
 
         this.data = data;
         super.finalizeData();
