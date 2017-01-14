@@ -30,9 +30,6 @@ import org.json.JSONObject;
 
 import java.awt.Color;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * @since  3.0
@@ -42,7 +39,7 @@ public class RoleAction extends RestAction<Role> //todo documentation when rolle
 {
 
     protected final Guild guild;
-    protected Set<Permission> permissions = null;
+    protected long permissions = 0;
     protected String name = null;
     protected Integer color = null;
     protected Boolean hoisted = null;
@@ -85,15 +82,20 @@ public class RoleAction extends RestAction<Role> //todo documentation when rolle
 
     public RoleAction setPermissions(Permission... permissions)
     {
-        Args.notNull(permissions, "Permissions");
-        this.permissions = new HashSet<>();
-        Collections.addAll(this.permissions, permissions);
+        this.permissions = permissions == null ? 0 : Permission.getRaw(permissions);
         return this;
     }
 
     public RoleAction setPermissions(Collection<Permission> permissions)
     {
-        this.permissions = permissions == null ? null : new HashSet<>(permissions);
+        this.permissions = permissions == null ? 0 : Permission.getRaw(permissions);
+        return this;
+    }
+
+    public RoleAction setPermissions(long permissions)
+    {
+        Args.notNegative(permissions, "Raw Permissions");
+        this.permissions = permissions;
         return this;
     }
 
@@ -105,8 +107,8 @@ public class RoleAction extends RestAction<Role> //todo documentation when rolle
             object.put("name", name);
         if (color != null)
             object.put("color", color.intValue());
-        if (permissions != null)
-            object.put("permissions", Permission.getRaw(permissions));
+        if (permissions > 0)
+            object.put("permissions", permissions);
         if (hoisted != null)
             object.put("hoist", hoisted.booleanValue());
         if (mentionable != null)

@@ -49,6 +49,7 @@ public class ChannelAction extends RestAction<Channel> //todo documentation
     protected final Guild guild;
     protected final boolean voice;
     protected String name;
+    protected String topic = null;
 
     // --voice only--
     protected Integer bitrate = null;
@@ -59,6 +60,7 @@ public class ChannelAction extends RestAction<Channel> //todo documentation
         super(api, route, null);
         this.guild = guild;
         this.voice = voice;
+        this.name = name;
     }
 
     public ChannelAction setName(String name)
@@ -71,41 +73,75 @@ public class ChannelAction extends RestAction<Channel> //todo documentation
         return this;
     }
 
+    public ChannelAction setTopic(String topic)
+    {
+        if (voice)
+            throw new UnsupportedOperationException("Cannot set the topic for a VoiceChannel!");
+        if (topic != null && topic.length() > 1024)
+            throw new IllegalArgumentException("Channel Topic must not be greater than 1024 in length!");
+        this.topic = topic;
+        return this;
+    }
+
     public ChannelAction addPermissionOverride(Role role, Collection<Permission> allow, Collection<Permission> deny)
+    {
+        final long allowRaw = allow != null ? Permission.getRaw(allow) : 0;
+        final long denyRaw = deny != null ? Permission.getRaw(deny) : 0;
+
+        return addPermissionOverride(role, allowRaw, denyRaw);
+    }
+
+    public ChannelAction addPermissionOverride(Member member, Collection<Permission> allow, Collection<Permission> deny)
+    {
+        final long allowRaw = allow != null ? Permission.getRaw(allow) : 0;
+        final long denyRaw = deny != null ? Permission.getRaw(deny) : 0;
+
+        return addPermissionOverride(member, allowRaw, denyRaw);
+    }
+
+    public ChannelAction addPermissionOverride(Role role, long allow, long deny)
     {
         Args.notNull(role, "Override Role");
         if (!role.getGuild().equals(guild))
             throw new IllegalArgumentException("Specified Role is not in the same Guild!");
 
         String id = role.getId();
-        PromisePermissionOverride override = new PromisePermissionOverride(ROLE_TYPE, id, deny, allow);
-        overrides.add(override);
+        overrides.add(new PromisePermissionOverride(ROLE_TYPE, id, allow, deny));
         return this;
     }
 
-    public ChannelAction addPermissionOverride(Member member, Collection<Permission> allow, Collection<Permission> deny)
+    public ChannelAction addPermissionOverride(Member member, long allow, long deny)
     {
         Args.notNull(member, "Override Member");
         if (!member.getGuild().equals(guild))
-            throw new IllegalArgumentException("Specified Member is not in the same Guild!");
+            throw new IllegalArgumentException("Specified Role is not in the same Guild!");
 
         String id = member.getUser().getId();
-        PromisePermissionOverride override = new PromisePermissionOverride(USER_TYPE, id, deny, allow);
-        overrides.add(override);
+        overrides.add(new PromisePermissionOverride(USER_TYPE, id, allow, deny));
         return this;
     }
 
     // --voice only--
     public ChannelAction setBitrate(Integer bitrate)
     {
-        if (bitrate != null && bitrate < 8000)
-            throw new IllegalArgumentException("Bitrate must be greater than 8000.");
+        if (!voice)
+            throw new UnsupportedOperationException("Cannot set the bitrate for a TextChannel!");
+        if (bitrate != null)
+        {
+            if (bitrate < 8000)
+                throw new IllegalArgumentException("Bitrate must be greater than 8000.");
+            if (bitrate > 128000) // todo: checking whether guild is VIP or not (96000 max no vip)
+                throw new IllegalArgumentException("Bitrate must be less than 128000.");
+        }
+
         this.bitrate = bitrate;
         return this;
     }
 
     public ChannelAction setUserlimit(Integer userlimit)
     {
+        if (!voice)
+            throw new UnsupportedOperationException("Cannot set the userlimit for a TextChannel!");
         if (userlimit != null && (userlimit < 0 || userlimit > 99))
             throw new IllegalArgumentException("Userlimit must be between 0-99!");
         this.userlimit = userlimit;
@@ -151,16 +187,16 @@ public class ChannelAction extends RestAction<Channel> //todo documentation
     protected final class PromisePermissionOverride implements JSONString
     {
         protected final String id;
-        protected final Set<Permission> deny;
-        protected final Set<Permission> allow;
+        protected final long deny;
+        protected final long allow;
         protected final int type;
 
-        public PromisePermissionOverride(int type, String id, Collection<Permission> deny, Collection<Permission> allow)
+        public PromisePermissionOverride(int type, String id, long allow, long deny)
         {
             this.type = type;
             this.id = id;
-            this.deny  = deny  != null ? new HashSet<>(deny)  : new HashSet<>();
-            this.allow = allow != null ? new HashSet<>(allow) : new HashSet<>();
+            this.deny  = deny;
+            this.allow = allow;
         }
 
         @Override
@@ -169,8 +205,8 @@ public class ChannelAction extends RestAction<Channel> //todo documentation
             JSONObject object = new JSONObject();
             object.put("id",    id);
             object.put("type",  type);
-            object.put("deny",  Permission.getRaw(deny));
-            object.put("allow", Permission.getRaw(allow));
+            object.put("deny",  deny);
+            object.put("allow", allow);
 
             return object.toString();
         }
