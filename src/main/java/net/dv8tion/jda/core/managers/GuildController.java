@@ -1022,37 +1022,16 @@ public class GuildController
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *      if the guild is temporarily unavailable
      */
-    public RestAction<Role> createCopyOfRole(Role role)
+    public RoleAction createCopyOfRole(Role role)
     {
-        checkAvailable();
-        checkPermission(Permission.MANAGE_ROLES);
-        role.getPermissions().forEach(this::checkPermission);
-
         Route.CompiledRoute route = Route.Roles.CREATE_ROLE.compile(guild.getId());
-        return new RestAction<Role>(getJDA(), route, null)
-        {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                if (!response.isOk())
-                {
-                    request.onFailure(response);
-                    return;
-                }
 
-                JSONObject roleJson = response.getObject();
-                Role r = EntityBuilder.get(api).createRole(roleJson, guild.getId());
-
-                RoleManagerUpdatable mng = r.getManagerUpdatable()
-                        .getNameField().setValue(role.getName())
-                        .getColorField().setValue(role.getColor())
-                        .getMentionableField().setValue(role.isMentionable())
-                        .getHoistedField().setValue(role.isHoisted())
-                        .getPermissionField().setValue(role.getPermissionsRaw());
-
-                mng.update().queue(request.getOnSuccess(), request.getOnFailure());
-            }
-        };
+        return createRole()
+                .setColor(role.getColor())
+                .setPermissions(role.getPermissionsRaw())
+                .setName(role.getName())
+                .setHoisted(role.isHoisted())
+                .setMentionable(role.isMentionable());
     }
 
     /**
