@@ -913,7 +913,7 @@ public class GuildController
                 .put("type", "text")
                 .put("name", name);
         Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(guild.getId());
-        return new ChannelAction(getJDA(), route, name, guild, false);
+        return new ChannelAction(route, name, guild, false);
     }
 
     /**
@@ -947,7 +947,7 @@ public class GuildController
                 .put("type", "voice")
                 .put("name", name);
         Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(guild.getId());
-        return new ChannelAction(getJDA(), route, name, guild, true);
+        return new ChannelAction(route, name, guild, true);
     }
 
     /**
@@ -1000,7 +1000,7 @@ public class GuildController
         checkPermission(Permission.MANAGE_ROLES);
 
         Route.CompiledRoute route = Route.Roles.CREATE_ROLE.compile(guild.getId());
-        return new RoleAction(getJDA(), route, guild);
+        return new RoleAction(route, guild);
     }
 
     /**

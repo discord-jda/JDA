@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.core.requests.restaction;
 
-import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.entities.EntityBuilder;
@@ -37,10 +36,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * Extension of {@link net.dv8tion.jda.core.requests.RestAction RestAction} specifically
+ * designed to create a {@link net.dv8tion.jda.core.entities.Channel Channel}.
+ * This extension allows setting properties before executing the action.
+ *
  * @since  3.0
  * @author Florian Spieß
  */
-public class ChannelAction extends RestAction<Channel> //todo documentation
+public class ChannelAction extends RestAction<Channel>
 {
     public static final int ROLE_TYPE = 0;
     public static final int USER_TYPE = 1;
@@ -55,14 +58,38 @@ public class ChannelAction extends RestAction<Channel> //todo documentation
     protected Integer bitrate = null;
     protected Integer userlimit = null;
 
-    public ChannelAction(JDA api, Route.CompiledRoute route, String name, Guild guild, boolean voice)
+    /**
+     * Creates a new ChannelAction instance
+     *
+     * @param  route
+     *         The {@link net.dv8tion.jda.core.requests.Route.CompiledRoute CompileRoute}
+     *         to use for this action
+     * @param  name
+     *         The name for the new {@link net.dv8tion.jda.core.entities.Channel Channel}
+     * @param  guild
+     *         The {@link net.dv8tion.jda.core.entities.Guild Guild} the channel should be created in
+     * @param  voice
+     *         Whether the new channel should be a VoiceChannel (false -> TextChannel)
+     */
+    public ChannelAction(Route.CompiledRoute route, String name, Guild guild, boolean voice)
     {
-        super(api, route, null);
+        super(guild.getJDA(), route, null);
         this.guild = guild;
         this.voice = voice;
         this.name = name;
     }
 
+    /**
+     * Sets the name for the new Channel
+     *
+     * @param  name
+     *         The not-null name for the new Channel (2-100 chars long)
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided name is null or not between 2-100 chars long
+     *
+     * @return The current ChannelAction, for chaining convenience
+     */
     public ChannelAction setName(String name)
     {
         Args.notNull(name, "Channel name");
@@ -73,6 +100,19 @@ public class ChannelAction extends RestAction<Channel> //todo documentation
         return this;
     }
 
+    /**
+     * Sets the topic for the new TextChannel
+     *
+     * @param  topic
+     *         The topic for the new Channel (max 1024 chars)
+     *
+     * @throws UnsupportedOperationException
+     *         If this ChannelAction is for a VoiceChannel
+     * @throws IllegalArgumentException
+     *         If the provided topic is longer than 1024 chars
+     *
+     * @return The current ChannelAction, for chaining convenience
+     */
     public ChannelAction setTopic(String topic)
     {
         if (voice)
@@ -83,6 +123,23 @@ public class ChannelAction extends RestAction<Channel> //todo documentation
         return this;
     }
 
+    /**
+     * Adds a new Role-{@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
+     * for the new Channel.
+     *
+     * @param  role
+     *         The not-null {@link net.dv8tion.jda.core.entities.Role Role} for the override
+     * @param  allow
+     *         The granted {@link net.dv8tion.jda.core.Permission Permissions} for the override or null
+     * @param  deny
+     *         The denied {@link net.dv8tion.jda.core.Permission Permissions} for the override or null
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the specified {@link net.dv8tion.jda.core.entities.Role Role} is null
+     *         or not within the same guild.
+     *
+     * @return The current ChannelAction, for chaining convenience
+     */
     public ChannelAction addPermissionOverride(Role role, Collection<Permission> allow, Collection<Permission> deny)
     {
         final long allowRaw = allow != null ? Permission.getRaw(allow) : 0;
@@ -91,6 +148,23 @@ public class ChannelAction extends RestAction<Channel> //todo documentation
         return addPermissionOverride(role, allowRaw, denyRaw);
     }
 
+    /**
+     * Adds a new Member-{@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
+     * for the new Channel.
+     *
+     * @param  member
+     *         The not-null {@link net.dv8tion.jda.core.entities.Member Member} for the override
+     * @param  allow
+     *         The granted {@link net.dv8tion.jda.core.Permission Permissions} for the override or null
+     * @param  deny
+     *         The denied {@link net.dv8tion.jda.core.Permission Permissions} for the override or null
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the specified {@link net.dv8tion.jda.core.entities.Member Member} is null
+     *         or not within the same guild.
+     *
+     * @return The current ChannelAction, for chaining convenience
+     */
     public ChannelAction addPermissionOverride(Member member, Collection<Permission> allow, Collection<Permission> deny)
     {
         final long allowRaw = allow != null ? Permission.getRaw(allow) : 0;
@@ -99,6 +173,29 @@ public class ChannelAction extends RestAction<Channel> //todo documentation
         return addPermissionOverride(member, allowRaw, denyRaw);
     }
 
+    /**
+     * Adds a new Role-{@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
+     * for the new Channel.
+     *
+     * @param  role
+     *         The not-null {@link net.dv8tion.jda.core.entities.Role Role} for the override
+     * @param  allow
+     *         The granted {@link net.dv8tion.jda.core.Permission Permissions} for the override
+     *         Use {@link net.dv8tion.jda.core.Permission#getRawValue()} to retrieve these Permissions.
+     * @param  deny
+     *         The denied {@link net.dv8tion.jda.core.Permission Permissions} for the override
+     *         Use {@link net.dv8tion.jda.core.Permission#getRawValue()} to retrieve these Permissions.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the specified {@link net.dv8tion.jda.core.entities.Role Role} is null
+     *         or not within the same guild.
+     *
+     * @return The current ChannelAction, for chaining convenience
+     *
+     * @see    net.dv8tion.jda.core.Permission#getRawValue()
+     * @see    net.dv8tion.jda.core.Permission#getRaw(java.util.Collection)
+     * @see    net.dv8tion.jda.core.Permission#getRaw(net.dv8tion.jda.core.Permission...)
+     */
     public ChannelAction addPermissionOverride(Role role, long allow, long deny)
     {
         Args.notNull(role, "Override Role");
@@ -110,6 +207,29 @@ public class ChannelAction extends RestAction<Channel> //todo documentation
         return this;
     }
 
+    /**
+     * Adds a new Member-{@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
+     * for the new Channel.
+     *
+     * @param  member
+     *         The not-null {@link net.dv8tion.jda.core.entities.Member Member} for the override
+     * @param  allow
+     *         The granted {@link net.dv8tion.jda.core.Permission Permissions} for the override
+     *         Use {@link net.dv8tion.jda.core.Permission#getRawValue()} to retrieve these Permissions.
+     * @param  deny
+     *         The denied {@link net.dv8tion.jda.core.Permission Permissions} for the override
+     *         Use {@link net.dv8tion.jda.core.Permission#getRawValue()} to retrieve these Permissions.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the specified {@link net.dv8tion.jda.core.entities.Member Member} is null
+     *         or not within the same guild.
+     *
+     * @return The current ChannelAction, for chaining convenience
+     *
+     * @see    net.dv8tion.jda.core.Permission#getRawValue()
+     * @see    net.dv8tion.jda.core.Permission#getRaw(java.util.Collection)
+     * @see    net.dv8tion.jda.core.Permission#getRaw(net.dv8tion.jda.core.Permission...)
+     */
     public ChannelAction addPermissionOverride(Member member, long allow, long deny)
     {
         Args.notNull(member, "Override Member");
@@ -122,6 +242,19 @@ public class ChannelAction extends RestAction<Channel> //todo documentation
     }
 
     // --voice only--
+    /**
+     * Sets the bitrate for the new VoiceChannel
+     *
+     * @param  bitrate
+     *         The bitrate for the new Channel (min 8000) or null to use default (64000)
+     *
+     * @throws UnsupportedOperationException
+     *         If this ChannelAction is for a TextChannel
+     * @throws IllegalArgumentException
+     *         If the provided bitrate is less than 8000 or greater than 128000
+     *
+     * @return The current ChannelAction, for chaining convenience
+     */
     public ChannelAction setBitrate(Integer bitrate)
     {
         if (!voice)
@@ -138,6 +271,19 @@ public class ChannelAction extends RestAction<Channel> //todo documentation
         return this;
     }
 
+    /**
+     * Sets the userlimit for the new VoiceChannel
+     *
+     * @param  userlimit
+     *         The userlimit for the new VoiceChannel or {@code null}/{@code 0} to use no limit,
+     *
+     * @throws UnsupportedOperationException
+     *         If this ChannelAction is for a TextChannel
+     * @throws IllegalArgumentException
+     *         If the provided userlimit is negative or above {@code 99}
+     *
+     * @return The current ChannelAction, for chaining convenience
+     */
     public ChannelAction setUserlimit(Integer userlimit)
     {
         if (!voice)
