@@ -187,8 +187,11 @@ public class ChannelAction extends RestAction<Channel>
      *         Use {@link net.dv8tion.jda.core.Permission#getRawValue()} to retrieve these Permissions.
      *
      * @throws java.lang.IllegalArgumentException
-     *         If the specified {@link net.dv8tion.jda.core.entities.Role Role} is null
-     *         or not within the same guild.
+     *         <ul>
+     *             <li>If the specified {@link net.dv8tion.jda.core.entities.Role Role} is null
+     *                 or not within the same guild.</li>
+     *             <li>If one of the provided Permission values is negative</li>
+     *         </ul>
      *
      * @return The current ChannelAction, for chaining convenience
      *
@@ -199,6 +202,8 @@ public class ChannelAction extends RestAction<Channel>
     public ChannelAction addPermissionOverride(Role role, long allow, long deny)
     {
         Args.notNull(role, "Override Role");
+        Args.notNegative(allow, "Granted permissions value");
+        Args.notNegative(deny, "Denied permissions value");
         if (!role.getGuild().equals(guild))
             throw new IllegalArgumentException("Specified Role is not in the same Guild!");
 
@@ -221,8 +226,11 @@ public class ChannelAction extends RestAction<Channel>
      *         Use {@link net.dv8tion.jda.core.Permission#getRawValue()} to retrieve these Permissions.
      *
      * @throws java.lang.IllegalArgumentException
-     *         If the specified {@link net.dv8tion.jda.core.entities.Member Member} is null
-     *         or not within the same guild.
+     *         <ul>
+     *             <li>If the specified {@link net.dv8tion.jda.core.entities.Member Member} is null
+     *                 or not within the same guild.</li>
+     *             <li>If one of the provided Permission values is negative</li>
+     *         </ul>
      *
      * @return The current ChannelAction, for chaining convenience
      *
@@ -233,8 +241,10 @@ public class ChannelAction extends RestAction<Channel>
     public ChannelAction addPermissionOverride(Member member, long allow, long deny)
     {
         Args.notNull(member, "Override Member");
+        Args.notNegative(allow, "Granted permissions value");
+        Args.notNegative(deny, "Denied permissions value");
         if (!member.getGuild().equals(guild))
-            throw new IllegalArgumentException("Specified Role is not in the same Guild!");
+            throw new IllegalArgumentException("Specified Member is not in the same Guild!");
 
         String id = member.getUser().getId();
         overrides.add(new PromisePermissionOverride(USER_TYPE, id, allow, deny));

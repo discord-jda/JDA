@@ -117,15 +117,16 @@ public class RoleAction extends RestAction<Role>
      */
     public RoleAction setColor(Color color)
     {
-        return this.setColor(color != null ? color.getRGB() & 0xFFFFFF : null);
+        return this.setColor(color != null ? color.getRGB() : null);
     }
 
     /**
      * Sets the Color for the new role.
-     * This accepts colors from the range {@code 0x000} to {@code 0xFFFFFF}
+     * This accepts colors from the range {@code 0x000} to {@code 0xFFFFFF}.
+     * The provided value will be ranged using {@code rbg & 0xFFFFFF}
      *
      * @param  rgb
-     *         The color for the new role in integer form, null to use default white/black
+     *         The color for the new role in integer form, {@code null} to use default white/black
      *
      * @return The current RoleAction, for chaining convenience
      */
@@ -221,7 +222,7 @@ public class RoleAction extends RestAction<Role>
         if (name != null)
             object.put("name", name);
         if (color != null)
-            object.put("color", color.intValue());
+            object.put("color", color & 0xFFFFFF);
         if (permissions > 0)
             object.put("permissions", permissions);
         if (hoisted != null)
