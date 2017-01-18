@@ -30,6 +30,7 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.restaction.ChannelOrderAction;
 import net.dv8tion.jda.core.requests.restaction.WebhookAction;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.json.JSONArray;
@@ -1168,6 +1169,16 @@ public class GuildController
                     request.onFailure(response);
             }
         };
+    }
+
+    public ChannelOrderAction modifyTextChannelPositions()
+    {
+        return new ChannelOrderAction(guild, true);
+    }
+
+    public ChannelOrderAction modifyVoiceChannelPositions()
+    {
+        return new ChannelOrderAction(guild, false);
     }
 
     protected void checkAvailable()
