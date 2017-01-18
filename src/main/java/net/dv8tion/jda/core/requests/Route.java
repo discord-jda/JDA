@@ -58,6 +58,7 @@ public class Route
         public static final Route CREATE_CHANNEL =   new Route(POST,   "guilds/{guild_id}/channels",          "guild_id");
         public static final Route GET_CHANNELS =     new Route(GET,    "guilds/{guild_id}/channels",          "guild_id");
         public static final Route MODIFY_CHANNELS =  new Route(PATCH,  "guilds/{guild_id}/channels",          "guild_id");
+        public static final Route MODIFY_ROLES =     new Route(PATCH,  "guilds/{guild_id}/roles",             "guild_id");
         public static final Route GET_BANS =         new Route(GET,    "guilds/{guild_id}/bans",              "guild_id");
         public static final Route BAN =              new Route(PUT,    "guilds/{guild_id}/bans/{user_id}",    "guild_id");
         public static final Route BAN_WITH_DELETE =  new Route(PUT,    "guilds/{guild_id}/bans/{user_id}?delete-message-days={}",    "guild_id");
