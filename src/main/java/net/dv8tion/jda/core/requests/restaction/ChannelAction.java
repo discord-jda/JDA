@@ -46,7 +46,7 @@ import java.util.Set;
 public class ChannelAction extends RestAction<Channel>
 {
     public static final int ROLE_TYPE = 0;
-    public static final int USER_TYPE = 1;
+    public static final int MEMBER_TYPE = 1;
 
     protected final Set<PromisePermissionOverride> overrides = new HashSet<>();
     protected final Guild guild;
@@ -142,6 +142,8 @@ public class ChannelAction extends RestAction<Channel>
      */
     public ChannelAction addPermissionOverride(Role role, Collection<Permission> allow, Collection<Permission> deny)
     {
+        checkPermissions(allow);
+        checkPermissions(deny);
         final long allowRaw = allow != null ? Permission.getRaw(allow) : 0;
         final long denyRaw = deny != null ? Permission.getRaw(deny) : 0;
 
@@ -167,6 +169,8 @@ public class ChannelAction extends RestAction<Channel>
      */
     public ChannelAction addPermissionOverride(Member member, Collection<Permission> allow, Collection<Permission> deny)
     {
+        checkPermissions(allow);
+        checkPermissions(deny);
         final long allowRaw = allow != null ? Permission.getRaw(allow) : 0;
         final long denyRaw = deny != null ? Permission.getRaw(deny) : 0;
 
@@ -190,7 +194,7 @@ public class ChannelAction extends RestAction<Channel>
      *         <ul>
      *             <li>If the specified {@link net.dv8tion.jda.core.entities.Role Role} is null
      *                 or not within the same guild.</li>
-     *             <li>If one of the provided Permission values is negative</li>
+     *             <li>If one of the provided Permission values is invalid</li>
      *         </ul>
      *
      * @return The current ChannelAction, for chaining convenience
@@ -204,8 +208,9 @@ public class ChannelAction extends RestAction<Channel>
         Args.notNull(role, "Override Role");
         Args.notNegative(allow, "Granted permissions value");
         Args.notNegative(deny, "Denied permissions value");
-        if (!role.getGuild().equals(guild))
-            throw new IllegalArgumentException("Specified Role is not in the same Guild!");
+        Args.check(allow <= Permission.ALL_PERMISSIONS, "Specified allow value may not be greater than a full permission set");
+        Args.check(deny <= Permission.ALL_PERMISSIONS,  "Specified deny value may not be greater than a full permission set");
+        Args.check(role.getGuild().equals(guild), "Specified Role is not in the same Guild!");
 
         String id = role.getId();
         overrides.add(new PromisePermissionOverride(ROLE_TYPE, id, allow, deny));
@@ -229,7 +234,7 @@ public class ChannelAction extends RestAction<Channel>
      *         <ul>
      *             <li>If the specified {@link net.dv8tion.jda.core.entities.Member Member} is null
      *                 or not within the same guild.</li>
-     *             <li>If one of the provided Permission values is negative</li>
+     *             <li>If one of the provided Permission values is invalid</li>
      *         </ul>
      *
      * @return The current ChannelAction, for chaining convenience
@@ -243,11 +248,12 @@ public class ChannelAction extends RestAction<Channel>
         Args.notNull(member, "Override Member");
         Args.notNegative(allow, "Granted permissions value");
         Args.notNegative(deny, "Denied permissions value");
-        if (!member.getGuild().equals(guild))
-            throw new IllegalArgumentException("Specified Member is not in the same Guild!");
+        Args.check(allow <= Permission.ALL_PERMISSIONS, "Specified allow value may not be greater than a full permission set");
+        Args.check(deny <= Permission.ALL_PERMISSIONS,  "Specified deny value may not be greater than a full permission set");
+        Args.check(member.getGuild().equals(guild), "Specified Member is not in the same Guild!");
 
         String id = member.getUser().getId();
-        overrides.add(new PromisePermissionOverride(USER_TYPE, id, allow, deny));
+        overrides.add(new PromisePermissionOverride(MEMBER_TYPE, id, allow, deny));
         return this;
     }
 
@@ -338,6 +344,22 @@ public class ChannelAction extends RestAction<Channel>
                 : builder.createTextChannel(response.getObject(),  guild.getId());
 
         request.onSuccess(channel);
+    }
+
+    protected void checkPermissions(Permission... permissions)
+    {
+        if (permissions == null)
+            return;
+        for (Permission p : permissions)
+            Args.notNull(p, "Permissions");
+    }
+
+    protected void checkPermissions(Collection<Permission> permissions)
+    {
+        if (permissions == null)
+            return;
+        for (Permission p : permissions)
+            Args.notNull(p, "Permissions");
     }
 
     protected final class PromisePermissionOverride implements JSONString

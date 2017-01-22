@@ -146,6 +146,8 @@ public class RoleAction extends RestAction<Role>
      *
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         If the currently logged in account does not hold one of the specified permissions
+     * @throws IllegalArgumentException
+     *         If any of the provided permissions is {@code null}
      *
      * @return The current RoleAction, for chaining convenience
      */
@@ -154,7 +156,10 @@ public class RoleAction extends RestAction<Role>
         if (permissions != null)
         {
             for (Permission p : permissions)
+            {
+                Args.notNull(p, "Permissions");
                 checkPermission(p);
+            }
         }
 
         this.permissions = permissions == null ? 0 : Permission.getRaw(permissions);
@@ -171,6 +176,8 @@ public class RoleAction extends RestAction<Role>
      *
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         If the currently logged in account does not hold one of the specified permissions
+     * @throws IllegalArgumentException
+     *         If any of the provided permissions is {@code null}
      *
      * @return The current RoleAction, for chaining convenience
      */
@@ -179,7 +186,10 @@ public class RoleAction extends RestAction<Role>
         if (permissions != null)
         {
             for (Permission p : permissions)
+            {
+                Args.notNull(p, "Permissions");
                 checkPermission(p);
+            }
         }
 
         this.permissions = permissions == null ? 0 : Permission.getRaw(permissions);
@@ -196,7 +206,7 @@ public class RoleAction extends RestAction<Role>
      *         To retrieve this use {@link net.dv8tion.jda.core.Permission#getRawValue()}
      *
      * @throws java.lang.IllegalArgumentException
-     *         If the provided permission value is negative
+     *         If the provided permission value is invalid
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         If the currently logged in account does not hold one of the specified permissions
      *
@@ -209,6 +219,7 @@ public class RoleAction extends RestAction<Role>
     public RoleAction setPermissions(long permissions)
     {
         Args.notNegative(permissions, "Raw Permissions");
+        Args.check(permissions <= Permission.ALL_PERMISSIONS, "Provided permissions may not be greater than a full permission set!");
         for (Permission p : Permission.getPermissions(permissions))
             checkPermission(p);
         this.permissions = permissions;
