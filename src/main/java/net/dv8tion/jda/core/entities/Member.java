@@ -29,7 +29,7 @@ import java.util.List;
  *
  * <p>Contains all guild-specific information about a User. (Roles, Nickname, VoiceStatus etc.)
  *
- * @since JDA 3.0
+ * @since 3.0
  */
 public interface Member extends IMentionable, IPermissionHolder
 {
@@ -64,7 +64,7 @@ public interface Member extends IMentionable, IPermissionHolder
     /**
      * The {@link net.dv8tion.jda.core.entities.GuildVoiceState VoiceState} of this Member.
      *
-     * <p>This can be used to get the Member's VoiceChannel.
+     * <p>This can be used to get the Member's VoiceChannel using {@link GuildVoiceState#getChannel()}.
      *
      * @return {@link net.dv8tion.jda.core.entities.GuildVoiceState VoiceState}
      */
@@ -72,7 +72,7 @@ public interface Member extends IMentionable, IPermissionHolder
 
     /**
      * The game that the user is currently playing.
-     * If the user is not currently playing a game, this will return null.
+     * <br>If the user is not currently playing a game, this will return null.
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Game Game} containing the game
      *         that the {@link net.dv8tion.jda.core.entities.User User} is currently playing.
@@ -90,6 +90,9 @@ public interface Member extends IMentionable, IPermissionHolder
     /**
      * Returns the current nickname of this Member for the parent Guild.
      *
+     * <p>This can be changed using
+     * {@link net.dv8tion.jda.core.managers.GuildController#setNickname(Member, String) GuildController.setNickname(Member, String)}.
+     *
      * @return The nickname or null, if no nickname is set.
      */
     String getNickname();
@@ -103,6 +106,10 @@ public interface Member extends IMentionable, IPermissionHolder
 
     /**
      * The roles applied to this Member.
+     * <br>The roles are ordered based on their position.
+     *
+     * <p>A Member's roles can be changed using the <b>addRolesToMember</b>, <b>removeRolesFromMember</b>, and <b>modifyMemberRoles</b>
+     * methods in {@link net.dv8tion.jda.core.managers.GuildController GuildController}.
      *
      * @return An immutable List of {@link net.dv8tion.jda.core.entities.Role Roles} for this Member.
      */
@@ -119,14 +126,14 @@ public interface Member extends IMentionable, IPermissionHolder
     Color getColor();
 
     /**
-     * The Permissions this PermissionHolder holds in the specified {@link net.dv8tion.jda.core.entities.Channel Channel}.
+     * The Permissions this Member holds in the specified {@link net.dv8tion.jda.core.entities.Channel Channel}.
      * <br>Permissions returned by this may be different from {@link #getPermissions()}
      * due to the Channel's {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides}.
      *
      * @param  channel
      *         The {@link net.dv8tion.jda.core.entities.Channel Channel} of which to get Permissions for
      *
-     * @return An immutable List of Permissions granted to this PermissionHolder.
+     * @return An immutable List of Permissions granted to this Member.
      */
     List<Permission> getPermissions(Channel channel);
 

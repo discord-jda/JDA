@@ -17,9 +17,9 @@
 package net.dv8tion.jda.core.entities;
 
 /**
- * Marks a mentionable entity
+ * Marks a mentionable entity.
  *
- * @since JDA 3.0
+ * @since 3.0
  */
 public interface IMentionable
 {

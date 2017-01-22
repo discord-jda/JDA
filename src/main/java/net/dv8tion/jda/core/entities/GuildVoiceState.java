@@ -16,6 +16,10 @@
 
 package net.dv8tion.jda.core.entities;
 
+/**
+ * Represents the voice state of a {@link net.dv8tion.jda.core.entities.Member Member} in a
+ * {@link net.dv8tion.jda.core.entities.Guild Guild}.
+ */
 public interface GuildVoiceState extends VoiceState
 {
     /**

@@ -27,8 +27,10 @@ import java.util.Base64;
 
 /**
  * Icon containing a base64 encoded jpeg image.
+ * <br>Used to different base64 images in the Discord api.
+ * <br>Example: {@link net.dv8tion.jda.core.managers.AccountManager#setAvatar(Icon)}.
  *
- * @since JDA 3.0
+ * @since 3.0
  */
 public class Icon
 {

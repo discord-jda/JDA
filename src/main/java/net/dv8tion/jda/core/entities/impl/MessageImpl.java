@@ -111,8 +111,7 @@ public class MessageImpl implements Message
         if (reaction == null)
         {
             checkFake(emote, "Emote");
-            checkPermission(Permission.MESSAGE_ADD_REACTION);
-            if (!PermissionUtil.canInteract(api.getSelfUser(), emote, channel))
+            if (!emote.canInteract(api.getSelfUser(), channel))
                 throw new IllegalArgumentException("Cannot react with the provided emote because it is not available in the current channel.");
         }
         else if (reaction.isSelf())
@@ -132,9 +131,7 @@ public class MessageImpl implements Message
                 .filter(r -> r.getEmote().getName().equals(unicode))
                 .findFirst().orElse(null);
 
-        if (reaction == null)
-            checkPermission(Permission.MESSAGE_ADD_REACTION);
-        else if (reaction.isSelf())
+        if (reaction != null && reaction.isSelf())
             return new RestAction.EmptyRestAction<>(null);
 
         return channel.addReactionById(id, unicode);
@@ -440,25 +437,32 @@ public class MessageImpl implements Message
     @Override
     public RestAction<Message> editMessage(String newContent)
     {
-        return editMessage(new MessageBuilder().appendString(newContent).build());
+        return editMessage(new MessageBuilder().append(newContent).build());
     }
 
     @Override
     public RestAction<Message> editMessage(Message newContent)
     {
         if (!api.getSelfUser().equals(getAuthor()))
-            throw new UnsupportedOperationException("Attempted to update message that was not sent by this account. You cannot modify other User's messages!");
+            throw new IllegalStateException("Attempted to update message that was not sent by this account. You cannot modify other User's messages!");
 
         return getChannel().editMessageById(getId(), newContent);
     }
 
     @Override
+    @Deprecated
     public RestAction<Void> deleteMessage()
+    {
+        return delete();
+    }
+
+    @Override
+    public RestAction<Void> delete()
     {
         if (!getJDA().getSelfUser().equals(getAuthor()))
         {
             if (isFromType(ChannelType.PRIVATE) || isFromType(ChannelType.GROUP))
-                throw new PermissionException("Cannot delete another User's messages in a Group or PrivateChannel.");
+                throw new IllegalStateException("Cannot delete another User's messages in a Group or PrivateChannel.");
             else if (!getGuild().getSelfMember()
                     .hasPermission((TextChannel) getChannel(), Permission.MESSAGE_MANAGE))
                 throw new PermissionException(Permission.MESSAGE_MANAGE);
