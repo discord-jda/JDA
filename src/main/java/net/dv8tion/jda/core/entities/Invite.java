@@ -26,7 +26,7 @@ import java.time.OffsetDateTime;
  * Representation of a Discord Invite.
  * This class is immutable.
  *
- * @since  JDA 3.0
+ * @since  3.0
  * @author Aljoscha Grebe
  */
 public interface Invite

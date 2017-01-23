@@ -21,9 +21,9 @@ import net.dv8tion.jda.core.utils.MiscUtil;
 import java.time.OffsetDateTime;
 
 /**
- * Marks a snowflake entity
+ * Marks a snowflake entity. Snowflake entities are ones that have an id that uniquely identifies them.
  *
- * @since JDA 3.0
+ * @since 3.0
  */
 public interface ISnowflake
 {

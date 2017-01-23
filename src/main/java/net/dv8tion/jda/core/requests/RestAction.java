@@ -57,7 +57,7 @@ import java.util.function.Consumer;
  * @param <T>
  *        The generic response type for this RestAction
  *
- * @since JDA 3.0
+ * @since 3.0
  */
 public abstract class RestAction<T>
 {

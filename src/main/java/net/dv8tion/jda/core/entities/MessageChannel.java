@@ -17,7 +17,9 @@ package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.MessageBuilder;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.impl.MessageImpl;
+import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
@@ -372,6 +374,10 @@ public interface MessageChannel extends ISnowflake //todo: doc error responses o
      * @param  unicode
      *         The UTF-8 characters to react with
      *
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the currently logged
+     *         in account does not have {@link net.dv8tion.jda.core.Permission#MESSAGE_ADD_REACTION Permisison.MESSAGE_ADD_REACTION}
+     *         in this channel.
      * @throws IllegalArgumentException
      *         if any of the provided parameters is null
      *
@@ -381,6 +387,16 @@ public interface MessageChannel extends ISnowflake //todo: doc error responses o
     {
         Args.notNull(messageId, "MessageId");
         Args.containsNoBlanks(unicode, "Provided Unicode");
+        if (this instanceof TextChannel)
+        {
+            TextChannel tChan = (TextChannel) this;
+            Guild guild = tChan.getGuild();
+            Member selfMember = guild.getSelfMember();
+
+            if (!selfMember.hasPermission(tChan, Permission.MESSAGE_ADD_REACTION))
+                throw new PermissionException(Permission.MESSAGE_ADD_REACTION);
+        }
+
         String encoded;
         try
         {
@@ -416,6 +432,10 @@ public interface MessageChannel extends ISnowflake //todo: doc error responses o
      * @param  emote
      *         The not-null {@link net.dv8tion.jda.core.entities.Emote} to react with
      *
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the currently logged
+     *         in account does not have {@link net.dv8tion.jda.core.Permission#MESSAGE_ADD_REACTION Permisison.MESSAGE_ADD_REACTION}
+     *         in this channel.
      * @throws IllegalArgumentException
      *         if any of the provided parameters is null
      *
@@ -425,6 +445,15 @@ public interface MessageChannel extends ISnowflake //todo: doc error responses o
     {
         Args.notNull(messageId, "MessageId");
         Args.notNull(emote, "Emote");
+        if (this instanceof TextChannel)
+        {
+            TextChannel tChan = (TextChannel) this;
+            Guild guild = tChan.getGuild();
+            Member selfMember = guild.getSelfMember();
+
+            if (!selfMember.hasPermission(tChan, Permission.MESSAGE_ADD_REACTION))
+                throw new PermissionException(Permission.MESSAGE_ADD_REACTION);
+        }
 
         Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, String.format("%s:%s", emote.getName(), emote.getId()));
         return new RestAction<Void>(getJDA(), route, null)

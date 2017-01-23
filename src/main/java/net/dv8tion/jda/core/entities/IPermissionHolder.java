@@ -8,8 +8,8 @@ import java.util.List;
 /**
  * Marker for entities that hold Permissions within JDA
  *
- * @since  JDA 3.0
- */ // todo: author?
+ * @since 3.0
+ */
 public interface IPermissionHolder {
 
     /**
