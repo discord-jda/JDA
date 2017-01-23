@@ -25,6 +25,8 @@ import java.util.TimeZone;
 
 public class MiscUtil
 {
+    public static final long DISCORD_EPOCH = 1420070400000L;
+    public static final long TIMESTAMP_OFFSET = 22;
     private static final DateTimeFormatter dtFormatter = DateTimeFormatter.RFC_1123_DATE_TIME;
 
     /**
@@ -39,7 +41,7 @@ public class MiscUtil
     public static OffsetDateTime getCreationTime(String entityId) {
         try
         {
-            long timestamp = ((Long.parseLong(entityId) >> 22) + 1420070400000L);
+            long timestamp = ((Long.parseLong(entityId) >> TIMESTAMP_OFFSET) + DISCORD_EPOCH);
             Calendar gmt = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
             gmt.setTimeInMillis(timestamp);
             return OffsetDateTime.ofInstant(gmt.toInstant(), gmt.getTimeZone().toZoneId());

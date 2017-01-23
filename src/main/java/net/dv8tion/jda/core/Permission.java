@@ -61,6 +61,11 @@ public enum Permission
 
     UNKNOWN(-1, false, false);
 
+    /**
+     * Represents a raw set of all permissions
+     */
+    public static final long ALL_PERMISSIONS = Permission.getRaw(Permission.values());
+
     private final int offset;
     private final boolean isGuild, isChannel;
 
@@ -176,7 +181,10 @@ public enum Permission
     {
         long raw = 0;
         for (Permission perm : permissions)
-            raw |= (1 << perm.getOffset());
+        {
+            if (perm != UNKNOWN)
+                raw |= (1 << perm.getOffset());
+        }
 
         return raw;
     }
