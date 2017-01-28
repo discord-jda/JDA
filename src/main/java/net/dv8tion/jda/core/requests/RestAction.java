@@ -63,8 +63,8 @@ public abstract class RestAction<T>
 {
     public static final SimpleLog LOG = SimpleLog.getLog("RestAction");
 
-    public static final Consumer DEFAULT_SUCCESS = o -> {};
-    public static final Consumer<Throwable> DEFAULT_FAILURE = t ->
+    public static Consumer DEFAULT_SUCCESS = o -> {};
+    public static Consumer<Throwable> DEFAULT_FAILURE = t ->
     {
         if (LOG.getEffectiveLevel().getPriority() <= SimpleLog.Level.DEBUG.getPriority())
         {
