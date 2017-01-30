@@ -35,6 +35,15 @@ public interface ApplicationInfo extends ISnowflake
 {
 
     /**
+     * Whether the bot requires code grant to invite or not. 
+     * If your application requires multiple scopes then you may need the full OAuth2 flow to ensure a
+     * bot doesn't join before your application is granted a token.
+     * 
+     * @return whether the bot requires code grant
+     */
+    boolean doesBotRequireCodeGrant();
+
+    /**
      * Returns the description of the bot's application.
      * 
      * @return The description of the bot's application or an empty {@link String} if no description is defined.
@@ -126,9 +135,10 @@ public interface ApplicationInfo extends ISnowflake
     User getOwner();
 
     /**
-     * Returns a {@link java.util.List List} of {@link String Strings} containing the RPC origins of the bot's application.
+     * Whether the bot is public or not. 
+     * Public bots can be added by anyone. When false only the owner can invite the bot to servers.
      * 
-     * @return The RPC origins of the bot's application, possibly empty.
+     * @return Whether the bot is public
      */
-    List<String> getRpcOrigins();
+    boolean isBotPublic();
 }

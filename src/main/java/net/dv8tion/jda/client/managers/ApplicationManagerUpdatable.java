@@ -46,8 +46,6 @@ public class ApplicationManagerUpdatable
     private ApplicationField<String> name;
     private ApplicationField<List<String>> redirectUris;
 
-    private ApplicationField<List<String>> rpcOrigins;
-
     public ApplicationManagerUpdatable(final ApplicationImpl application)
     {
         this.application = application;
@@ -95,16 +93,12 @@ public class ApplicationManagerUpdatable
         return this.redirectUris;
     }
 
-    public final ApplicationField<List<String>> getRpcOriginsField()
-    {
-        return this.rpcOrigins;
-    }
 
     protected boolean needsUpdate()
     {
         return this.description.shouldUpdate() || this.doesBotRequireCodeGrant.shouldUpdate()
                 || this.icon.shouldUpdate() || this.isBotPublic.shouldUpdate() || this.name.shouldUpdate()
-                || this.redirectUris.shouldUpdate() || this.rpcOrigins.shouldUpdate();
+                || this.redirectUris.shouldUpdate();
     }
 
     /**
@@ -118,7 +112,6 @@ public class ApplicationManagerUpdatable
         this.isBotPublic.reset();
         this.name.reset();
         this.redirectUris.reset();
-        this.rpcOrigins.reset();
     }
 
     protected void setupFields()
@@ -198,21 +191,6 @@ public class ApplicationManagerUpdatable
                 }
             }
         };
-
-        this.rpcOrigins = new ApplicationField<List<String>>(this, this.application::getRedirectUris)
-        {
-            @Override
-            public void checkValue(final List<String> value)
-            {
-                Field.checkNull(value, "rpc origins");
-                for (final String url : value)
-                {
-                    Field.checkNull(url, "rpc origin");
-                    if (!ApplicationManagerUpdatable.URL_PATTERN.matcher(url).matches())
-                        throw new IllegalArgumentException("URL must be a valid http or https url.");
-                }
-            }
-        };
     }
 
     public RestAction<Application> update()
@@ -248,15 +226,6 @@ public class ApplicationManagerUpdatable
         }
         else
             body.put("redirect_uris", this.redirectUris.getOriginalValue());
-
-        if (this.rpcOrigins.shouldUpdate())
-        {
-            // same here
-            this.rpcOrigins.checkValue(this.rpcOrigins.getValue());
-            body.put("rpc_origins", this.rpcOrigins.getValue());
-        }
-        else
-            body.put("rpc_origins", this.rpcOrigins.getOriginalValue());
 
         return new RestAction<Application>(this.getJDA(),
                 Route.Applications.MODIFY_APPLICATION.compile(this.application.getId()), body)

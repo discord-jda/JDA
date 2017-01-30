@@ -96,9 +96,4 @@ public class ApplicationManager
         return this.updatable.getRedirectUrisField().setValue(redirectUris).update();
     }
 
-    public RestAction<Application> setRpcOrigins(final List<String> rpcOrigins)
-    {
-        return this.updatable.getRedirectUrisField().setValue(rpcOrigins).update();
-    }
-
 }

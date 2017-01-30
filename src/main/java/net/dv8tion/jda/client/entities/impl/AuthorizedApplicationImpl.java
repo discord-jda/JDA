@@ -20,11 +20,10 @@ public class AuthorizedApplicationImpl implements AuthorizedApplication
     private final String iconId;
     private final String id;
     private final String name;
-    private final List<String> rpcOrigins;
     private final List<String> scopes;
 
     public AuthorizedApplicationImpl(final JDA api, final String authId, final String description, final String iconId,
-            final String id, final String name, final List<String> rpcOrigins, final List<String> scopes)
+            final String id, final String name, final List<String> scopes)
     {
         this.api = api;
         this.authId = authId;
@@ -32,7 +31,6 @@ public class AuthorizedApplicationImpl implements AuthorizedApplication
         this.iconId = iconId;
         this.id = id;
         this.name = name;
-        this.rpcOrigins = rpcOrigins;
         this.scopes = scopes;
     }
 
@@ -101,12 +99,6 @@ public class AuthorizedApplicationImpl implements AuthorizedApplication
     public String getName()
     {
         return this.name;
-    }
-
-    @Override
-    public List<String> getRpcOrigins()
-    {
-        return Collections.unmodifiableList(this.rpcOrigins);
     }
 
     @Override

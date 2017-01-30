@@ -1168,19 +1168,14 @@ public class EntityBuilder
     public ApplicationInfo createApplicationInfo(JSONObject object)
     {
         final String description = object.getString("description");
+        final boolean doesBotRequireCodeGrant = object.getBoolean("bot_require_code_grant");
         final String iconId = object.has("icon") ? null : object.getString("icon");
         final String id = object.getString("id");
         final String name = object.getString("name");
+        final boolean isBotPublic = object.getBoolean("bot_public");
         final User owner = createFakeUser(object.getJSONObject("owner"), false);
 
-        JSONArray rpcOriginArray = object.getJSONArray("rpc_origins");
-        List<String> rpcOrigins = new ArrayList<>(rpcOriginArray.length());
-        for (int i = 0; i < rpcOriginArray.length(); i++)
-        {
-            rpcOrigins.add(rpcOriginArray.getString(i));
-        }
-
-        return new ApplicationInfoImpl(api, description, iconId, id, name, owner, rpcOrigins);
+        return new ApplicationInfoImpl(api, description, doesBotRequireCodeGrant, iconId, id, false, name, owner);
     }
 
     public Application createApplication(JSONObject object)
@@ -1205,13 +1200,6 @@ public class EntityBuilder
         final String id = application.getString("id");
         final String name = application.getString("name");
 
-        JSONArray rpcOriginArray = application.getJSONArray("rpc_origins");
-        List<String> rpcOrigins = new ArrayList<>(rpcOriginArray.length());
-        for (int i = 0; i < rpcOriginArray.length(); i++)
-        {
-            rpcOrigins.add(rpcOriginArray.getString(i));
-        }
-
-        return new AuthorizedApplicationImpl(api, authId, description, iconId, id, name, rpcOrigins, scopes);
+        return new AuthorizedApplicationImpl(api, authId, description, iconId, id, name, scopes);
     }
 }

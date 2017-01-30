@@ -29,22 +29,30 @@ public class ApplicationInfoImpl implements ApplicationInfo
     private final JDA api;
 
     private final String description;
+    private boolean doesBotRequireCodeGrant;
     private final String iconId;
     private final String id;
+    private boolean isBotPublic;
     private final String name;
     private final User owner;
-    private final List<String> rpcOrigins;
 
-    public ApplicationInfoImpl(final JDA api, final String description, final String iconId, final String id,
-            final String name, final User owner, final List<String> rpcOrigins)
+    public ApplicationInfoImpl(JDA api, String description, boolean doesBotRequireCodeGrant, String iconId, String id,
+            boolean isBotPublic, String name, User owner)
     {
         this.api = api;
         this.description = description;
+        this.doesBotRequireCodeGrant = doesBotRequireCodeGrant;
         this.iconId = iconId;
         this.id = id;
+        this.isBotPublic = isBotPublic;
         this.name = name;
         this.owner = owner;
-        this.rpcOrigins = rpcOrigins;
+    }
+
+    @Override
+    public final boolean doesBotRequireCodeGrant()
+    {
+        return this.doesBotRequireCodeGrant;
     }
 
     @Override
@@ -97,7 +105,6 @@ public class ApplicationInfoImpl implements ApplicationInfo
                 + (permissions == null || permissions.isEmpty() ? "" : "&permissions=" + Permission.getRaw(permissions))
                 + (guildId == null ? "" : "&guild_id=" + guildId);
     }
-
     @Override
     public String getInviteUrl(final String guildId, final Permission... permissions)
     {
@@ -106,7 +113,6 @@ public class ApplicationInfoImpl implements ApplicationInfo
                         : "&permissions=" + Permission.getRaw(permissions))
                 + (guildId == null ? "" : "&guild_id=" + guildId);
     }
-
     @Override
     public JDA getJDA()
     {
@@ -126,15 +132,15 @@ public class ApplicationInfoImpl implements ApplicationInfo
     }
 
     @Override
-    public List<String> getRpcOrigins()
-    {
-        return Collections.unmodifiableList(this.rpcOrigins);
-    }
-
-    @Override
     public int hashCode()
     {
         return this.id.hashCode();
+    }
+
+    @Override
+    public final boolean isBotPublic()
+    {
+        return this.isBotPublic;
     }
 
     @Override

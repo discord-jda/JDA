@@ -49,7 +49,6 @@ public class ApplicationImpl implements Application
     private String name;
     private List<String> redirectUris;
     private int rpcApplicationState;
-    private List<String> rpcOrigins;
     private String secret;
 
     public ApplicationImpl(final JDA api, final JSONObject object)
@@ -191,12 +190,6 @@ public class ApplicationImpl implements Application
     }
 
     @Override
-    public final List<String> getRpcOrigins()
-    {
-        return Collections.unmodifiableList(this.rpcOrigins);
-    }
-
-    @Override
     public String getSecret()
     {
         return this.secret;
@@ -238,6 +231,7 @@ public class ApplicationImpl implements Application
 
     public ApplicationImpl updateFromJson(final JSONObject object)
     {
+        System.out.println(object.toString(4));
         if (object.has("bot"))
         {
             final JSONObject botObject = object.getJSONObject("bot");
@@ -270,14 +264,6 @@ public class ApplicationImpl implements Application
             this.redirectUris.add(redirectUriArray.getString(i));
 
         this.rpcApplicationState = object.getInt("rpc_application_state");
-
-        final JSONArray rpcOriginArray = object.getJSONArray("rpc_origins");
-        if (this.rpcOrigins == null)
-            this.rpcOrigins = new ArrayList<>(rpcOriginArray.length());
-        else
-            this.rpcOrigins.clear();
-        for (int i = 0; i < rpcOriginArray.length(); i++)
-            this.rpcOrigins.add(rpcOriginArray.getString(i));
 
         this.secret = object.getString("secret");
 

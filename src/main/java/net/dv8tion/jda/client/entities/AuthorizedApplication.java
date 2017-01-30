@@ -87,13 +87,6 @@ public interface AuthorizedApplication extends ISnowflake
     String getName();
 
     /**
-     * Returns a {@link java.util.List List<}{@link String String}{@link java.util.List >} of RPC origins of the Application.
-     * @return
-     *      The name of the bot's Application.
-     */
-    List<String> getRpcOrigins();
-
-    /**
      * Returns a {@link java.util.List List}{@literal <}{@link String String}{@literal >} of authorized scopes of the Application.
      * @return
      *      The authorisation scopes.

@@ -64,9 +64,6 @@ public interface Application extends ISnowflake
      * Whether the bot requires code grant to invite or not. 
      * If your application requires multiple scopes then you may need the full OAuth2 flow to ensure a
      * bot doesn't join before your application is granted a token.
-     * <br>
-     * <br><b>TODO</b>:  Wait for <a href="https://github.com/hammerandchisel/discord-api-docs/issues/204">Discord
-     * Documentation Github - Missing fields when viewing a bot's own application #204</a> as this might be moved into the bot object
      * 
      * @return whether the bot requires code grant
      */
@@ -132,13 +129,6 @@ public interface Application extends ISnowflake
     int getRpcApplicationState();
 
     /**
-     * Returns a {@link java.util.List List} of {@link String Strings} containing the RPC origins of the application.
-     * 
-     * @return The RPC origins of the application, possibly empty.
-     */
-    List<String> getRpcOrigins();
-
-    /**
      * Returns the Application secret (Used for oAuth)
      * @return
      *      The Application secret
@@ -155,9 +145,6 @@ public interface Application extends ISnowflake
     /**
      * Whether the bot is public or not. 
      * Public bots can be added by anyone. When false only the owner can invite the bot to servers.
-     * <br>
-     * <br><b>TODO</b>:  Wait for <a href="https://github.com/hammerandchisel/discord-api-docs/issues/204">Discord
-     * Documentation Github - Missing fields when viewing a bot's own application #204</a> as this might be moved into the bot object
      * 
      * @return Whether the bot is public
      */
