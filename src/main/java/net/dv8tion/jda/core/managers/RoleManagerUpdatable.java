@@ -27,11 +27,27 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
-import net.dv8tion.jda.core.utils.PermissionUtil;
+import org.apache.http.util.Args;
 import org.json.JSONObject;
 
-import java.awt.*;
+import java.awt.Color;
 
+/**
+ * An {@link #update() updatable} manager that allows
+ * to modify role settings like the {@link #getNameField() name} the {@link #getColorField() color}.
+ *
+ * <p>This manager allows to modify multiple fields at once
+ * by getting the {@link net.dv8tion.jda.core.managers.fields.RoleField RoleField} for specific
+ * properties and setting or resetting their values; followed by a call of {@link #update()}!
+ * <br>Default values depend on the inherited properties of the <u>Public Role</u> in the parent Guild.
+ *
+ * <p>The {@link net.dv8tion.jda.core.managers.RoleManager RoleManager} implementation
+ * simplifies this process by giving simple setters that return the {@link #update() update} {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+ *
+ * <p><b>Note</b>: To {@link #update() update} this manager
+ * the currently logged in account requires the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES} and
+ * must be more powerful according to Discord hierarchy rules (positional strength). [ee {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) Role.canInteract(Role)}]
+ */
 public class RoleManagerUpdatable
 {
     protected final Role role;
@@ -42,72 +58,142 @@ public class RoleManagerUpdatable
     protected RoleField<Boolean> mentionable;
     protected PermissionField permissions;
 
+    /**
+     * Creates a new RoleManagerUpdatable instance
+     *
+     * @param role
+     *        The {@link net.dv8tion.jda.core.entities.Role Role} to manage
+     */
     public RoleManagerUpdatable(Role role)
     {
         this.role = role;
         setupFields();
     }
 
+    /**
+     * The {@link net.dv8tion.jda.core.JDA JDA} instance of this Manager
+     *
+     * @return the corresponding JDA instance
+     */
     public JDA getJDA()
     {
         return role.getJDA();
     }
 
+    /**
+     * The {@link net.dv8tion.jda.core.entities.Guild Guild} this Manager's
+     * {@link net.dv8tion.jda.core.entities.Role Role} is in.
+     * <br>This is logically the same as calling {@code getRole().getGuild()}
+     *
+     * @return The parent {@link net.dv8tion.jda.core.entities.Guild Guild}
+     */
     public Guild getGuild()
     {
         return role.getGuild();
     }
 
+    /**
+     * The target {@link net.dv8tion.jda.core.entities.Role Role} for this
+     * manager
+     *
+     * @return The target Role
+     */
     public Role getRole()
     {
         return role;
     }
 
+    /**
+     * An {@link net.dv8tion.jda.core.managers.fields.RoleField RoleField}
+     * for the <b><u>name</u></b> of the selected {@link net.dv8tion.jda.core.entities.Role Role}.
+     *
+     * <p>To set the value use {@link net.dv8tion.jda.core.managers.fields.Field#setValue(Object) setValue(String)}
+     * on the returned {@link net.dv8tion.jda.core.managers.fields.RoleField RoleField} instance.
+     *
+     * <p>A role name <b>must</b> be between 1-32 characters long!
+     * <br>Otherwise {@link net.dv8tion.jda.core.managers.fields.Field#setValue(Object) Field.setValue(...)} will
+     * throw an {@link IllegalArgumentException IllegalArgumentException}.
+     *
+     * @return {@link net.dv8tion.jda.core.managers.fields.RoleField RoleField} - Type: {@code String}
+     */
     public RoleField<String> getNameField()
     {
-        checkPermission(Permission.MANAGE_ROLES);
-        checkPosition();
-
         return name;
     }
 
-
+    /**
+     * An {@link net.dv8tion.jda.core.managers.fields.RoleField RoleField}
+     * for the <b><u>color</u></b> of the selected {@link net.dv8tion.jda.core.entities.Role Role}.
+     *
+     * <p>To set the value use {@link net.dv8tion.jda.core.managers.fields.Field#setValue(Object) setValue(Color)}
+     * on the returned {@link net.dv8tion.jda.core.managers.fields.RoleField RoleField} instance.
+     * <br>Provide {@code null} or {@link Color#BLACK black} to use the default color.
+     *
+     * @return {@link net.dv8tion.jda.core.managers.fields.RoleField RoleField} - Type: {@link java.awt.Color Color}
+     */
     public RoleField<Color> getColorField()
     {
-        checkPermission(Permission.MANAGE_ROLES);
-        checkPosition();
-
         return color;
     }
 
+    /**
+     * An {@link net.dv8tion.jda.core.managers.fields.RoleField RoleField}
+     * for the <b><u>hoist state</u></b> of the selected {@link net.dv8tion.jda.core.entities.Role Role}.
+     *
+     * <p>To set the value use {@link net.dv8tion.jda.core.managers.fields.Field#setValue(Object) setValue(Boolean)}
+     * on the returned {@link net.dv8tion.jda.core.managers.fields.RoleField RoleField} instance.
+     *
+     * <p>A role hoist state <b>must not</b> be {@code null}!
+     * <br>Otherwise {@link net.dv8tion.jda.core.managers.fields.Field#setValue(Object) Field.setValue(...)} will
+     * throw an {@link IllegalArgumentException IllegalArgumentException}.
+     *
+     * @return {@link net.dv8tion.jda.core.managers.fields.RoleField RoleField} - Type: {@code Boolean}
+     */
     public RoleField<Boolean> getHoistedField()
     {
-        checkPermission(Permission.MANAGE_ROLES);
-        checkPosition();
-
         return hoisted;
     }
 
+    /**
+     * An {@link net.dv8tion.jda.core.managers.fields.RoleField RoleField}
+     * for the <b><u>mentionable state</u></b> of the selected {@link net.dv8tion.jda.core.entities.Role Role}.
+     *
+     * <p>To set the value use {@link net.dv8tion.jda.core.managers.fields.Field#setValue(Object) setValue(Boolean)}
+     * on the returned {@link net.dv8tion.jda.core.managers.fields.RoleField RoleField} instance.
+     *
+     * <p>A role mentionable state <b>must not</b> be {@code null}!
+     * <br>Otherwise {@link net.dv8tion.jda.core.managers.fields.Field#setValue(Object) Field.setValue(...)} will
+     * throw an {@link IllegalArgumentException IllegalArgumentException}.
+     *
+     * @return {@link net.dv8tion.jda.core.managers.fields.RoleField RoleField} - Type: {@code Boolean}
+     */
     public RoleField<Boolean> getMentionableField()
     {
-        checkPermission(Permission.MANAGE_ROLES);
-        checkPosition();
-
         return mentionable;
     }
 
-
+    /**
+     * An {@link net.dv8tion.jda.core.managers.fields.PermissionField PermissionField}
+     * for the {@link net.dv8tion.jda.core.Permission Permissions} of the selected {@link net.dv8tion.jda.core.entities.Role Role}.
+     *
+     * <p>To set the value use {@link net.dv8tion.jda.core.managers.fields.PermissionField#setPermissions(Permission...) setPermissions(Permission...)}
+     * on the returned {@link net.dv8tion.jda.core.managers.fields.PermissionField PermissionField} instance.
+     *
+     * <p>A role permissions <b>must not</b> be {@code null}!
+     * <br>Otherwise the {@link net.dv8tion.jda.core.managers.fields.PermissionField PermissionField} will
+     * throw an {@link IllegalArgumentException IllegalArgumentException}.
+     *
+     * @return {@link net.dv8tion.jda.core.managers.fields.PermissionField PermissionField}
+     */
     public PermissionField getPermissionField()
     {
-        checkPermission(Permission.MANAGE_ROLES);
-        checkPosition();
-
         return permissions;
     }
 
-
     /**
-     * Resets all queued updates. So the next call to {@link #update()} will change nothing.
+     * Resets all {@link net.dv8tion.jda.core.managers.fields.Field Fields}
+     * for this manager instance by calling {@link net.dv8tion.jda.core.managers.fields.Field#reset() Field.reset()} sequentially
+     * <br>This is automatically called by {@link #update()}
      */
     public void reset() {
         name.reset();
@@ -117,8 +203,34 @@ public class RoleManagerUpdatable
         permissions.reset();
     }
 
-    /*
-     * This method will apply all accumulated changes received by setters
+    /**
+     * Creates a new {@link net.dv8tion.jda.core.requests.RestAction RestAction} instance
+     * that will apply <b>all</b> changes that have been made to this manager instance.
+     * <br>If no changes have been made this will simply return {@link net.dv8tion.jda.core.requests.RestAction.EmptyRestAction EmptyRestAction}.
+     *
+     * <p>Before applying new changes it is recommended to call {@link #reset()} to reset previous changes.
+     * <br>This is automatically called if this method returns successfully.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} for this
+     * update include the following:
+     * <ul>
+     *      <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_ROLE UNKNOWN_ROLE}
+     *      <br>If the Role was deleted before finishing the task</li>
+     *
+     *      <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *      <br>If the currently logged in account was removed from the Guild before finishing the task</li>
+     *
+     *      <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *      <br>If the currently logged in account loses the {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES Permission} or lost
+     *          positional power before finishing the task</li>
+     * </ul>
+     *
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES}
+     *         or does not have the power to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     *         <br>Applies all changes that have been made in a single api-call.
      */
     public RestAction<Void> update()
     {
@@ -166,21 +278,15 @@ public class RoleManagerUpdatable
                 || permissions.shouldUpdate();
     }
 
-    protected void checkNull(Object obj, String name)
-    {
-        if (obj == null)
-            throw new NullPointerException("Provided " + name + " was null!");
-    }
-
     protected void checkPermission(Permission perm)
     {
-        if (!PermissionUtil.checkPermission(getGuild(), getGuild().getSelfMember(), perm))
+        if (!getGuild().getSelfMember().hasPermission(perm))
             throw new PermissionException(perm);
     }
 
     protected void checkPosition()
     {
-        if(!PermissionUtil.canInteract(getGuild().getSelfMember(), role))
+        if(!getGuild().getSelfMember().canInteract(role))
             throw new PermissionException("Can't modify role >= highest self-role");
     }
 
@@ -191,7 +297,7 @@ public class RoleManagerUpdatable
             @Override
             public void checkValue(String value)
             {
-                checkNull(value, "name");
+                Args.notNull(value, "name");
                 if (value.isEmpty() || value.length() > 32)
                     throw new IllegalArgumentException("Provided role name must be 1 to 32 characters in length");
             }
@@ -218,7 +324,7 @@ public class RoleManagerUpdatable
             @Override
             public void checkValue(Boolean value)
             {
-                checkNull(value, "hoisted Boolean");
+                Args.notNull(value, "hoisted Boolean");
             }
         };
 
@@ -227,7 +333,7 @@ public class RoleManagerUpdatable
             @Override
             public void checkValue(Boolean value)
             {
-                checkNull(value, "mentionable Boolean");
+                Args.notNull(value, "mentionable Boolean");
             }
         };
 

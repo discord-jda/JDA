@@ -20,6 +20,19 @@ import net.dv8tion.jda.core.managers.WebhookManagerUpdatable;
 
 import java.util.function.Supplier;
 
+/**
+ * Specification AMF for
+ * an {@link net.dv8tion.jda.core.managers.WebhookManagerUpdatable WebhookManagerUpdatable}
+ * field.
+ *
+ * <p><b>This class is abstract and requires an implementation
+ * for {@link #checkValue(Object)}</b>
+ *
+ * @param  <T>
+ *         The Field-Type for this WebhookField
+ *
+ * @since  3.0
+ */
 public abstract class WebhookField<T> extends Field<T, WebhookManagerUpdatable>
 {
     public WebhookField(WebhookManagerUpdatable manager, Supplier<T> originalValue)

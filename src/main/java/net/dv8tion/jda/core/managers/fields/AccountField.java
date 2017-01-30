@@ -20,6 +20,19 @@ import net.dv8tion.jda.core.managers.AccountManagerUpdatable;
 
 import java.util.function.Supplier;
 
+/**
+ * Specification AMF for
+ * an {@link net.dv8tion.jda.core.managers.AccountManagerUpdatable AccountManagerUpdatable}
+ * field.
+ *
+ * <p><b>This class is abstract and requires an implementation
+ * for {@link #checkValue(Object)}</b>
+ *
+ * @param  <T>
+ *         The Field-Type for this AccountField
+ *
+ * @since  3.0
+ */
 public abstract class AccountField<T> extends Field<T, AccountManagerUpdatable>
 {
     public AccountField(AccountManagerUpdatable manager, Supplier<T> originalValue)

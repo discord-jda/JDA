@@ -50,12 +50,15 @@ public interface Presence
      * <br>This might not be what the Discord Client displays due to session clashing!
      *
      * @return The {@link net.dv8tion.jda.core.entities.Game Game}
-     *         of the current session
+     *         of the current session or null if no game is set
      */
     Game getGame();
 
     /**
-     * Whether the current session is marked as afk or not
+     * Whether the current session is marked as afk or not.
+     *
+     * <p>This is relevant to client accounts to monitor
+     * whether new messages should trigger mobile push-notifications.
      *
      * @return True if this session is marked as afk
      */
@@ -64,12 +67,12 @@ public interface Presence
     /**
      * Sets the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} for this session
      *
+     * @throws IllegalArgumentException
+     *         if the provided OnlineStatus is {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}
+     *
      * @param  status
      *         the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus}
      *         to be used (OFFLINE/null {@literal ->} INVISIBLE)
-     *
-     * @throws IllegalArgumentException
-     *         if the provided OnlineStatus is {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}
      */
     void setStatus(OnlineStatus status);
 
@@ -88,6 +91,9 @@ public interface Presence
 
     /**
      * Sets whether this session should be marked as afk or not
+     *
+     * <p>This is relevant to client accounts to monitor
+     * whether new messages should trigger mobile push-notifications.
      *
      * @param idle
      *        boolean

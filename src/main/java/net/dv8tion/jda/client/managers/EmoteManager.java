@@ -21,31 +21,41 @@ import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.impl.EmoteImpl;
-import net.dv8tion.jda.core.exceptions.AccountTypeException;
-import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.requests.RestAction;
 
 import java.util.Set;
 
 /**
- * Used to modify or delete an Emote.<p>
- * <b>This is a <u>client only</u> function!</b>
+ * Decoration for a {@link net.dv8tion.jda.client.managers.EmoteManagerUpdatable EmoteManagerUpdatable} instance.
+ * <br>Simplifies managing flow for convenience.
+ *
+ * <p>This decoration allows to modify a single field by automatically building an update {@link net.dv8tion.jda.core.requests.RestAction RestAction}
  */
 public class EmoteManager
 {
 
     protected final EmoteManagerUpdatable updatable;
 
+    /**
+     * Creates a new EmoteManager instance
+     *
+     * @param  emote
+     *         The target {@link net.dv8tion.jda.core.entities.impl.EmoteImpl EmoteImpl} to modify
+     *
+     * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
+     *         If the currently logged in account is not from {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}
+     * @throws java.lang.IllegalStateException
+     *         If the specified Emote is {@link net.dv8tion.jda.core.entities.Emote#isFake() fake} or {@link net.dv8tion.jda.core.entities.Emote#isManaged() managed}.
+     */
     public EmoteManager(EmoteImpl emote)
     {
         this.updatable = new EmoteManagerUpdatable(emote);
     }
 
     /**
-     * The {@link net.dv8tion.jda.core.JDA JDA} instance of this Emote
+     * The {@link net.dv8tion.jda.core.JDA JDA} instance of this Manager
      *
-     * @return
-     *      The JDA instance of this Emote
+     * @return the corresponding JDA instance
      */
     public JDA getJDA()
     {
@@ -53,10 +63,11 @@ public class EmoteManager
     }
 
     /**
-     * The {@link net.dv8tion.jda.core.entities.Guild Guild} this emote is in
+     * The {@link net.dv8tion.jda.core.entities.Guild Guild} this Manager's
+     * {@link net.dv8tion.jda.core.entities.Emote Emote} is in.
+     * <br>This is logically the same as calling {@code getEmote().getGuild()}
      *
-     * @return
-     *      The Guild of the respected Emote
+     * @return The parent {@link net.dv8tion.jda.core.entities.Guild Guild}
      */
     public Guild getGuild()
     {
@@ -64,10 +75,10 @@ public class EmoteManager
     }
 
     /**
-     * The {@link net.dv8tion.jda.core.entities.Emote Emote} represented by this Manager.
+     * The target {@link net.dv8tion.jda.core.entities.Emote Emote}
+     * that will be modified by this Manager
      *
-     * @return
-     *      The Emote
+     * @return The target Emote
      */
     public Emote getEmote()
     {
@@ -75,21 +86,26 @@ public class EmoteManager
     }
 
     /**
-     * Sets the name of this Emote.<p>
-     * <b>This is a <u>client only</u> function!</b>
+     * Sets the <b><u>name</u></b> of the selected {@link net.dv8tion.jda.core.entities.Emote Emote}.
      *
-     * @param name
-     *      The name to set for this Emote (null to keep current name)
-     * @return
-     *      {@link net.dv8tion.jda.core.requests.RestAction RestAction} - <br>
-     *      &nbsp;&nbsp;&nbsp;&nbsp;<b>Type</b>: {@link java.lang.Void}<br>
-     *      &nbsp;&nbsp;&nbsp;&nbsp;<b>Value</b>: None
-     * @throws AccountTypeException
-     *      if the current AccountType is not Client
-     * @throws PermissionException
-     *      if either the Emote trying to update is fake or we do not have the required Permissions to update this emote
+     * <p>An emote name <b>must</b> be between 2-32 characters long!
+     * <br>Emote names may only be populated with alphanumeric (with underscore and dash).
+     *
+     * <p><b>Example</b>: {@code tatDab} or {@code fmgSUP}
+     *
+     * @param  name
+     *         The new name for the selected {@link net.dv8tion.jda.core.entities.Emote Emote}
+     *
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES MANAGE_EMOTES}
      * @throws IllegalArgumentException
-     *      if the specified name has less than 2 chars or more than 32 chars.
+     *         If the provided name is {@code null} or not between 2-32 characters long
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     *         <br>Update RestAction from {@link EmoteManagerUpdatable#update() #update()}
+     *
+     * @see    net.dv8tion.jda.client.managers.EmoteManagerUpdatable#getNameField()
+     * @see    net.dv8tion.jda.client.managers.EmoteManagerUpdatable#update()
      */
     public RestAction<Void> setName(String name)
     {
@@ -97,19 +113,25 @@ public class EmoteManager
     }
 
     /**
-     * Set roles this emote is active for.<p>
-     * <b>This is a <u>client only</u> function!</b>
+     * Sets the <b><u>restriction roles</u></b> of the selected {@link net.dv8tion.jda.core.entities.Emote Emote}.
+     * <br>If these are empty the Emote will be available to everyone otherwise only available to the specified roles.
      *
-     * @param roles
-     *      A set of roles (all within the same guild the emote is in) / null to keep current roles
-     * @return
-     *      {@link net.dv8tion.jda.core.requests.RestAction RestAction} - <br>
-     *      &nbsp;&nbsp;&nbsp;&nbsp;<b>Type</b>: {@link java.lang.Void}<br>
-     *      &nbsp;&nbsp;&nbsp;&nbsp;<b>Value</b>: None
-     * @throws AccountTypeException
-     *      if the current AccountType is not Client
-     * @throws PermissionException
-     *      if either the Emote trying to update is fake or we do not have the required Permissions to update this emote
+     * <p>An emote's restriction roles <b>must not</b> contain {@code null}!
+     *
+     * @param  roles
+     *         The new not-null set of {@link net.dv8tion.jda.core.entities.Role Roles} for the selected {@link net.dv8tion.jda.core.entities.Emote Emote}
+     *         to be restricted to
+     *
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES MANAGE_EMOTES}
+     * @throws IllegalArgumentException
+     *         If any of the provided values is {@code null}
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     *         <br>Update RestAction from {@link EmoteManagerUpdatable#update() #update()}
+     *
+     * @see    net.dv8tion.jda.client.managers.EmoteManagerUpdatable#getRolesField()
+     * @see    net.dv8tion.jda.client.managers.EmoteManagerUpdatable#update()
      */
     public RestAction<Void> setRoles(Set<Role> roles)
     {
