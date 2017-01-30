@@ -588,7 +588,7 @@ public interface Guild extends ISnowflake
      * for messages. The value returned is the default level set for any new Members that join the Guild.
      * <br>For a short description of the different values, see {@link net.dv8tion.jda.core.entities.Guild.NotificationLevel NotificationLevel}.
      * <p>
-     * This value can be modified using {@link GuildManager#setDefaultNotificationLeveL(net.dv8tion.jda.core.entities.Guild.NotificationLevel)}
+     * This value can be modified using {@link GuildManager#setDefaultNotificationLevel(net.dv8tion.jda.core.entities.Guild.NotificationLevel)}
      * or {@link net.dv8tion.jda.core.managers.GuildManagerUpdatable#getDefaultNotificationLevelField()}
      *
      * @return The default message Notification-Level of this Guild.

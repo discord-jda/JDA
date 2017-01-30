@@ -363,7 +363,7 @@ public interface Message extends ISnowflake
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The delete was attempted after the account lost {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in
      *         the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} when deleting another Member's message
-     *         or lost {@link net.dv8tion.jda.core.Permission#}.</li>
+     *         or lost {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE}.</li>
      *
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *         The pin was attempted after the Message had been deleted.</li>

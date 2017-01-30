@@ -69,7 +69,7 @@ public class ChannelAction extends RestAction<Channel>
      * @param  guild
      *         The {@link net.dv8tion.jda.core.entities.Guild Guild} the channel should be created in
      * @param  voice
-     *         Whether the new channel should be a VoiceChannel (false -> TextChannel)
+     *         Whether the new channel should be a VoiceChannel (false {@literal ->} TextChannel)
      */
     public ChannelAction(Route.CompiledRoute route, String name, Guild guild, boolean voice)
     {

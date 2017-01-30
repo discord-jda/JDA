@@ -15,10 +15,22 @@
  */
 package net.dv8tion.jda.core;
 
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.IMentionable;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.MessageEmbed;
+import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.impl.MessageImpl;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.MissingFormatArgumentException;
+import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,7 +43,7 @@ import java.util.regex.Pattern;
  * @since  1.0
  * @author Michael Ritter and Aljoscha Grebe
  */
-public class MessageBuilder
+public class MessageBuilder implements Appendable
 {
     public static final String USER_KEY = "%U%";
     public static final String ROLE_KEY = "%R%";
@@ -50,9 +62,9 @@ public class MessageBuilder
     public static final IMentionable HERE_MENTION = () -> "@here";
 
     protected static final Pattern FORMAT_PATTERN = Pattern.compile(String.format("%s|%s|%s|%s|%s", USER_KEY, ROLE_KEY, TEXTCHANNEL_KEY, EVERYONE_KEY, HERE_KEY));
-    protected static final Pattern USER_MENTION_PATTERN = Pattern.compile("<@!{0,1}([0-9]+)>");
-    protected static final Pattern CHANNEL_MENTION_PATTERN = Pattern.compile("<#!{0,1}([0-9]+)>");
-    protected static final Pattern ROLE_MENTION_PATTERN = Pattern.compile("<@&!{0,1}([0-9]+)>");
+    protected static final Pattern USER_MENTION_PATTERN = Pattern.compile("<@!?([0-9]+)>");
+    protected static final Pattern CHANNEL_MENTION_PATTERN = Pattern.compile("<#!?([0-9]+)>");
+    protected static final Pattern ROLE_MENTION_PATTERN = Pattern.compile("<@&!?([0-9]+)>");
 
     protected final StringBuilder builder = new StringBuilder();
 
@@ -93,22 +105,6 @@ public class MessageBuilder
     }
 
     /**
-     * Appends a string to the Message
-     *
-     * @param  text
-     *         the text to append
-     *
-     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
-     *
-     * @deprecated use {@link #append(CharSequence)} instead.
-     */
-    @Deprecated
-    public MessageBuilder appendString(CharSequence text)
-    {
-        return this.append(text);
-    }
-
-    /**
      * Appends a String to the Message.
      *
      * @param  text
@@ -116,9 +112,24 @@ public class MessageBuilder
      *
      * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
      */
+    @Override
     public MessageBuilder append(CharSequence text)
     {
         builder.append(text);
+        return this;
+    }
+
+    @Override
+    public MessageBuilder append(CharSequence text, int start, int end)
+    {
+        builder.append(text, start, end);
+        return this;
+    }
+
+    @Override
+    public MessageBuilder append(char c)
+    {
+        builder.append(c);
         return this;
     }
 
@@ -190,46 +201,28 @@ public class MessageBuilder
     }
 
     /**
-     * Appends a formatted string to the Message
-     *
-     * @param  text
-     *         the text to append
-     * @param  format
-     *         the format(s) to apply to the text
-     *
-     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
-     *
-     * @deprecated use {@link #append(CharSequence, Formatting...)} instead
-     */
-    @Deprecated
-    public MessageBuilder appendString(CharSequence text, Formatting... format)
-    {
-        return this.append(text, format);
-    }
-
-    /**
      * This method is an extended form of {@link String#format(String, Object...)}. It allows for all of
      * the token replacement functionality that String.format(String, Object...) supports, but it also supports
      * specialized token replacement specific to JDA objects.
      *
      * <p>Current tokens:
      * <ul>
-     *     <li><b>%U%</b> - Defined as {@link net.dv8tion.jda.core.MessageBuilder#USER_KEY}
+     *     <li><b>%U%</b> - Defined as {@link net.dv8tion.jda.core.MessageBuilder#USER_KEY USER_KEY}
      *          Used to mention a {@link net.dv8tion.jda.core.entities.User User}.
-     *          Same as {@link #appendMention(net.dv8tion.jda.core.entities.User)}
+     *          Same as {@link #append(IMentionable) append(User)}
      *          </li>
-     *     <li><b>%R%</b> - Defined as {@link net.dv8tion.jda.core.MessageBuilder#ROLE_KEY}
+     *     <li><b>%R%</b> - Defined as {@link net.dv8tion.jda.core.MessageBuilder#ROLE_KEY ROLE_KEY}
      *          Used to mention a {@link net.dv8tion.jda.core.entities.Role Role}.
-     *          Same as {@link #appendMention(net.dv8tion.jda.core.entities.Role)}</li>
-     *     <li><b>%TC%</b> - Defined as {@link net.dv8tion.jda.core.MessageBuilder#TEXTCHANNEL_KEY}
+     *          Same as {@link #append(IMentionable) append(Role)}</li>
+     *     <li><b>%TC%</b> - Defined as {@link net.dv8tion.jda.core.MessageBuilder#TEXTCHANNEL_KEY TEXTCHANNEL_KEY}
      *          Used to mention a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
-     *          Same as {@link #appendMention(net.dv8tion.jda.core.entities.TextChannel)}</li>
-     *     <li><b>%E%</b> - Defined as {@link net.dv8tion.jda.core.MessageBuilder#EVERYONE_KEY}
+     *          Same as {@link #append(IMentionable) append(Role)}</li>
+     *     <li><b>%E%</b> - Defined as {@link net.dv8tion.jda.core.MessageBuilder#EVERYONE_KEY EVERYONE_KEY}
      *          Used to mention {@code @everyone}.
-     *          Same as {@link #appendEveryoneMention()}</li>
-     *     <li><b>%H%</b> - Defined as {@link net.dv8tion.jda.core.MessageBuilder#HERE_KEY}
+     *          Same as {@link #append(CharSequence) append("@everyone")}</li>
+     *     <li><b>%H%</b> - Defined as {@link net.dv8tion.jda.core.MessageBuilder#HERE_KEY HERE_KEY}
      *          Used to mention {@code @here}.
-     *          Same as {@link #appendHereMention()}</li>
+     *          Same as {@link #append(CharSequence) append("@here")}</li>
      * </ul>
      *
      * <p>Example:
@@ -370,82 +363,6 @@ public class MessageBuilder
     {
         builder.append("```").append(language).append('\n').append(text).append("\n```");
         return this;
-    }
-
-    /**
-     * Appends a mention to the Message.
-     *
-     * @param user
-     *        the user to mention
-     *
-     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
-     *
-     * @deprecated use {@link #append(IMentionable)} instead
-     */
-    @Deprecated
-    public MessageBuilder appendMention(User user)
-    {
-        return this.append(user);
-    }
-
-    /**
-     * Appends a @everyone mention to the Message
-     * 
-     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
-     *
-     * @deprecated use {@link MessageBuilder#append(IMentionable)} with {@link MessageBuilder#EVERYONE_MENTION} instead.
-     */
-    @Deprecated
-    public MessageBuilder appendEveryoneMention()
-    {
-        return this.append(EVERYONE_MENTION);
-    }
-    
-    /**
-     * Appends a @here mention to the Message
-     *
-     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
-     *
-     * @deprecated use {@linkplain MessageBuilder#append(IMentionable)} with {@link MessageBuilder#HERE_MENTION} instead
-     */
-    @Deprecated
-    public MessageBuilder appendHereMention()
-    {
-        return this.append(HERE_MENTION);
-    }
-
-    /**
-     * Appends a channel mention to the Message.
-     * <br>For this to work, the given TextChannel has to be from the Guild the mention is posted to.
-     *
-     * @param  channel
-     *         The {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} to mention.
-     *
-     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
-     *
-     * @deprecated use {@link #append(IMentionable)} instead.
-     */
-    @Deprecated
-    public MessageBuilder appendMention(TextChannel channel)
-    {
-        return this.append(channel);
-    }
-
-    /**
-     * Appends a Role mention to the Message.
-     * <br>For this to work, the given Role has to be from the Guild the mention is posted to.
-     *
-     * @param  role
-     *         The {@link net.dv8tion.jda.core.entities.Role Role} to mention.
-     *
-     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
-     *
-     * @deprecated use {@link #append(IMentionable)} instead.
-     */
-    @Deprecated
-    public MessageBuilder appendMention(Role role)
-    {
-        return this.append(role);
     }
 
     /**

@@ -544,7 +544,7 @@ public interface MessageChannel extends ISnowflake //todo: doc error responses o
      */
     default RestAction<Message> editMessageById(String id, String newContent)
     {
-        return editMessageById(id, new MessageBuilder().appendString(newContent).build());
+        return editMessageById(id, new MessageBuilder().append(newContent).build());
     }
 
     /**

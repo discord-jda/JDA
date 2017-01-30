@@ -147,7 +147,10 @@ public class WidgetUtil
      * @param  guildId
      *         The id of the Guild
      *
-     * @return null if the provided guild ID is not a valid Discord guild ID
+     * @throws net.dv8tion.jda.core.exceptions.RateLimitedException
+     *         If the request was rate limited, <b>respect the timeout</b>!
+     *
+     * @return {@code null} if the provided guild ID is not a valid Discord guild ID
      *         <br>a Widget object with null fields and isAvailable() returning
      *         false if the guild ID is valid but the guild in question does not
      *         have the widget enabled
