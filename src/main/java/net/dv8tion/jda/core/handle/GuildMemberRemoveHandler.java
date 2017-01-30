@@ -22,9 +22,8 @@ import net.dv8tion.jda.core.entities.impl.*;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.core.requests.GuildLock;
+import net.dv8tion.jda.core.requests.WebSocketClient;
 import org.json.JSONObject;
-
-//import net.dv8tion.jda.core.events.voice.VoiceLeaveEvent;
 
 public class GuildMemberRemoveHandler extends SocketHandler
 {
@@ -52,13 +51,19 @@ public class GuildMemberRemoveHandler extends SocketHandler
         String userId = content.getJSONObject("user").getString("id");
         MemberImpl member = (MemberImpl) guild.getMembersMap().remove(userId);
 
+        if (member == null)
+        {
+            WebSocketClient.LOG.debug("Received GUILD_MEMBER_REMOVE for a Member that does not exist in the specified Guild.");
+            return null;
+        }
+
         if (member.getVoiceState().inVoiceChannel())//If this user was in a VoiceChannel, fire VoiceLeaveEvent.
         {
 
             GuildVoiceStateImpl vState = (GuildVoiceStateImpl) member.getVoiceState();
             VoiceChannel channel = vState.getChannel();
             vState.setConnectedChannel(null);
-            ((VoiceChannelImpl) channel).getConnectedMembersMap().remove(member);
+            ((VoiceChannelImpl) channel).getConnectedMembersMap().remove(member.getUser().getId());
             api.getEventManager().handle(
                     new GuildVoiceLeaveEvent(
                             api, responseNumber,

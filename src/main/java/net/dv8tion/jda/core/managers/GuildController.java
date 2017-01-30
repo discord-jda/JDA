@@ -30,6 +30,9 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.restaction.ChannelAction;
+import net.dv8tion.jda.core.requests.restaction.RoleAction;
+import net.dv8tion.jda.core.requests.restaction.WebhookAction;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -897,7 +900,7 @@ public class GuildController
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *      if the guild is temporarily unavailable
      */
-    public RestAction<TextChannel> createTextChannel(String name)
+    public ChannelAction createTextChannel(String name)
     {
         checkAvailable();
         checkPermission(Permission.MANAGE_CHANNEL);
@@ -910,23 +913,7 @@ public class GuildController
                 .put("type", "text")
                 .put("name", name);
         Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(guild.getId());
-        return new RestAction<TextChannel>(getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                if (!response.isOk())
-                {
-                    request.onFailure(response);
-                    return;
-                }
-
-                JSONObject chanJson = response.getObject();
-                TextChannel tc = EntityBuilder.get(api).createTextChannel(chanJson, guild.getId());
-
-                request.onSuccess(tc);
-            }
-        };
+        return new ChannelAction(route, name, guild, false);
     }
 
     /**
@@ -947,7 +934,7 @@ public class GuildController
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *      if the guild is temporarily unavailable
      */
-    public RestAction<VoiceChannel> createVoiceChannel(String name)
+    public ChannelAction createVoiceChannel(String name)
     {
         checkAvailable();
         checkPermission(Permission.MANAGE_CHANNEL);
@@ -960,23 +947,36 @@ public class GuildController
                 .put("type", "voice")
                 .put("name", name);
         Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(guild.getId());
-        return new RestAction<VoiceChannel>(getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                if (!response.isOk())
-                {
-                    request.onFailure(response);
-                    return;
-                }
+        return new ChannelAction(route, name, guild, true);
+    }
 
-                JSONObject chanJson = response.getObject();
-                VoiceChannel vc = EntityBuilder.get(api).createVoiceChannel(chanJson, guild.getId());
+    /**
+     * Creates a new {@link net.dv8tion.jda.core.entities.Webhook Webhook} for the specified
+     * {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
+     *
+     * @param  channel
+     *         The target TextChannel to attach a new Webhook to.
+     * @param  name
+     *         The default name for the new Webhook.
+     *
+     * @throws IllegalArgumentException
+     *         If any of the provided arguments is null.
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If you do not hold the permission {@link net.dv8tion.jda.core.Permission#MANAGE_WEBHOOKS Manage Webhooks}
+     *         on the selected channel.
+     *
+     * @return A specified {@link net.dv8tion.jda.core.requests.restaction.WebhookAction WebhookAction}
+     *         This action allows you to set fields for the new webhook before creating it.
+     */
+    public WebhookAction createWebhook(TextChannel channel, String name)
+    {
+        checkNull(name, "Webhook name");
+        checkNull(channel, "TextChannel");
+        if (!guild.getSelfMember().hasPermission(channel, Permission.MANAGE_WEBHOOKS))
+            throw new PermissionException(Permission.MANAGE_WEBHOOKS);
 
-                request.onSuccess(vc);
-            }
-        };
+        Route.CompiledRoute route = Route.Channels.CREATE_WEBHOOK.compile(channel.getId());
+        return new WebhookAction(getJDA(), route, name);
     }
 
     /**
@@ -994,29 +994,13 @@ public class GuildController
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *      if the guild is temporarily unavailable
      */
-    public RestAction<Role> createRole()
+    public RoleAction createRole()
     {
         checkAvailable();
         checkPermission(Permission.MANAGE_ROLES);
 
         Route.CompiledRoute route = Route.Roles.CREATE_ROLE.compile(guild.getId());
-        return new RestAction<Role>(getJDA(), route, null)
-        {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                if (!response.isOk())
-                {
-                    request.onFailure(response);
-                    return;
-                }
-
-                JSONObject roleJson = response.getObject();
-                Role role = EntityBuilder.get(api).createRole(roleJson, guild.getId());
-
-                request.onSuccess(role);
-            }
-        };
+        return new RoleAction(route, guild);
     }
 
     /**
@@ -1038,37 +1022,16 @@ public class GuildController
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *      if the guild is temporarily unavailable
      */
-    public RestAction<Role> createCopyOfRole(Role role)
+    public RoleAction createCopyOfRole(Role role)
     {
-        checkAvailable();
-        checkPermission(Permission.MANAGE_ROLES);
-        role.getPermissions().forEach(this::checkPermission);
-
         Route.CompiledRoute route = Route.Roles.CREATE_ROLE.compile(guild.getId());
-        return new RestAction<Role>(getJDA(), route, null)
-        {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                if (!response.isOk())
-                {
-                    request.onFailure(response);
-                    return;
-                }
 
-                JSONObject roleJson = response.getObject();
-                Role r = EntityBuilder.get(api).createRole(roleJson, guild.getId());
-
-                RoleManagerUpdatable mng = r.getManagerUpdatable()
-                        .getNameField().setValue(role.getName())
-                        .getColorField().setValue(role.getColor())
-                        .getMentionableField().setValue(role.isMentionable())
-                        .getHoistedField().setValue(role.isHoisted())
-                        .getPermissionField().setValue(role.getPermissionsRaw());
-
-                mng.update().queue(request.getOnSuccess(), request.getOnFailure());
-            }
-        };
+        return createRole()
+                .setColor(role.getColor())
+                .setPermissions(role.getPermissionsRaw())
+                .setName(role.getName())
+                .setHoisted(role.isHoisted())
+                .setMentionable(role.isMentionable());
     }
 
     /**

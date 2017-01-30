@@ -16,16 +16,13 @@
 package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.managers.RoleManager;
 import net.dv8tion.jda.core.managers.RoleManagerUpdatable;
 import net.dv8tion.jda.core.requests.RestAction;
 
 import java.awt.*;
-import java.util.Collection;
-import java.util.List;
 
-public interface Role extends ISnowflake, IMentionable, Comparable<Role>
+public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Comparable<Role>
 {
     /**
      * The hierarchical position of this {@link net.dv8tion.jda.core.entities.Role Role} in the {@link net.dv8tion.jda.core.entities.Guild Guild} hierarchy.<br>
@@ -94,78 +91,12 @@ public interface Role extends ISnowflake, IMentionable, Comparable<Role>
     long getPermissionsRaw();
 
     /**
-     * A list of the literal {@link net.dv8tion.jda.core.Permission Permissions} that this {@link net.dv8tion.jda.core.entities.Role Role} has.<br>
-     * <b>NOTE:</b> these do not necessarily represent the permissions this role will have in a {@link net.dv8tion.jda.core.entities.Channel Channel}.
-     *
-     * @return
-     *      Possibly-empty list containing the literal permissions of this role.
-     */
-    List<Permission> getPermissions();
-
-    /**
      * The color this {@link net.dv8tion.jda.core.entities.Role Role} is displayed in.
      *
      * @return
      *      Color value of Role-color
      */
     Color getColor();
-
-    /**
-     * Checks if this {@link net.dv8tion.jda.core.entities.Role Role} has access to the provided {@link net.dv8tion.jda.core.Permission Permissions}.
-     * This does not check the Channel-specific override {@link net.dv8tion.jda.core.Permission Permissions}.
-     * <p>
-     * <b>NOTE:</b> this is not the same as {@link net.dv8tion.jda.core.entities.Role#getPermissions()}{@link Collection#contains(Object) .contains(Permission)}
-     * as it does effective permission calculations. The correct usage of this method is to determine if a Role has
-     * the ability to do something.
-     *
-     * @param permissions
-     *          The {@link net.dv8tion.jda.core.Permission Permissions} to check for
-     * @return
-     *      If the given {@link net.dv8tion.jda.core.Permission Permissions} are available to this {@link net.dv8tion.jda.core.entities.Role Role}
-     */
-    boolean hasPermission(Permission... permissions);
-
-    /**
-     * Checks if this {@link net.dv8tion.jda.core.entities.Role Role} has access to the {@link net.dv8tion.jda.core.Permission Permissions}
-     * in the provided {@literal Collection<Permission>}<br>
-     * This does not check the Channel-specific override {@link net.dv8tion.jda.core.Permission Permissions}.
-     * <p>
-     * <b>NOTE:</b> this is not the same as {@link net.dv8tion.jda.core.entities.Role#getPermissions()}{@link Collection#contains(Object) .contains(Permission)}
-     * as it does effective permission calculations. The correct usage of this method is to determine if a Role has
-     * the ability to do something.
-     *
-     * @param permissions
-     *          The {@link net.dv8tion.jda.core.Permission Permissions} to check for
-     * @return
-     *      If the given {@link net.dv8tion.jda.core.Permission Permissions} are available to this {@link net.dv8tion.jda.core.entities.Role Role}
-     */
-    boolean hasPermission(Collection<Permission> permissions);
-
-    /**
-     * Checks if this {@link net.dv8tion.jda.core.entities.Role Role} has access to the provided {@link net.dv8tion.jda.core.Permission Permissions}
-     * in the specified {@link net.dv8tion.jda.core.entities.Channel Channel}.
-     *
-     * @param channel
-     *      The {@link net.dv8tion.jda.core.entities.Channel Channel} to check in
-     * @param permissions
-     *      The {@link net.dv8tion.jda.core.Permission Permissions} to check for
-     * @return
-     *      If the given {@link net.dv8tion.jda.core.Permission Permissions} are available to this {@link net.dv8tion.jda.core.entities.Role Role} in this Channel
-     */
-    boolean hasPermission(Channel channel, Permission... permissions);
-
-    /**
-     * Checks if this {@link net.dv8tion.jda.core.entities.Role Role} has access to the {@link net.dv8tion.jda.core.Permission Permissions}
-     * in the provided {@literal Collection<Permission>} in the specified {@link net.dv8tion.jda.core.entities.Channel Channel}.
-     *
-     * @param channel
-     *      The {@link net.dv8tion.jda.core.entities.Channel Channel} to check in
-     * @param permissions
-     *      The {@link net.dv8tion.jda.core.Permission Permissions} to check for
-     * @return
-     *      If the given {@link net.dv8tion.jda.core.Permission Permissions} are available to this {@link net.dv8tion.jda.core.entities.Role Role} in this Channel
-     */
-    boolean hasPermission(Channel channel, Collection<Permission> permissions);
 
     boolean canInteract(Role role);
 

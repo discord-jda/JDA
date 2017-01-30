@@ -26,9 +26,12 @@ import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.managers.ChannelManager;
 import net.dv8tion.jda.core.managers.ChannelManagerUpdatable;
 import net.dv8tion.jda.core.requests.*;
+import net.dv8tion.jda.core.requests.restaction.InviteAction;
 import net.dv8tion.jda.core.utils.IOUtil;
+import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.http.util.Args;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -74,6 +77,8 @@ public class TextChannelImpl implements TextChannel
     @Override
     public RestAction<Void> deleteMessages(Collection<Message> messages)
     {
+        Args.notEmpty(messages, "Messages collection");
+
         return deleteMessagesByIds(messages.stream()
                 .map(ISnowflake::getId)
                 .collect(Collectors.toList()));
@@ -86,9 +91,74 @@ public class TextChannelImpl implements TextChannel
         if (messageIds.size() < 2 || messageIds.size() > 100)
             throw new IllegalArgumentException("Must provide at least 2 or at most 100 messages to be deleted.");
 
+        long twoWeeksAgo = ((System.currentTimeMillis() - (14 * 24 * 60 * 60 * 1000)) - MiscUtil.DISCORD_EPOCH) << MiscUtil.TIMESTAMP_OFFSET;
+        for (String id : messageIds)
+        {
+            Args.notEmpty(id, "Message id in messageIds");
+            Args.check(Long.parseLong(id) > twoWeeksAgo, "Message Id provided was older than 2 weeks. Id: " + id);
+        }
+
         JSONObject body = new JSONObject().put("messages", messageIds);
         Route.CompiledRoute route = Route.Messages.DELETE_MESSAGES.compile(id);
         return new RestAction<Void>(getJDA(), route, body)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
+    }
+
+    @Override
+    public RestAction<List<Webhook>> getWebhooks()
+    {
+        checkPermission(Permission.MANAGE_WEBHOOKS);
+
+        Route.CompiledRoute route = Route.Channels.GET_WEBHOOKS.compile(id);
+        return new RestAction<List<Webhook>>(getJDA(), route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (!response.isOk())
+                {
+                    request.onFailure(response);
+                    return;
+                }
+
+                List<Webhook> webhooks = new LinkedList<>();
+                JSONArray array = response.getArray();
+                EntityBuilder builder = EntityBuilder.get(getJDA());
+
+                for (Object object : array)
+                {
+                    try
+                    {
+                        webhooks.add(builder.createWebhook((JSONObject) object));
+                    }
+                    catch (JSONException | NullPointerException e)
+                    {
+                        JDAImpl.LOG.log(e);
+                    }
+                }
+
+                request.onSuccess(webhooks);
+            }
+        };
+    }
+
+    @Override
+    public RestAction<Void> deleteWebhookById(String id)
+    {
+        if (!guild.getSelfMember().hasPermission(this, Permission.MANAGE_WEBHOOKS))
+            throw new PermissionException(Permission.MANAGE_WEBHOOKS);
+
+        Route.CompiledRoute route = Route.Webhooks.DELETE_WEBHOOK.compile(id);
+        return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
             protected void handleResponse(Response response, Request request)
@@ -206,7 +276,7 @@ public class TextChannelImpl implements TextChannel
             {
                 if (response.isOk())
                 {
-                    Message m = EntityBuilder.get(getJDA()).createMessage(response.getObject());
+                    Message m = EntityBuilder.get(getJDA()).createMessage(response.getObject(), TextChannelImpl.this, false);
                     request.onSuccess(m);
                 }
                 else
@@ -732,5 +802,46 @@ public class TextChannelImpl implements TextChannel
     {
         if (obj == null)
             throw new NullPointerException("Provided " + name + " was null!");
+    }
+
+    @Override
+    public RestAction<List<Invite>> getInvites()
+    {
+        if (!this.guild.getSelfMember().hasPermission(this, Permission.MANAGE_CHANNEL))
+            throw new PermissionException(Permission.MANAGE_CHANNEL);
+
+        final Route.CompiledRoute route = Route.Invites.GET_CHANNEL_INVITES.compile(getId());
+
+        return new RestAction<List<Invite>>(getJDA(), route, null)
+        {
+            @Override
+            protected void handleResponse(final Response response, final Request request)
+            {
+                if (response.isOk())
+                {
+                    EntityBuilder entityBuilder = EntityBuilder.get(this.api);
+                    JSONArray array = response.getArray();
+                    List<Invite> invites = new ArrayList<>(array.length());
+                    for (int i = 0; i < array.length(); i++)
+                    {
+                        invites.add(entityBuilder.createInvite(array.getJSONObject(i)));
+                    }
+                    request.onSuccess(invites);
+                }
+                else
+                {
+                    request.onFailure(response);
+                }
+            }
+        };
+    }
+
+    @Override
+    public InviteAction createInvite()
+    {
+        if (!this.guild.getSelfMember().hasPermission(this, Permission.CREATE_INSTANT_INVITE))
+            throw new PermissionException(Permission.CREATE_INSTANT_INVITE);
+
+        return new InviteAction(this.getJDA(), this.getId());
     }
 }

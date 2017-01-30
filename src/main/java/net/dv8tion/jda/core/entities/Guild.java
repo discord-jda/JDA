@@ -61,6 +61,8 @@ public interface Guild extends ISnowflake
 
     VoiceChannel getAfkChannel();
 
+    RestAction<List<Webhook>> getWebhooks();
+
     /**
      * The {@link net.dv8tion.jda.core.entities.Member Member} object of the owner of this {@link net.dv8tion.jda.core.entities.Guild Guild}.
      *
@@ -238,6 +240,24 @@ public interface Guild extends ISnowflake
     JDA getJDA();
 
     /**
+     * Retrieves all invites for this guild.
+     * <br>Requires {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER MANAGE_SERVER} in this guild.
+     * Will throw a {@link net.dv8tion.jda.core.exceptions.PermissionException PermissionException} otherwise.
+     *
+     * <p>To get all invites for a {@link net.dv8tion.jda.core.entities.Channel Channel}
+     * use {@link net.dv8tion.jda.core.entities.Channel#getInvites() Channel.getInvites()}
+     *
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         if the account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER MANAGE_SERVER} in this guild
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.core.entities.Invite Invite}{@literal >}
+     *         <br>The list of expanded Invite objects
+     *
+     * @see     net.dv8tion.jda.core.entities.Channel#getInvites()
+     */
+    RestAction<List<Invite>> getInvites();
+
+    /**
      * A list containing the {@link net.dv8tion.jda.core.entities.VoiceState VoiceState} of every {@link net.dv8tion.jda.core.entities.Member Member}
      * in this {@link net.dv8tion.jda.core.entities.Guild Guild}.<br>
      * This will never return an empty list because if it were empty, that would imply that there are no
@@ -291,14 +311,6 @@ public interface Guild extends ISnowflake
      *      If the Guild is available
      */
     boolean isAvailable();
-
-//    /**
-//     * Provides a list of all {@link net.dv8tion.jda.utils.InviteUtil.AdvancedInvite Invites} for this Guild.
-//     *
-//     * @return
-//     *      An Immutable List of {@link net.dv8tion.jda.utils.InviteUtil.AdvancedInvite Invites} for this guild.
-//     */
-//    List<AdvancedInvite> getInvites();
 
     /**
      * Represents the idle time allowed until a user is moved to the

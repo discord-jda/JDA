@@ -174,10 +174,7 @@ public class AccountManagerUpdatable
         avatar = new AccountField<Icon>(this, null)
         {
             @Override
-            public void checkValue(Icon value)
-            {
-                checkNull(value, "Avatar");
-            }
+            public void checkValue(Icon value) { }
 
             @Override
             public Icon getOriginalValue()

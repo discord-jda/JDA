@@ -25,7 +25,6 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import org.apache.http.util.Args;
 import org.json.JSONObject;
-//import net.dv8tion.jda.core.exceptions.VerificationLevelException;
 
 import java.io.File;
 import java.io.IOException;
