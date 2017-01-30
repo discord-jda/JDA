@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,8 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 
 import org.json.JSONObject;
-
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -179,6 +180,16 @@ public class ApplicationManagerUpdatable
         this.redirectUris = new ApplicationField<List<String>>(this, this.application::getRedirectUris)
         {
             @Override
+            public ApplicationManagerUpdatable setValue(List<String> value)
+            {
+                checkValue(value);
+
+                this.value = Collections.unmodifiableList(new ArrayList<>(value));
+                this.set = true;
+
+                return manager;
+            }
+            @Override
             public void checkValue(final List<String> value)
             {
                 Field.checkNull(value, "redirect uris");
@@ -220,8 +231,6 @@ public class ApplicationManagerUpdatable
 
         if (this.redirectUris.shouldUpdate())
         {
-            // This is neccessary because Lists are mutable and thus can be modified before sending
-            this.redirectUris.checkValue(this.redirectUris.getValue());
             body.put("redirect_uris", this.redirectUris.getValue());
         }
         else
