@@ -67,7 +67,8 @@ public class UserImpl implements User
     @Override
     public String getAvatarUrl()
     {
-        return getAvatarId() == null ? null : "https://cdn.discordapp.com/avatars/" + getId() + "/" + getAvatarId() + ".jpg";
+        return getAvatarId() == null ? null : "https://cdn.discordapp.com/avatars/" + getId() + "/" + getAvatarId() 
+                + (getAvatarId().startsWith("a_") ? ".gif" : ".png");
     }
 
     @Override
