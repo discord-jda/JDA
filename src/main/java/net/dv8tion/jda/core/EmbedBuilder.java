@@ -166,8 +166,8 @@ public class EmbedBuilder
     }
 
     /**
-     * Appends a string to the message
-     * @param description the description of the embed
+     * Appends a string to the description
+     * @param description the string to append to the description
      * @return the builder after the description has been set
      */
     public EmbedBuilder appendDescription(String description)
