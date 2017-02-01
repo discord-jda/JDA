@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.impl.MessageEmbedImpl;
 
-public class EmbedBuilder 
+public class EmbedBuilder
 {
     public final static int TITLE_MAX_LENGTH = 256;
     public final static int VALUE_MAX_LENGTH = 1024;
@@ -32,7 +32,7 @@ public class EmbedBuilder
     public final static int URL_MAX_LENGTH = 2000;
     public final static String ZERO_WIDTH_SPACE = "\u200E";
     public final static Pattern URL_PATTERN = Pattern.compile("\\s*https?:\\/\\/.+\\..{2,}\\s*", Pattern.CASE_INSENSITIVE);
-    
+
     private String url;
     private String title;
     private String description;
@@ -45,7 +45,7 @@ public class EmbedBuilder
     private MessageEmbed.Footer footer;
     private MessageEmbed.ImageInfo image;
     private final List<MessageEmbed.Field> fields;
-    
+
     /**
      * Creates an EmbedBuilder to be used to creates an embed to send
      */
@@ -53,7 +53,7 @@ public class EmbedBuilder
     {
         this(null);
     }
-    
+
     /**
      * Creates an EmbedBuilder using fields in an existing embed
      * @param embed the existing embed
@@ -78,11 +78,11 @@ public class EmbedBuilder
                 fields.addAll(embed.getFields());
         }
     }
-    
+
     /**
      * Returns a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed}
      * that has been checked as being valid for sending.
-     * 
+     *
      * @return the built, sendable MessageEmbed
      */
     public MessageEmbed build()
@@ -91,7 +91,7 @@ public class EmbedBuilder
         {
             throw new IllegalStateException("Cannot build an empty embed!");
         }
-        
+
         return new MessageEmbedImpl().setTitle(title)
                 .setUrl(url)
                 .setDescription(description)
@@ -105,10 +105,10 @@ public class EmbedBuilder
                 .setImage(image)
                 .setFields(fields);
     }
-    
+
     /**
      * Checks if the given embed is empty. Empty embeds will throw an exception if built
-     * 
+     *
      * @return true if the embed is empty and cannot be built
      */
     public boolean isEmpty()
@@ -126,7 +126,7 @@ public class EmbedBuilder
                 && image == null
                 && fields.isEmpty();
     }
-    
+
     /**
      * Sets the URL of the embed
      * @param url the url of the embed
@@ -138,7 +138,7 @@ public class EmbedBuilder
         this.url = url;
         return this;
     }
-    
+
     /**
      * Sets the Title of the embed
      * @param title the title of the embed
@@ -151,7 +151,7 @@ public class EmbedBuilder
         this.title = title;
         return this;
     }
-    
+
     /**
      * Sets the Description of the embed.
      * @param description the description of the embed
@@ -164,7 +164,21 @@ public class EmbedBuilder
         this.description = description;
         return this;
     }
-    
+
+    /**
+     * Appends a string to the message
+     * @param description the description of the embed
+     * @return the builder after the description has been set
+     */
+    public EmbedBuilder appendDescription(String description)
+    {
+        this.description = this.description == null ? description : this.description + description;
+        if (this.description != null && this.description.length() > TEXT_MAX_LENGTH)
+            throw new IllegalArgumentException("Description cannot be longer than " + TEXT_MAX_LENGTH + " characters.");
+        this.description = description;
+        return this;
+    }
+
     /**
      * Sets the Timestamp of the embed.
      * @param temporal the temporal accessor of the timestamp
@@ -176,9 +190,9 @@ public class EmbedBuilder
             this.timestamp = null;
         else
             this.timestamp = OffsetDateTime.from(temporal);
-        return this; 
+        return this;
     }
-    
+
     /**
      * Sets the Color of the embed.
      * @param color the color of the embed
@@ -189,7 +203,7 @@ public class EmbedBuilder
         this.color = color;
         return this;
     }
-    
+
     /**
      * Sets the Thumbnail of the embed.
      * @param url the url of the thumbnail of the embed
@@ -208,7 +222,7 @@ public class EmbedBuilder
         }
         return this;
     }
-    
+
     /**
      * Sets the Video of the embed.
      * @param url the url of the video of the embed
@@ -227,7 +241,7 @@ public class EmbedBuilder
         }
         return this;
     }
-    
+
     /**
      * Sets the Image of the embed.
      * @param url the url of the image of the embed
@@ -246,7 +260,7 @@ public class EmbedBuilder
         }
         return this;
     }
-    
+
     /**
      * Sets the Provider of the embed.
      * @param name the name of the provider of the embed
@@ -266,10 +280,10 @@ public class EmbedBuilder
         }
         return this;
     }
-    
+
     /**
      * Sets the Author of the embed.
-     * @param name the name of the author of the embed. If this is not set, the 
+     * @param name the name of the author of the embed. If this is not set, the
      * author will not appear in the embed
      * @param url the url of the author of the embed
      * @param iconUrl the url of the icon for the author
@@ -288,10 +302,10 @@ public class EmbedBuilder
         }
         return this;
     }
-    
+
     /**
      * Sets the Footer of the embed.
-     * @param text the text of the footer of the embed. If this is not set, the 
+     * @param text the text of the footer of the embed. If this is not set, the
      * footer will not appear in the embed
      * @param iconUrl the url of the icon for the footer
      * @return the builder after the footer has been set
@@ -311,10 +325,10 @@ public class EmbedBuilder
         }
         return this;
     }
-    
+
     /**
      * Adds a Field to the embed
-     * 
+     *
      * @param field the field object to add
      * @return the builder after the field has been added
      */
@@ -322,10 +336,10 @@ public class EmbedBuilder
     {
         return addField(field.getName(), field.getValue(), field.isInline());
     }
-    
+
     /**
      * Adds a Field to the embed.
-     * 
+     *
      * @param name the name of the footer of the embed.
      * @param value the contents of the field
      * @param inline whether or not this field should display inline
@@ -348,7 +362,7 @@ public class EmbedBuilder
         this.fields.add(new MessageEmbed.Field(name, value, inline));
         return this;
     }
-    
+
     /**
      * Adds a blank (empty) Field to the embed.
      * @param inline whether or not this field should display inline
@@ -359,7 +373,7 @@ public class EmbedBuilder
         this.fields.add(new MessageEmbed.Field(ZERO_WIDTH_SPACE, ZERO_WIDTH_SPACE, inline));
         return this;
     }
-    
+
     private void urlCheck(String url)
     {
         if (url == null)
