@@ -194,7 +194,7 @@ public class MessageHistory
      */
     public RestAction<List<Message>> retrieveFuture(int amount)
     {
-        if (amount > 100 || amount < 0)
+        if (amount > 100 || amount < 1)
             throw new IllegalArgumentException("Message retrieval limit is between 1 and 100 messages. No more, no less. Limit provided: " + amount);
 
         if (history.isEmpty())
