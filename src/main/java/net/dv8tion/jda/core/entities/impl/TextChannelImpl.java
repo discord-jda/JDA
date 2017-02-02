@@ -244,18 +244,6 @@ public class TextChannelImpl implements TextChannel
     {
         return guild.getJDA();
     }
-
-    @Override
-    public RestAction<Message> sendMessage(String text)
-    {
-        return sendMessage(new MessageBuilder().append(text).build());
-    }
-
-    @Override
-    public RestAction<Message> sendMessage(MessageEmbed embed)
-    {
-        return sendMessage(new MessageBuilder().setEmbed(embed).build());
-    }
     
     @Override
     public RestAction<Message> sendMessage(Message msg)

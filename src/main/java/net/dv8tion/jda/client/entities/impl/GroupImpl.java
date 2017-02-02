@@ -155,18 +155,6 @@ public class GroupImpl implements Group
     }
 
     @Override
-    public RestAction<Message> sendMessage(String text)
-    {
-        return sendMessage(new MessageBuilder().append(text).build());
-    }
-    
-    @Override
-    public RestAction<Message> sendMessage(MessageEmbed embed)
-    {
-        return sendMessage(new MessageBuilder().setEmbed(embed).build());
-    }
-
-    @Override
     public RestAction<Message> sendMessage(Message msg)
     {
         Args.notNull(msg, "Message");

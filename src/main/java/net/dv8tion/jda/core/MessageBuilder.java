@@ -398,7 +398,7 @@ public class MessageBuilder implements Appendable
      * {@link #buildAll(net.dv8tion.jda.core.MessageBuilder.SplitPolicy...) buildAll(SplitPolicy...)} as possible ways to
      * deal with the 2000 character cap.
      *
-     * @throws UnsupportedOperationException
+     * @throws java.lang.IllegalStateException
      *         <ul>
      *             <li>If you attempt to build() an empty Message ({@link #length()} is {@code 0} and no
      *             {@link net.dv8tion.jda.core.entities.MessageEmbed} was provided to {@link #setEmbed(net.dv8tion.jda.core.entities.MessageEmbed)})</li>
@@ -411,9 +411,9 @@ public class MessageBuilder implements Appendable
     {
         String message = builder.toString();
         if (this.isEmpty())
-            throw new UnsupportedOperationException("Cannot build a Message with no content. (You never added any content to the message)");
+            throw new IllegalStateException("Cannot build a Message with no content. (You never added any content to the message)");
         if (message.length() > 2000)
-            throw new UnsupportedOperationException("Cannot build a Message with more than 2000 characters. Please limit your input.");
+            throw new IllegalStateException("Cannot build a Message with more than 2000 characters. Please limit your input.");
 
         return new MessageImpl("", null, false).setContent(message).setTTS(isTTS)
                 .setEmbeds(embed == null ? new LinkedList<>() : Collections.singletonList(embed));

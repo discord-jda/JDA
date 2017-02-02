@@ -175,7 +175,7 @@ public interface Member extends IMentionable, IPermissionHolder
 
     /**
      * Whether this Member can interact with the provided {@link net.dv8tion.jda.core.entities.Emote Emote}
-     * (delete/modify)
+     * (use in a message)
      *
      * @param  emote
      *         The target Emote to check

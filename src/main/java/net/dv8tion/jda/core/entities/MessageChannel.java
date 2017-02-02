@@ -36,29 +36,27 @@ import java.net.URLEncoder;
 import java.util.LinkedList;
 import java.util.List;
 
-//import net.dv8tion.jda.core.exceptions.VerificationLevelException;
-
 /**
- * Represents a Discord channel that can have messages and files sent to it.
+ * Represents a Discord channel that can have {@link net.dv8tion.jda.core.entities.Message Messages} and files sent to it.
  */
-public interface MessageChannel extends ISnowflake //todo: doc error responses on rest actions
+public interface MessageChannel extends ISnowflake
 {
     /**
      * This method is a shortcut method to return the following information in the following situation:
      * If the MessageChannel is instance of..
      * <ul>
      *     <li><b>TextChannel</b> - Returns {@link TextChannel#getName()}</li>
-     *     <li><b>PrivateChannel</b> Returns {@link PrivateChannel#getUser()} {@link net.dv8tion.jda.core.entities.User#getName() .getName()}</li>
-     *     <li><b>Group</b> - Returns {@link net.dv8tion.jda.client.entities.Group#getName()}</li>
+     *     <li><b>PrivateChannel</b> Returns {@link PrivateChannel#getUser()}{@link net.dv8tion.jda.core.entities.User#getName() .getName()}</li>
+     *     <li><b>Group</b> - Returns {@link net.dv8tion.jda.client.entities.Group#getName() Group.getName()}</li>
      * </ul>
      *
-     * @return Possibly-null "name" of the MessageChannel. Different implementations determine what the name is.
+     * @return Possibly-null "name" of the MessageChannel. Different implementations determine what the name. Only
+     *         {@link net.dv8tion.jda.client.entities.Group Group} could have a {@code null} name.
      */
     String getName();
 
     /**
-     * The {@link net.dv8tion.jda.core.entities.ChannelType ChannelType}
-     * of this MessageChannel.
+     * The {@link net.dv8tion.jda.core.entities.ChannelType ChannelType} of this MessageChannel.
      *
      * @return The ChannelType for this channel
      */
@@ -72,11 +70,15 @@ public interface MessageChannel extends ISnowflake //todo: doc error responses o
     JDA getJDA();
 
     /**
-     * Sends a plain text {@link net.dv8tion.jda.core.entities.Message Message} to this channel.
+     * Sends a plain text message to this channel.
      * <br>This will fail if this channel is an instance of {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and
      * the account of the api does not have permissions to send a message to this channel.
      * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
-     * use {@link net.dv8tion.jda.core.entities.TextChannel#canTalk() TextChannel#canTalk}.
+     * use {@link net.dv8tion.jda.core.entities.TextChannel#canTalk() TextChannel.canTalk()}.
+     *
+     * <p>This method is a shortcut to {@link #sendMessage(Message)} by way of using a {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder}
+     * internally to build the provided {@code text} into a Message.
+     * <pre>sendMessage(new MessageBuilder().append(text).build())</pre>
      *
      * @param  text
      *         the text to send
@@ -91,7 +93,10 @@ public interface MessageChannel extends ISnowflake //todo: doc error responses o
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
      *         <br>The newly created message
      */
-    RestAction<Message> sendMessage(String text);
+    default RestAction<Message> sendMessage(String text)
+    {
+        return sendMessage(new MessageBuilder().append(text).build());
+    }
 
     /**
      * Sends a specified {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} as a {@link net.dv8tion.jda.core.entities.Message Message}
@@ -117,7 +122,10 @@ public interface MessageChannel extends ISnowflake //todo: doc error responses o
      * @see    net.dv8tion.jda.core.MessageBuilder
      * @see    net.dv8tion.jda.core.EmbedBuilder
      */
-    RestAction<Message> sendMessage(MessageEmbed embed);
+    default RestAction<Message> sendMessage(MessageEmbed embed)
+    {
+        return sendMessage(new MessageBuilder().setEmbed(embed).build());
+    }
 
     /**
      * Sends a specified {@link net.dv8tion.jda.core.entities.Message Message} to this channel.
