@@ -96,11 +96,10 @@ public class JDABuilder
      * <br>Using either the Discord desktop app or the Browser Webapp
      * <ol>
      *     <li>Press {@code Ctrl-Shift-i} which will bring up the developer tools.</li>
-     *     <li>Go to the {@code Console} tab</li>
-     *     <li>Type {@code localStorage.token} into the console and press {@code enter}</li>
-     *     <li>Copy and use the {@code token} that is in the quotes.</li>
+     *     <li>Go to the {@code Application} tab</li>
+     *     <li>Under {@code Storage}, select {@code Local Storage}, and then {@code discordapp.com}</li>
+     *     <li>Find the {@code token} row and copy the value that is in quotes.</li>
      * </ol>
-     *
      *
      * @param  token
      *         The token of the account that you would like to login with.

@@ -16,26 +16,24 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.request.body.MultipartBody;
 import net.dv8tion.jda.client.exceptions.VerificationLevelException;
-import net.dv8tion.jda.core.*;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.managers.ChannelManager;
 import net.dv8tion.jda.core.managers.ChannelManagerUpdatable;
-import net.dv8tion.jda.core.requests.*;
+import net.dv8tion.jda.core.requests.Request;
+import net.dv8tion.jda.core.requests.Response;
+import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.InviteAction;
-import net.dv8tion.jda.core.utils.IOUtil;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.http.util.Args;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -249,148 +247,49 @@ public class TextChannelImpl implements TextChannel
     public RestAction<Message> sendMessage(Message msg)
     {
         Args.notNull(msg, "Message");
+
         checkVerification();
         checkPermission(Permission.MESSAGE_READ);
         checkPermission(Permission.MESSAGE_WRITE);
         if (msg.getRawContent().isEmpty() && !msg.getEmbeds().isEmpty())
             checkPermission(Permission.MESSAGE_EMBED_LINKS);
 
-        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
-        JSONObject json = ((MessageImpl) msg).toJSONObject();
-        return new RestAction<Message>(getJDA(), route, json)
-        {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                if (response.isOk())
-                {
-                    Message m = EntityBuilder.get(getJDA()).createMessage(response.getObject(), TextChannelImpl.this, false);
-                    request.onSuccess(m);
-                }
-                else
-                {
-                    request.onFailure(response);
-                }
-            }
-        };
-    }
-
-    @Override
-    public RestAction<Message> sendFile(File file, Message message) throws IOException
-    {
-        checkNull(file, "file");
-
-        return sendFile(file, file.getName(), message);
-    }
-
-    @Override
-    public RestAction<Message> sendFile(File file, String fileName, Message message) throws IOException
-    {
-        checkNull(file, "file");
-
-        if(file == null || !file.exists() || !file.canRead())
-            throw new IllegalArgumentException("Provided file is either null, doesn't exist or is not readable!");
-        if (file.length() > 8<<20)   //8MB
-            throw new IllegalArgumentException("File is to big! Max file-size is 8MB");
-
-        return sendFile(IOUtil.readFully(file), fileName, message);
+        //Call MessageChannel's default
+        return TextChannel.super.sendMessage(msg);
     }
 
     @Override
     public RestAction<Message> sendFile(InputStream data, String fileName, Message message)
     {
         checkVerification();
+        checkPermission(Permission.MESSAGE_READ);
         checkPermission(Permission.MESSAGE_WRITE);
         checkPermission(Permission.MESSAGE_ATTACH_FILES);
-        checkNull(data, "data InputStream");
-        checkNull(fileName, "fileName");
 
-        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(id);
-        MultipartBody body = Unirest.post(Requester.DISCORD_API_PREFIX + route.getCompiledRoute())
-                .fields(null); //We use this to change from an HttpRequest to a MultipartBody
-
-        body.field("file", data, fileName);
-
-        if (message != null)
-        {
-            body.field("content", message.getRawContent());
-            body.field("tts", message.isTTS());
-        }
-
-        return new RestAction<Message>(getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                if (response.isOk())
-                    request.onSuccess(EntityBuilder.get(api).createMessage(response.getObject()));
-                else
-                    request.onFailure(response);
-            }
-        };
+        //Call MessageChannel's default method
+        return TextChannel.super.sendFile(data, fileName, message);
     }
 
     @Override
     public RestAction<Message> sendFile(byte[] data, String fileName, Message message)
     {
         checkVerification();
+        checkPermission(Permission.MESSAGE_READ);
         checkPermission(Permission.MESSAGE_WRITE);
         checkPermission(Permission.MESSAGE_ATTACH_FILES);
-        checkNull(fileName, "fileName");
 
-        if (data.length > 8<<20)   //8MB
-            throw new IllegalArgumentException("Provided data is too large! Max file-size is 8MB");
-
-        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(id);
-        MultipartBody body = Unirest.post(Requester.DISCORD_API_PREFIX + route.getCompiledRoute())
-                .fields(null); //We use this to change from an HttpRequest to a MultipartBody
-
-        body.field("file", data, fileName);
-
-        if (message != null)
-        {
-            body.field("content", message.getRawContent());
-            body.field("tts", message.isTTS());
-        }
-
-        return new RestAction<Message>(getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                if (response.isOk())
-                    request.onSuccess(EntityBuilder.get(api).createMessage(response.getObject()));
-                else
-                    request.onFailure(response);
-            }
-        };
+        //Call MessageChannel's default method
+        return TextChannel.super.sendFile(data, fileName, message);
     }
 
     @Override
     public RestAction<Message> getMessageById(String messageId)
     {
-        if (getJDA().getAccountType() != AccountType.BOT)
-            throw new AccountTypeException(AccountType.BOT);
-        checkNull(messageId, "messageId");
         checkPermission(Permission.MESSAGE_READ);
         checkPermission(Permission.MESSAGE_HISTORY);
 
-        Route.CompiledRoute route = Route.Messages.GET_MESSAGE.compile(getId(), messageId);
-        return new RestAction<Message>(getJDA(), route, null)
-        {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                if (response.isOk())
-                {
-                    Message m = EntityBuilder.get(getJDA()).createMessage(response.getObject());
-                    request.onSuccess(m);
-                }
-                else
-                    request.onFailure(response);
-
-            }
-        };
+        //Call MessageChannel's default method
+        return TextChannel.super.getMessageById(messageId);
     }
 
     @Override
@@ -399,97 +298,38 @@ public class TextChannelImpl implements TextChannel
         checkNull(messageId, "messageId");
         checkPermission(Permission.MESSAGE_READ);
 
-        Route.CompiledRoute route = Route.Messages.DELETE_MESSAGE.compile(getId(), messageId);
-        return new RestAction<Void>(getJDA(), route, null) {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                {
-                    ErrorResponse error = ErrorResponse.fromJSON(response.getObject());
-                    if (error == ErrorResponse.MISSING_PERMISSIONS)
-                    {
-                        //Double check to make sure we still have permission to read.
-                        if (!guild.getSelfMember().hasPermission(Permission.MESSAGE_READ))
-                            request.onFailure(new PermissionException(Permission.MESSAGE_READ));
-                        else
-                            request.onFailure(new PermissionException(Permission.MESSAGE_MANAGE,
-                                    "You need MESSAGE_MANAGE permission to delete another users Messages"));
-                    }
-                    else
-                    {
-                        request.onFailure(response);
-                    }
-                }
-            }
-        };
+        //Call MessageChannel's default method
+        return TextChannel.super.deleteMessageById(messageId);
     }
 
     @Override
-    public MessageHistory getHistory()
+    public RestAction<MessageHistory> getHistoryAround(String messageId, int limit)
     {
-        return new MessageHistory(this);
-    }
+        checkPermission(Permission.MESSAGE_READ);
+        checkPermission(Permission.MESSAGE_HISTORY);
 
-    @Override
-    public RestAction<Void> sendTyping()
-    {
-        Route.CompiledRoute route = Route.Channels.SEND_TYPING.compile(id);
-        return new RestAction<Void>(getJDA(), route, null)
-        {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        //Call MessageChannel's default method
+        return TextChannel.super.getHistoryAround(messageId, limit);
     }
 
     @Override
     public RestAction<Void> pinMessageById(String messageId)
     {
-        checkNull(messageId, "messageId");
         checkPermission(Permission.MESSAGE_READ, "You cannot pin a message in a channel you can't access. (MESSAGE_READ)");
         checkPermission(Permission.MESSAGE_MANAGE, "You need MESSAGE_MANAGE to pin or unpin messages.");
 
-        Route.CompiledRoute route = Route.Messages.ADD_PINNED_MESSAGE.compile(getId(), messageId);
-        return new RestAction<Void>(getJDA(), route, null)
-        {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        //Call MessageChannel's default method
+        return TextChannel.super.pinMessageById(messageId);
     }
 
     @Override
     public RestAction<Void> unpinMessageById(String messageId)
     {
-        checkNull(messageId, "messageId");
         checkPermission(Permission.MESSAGE_READ, "You cannot unpin a message in a channel you can't access. (MESSAGE_READ)");
         checkPermission(Permission.MESSAGE_MANAGE, "You need MESSAGE_MANAGE to pin or unpin messages.");
 
-        Route.CompiledRoute route = Route.Messages.REMOVE_PINNED_MESSAGE.compile(getId(), messageId);
-        return new RestAction<Void>(getJDA(), route, null)
-        {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        //Call MessageChannel's default method
+        return TextChannel.super.unpinMessageById(messageId);
     }
 
     @Override
@@ -497,31 +337,26 @@ public class TextChannelImpl implements TextChannel
     {
         checkPermission(Permission.MESSAGE_READ, "Cannot get the pinned message of a channel without MESSAGE_READ access.");
 
-        Route.CompiledRoute route = Route.Messages.GET_PINNED_MESSAGES.compile(getId());
-        return new RestAction<List<Message>>(getJDA(), route, null)
-        {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                if (response.isOk())
-                {
-                    LinkedList<Message> pinnedMessages = new LinkedList<>();
-                    EntityBuilder builder = EntityBuilder.get(getJDA());
-                    JSONArray pins = response.getArray();
+        //Call MessageChannel's default method
+        return TextChannel.super.getPinnedMessages();
+    }
 
-                    for (int i = 0; i < pins.length(); i++)
-                    {
-                        pinnedMessages.add(builder.createMessage(pins.getJSONObject(i)));
-                    }
+    @Override
+    public RestAction<Void> addReactionById(String messageId, String unicode)
+    {
+        checkPermission(Permission.MESSAGE_ADD_REACTION);
 
-                    request.onSuccess(Collections.unmodifiableList(pinnedMessages));
-                }
-                else
-                {
-                    request.onFailure(response);
-                }
-            }
-        };
+        //Call MessageChannel's default method
+        return TextChannel.super.addReactionById(messageId, unicode);
+    }
+
+    @Override
+    public RestAction<Void> addReactionById(String messageId, Emote emote)
+    {
+        checkPermission(Permission.MESSAGE_ADD_REACTION);
+
+        //Call MessageChannel's default method
+        return TextChannel.super.addReactionById(messageId, emote);
     }
 
     @Override

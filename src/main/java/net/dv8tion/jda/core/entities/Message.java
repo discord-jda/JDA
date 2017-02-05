@@ -285,7 +285,7 @@ public interface Message extends ISnowflake
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>The edit was attempted after the account lost access to the
      *         {@link net.dv8tion.jda.core.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
-     *         typcally due to being kicked or removed.</li>
+     *         typically due to being kicked or removed.</li>
      *
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The edit was attempted after the account lost {@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE} in
@@ -315,7 +315,7 @@ public interface Message extends ISnowflake
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>The edit was attempted after the account lost access to the
      *         {@link net.dv8tion.jda.core.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
-     *         typcally due to being kicked or removed.</li>
+     *         typically due to being kicked or removed.</li>
      *
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The edit was attempted after the account lost {@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE} in
