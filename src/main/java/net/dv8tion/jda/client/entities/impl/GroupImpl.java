@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import net.dv8tion.jda.core.entities.MessageEmbed;
+import net.dv8tion.jda.core.entities.impl.MessageEmbedImpl;
 
 public class GroupImpl implements Group
 {
@@ -227,6 +228,8 @@ public class GroupImpl implements Group
         {
             body.field("content", message.getRawContent());
             body.field("tts", message.isTTS());
+            if (!message.getEmbeds().isEmpty())
+                body.field("embed", ((MessageEmbedImpl)message.getEmbeds().get(0)).toJSONObject().toString());
         }
 
         return new RestAction<Message>(getJDA(), route, body)
@@ -260,6 +263,8 @@ public class GroupImpl implements Group
         {
             body.field("content", message.getRawContent());
             body.field("tts", message.isTTS());
+            if (!message.getEmbeds().isEmpty())
+                body.field("embed", ((MessageEmbedImpl)message.getEmbeds().get(0)).toJSONObject().toString());
         }
 
         return new RestAction<Message>(getJDA(), route, body)

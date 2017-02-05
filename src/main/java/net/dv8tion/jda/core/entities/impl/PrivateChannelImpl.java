@@ -147,6 +147,8 @@ public class PrivateChannelImpl implements PrivateChannel
         {
             body.field("content", message.getRawContent());
             body.field("tts", message.isTTS());
+            if (!message.getEmbeds().isEmpty())
+                body.field("embed", ((MessageEmbedImpl)message.getEmbeds().get(0)).toJSONObject().toString());
         }
 
         return new RestAction<Message>(getJDA(), route, body)
@@ -180,6 +182,8 @@ public class PrivateChannelImpl implements PrivateChannel
         {
             body.field("content", message.getRawContent());
             body.field("tts", message.isTTS());
+            if (!message.getEmbeds().isEmpty())
+                body.field("embed", ((MessageEmbedImpl)message.getEmbeds().get(0)).toJSONObject().toString());
         }
 
         return new RestAction<Message>(getJDA(), route, body)
