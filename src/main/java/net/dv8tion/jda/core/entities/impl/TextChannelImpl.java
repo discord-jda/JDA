@@ -547,6 +547,15 @@ public class TextChannelImpl implements TextChannel
             }
         };
     }
+    
+    @Override
+    public RestAction<Message> editMessageById(String id, Message newContent)
+    {
+        //checkVerification(); You can edit messages without verification
+        checkPermission(Permission.MESSAGE_READ);
+        checkPermission(Permission.MESSAGE_WRITE);
+        return TextChannel.super.editMessageById(id, newContent);
+    }
 
     @Override
     public PermissionOverride getPermissionOverride(Member member)

@@ -200,6 +200,16 @@ public interface Message extends ISnowflake
      * @return a new Message-Object for the edited message
      */
     RestAction<Message> editMessage(String newContent);
+    
+    /**
+     * Edits this Messages embed to the provided MessageEmbed.
+     * If The Message was not created by this account, this will result in a PermissionException.
+     * If this method failed, null gets returned
+     *
+     * @param embed the new embed of the Message
+     * @return a new Message-Object for the edited message
+     */
+    RestAction<Message> editMessage(MessageEmbed embed);
 
     /**
      * Edits this Messages content to be the content of the provide message.
