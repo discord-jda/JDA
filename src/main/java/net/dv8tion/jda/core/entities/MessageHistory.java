@@ -104,6 +104,9 @@ public class MessageHistory
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>Can occur if the request for history retrieval was executed <i>after</i> JDA lost the
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY} permission.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The send request was attempted after the channel was deleted.</li>
      * </ul>
      *
      * @param  amount
@@ -176,6 +179,9 @@ public class MessageHistory
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>Can occur if the request for history retrieval was executed <i>after</i> JDA lost the
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY} permission.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The send request was attempted after the channel was deleted.</li>
      * </ul>
      *
      * @param  amount

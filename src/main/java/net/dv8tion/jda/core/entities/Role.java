@@ -22,12 +22,15 @@ import net.dv8tion.jda.core.requests.RestAction;
 
 import java.awt.*;
 
+/**
+ * Represents a {@link net.dv8tion.jda.core.entities.Guild Guild}'s Role. Used to control permissions for Members.
+ */
 public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Comparable<Role>
 {
     /**
      * The hierarchical position of this {@link net.dv8tion.jda.core.entities.Role Role}
      * in the {@link net.dv8tion.jda.core.entities.Guild Guild} hierarchy. (higher value means higher role).
-     * <br>The @everyone {@link net.dv8tion.jda.core.entities.Role Role} always return -1.
+     * <br>The {@link net.dv8tion.jda.core.entities.Guild#getPublicRole()}'s getPosition() always return -1.
      *
      * @return The position of this {@link net.dv8tion.jda.core.entities.Role Role} as integer.
      */
@@ -131,6 +134,27 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      */
     RoleManagerUpdatable getManagerUpdatable();
 
+    /**
+     * Deletes this Role.
+     *
+     * <p>Possible ErrorResponses include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_ROLE}
+     *     <br>If the the role was already deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The send request was attempted after the account lost
+     *         {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES Permission.MANAGE_ROLES} in the channel.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>If we were removed from the Guild</li>
+     * </ul>
+     *
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         if we don't have the permission to {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES}
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: Void
+     */
     RestAction<Void> delete();
 
     /**

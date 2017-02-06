@@ -15,14 +15,45 @@
  */
 package net.dv8tion.jda.core.entities;
 
+/**
+ * Represents the different types of {@link net.dv8tion.jda.core.entities.Message Messages} that can be received from Discord.
+ * <br>A normal text based message is {@link #DEFAULT}.
+ */
 public enum MessageType
 {
+    /**
+     * The normal text messages received when a user or bot sends a Message.
+     */
     DEFAULT(0),
+
+    /**
+     * Specialized messages used for Groups as a System-Message showing that a new User has been added to the Group.
+     */
     RECIPIENT_ADD(1),
+
+    /**
+     * Specialized messages used for Groups as a System-Message showing that a new User has been removed from the Group.
+     */
     RECIPIENT_REMOVE(2),
+
+    /**
+     * Specialized message used for Groups as a System-Message showing that a Call was started.
+     */
     CALL(3),
+
+    /**
+     * Specialized message used for Groups as a System-Message showing that the icon of the Group was changed.
+     */
     CHANNEL_ICON_CHANGE(4),
+
+    /**
+     * Specialized message used for Groups as a System-Message showing that the name of the Group was changed.
+     */
     CHANNEL_NAME_CHANGE(5),
+
+    /**
+     * Unknown MessageType.
+     */
     UNKNOWN(-1);
 
     protected final int id;
@@ -31,11 +62,25 @@ public enum MessageType
         this.id = id;
     }
 
+    /**
+     * The Discord id key used to reference the MessageType.
+     *
+     * @return the Discord id key.
+     */
     public int getId()
     {
         return id;
     }
 
+    /**
+     * Used to retrieve a MessageType based on the Discord id key.
+     * <br>If the {@code id} provided is not a known id, {@link #UNKNOWN} is returned
+     *
+     * @param  id
+     *         The Discord key id of the requested MessageType.
+     *
+     * @return A MessageType with the same Discord id key as the one provided, or {@link #UNKNOWN}.
+     */
     public static MessageType fromId(int id)
     {
         for (MessageType type : values())

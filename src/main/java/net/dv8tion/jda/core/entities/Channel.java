@@ -171,12 +171,17 @@ public interface Channel extends ISnowflake
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>If this channel was already deleted</li>
      *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The send request was attempted after the account lost
+     *         {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL Permission.MANAGE_CHANNEL} in the channel.</li>
+     *
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>If we were removed from the Guild</li>
      * </ul>
      *
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *         if we don't have the permission to {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
+     *         if the currently logged in account doesn't have {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
+     *         for the channel.
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: Void
      */

@@ -213,8 +213,8 @@ public class RoleImpl implements Role
     @Override
     public RestAction<Void> delete()
     {
-        if (!PermissionUtil.checkPermission(getGuild(), getGuild().getSelfMember(), Permission.MANAGE_PERMISSIONS))
-            throw new PermissionException(Permission.MANAGE_PERMISSIONS);
+        if (!PermissionUtil.checkPermission(getGuild(), getGuild().getSelfMember(), Permission.MANAGE_ROLES))
+            throw new PermissionException(Permission.MANAGE_ROLES);
         if(!PermissionUtil.canInteract(getGuild().getSelfMember(), this))
             throw new PermissionException("Can't delete role >= highest self-role");
         if (managed)

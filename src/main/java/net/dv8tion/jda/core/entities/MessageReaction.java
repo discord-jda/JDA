@@ -34,9 +34,11 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * An object representing a single MessageReaction from Discord
+ * An object representing a single MessageReaction from Discord.
+ * This is an immutable object and is not updated by method calls or changes in Discord. A new snapshot instance
+ * built from Discord is needed to see changes.
  *
- * @since  JDA 3.0
+ * @since  JDA
  * @author Florian Spieß
  */
 public class MessageReaction
@@ -52,11 +54,9 @@ public class MessageReaction
      * Creates a new MessageReaction instance
      *
      * @param  channel
-     *         The {@link net.dv8tion.jda.core.entities.MessageChannel}
-     *         this Reaction was used in
+     *         The {@link net.dv8tion.jda.core.entities.MessageChannel} this Reaction was used in
      * @param  emote
-     *         The {@link net.dv8tion.jda.core.entities.MessageReaction.ReactionEmote ReactionEmote}
-     *         that was used
+     *         The {@link net.dv8tion.jda.core.entities.MessageReaction.ReactionEmote ReactionEmote} that was used
      * @param  messageId
      *         The message id this reaction is attached to
      * @param  self
@@ -84,7 +84,7 @@ public class MessageReaction
     }
 
     /**
-     * Whether we reacted with this reaction
+     * Whether the currently logged in account has reacted with this reaction
      *
      * @return True, if we reacted with this reaction
      */
@@ -270,6 +270,8 @@ public class MessageReaction
      * @param  user
      *         The User of which to remove the reaction
      *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided {@code user} is null.
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         if the provided User is not us and we do not have permission to
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE manage messages}

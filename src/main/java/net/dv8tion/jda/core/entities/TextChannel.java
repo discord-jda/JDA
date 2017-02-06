@@ -62,6 +62,10 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>if we were removed from the guild</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The send request was attempted after the account lost
+     *         {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in the channel.</li>
      * </ul>
      *
      * @param  messages
@@ -103,6 +107,10 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>if we were removed from the guild</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The send request was attempted after the account lost
+     *         {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in the channel.</li>
      * </ul>
      *
      * @param  messageIds
@@ -142,18 +150,29 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *
      * <p>Possible ErrorResponses include:
      * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_WEBHOOK}
+     *     <br>The provided id does not refer to a WebHook present in this TextChannel, either due
+     *         to it not existing or having already been deleted.</li>
+     *
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>if this channel was deleted</li>
      *
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>if we were removed from the guild</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The send request was attempted after the account lost
+     *         {@link net.dv8tion.jda.core.Permission#MANAGE_WEBHOOKS Permission.MANAGE_WEBHOOKS} in the channel.</li>
      * </ul>
      *
      * @param  id
      *         The not-null id for the target Webhook.
      *
-     * @throws NullPointerException
-     *         if the provided id is null
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided {@code id} is {@code null} or empty.
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If the currently logged in account does not have
+     *         {@link net.dv8tion.jda.core.Permission#MANAGE_WEBHOOKS Permission.MANAGE_WEBHOOKS} in this channel.
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: Void
      */
@@ -162,6 +181,8 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
     /**
      * Whether we can send messages in this channel.
      * <br>This is an overload of {@link #canTalk(Member)} with the SelfMember.
+     * <br>Checks for both {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ} and
+     * {@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}.
      *
      * @return True, if we are able to read and send messages in this channel
      */
@@ -170,6 +191,8 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
     /**
      * Whether the specified {@link net.dv8tion.jda.core.entities.Member}
      * can send messages in this channel.
+     * <br>Checks for both {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ} and
+     * {@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}.
      *
      * @param  member
      *         The Member to check

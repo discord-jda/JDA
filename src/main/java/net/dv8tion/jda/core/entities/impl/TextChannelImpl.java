@@ -152,6 +152,8 @@ public class TextChannelImpl implements TextChannel
     @Override
     public RestAction<Void> deleteWebhookById(String id)
     {
+        Args.notEmpty(id, "webhook id");
+
         if (!guild.getSelfMember().hasPermission(this, Permission.MANAGE_WEBHOOKS))
             throw new PermissionException(Permission.MANAGE_WEBHOOKS);
 

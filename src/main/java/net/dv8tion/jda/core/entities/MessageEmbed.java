@@ -171,7 +171,7 @@ public interface MessageEmbed
 
         /**
          * The Discord proxied url of the thumbnail image.
-         * <br>This url will always work, even if the original image was deleted from the hosting website.
+         * <br>This url is used to access the image through Discord instead of directly to prevent ip scraping.
          *
          * @return Never-null String containing the proxied url of this image.
          */
@@ -325,6 +325,7 @@ public interface MessageEmbed
         
         /**
          * The url of the image, proxied by Discord
+         * <br>This url is used to access the image through Discord instead of directly to prevent ip scraping.
          *
          * @return Never-null String containing the proxied image url.
          */
@@ -406,6 +407,7 @@ public interface MessageEmbed
         
         /**
          * The url of the author's icon, proxied by Discord
+         * <br>This url is used to access the image through Discord instead of directly to prevent ip scraping.
          *
          * @return Possibly-null String containing the proxied icon url.
          */
@@ -453,6 +455,7 @@ public interface MessageEmbed
         
         /**
          * The url of the footer's icon, proxied by Discord
+         * <br>This url is used to access the image through Discord instead of directly to prevent ip scraping.
          *
          * @return Possibly-null String containing the proxied icon url.
          */
@@ -468,7 +471,7 @@ public interface MessageEmbed
      * the field can display on the same line as previous fields if there is
      * enough space horizontally.
      *
-     * @since  JDA 3.0
+     * @since  JDA
      * @author John A. Grosh
      */
     class Field
