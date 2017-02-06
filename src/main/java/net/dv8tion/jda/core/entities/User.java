@@ -96,8 +96,14 @@ public interface User extends ISnowflake, IMentionable, IFakeable
      *
      * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#CANNOT_SEND_TO_USER}</li>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#CANNOT_SEND_TO_USER CANNOT_SEND_TO_USER}
+     *     <br>If the recipient User has you blocked</li>
      * </ul>
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If the recipient User is the currently logged in account (represented by {@link net.dv8tion.jda.core.entities.SelfUser SelfUser})
+     * @throws java.lang.IllegalStateException
+     *         If this User is {@link #isFake() fake}
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}
      *         <br>The PrivateChannel to use to directly message this User.
