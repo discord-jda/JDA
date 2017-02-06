@@ -18,6 +18,9 @@ package net.dv8tion.jda.core.exceptions;
 
 import net.dv8tion.jda.core.requests.Route.CompiledRoute;
 
+/**
+ * Indicates that we received a {@code 429: Too Many Requests} response
+ */
 public class RateLimitedException extends Exception
 {
     private final String rateLimitedRoute;
@@ -35,11 +38,23 @@ public class RateLimitedException extends Exception
         this.retryAfter = retryAfter;
     }
 
+    /**
+     * The route responsible for the rate limit bucket that is used in
+     * the responsible {@link net.dv8tion.jda.core.requests.RateLimiter RateLimiter}
+     *
+     * @return The corresponding route
+     */
     public String getRateLimitedRoute()
     {
         return rateLimitedRoute;
     }
 
+    /**
+     * The back-off delay in milliseconds that should be respected
+     * before trying to query the {@link #getRateLimitedRoute() route} again
+     *
+     * @return The back-off delay in milliseconds
+     */
     public long getRetryAfter()
     {
         return retryAfter;

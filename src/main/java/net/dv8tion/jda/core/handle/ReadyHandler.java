@@ -137,7 +137,7 @@ public class ReadyHandler extends SocketHandler
                 String userId = presence.getJSONObject("user").getString("id");
                 FriendImpl friend = (FriendImpl) api.asClient().getFriendById(userId);
                 if (friend == null)
-                    WebSocketClient.LOG.warn("Received a presence in the Presences array in READY that did not corrospond to a cached Friend! JSON: " + presence);
+                    WebSocketClient.LOG.warn("Received a presence in the Presences array in READY that did not correspond to a cached Friend! JSON: " + presence);
                 else
                     builder.createPresence(friend, presence);
             }

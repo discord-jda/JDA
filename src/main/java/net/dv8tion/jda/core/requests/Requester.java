@@ -34,8 +34,6 @@ import net.dv8tion.jda.core.requests.ratelimit.IBucket;
 import net.dv8tion.jda.core.utils.SimpleLog;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class Requester
 {
@@ -143,7 +141,7 @@ public class Requester
             }
             if (response.getBody() != null && response.getBody().startsWith("<"))
             {
-                //Epic failure due to cloudfare. Attempted 4 times.
+                //Epic failure due to cloudflare. Attempted 4 times.
                 return null;
             }
 

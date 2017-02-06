@@ -466,7 +466,7 @@ public class PermissionUtil
                 }
             }
         }
-        if (allow != -1 && deny != -1)  //If we found atleast 1 role with overrides.
+        if (allow != -1 && deny != -1)  //If we found at least 1 role with overrides.
         {
             permission = apply(permission, allow, deny);
         }

@@ -65,7 +65,7 @@ public enum ChannelType
      * @param  id
      *         The id key of the requested channel type.
      *
-     * @return The ChannelType that is refered to by the provided key. If the id key is unknown, {@link #UNKNOWN} is returned.
+     * @return The ChannelType that is referred to by the provided key. If the id key is unknown, {@link #UNKNOWN} is returned.
      */
     public static ChannelType fromId(int id)
     {

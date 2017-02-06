@@ -184,7 +184,7 @@ public interface Invite
     int getMaxAge();
 
     /**
-    * The max uses of this invite. If there is no limit thius will return {@code 0}.
+    * The max uses of this invite. If there is no limit thus will return {@code 0}.
     *
     * <p>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
     *

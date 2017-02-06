@@ -19,10 +19,24 @@ package net.dv8tion.jda.core.exceptions;
 import net.dv8tion.jda.core.requests.ErrorResponse;
 import net.dv8tion.jda.core.requests.Response;
 
+/**
+ * Indicates an unhandled error that is returned by Discord API Request using {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+ * <br>It holds an {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponse}
+ */
 public class ErrorResponseException extends RuntimeException
 {
     private final ErrorResponse errorResponse;
     private final Response response;
+
+    /**
+     * Creates a new ErrorResponseException instance
+     *
+     * @param errorResponse
+     *        The {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponse} corresponding
+     *        for the received error response from Discord
+     * @param response
+     *        The Discord Response causing the ErrorResponse
+     */
     public ErrorResponseException(ErrorResponse errorResponse, Response response)
     {
         super(errorResponse.getMeaning()
@@ -33,11 +47,22 @@ public class ErrorResponseException extends RuntimeException
         this.errorResponse = errorResponse;
     }
 
+    /**
+     * The {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponse} corresponding
+     * for the received error response from Discord
+     *
+     * @return {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponse}
+     */
     public ErrorResponse getErrorResponse()
     {
         return errorResponse;
     }
 
+    /**
+     * The Discord Response causing the ErrorResponse
+     *
+     * @return {@link net.dv8tion.jda.core.requests.Response Response}
+     */
     public Response getResponse()
     {
         return response;

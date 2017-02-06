@@ -73,7 +73,7 @@ public class ChannelUpdateHandler extends SocketHandler
                     {
                         handle(responseNumber, allContent);
                     });
-                    EventCache.LOG.debug("CHANNEL_UPDATE attemped to update a TextChannel that does not exist. JSON: " + content);
+                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a TextChannel that does not exist. JSON: " + content);
                     return null;
                 }
 
@@ -151,7 +151,7 @@ public class ChannelUpdateHandler extends SocketHandler
                     {
                         handle(responseNumber, allContent);
                     });
-                    EventCache.LOG.debug("CHANNEL_UPDATE attemped to update a VoiceChannel that does not exist. JSON: " + content);
+                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a VoiceChannel that does not exist. JSON: " + content);
                     return null;
                 }
                 //If any properties changed, update the values and fire the proper events.
@@ -326,7 +326,7 @@ public class ChannelUpdateHandler extends SocketHandler
             {
                 handle(responseNumber, allContent);
             });
-            EventCache.LOG.debug("Recieved CHANNEL_UPDATE for a group that was not yet cached. JSON: " + content);
+            EventCache.LOG.debug("Received CHANNEL_UPDATE for a group that was not yet cached. JSON: " + content);
             return;
         }
 

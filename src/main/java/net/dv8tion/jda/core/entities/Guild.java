@@ -44,7 +44,7 @@ public interface Guild extends ISnowflake
 
     /**
      * The Discord hash-id of the {@link net.dv8tion.jda.core.entities.Guild Guild} icon image.
-     * If no icon has been set, this returns @code null}.
+     * If no icon has been set, this returns {@code null}.
      * <p>
      * The Guild icon can be modified using {@link net.dv8tion.jda.core.managers.GuildManager#setIcon(Icon)}
      * or {@link net.dv8tion.jda.core.managers.GuildManagerUpdatable#getIconField()}.
@@ -67,7 +67,7 @@ public interface Guild extends ISnowflake
     /**
      * The Discord hash-id of the splash image for this Guild. A Splash image is an image displayed when viewing a
      * Discord Guild Invite on the web or in client just before accepting or declining the invite.
-     * If no splash has been set, this returns @code null}.
+     * If no splash has been set, this returns {@code null}.
      * <br>Splash images are VIP/Partner Guild only.
      * <p>
      * The Guild splash can be modified using {@link net.dv8tion.jda.core.managers.GuildManager#setSplash(Icon)}
@@ -106,7 +106,7 @@ public interface Guild extends ISnowflake
     /**
      * The {@link net.dv8tion.jda.core.entities.Member Member} object of the owner of this {@link net.dv8tion.jda.core.entities.Guild Guild}.
      * <p>
-     * Ownership can be transfered using {@link GuildController#transferOwnership(Member)}.
+     * Ownership can be transferred using {@link GuildController#transferOwnership(Member)}.
      *
      * @return Never-null Member object containing the Guild owner.
      */
@@ -673,7 +673,7 @@ public interface Guild extends ISnowflake
                 if (t.getSeconds() == seconds)
                     return t;
             }
-            throw new IllegalArgumentException("Provided key was not recoginized. Seconds: " + seconds);
+            throw new IllegalArgumentException("Provided key was not recognized. Seconds: " + seconds);
         }
     }
 

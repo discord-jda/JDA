@@ -286,7 +286,7 @@ public class EntityBuilder
         }
 
         //As detailed in the comment above, if we've made it this far then we have all member information needed to
-        // create the Guild. Thusly, we fill in the remaining information, unlock the guild, and provide the guild
+        // create the Guild. Thus, we fill in the remaining information, unlock the guild, and provide the guild
         // to the callback
         //This should only occur on small user count guilds.
 

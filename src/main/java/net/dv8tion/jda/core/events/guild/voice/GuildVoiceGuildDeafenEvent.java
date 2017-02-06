@@ -21,16 +21,16 @@ import net.dv8tion.jda.core.entities.Member;
 
 public class GuildVoiceGuildDeafenEvent extends GenericGuildVoiceEvent
 {
-    protected final boolean guildDefened;
+    protected final boolean guildDeafened;
 
     public GuildVoiceGuildDeafenEvent(JDA api, long responseNumber, Member member)
     {
         super(api, responseNumber, member);
-        this.guildDefened = member.getVoiceState().isGuildDeafened();
+        this.guildDeafened = member.getVoiceState().isGuildDeafened();
     }
 
     public boolean isGuildDeafened()
     {
-        return guildDefened;
+        return guildDeafened;
     }
 }

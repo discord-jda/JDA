@@ -23,7 +23,6 @@ import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import org.apache.http.HttpHost;
-import org.apache.http.util.Args;
 
 import javax.security.auth.login.LoginException;
 import java.util.Arrays;
@@ -159,7 +158,7 @@ public class JDABuilder
      * <p>Default: <b>true (enabled)</b>
      *
      * @param  enabled
-     *         True - The MESSAGE_DELTE_BULK will be split into multiple individual MessageDeleteEvents.
+     *         True - The MESSAGE_DELETE_BULK will be split into multiple individual MessageDeleteEvents.
      *
      * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
      */

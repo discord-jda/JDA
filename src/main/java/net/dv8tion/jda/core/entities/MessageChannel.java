@@ -20,11 +20,8 @@ import com.mashape.unirest.request.body.MultipartBody;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.impl.MessageImpl;
-import net.dv8tion.jda.core.entities.impl.TextChannelImpl;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
-import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.utils.IOUtil;
 import org.apache.http.util.Args;
@@ -39,7 +36,6 @@ import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Represents a Discord channel that can have {@link net.dv8tion.jda.core.entities.Message Messages} and files sent to it.
@@ -857,7 +853,7 @@ public interface MessageChannel extends ISnowflake
      *         </ul>
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the currently logged
-     *         in account does not have {@link net.dv8tion.jda.core.Permission#MESSAGE_ADD_REACTION Permisison.MESSAGE_ADD_REACTION}
+     *         in account does not have {@link net.dv8tion.jda.core.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION}
      *         in this channel.
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: Void

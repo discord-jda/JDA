@@ -19,7 +19,7 @@ import java.lang.annotation.*;
 
 /**
  * Annotation used by the {@link net.dv8tion.jda.core.hooks.AnnotatedEventManager AnnotatedEventManager}
- * this is only picked up if the event manager implemenation has been set to use the {@link net.dv8tion.jda.core.hooks.AnnotatedEventManager AnnotatedEventManager}
+ * this is only picked up if the event manager implementation has been set to use the {@link net.dv8tion.jda.core.hooks.AnnotatedEventManager AnnotatedEventManager}
  * via {@link net.dv8tion.jda.core.JDABuilder#setEventManager(IEventManager) JDABuilder.setEventManager(IEventManager)}
  *
  * @see net.dv8tion.jda.core.hooks.AnnotatedEventManager

@@ -58,7 +58,7 @@ public class MessageDeleteEvent extends Event
         return channel;
     }
 
-    public PrivateChannel getPrivatechannel()
+    public PrivateChannel getPrivateChannel()
     {
         return isFromType(ChannelType.PRIVATE) ? (PrivateChannel) channel : null;
     }

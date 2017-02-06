@@ -16,8 +16,6 @@
 
 package net.dv8tion.jda.core.audio;
 
-import net.dv8tion.jda.core.entities.User;
-
 import javax.sound.sampled.AudioFormat;
 
 /**
@@ -47,7 +45,7 @@ public interface AudioReceiveHandler
 
     /**
      * If {@link #canReceiveCombined()} returns true, JDA will provide a {@link net.dv8tion.jda.core.audio.CombinedAudio CombinedAudio}
-     * object to this method <b>every 20 milliseconds</b>. The data provided by CombinedAudio is all audio that occured
+     * object to this method <b>every 20 milliseconds</b>. The data provided by CombinedAudio is all audio that occurred
      * during the 20 millisecond period mixed together into a single 20 millisecond packet. If no users spoke, this method
      * will still be provided with a CombinedAudio object containing 20 milliseconds of silence and
      * {@link CombinedAudio#getUsers()}'s list will be empty.

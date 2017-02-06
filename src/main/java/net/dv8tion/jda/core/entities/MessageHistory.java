@@ -76,7 +76,7 @@ public class MessageHistory
      * <ul>
      *     <li><b>Initial Retrieval</b>
      *     <br>This mode is what is used when no {@link net.dv8tion.jda.core.entities.Message Messages} have been retrieved
-     *         yet ({@link #getRetrievedHistory()}'s size is 0). Initial retrival starts from the most recent message sent
+     *         yet ({@link #getRetrievedHistory()}'s size is 0). Initial retrieval starts from the most recent message sent
      *         to the channel and retrieves backwards from there. So, if 50 messages are retrieved during this mode, the
      *         most recent 50 messages will be retrieved.</li>
      *
@@ -117,7 +117,7 @@ public class MessageHistory
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} -
      *         Type: {@link java.util.List List}{@literal <}{@link net.dv8tion.jda.core.entities.Message Message}{@literal >}
-     *         <br>Retreived Messages are placed in a List and provided in order of most recent to oldest with most recent
+     *         <br>Retrieved Messages are placed in a List and provided in order of most recent to oldest with most recent
      *         starting at index 0. If the list is empty, there were no more messages left to retrieve.
      */
     public RestAction<List<Message>> retrievePast(int amount)
@@ -190,12 +190,12 @@ public class MessageHistory
      * @throws java.lang.IllegalArgumentException
      *         The the {@code amount} is less than {@code 1} or greater than {@code 100}.
      * @throws java.lang.IllegalStateException
-     *         If no messages have been retrieved by this MessageHistory. Thrown due
+     *         If no messages have been retrieved by this MessageHistory.
      *
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} -
      *         Type: {@link java.util.List List}{@literal <}{@link net.dv8tion.jda.core.entities.Message Message}{@literal >}
-     *         <br>Retreived Messages are placed in a List and provided in order of most recent to oldest with most recent
+     *         <br>Retrieved Messages are placed in a List and provided in order of most recent to oldest with most recent
      *         starting at index 0. If the list is empty, there were no more messages left to retrieve.
      */
     public RestAction<List<Message>> retrieveFuture(int amount)

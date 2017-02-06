@@ -18,21 +18,44 @@ package net.dv8tion.jda.core.exceptions;
 
 import net.dv8tion.jda.core.AccountType;
 
+/**
+ * Indicates that an operation is not possible unless the {@link net.dv8tion.jda.core.AccountType AccountType}
+ * matches the one provided in {@link #getRequiredType()}
+ */
 public class AccountTypeException extends RuntimeException
 {
-    AccountType requiredType;
+    private final AccountType requiredType;
 
+    /**
+     * Creates a new AccountTypeException instance
+     *
+     * @param requiredType
+     *        The required {@link net.dv8tion.jda.core.AccountType AccountType} for the operation
+     */
     public AccountTypeException(AccountType requiredType)
     {
         this(requiredType, "The current AccountType is not valid for the attempted action. Required AccountType: " + requiredType);
     }
 
+    /**
+     * Creates a new AccountTypeException instance
+     *
+     * @param requiredType
+     *        The required {@link net.dv8tion.jda.core.AccountType AccountType} for the operation
+     * @param message
+     *        A specialized message
+     */
     public AccountTypeException(AccountType requiredType, String message)
     {
         super(message);
         this.requiredType = requiredType;
     }
 
+    /**
+     * The required {@link net.dv8tion.jda.core.AccountType AccountType} for the operation
+     *
+     * @return AccountType
+     */
     public AccountType getRequiredType()
     {
         return requiredType;

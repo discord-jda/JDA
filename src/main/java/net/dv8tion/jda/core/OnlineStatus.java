@@ -54,7 +54,7 @@ public enum OnlineStatus
      * @param  key
      *         The key relating to the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} we wish to retrieve.
      *
-     * @return The matching {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus}. If there is no match, returns {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKONWN}.
+     * @return The matching {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus}. If there is no match, returns {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}.
      */
     public static OnlineStatus fromKey(String key)
     {

@@ -134,7 +134,7 @@ public class MessageBuilder implements Appendable
     }
 
     /**
-     * Appends the string repesentation of an object to the Message.
+     * Appends the string representation of an object to the Message.
      * <br>This is the same as {@link #append(CharSequence) append(String.valueOf(object))}
      * 
      * @param  object
@@ -802,7 +802,7 @@ public class MessageBuilder implements Appendable
      * The method will try the policies in the order they are passed to it.
      * <br>If no SplitPolicy is provided each message will be split after exactly 2000 chars.
      *
-     * <p><b>This is not Markdown safe.</b> An easy workaround is to include <a href="https://en.wikipedia.org/wiki/Zero-width_space">Zero Witdh Spaces</a>
+     * <p><b>This is not Markdown safe.</b> An easy workaround is to include <a href="https://en.wikipedia.org/wiki/Zero-width_space">Zero Width Spaces</a>
      * as predetermined breaking points to the message and only split on them.
      *
      * @param  policy

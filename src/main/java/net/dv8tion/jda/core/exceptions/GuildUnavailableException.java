@@ -15,13 +15,26 @@
  */
 package net.dv8tion.jda.core.exceptions;
 
+/**
+ * Indicates that a {@link net.dv8tion.jda.core.entities.Guild Guild} is not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
+ * <br>Thrown when an operation requires a Guild to be available and {@link net.dv8tion.jda.core.entities.Guild#isAvailable() Guild#isAvailable()} is {@code false}
+ */
 public class GuildUnavailableException extends RuntimeException
 {
+    /**
+     * Creates a new GuildUnavailableException instance
+     */
     public GuildUnavailableException()
     {
         this("This operation is not possible due to the Guild being temporarily unavailable");
     }
 
+    /**
+     * Creates a new GuildUnavailableException instance
+     *
+     * @param reason
+     *        The reason for this Exception
+     */
     public GuildUnavailableException(String reason)
     {
         super(reason);
