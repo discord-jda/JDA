@@ -27,8 +27,7 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import org.json.JSONObject;
 
-import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.List;
 
 public class UserImpl implements User
 {
@@ -129,11 +128,9 @@ public class UserImpl implements User
     }
 
     @Override
-    public Collection<Guild> getMutualGuilds() {
-        return getJDA().getGuilds()
-                .parallelStream()
-                .filter(guild -> guild.isMember(this))
-                .collect(Collectors.toList());
+    public List<Guild> getMutualGuilds()
+    {
+        return getJDA().getMutualGuilds(this);
     }
 
     @Override

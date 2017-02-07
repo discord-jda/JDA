@@ -44,10 +44,7 @@ import org.json.JSONObject;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class JDAImpl implements JDA
@@ -301,6 +298,33 @@ public class JDAImpl implements JDA
     public User getUserById(String id)
     {
         return users.get(id);
+    }
+
+    @Override
+    public List<Guild> getMutualGuilds(User... users)
+    {
+        Args.notNull(users, "users");
+        return getMutualGuilds(Arrays.asList(users));
+    }
+
+    @Override
+    public List<Guild> getMutualGuilds(Collection<User> users)
+    {
+        Args.notNull(users, "users");
+        for(User u : users)
+        {
+            if(u == null)
+                throw new IllegalArgumentException("All users provided must be non-null");
+        }
+        return Collections.unmodifiableList(getGuilds().parallelStream()
+                .filter(guild -> {
+                    for(User u : users)
+                    {
+                        if(!guild.isMember(u))
+                            return false;
+                    }
+                    return true;
+                }).collect(Collectors.toList()));
     }
 
     @Override
