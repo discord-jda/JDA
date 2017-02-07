@@ -24,17 +24,17 @@ import java.util.List;
 
 public class GroupMessageEmbedEvent extends GenericGroupMessageEvent
 {
-    private final String messageId;
+    private final long messageId;
     private final List<MessageEmbed> embeds;
 
-    public GroupMessageEmbedEvent(JDA api, long responseNumber, String messageId, Group group, List<MessageEmbed> embeds)
+    public GroupMessageEmbedEvent(JDA api, long responseNumber, long messageId, Group group, List<MessageEmbed> embeds)
     {
         super(api, responseNumber, null, group);
         this.messageId = messageId;
         this.embeds = embeds;
     }
 
-    public String getMessageId()
+    public long getMessageId()
     {
         return messageId;
     }

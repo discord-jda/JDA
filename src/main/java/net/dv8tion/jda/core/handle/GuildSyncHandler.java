@@ -30,9 +30,9 @@ public class GuildSyncHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
-        String guildId = content.getString("id");
+        long guildId = content.getLong("id");
         if (!api.getGuildMap().containsKey(guildId))
         {
             JDAImpl.LOG.fatal("Received a GUILD_SYNC for a Guild that does not yet exist in JDA's guild cache. This is a BAD ERROR FOR CLIENTS!");

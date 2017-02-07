@@ -436,7 +436,7 @@ public class MessageBuilder
         if (message.length() > 2000)
             throw new UnsupportedOperationException("Cannot build a Message with more than 2000 characters. Please limit your input.");
 
-        return new MessageImpl("", null, false).setContent(message).setTTS(isTTS)
+        return new MessageImpl(0, null, false).setContent(message).setTTS(isTTS)
                 .setEmbeds(embed == null ? new LinkedList<>() : Collections.singletonList(embed));
     }
 
@@ -575,7 +575,7 @@ public class MessageBuilder
                         Matcher matcher = CHANNEL_MENTION_PATTERN.matcher(string);
                         while (matcher.find())
                         {
-                            TextChannel channel = jda.getTextChannelById(matcher.group(1));
+                            TextChannel channel = jda.getTextChannelById(Long.parseLong(matcher.group(1)));
                             if (channel != null)
                             {
                                 replaceAll(matcher.group(), "#" + channel.getName());
@@ -595,7 +595,7 @@ public class MessageBuilder
                         {
                             for (Guild g : jda.getGuilds())
                             {
-                                Role role = g.getRoleById(matcher.group(1));
+                                Role role = g.getRoleById(Long.parseLong(matcher.group(1)));
                                 if (role != null)
                                 {
                                     replaceAll(matcher.group(), "@"+role.getName());
@@ -615,7 +615,7 @@ public class MessageBuilder
                         Matcher matcher = USER_MENTION_PATTERN.matcher(string);
                         while (matcher.find())
                         {
-                            User user = jda.getUserById(matcher.group(1));
+                            User user = jda.getUserById(Long.parseLong(matcher.group(1)));
                             String replacement = null;
 
                             if (user == null)
@@ -829,7 +829,7 @@ public class MessageBuilder
 
     protected Message build(int beginIndex, int endIndex)
     {
-        return new MessageImpl("", null, false).setContent(builder.substring(beginIndex, endIndex)).setTTS(isTTS);
+        return new MessageImpl(0, null, false).setContent(builder.substring(beginIndex, endIndex)).setTTS(isTTS);
     }
 
     public static interface SplitPolicy

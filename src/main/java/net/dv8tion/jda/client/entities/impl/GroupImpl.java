@@ -44,17 +44,17 @@ import net.dv8tion.jda.core.entities.MessageEmbed;
 
 public class GroupImpl implements Group
 {
-    private final String id;
+    private final long id;
     private final JDAImpl api;
 
-    private HashMap<String, User> userMap = new HashMap<>();
+    private HashMap<Long, User> userMap = new HashMap<>();
 
     private Call currentCall;
     private User owner;
     private String name;
     private String iconId;
 
-    public GroupImpl(String id, JDAImpl api)
+    public GroupImpl(long id, JDAImpl api)
     {
         this.id = id;
         this.api = api;
@@ -115,7 +115,7 @@ public class GroupImpl implements Group
     public List<Friend> getFriends()
     {
         List<Friend> friends = new ArrayList<>();
-        for (String userId : userMap.keySet())
+        for (long userId : userMap.keySet())
         {
             Friend friend = api.asClient().getFriendById(userId);
             if (friend != null)
@@ -143,7 +143,7 @@ public class GroupImpl implements Group
     }
 
     @Override
-    public String getId()
+    public long getId()
     {
         return id;
     }
@@ -170,7 +170,7 @@ public class GroupImpl implements Group
     public RestAction<Message> sendMessage(Message msg)
     {
         Args.notNull(msg, "Message");
-        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
+        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(Long.toString(getId()));
         JSONObject json = ((MessageImpl) msg).toJSONObject();
         return new RestAction<Message>(getJDA(), route, json)
         {
@@ -217,7 +217,7 @@ public class GroupImpl implements Group
         checkNull(data, "data InputStream");
         checkNull(fileName, "fileName");
 
-        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(id);
+        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(Long.toString(id));
         MultipartBody body = Unirest.post(Requester.DISCORD_API_PREFIX + route.getCompiledRoute())
                 .fields(null); //We use this to change from an HttpRequest to a MultipartBody
 
@@ -250,7 +250,7 @@ public class GroupImpl implements Group
         if (data.length > 8<<20)   //8MB
             throw new IllegalArgumentException("Provided data is too large! Max file-size is 8MB");
 
-        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(id);
+        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(Long.toString(id));
         MultipartBody body = Unirest.post(Requester.DISCORD_API_PREFIX + route.getCompiledRoute())
                 .fields(null); //We use this to change from an HttpRequest to a MultipartBody
 
@@ -276,11 +276,11 @@ public class GroupImpl implements Group
     }
 
     @Override
-    public RestAction<Message> getMessageById(String messageId)
+    public RestAction<Message> getMessageById(long messageId)
     {
         checkNull(messageId, "messageId");
 
-        Route.CompiledRoute route = Route.Messages.GET_MESSAGE.compile(getId(), messageId);
+        Route.CompiledRoute route = Route.Messages.GET_MESSAGE.compile(Long.toString(getId()), Long.toString(messageId));
         return new RestAction<Message>(getJDA(), route, null)
         {
             @Override
@@ -300,11 +300,11 @@ public class GroupImpl implements Group
     }
 
     @Override
-    public RestAction<Void> deleteMessageById(String messageId)
+    public RestAction<Void> deleteMessageById(long messageId)
     {
         checkNull(messageId, "messageId");
 
-        Route.CompiledRoute route = Route.Messages.DELETE_MESSAGE.compile(getId(), messageId);
+        Route.CompiledRoute route = Route.Messages.DELETE_MESSAGE.compile(Long.toString(getId()), Long.toString(messageId));
         return new RestAction<Void>(getJDA(), route, null) {
             @Override
             protected void handleResponse(Response response, Request request)
@@ -331,7 +331,7 @@ public class GroupImpl implements Group
     }
 
     @Override
-    public RestAction<MessageHistory> getHistoryAround(String markedMessageId, int limit)
+    public RestAction<MessageHistory> getHistoryAround(long markedMessageId, int limit)
     {
         return MessageHistory.getHistoryAround(this, markedMessageId, limit);
     }
@@ -339,7 +339,7 @@ public class GroupImpl implements Group
     @Override
     public RestAction<Void> sendTyping()
     {
-        Route.CompiledRoute route = Route.Channels.SEND_TYPING.compile(id);
+        Route.CompiledRoute route = Route.Channels.SEND_TYPING.compile(Long.toString(id));
         return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
@@ -354,11 +354,11 @@ public class GroupImpl implements Group
     }
 
     @Override
-    public RestAction<Void> pinMessageById(String messageId)
+    public RestAction<Void> pinMessageById(long messageId)
     {
         checkNull(messageId, "messageId");
 
-        Route.CompiledRoute route = Route.Messages.ADD_PINNED_MESSAGE.compile(getId(), messageId);
+        Route.CompiledRoute route = Route.Messages.ADD_PINNED_MESSAGE.compile(Long.toString(getId()), Long.toString(messageId));
         return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
@@ -373,11 +373,11 @@ public class GroupImpl implements Group
     }
 
     @Override
-    public RestAction<Void> unpinMessageById(String messageId)
+    public RestAction<Void> unpinMessageById(long messageId)
     {
         checkNull(messageId, "messageId");
 
-        Route.CompiledRoute route = Route.Messages.REMOVE_PINNED_MESSAGE.compile(getId(), messageId);
+        Route.CompiledRoute route = Route.Messages.REMOVE_PINNED_MESSAGE.compile(Long.toString(getId()), Long.toString(messageId));
         return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
@@ -394,7 +394,7 @@ public class GroupImpl implements Group
     @Override
     public RestAction<List<Message>> getPinnedMessages()
     {
-        Route.CompiledRoute route = Route.Messages.GET_PINNED_MESSAGES.compile(getId());
+        Route.CompiledRoute route = Route.Messages.GET_PINNED_MESSAGES.compile(Long.toString(getId()));
         return new RestAction<List<Message>>(getJDA(), route, null)
         {
             @Override
@@ -434,16 +434,16 @@ public class GroupImpl implements Group
             return false;
 
         Group oGroup = (Group) o;
-        return id.equals(oGroup.getId());
+        return id == oGroup.getId();
     }
 
     @Override
     public int hashCode()
     {
-        return id.hashCode();
+        return Long.hashCode(id);
     }
 
-    public HashMap<String, User> getUserMap()
+    public HashMap<Long, User> getUserMap()
     {
         return userMap;
     }

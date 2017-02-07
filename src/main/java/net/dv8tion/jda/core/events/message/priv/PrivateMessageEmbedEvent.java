@@ -29,17 +29,17 @@ import java.util.List;
  */
 public class PrivateMessageEmbedEvent extends GenericPrivateMessageEvent
 {
-    private final String messageId;
+    private final long messageId;
     private final List<MessageEmbed> embeds;
 
-    public PrivateMessageEmbedEvent(JDA api, long responseNumber, String messageId, PrivateChannel channel, List<MessageEmbed> embeds)
+    public PrivateMessageEmbedEvent(JDA api, long responseNumber, long messageId, PrivateChannel channel, List<MessageEmbed> embeds)
     {
         super(api, responseNumber, null, channel);
         this.messageId = messageId;
         this.embeds = embeds;
     }
 
-    public String getMessageId()
+    public long getMessageId()
     {
         return messageId;
     }

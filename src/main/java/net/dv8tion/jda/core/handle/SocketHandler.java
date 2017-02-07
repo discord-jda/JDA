@@ -35,7 +35,7 @@ public abstract class SocketHandler
     {
         this.allContent = o;
         this.responseNumber = responseTotal;
-        String guildId = handleInternally(o.getJSONObject("d"));
+        Long guildId = handleInternally(o.getJSONObject("d"));
         if (guildId != null)
         {
             GuildLock.get(api).queue(guildId, o);
@@ -49,5 +49,5 @@ public abstract class SocketHandler
      * @return
      *      Guild-id if that guild has a lock, or null if successful
      */
-    protected abstract String handleInternally(JSONObject content);
+    protected abstract Long handleInternally(JSONObject content);
 }

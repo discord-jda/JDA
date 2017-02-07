@@ -42,14 +42,14 @@ public class ChannelDeleteHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
         ChannelType type = ChannelType.fromId(content.getInt("type"));
         if (type == ChannelType.TEXT || type == ChannelType.VOICE)
         {
-            if (GuildLock.get(api).isLocked(content.getString("guild_id")))
+            if (GuildLock.get(api).isLocked(content.getLong("guild_id")))
             {
-                return content.getString("guild_id");
+                return content.getLong("guild_id");
             }
         }
 
@@ -57,11 +57,11 @@ public class ChannelDeleteHandler extends SocketHandler
         {
             case TEXT:
             {
-                GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("guild_id"));
-                TextChannel channel = api.getTextChannelMap().remove(content.getString("id"));
+                GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getLong("guild_id"));
+                TextChannel channel = api.getTextChannelMap().remove(content.getLong("id"));
                 if (channel == null)
                 {
-                    EventCache.get(api).cache(EventCache.Type.CHANNEL, content.getString("id"), () ->
+                    EventCache.get(api).cache(EventCache.Type.CHANNEL, content.getLong("id"), () ->
                     {
                         handle(responseNumber, allContent);
                     });
@@ -78,11 +78,11 @@ public class ChannelDeleteHandler extends SocketHandler
             }
             case VOICE:
             {
-                GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("guild_id"));
-                VoiceChannel channel = guild.getVoiceChannelMap().remove(content.getString("id"));
+                GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getLong("guild_id"));
+                VoiceChannel channel = guild.getVoiceChannelMap().remove(content.getLong("id"));
                 if (channel == null)
                 {
-                    EventCache.get(api).cache(EventCache.Type.CHANNEL, content.getString("id"), () ->
+                    EventCache.get(api).cache(EventCache.Type.CHANNEL, content.getLong("id"), () ->
                     {
                         handle(responseNumber, allContent);
                     });
@@ -93,7 +93,7 @@ public class ChannelDeleteHandler extends SocketHandler
                 //We use this instead of getAudioManager(Guild) so we don't create a new instance. Efficiency!
                 AudioManagerImpl manager = (AudioManagerImpl) api.getAudioManagerMap().get(guild.getId());
                 if (manager != null && manager.isConnected()
-                        && manager.getConnectedChannel().getId().equals(channel.getId()))
+                        && manager.getConnectedChannel().getId() == channel.getId())
                 {
                     manager.closeAudioConnection(ConnectionStatus.DISCONNECTED_CHANNEL_DELETED);
                 }
@@ -106,14 +106,14 @@ public class ChannelDeleteHandler extends SocketHandler
             }
             case PRIVATE:
             {
-                String channelId = content.getString("id");
+                long channelId = content.getLong("id");
                 PrivateChannel channel = api.getPrivateChannelMap().remove(channelId);
 
                 if (channel == null)
                     channel = api.getFakePrivateChannelMap().remove(channelId);
                 if (channel == null)
                 {
-                    EventCache.get(api).cache(EventCache.Type.CHANNEL, content.getString("id"), () ->
+                    EventCache.get(api).cache(EventCache.Type.CHANNEL, content.getLong("id"), () ->
                     {
                         handle(responseNumber, allContent);
                     });
@@ -135,14 +135,12 @@ public class ChannelDeleteHandler extends SocketHandler
             case GROUP:
             {
                 //TODO: close call on group leave (kill audio manager)
-                String groupId = content.getString("id");
+                long groupId = content.getLong("id");
                 GroupImpl group = (GroupImpl) ((JDAClientImpl) api.asClient()).getGroupMap().remove(groupId);
                 if (group == null)
                 {
-                    EventCache.get(api).cache(EventCache.Type.CHANNEL, content.getString("id"), () ->
-                    {
-                        handle(responseNumber, allContent);
-                    });
+                    EventCache.get(api).cache(EventCache.Type.CHANNEL, content.getLong("id"), () ->
+                            handle(responseNumber, allContent));
                     EventCache.LOG.debug("CHANNEL_DELETE attempted to delete a group that is not yet cached. JSON: " + content);
                     return null;
                 }

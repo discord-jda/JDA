@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 
 public class TextChannelImpl implements TextChannel
 {
-    private final String id;
+    private final long id;
     private final GuildImpl guild;
     private final HashMap<Member, PermissionOverride> memberOverrides = new HashMap<>();
     private final HashMap<Role, PermissionOverride> roleOverrides = new HashMap<>();
@@ -56,7 +56,7 @@ public class TextChannelImpl implements TextChannel
     private String topic;
     private int rawPosition;
 
-    public TextChannelImpl(String id, Guild guild)
+    public TextChannelImpl(long id, Guild guild)
     {
         this.id = id;
         this.guild = (GuildImpl) guild;
@@ -69,7 +69,7 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
-    public String getId()
+    public long getId()
     {
         return id;
     }
@@ -85,21 +85,21 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
-    public RestAction<Void> deleteMessagesByIds(Collection<String> messageIds)
+    public RestAction<Void> deleteMessagesByIds(Collection<Long> messageIds)
     {
         checkPermission(Permission.MESSAGE_MANAGE, "Must have MESSAGE_MANAGE in order to bulk delete messages in this channel regardless of author.");
         if (messageIds.size() < 2 || messageIds.size() > 100)
             throw new IllegalArgumentException("Must provide at least 2 or at most 100 messages to be deleted.");
 
         long twoWeeksAgo = ((System.currentTimeMillis() - (14 * 24 * 60 * 60 * 1000)) - MiscUtil.DISCORD_EPOCH) << MiscUtil.TIMESTAMP_OFFSET;
-        for (String id : messageIds)
+        for (long id : messageIds)
         {
-            Args.notEmpty(id, "Message id in messageIds");
-            Args.check(Long.parseLong(id) > twoWeeksAgo, "Message Id provided was older than 2 weeks. Id: " + id);
+            Args.check(id != 0, "Message id in messageIds");
+            Args.check(id > twoWeeksAgo, "Message Id provided was older than 2 weeks. Id: " + id);
         }
 
         JSONObject body = new JSONObject().put("messages", messageIds);
-        Route.CompiledRoute route = Route.Messages.DELETE_MESSAGES.compile(id);
+        Route.CompiledRoute route = Route.Messages.DELETE_MESSAGES.compile(Long.toString(id));
         return new RestAction<Void>(getJDA(), route, body)
         {
             @Override
@@ -118,7 +118,7 @@ public class TextChannelImpl implements TextChannel
     {
         checkPermission(Permission.MANAGE_WEBHOOKS);
 
-        Route.CompiledRoute route = Route.Channels.GET_WEBHOOKS.compile(id);
+        Route.CompiledRoute route = Route.Channels.GET_WEBHOOKS.compile(Long.toString(id));
         return new RestAction<List<Webhook>>(getJDA(), route, null)
         {
             @Override
@@ -267,7 +267,7 @@ public class TextChannelImpl implements TextChannel
         if (msg.getRawContent().isEmpty() && !msg.getEmbeds().isEmpty())
             checkPermission(Permission.MESSAGE_EMBED_LINKS);
 
-        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
+        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(Long.toString(getId()));
         JSONObject json = ((MessageImpl) msg).toJSONObject();
         return new RestAction<Message>(getJDA(), route, json)
         {
@@ -317,7 +317,7 @@ public class TextChannelImpl implements TextChannel
         checkNull(data, "data InputStream");
         checkNull(fileName, "fileName");
 
-        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(id);
+        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(Long.toString(id));
         MultipartBody body = Unirest.post(Requester.DISCORD_API_PREFIX + route.getCompiledRoute())
                 .fields(null); //We use this to change from an HttpRequest to a MultipartBody
 
@@ -353,7 +353,7 @@ public class TextChannelImpl implements TextChannel
         if (data.length > 8<<20)   //8MB
             throw new IllegalArgumentException("Provided data is too large! Max file-size is 8MB");
 
-        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(id);
+        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(Long.toString(id));
         MultipartBody body = Unirest.post(Requester.DISCORD_API_PREFIX + route.getCompiledRoute())
                 .fields(null); //We use this to change from an HttpRequest to a MultipartBody
 
@@ -379,7 +379,7 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
-    public RestAction<Message> getMessageById(String messageId)
+    public RestAction<Message> getMessageById(long messageId)
     {
         if (getJDA().getAccountType() != AccountType.BOT)
             throw new AccountTypeException(AccountType.BOT);
@@ -387,7 +387,7 @@ public class TextChannelImpl implements TextChannel
         checkPermission(Permission.MESSAGE_READ);
         checkPermission(Permission.MESSAGE_HISTORY);
 
-        Route.CompiledRoute route = Route.Messages.GET_MESSAGE.compile(getId(), messageId);
+        Route.CompiledRoute route = Route.Messages.GET_MESSAGE.compile(Long.toString(getId()), Long.toString(messageId));
         return new RestAction<Message>(getJDA(), route, null)
         {
             @Override
@@ -406,12 +406,12 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
-    public RestAction<Void> deleteMessageById(String messageId)
+    public RestAction<Void> deleteMessageById(long messageId)
     {
         checkNull(messageId, "messageId");
         checkPermission(Permission.MESSAGE_READ);
 
-        Route.CompiledRoute route = Route.Messages.DELETE_MESSAGE.compile(getId(), messageId);
+        Route.CompiledRoute route = Route.Messages.DELETE_MESSAGE.compile(Long.toString(getId()), Long.toString(messageId));
         return new RestAction<Void>(getJDA(), route, null) {
             @Override
             protected void handleResponse(Response response, Request request)
@@ -452,7 +452,7 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
-    public RestAction<MessageHistory> getHistoryAround(String markedMessageId, int limit)
+    public RestAction<MessageHistory> getHistoryAround(long markedMessageId, int limit)
     {
         return MessageHistory.getHistoryAround(this, markedMessageId, limit);
     }
@@ -460,7 +460,7 @@ public class TextChannelImpl implements TextChannel
     @Override
     public RestAction<Void> sendTyping()
     {
-        Route.CompiledRoute route = Route.Channels.SEND_TYPING.compile(id);
+        Route.CompiledRoute route = Route.Channels.SEND_TYPING.compile(Long.toString(id));
         return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
@@ -475,13 +475,13 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
-    public RestAction<Void> pinMessageById(String messageId)
+    public RestAction<Void> pinMessageById(long messageId)
     {
         checkNull(messageId, "messageId");
         checkPermission(Permission.MESSAGE_READ, "You cannot pin a message in a channel you can't access. (MESSAGE_READ)");
         checkPermission(Permission.MESSAGE_MANAGE, "You need MESSAGE_MANAGE to pin or unpin messages.");
 
-        Route.CompiledRoute route = Route.Messages.ADD_PINNED_MESSAGE.compile(getId(), messageId);
+        Route.CompiledRoute route = Route.Messages.ADD_PINNED_MESSAGE.compile(Long.toString(getId()), Long.toString(messageId));
         return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
@@ -496,13 +496,13 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
-    public RestAction<Void> unpinMessageById(String messageId)
+    public RestAction<Void> unpinMessageById(long messageId)
     {
         checkNull(messageId, "messageId");
         checkPermission(Permission.MESSAGE_READ, "You cannot unpin a message in a channel you can't access. (MESSAGE_READ)");
         checkPermission(Permission.MESSAGE_MANAGE, "You need MESSAGE_MANAGE to pin or unpin messages.");
 
-        Route.CompiledRoute route = Route.Messages.REMOVE_PINNED_MESSAGE.compile(getId(), messageId);
+        Route.CompiledRoute route = Route.Messages.REMOVE_PINNED_MESSAGE.compile(Long.toString(getId()), Long.toString(messageId));
         return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
@@ -521,7 +521,7 @@ public class TextChannelImpl implements TextChannel
     {
         checkPermission(Permission.MESSAGE_READ, "Cannot get the pinned message of a channel without MESSAGE_READ access.");
 
-        Route.CompiledRoute route = Route.Messages.GET_PINNED_MESSAGES.compile(getId());
+        Route.CompiledRoute route = Route.Messages.GET_PINNED_MESSAGES.compile(Long.toString(getId()));
         return new RestAction<List<Message>>(getJDA(), route, null)
         {
             @Override
@@ -618,7 +618,7 @@ public class TextChannelImpl implements TextChannel
     {
         checkPermission(Permission.MANAGE_CHANNEL);
 
-        Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(id);
+        Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(Long.toString(id));
         return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
@@ -650,7 +650,7 @@ public class TextChannelImpl implements TextChannel
                 .put("allow", 0)
                 .put("deny", 0);
 
-        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(id, member.getUser().getId());
+        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(Long.toString(id), Long.toString(member.getUser().getId()));
         return new RestAction<PermissionOverride>(getJDA(), route, body)
         {
             @Override
@@ -686,7 +686,7 @@ public class TextChannelImpl implements TextChannel
                 .put("allow", 0)
                 .put("deny", 0);
 
-        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(id, role.getId());
+        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(Long.toString(id), Long.toString(role.getId()));
         return new RestAction<PermissionOverride>(getJDA(), route, body)
         {
             @Override
@@ -710,13 +710,13 @@ public class TextChannelImpl implements TextChannel
         if (!(o instanceof TextChannel))
             return false;
         TextChannel oTChannel = (TextChannel) o;
-        return this == oTChannel || this.getId().equals(oTChannel.getId());
+        return this == oTChannel || this.getId() == oTChannel.getId();
     }
 
     @Override
     public int hashCode()
     {
-        return getId().hashCode();
+        return Long.hashCode(getId());
     }
 
     @Override
@@ -810,7 +810,7 @@ public class TextChannelImpl implements TextChannel
         if (!this.guild.getSelfMember().hasPermission(this, Permission.MANAGE_CHANNEL))
             throw new PermissionException(Permission.MANAGE_CHANNEL);
 
-        final Route.CompiledRoute route = Route.Invites.GET_CHANNEL_INVITES.compile(getId());
+        final Route.CompiledRoute route = Route.Invites.GET_CHANNEL_INVITES.compile(Long.toString(getId()));
 
         return new RestAction<List<Invite>>(getJDA(), route, null)
         {

@@ -237,7 +237,7 @@ public class AudioWebSocket extends WebSocketAdapter
                 JSONObject content = contentAll.getJSONObject("d");
                 boolean speaking = content.getBoolean("speaking");
                 int ssrc = content.getInt("ssrc");
-                String userId = content.getString("user_id");
+                long userId = content.getLong("user_id");
 
                 User user = api.getUserById(userId);
                 if (user == null)

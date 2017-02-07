@@ -34,13 +34,13 @@ public class ChannelCreateHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
         ChannelType type = ChannelType.fromId(content.getInt("type"));
 
-        if ((type == ChannelType.TEXT || type == ChannelType.VOICE ) && GuildLock.get(api).isLocked(content.getString("guild_id")))
+        if ((type == ChannelType.TEXT || type == ChannelType.VOICE ) && GuildLock.get(api).isLocked(content.getLong("guild_id")))
         {
-            return content.getString("guild_id");
+            return content.getLong("guild_id");
         }
 
         switch (type)
@@ -50,7 +50,7 @@ public class ChannelCreateHandler extends SocketHandler
                 api.getEventManager().handle(
                         new TextChannelCreateEvent(
                                 api, responseNumber,
-                                EntityBuilder.get(api).createTextChannel(content, content.getString("guild_id"))));
+                                EntityBuilder.get(api).createTextChannel(content, content.getLong("guild_id"))));
                 break;
             }
             case VOICE:
@@ -58,7 +58,7 @@ public class ChannelCreateHandler extends SocketHandler
                 api.getEventManager().handle(
                         new VoiceChannelCreateEvent(
                                 api, responseNumber,
-                                EntityBuilder.get(api).createVoiceChannel(content, content.getString("guild_id"))));
+                                EntityBuilder.get(api).createVoiceChannel(content, content.getLong("guild_id"))));
                 break;
             }
             case PRIVATE:
@@ -80,7 +80,7 @@ public class ChannelCreateHandler extends SocketHandler
             default:
                 throw new IllegalArgumentException("Discord provided an CREATE_CHANNEL event with an unknown channel type! JSON: " + content);
         }
-        EventCache.get(api).playbackCache(EventCache.Type.CHANNEL, content.getString("id"));
+        EventCache.get(api).playbackCache(EventCache.Type.CHANNEL, content.getLong("id"));
         return null;
     }
 }

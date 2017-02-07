@@ -143,7 +143,7 @@ public class RoleManagerUpdatable
             body.put("permissions", permissions.getValue());
 
         reset();
-        Route.CompiledRoute route = Route.Roles.MODIFY_ROLE.compile(getGuild().getId(), role.getId());
+        Route.CompiledRoute route = Route.Roles.MODIFY_ROLE.compile(Long.toString(getGuild().getId()), Long.toString(role.getId()));
         return new RestAction<Void>(getJDA(), route, body)
         {
             @Override

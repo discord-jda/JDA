@@ -37,7 +37,7 @@ public class MessageCreateHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
         MessageType type = MessageType.fromId(content.getInt("type"));
 
@@ -51,7 +51,7 @@ public class MessageCreateHandler extends SocketHandler
         return null;
     }
 
-    private String handleDefaultMessage(JSONObject content)
+    private Long handleDefaultMessage(JSONObject content)
     {
         Message message;
         try
@@ -64,7 +64,7 @@ public class MessageCreateHandler extends SocketHandler
             {
                 case EntityBuilder.MISSING_CHANNEL:
                 {
-                    EventCache.get(api).cache(EventCache.Type.CHANNEL, content.getString("channel_id"), () ->
+                    EventCache.get(api).cache(EventCache.Type.CHANNEL, content.getLong("channel_id"), () ->
                     {
                         handle(responseNumber, allContent);
                     });
@@ -73,7 +73,7 @@ public class MessageCreateHandler extends SocketHandler
                 }
                 case EntityBuilder.MISSING_USER:
                 {
-                    EventCache.get(api).cache(EventCache.Type.USER, content.getJSONObject("author").getString("id"), () ->
+                    EventCache.get(api).cache(EventCache.Type.USER, content.getJSONObject("author").getLong("id"), () ->
                     {
                         handle(responseNumber, allContent);
                     });

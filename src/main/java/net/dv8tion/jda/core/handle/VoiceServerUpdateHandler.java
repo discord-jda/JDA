@@ -36,9 +36,9 @@ public class VoiceServerUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
-        String guildId = content.getString("guild_id");
+        long guildId = content.getLong("guild_id");
         api.getClient().getQueuedAudioConnectionMap().remove(guildId);
 
         if (GuildLock.get(api).isLocked(guildId))
@@ -56,7 +56,7 @@ public class VoiceServerUpdateHandler extends SocketHandler
 
         String endpoint = content.getString("endpoint");
         String token = content.getString("token");
-        Guild guild = api.getGuildMap().get(content.getString("guild_id"));
+        Guild guild = api.getGuildMap().get(content.getLong("guild_id"));
         if (guild == null)
             throw new IllegalArgumentException("Attempted to start audio connection with Guild that doesn't exist! JSON: " + content);
         String sessionId = guild.getSelfMember().getVoiceState().getSessionId();

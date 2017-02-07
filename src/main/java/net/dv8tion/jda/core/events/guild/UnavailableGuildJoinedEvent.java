@@ -27,15 +27,15 @@ import net.dv8tion.jda.core.events.Event;
  */
 public class UnavailableGuildJoinedEvent extends Event
 {
-    private final String guildId;
+    private final long guildId;
 
-    public UnavailableGuildJoinedEvent(JDA api, long responseNumber, String guildId)
+    public UnavailableGuildJoinedEvent(JDA api, long responseNumber, long guildId)
     {
         super(api, responseNumber);
         this.guildId = guildId;
     }
 
-    public String getGuildId()
+    public long getGuildId()
     {
         return guildId;
     }

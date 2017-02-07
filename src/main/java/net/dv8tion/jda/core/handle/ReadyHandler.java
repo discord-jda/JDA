@@ -35,11 +35,11 @@ import java.util.Set;
 
 public class ReadyHandler extends SocketHandler
 {
-    private final Set<String> incompleteGuilds = new HashSet<>();
-    private final Set<String> acknowledgedGuilds = new HashSet<>();
-    private final Set<String> unavailableGuilds = new HashSet<>();
-    private final Set<String> guildsRequiringChunking = new HashSet<>();
-    private final Set<String> guildsRequiringSyncing = new HashSet<>();
+    private final Set<Long> incompleteGuilds = new HashSet<>();
+    private final Set<Long> acknowledgedGuilds = new HashSet<>();
+    private final Set<Long> unavailableGuilds = new HashSet<>();
+    private final Set<Long> guildsRequiringChunking = new HashSet<>();
+    private final Set<Long> guildsRequiringSyncing = new HashSet<>();
 
     public ReadyHandler(JDAImpl api)
     {
@@ -47,7 +47,7 @@ public class ReadyHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
         EntityBuilder builder = EntityBuilder.get(api);
 
@@ -79,7 +79,7 @@ public class ReadyHandler extends SocketHandler
         for (int i = 0; i < guilds.length(); i++)
         {
             JSONObject guild = guilds.getJSONObject(i);
-            incompleteGuilds.add(guild.getString("id"));
+            incompleteGuilds.add(guild.getLong("id"));
         }
 
         //We use two different for-loops here so that we cache all of the ids before sending them off to the EntityBuilder
@@ -134,7 +134,7 @@ public class ReadyHandler extends SocketHandler
             for (int i = 0; i < presences.length(); i++)
             {
                 JSONObject presence = presences.getJSONObject(i);
-                String userId = presence.getJSONObject("user").getString("id");
+                long userId = presence.getJSONObject("user").getLong("id");
                 FriendImpl friend = (FriendImpl) api.asClient().getFriendById(userId);
                 if (friend == null)
                     WebSocketClient.LOG.warn("Received a presence in the Presences array in READY that did not corrospond to a cached Friend! JSON: " + presence);
@@ -220,7 +220,7 @@ public class ReadyHandler extends SocketHandler
             return;
 
         JSONArray guildIds = new JSONArray();
-        for (String guildId : guildsRequiringSyncing)
+        for (long guildId : guildsRequiringSyncing)
         {
             guildIds.put(guildId);
 
@@ -251,7 +251,7 @@ public class ReadyHandler extends SocketHandler
             return;
 
         JSONArray guildIds = new JSONArray();
-        for (String guildId : guildsRequiringChunking)
+        for (long guildId : guildsRequiringChunking)
         {
             guildIds.put(guildId);
 

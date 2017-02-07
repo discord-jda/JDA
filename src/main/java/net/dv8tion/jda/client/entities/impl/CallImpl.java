@@ -21,10 +21,7 @@ import net.dv8tion.jda.client.entities.CallUser;
 import net.dv8tion.jda.client.entities.CallableChannel;
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.Region;
-import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.PrivateChannel;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -32,14 +29,14 @@ import java.util.stream.Collectors;
 public class CallImpl implements Call
 {
     private final CallableChannel callableChannel;
-    private final String messageId;
+    private final long messageId;
 
-    private HashMap<String, CallUser> callUsers = new HashMap<>();
-    private HashMap<String, CallUser> callUserHistory = new HashMap<>();
+    private HashMap<Long, CallUser> callUsers = new HashMap<>();
+    private HashMap<Long, CallUser> callUserHistory = new HashMap<>();
 
     private Region region;
 
-    public CallImpl(CallableChannel callableChannel, String messageId)
+    public CallImpl(CallableChannel callableChannel, long messageId)
     {
         this.callableChannel = callableChannel;
         this.messageId = messageId;
@@ -76,7 +73,7 @@ public class CallImpl implements Call
     }
 
     @Override
-    public String getMessageId()
+    public long getMessageId()
     {
         return messageId;
     }
@@ -112,7 +109,7 @@ public class CallImpl implements Call
     }
 
     @Override
-    public String getId()
+    public long getId()
     {
         return callableChannel.getId();
     }
@@ -130,7 +127,7 @@ public class CallImpl implements Call
             return false;
 
         Call oCall = (Call) o;
-        return getId().equals(oCall.getId()) && Objects.equals(messageId, oCall.getMessageId());
+        return getId() == oCall.getId() && Objects.equals(messageId, oCall.getMessageId());
     }
 
     @Override
@@ -145,12 +142,12 @@ public class CallImpl implements Call
         return this;
     }
 
-    public HashMap<String, CallUser> getCallUserMap()
+    public HashMap<Long, CallUser> getCallUserMap()
     {
         return callUsers;
     }
 
-    public HashMap<String, CallUser> getCallUserHistoryMap()
+    public HashMap<Long, CallUser> getCallUserHistoryMap()
     {
         return callUserHistory;
     }

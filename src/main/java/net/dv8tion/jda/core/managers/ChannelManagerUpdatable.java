@@ -137,7 +137,7 @@ public class ChannelManagerUpdatable
             frame.put("bitrate", bitrate.getValue());
 
         reset();    //now that we've built our JSON object, reset the manager back to the non-modified state
-        Route.CompiledRoute route = Route.Channels.MODIFY_CHANNEL.compile(channel.getId());
+        Route.CompiledRoute route = Route.Channels.MODIFY_CHANNEL.compile(Long.toString(channel.getId()));
         return new RestAction<Void>(channel.getJDA(), route, frame)
         {
             @Override

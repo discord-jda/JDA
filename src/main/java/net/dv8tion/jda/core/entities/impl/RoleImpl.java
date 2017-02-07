@@ -39,7 +39,7 @@ import java.util.List;
 
 public class RoleImpl implements Role
 {
-    private final String id;
+    private final long id;
     private final Guild guild;
 
     private volatile RoleManager manager;
@@ -54,7 +54,7 @@ public class RoleImpl implements Role
     private long rawPermissions;
     private int rawPosition;
 
-    public RoleImpl(String id, Guild guild)
+    public RoleImpl(long id, Guild guild)
     {
         this.id = id;
         this.guild = guild;
@@ -220,7 +220,7 @@ public class RoleImpl implements Role
         if (managed)
             throw new UnsupportedOperationException("Cannot delete a Role that is managed. ");
 
-        Route.CompiledRoute route = Route.Roles.DELETE_ROLE.compile(guild.getId(), id);
+        Route.CompiledRoute route = Route.Roles.DELETE_ROLE.compile(Long.toString(guild.getId()), Long.toString(id));
         return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
@@ -247,7 +247,7 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public String getId()
+    public long getId()
     {
         return id;
     }
@@ -258,13 +258,13 @@ public class RoleImpl implements Role
         if (!(o instanceof Role))
             return false;
         Role oRole = (Role) o;
-        return this == oRole || this.getId().equals(oRole.getId());
+        return this == oRole || this.getId() == oRole.getId();
     }
 
     @Override
     public int hashCode()
     {
-        return getId().hashCode();
+        return Long.hashCode(getId());
     }
 
     @Override

@@ -35,12 +35,12 @@ public class GuildEmojisUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
-        String guild_id = content.getString("guild_id");
+        long guild_id = content.getLong("guild_id");
         if (GuildLock.get(api).isLocked(guild_id))
         {
-            return content.getString("guild_id");
+            return content.getLong("guild_id");
         }
 
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(guild_id);
@@ -51,12 +51,12 @@ public class GuildEmojisUpdateHandler extends SocketHandler
             return null;
         }
         JSONArray array = content.getJSONArray("emojis");
-        Map<String, Emote> emoteMap = guild.getEmoteMap();
+        Map<Long, Emote> emoteMap = guild.getEmoteMap();
         List<Emote> oldEmotes = new ArrayList<>(emoteMap.values()); //snapshot of emote cache
         for (int i = 0; i < array.length(); i++)
         {
             JSONObject current = array.getJSONObject(i);
-            String emoteId = current.getString("id");
+            long emoteId = current.getLong("id");
             EmoteImpl emote = (EmoteImpl) emoteMap.get(emoteId);
             if (emote == null)
                 emote = new EmoteImpl(emoteId, guild);
@@ -70,7 +70,7 @@ public class GuildEmojisUpdateHandler extends SocketHandler
             Set<Role> oldRoles = new HashSet<>(newRoles); //snapshot of cached roles
             for (int j = 0; j < roles.length(); j++)
             {
-                Role role = guild.getRoleById(roles.getString(j));
+                Role role = guild.getRoleById(roles.getLong(j));
                 newRoles.add(role);
                 oldRoles.remove(role);
             }

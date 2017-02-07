@@ -29,7 +29,7 @@ public interface JDAClient
 
     List<Group> getGroups();
     List<Group> getGroupsByName(String name, boolean ignoreCase);
-    Group getGroupById(String id);
+    Group getGroupById(long id);
 
     List<Relationship> getRelationships();
     List<Relationship> getRelationships(RelationshipType type);
@@ -37,14 +37,14 @@ public interface JDAClient
     List<Relationship> getRelationshipsByName(String name, boolean ignoreCase);
     Relationship getRelationship(User user);
     Relationship getRelationship(Member member);
-    Relationship getRelationshipById(String id);
-    Relationship getRelationshipById(String id, RelationshipType type);
+    Relationship getRelationshipById(long id);
+    Relationship getRelationshipById(long id, RelationshipType type);
 
     List<Friend> getFriends();
     List<Friend> getFriendsByName(String name, boolean ignoreCase);
     Friend getFriend(User user);
     Friend getFriend(Member member);
-    Friend getFriendById(String id);
+    Friend getFriendById(long id);
 
     UserSettings getSettings();
 

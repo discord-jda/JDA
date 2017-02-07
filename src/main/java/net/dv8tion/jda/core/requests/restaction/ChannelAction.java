@@ -212,7 +212,7 @@ public class ChannelAction extends RestAction<Channel>
         Args.check(deny <= Permission.ALL_PERMISSIONS,  "Specified deny value may not be greater than a full permission set");
         Args.check(role.getGuild().equals(guild), "Specified Role is not in the same Guild!");
 
-        String id = role.getId();
+        long id = role.getId();
         overrides.add(new PromisePermissionOverride(ROLE_TYPE, id, allow, deny));
         return this;
     }
@@ -252,7 +252,7 @@ public class ChannelAction extends RestAction<Channel>
         Args.check(deny <= Permission.ALL_PERMISSIONS,  "Specified deny value may not be greater than a full permission set");
         Args.check(member.getGuild().equals(guild), "Specified Member is not in the same Guild!");
 
-        String id = member.getUser().getId();
+        long id = member.getUser().getId();
         overrides.add(new PromisePermissionOverride(MEMBER_TYPE, id, allow, deny));
         return this;
     }
@@ -364,12 +364,12 @@ public class ChannelAction extends RestAction<Channel>
 
     protected final class PromisePermissionOverride implements JSONString
     {
-        protected final String id;
+        protected final long id;
         protected final long deny;
         protected final long allow;
         protected final int type;
 
-        public PromisePermissionOverride(int type, String id, long allow, long deny)
+        public PromisePermissionOverride(int type, long id, long allow, long deny)
         {
             this.type = type;
             this.id = id;

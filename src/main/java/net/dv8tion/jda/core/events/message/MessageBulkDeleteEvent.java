@@ -32,9 +32,9 @@ import java.util.List;
 public class MessageBulkDeleteEvent extends Event
 {
     protected final TextChannel channel;
-    protected final List<String> messageIds;
+    protected final List<Long> messageIds;
 
-    public MessageBulkDeleteEvent(JDA api, long responseNumber, TextChannel channel, List<String> messageIds)
+    public MessageBulkDeleteEvent(JDA api, long responseNumber, TextChannel channel, List<Long> messageIds)
     {
         super(api, responseNumber);
         this.channel = channel;
@@ -51,7 +51,7 @@ public class MessageBulkDeleteEvent extends Event
         return channel.getGuild();
     }
 
-    public List<String> getMessageIds()
+    public List<Long> getMessageIds()
     {
         return messageIds;
     }

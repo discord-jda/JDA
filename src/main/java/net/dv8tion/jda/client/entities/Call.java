@@ -30,7 +30,7 @@ public interface Call extends AudioChannel
     CallableChannel getCallableChannel();
     Group getGroup();
     PrivateChannel getPrivateChannel();
-    String getMessageId();
+    long getMessageId();
 
     List<CallUser> getRingingUsers();
     List<CallUser> getConnectedUsers();

@@ -35,9 +35,9 @@ public class GuildRoleDeleteHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
-        String guildId = content.getString("guild_id");
+        long guildId = content.getLong("guild_id");
         if (GuildLock.get(api).isLocked(guildId))
         {
             return guildId;
@@ -54,10 +54,10 @@ public class GuildRoleDeleteHandler extends SocketHandler
             return null;
         }
 
-        Role removedRole = guild.getRolesMap().remove(content.getString("role_id"));
+        Role removedRole = guild.getRolesMap().remove(content.getLong("role_id"));
         if (removedRole == null)
         {
-            EventCache.get(api).cache(EventCache.Type.ROLE, content.getString("role_id"), () ->
+            EventCache.get(api).cache(EventCache.Type.ROLE, content.getLong("role_id"), () ->
             {
                 handle(responseNumber, allContent);
             });

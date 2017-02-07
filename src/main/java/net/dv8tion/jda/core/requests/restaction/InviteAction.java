@@ -33,9 +33,9 @@ public class InviteAction extends RestAction<Invite>
     private Boolean temporary = null;
     private Boolean unique = null;
 
-    public InviteAction(final JDA api, final String channelId)
+    public InviteAction(final JDA api, final long channelId)
     {
-        super(api, Route.Invites.CREATE_INVITE.compile(channelId), null);
+        super(api, Route.Invites.CREATE_INVITE.compile(Long.toString(channelId)), null);
     }
 
     @Override

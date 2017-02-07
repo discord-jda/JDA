@@ -38,13 +38,13 @@ import java.util.List;
 
 public class PrivateChannelImpl implements PrivateChannel
 {
-    private final String id;
+    private final long id;
     private final User user;
 
     private Call currentCall = null;
     private boolean fake = false;
 
-    public PrivateChannelImpl(String id, User user)
+    public PrivateChannelImpl(long id, User user)
     {
         this.id = id;
         this.user = user;
@@ -90,7 +90,7 @@ public class PrivateChannelImpl implements PrivateChannel
     public RestAction<Message> sendMessage(Message msg)
     {
         Args.notNull(msg, "Message");
-        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
+        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(Long.toString(getId()));
         JSONObject json = ((MessageImpl) msg).toJSONObject();
         return new RestAction<Message>(getJDA(), route, json)
         {
@@ -137,7 +137,7 @@ public class PrivateChannelImpl implements PrivateChannel
         checkNull(data, "data InputStream");
         checkNull(fileName, "fileName");
 
-        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(id);
+        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(Long.toString(id));
         MultipartBody body = Unirest.post(Requester.DISCORD_API_PREFIX + route.getCompiledRoute())
                 .fields(null); //We use this to change from an HttpRequest to a MultipartBody
 
@@ -170,7 +170,7 @@ public class PrivateChannelImpl implements PrivateChannel
         if (data.length > 8<<20)   //8MB
             throw new IllegalArgumentException("Provided data is too large! Max file-size is 8MB");
 
-        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(id);
+        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(Long.toString(id));
         MultipartBody body = Unirest.post(Requester.DISCORD_API_PREFIX + route.getCompiledRoute())
                 .fields(null); //We use this to change from an HttpRequest to a MultipartBody
 
@@ -196,11 +196,11 @@ public class PrivateChannelImpl implements PrivateChannel
     }
 
     @Override
-    public RestAction<Message> getMessageById(String messageId)
+    public RestAction<Message> getMessageById(long messageId)
     {
         checkNull(messageId, "messageId");
 
-        Route.CompiledRoute route = Route.Messages.GET_MESSAGE.compile(getId(), messageId);
+        Route.CompiledRoute route = Route.Messages.GET_MESSAGE.compile(Long.toString(getId()), Long.toString(messageId));
         return new RestAction<Message>(getJDA(), route, null)
         {
             @Override
@@ -220,11 +220,11 @@ public class PrivateChannelImpl implements PrivateChannel
     }
 
     @Override
-    public RestAction<Void> deleteMessageById(String messageId)
+    public RestAction<Void> deleteMessageById(long messageId)
     {
         checkNull(messageId, "messageId");
 
-        Route.CompiledRoute route = Route.Messages.DELETE_MESSAGE.compile(getId(), messageId);
+        Route.CompiledRoute route = Route.Messages.DELETE_MESSAGE.compile(Long.toString(getId()), Long.toString(messageId));
         return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
@@ -251,7 +251,7 @@ public class PrivateChannelImpl implements PrivateChannel
     }
 
     @Override
-    public RestAction<MessageHistory> getHistoryAround(String markedMessageId, int limit)
+    public RestAction<MessageHistory> getHistoryAround(long markedMessageId, int limit)
     {
         return MessageHistory.getHistoryAround(this, markedMessageId, limit);
     }
@@ -259,7 +259,7 @@ public class PrivateChannelImpl implements PrivateChannel
     @Override
     public RestAction sendTyping()
     {
-        Route.CompiledRoute route = Route.Channels.SEND_TYPING.compile(id);
+        Route.CompiledRoute route = Route.Channels.SEND_TYPING.compile(Long.toString(id));
         return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
@@ -274,11 +274,11 @@ public class PrivateChannelImpl implements PrivateChannel
     }
 
     @Override
-    public RestAction<Void> pinMessageById(String messageId)
+    public RestAction<Void> pinMessageById(long messageId)
     {
         checkNull(messageId, "messageId");
 
-        Route.CompiledRoute route = Route.Messages.ADD_PINNED_MESSAGE.compile(getId(), messageId);
+        Route.CompiledRoute route = Route.Messages.ADD_PINNED_MESSAGE.compile(Long.toString(getId()), Long.toString(messageId));
         return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
@@ -293,11 +293,11 @@ public class PrivateChannelImpl implements PrivateChannel
     }
 
     @Override
-    public RestAction<Void> unpinMessageById(String messageId)
+    public RestAction<Void> unpinMessageById(long messageId)
     {
         checkNull(messageId, "messageId");
 
-        Route.CompiledRoute route = Route.Messages.REMOVE_PINNED_MESSAGE.compile(getId(), messageId);
+        Route.CompiledRoute route = Route.Messages.REMOVE_PINNED_MESSAGE.compile(Long.toString(getId()), Long.toString(messageId));
         return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
@@ -314,7 +314,7 @@ public class PrivateChannelImpl implements PrivateChannel
     @Override
     public RestAction<List<Message>> getPinnedMessages()
     {
-        Route.CompiledRoute route = Route.Messages.GET_PINNED_MESSAGES.compile(getId());
+        Route.CompiledRoute route = Route.Messages.GET_PINNED_MESSAGES.compile(Long.toString(getId()));
         return new RestAction<List<Message>>(getJDA(), route, null)
         {
             @Override
@@ -344,7 +344,7 @@ public class PrivateChannelImpl implements PrivateChannel
     @Override
     public RestAction<Void> close()
     {
-        Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(id);
+        Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(Long.toString(id));
         return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
@@ -359,7 +359,7 @@ public class PrivateChannelImpl implements PrivateChannel
     }
 
     @Override
-    public String getId()
+    public long getId()
     {
         return id;
     }

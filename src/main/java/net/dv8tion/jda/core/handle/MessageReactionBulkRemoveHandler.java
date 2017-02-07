@@ -30,10 +30,10 @@ public class MessageReactionBulkRemoveHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
-        String messageId = content.getString("message_id");
-        String channelId = content.getString("channel_id");
+        long messageId = content.getLong("message_id");
+        long channelId = content.getLong("channel_id");
         MessageChannel channel = api.getTextChannelById(channelId);
         if (channel == null)
             channel = api.getPrivateChannelById(channelId);

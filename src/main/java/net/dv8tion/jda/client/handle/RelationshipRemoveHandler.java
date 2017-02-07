@@ -24,7 +24,6 @@ import net.dv8tion.jda.client.events.relationship.FriendRemovedEvent;
 import net.dv8tion.jda.client.events.relationship.FriendRequestCanceledEvent;
 import net.dv8tion.jda.client.events.relationship.FriendRequestIgnoredEvent;
 import net.dv8tion.jda.client.events.relationship.UserUnblockedEvent;
-import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
@@ -43,9 +42,9 @@ public class RelationshipRemoveHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
-        String userId = content.getString("id");
+        long userId = content.getLong("id");
         RelationshipType type = RelationshipType.fromKey(content.getInt("type"));
 
         //Technically this could be used to detect when another user has unblocked us,

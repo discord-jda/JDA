@@ -32,9 +32,9 @@ public class MessageBulkDeleteHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
-        String channelId = content.getString("channel_id");
+        long channelId = content.getLong("channel_id");
 
         if (api.isBulkDeleteSplittingEnabled())
         {
@@ -66,8 +66,8 @@ public class MessageBulkDeleteHandler extends SocketHandler
                 return channel.getGuild().getId();
             }
 
-            LinkedList<String> msgIds = new LinkedList<>();
-            content.getJSONArray("ids").forEach(id -> msgIds.add((String) id));
+            LinkedList<Long> msgIds = new LinkedList<>();
+            content.getJSONArray("ids").forEach(id -> msgIds.add((long)id));
             api.getEventManager().handle(
                     new MessageBulkDeleteEvent(
                             api, responseNumber,

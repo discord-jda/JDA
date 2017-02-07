@@ -39,10 +39,10 @@ public class CallCreateHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
-        String channelId = content.getString("channel_id");
-        String messageId = content.getString("message_id");
+        long channelId = content.getLong("channel_id");
+        long messageId = content.getLong("message_id");
         Region region = Region.fromKey(content.getString("region"));
         JSONArray voiceStates = content.getJSONArray("voice_states");
         JSONArray ringing = content.getJSONArray("ringing");
@@ -59,7 +59,7 @@ public class CallCreateHandler extends SocketHandler
 
         CallImpl call = new CallImpl(channel, messageId);
         call.setRegion(region);
-        HashMap<String, CallUser> callUsers = call.getCallUserMap();
+        HashMap<Long, CallUser> callUsers = call.getCallUserMap();
 
         if (channel instanceof Group)
         {
@@ -74,7 +74,7 @@ public class CallCreateHandler extends SocketHandler
 
                 for (int i = 0; i < ringing.length(); i++)
                 {
-                    if (ringing.getString(i).equals(userId))
+                    if (ringing.getLong(i) == userId)
                     {
                         callUser.setRinging(true);
                         break;
@@ -95,7 +95,7 @@ public class CallCreateHandler extends SocketHandler
         for (int i = 0; i < voiceStates.length(); i++)
         {
             JSONObject voiceState = voiceStates.getJSONObject(i);
-            String userId = voiceState.getString("user_id");
+            long userId = voiceState.getLong("user_id");
             CallUser cUser = callUsers.get(userId);
             CallVoiceStateImpl vState = (CallVoiceStateImpl) cUser.getVoiceState();
 

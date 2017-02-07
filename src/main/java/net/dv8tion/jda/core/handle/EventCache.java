@@ -26,7 +26,7 @@ public class EventCache
 {
     public static final SimpleLog LOG = SimpleLog.getLog("EventCache");
     private static HashMap<JDA, EventCache> caches = new HashMap<>();
-    private HashMap<Type, HashMap<String, List<Runnable>>> eventCache = new HashMap<>();
+    private HashMap<Type, HashMap<Long, List<Runnable>>> eventCache = new HashMap<>();
 
     public static EventCache get(JDA jda)
     {
@@ -39,9 +39,9 @@ public class EventCache
         return cache;
     }
 
-    public void cache(Type type, String triggerId, Runnable handler)
+    public void cache(Type type, Long triggerId, Runnable handler)
     {
-        HashMap<String, List<Runnable>> triggerCache = eventCache.get(type);
+        HashMap<Long, List<Runnable>> triggerCache = eventCache.get(type);
         if (triggerCache == null)
         {
             triggerCache = new HashMap<>();
@@ -58,7 +58,7 @@ public class EventCache
         items.add(handler);
     }
 
-    public void playbackCache(Type type, String triggerId)
+    public void playbackCache(Type type, long triggerId)
     {
         List<Runnable> items;
         try
@@ -86,7 +86,7 @@ public class EventCache
     public int size()
     {
         int count = 0;
-        for (HashMap<String, List<Runnable>> typeMap : eventCache.values())
+        for (HashMap<Long, List<Runnable>> typeMap : eventCache.values())
         {
             for (List<Runnable> eventList : typeMap.values())
             {

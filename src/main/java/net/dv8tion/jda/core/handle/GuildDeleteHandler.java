@@ -45,14 +45,14 @@ public class GuildDeleteHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
-        if (GuildLock.get(api).isLocked(content.getString("id")))
+        if (GuildLock.get(api).isLocked(content.getLong("id")))
         {
-            return content.getString("id");
+            return content.getLong("id");
         }
 
-        GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("id"));
+        GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getLong("id"));
         AudioManagerImpl manager = (AudioManagerImpl) api.getAudioManagerMap().get(guild.getId());
         if (manager != null)
             manager.closeAudioConnection(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD);
@@ -73,14 +73,14 @@ public class GuildDeleteHandler extends SocketHandler
 
         //cleaning up all users that we do not share a guild with anymore
         // Anything left in memberIds will be removed from the main userMap
-        Set<String> memberIds = guild.getMembersMap().keySet();
+        Set<Long> memberIds = guild.getMembersMap().keySet();
         for (Guild guildI : api.getGuilds())
         {
             GuildImpl g = (GuildImpl) guildI;
             if (g.equals(guild))
                 continue;
 
-            for (Iterator<String> it = memberIds.iterator(); it.hasNext();)
+            for (Iterator<Long> it = memberIds.iterator(); it.hasNext();)
             {
 
                 if (g.getMembersMap().containsKey(it.next()))
@@ -92,8 +92,8 @@ public class GuildDeleteHandler extends SocketHandler
         // Remember, everything left in memberIds is removed from the userMap
         if (api.getAccountType() == AccountType.CLIENT)
         {
-            HashMap<String, Relationship> relationships = ((JDAClientImpl) api.asClient()).getRelationshipMap();
-            for (Iterator<String> it = memberIds.iterator(); it.hasNext();)
+            HashMap<Long, Relationship> relationships = ((JDAClientImpl) api.asClient()).getRelationshipMap();
+            for (Iterator<Long> it = memberIds.iterator(); it.hasNext();)
             {
                 Relationship rel = relationships.get(it.next());
                 if (rel != null && rel.getType() == RelationshipType.FRIEND)
@@ -101,7 +101,7 @@ public class GuildDeleteHandler extends SocketHandler
             }
         }
 
-        for (String memberId : memberIds)
+        for (long memberId : memberIds)
         {
             UserImpl user = (UserImpl) api.getUserMap().remove(memberId);
             if (user.hasPrivateChannel())

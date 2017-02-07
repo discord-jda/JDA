@@ -38,8 +38,8 @@ public class MessageHistory implements net.dv8tion.jda.core.hooks.EventListener
     protected final JDAImpl api;
     protected final MessageChannel channel;
 
-    protected ListOrderedMap<String, Message> history = new ListOrderedMap<>();
-    protected String markerId;
+    protected ListOrderedMap<Long, Message> history = new ListOrderedMap<>();
+    protected long markerId;
 
     public MessageHistory(MessageChannel channel)
     {
@@ -69,9 +69,9 @@ public class MessageHistory implements net.dv8tion.jda.core.hooks.EventListener
 
         Route.CompiledRoute route;
         if (history.isEmpty())
-            route = Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId(), Integer.toString(amount));
+            route = Route.Messages.GET_MESSAGE_HISTORY.compile(Long.toString(channel.getId()), Integer.toString(amount));
         else
-            route = Route.Messages.GET_MESSAGE_HISTORY_BEFORE.compile(channel.getId(), Integer.toString(amount), history.lastKey());
+            route = Route.Messages.GET_MESSAGE_HISTORY_BEFORE.compile(Long.toString(channel.getId()), Integer.toString(amount), Long.toString(history.lastKey()));
         return new RestAction<List<Message>>(api, route, null)
         {
             @Override
@@ -105,7 +105,7 @@ public class MessageHistory implements net.dv8tion.jda.core.hooks.EventListener
             throw new IllegalStateException("No messageId  is stored to use as the marker between the future and past." +
                     "Either use MessageHistory(MessageChannel, String) or make a call to retrievePast(int) first.");
 
-        Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY_AFTER.compile(channel.getId(), Integer.toString(amount), history.firstKey());
+        Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY_AFTER.compile(Long.toString(channel.getId()), Integer.toString(amount), Long.toString(history.firstKey()));
         return new RestAction<List<Message>>(api, route, null)
         {
             @Override
@@ -162,10 +162,8 @@ public class MessageHistory implements net.dv8tion.jda.core.hooks.EventListener
     }
 
 
-    public Message informDeletion(String id)
+    public Message informDeletion(long id)
     {
-        if (id == null)
-            throw new NullPointerException("Provided message id was null!");
         return history.remove(id);
     }
 
@@ -194,15 +192,12 @@ public class MessageHistory implements net.dv8tion.jda.core.hooks.EventListener
         return getHistoryAround(channel, message.getId(), limit);
     }
 
-    public static RestAction<MessageHistory> getHistoryAround(MessageChannel channel, final String markerMessageId, int limit)
+    public static RestAction<MessageHistory> getHistoryAround(MessageChannel channel, final long markerMessageId, int limit)
     {
-        if (markerMessageId == null)
-            throw new IllegalArgumentException("Provided markedMessageId cannot be null!");
-
         if (limit > 100 || limit < 1)
             throw new IllegalArgumentException("Provided limit was out of bounds. Minimum: 1, Max: 100. Provided: " + limit);
 
-        Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY_AROUND.compile(channel.getId(), Integer.toString(limit), markerMessageId);
+        Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY_AROUND.compile(Long.toString(channel.getId()), Integer.toString(limit), Long.toString(markerMessageId));
         return new RestAction<MessageHistory>(channel.getJDA(), route, null)
         {
             @Override

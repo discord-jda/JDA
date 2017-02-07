@@ -105,7 +105,7 @@ public class MemberImpl implements Member
     public List<Role> getRoles()
     {
         List<Role> roleList = new ArrayList<>(roles);
-        roleList.sort((r1, r2) -> r2.compareTo(r1));
+        roleList.sort(Comparator.reverseOrder());
 
         return Collections.unmodifiableList(roleList);
     }
@@ -233,7 +233,7 @@ public class MemberImpl implements Member
     @Override
     public int hashCode()
     {
-        return (guild.getId() + user.getId()).hashCode();
+        return (Long.toString(guild.getId()) + Long.toString(user.getId())).hashCode();
     }
 
     @Override

@@ -29,10 +29,7 @@ import net.dv8tion.jda.core.handle.SocketHandler;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public class CallUpdateHandler extends SocketHandler
 {
@@ -42,9 +39,9 @@ public class CallUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
-        String channelId = content.getString("channel_id");
+        long channelId = content.getLong("channel_id");
         JSONArray ringing = content.getJSONArray("ringing");
         Region region = Region.fromKey(content.getString("region"));
 
@@ -79,13 +76,13 @@ public class CallUpdateHandler extends SocketHandler
         //Deal with CallUser ringing status changes
         if (ringing.length() > 0)
         {
-            List<String> givenRingingIds = toStringList(ringing);
+            Set<Long> givenRingingIds = toLongSet(ringing);
             List<CallUser> stoppedRingingUsers = new ArrayList<>();
             List<CallUser> startedRingingUsers = new ArrayList<>();
 
             for (CallUser cUser : call.getRingingUsers())
             {
-                String userId = cUser.getUser().getId();
+                long userId = cUser.getUser().getId();
 
                 //If the ringing user is no longer ringing, change the ringing status
                 if (!givenRingingIds.contains(userId))
@@ -98,7 +95,7 @@ public class CallUpdateHandler extends SocketHandler
             }
 
             //Any Ids that are users that have started ringing, so we need to set their ringing status as such
-            for (String userId : givenRingingIds)
+            for (long userId : givenRingingIds)
             {
                 CallUserImpl cUser = (CallUserImpl) call.getCallUserMap().get(userId);
                 cUser.setRinging(true);
@@ -123,5 +120,13 @@ public class CallUpdateHandler extends SocketHandler
             strings.add(array.getString(i));
 
         return strings;
+    }
+    private Set<Long> toLongSet(JSONArray array)
+    {
+        Set<Long> longs = new HashSet<>();
+        for (int i = 0; i < array.length(); i++)
+            longs.add(array.getLong(i));
+
+        return longs;
     }
 }

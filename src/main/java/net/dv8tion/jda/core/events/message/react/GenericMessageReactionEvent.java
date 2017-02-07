@@ -35,7 +35,7 @@ public class GenericMessageReactionEvent extends Event
         this.reaction = reaction;
     }
 
-    public String getMessageId()
+    public long getMessageId()
     {
         return reaction.getMessageId();
     }

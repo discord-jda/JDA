@@ -264,7 +264,7 @@ public class MessageEmbedImpl implements MessageEmbed
         if (!fields.isEmpty())
         {
             JSONArray fieldsArray = new JSONArray();
-            fields.stream().forEach(field -> 
+            fields.forEach(field ->
                 fieldsArray.put(new JSONObject()
                     .put("name", field.getName())
                     .put("value", field.getValue())

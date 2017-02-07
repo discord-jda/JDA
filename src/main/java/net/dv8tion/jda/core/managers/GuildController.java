@@ -113,9 +113,9 @@ public class GuildController
 
         Route.CompiledRoute route;
         if (member.equals(guild.getSelfMember()))
-            route = Route.Guilds.MODIFY_SELF_NICK.compile(guild.getId());
+            route = Route.Guilds.MODIFY_SELF_NICK.compile(Long.toString(guild.getId()));
         else
-            route = Route.Guilds.MODIFY_MEMBER.compile(guild.getId(), member.getUser().getId());
+            route = Route.Guilds.MODIFY_MEMBER.compile(Long.toString(guild.getId()), Long.toString(member.getUser().getId()));
 
         return new RestAction<Void>(guild.getJDA(), route, body)
         {
@@ -184,7 +184,7 @@ public class GuildController
                             "for the destination VoiceChannel, so the move cannot be done.");
 
         JSONObject body = new JSONObject().put("channel_id", voiceChannel.getId());
-        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(guild.getId(), member.getUser().getId());
+        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(Long.toString(guild.getId()), Long.toString(member.getUser().getId()));
 
         return new RestAction<Void>(guild.getJDA(), route, body)
         {
@@ -224,7 +224,7 @@ public class GuildController
         if (days < 1)
             throw new IllegalArgumentException("Days amount must be at minimum 1 day.");
 
-        Route.CompiledRoute route = Route.Guilds.PRUNE_MEMBERS.compile(guild.getId(), Integer.toString(days));
+        Route.CompiledRoute route = Route.Guilds.PRUNE_MEMBERS.compile(Long.toString(guild.getId()), Integer.toString(days));
         return new RestAction<Integer>(guild.getJDA(), route, null)
         {
             @Override
@@ -261,7 +261,7 @@ public class GuildController
         if (days < 1)
             throw new IllegalArgumentException("Days amount must be at minimum 1 day.");
 
-        Route.CompiledRoute route = Route.Guilds.PRUNABLE_COUNT.compile(guild.getId(), Integer.toString(days));
+        Route.CompiledRoute route = Route.Guilds.PRUNABLE_COUNT.compile(Long.toString(guild.getId()), Integer.toString(days));
         return new RestAction<Integer>(guild.getJDA(), route, null)
         {
             @Override
@@ -305,7 +305,7 @@ public class GuildController
         checkPermission(Permission.KICK_MEMBERS);
         checkPosition(member);
 
-        Route.CompiledRoute route = Route.Guilds.KICK_MEMBER.compile(guild.getId(), member.getUser().getId());
+        Route.CompiledRoute route = Route.Guilds.KICK_MEMBER.compile(Long.toString(guild.getId()), Long.toString(member.getUser().getId()));
         return new RestAction<Void>(guild.getJDA(), route, null)
         {
             @Override
@@ -341,7 +341,7 @@ public class GuildController
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *      if the guild is temporarily unavailable
      */
-    public RestAction<Void> kick(String userId)
+    public RestAction<Void> kick(long userId)
     {
         checkNull(userId, "userId");
 
@@ -431,9 +431,9 @@ public class GuildController
 
         Route.CompiledRoute route;
         if (delDays > 0)
-            route = Route.Guilds.BAN_WITH_DELETE.compile(guild.getId(), user.getId(), Integer.toString(delDays));
+            route = Route.Guilds.BAN_WITH_DELETE.compile(Long.toString(guild.getId()), Long.toString(user.getId()), Integer.toString(delDays));
         else
-            route = Route.Guilds.BAN.compile(guild.getId(), user.getId());
+            route = Route.Guilds.BAN.compile(Long.toString(guild.getId()), Long.toString(user.getId()));
 
         return new RestAction<Void>(guild.getJDA(), route, null)
         {
@@ -476,7 +476,7 @@ public class GuildController
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *      if the guild is temporarily unavailable
      */
-    public RestAction<Void> ban(String userId, int delDays)
+    public RestAction<Void> ban(long userId, int delDays)
     {
         checkAvailable();
         checkNull(userId, "userId");
@@ -490,9 +490,9 @@ public class GuildController
 
         Route.CompiledRoute route;
         if (delDays > 0)
-            route = Route.Guilds.BAN_WITH_DELETE.compile(guild.getId(), userId, Integer.toString(delDays));
+            route = Route.Guilds.BAN_WITH_DELETE.compile(Long.toString(guild.getId()), Long.toString(userId), Integer.toString(delDays));
         else
-            route = Route.Guilds.BAN.compile(guild.getId(), userId);
+            route = Route.Guilds.BAN.compile(Long.toString(guild.getId()), Long.toString(userId));
 
         return new RestAction<Void>(guild.getJDA(), route, null)
         {
@@ -544,13 +544,13 @@ public class GuildController
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *      if the guild is temporarily unavailable
      */
-    public RestAction<Void> unban(String userId)
+    public RestAction<Void> unban(long userId)
     {
         checkAvailable();
         checkNull(userId, "userId");
         checkPermission(Permission.BAN_MEMBERS);
 
-        Route.CompiledRoute route = Route.Guilds.UNBAN.compile(guild.getId(), userId);
+        Route.CompiledRoute route = Route.Guilds.UNBAN.compile(Long.toString(guild.getId()), Long.toString(userId));
         return new RestAction<Void>(guild.getJDA(), route, null)
         {
             @Override
@@ -607,7 +607,7 @@ public class GuildController
             return new RestAction.EmptyRestAction<Void>(null);
 
         JSONObject body = new JSONObject().put("deaf", deafen);
-        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(guild.getId(), member.getUser().getId());
+        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(Long.toString(guild.getId()), Long.toString(member.getUser().getId()));
         return new RestAction<Void>(guild.getJDA(), route, body)
         {
             @Override
@@ -662,7 +662,7 @@ public class GuildController
             return new RestAction.EmptyRestAction<Void>(null);
 
         JSONObject body = new JSONObject().put("mute", mute);
-        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(guild.getId(), member.getUser().getId());
+        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(Long.toString(guild.getId()), Long.toString(member.getUser().getId()));
         return new RestAction<Void>(guild.getJDA(), route, body)
         {
             @Override
@@ -695,7 +695,7 @@ public class GuildController
         checkAvailable();
         checkPermission(Permission.BAN_MEMBERS);
 
-        Route.CompiledRoute route = Route.Guilds.GET_BANS.compile(guild.getId());
+        Route.CompiledRoute route = Route.Guilds.GET_BANS.compile(Long.toString(guild.getId()));
         return new RestAction<List<User>>(guild.getJDA(), route, null)
         {
             @Override
@@ -775,7 +775,7 @@ public class GuildController
 
         JSONObject body = new JSONObject()
                 .put("roles", currentRoles.stream().map(Role::getId).collect(Collectors.toList()));
-        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(guild.getId(), member.getUser().getId());
+        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(Long.toString(guild.getId()), Long.toString(member.getUser().getId()));
 
         return new RestAction<Void>(guild.getJDA(), route, body)
         {
@@ -838,7 +838,7 @@ public class GuildController
         //This is identical to the rest action stuff in #modifyMemberRoles(Member, Collection<Role>, Collection<Role>)
         JSONObject body = new JSONObject()
                 .put("roles", roles.stream().map(Role::getId).collect(Collectors.toList()));
-        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(guild.getId(), member.getUser().getId());
+        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(Long.toString(guild.getId()), Long.toString(member.getUser().getId()));
 
         return new RestAction<Void>(guild.getJDA(), route, body)
         {
@@ -868,7 +868,7 @@ public class GuildController
             throw new IllegalArgumentException("Cannot transfer ownership of a Guild to a Bot!");
 
         JSONObject body = new JSONObject().put("owner_id", newOwner.getUser().getId());
-        Route.CompiledRoute route = Route.Guilds.MODIFY_GUILD.compile(guild.getId());
+        Route.CompiledRoute route = Route.Guilds.MODIFY_GUILD.compile(Long.toString(guild.getId()));
         return new RestAction<Void>(guild.getJDA(), route, body)
         {
             @Override
@@ -912,7 +912,7 @@ public class GuildController
         JSONObject body = new JSONObject()
                 .put("type", "text")
                 .put("name", name);
-        Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(guild.getId());
+        Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(Long.toString(guild.getId()));
         return new ChannelAction(route, name, guild, false);
     }
 
@@ -946,7 +946,7 @@ public class GuildController
         JSONObject body = new JSONObject()
                 .put("type", "voice")
                 .put("name", name);
-        Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(guild.getId());
+        Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(Long.toString(guild.getId()));
         return new ChannelAction(route, name, guild, true);
     }
 
@@ -975,7 +975,7 @@ public class GuildController
         if (!guild.getSelfMember().hasPermission(channel, Permission.MANAGE_WEBHOOKS))
             throw new PermissionException(Permission.MANAGE_WEBHOOKS);
 
-        Route.CompiledRoute route = Route.Channels.CREATE_WEBHOOK.compile(channel.getId());
+        Route.CompiledRoute route = Route.Channels.CREATE_WEBHOOK.compile(Long.toString(channel.getId()));
         return new WebhookAction(getJDA(), route, name);
     }
 
@@ -999,7 +999,7 @@ public class GuildController
         checkAvailable();
         checkPermission(Permission.MANAGE_ROLES);
 
-        Route.CompiledRoute route = Route.Roles.CREATE_ROLE.compile(guild.getId());
+        Route.CompiledRoute route = Route.Roles.CREATE_ROLE.compile(Long.toString(guild.getId()));
         return new RoleAction(route, guild);
     }
 
@@ -1024,7 +1024,7 @@ public class GuildController
      */
     public RoleAction createCopyOfRole(Role role)
     {
-        Route.CompiledRoute route = Route.Roles.CREATE_ROLE.compile(guild.getId());
+        Route.CompiledRoute route = Route.Roles.CREATE_ROLE.compile(Long.toString(guild.getId()));
 
         return createRole()
                 .setColor(role.getColor())
@@ -1069,9 +1069,9 @@ public class GuildController
         body.put("name", name);
         body.put("image", icon.getEncoding());
         if (roles.length > 0) // making sure none of the provided roles are null before mapping them to the snowflake id
-            body.put("roles", Stream.of(roles).filter(r -> r != null).map(ISnowflake::getId).collect(Collectors.toSet()));
+            body.put("roles", Stream.of(roles).filter(Objects::nonNull).map(ISnowflake::getId).collect(Collectors.toSet()));
 
-        Route.CompiledRoute route = Route.Emotes.CREATE_EMOTE.compile(guild.getId());
+        Route.CompiledRoute route = Route.Emotes.CREATE_EMOTE.compile(Long.toString(guild.getId()));
         return new RestAction<Emote>(getJDA(), route, body)
         {
             @Override
@@ -1080,7 +1080,7 @@ public class GuildController
                 if (response.isOk())
                 {
                     JSONObject obj = response.getObject();
-                    String id = obj.getString("id");
+                    long id = obj.getLong("id");
                     String name = obj.getString("name");
                     EmoteImpl emote = new EmoteImpl(id, guild).setName(name);
                     // managed is false by default, should always be false for emotes created by client accounts.
@@ -1089,7 +1089,7 @@ public class GuildController
                     Set<Role> roleSet = emote.getRoleSet();
                     for (int i = 0; i < rolesArr.length(); i++)
                     {
-                        roleSet.add(guild.getRoleById(rolesArr.getString(i)));
+                        roleSet.add(guild.getRoleById(rolesArr.getLong(i)));
                     }
 
                     // put emote into cache

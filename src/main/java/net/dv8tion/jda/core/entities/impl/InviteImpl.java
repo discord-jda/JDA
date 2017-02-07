@@ -135,11 +135,11 @@ public class InviteImpl implements Invite
 
         if (member.hasPermission(channel, Permission.MANAGE_CHANNEL))
         {
-            route = Route.Invites.GET_CHANNEL_INVITES.compile(channel.getId());
+            route = Route.Invites.GET_CHANNEL_INVITES.compile(Long.toString(channel.getId()));
         }
         else if (member.hasPermission(Permission.MANAGE_SERVER))
         {
-            route = Route.Invites.GET_GUILD_INVITES.compile(guild.getId());
+            route = Route.Invites.GET_GUILD_INVITES.compile(Long.toString(guild.getId()));
         }
         else
         {
@@ -260,10 +260,11 @@ public class InviteImpl implements Invite
 
     public static class ChannelImpl implements Channel
     {
-        private final String id, name;
+        private final long id;
+        private final String name;
         private final ChannelType type;
 
-        public ChannelImpl(final String id, final String name, final ChannelType type)
+        public ChannelImpl(final long id, final String name, final ChannelType type)
         {
             this.id = id;
             this.name = name;
@@ -271,7 +272,7 @@ public class InviteImpl implements Invite
         }
 
         @Override
-        public String getId()
+        public long getId()
         {
             return this.id;
         }
@@ -293,9 +294,10 @@ public class InviteImpl implements Invite
     public static class GuildImpl implements Guild
     {
 
-        private final String id, iconId, name, splashId;
+        private final long id;
+        private final String iconId, name, splashId;
 
-        public GuildImpl(final String id, final String iconId, final String name, final String splashId)
+        public GuildImpl(final long id, final String iconId, final String name, final String splashId)
         {
             this.id = id;
             this.iconId = iconId;
@@ -317,7 +319,7 @@ public class InviteImpl implements Invite
         }
 
         @Override
-        public String getId()
+        public long getId()
         {
             return this.id;
         }

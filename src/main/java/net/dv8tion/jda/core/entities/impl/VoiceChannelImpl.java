@@ -40,12 +40,12 @@ import java.util.List;
 
 public class VoiceChannelImpl implements VoiceChannel
 {
-    private final String id;
+    private final long id;
     private final GuildImpl guild;
 
     private final HashMap<Member, PermissionOverride> memberOverrides = new HashMap<>();
     private final HashMap<Role, PermissionOverride> roleOverrides = new HashMap<>();
-    private final HashMap<String, Member> connectedMembers = new HashMap<>();
+    private final HashMap<Long, Member> connectedMembers = new HashMap<>();
 
     private volatile ChannelManager manager;
     private volatile ChannelManagerUpdatable managerUpdatable;
@@ -56,7 +56,7 @@ public class VoiceChannelImpl implements VoiceChannel
     private int userLimit;
     private int bitrate;
 
-    public VoiceChannelImpl(String id, Guild guild)
+    public VoiceChannelImpl(long id, Guild guild)
     {
         this.id = id;
         this.guild = (GuildImpl) guild;
@@ -186,7 +186,7 @@ public class VoiceChannelImpl implements VoiceChannel
     {
         checkPermission(Permission.MANAGE_CHANNEL);
 
-        Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(id);
+        Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(Long.toString(id));
         return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
@@ -218,7 +218,7 @@ public class VoiceChannelImpl implements VoiceChannel
                 .put("allow", 0)
                 .put("deny", 0);
 
-        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(id, member.getUser().getId());
+        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(Long.toString(id), Long.toString(member.getUser().getId()));
         return new RestAction<PermissionOverride>(getJDA(), route, body)
         {
             @Override
@@ -254,7 +254,7 @@ public class VoiceChannelImpl implements VoiceChannel
                 .put("allow", 0)
                 .put("deny", 0);
 
-        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(id, role.getId());
+        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(Long.toString(id), Long.toString(role.getId()));
         return new RestAction<PermissionOverride>(getJDA(), route, body)
         {
             @Override
@@ -273,7 +273,7 @@ public class VoiceChannelImpl implements VoiceChannel
     }
 
     @Override
-    public String getId()
+    public long getId()
     {
         return id;
     }
@@ -284,13 +284,13 @@ public class VoiceChannelImpl implements VoiceChannel
         if (!(o instanceof VoiceChannel))
             return false;
         VoiceChannel oVChannel = (VoiceChannel) o;
-        return this == oVChannel || this.getId().equals(oVChannel.getId());
+        return this == oVChannel || this.getId() == oVChannel.getId();
     }
 
     @Override
     public int hashCode()
     {
-        return getId().hashCode();
+        return Long.hashCode(getId());
     }
 
     @Override
@@ -358,7 +358,7 @@ public class VoiceChannelImpl implements VoiceChannel
         return roleOverrides;
     }
 
-    public HashMap<String, Member> getConnectedMembersMap()
+    public HashMap<Long, Member> getConnectedMembersMap()
     {
         return connectedMembers;
     }
@@ -381,7 +381,7 @@ public class VoiceChannelImpl implements VoiceChannel
         if (!this.guild.getSelfMember().hasPermission(this, Permission.MANAGE_CHANNEL))
             throw new PermissionException(Permission.MANAGE_CHANNEL);
 
-        final Route.CompiledRoute route = Route.Invites.GET_CHANNEL_INVITES.compile(getId());
+        final Route.CompiledRoute route = Route.Invites.GET_CHANNEL_INVITES.compile(Long.toString(getId()));
 
         return new RestAction<List<Invite>>(getJDA(), route, null)
         {

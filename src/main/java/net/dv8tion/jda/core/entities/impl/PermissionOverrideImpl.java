@@ -167,8 +167,8 @@ public class PermissionOverrideImpl implements PermissionOverride
         if (!channel.getGuild().getSelfMember().hasPermission(channel, Permission.MANAGE_PERMISSIONS))
             throw new PermissionException(Permission.MANAGE_PERMISSIONS);
 
-        String targetId = isRoleOverride() ? role.getId() : member.getUser().getId();
-        Route.CompiledRoute route = Route.Channels.DELETE_PERM_OVERRIDE.compile(channel.getId(), targetId);
+        long targetId = isRoleOverride() ? role.getId() : member.getUser().getId();
+        Route.CompiledRoute route = Route.Channels.DELETE_PERM_OVERRIDE.compile(Long.toString(channel.getId()), Long.toString(targetId));
         return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
@@ -208,8 +208,8 @@ public class PermissionOverrideImpl implements PermissionOverride
     public int hashCode()
     {
         return member != null
-                ? (channel.getId() + member.getUser().getId()).hashCode()
-                : (channel.getId() + role.getId()).hashCode();
+                ? (Long.toString(channel.getId()) + Long.toString(member.getUser().getId())).hashCode()
+                : (Long.toString(channel.getId()) + Long.toString(role.getId())).hashCode();
     }
 
     @Override
