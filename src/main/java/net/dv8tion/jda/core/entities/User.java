@@ -113,9 +113,9 @@ public interface User extends ISnowflake, IMentionable, IFakeable
     RestAction<PrivateChannel> openPrivateChannel();
 
     /**
-     * Finds and collects all {@link Guild} instances that contain this {@link User} within the current {@link JDA} instance.
+     * Finds and collects all {@link net.dv8tion.jda.core.entities.Guild Guild} instances that contain this {@link net.dv8tion.jda.core.entities.User User} within the current {@link net.dv8tion.jda.core.JDA JDA} instance.
      *
-     * @return Unmodifiable list of all mutual {@link Guild}s.
+     * @return Unmodifiable list of all mutual {@link net.dv8tion.jda.core.entities.Guild Guilds}.
      */
     List<Guild> getMutualGuilds();
 
