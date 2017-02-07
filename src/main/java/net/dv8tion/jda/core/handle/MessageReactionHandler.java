@@ -40,18 +40,18 @@ public class MessageReactionHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
         JSONObject emoji = content.getJSONObject("emoji");
 
-        String userId = content.getString("user_id");
-        String messageId = content.getString("message_id");
-        String channelId = content.getString("channel_id");
+        long userId = content.getLong("user_id");
+        long messageId = content.getLong("message_id");
+        long channelId = content.getLong("channel_id");
 
-        String emojiId = emoji.isNull("id") ? null : emoji.getString("id");
+        long emojiId = emoji.isNull("id") ? 0: emoji.getLong("id");
         String emojiName = emoji.isNull("name") ? null : emoji.getString("name");
 
-        if (emojiId == null && emojiName == null)
+        if (emojiId == 0 && emojiName == null)
         {
             WebSocketClient.LOG.debug("Received a reaction " + (add ? "add" : "remove") + " with no name nor id. json: " + content);
             return null;
@@ -88,7 +88,7 @@ public class MessageReactionHandler extends SocketHandler
         }
 
         MessageReaction.ReactionEmote rEmote;
-        if (emojiId != null)
+        if (emojiId != 0)
         {
             Emote emote = api.getEmoteById(emojiId);
             if (emote == null)
@@ -107,7 +107,7 @@ public class MessageReactionHandler extends SocketHandler
         }
         else
         {
-            rEmote = new MessageReaction.ReactionEmote(emojiName, null, api);
+            rEmote = new MessageReaction.ReactionEmote(emojiName, 0, api);
         }
         MessageReaction reaction = new MessageReaction(channel, rEmote, messageId, user.equals(api.getSelfUser()), -1);
 

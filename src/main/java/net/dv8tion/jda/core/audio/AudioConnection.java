@@ -59,7 +59,7 @@ public class AudioConnection
     private volatile AudioSendHandler sendHandler = null;
     private volatile AudioReceiveHandler receiveHandler = null;
     private PointerByReference opusEncoder;
-    private volatile HashMap<Integer, String> ssrcMap = new HashMap<>();
+    private volatile HashMap<Integer, Long> ssrcMap = new HashMap<>();
     private volatile HashMap<Integer, Decoder> opusDecoders = new HashMap<>();
     private volatile HashMap<User, Queue<Pair<Long, short[]>>> combinedQueue = new HashMap<>();
     private ScheduledExecutorService combinedAudioExecutor;
@@ -170,12 +170,12 @@ public class AudioConnection
         return channel.getGuild();
     }
 
-    public void updateUserSSRC(int ssrc, String userId, boolean talking)
+    public void updateUserSSRC(int ssrc, long userId, boolean talking)
     {
-        String previousId = ssrcMap.get(ssrc);
+        Long previousId = ssrcMap.get(ssrc);
         if (previousId != null)
         {
-            if (!previousId.equals(userId))
+            if (previousId != userId)
             {
                 //Different User already existed with this ssrc. What should we do? Just replace? Probably should nuke the old opusDecoder.
                 //Log for now and see if any user report the error.
@@ -288,7 +288,7 @@ public class AudioConnection
                                 }
                                 AudioPacket decryptedPacket = AudioPacket.decryptAudioPacket(receivedPacket, webSocket.getSecretKey());
 
-                                String userId = ssrcMap.get(decryptedPacket.getSSRC());
+                                Long userId = ssrcMap.get(decryptedPacket.getSSRC());
                                 Decoder decoder = opusDecoders.get(decryptedPacket.getSSRC());
                                 if (userId == null)
                                 {

@@ -37,7 +37,7 @@ public class SelfUserImpl extends UserImpl implements SelfUser
     //Client only
     private String email;
 
-    public SelfUserImpl(String id, JDAImpl api)
+    public SelfUserImpl(long id, JDAImpl api)
     {
         super(id, api);
     }

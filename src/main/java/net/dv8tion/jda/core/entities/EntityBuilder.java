@@ -32,7 +32,6 @@ import net.dv8tion.jda.core.handle.GuildMembersChunkHandler;
 import net.dv8tion.jda.core.handle.ReadyHandler;
 import net.dv8tion.jda.core.requests.GuildLock;
 import net.dv8tion.jda.core.requests.WebSocketClient;
-import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -55,8 +54,8 @@ public class EntityBuilder
     private static final Pattern channelMentionPattern = Pattern.compile("<#(\\d+)>");
 
     protected final JDAImpl api;
-    protected final HashMap<String, JSONObject> cachedGuildJsons = new HashMap<>();
-    protected final HashMap<String, Consumer<Guild>> cachedGuildCallbacks = new HashMap<>();
+    protected final HashMap<Long, JSONObject> cachedGuildJsons = new HashMap<>();
+    protected final HashMap<Long, Consumer<Guild>> cachedGuildCallbacks = new HashMap<>();
 
     public static EntityBuilder get(JDA api)
     {
@@ -79,7 +78,7 @@ public class EntityBuilder
         SelfUserImpl selfUser = ((SelfUserImpl) api.getSelfUser());
         if (selfUser == null)
         {
-            selfUser = new SelfUserImpl(self.getString("id"), api);
+            selfUser = new SelfUserImpl(self.getLong("id"), api);
             api.setSelfUser(selfUser);
         }
         if (!api.getUserMap().containsKey(selfUser.getId()))
@@ -98,7 +97,7 @@ public class EntityBuilder
 
     public void createGuildFirstPass(JSONObject guild, Consumer<Guild> secondPassCallback)
     {
-        String id = guild.getString("id");
+        long id = guild.getLong("id");
         GuildImpl guildObj = ((GuildImpl) api.getGuildMap().get(id));
         if (guildObj == null)
         {
@@ -151,25 +150,25 @@ public class EntityBuilder
         {
             Role role = createRole(roles.getJSONObject(i), guildObj.getId());
             guildObj.getRolesMap().put(role.getId(), role);
-            if (role.getId().equals(guildObj.getId()))
+            if (role.getId() == guildObj.getId())
                 guildObj.setPublicRole(role);
         }
 
         if (!guild.isNull("emojis"))
         {
             JSONArray array = guild.getJSONArray("emojis");
-            Map<String, Emote> emoteMap = guildObj.getEmoteMap();
+            Map<Long, Emote> emoteMap = guildObj.getEmoteMap();
             for (int i = 0; i < array.length(); i++)
             {
                 JSONObject object = array.getJSONObject(i);
                 JSONArray emoteRoles = object.getJSONArray("roles");
-                String emoteId = object.getString("id");
+                long emoteId = object.getLong("id");
 
                 EmoteImpl emoteObj = new EmoteImpl(emoteId, guildObj);
                 Set<Role> roleSet = emoteObj.getRoleSet();
 
                 for (int j = 0; j < emoteRoles.length(); j++)
-                    roleSet.add(guildObj.getRoleById(emoteRoles.getString(j)));
+                    roleSet.add(guildObj.getRoleById(emoteRoles.getLong(j)));
                 emoteMap.put(emoteId, emoteObj
                         .setName(object.getString("name"))
                         .setManaged(object.getBoolean("managed")));
@@ -183,7 +182,7 @@ public class EntityBuilder
         }
 
         //This could be null for Client accounts. Will be fixed by GUILD_SYNC
-        Member owner = guildObj.getMemberById(guild.getString("owner_id"));
+        Member owner = guildObj.getMemberById(guild.getLong("owner_id"));
         if (owner != null)
             guildObj.setOwner(owner);
 
@@ -214,14 +213,14 @@ public class EntityBuilder
                 if (type == ChannelType.TEXT)
                 {
                     TextChannel newChannel = createTextChannel(channel, guildObj.getId());
-                    if (newChannel.getId().equals(guildObj.getId()))
+                    if (newChannel.getId() == guildObj.getId())
                         guildObj.setPublicChannel(newChannel);
                 }
                 else if (type == ChannelType.VOICE)
                 {
                     VoiceChannel newChannel = createVoiceChannel(channel, guildObj.getId());
                     if (!guild.isNull("afk_channel_id")
-                            && newChannel.getId().equals(guild.getString("afk_channel_id")))
+                            && newChannel.getId() == guild.getLong("afk_channel_id"))
                         guildObj.setAfkChannel(newChannel);
                 }
                 else
@@ -301,7 +300,7 @@ public class EntityBuilder
             secondPassCallback.accept(guildObj);
     }
 
-    public void createGuildSecondPass(String guildId, List<JSONArray> memberChunks)
+    public void createGuildSecondPass(long guildId, List<JSONArray> memberChunks)
     {
         JSONObject guildJson = cachedGuildJsons.remove(guildId);
         Consumer<Guild> secondPassCallback = cachedGuildCallbacks.remove(guildId);
@@ -321,7 +320,7 @@ public class EntityBuilder
             createGuildMemberPass(guildObj, chunk);
         }
 
-        Member owner = guildObj.getMemberById(guildJson.getString("owner_id"));
+        Member owner = guildObj.getMemberById(guildJson.getLong("owner_id"));
         if (owner != null)
             guildObj.setOwner(owner);
 
@@ -377,11 +376,11 @@ public class EntityBuilder
             Channel channelObj = null;
             if (type == ChannelType.TEXT)
             {
-                channelObj = api.getTextChannelById(channel.getString("id"));
+                channelObj = api.getTextChannelById(channel.getLong("id"));
             }
             else if (type == ChannelType.VOICE)
             {
-                channelObj = api.getVoiceChannelById(channel.getString("id"));
+                channelObj = api.getVoiceChannelById(channel.getLong("id"));
             }
             else
                 WebSocketClient.LOG.fatal("Received a channel for a guild that isn't a text or voice channel (ChannelPass). JSON: " + channel);
@@ -413,7 +412,7 @@ public class EntityBuilder
         for (int i = 0; i < voiceStates.length(); i++)
         {
             JSONObject voiceStateJson = voiceStates.getJSONObject(i);
-            Member member = guildObj.getMembersMap().get(voiceStateJson.getString("user_id"));
+            Member member = guildObj.getMembersMap().get(voiceStateJson.getLong("user_id"));
             if (member == null)
             {
                 WebSocketClient.LOG.fatal("Received a VoiceState for a unknown Member! GuildId: "
@@ -422,7 +421,7 @@ public class EntityBuilder
             }
 
             VoiceChannelImpl voiceChannel =
-                    (VoiceChannelImpl) guildObj.getVoiceChannelMap().get(voiceStateJson.getString("channel_id"));
+                    (VoiceChannelImpl) guildObj.getVoiceChannelMap().get(voiceStateJson.getLong("channel_id"));
             voiceChannel.getConnectedMembersMap().put(member.getUser().getId(), member);
 
             GuildVoiceStateImpl voiceState = (GuildVoiceStateImpl) member.getVoiceState();
@@ -440,7 +439,7 @@ public class EntityBuilder
     public User createUser(JSONObject user)     { return createUser(user, false, true); }
     private User createUser(JSONObject user, boolean fake, boolean modifyCache)
     {
-        String id = user.getString("id");
+        long id = user.getLong("id");
         UserImpl userObj;
 
         userObj = (UserImpl) api.getUserMap().get(id);
@@ -505,7 +504,7 @@ public class EntityBuilder
         JSONArray rolesJson = memberJson.getJSONArray("roles");
         for (int k = 0; k < rolesJson.length(); k++)
         {
-            String roleId = rolesJson.getString(k);
+            long roleId = rolesJson.getLong(k);
             Role r = guild.getRolesMap().get(roleId);
             if (r == null)
             {
@@ -574,9 +573,9 @@ public class EntityBuilder
             throw new IllegalArgumentException("An object was provided to EntityBuilder#createPresence that wasn't a Member or Friend. JSON: " + presenceJson);
     }
 
-    public TextChannel createTextChannel(JSONObject json, String guildId)
+    public TextChannel createTextChannel(JSONObject json, long guildId)
     {
-        String id = json.getString("id");
+        long id = json.getLong("id");
         TextChannelImpl channel = (TextChannelImpl) api.getTextChannelMap().get(id);
         if (channel == null)
         {
@@ -592,9 +591,9 @@ public class EntityBuilder
                 .setRawPosition(json.getInt("position"));
     }
 
-    public VoiceChannel createVoiceChannel(JSONObject json, String guildId)
+    public VoiceChannel createVoiceChannel(JSONObject json, long guildId)
     {
-        String id = json.getString("id");
+        long id = json.getLong("id");
         VoiceChannelImpl channel = ((VoiceChannelImpl) api.getVoiceChannelMap().get(id));
         if (channel == null)
         {
@@ -613,17 +612,17 @@ public class EntityBuilder
 
     public PrivateChannel createPrivateChannel(JSONObject privatechat)
     {
-        JSONObject recipient = privatechat.has("recipients") ? 
+        JSONObject recipient = privatechat.has("recipients") ?
             privatechat.getJSONArray("recipients").getJSONObject(0) :
             privatechat.getJSONObject("recipient");
-        UserImpl user = ((UserImpl) api.getUserMap().get(recipient.getString("id")));
+        UserImpl user = ((UserImpl) api.getUserMap().get(recipient.getLong("id")));
         if (user == null)
         {   //The API can give us private channels connected to Users that we can no longer communicate with.
             // As such, make a fake user and fake private channel.
             user = (UserImpl) createFakeUser(recipient, true);
         }
 
-        PrivateChannelImpl priv = new PrivateChannelImpl(privatechat.getString("id"), user);
+        PrivateChannelImpl priv = new PrivateChannelImpl(privatechat.getLong("id"), user);
         user.setPrivateChannel(priv);
 
         if (user.isFake())
@@ -636,9 +635,9 @@ public class EntityBuilder
         return priv;
     }
 
-    public Role createRole(JSONObject roleJson, String guildId)
+    public Role createRole(JSONObject roleJson, long guildId)
     {
-        String id = roleJson.getString("id");
+        long id = roleJson.getLong("id");
         GuildImpl guild = ((GuildImpl) api.getGuildMap().get(guildId));
         RoleImpl role = ((RoleImpl) guild.getRolesMap().get(id));
         if (role == null)
@@ -658,7 +657,7 @@ public class EntityBuilder
     public Message createMessage(JSONObject jsonObject) { return createMessage(jsonObject, false); }
     public Message createMessage(JSONObject jsonObject, boolean exceptionOnMissingUser)
     {
-        String channelId = jsonObject.getString("channel_id");
+        long channelId = jsonObject.getLong("channel_id");
         MessageChannel chan = api.getTextChannelById(channelId);
         if (chan == null)
             chan = api.getPrivateChannelById(channelId);
@@ -673,11 +672,11 @@ public class EntityBuilder
     }
     public Message createMessage(JSONObject jsonObject, MessageChannel chan, boolean exceptionOnMissingUser)
     {
-        String id = jsonObject.getString("id");
+        long id = jsonObject.getLong("id");
         String content = !jsonObject.isNull("content") ? jsonObject.getString("content") : "";
 
         JSONObject author = jsonObject.getJSONObject("author");
-        String authorId = author.getString("id");
+        long authorId = author.getLong("id");
         boolean fromWebhook = jsonObject.has("webhook_id");
 
         MessageImpl message = new MessageImpl(id, chan, fromWebhook)
@@ -688,7 +687,7 @@ public class EntityBuilder
                 .setPinned(!jsonObject.isNull("pinned") && jsonObject.getBoolean("pinned"));
         if (chan instanceof PrivateChannel)
         {
-            if (StringUtils.equals(authorId, api.getSelfUser().getId()))
+            if (authorId == api.getSelfUser().getId())
                 message.setAuthor(api.getSelfUser());
             else
                 message.setAuthor(((PrivateChannel) chan).getUser());
@@ -772,13 +771,13 @@ public class EntityBuilder
                 JSONObject obj = reactions.getJSONObject(i);
                 JSONObject emoji = obj.getJSONObject("emoji");
 
-                String emojiId = emoji.isNull("id") ? null : emoji.getString("id");
+                long emojiId = emoji.isNull("id") ? 0 : emoji.getLong("id");
                 String emojiName = emoji.getString("name");
 
                 boolean self = obj.has("self") && obj.getBoolean("self");
                 int count = obj.getInt("count");
                 Emote emote = null;
-                if (emojiId != null)
+                if (emojiId != 0)
                 {
                     emote = api.getEmoteById(emojiId);
                     if (emote == null)
@@ -786,7 +785,7 @@ public class EntityBuilder
                 }
                 MessageReaction.ReactionEmote reactionEmote;
                 if (emote == null)
-                    reactionEmote = new MessageReaction.ReactionEmote(emojiName, null, api);
+                    reactionEmote = new MessageReaction.ReactionEmote(emojiName, 0, api);
                 else
                     reactionEmote = new MessageReaction.ReactionEmote(emote);
                 list.add(new MessageReaction(chan, reactionEmote, message.getId(), self, count));
@@ -804,7 +803,7 @@ public class EntityBuilder
                 for (int i = 0; i < mentions.length(); i++)
                 {
                     JSONObject mention = mentions.getJSONObject(i);
-                    User u = api.getUserMap().get(mention.getString("id"));
+                    User u = api.getUserMap().get(mention.getLong("id"));
                     if (u != null)
                     {
                         //We do this to properly order the mentions. The array given by discord is out of order sometimes.
@@ -825,7 +824,7 @@ public class EntityBuilder
                 JSONArray roleMentions = jsonObject.getJSONArray("mention_roles");
                 for (int i = 0; i < roleMentions.length(); i++)
                 {
-                    String roleId = roleMentions.getString(i);
+                    long roleId = roleMentions.getLong(i);
                     Role r = textChannel.getGuild().getRoleById(roleId);
                     if (r != null)
                     {
@@ -837,11 +836,11 @@ public class EntityBuilder
             message.setMentionedRoles(new LinkedList<Role>(mentionedRoles.values()));
 
             List<TextChannel> mentionedChannels = new LinkedList<>();
-            Map<String, TextChannel> chanMap = ((GuildImpl) textChannel.getGuild()).getTextChannelsMap();
+            Map<Long, TextChannel> chanMap = ((GuildImpl) textChannel.getGuild()).getTextChannelsMap();
             Matcher matcher = channelMentionPattern.matcher(content);
             while (matcher.find())
             {
-                TextChannel channel = chanMap.get(matcher.group(1));
+                TextChannel channel = chanMap.get(Long.parseLong(matcher.group(1)));
                 if(channel != null && !mentionedChannels.contains(channel))
                 {
                     mentionedChannels.add(channel);
@@ -908,7 +907,7 @@ public class EntityBuilder
                     imageJson.isNull("height") ? -1 : imageJson.getInt("height")));
         }
         else embed.setImage(null);
-        
+
         if (messageEmbed.has("footer"))
         {
             JSONObject footerJson = messageEmbed.getJSONObject("footer");
@@ -918,7 +917,7 @@ public class EntityBuilder
                     footerJson.isNull("proxy_icon_url") ? null : footerJson.getString("proxy_icon_url")));
         }
         else embed.setFooter(null);
-        
+
         if (messageEmbed.has("fields"))
         {
             JSONArray fieldsJson = messageEmbed.getJSONArray("fields");
@@ -934,7 +933,7 @@ public class EntityBuilder
             embed.setFields(fields);
         }
         else embed.setFields(Collections.emptyList());
-        
+
         if (messageEmbed.has("video"))
         {
             JSONObject videoJson = messageEmbed.getJSONObject("video");
@@ -949,7 +948,7 @@ public class EntityBuilder
     public PermissionOverride createPermissionOverride(JSONObject override, Channel chan)
     {
         PermissionOverrideImpl permOverride = null;
-        String id = override.getString("id");
+        long id = override.getLong("id");
         long allow = override.getLong("allow");
         long deny = override.getLong("deny");
 
@@ -994,10 +993,10 @@ public class EntityBuilder
 
     public Webhook createWebhook(JSONObject object)
     {
-        String id = object.getString("id");
+        long id = object.getLong("id");
         String token = !object.isNull("token") ? object.getString("token") : null;
-        String guildId = object.getString("guild_id");
-        String channelId = object.getString("channel_id");
+        long guildId = object.getLong("guild_id");
+        long channelId = object.getLong("channel_id");
 
         TextChannel channel = api.getTextChannelById(channelId);
         if (channel == null)
@@ -1015,7 +1014,7 @@ public class EntityBuilder
         User defaultUser = createFakeUser(fakeUser, false);
 
         JSONObject ownerJson = object.getJSONObject("user");
-        String userId = ownerJson.getString("id");
+        long userId = ownerJson.getLong("id");
 
         User owner = api.getUserById(userId);
         if (owner == null)
@@ -1069,9 +1068,9 @@ public class EntityBuilder
         if (api.getAccountType() != AccountType.CLIENT)
             throw new AccountTypeException(AccountType.CLIENT, "Attempted to create a Group but the logged in account is not a CLIENT!");
 
-        String groupId = groupJson.getString("id");
+        long groupId = groupJson.getLong("id");
         JSONArray recipients = groupJson.getJSONArray("recipients");
-        String ownerId = groupJson.getString("owner_id");
+        long ownerId = groupJson.getLong("owner_id");
         String name = !groupJson.isNull("name") ? groupJson.getString("name") : null;
         String iconId = !groupJson.isNull("icon") ? groupJson.getString("icon") : null;
 
@@ -1082,12 +1081,12 @@ public class EntityBuilder
             ((JDAClientImpl) api.asClient()).getGroupMap().put(groupId, group);
         }
 
-        HashMap<String, User> groupUsers = group.getUserMap();
+        HashMap<Long, User> groupUsers = group.getUserMap();
         groupUsers.put(api.getSelfUser().getId(), api.getSelfUser());
         for (int i = 0; i < recipients.length(); i++)
         {
             JSONObject groupUser = recipients.getJSONObject(i);
-            groupUsers.put(groupUser.getString("id"), createFakeUser(groupUser, true));
+            groupUsers.put(groupUser.getLong("id"), createFakeUser(groupUser, true));
         }
 
         User owner = api.getUserMap().get(ownerId);
@@ -1114,7 +1113,7 @@ public class EntityBuilder
             : channelTypeName.equals("voice")
                 ? ChannelType.VOICE
                 : ChannelType.UNKNOWN;
-        final String channelId = channelObject.getString("id");
+        final long channelId = channelObject.getLong("id");
         final String channelName = channelObject.getString("name");
 
         final Invite.Channel channel = new InviteImpl.ChannelImpl(channelId, channelName, channelType);
@@ -1122,7 +1121,7 @@ public class EntityBuilder
         final JSONObject guildObject = object.getJSONObject("guild");
 
         final String guildIconId = guildObject.isNull("icon") ? null : guildObject.getString("icon");
-        final String guildId = guildObject.getString("id");
+        final long guildId = guildObject.getLong("id");
         final String guildName = guildObject.getString("name");
         final String guildSplashId = guildObject.isNull("splash") ? null : guildObject.getString("splash");
 

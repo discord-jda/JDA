@@ -40,7 +40,7 @@ public class MessageImpl implements Message
     private static final Pattern EMOTE_PATTERN = Pattern.compile("<:([^:]+):([0-9]+)>");
 
     private final JDAImpl api;
-    private final String id;
+    private final long id;
     private final MessageType type;
     private final MessageChannel channel;
     private final boolean fromWebhook;
@@ -61,12 +61,12 @@ public class MessageImpl implements Message
     private List<Emote> emotes = null;
     private List<MessageReaction> reactions = new LinkedList<>();
 
-    public MessageImpl(String id, MessageChannel channel, boolean fromWebhook)
+    public MessageImpl(long id, MessageChannel channel, boolean fromWebhook)
     {
         this(id, channel, fromWebhook, MessageType.DEFAULT);
     }
 
-    public MessageImpl(String id, MessageChannel channel, boolean fromWebhook, MessageType type)
+    public MessageImpl(long id, MessageChannel channel, boolean fromWebhook, MessageType type)
     {
         this.id = id;
         this.channel = channel;
@@ -144,7 +144,7 @@ public class MessageImpl implements Message
     public RestAction<Void> clearReactions()
     {
         checkPermission(Permission.MESSAGE_MANAGE);
-        return new RestAction<Void>(getJDA(), Route.Messages.REMOVE_ALL_REACTIONS.compile(getChannel().getId(), getId()), null)
+        return new RestAction<Void>(getJDA(), Route.Messages.REMOVE_ALL_REACTIONS.compile(Long.toString(getChannel().getId()), Long.toString(getId())), null)
         {
             @Override
             protected void handleResponse(Response response, Request request)
@@ -164,7 +164,7 @@ public class MessageImpl implements Message
     }
 
     @Override
-    public String getId()
+    public long getId()
     {
         return id;
     }
@@ -407,7 +407,7 @@ public class MessageImpl implements Message
             Matcher matcher = EMOTE_PATTERN.matcher(getRawContent());
             while (matcher.find())
             {
-                String emoteId   = matcher.group(2);
+                long emoteId   = Long.parseLong(matcher.group(2));
                 String emoteName = matcher.group(1);
                 Emote emote = api.getEmoteById(emoteId);
                 if (emote == null)
@@ -550,13 +550,13 @@ public class MessageImpl implements Message
         if (!(o instanceof Message))
             return false;
         Message oMsg = (Message) o;
-        return this == oMsg || this.getId().equals(oMsg.getId());
+        return this == oMsg || this.getId() == oMsg.getId();
     }
 
     @Override
     public int hashCode()
     {
-        return getId().hashCode();
+        return Long.hashCode(getId());
     }
 
     @Override

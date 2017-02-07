@@ -72,7 +72,7 @@ public class WidgetUtil
      * @param type The type (visual style) of the banner
      * @return A String containing the URL of the banner image
      */
-    public static String getWidgetBanner(String guildId, BannerType type)
+    public static String getWidgetBanner(long guildId, BannerType type)
     {
         Args.notNull(guildId, "GuildId");
         Args.notNull(type, "BannerType");
@@ -108,7 +108,7 @@ public class WidgetUtil
      * @param height the height of the widget
      * @return a String containing the pre-made widget with the supplied settings
      */
-    public static String getPremadeWidgetHtml(String guildId, WidgetTheme theme, int width, int height)
+    public static String getPremadeWidgetHtml(long guildId, WidgetTheme theme, int width, int height)
     {
         Args.notNull(guildId, "GuildId");
         Args.notNull(theme, "WidgetTheme");
@@ -133,7 +133,7 @@ public class WidgetUtil
      * @return a filled-in Widget object if the guild ID is valid and the guild
      *         in question has the widget enabled.
      */
-    public static Widget getWidget(String guildId) throws RateLimitedException
+    public static Widget getWidget(long guildId) throws RateLimitedException
     {
         Args.notNull(guildId, "GuildId");
         try
@@ -193,16 +193,16 @@ public class WidgetUtil
     public static class Widget implements ISnowflake
     {
         private final boolean isAvailable;
-        private final String id;
+        private final long id;
         private final String name;
         private final String invite;
-        private final HashMap<String, VoiceChannel> channels;
-        private final HashMap<String, Member> members;
+        private final HashMap<Long, VoiceChannel> channels;
+        private final HashMap<Long, Member> members;
         
         /**
          * Constructs an unavailable Widget
          */
-        private Widget(String guildId)
+        private Widget(long guildId)
         {
             isAvailable = false;
             id = guildId;
@@ -227,7 +227,7 @@ public class WidgetUtil
                 inviteCode = inviteCode.substring(inviteCode.lastIndexOf("/") + 1);
             
             isAvailable = true;
-            id = json.getString("id");
+            id = json.getLong("id");
             name = json.getString("name");
             invite = inviteCode;
             channels = new HashMap<>();
@@ -237,7 +237,7 @@ public class WidgetUtil
             for (int i = 0; i < channelsJson.length(); i++)
             {
                 JSONObject channel = channelsJson.getJSONObject(i);
-                channels.put(channel.getString("id"), new VoiceChannel(channel, this));
+                channels.put(channel.getLong("id"), new VoiceChannel(channel, this));
             }
             
             JSONArray membersJson = json.getJSONArray("members");
@@ -247,7 +247,7 @@ public class WidgetUtil
                 Member member = new Member(memberJson, this);
                 if (!memberJson.isNull("channel_id")) // voice state
                 {
-                    VoiceChannel channel = channels.get(memberJson.getString("channel_id"));
+                    VoiceChannel channel = channels.get(memberJson.getLong("channel_id"));
                     member.setVoiceState(new VoiceState(channel, 
                             memberJson.getBoolean("mute"), 
                             memberJson.getBoolean("deaf"), 
@@ -279,7 +279,7 @@ public class WidgetUtil
          * @return the ID of the guild
          */
         @Override
-        public String getId()
+        public long getId()
         {
             return id;
         }
@@ -349,7 +349,7 @@ public class WidgetUtil
 
         @Override
         public int hashCode() {
-            return id.hashCode();
+            return Long.hashCode(id);
         }
 
         @Override
@@ -357,7 +357,7 @@ public class WidgetUtil
             if (!(obj instanceof Widget))
                 return false;
             Widget oWidget = (Widget) obj;
-            return this == oWidget || this.id.equals(oWidget.getId());
+            return this == oWidget || this.id == oWidget.getId();
         }
         
         @Override
@@ -371,7 +371,7 @@ public class WidgetUtil
         public static class Member implements ISnowflake, IMentionable
         {
             private final boolean bot;
-            private final String id;
+            private final long id;
             private final String username;
             private final String discriminator;
             private final String avatar;
@@ -385,7 +385,7 @@ public class WidgetUtil
             {
                 this.widget = widget;
                 this.bot = !json.isNull("bot") && json.getBoolean("bot");
-                this.id = json.getString("id");
+                this.id = json.getLong("id");
                 this.username = json.getString("username");
                 this.discriminator = json.getString("discriminator");
                 this.avatar = json.isNull("avatar") ? null : json.getString("avatar");
@@ -427,7 +427,7 @@ public class WidgetUtil
              * @return the never-null id of the member
              */
             @Override
-            public String getId()
+            public long getId()
             {
                 return id;
             }
@@ -582,7 +582,7 @@ public class WidgetUtil
 
             @Override
             public int hashCode() {
-                return (widget.getId() + ' ' + id).hashCode();
+                return (""+widget.getId() + ' ' + id).hashCode();
             }
 
             @Override
@@ -590,7 +590,7 @@ public class WidgetUtil
                 if (!(obj instanceof Member))
                     return false;
                 Member oMember = (Member) obj;
-                return this == oMember || (this.id.equals(oMember.getId()) && this.widget.getId().equals(oMember.getWidget().getId()));
+                return this == oMember || (this.id == oMember.getId() && this.widget.getId() == oMember.getWidget().getId());
             }
             
             @Override

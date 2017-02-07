@@ -35,18 +35,18 @@ public class GuildBanHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
-        if (GuildLock.get(api).isLocked(content.getString("guild_id")))
+        if (GuildLock.get(api).isLocked(content.getLong("guild_id")))
         {
-            return content.getString("guild_id");
+            return content.getLong("guild_id");
         }
 
         JSONObject userJson = content.getJSONObject("user");
-        GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("guild_id"));
+        GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getLong("guild_id"));
         if (guild == null)
         {
-            EventCache.get(api).cache(EventCache.Type.GUILD, content.getString("guild_id"), () ->
+            EventCache.get(api).cache(EventCache.Type.GUILD, content.getLong("guild_id"), () ->
             {
                 handle(responseNumber, allContent);
             });

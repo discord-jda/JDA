@@ -37,15 +37,15 @@ public class GuildLock
     }
 
     private final JDA api;
-    private final Map<String, List<JSONObject>> cache = new HashMap<>();
-    private final Set<String> cached = new HashSet<>();
+    private final Map<Long, List<JSONObject>> cache = new HashMap<>();
+    private final Set<Long> cached = new HashSet<>();
 
-    public boolean isLocked(String guildId)
+    public boolean isLocked(long guildId)
     {
         return cached.contains(guildId);
     }
 
-    public void lock(String guildId)
+    public void lock(long guildId)
     {
         if (!isLocked(guildId))
         {
@@ -54,7 +54,7 @@ public class GuildLock
         }
     }
 
-    public void unlock(String guildId)
+    public void unlock(long guildId)
     {
         if (isLocked(guildId))
         {
@@ -69,7 +69,7 @@ public class GuildLock
         }
     }
 
-    public void queue(String guildId, JSONObject event)
+    public void queue(long guildId, JSONObject event)
     {
         if (isLocked(guildId))
         {

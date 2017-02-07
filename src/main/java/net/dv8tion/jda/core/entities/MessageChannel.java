@@ -165,7 +165,7 @@ public interface MessageChannel extends ISnowflake
      *              ({@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY})</li>
      *      </ul>
      */
-    RestAction<Message> getMessageById(String messageId);
+    RestAction<Message> getMessageById(long messageId);
 
     /**
      * Attempts to delete a {@link net.dv8tion.jda.core.entities.Message Message} from the Discord servers
@@ -185,7 +185,7 @@ public interface MessageChannel extends ISnowflake
      *          <li>Attempt to delete another user's message in a PrivateChannel.</li>
      *      </ul>
      */
-    RestAction<Void> deleteMessageById(String messageId);
+    RestAction<Void> deleteMessageById(long messageId);
 
     /**
      * Creates a new {@link net.dv8tion.jda.core.MessageHistory MessageHistory} object for each call of this method.<br>
@@ -198,7 +198,7 @@ public interface MessageChannel extends ISnowflake
 
     //TODO: doc
     RestAction<MessageHistory> getHistoryAround(Message message, int limit);
-    RestAction<MessageHistory> getHistoryAround(String messageId, int limit);
+    RestAction<MessageHistory> getHistoryAround(long messageId, int limit);
 
     /**
      * Sends the typing status to discord. This is what is used to make the message "X is typing..." appear.<br>
@@ -213,7 +213,7 @@ public interface MessageChannel extends ISnowflake
     RestAction<Void> sendTyping();
 
     //TODO: doc
-    default RestAction<Void> addReactionById(String messageId, String unicode)
+    default RestAction<Void> addReactionById(long messageId, String unicode)
     {
         Args.notNull(messageId, "MessageId");
         Args.containsNoBlanks(unicode, "Provided Unicode");
@@ -226,7 +226,7 @@ public interface MessageChannel extends ISnowflake
         {
             throw new RuntimeException(e); //thanks JDK 1.4
         }
-        Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, encoded);
+        Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(Long.toString(getId()), Long.toString(messageId), encoded);
         return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
@@ -241,12 +241,12 @@ public interface MessageChannel extends ISnowflake
     }
 
     //TODO: doc
-    default RestAction<Void> addReactionById(String messageId, Emote emote)
+    default RestAction<Void> addReactionById(long messageId, Emote emote)
     {
         Args.notNull(messageId, "MessageId");
         Args.notNull(emote, "Emote");
 
-        Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, String.format("%s:%s", emote.getName(), emote.getId()));
+        Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(Long.toString(getId()), Long.toString(messageId), String.format("%s:%s", emote.getName(), emote.getId()));
         return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
@@ -273,7 +273,7 @@ public interface MessageChannel extends ISnowflake
      *          {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ} and
      *          {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
      */
-    RestAction<Void> pinMessageById(String messageId);
+    RestAction<Void> pinMessageById(long messageId);
 
     /**
      * Used to unpin a message.<br>
@@ -288,7 +288,7 @@ public interface MessageChannel extends ISnowflake
      *          {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ} and
      *          {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
      */
-    RestAction<Void> unpinMessageById(String messageId);
+    RestAction<Void> unpinMessageById(long messageId);
 
     /**
      * Gets a List of {@link net.dv8tion.jda.core.entities.Message Messages} that have been pinned in this channel.<br>
@@ -302,18 +302,18 @@ public interface MessageChannel extends ISnowflake
      */
     RestAction<List<Message>> getPinnedMessages();
 
-    default RestAction<Message> editMessageById(String id, String newContent)
+    default RestAction<Message> editMessageById(long id, String newContent)
     {
         return editMessageById(id, new MessageBuilder().appendString(newContent).build());
     }
 
-    default RestAction<Message> editMessageById(String id, Message newContent)
+    default RestAction<Message> editMessageById(long id, Message newContent)
     {
         Args.notNull(id, "id");
         Args.notNull(newContent, "message");
 
         JSONObject json = ((MessageImpl) newContent).toJSONObject();
-        Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getId(), id);
+        Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(Long.toString(getId()), Long.toString(id));
         return new RestAction<Message>(getJDA(), route, json)
         {
             @Override

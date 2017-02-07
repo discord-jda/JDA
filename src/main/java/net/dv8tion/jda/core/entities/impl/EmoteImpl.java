@@ -40,7 +40,7 @@ import java.util.List;
 public class EmoteImpl implements Emote
 {
 
-    private final String id;
+    private final long id;
     private final Guild guild;
     private final JDA api;
 
@@ -52,7 +52,7 @@ public class EmoteImpl implements Emote
     private HashSet<Role> roles = null;
     private String name;
 
-    public EmoteImpl(String id,  Guild guild)
+    public EmoteImpl(long id,  Guild guild)
     {
         this.id = id;
         this.guild = guild;
@@ -60,7 +60,7 @@ public class EmoteImpl implements Emote
         this.roles = new HashSet<>();
     }
 
-    public EmoteImpl(String id,  JDA api)
+    public EmoteImpl(long id,  JDA api)
     {
         this.id = id;
         this.api = api;
@@ -100,7 +100,7 @@ public class EmoteImpl implements Emote
     }
 
     @Override
-    public String getId()
+    public long getId()
     {
         return id;
     }
@@ -154,7 +154,7 @@ public class EmoteImpl implements Emote
             throw new IllegalStateException("You cannot delete a managed emote!");
         if (!PermissionUtil.checkPermission(guild, guild.getSelfMember(), Permission.MANAGE_EMOTES))
             throw new PermissionException(Permission.MANAGE_EMOTES);
-        return new RestAction<Void>(getJDA(), Route.Emotes.DELETE_EMOTE.compile(getGuild().getId(), getId()), null)
+        return new RestAction<Void>(getJDA(), Route.Emotes.DELETE_EMOTE.compile(Long.toString(getGuild().getId()), Long.toString(getId())), null)
         {
             @Override
             protected void handleResponse(Response response, Request request)
@@ -197,14 +197,14 @@ public class EmoteImpl implements Emote
             return false;
 
         Emote oEmote = (Emote) obj;
-        return getId().equals(oEmote.getId()) && getName().equals(oEmote.getName());
+        return getId() == oEmote.getId() && getName().equals(oEmote.getName());
     }
 
 
     @Override
     public int hashCode()
     {
-        return getId().hashCode();
+        return Long.hashCode(getId());
     }
 
     @Override

@@ -86,7 +86,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *      If this account does not have MANAGE_MESSAGES
      */
-    RestAction<Void> deleteMessagesByIds(Collection<String> messageIds);
+    RestAction<Void> deleteMessagesByIds(Collection<Long> messageIds);
 
     RestAction<List<Webhook>> getWebhooks();
 

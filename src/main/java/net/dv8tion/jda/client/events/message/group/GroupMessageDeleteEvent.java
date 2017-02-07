@@ -22,15 +22,15 @@ import net.dv8tion.jda.core.entities.Message;
 
 public class GroupMessageDeleteEvent extends GenericGroupMessageEvent
 {
-    protected final String messageId;
+    protected final long messageId;
 
-    public GroupMessageDeleteEvent(JDA api, long responseNumber, String messageId, Group group)
+    public GroupMessageDeleteEvent(JDA api, long responseNumber, long messageId, Group group)
     {
         super(api, responseNumber, null, group);
         this.messageId = messageId;
     }
 
-    public String getMessageId()
+    public long getMessageId()
     {
         return messageId;
     }

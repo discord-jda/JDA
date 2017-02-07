@@ -39,15 +39,15 @@ import java.util.stream.Collectors;
 
 public class GuildImpl implements Guild
 {
-    private final String id;
+    private final long id;
     private final JDAImpl api;
-    private final HashMap<String, TextChannel> textChannels = new HashMap<>();
-    private final HashMap<String, VoiceChannel> voiceChannels = new HashMap<>();
-    private final HashMap<String, Member> members = new HashMap<>();
-    private final HashMap<String, Role> roles = new HashMap<>();
-    private final HashMap<String, Emote> emotes = new HashMap<>();
+    private final HashMap<Long, TextChannel> textChannels = new HashMap<>();
+    private final HashMap<Long, VoiceChannel> voiceChannels = new HashMap<>();
+    private final HashMap<Long, Member> members = new HashMap<>();
+    private final HashMap<Long, Role> roles = new HashMap<>();
+    private final HashMap<Long, Emote> emotes = new HashMap<>();
 
-    private final HashMap<String, JSONObject> cachedPresences = new HashMap<>();
+    private final HashMap<Long, JSONObject> cachedPresences = new HashMap<>();
 
     private volatile GuildManager manager;
     private volatile GuildManagerUpdatable managerUpdatable;
@@ -69,7 +69,7 @@ public class GuildImpl implements Guild
     private boolean available;
     private boolean canSendVerification = false;
 
-    public GuildImpl(JDAImpl api, String id)
+    public GuildImpl(JDAImpl api, long id)
     {
         this.id = id;
         this.api = api;
@@ -117,7 +117,7 @@ public class GuildImpl implements Guild
         if (!getSelfMember().hasPermission(Permission.MANAGE_WEBHOOKS))
             throw new PermissionException(Permission.MANAGE_WEBHOOKS);
 
-        Route.CompiledRoute route = Route.Guilds.GET_WEBHOOKS.compile(id);
+        Route.CompiledRoute route = Route.Guilds.GET_WEBHOOKS.compile(Long.toString(id));
 
         return new RestAction<List<Webhook>>(api, route, null)
         {
@@ -188,7 +188,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public Member getMemberById(String userId)
+    public Member getMemberById(long userId)
     {
         return members.get(userId);
     }
@@ -247,7 +247,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public TextChannel getTextChannelById(String id)
+    public TextChannel getTextChannelById(long id)
     {
         return textChannels.get(id);
     }
@@ -272,7 +272,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public VoiceChannel getVoiceChannelById(String id)
+    public VoiceChannel getVoiceChannelById(long id)
     {
         return voiceChannels.get(id);
     }
@@ -297,7 +297,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public Role getRoleById(String id)
+    public Role getRoleById(long id)
     {
         return roles.get(id);
     }
@@ -322,7 +322,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public Emote getEmoteById(String id)
+    public Emote getEmoteById(long id)
     {
         return emotes.get(id);
     }
@@ -410,7 +410,7 @@ public class GuildImpl implements Guild
         if (owner.equals(getSelfMember()))
             throw new IllegalStateException("Cannot leave a guild that you are the owner of! Transfer guild ownership first!");
 
-        Route.CompiledRoute route = Route.Self.LEAVE_GUILD.compile(id);
+        Route.CompiledRoute route = Route.Self.LEAVE_GUILD.compile(Long.toString(id));
         return new RestAction<Void>(api, route, null)
         {
             @Override
@@ -430,7 +430,7 @@ public class GuildImpl implements Guild
         if (!owner.equals(getSelfMember()))
             throw new PermissionException("Cannot delete a guild that you do not own!");
 
-        Route.CompiledRoute route = Route.Guilds.DELETE_GUILD.compile(id);
+        Route.CompiledRoute route = Route.Guilds.DELETE_GUILD.compile(Long.toString(id));
         return new RestAction<Void>(api, route, null)
         {
             @Override
@@ -450,7 +450,7 @@ public class GuildImpl implements Guild
         if (!api.isAudioEnabled())
             throw new IllegalStateException("Audio is disabled. Cannot retrieve an AudioManager while audio is disabled.");
 
-        HashMap<String, AudioManager> audioManagers = ((JDAImpl) api).getAudioManagerMap();
+        HashMap<Long, AudioManager> audioManagers = ((JDAImpl) api).getAudioManagerMap();
         AudioManager mng = audioManagers.get(id);
         if (mng == null)
         {
@@ -530,7 +530,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public String getId()
+    public long getId()
     {
         return id;
     }
@@ -618,32 +618,32 @@ public class GuildImpl implements Guild
 
     // -- Map getters --
 
-    public HashMap<String, TextChannel> getTextChannelsMap()
+    public HashMap<Long, TextChannel> getTextChannelsMap()
     {
         return textChannels;
     }
 
-    public HashMap<String, VoiceChannel> getVoiceChannelMap()
+    public HashMap<Long, VoiceChannel> getVoiceChannelMap()
     {
         return voiceChannels;
     }
 
-    public HashMap<String, Member> getMembersMap()
+    public HashMap<Long, Member> getMembersMap()
     {
         return members;
     }
 
-    public HashMap<String, Role> getRolesMap()
+    public HashMap<Long, Role> getRolesMap()
     {
         return roles;
     }
 
-    public HashMap<String, JSONObject> getCachedPresenceMap()
+    public HashMap<Long, JSONObject> getCachedPresenceMap()
     {
         return cachedPresences;
     }
 
-    public HashMap<String, Emote> getEmoteMap()
+    public HashMap<Long, Emote> getEmoteMap()
     {
         return emotes;
     }
@@ -657,13 +657,13 @@ public class GuildImpl implements Guild
         if (!(o instanceof Guild))
             return false;
         Guild oGuild = (Guild) o;
-        return this == oGuild || this.getId().equals(oGuild.getId());
+        return this == oGuild || this.getId() == oGuild.getId();
     }
 
     @Override
     public int hashCode()
     {
-        return getId().hashCode();
+        return Long.hashCode(getId());
     }
 
     @Override
@@ -678,7 +678,7 @@ public class GuildImpl implements Guild
         if (!this.getSelfMember().hasPermission(Permission.MANAGE_SERVER))
             throw new PermissionException(Permission.MANAGE_SERVER);
 
-        final Route.CompiledRoute route = Route.Invites.GET_GUILD_INVITES.compile(getId());
+        final Route.CompiledRoute route = Route.Invites.GET_GUILD_INVITES.compile(Long.toString(getId()));
 
         return new RestAction<List<Invite>>(api, route, null)
         {

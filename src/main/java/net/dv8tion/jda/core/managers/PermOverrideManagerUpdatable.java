@@ -196,7 +196,7 @@ public class PermOverrideManagerUpdatable
         if (!shouldUpdate())
             return new RestAction.EmptyRestAction<>(null);
 
-        String targetId = override.isRoleOverride() ? override.getRole().getId() : override.getMember().getUser().getId();
+        long targetId = override.isRoleOverride() ? override.getRole().getId() : override.getMember().getUser().getId();
         JSONObject body = new JSONObject()
                 .put("id", targetId)
                 .put("type", override.isRoleOverride() ? "role" : "member")
@@ -204,7 +204,7 @@ public class PermOverrideManagerUpdatable
                 .put("deny", getDenyBits());
 
         reset();
-        Route.CompiledRoute route = Route.Channels.MODIFY_PERM_OVERRIDE.compile(override.getChannel().getId(), targetId);
+        Route.CompiledRoute route = Route.Channels.MODIFY_PERM_OVERRIDE.compile(Long.toString(override.getChannel().getId()), Long.toString(targetId));
         return new RestAction<Void>(getJDA(), route, body)
         {
             @Override

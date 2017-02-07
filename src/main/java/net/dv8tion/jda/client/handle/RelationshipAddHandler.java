@@ -36,7 +36,7 @@ public class RelationshipAddHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
         Relationship relationship = EntityBuilder.get(api).createRelationship(content);
         if (relationship == null)

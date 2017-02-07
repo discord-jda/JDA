@@ -43,7 +43,7 @@ public class MessageUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
         if (content.has("author"))
         {
@@ -76,7 +76,7 @@ public class MessageUpdateHandler extends SocketHandler
             return handleMessageEmbed(content);
     }
 
-    private String handleDefaultMessage(JSONObject content)
+    private Long handleDefaultMessage(JSONObject content)
     {
         Message message;
         try
@@ -89,7 +89,7 @@ public class MessageUpdateHandler extends SocketHandler
             {
                 case EntityBuilder.MISSING_CHANNEL:
                 {
-                    EventCache.get(api).cache(EventCache.Type.CHANNEL, content.getString("channel_id"), () ->
+                    EventCache.get(api).cache(EventCache.Type.CHANNEL, content.getLong("channel_id"), () ->
                     {
                         handle(responseNumber, allContent);
                     });
@@ -98,7 +98,7 @@ public class MessageUpdateHandler extends SocketHandler
                 }
                 case EntityBuilder.MISSING_USER:
                 {
-                    EventCache.get(api).cache(EventCache.Type.USER, content.getJSONObject("author").getString("id"), () ->
+                    EventCache.get(api).cache(EventCache.Type.USER, content.getJSONObject("author").getLong("id"), () ->
                     {
                         handle(responseNumber, allContent);
                     });
@@ -154,11 +154,11 @@ public class MessageUpdateHandler extends SocketHandler
         return null;
     }
 
-    private String handleMessageEmbed(JSONObject content)
+    private Long handleMessageEmbed(JSONObject content)
     {
         EntityBuilder builder = EntityBuilder.get(api);
-        String messageId = content.getString("id");
-        String channelId = content.getString("channel_id");
+        long messageId = content.getLong("id");
+        long channelId = content.getLong("channel_id");
         LinkedList<MessageEmbed> embeds = new LinkedList<>();
         MessageChannel channel = api.getTextChannelMap().get(channelId);
         if (channel == null)

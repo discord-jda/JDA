@@ -96,7 +96,7 @@ public class WebhookManagerUpdatable
             data.put("avatar", value != null ? value.getEncoding() : JSONObject.NULL);
         }
 
-        Route.CompiledRoute route = Route.Webhooks.MODIFY_WEBHOOK.compile(webhook.getId());
+        Route.CompiledRoute route = Route.Webhooks.MODIFY_WEBHOOK.compile(Long.toString(webhook.getId()));
         return new RestAction<Void>(getJDA(), route, data)
         {
             @Override

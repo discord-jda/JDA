@@ -38,11 +38,11 @@ public class MessageReaction
 
     private final MessageChannel channel;
     private final ReactionEmote emote;
-    private final String messageId;
+    private final long messageId;
     private final boolean self;
     private final int count;
 
-    public MessageReaction(MessageChannel channel, ReactionEmote emote, String messageId, boolean self, int count)
+    public MessageReaction(MessageChannel channel, ReactionEmote emote, long messageId, boolean self, int count)
     {
         this.channel = channel;
         this.emote = emote;
@@ -71,7 +71,7 @@ public class MessageReaction
         return emote;
     }
 
-    public String getMessageId()
+    public long getMessageId()
     {
         return messageId;
     }
@@ -93,7 +93,7 @@ public class MessageReaction
         String code = emote.isEmote()
                 ? emote.getName() + ":" + emote.getId()
                 : encode(emote.getName());
-        Route.CompiledRoute route = Route.Messages.GET_REACTION_USERS.compile(channel.getId(), messageId, code, String.valueOf(amount));
+        Route.CompiledRoute route = Route.Messages.GET_REACTION_USERS.compile(Long.toString(channel.getId()), Long.toString(messageId), code, String.valueOf(amount));
         return new RestAction<List<User>>(getJDA(), route, null)
         {
             @Override
@@ -109,7 +109,7 @@ public class MessageReaction
                 for (int i = 0; i < array.length(); i++)
                 {
                     JSONObject json = array.getJSONObject(i);
-                    String userId = json.getString("id");
+                    long userId = json.getLong("id");
                     User user = api.getUserById(userId);
                     if (user == null)
                         user = api.getFakeUserMap().get(userId);
@@ -148,7 +148,7 @@ public class MessageReaction
         String code = emote.isEmote()
                     ? emote.getName() + ":" + emote.getId()
                     : encode(emote.getName());
-        Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(channel.getId(), messageId, code, user.getId());
+        Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(Long.toString(channel.getId()), Long.toString(messageId), code, Long.toString(user.getId()));
         return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
@@ -168,7 +168,7 @@ public class MessageReaction
         return obj instanceof MessageReaction
                 && ((MessageReaction) obj).emote.equals(emote)
                 && (((MessageReaction) obj).self == self)
-                && ((MessageReaction) obj).messageId.equals(messageId);
+                && ((MessageReaction) obj).messageId == messageId;
     }
 
     @Override
@@ -194,9 +194,9 @@ public class MessageReaction
 
         private final JDA api;
         private final String name;
-        private final String id;
+        private final long id;
 
-        public ReactionEmote(String name, String id, JDA api)
+        public ReactionEmote(String name, long id, JDA api)
         {
             this.name = name;
             this.id = id;
@@ -210,11 +210,11 @@ public class MessageReaction
 
         public boolean isEmote()
         {
-            return id != null;
+            return id != 0;
         }
 
         @Override
-        public String getId()
+        public long getId()
         {
             return id;
         }

@@ -101,7 +101,7 @@ public interface Guild extends ISnowflake
 
     Member getSelfMember();
     Member getMember(User user);
-    Member getMemberById(String userId);
+    Member getMemberById(long userId);
     List<Member> getMembers();
     List<Member> getMembersByName(String name, boolean ignoreCase);
     List<Member> getMembersByNickname(String nickname, boolean ignoreCase);
@@ -110,7 +110,7 @@ public interface Guild extends ISnowflake
     List<Member> getMembersWithRoles(Collection<Role> roles);
 
 
-    TextChannel getTextChannelById(String id);
+    TextChannel getTextChannelById(long id);
     /**
      * The {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} available on the {@link net.dv8tion.jda.core.entities.Guild Guild}.
      * The channels returned will be sorted according to their position.
@@ -121,7 +121,7 @@ public interface Guild extends ISnowflake
     List<TextChannel> getTextChannels();
     List<TextChannel> getTextChannelsByName(String name, boolean ignoreCase);
 
-    VoiceChannel getVoiceChannelById(String id);
+    VoiceChannel getVoiceChannelById(long id);
 
     /**
      * The {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels} available on the {@link net.dv8tion.jda.core.entities.Guild Guild}.
@@ -143,7 +143,7 @@ public interface Guild extends ISnowflake
      * @return
      *      Possibly-null Role with matching id.
      */
-    Role getRoleById(String id);
+    Role getRoleById(long id);
 
     /**
      * The {@link net.dv8tion.jda.core.entities.Role Roles} of this {@link net.dv8tion.jda.core.entities.Guild Guild}.
@@ -163,7 +163,7 @@ public interface Guild extends ISnowflake
      * @return
      *      An Emote matching the specified ID.
      */
-    Emote getEmoteById(String id);
+    Emote getEmoteById(long id);
 
     /**
      * An immutable linked list of the emotes contained in this Guild.

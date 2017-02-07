@@ -54,16 +54,16 @@ public class JDAImpl implements JDA
 {
     public static final SimpleLog LOG = SimpleLog.getLog("JDA");
 
-    protected final HashMap<String, User> users = new HashMap<>(200);
-    protected final HashMap<String, Guild> guilds = new HashMap<>(10);
-    protected final HashMap<String, TextChannel> textChannels = new HashMap<>();
-    protected final HashMap<String, VoiceChannel> voiceChannels = new HashMap<>();
-    protected final HashMap<String, PrivateChannel> privateChannels = new HashMap<>();
+    protected final HashMap<Long, User> users = new HashMap<>(200);
+    protected final HashMap<Long, Guild> guilds = new HashMap<>(10);
+    protected final HashMap<Long, TextChannel> textChannels = new HashMap<>();
+    protected final HashMap<Long, VoiceChannel> voiceChannels = new HashMap<>();
+    protected final HashMap<Long, PrivateChannel> privateChannels = new HashMap<>();
 
-    protected final HashMap<String, User> fakeUsers = new HashMap<>();
-    protected final HashMap<String, PrivateChannel> fakePrivateChannels = new HashMap<>();
+    protected final HashMap<Long, User> fakeUsers = new HashMap<>();
+    protected final HashMap<Long, PrivateChannel> fakePrivateChannels = new HashMap<>();
 
-    protected final HashMap<String, AudioManager> audioManagers = new HashMap<>();
+    protected final HashMap<Long, AudioManager> audioManagers = new HashMap<>();
 
     protected final AccountType accountType;
     protected final PresenceImpl presence;
@@ -298,7 +298,7 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public User getUserById(String id)
+    public User getUserById(long id)
     {
         return users.get(id);
     }
@@ -314,7 +314,7 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public RestAction<User> retrieveUserById(String id)
+    public RestAction<User> retrieveUserById(long id)
     {
         if (accountType != AccountType.BOT)
             throw new AccountTypeException(AccountType.BOT);
@@ -324,7 +324,7 @@ public class JDAImpl implements JDA
         if (user != null)
             return new RestAction.EmptyRestAction<>(user);
 
-        Route.CompiledRoute route = Route.Users.GET_USER.compile(id);
+        Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toString(id));
         return new RestAction<User>(this, route, null)
         {
             @Override
@@ -348,7 +348,7 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public Guild getGuildById(String id)
+    public Guild getGuildById(long id)
     {
         return guilds.get(id);
     }
@@ -370,7 +370,7 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public TextChannel getTextChannelById(String id)
+    public TextChannel getTextChannelById(long id)
     {
         return textChannels.get(id);
     }
@@ -392,7 +392,7 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public VoiceChannel getVoiceChannelById(String id)
+    public VoiceChannel getVoiceChannelById(long id)
     {
         return voiceChannels.get(id);
     }
@@ -414,7 +414,7 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public PrivateChannel getPrivateChannelById(String id)
+    public PrivateChannel getPrivateChannelById(long id)
     {
         return privateChannels.get(id);
     }
@@ -436,7 +436,7 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public Emote getEmoteById(String id)
+    public Emote getEmoteById(long id)
     {
         for (Guild guild : getGuilds())
         {
@@ -604,42 +604,42 @@ public class JDAImpl implements JDA
         return client;
     }
 
-    public HashMap<String, User> getUserMap()
+    public HashMap<Long, User> getUserMap()
     {
         return users;
     }
 
-    public HashMap<String, Guild> getGuildMap()
+    public HashMap<Long, Guild> getGuildMap()
     {
         return guilds;
     }
 
-    public HashMap<String, TextChannel> getTextChannelMap()
+    public HashMap<Long, TextChannel> getTextChannelMap()
     {
         return textChannels;
     }
 
-    public HashMap<String, VoiceChannel> getVoiceChannelMap()
+    public HashMap<Long, VoiceChannel> getVoiceChannelMap()
     {
         return voiceChannels;
     }
 
-    public HashMap<String, PrivateChannel> getPrivateChannelMap()
+    public HashMap<Long, PrivateChannel> getPrivateChannelMap()
     {
         return privateChannels;
     }
 
-    public HashMap<String, User> getFakeUserMap()
+    public HashMap<Long, User> getFakeUserMap()
     {
         return fakeUsers;
     }
 
-    public HashMap<String, PrivateChannel> getFakePrivateChannelMap()
+    public HashMap<Long, PrivateChannel> getFakePrivateChannelMap()
     {
         return fakePrivateChannels;
     }
 
-    public HashMap<String, AudioManager> getAudioManagerMap()
+    public HashMap<Long, AudioManager> getAudioManagerMap()
     {
         return audioManagers;
     }

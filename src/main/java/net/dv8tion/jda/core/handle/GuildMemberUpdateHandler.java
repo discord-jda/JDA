@@ -16,7 +16,6 @@
 package net.dv8tion.jda.core.handle;
 
 import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.entities.impl.MemberImpl;
@@ -39,18 +38,18 @@ public class GuildMemberUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
-        if (GuildLock.get(api).isLocked(content.getString("guild_id")))
+        if (GuildLock.get(api).isLocked(content.getLong("guild_id")))
         {
-            return content.getString("guild_id");
+            return content.getLong("guild_id");
         }
 
         JSONObject userJson = content.getJSONObject("user");
-        GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("guild_id"));
+        GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getLong("guild_id"));
         if (guild == null)
         {
-            EventCache.get(api).cache(EventCache.Type.GUILD, userJson.getString("id"), () ->
+            EventCache.get(api).cache(EventCache.Type.GUILD, userJson.getLong("id"), () ->
             {
                 handle(responseNumber, allContent);
             });
@@ -58,10 +57,10 @@ public class GuildMemberUpdateHandler extends SocketHandler
             return null;
         }
 
-        MemberImpl member = (MemberImpl) guild.getMembersMap().get(userJson.getString("id"));
+        MemberImpl member = (MemberImpl) guild.getMembersMap().get(userJson.getLong("id"));
         if (member == null)
         {
-            EventCache.get(api).cache(EventCache.Type.USER, userJson.getString("id"), () ->
+            EventCache.get(api).cache(EventCache.Type.USER, userJson.getLong("id"), () ->
             {
                 handle(responseNumber, allContent);
             });
@@ -135,14 +134,14 @@ public class GuildMemberUpdateHandler extends SocketHandler
         LinkedList<Role> roles = new LinkedList<>();
         for(int i = 0; i < array.length(); i++)
         {
-            Role r = guild.getRolesMap().get(array.getString(i));
+            Role r = guild.getRolesMap().get(array.getLong(i));
             if (r != null)
             {
                 roles.add(r);
             }
             else
             {
-                EventCache.get(api).cache(EventCache.Type.ROLE, array.getString(i), () ->
+                EventCache.get(api).cache(EventCache.Type.ROLE, array.getLong(i), () ->
                 {
                     handle(responseNumber, allContent);
                 });

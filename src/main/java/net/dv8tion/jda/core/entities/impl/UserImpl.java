@@ -30,7 +30,7 @@ import org.json.JSONObject;
 
 public class UserImpl implements User
 {
-    protected final String id;
+    protected final long id;
     protected final JDAImpl api;
 
     protected String name;
@@ -40,7 +40,7 @@ public class UserImpl implements User
     protected boolean bot;
     protected boolean fake = false;
 
-    public UserImpl(String id, JDAImpl api)
+    public UserImpl(long id, JDAImpl api)
     {
         this.id = id;
         this.api = api;
@@ -154,7 +154,7 @@ public class UserImpl implements User
     }
 
     @Override
-    public String getId()
+    public long getId()
     {
         return id;
     }
@@ -171,13 +171,13 @@ public class UserImpl implements User
         if (!(o instanceof User))
             return false;
         User oUser = (User) o;
-        return this == oUser || this.getId().equals(oUser.getId());
+        return this == oUser || this.getId() == oUser.getId();
     }
 
     @Override
     public int hashCode()
     {
-        return getId().hashCode();
+        return Long.hashCode(getId());
     }
 
     @Override

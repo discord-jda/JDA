@@ -34,21 +34,21 @@ public class GuildMemberRemoveHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
-        if (GuildLock.get(api).isLocked(content.getString("guild_id")))
+        if (GuildLock.get(api).isLocked(content.getLong("guild_id")))
         {
-            return content.getString("guild_id");
+            return content.getLong("guild_id");
         }
 
-        GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("guild_id"));
+        GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getLong("guild_id"));
         if(guild == null)
         {
             //We probably just left the guild and this event is trying to remove us from the guild, therefore ignore
             return null;
         }
 
-        String userId = content.getJSONObject("user").getString("id");
+        long userId = content.getJSONObject("user").getLong("id");
         MemberImpl member = (MemberImpl) guild.getMembersMap().remove(userId);
 
         if (member == null)

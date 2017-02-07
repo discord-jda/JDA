@@ -73,7 +73,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected int reconnectTimeoutS = 2;
 
     //GuildId, <TimeOfNextAttempt, AudioConnection>
-    protected final HashMap<String, MutablePair<Long, VoiceChannel>> queuedAudioConnections = new HashMap<>();
+    protected final HashMap<Long, MutablePair<Long, VoiceChannel>> queuedAudioConnections = new HashMap<>();
 
     protected final LinkedList<String> ratelimitQueue = new LinkedList<>();
     protected volatile Thread ratelimitThread = null;
@@ -577,7 +577,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         api.getAudioManagerMap().entrySet().forEach(entry ->
         {
-            String guildId = entry.getKey();
+            long guildId = entry.getKey();
             AudioManager mng = entry.getValue();
             ConnectionListener listener = mng.getConnectionListener();
 
@@ -603,7 +603,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
                 if (mng.isConnected() || mng.isAttemptingToConnect())
                 {
-                    String channelId = mng.isConnected() ? mng.getConnectedChannel().getId() : mng.getQueuedAudioConnection().getId();
+                    long channelId = mng.isConnected() ? mng.getConnectedChannel().getId() : mng.getQueuedAudioConnection().getId();
                     VoiceChannel channel = api.getVoiceChannelById(channelId);
                     if (channel != null)
                     {
@@ -633,9 +633,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         long responseTotal = api.getResponseTotal();
 
         if (type.equals("GUILD_MEMBER_ADD"))
-            ((GuildMembersChunkHandler) getHandler("GUILD_MEMBERS_CHUNK")).modifyExpectedGuildMember(raw.getJSONObject("d").getString("guild_id"), 1);
+            ((GuildMembersChunkHandler) getHandler("GUILD_MEMBERS_CHUNK")).modifyExpectedGuildMember(raw.getJSONObject("d").getLong("guild_id"), 1);
         if (type.equals("GUILD_MEMBER_REMOVE"))
-            ((GuildMembersChunkHandler) getHandler("GUILD_MEMBERS_CHUNK")).modifyExpectedGuildMember(raw.getJSONObject("d").getString("guild_id"), -1);
+            ((GuildMembersChunkHandler) getHandler("GUILD_MEMBERS_CHUNK")).modifyExpectedGuildMember(raw.getJSONObject("d").getLong("guild_id"), -1);
 
         //If initiating, only allows READY, RESUMED, GUILD_MEMBERS_CHUNK, GUILD_SYNC, and GUILD_CREATE through.
         // If we are currently chunking, we don't allow GUILD_CREATE through anymore.
@@ -743,7 +743,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         queuedAudioConnections.put(channel.getGuild().getId(), new MutablePair<>(System.currentTimeMillis(), channel));
     }
 
-    public HashMap<String, MutablePair<Long, VoiceChannel>> getQueuedAudioConnectionMap()
+    public HashMap<Long, MutablePair<Long, VoiceChannel>> getQueuedAudioConnectionMap()
     {
         return queuedAudioConnections;
     }
@@ -857,7 +857,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             handlers.put("MESSAGE_ACK", new SocketHandler(api)
             {
                 @Override
-                protected String handleInternally(JSONObject content)
+                protected Long handleInternally(JSONObject content)
                 {
                     return null;
                 }

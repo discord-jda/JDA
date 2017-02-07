@@ -188,7 +188,7 @@ public class GuildManagerUpdatable
             body.put("mfa_level", mfaLevel.getValue().getKey());
 
         reset(); //now that we've built our JSON object, reset the manager back to the non-modified state
-        Route.CompiledRoute route = Route.Guilds.MODIFY_GUILD.compile(guild.getId());
+        Route.CompiledRoute route = Route.Guilds.MODIFY_GUILD.compile(Long.toString(guild.getId()));
         return new RestAction<Void>(guild.getJDA(), route, body)
         {
             @Override

@@ -160,7 +160,7 @@ public interface JDA
      * @return
      *      Possibly-null {@link net.dv8tion.jda.core.entities.User User} with matching id.
      */
-    User getUserById(String id);
+    User getUserById(long id);
 
     /**
      * This unmodifiable returns all {@link net.dv8tion.jda.core.entities.User Users} that have the same username as the one provided.<br>
@@ -175,7 +175,7 @@ public interface JDA
      */
     List<User> getUsersByName(String name, boolean ignoreCase);
 
-    RestAction<User> retrieveUserById(String id);
+    RestAction<User> retrieveUserById(long id);
 
     /**
      * An unmodifiable list of all {@link net.dv8tion.jda.core.entities.Guild Guilds} that this account is connected to.<br>
@@ -196,7 +196,7 @@ public interface JDA
      * @return
      *      Possibly-null {@link net.dv8tion.jda.core.entities.Guild Guild} with matching id.
      */
-    Guild getGuildById(String id);
+    Guild getGuildById(long id);
 
     /**
      * An unmodifiable list of all {@link net.dv8tion.jda.core.entities.Guild Guilds} that have the same name as the one provided.<br>
@@ -243,7 +243,7 @@ public interface JDA
      * @return
      *      Possibly-null {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} with matching id.
      */
-    TextChannel getTextChannelById(String id);
+    TextChannel getTextChannelById(long id);
 
     /**
      * An unmodifiable list of all {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} that have the same name as the one provided.<br>
@@ -284,7 +284,7 @@ public interface JDA
      * @return
      *      Possibly-null {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} with matching id.
      */
-    VoiceChannel getVoiceChannelById(String id);
+    VoiceChannel getVoiceChannelById(long id);
 
     /**
      * An unmodifiable list of all {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels} that have the same name as the one provided.<br>
@@ -318,7 +318,7 @@ public interface JDA
      * @return
      *      Possibly-null {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} with matching id.
      */
-    PrivateChannel getPrivateChannelById(String id);
+    PrivateChannel getPrivateChannelById(long id);
 
     /**
      * A collection of all to us known emotes (managed/restricted included)<br>
@@ -352,7 +352,7 @@ public interface JDA
      * @return
      *      An {@link net.dv8tion.jda.core.entities.Emote Emote} represented by this id or null if none is found in our cache
      */
-    Emote getEmoteById(String id);
+    Emote getEmoteById(long id);
 
     /**
      * Returns the currently logged in account represented by {@link net.dv8tion.jda.core.entities.SelfUser SelfUser}.<br>

@@ -27,8 +27,8 @@ import java.util.List;
 
 public class GuildMembersChunkHandler extends SocketHandler
 {
-    HashMap<String, Integer> expectedGuildMembers = new HashMap<>();
-    HashMap<String, List<JSONArray>> memberChunksCache = new HashMap<>();
+    HashMap<Long, Integer> expectedGuildMembers = new HashMap<>();
+    HashMap<Long, List<JSONArray>> memberChunksCache = new HashMap<>();
 
 
     public GuildMembersChunkHandler(JDAImpl api)
@@ -37,11 +37,11 @@ public class GuildMembersChunkHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
-        String guildId = content.getString("guild_id");
+        long guildId = content.getLong("guild_id");
         List<JSONArray> memberChunks = memberChunksCache.get(guildId);
-        Integer expectMemberCount = (Integer) expectedGuildMembers.get(guildId);
+        Integer expectMemberCount = expectedGuildMembers.get(guildId);
 
         JSONArray members = content.getJSONArray("members");
         JDAImpl.LOG.debug("GUILD_MEMBER_CHUNK for: " + guildId + " \tMembers: " + members.length());
@@ -63,7 +63,7 @@ public class GuildMembersChunkHandler extends SocketHandler
         return null;
     }
 
-    public void setExpectedGuildMembers(String guildId, int count)
+    public void setExpectedGuildMembers(long guildId, int count)
     {
         if (expectedGuildMembers.get(guildId) != null)
             JDAImpl.LOG.warn("Set the count of expected users from GuildMembersChunk even though a value already exists! GuildId: " + guildId);
@@ -76,11 +76,11 @@ public class GuildMembersChunkHandler extends SocketHandler
         memberChunksCache.put(guildId, new LinkedList<>());
     }
 
-    public void modifyExpectedGuildMember(String guildId, int changeAmount)
+    public void modifyExpectedGuildMember(long guildId, int changeAmount)
     {
         try
         {
-            Integer i = (Integer) expectedGuildMembers.get(guildId);
+            Integer i = expectedGuildMembers.get(guildId);
             i += changeAmount;
             expectedGuildMembers.put(guildId, i);
         }

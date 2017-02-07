@@ -28,7 +28,7 @@ public interface ISnowflake
      * @return
      *      Never-null String containing the Id.
      */
-    String getId();
+    long getId();
 
     /**
      * The time this entity was created. Calculated through the Snowflake in {@link #getId}.

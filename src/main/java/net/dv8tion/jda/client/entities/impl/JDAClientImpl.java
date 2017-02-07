@@ -34,9 +34,9 @@ import java.util.stream.Collectors;
 public class JDAClientImpl implements JDAClient
 {
     protected final JDAImpl api;
-    protected final HashMap<String, Group> groups = new HashMap<>();
-    protected final HashMap<String, Relationship> relationships = new HashMap<>();
-    protected final HashMap<String, CallUser> callUsers = new HashMap<>();
+    protected final HashMap<Long, Group> groups = new HashMap<>();
+    protected final HashMap<Long, Relationship> relationships = new HashMap<>();
+    protected final HashMap<Long, CallUser> callUsers = new HashMap<>();
     protected UserSettingsImpl userSettings;
 
     public JDAClientImpl(JDAImpl api)
@@ -71,7 +71,7 @@ public class JDAClientImpl implements JDAClient
     }
 
     @Override
-    public Group getGroupById(String id)
+    public Group getGroupById(long id)
     {
         return groups.get(id);
     }
@@ -126,13 +126,13 @@ public class JDAClientImpl implements JDAClient
     }
 
     @Override
-    public Relationship getRelationshipById(String id)
+    public Relationship getRelationshipById(long id)
     {
         return relationships.get(id);
     }
 
     @Override
-    public Relationship getRelationshipById(String id, RelationshipType type)
+    public Relationship getRelationshipById(long id, RelationshipType type)
     {
         Relationship relationship = getRelationshipById(id);
         if (relationship != null && relationship.getType() == type)
@@ -168,7 +168,7 @@ public class JDAClientImpl implements JDAClient
     }
 
     @Override
-    public Friend getFriendById(String id)
+    public Friend getFriendById(long id)
     {
         return (Friend) getRelationshipById(id, RelationshipType.FRIEND);
     }
@@ -179,17 +179,17 @@ public class JDAClientImpl implements JDAClient
         return userSettings;
     }
 
-    public HashMap<String, Group> getGroupMap()
+    public HashMap<Long, Group> getGroupMap()
     {
         return groups;
     }
 
-    public HashMap<String, Relationship> getRelationshipMap()
+    public HashMap<Long, Relationship> getRelationshipMap()
     {
         return relationships;
     }
 
-    public HashMap<String, CallUser> getCallUserMap()
+    public HashMap<Long, CallUser> getCallUserMap()
     {
         return callUsers;
     }
