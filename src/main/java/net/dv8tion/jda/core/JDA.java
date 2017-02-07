@@ -212,18 +212,20 @@ public interface JDA
     /**
      * Gets all {@link Guild}s that contain all given users as their members.
      *
-     * @param users The users which all the returned {@link Guild}s must contain.
+     * @param  users
+     *         The users which all the returned {@link net.dv8tion.jda.core.entities.Guild Guilds} must contain.
      *
-     * @return Unmodifiable list of all {@link Guild} instances which have all {@link User}s in them.
+     * @return Unmodifiable list of all {@link net.dv8tion.jda.core.entities.Guild Guild} instances which have all {@link net.dv8tion.jda.core.entities.User Users} in them.
      */
     List<Guild> getMutualGuilds(User... users);
 
     /**
      * Gets all {@link Guild}s that contain all given users as their members.
      *
-     * @param users The users which all the returned {@link Guild}s must contain.
+     * @param users
+     *        The users which all the returned {@link net.dv8tion.jda.core.entities.Guild Guilds} must contain.
      *
-     * @return Unmodifiable list of all {@link Guild} instances which have all {@link User}s in them.
+     * @return Unmodifiable list of all {@link net.dv8tion.jda.core.entities.Guild Guild} instances which have all {@link net.dv8tion.jda.core.entities.User Users} in them.
      */
     List<Guild> getMutualGuilds(Collection<User> users);
 

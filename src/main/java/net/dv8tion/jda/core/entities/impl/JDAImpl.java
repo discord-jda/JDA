@@ -313,18 +313,11 @@ public class JDAImpl implements JDA
         Args.notNull(users, "users");
         for(User u : users)
         {
-            if(u == null)
-                throw new IllegalArgumentException("All users provided must be non-null");
+            Args.notNull(u, "All users");
         }
-        return Collections.unmodifiableList(getGuilds().parallelStream()
-                .filter(guild -> {
-                    for(User u : users)
-                    {
-                        if(!guild.isMember(u))
-                            return false;
-                    }
-                    return true;
-                }).collect(Collectors.toList()));
+        return Collections.unmodifiableList(getGuilds().stream()
+                .filter(guild -> users.stream().allMatch(guild::isMember))
+                .collect(Collectors.toList()));
     }
 
     @Override
