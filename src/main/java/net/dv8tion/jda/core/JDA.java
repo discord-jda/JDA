@@ -210,7 +210,7 @@ public interface JDA
     User getUserById(String id);
 
     /**
-     * Gets all {@link Guild}s that contain all given users as their members.
+     * Gets all {@link net.dv8tion.jda.core.entities.Guild Guilds} that contain all given users as their members.
      *
      * @param  users
      *         The users which all the returned {@link net.dv8tion.jda.core.entities.Guild Guilds} must contain.
