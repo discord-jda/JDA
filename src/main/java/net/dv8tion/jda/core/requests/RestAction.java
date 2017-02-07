@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,9 +9,9 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 
 package net.dv8tion.jda.core.requests;
@@ -25,13 +25,13 @@ import net.dv8tion.jda.core.requests.restaction.CompletedFuture;
 import net.dv8tion.jda.core.requests.restaction.RequestFuture;
 import net.dv8tion.jda.core.utils.SimpleLog;
 
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
 /**
  * A class representing a terminal between the user and the discord API.
- * <br>This is used to offer users the ability to decide how JDA should limit
- * a Request.
+ * <br>This is used to offer users the ability to decide how JDA should limit a Request.
  *
  * <p>Methods that return an instance of RestAction require an additional step
  * to complete the execution. Thus the user needs to append a follow-up method.
@@ -44,11 +44,12 @@ import java.util.function.Consumer;
  *
  *     <li>{@link #submit()}, {@link #submit(boolean)}
  *     <br>Provides a Future representing the pending request.
- *     <br>An optional parameter from the type boolean can be passed to disable automated rate limit handling. (not recommended)</li>
+ *     <br>An optional parameter of type boolean can be passed to disable automated rate limit handling. (not recommended)</li>
  *
  *     <li>{@link #complete()}, {@link #complete(boolean)}
  *     <br>Blocking execution building up on {@link #submit()}.
- *     <br>This will simply block the thread and return the Request result, or throw an exception</li>
+ *     <br>This will simply block the thread and return the Request result, or throw an exception.
+ *     <br>An optional parameter of type boolean can be passed to disable automated rate limit handling. (not recommended)</li>
  * </ul>
  *
  * The most efficient way to use a RestAction is by using the asynchronous {@link #queue()} operations.
@@ -57,7 +58,7 @@ import java.util.function.Consumer;
  * @param <T>
  *        The generic response type for this RestAction
  *
- * @since JDA 3.0
+ * @since 3.0
  */
 public abstract class RestAction<T>
 {
@@ -252,6 +253,11 @@ public abstract class RestAction<T>
 
     /**
      * @deprecated use {@link #complete(boolean)} instead!
+     *
+     * @throws net.dv8tion.jda.core.exceptions.RateLimitedException
+     *         If the request was ratelimited.
+     *
+     * @return The never-null response value
      */
     @Deprecated
     public T block() throws RateLimitedException
@@ -263,6 +269,14 @@ public abstract class RestAction<T>
 
     protected abstract void handleResponse(Response response, Request request);
 
+    /**
+     * Specialized form of {@link net.dv8tion.jda.core.requests.RestAction} that is used to provide information that
+     * has already been retrieved or generated so that another request does not need to be made to Discord.
+     * <br>Basically: Allows you to provide a value directly to the success returns.
+     *
+     * @param <T>
+     *        The generic response type for this RestAction
+     */
     public static class EmptyRestAction<T> extends RestAction<T>
     {
         private final T returnObj;

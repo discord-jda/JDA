@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,30 +20,39 @@ import net.dv8tion.jda.core.JDA;
 public interface VoiceState
 {
     /**
-     * Returns whether the {@link net.dv8tion.jda.core.entities.Member Member} muted themselves.
+     * Returns whether the {@link net.dv8tion.jda.core.entities.Member Member}/{@link net.dv8tion.jda.core.entities.User User}
+     * muted themselves.
      *
-     * @return
-     *      The Member's self-mute status
+     * @return The User's self-mute status
      */
     boolean isSelfMuted();
 
     /**
-     * Returns whether the {@link net.dv8tion.jda.core.entities.Member Member} deafened themselves.
+     * Returns whether the {@link net.dv8tion.jda.core.entities.Member Member}/{@link net.dv8tion.jda.core.entities.User User}
+     * deafened themselves.
      *
-     * @return
-     *      the Member's self-deaf status
+     * @return The User's self-deaf status
      */
     boolean isSelfDeafened();
 
     /**
      * Returns the {@link net.dv8tion.jda.core.JDA JDA} instance of this VoiceState
      *
-     * @return
-     *      the corresponding JDA instance
+     * @return The corresponding JDA instance
      */
     JDA getJDA();
 
+    /**
+     * The possibly-null {@link net.dv8tion.jda.core.entities.AudioChannel AudioChannel} for this VoiceState
+     *
+     * @return A possibly-null AudioChannel
+     */
     AudioChannel getAudioChannel();
 
+    /**
+     * The Session-Id for this VoiceState
+     *
+     * @return The Session-Id
+     */
     String getSessionId();
 }

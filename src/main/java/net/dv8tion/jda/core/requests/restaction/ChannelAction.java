@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,7 @@
 package net.dv8tion.jda.core.requests.restaction;
 
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Channel;
-import net.dv8tion.jda.core.entities.EntityBuilder;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
@@ -69,7 +65,7 @@ public class ChannelAction extends RestAction<Channel>
      * @param  guild
      *         The {@link net.dv8tion.jda.core.entities.Guild Guild} the channel should be created in
      * @param  voice
-     *         Whether the new channel should be a VoiceChannel (false -> TextChannel)
+     *         Whether the new channel should be a VoiceChannel (false {@literal ->} TextChannel)
      */
     public ChannelAction(Route.CompiledRoute route, String name, Guild guild, boolean voice)
     {

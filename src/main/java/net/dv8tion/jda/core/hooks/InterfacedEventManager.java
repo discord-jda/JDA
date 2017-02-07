@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,9 +9,9 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 package net.dv8tion.jda.core.hooks;
 
@@ -23,6 +23,20 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * An {@link net.dv8tion.jda.core.hooks.IEventManager IEventManager} implementation
+ * that uses the {@link net.dv8tion.jda.core.hooks.EventListener EventListener} interface for
+ * event listeners.
+ *
+ * <p>This only accepts listeners that implement {@link net.dv8tion.jda.core.hooks.EventListener EventListener}
+ * <br>An adapter implementation is {@link net.dv8tion.jda.core.hooks.ListenerAdapter ListenerAdapter} which
+ * provides methods for each individual {@link net.dv8tion.jda.core.events.Event}.
+ *
+ * <p><b>This is the default IEventManager used by JDA</b>
+ *
+ * @see net.dv8tion.jda.core.hooks.AnnotatedEventManager
+ * @see net.dv8tion.jda.core.hooks.IEventManager
+ */
 public class InterfacedEventManager implements IEventManager
 {
     private final CopyOnWriteArrayList<EventListener> listeners = new CopyOnWriteArrayList<>();
@@ -32,6 +46,12 @@ public class InterfacedEventManager implements IEventManager
 
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalArgumentException
+     *         If the provided listener does not implement {@link net.dv8tion.jda.core.hooks.EventListener EventListener}
+     */
     @Override
     public void register(Object listener)
     {

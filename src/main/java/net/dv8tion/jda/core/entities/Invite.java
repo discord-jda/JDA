@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import java.time.OffsetDateTime;
  * Representation of a Discord Invite.
  * This class is immutable.
  *
- * @since  JDA 3.0
+ * @since  3.0
  * @author Aljoscha Grebe
  */
 public interface Invite
@@ -184,7 +184,7 @@ public interface Invite
     int getMaxAge();
 
     /**
-    * The max uses of this invite. If there is no limit thius will return {@code 0}.
+    * The max uses of this invite. If there is no limit thus will return {@code 0}.
     *
     * <p>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
     *

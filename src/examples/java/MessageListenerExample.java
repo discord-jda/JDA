@@ -163,7 +163,7 @@ public class MessageListenerExample extends ListenerAdapter
             {                                                               // what they are or how they work, try google!
                 if (roll < 3)
                 {
-                    channel.sendMessage("The role for messageId: " + sentMessage.getId() + " wasn't very good... Must be bad luck!\n").queue();
+                    channel.sendMessage("The roll for messageId: " + sentMessage.getId() + " wasn't very good... Must be bad luck!\n").queue();
                 }
             });
         }

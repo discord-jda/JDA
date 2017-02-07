@@ -124,22 +124,31 @@ javadoc {
     
     //### excludes ###
     //jda internals
-    exclude("net/dv8tion/jda/core/entities/impl")
     exclude("net/dv8tion/jda/bot/entities/impl")
-    exclude("net/dv8tion/jda/client/entities/impl")
-    exclude("net/dv8tion/jda/core/handle")
     exclude("net/dv8tion/jda/bot/handle")
-    exclude("net/dv8tion/jda/client/handle")
-    exclude("net/dv8tion/jda/core/managers/impl")
     exclude("net/dv8tion/jda/bot/managers/impl")
+
+    exclude("net/dv8tion/jda/client/entities/impl")
+    exclude("net/dv8tion/jda/client/handle")
     exclude("net/dv8tion/jda/client/managers/impl")
+
+    exclude("net/dv8tion/jda/core/audio/AudioConnection.java",
+            "net/dv8tion/jda/core/audio/AudioWebSocket.java",
+            "net/dv8tion/jda/core/audio/AudioPacket.java",
+            "net/dv8tion/jda/core/audio/Decoder.java",
+            "net/dv8tion/jda/core/audio/hooks/ListenerProxy.java")
+    exclude("net/dv8tion/jda/core/entities/impl")
+    exclude("net/dv8tion/jda/core/handle")
+    exclude("net/dv8tion/jda/core/managers/impl")
     exclude("net/dv8tion/jda/core/requests/GuildLock.java",
             "net/dv8tion/jda/core/requests/WebSocketClient.java",
             "net/dv8tion/jda/core/requests/RateLimiter.java",
             "net/dv8tion/jda/core/requests/Request.java",
             "net/dv8tion/jda/core/requests/Requester.java",
             "net/dv8tion/jda/core/requests/Response.java",
-            "net/dv8tion/jda/core/requests/ratelimit")
+            "net/dv8tion/jda/core/requests/ratelimit",
+            "net/dv8tion/jda/core/requests/restaction/CompletedFuture.java",
+            "net/dv8tion/jda/core/requests/restaction/RequestFuture.java")
 
     //opuswrapper
     exclude("tomp2p/opuswrapper")

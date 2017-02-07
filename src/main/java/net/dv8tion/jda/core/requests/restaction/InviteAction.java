@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,19 @@ package net.dv8tion.jda.core.requests.restaction;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Invite;
-import net.dv8tion.jda.core.requests.*;
-
+import net.dv8tion.jda.core.requests.Request;
+import net.dv8tion.jda.core.requests.Response;
+import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.Route;
 import org.apache.http.util.Args;
 import org.json.JSONObject;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * {@link net.dv8tion.jda.core.entities.Invite Invite} Builder system created as an extension of {@link net.dv8tion.jda.core.requests.RestAction}
+ * <br>Provides an easy way to gather and deliver information to Discord to create {@link net.dv8tion.jda.core.entities.Invite Invites}.
+ */
 public class InviteAction extends RestAction<Invite>
 {
     private Integer maxAge = null;
@@ -91,6 +97,8 @@ public class InviteAction extends RestAction<Invite>
      *
      * @param  maxAge
      *         The max age for this invite or {@code null} to use the default value.
+     * @param  timeUnit
+     *         The {@link java.util.concurrent.TimeUnit TimeUnit} type of {@code maxAge}.
      *
      * @throws IllegalArgumentException
      *         If maxAge is negative or maxAge is positive and timeUnit is null.
@@ -146,7 +154,7 @@ public class InviteAction extends RestAction<Invite>
     /**
      * Sets whether discord should reuse a similar invite. Default is {@code false}.
      *
-     * @param  temporary
+     * @param  unique
      *         Whether discord should reuse a similar invite or {@code null} to use the default value.
      *
      * @return The current InviteAction for chaining.

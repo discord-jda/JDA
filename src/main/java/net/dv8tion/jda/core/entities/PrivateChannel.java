@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,9 +9,9 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 package net.dv8tion.jda.core.entities;
 
@@ -27,25 +27,23 @@ public interface PrivateChannel extends MessageChannel, CallableChannel, IFakeab
     /**
      * The {@link net.dv8tion.jda.core.entities.User User} that this {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} communicates with.
      *
-     * @return
-     *      A non-null {@link net.dv8tion.jda.core.entities.User User}.
+     * @return A non-null {@link net.dv8tion.jda.core.entities.User User}.
      */
     User getUser();
 
     /**
      * Returns the {@link net.dv8tion.jda.core.JDA JDA} instance of this PrivateChannel
-     * @return
-     *      the corresponding JDA instance
+     *
+     * @return the corresponding JDA instance
      */
     JDA getJDA();
 
     /**
-     * Closes a PrivateChannel. After being closed successfully the PrivateChannel is removed from the JDA mapping.<br>
-     * As a note, this does not remove the history of the PrivateChannel. If the channel is reoppened the history will
+     * Closes a PrivateChannel. After being closed successfully the PrivateChannel is removed from the JDA mapping.
+     * <br>As a note, this does not remove the history of the PrivateChannel. If the channel is reopened the history will
      * still be present.
      *
-     * @return
-     *          {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
      */
     RestAction<Void> close();
 }
