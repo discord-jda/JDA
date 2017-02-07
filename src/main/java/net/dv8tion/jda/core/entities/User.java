@@ -114,9 +114,9 @@ public interface User extends ISnowflake, IMentionable, IFakeable
 
     /**
      * Finds and collects all {@link net.dv8tion.jda.core.entities.Guild Guild} instances that contain this {@link net.dv8tion.jda.core.entities.User User} within the current {@link net.dv8tion.jda.core.JDA JDA} instance.<br>
-     * <p>This method is a shortcut for {@code JDA#getMutualGuilds(this)}.</p>
+     * <p>This method is a shortcut for {@link net.dv8tion.jda.core.JDA#getMutualGuilds(User...) JDA.getMutualGuilds(User)}.</p>
      *
-     * @return Unmodifiable list of all mutual {@link net.dv8tion.jda.core.entities.Guild Guilds}.
+     * @return Unmodifiable list of all {@link net.dv8tion.jda.core.entities.Guild Guilds} that this user is a member of.
      */
     List<Guild> getMutualGuilds();
 
