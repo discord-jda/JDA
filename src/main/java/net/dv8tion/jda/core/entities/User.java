@@ -17,8 +17,9 @@ package net.dv8tion.jda.core.entities;
 
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.requests.RestAction;
+
+import java.util.Collection;
 
 /**
  * Represents a Discord User.
@@ -99,6 +100,13 @@ public interface User extends ISnowflake, IMentionable, IFakeable
     boolean hasPrivateChannel();
 
     RestAction<PrivateChannel> openPrivateChannel();
+
+    /**
+     * Finds and collects all mutual guilds between the current {@link JDA} instance and the {@link User} instance.
+     *
+     * @return Collection of mutual {@link Guild} objects.
+     */
+    Collection<Guild> getMutualGuilds();
 
     /**
      * Gets the {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} of this
