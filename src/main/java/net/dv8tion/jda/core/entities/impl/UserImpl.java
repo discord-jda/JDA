@@ -18,6 +18,7 @@ package net.dv8tion.jda.core.entities.impl;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.EntityBuilder;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.requests.Request;
@@ -25,6 +26,9 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import org.json.JSONObject;
+
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 public class UserImpl implements User
 {
@@ -65,7 +69,7 @@ public class UserImpl implements User
     @Override
     public String getAvatarUrl()
     {
-        return getAvatarId() == null ? null : "https://cdn.discordapp.com/avatars/" + getId() + "/" + getAvatarId() 
+        return getAvatarId() == null ? null : "https://cdn.discordapp.com/avatars/" + getId() + "/" + getAvatarId()
                 + (getAvatarId().startsWith("a_") ? ".gif" : ".png");
     }
 
@@ -86,7 +90,7 @@ public class UserImpl implements User
     {
         return getAvatarUrl() == null ? getDefaultAvatarUrl() : getAvatarUrl();
     }
-    
+
 
     @Override
     public boolean hasPrivateChannel()
@@ -122,6 +126,14 @@ public class UserImpl implements User
                 }
             }
         };
+    }
+
+    @Override
+    public Collection<Guild> getMutualGuilds() {
+        return getJDA().getGuilds()
+                .parallelStream()
+                .filter(guild -> guild.isMember(this))
+                .collect(Collectors.toList());
     }
 
     @Override
