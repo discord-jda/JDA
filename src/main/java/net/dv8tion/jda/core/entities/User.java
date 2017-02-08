@@ -19,6 +19,8 @@ package net.dv8tion.jda.core.entities;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.requests.RestAction;
 
+import java.util.List;
+
 /**
  * Represents a Discord User.
  * Contains all publicly available information about a specific Discord User.
@@ -76,11 +78,11 @@ public interface User extends ISnowflake, IMentionable, IFakeable
      * The URL for the user's avatar image
      * If they do not have an avatar set, this will return the URL of their
      * default avatar
-     * 
+     *
      * @return  Never-null String containing the {@link net.dv8tion.jda.core.entities.User User} effective avatar url.
      */
     String getEffectiveAvatarUrl();
-    
+
     /**
      * Whether or not the currently logged in user and this user have a currently open
      * {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} or not.
@@ -109,6 +111,14 @@ public interface User extends ISnowflake, IMentionable, IFakeable
      *         <br>The PrivateChannel to use to directly message this User.
      */
     RestAction<PrivateChannel> openPrivateChannel();
+
+    /**
+     * Finds and collects all {@link net.dv8tion.jda.core.entities.Guild Guild} instances that contain this {@link net.dv8tion.jda.core.entities.User User} within the current {@link net.dv8tion.jda.core.JDA JDA} instance.<br>
+     * <p>This method is a shortcut for {@link net.dv8tion.jda.core.JDA#getMutualGuilds(User...) JDA.getMutualGuilds(User)}.</p>
+     *
+     * @return Unmodifiable list of all {@link net.dv8tion.jda.core.entities.Guild Guilds} that this user is a member of.
+     */
+    List<Guild> getMutualGuilds();
 
     /**
      * Gets the {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} of this

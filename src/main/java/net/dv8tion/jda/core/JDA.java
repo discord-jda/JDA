@@ -25,6 +25,7 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.ratelimit.IBucket;
 import org.apache.http.HttpHost;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -32,6 +33,7 @@ import java.util.List;
  */
 public interface JDA
 {
+
     /**
      * Represents the connection status of JDA and its Main WebSocket.
      */
@@ -206,6 +208,26 @@ public interface JDA
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.User User} with matching id.
      */
     User getUserById(String id);
+
+    /**
+     * Gets all {@link net.dv8tion.jda.core.entities.Guild Guilds} that contain all given users as their members.
+     *
+     * @param  users
+     *         The users which all the returned {@link net.dv8tion.jda.core.entities.Guild Guilds} must contain.
+     *
+     * @return Unmodifiable list of all {@link net.dv8tion.jda.core.entities.Guild Guild} instances which have all {@link net.dv8tion.jda.core.entities.User Users} in them.
+     */
+    List<Guild> getMutualGuilds(User... users);
+
+    /**
+     * Gets all {@link net.dv8tion.jda.core.entities.Guild Guilds} that contain all given users as their members.
+     *
+     * @param users
+     *        The users which all the returned {@link net.dv8tion.jda.core.entities.Guild Guilds} must contain.
+     *
+     * @return Unmodifiable list of all {@link net.dv8tion.jda.core.entities.Guild Guild} instances which have all {@link net.dv8tion.jda.core.entities.User Users} in them.
+     */
+    List<Guild> getMutualGuilds(Collection<User> users);
 
     /**
      * This unmodifiable returns all {@link net.dv8tion.jda.core.entities.User Users} that have the same username as the one provided.
