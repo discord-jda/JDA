@@ -30,7 +30,7 @@ import org.json.JSONObject;
 
 /**
  * An {@link #update() updatable} manager that allows
- * to modify webhook settings like the {@link #getNameField() default name} the {@link #getAvatarField() default avatar}.
+ * to modify webhook settings like the {@link #getNameField() default name} or the {@link #getAvatarField() default avatar}.
  *
  * <p>This manager allows to modify multiple fields at once
  * by getting the {@link net.dv8tion.jda.core.managers.fields.WebhookField WebhookField} for specific

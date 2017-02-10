@@ -24,6 +24,12 @@ import net.dv8tion.jda.core.requests.RestAction;
 
 import java.util.List;
 
+/**
+ * Decoration for an {@link net.dv8tion.jda.client.managers.ApplicationManagerUpdatable ApplicationManagerUpdatable} instance.
+ * <br>Simplifies managing flow for convenience.
+ *
+ * <p>This decoration allows to modify a single field by automatically building an update {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+ */
 public class ApplicationManager
 {
     private final ApplicationManagerUpdatable updatable;
@@ -33,64 +39,143 @@ public class ApplicationManager
         this.updatable = new ApplicationManagerUpdatable(application);
     }
 
+    /**
+     * The {@link net.dv8tion.jda.client.entities.Application Application} that will
+     * be modified by this Manager instance
+     *
+     * @return The {@link net.dv8tion.jda.client.entities.Application Application}
+     */
     public Application getApplication()
     {
         return this.updatable.getApplication();
     }
 
+    /**
+     * The {@link net.dv8tion.jda.core.JDA JDA} instance of this Manager
+     *
+     * @return the corresponding JDA instance
+     */
     public JDA getJDA()
     {
         return this.updatable.getJDA();
     }
 
-    public RestAction<Application> setBotPublic(final boolean botPublic)
-    {
-        return this.updatable.getIsBotPublicField().setValue(botPublic).update();
-    }
-
     /**
-     * Changes the description of this Application
-     * @param description
-     *      Not null description of the Application (to remove description pass empty String)
-     * @return
+     * Sets the <b><u>description</u></b> of the selected {@link net.dv8tion.jda.client.entities.Application Application}.
+     *
+     * <p>A description <b>must not</b> be {@code null} nor more than 400 characters long!
+     *
+     * @param  description
+     *         The new description for the selected {@link net.dv8tion.jda.client.entities.Application Application}
+     *
+     * @throws IllegalArgumentException
+     *         If the provided description is {@code null} or more than 400 characters long
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     *         <br>Update RestAction from {@link ApplicationManagerUpdatable#update() #update()}
+     *
+     * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#getDescriptionField()
+     * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#update()
      */
     public RestAction<Application> setDescription(final String description)
     {
         return this.updatable.getDescriptionField().setValue(description).update();
     }
 
+    /**
+     * Sets the <b><u>code grant state</u></b> of the selected {@link net.dv8tion.jda.client.entities.Application Application's} bot.
+     *
+     * @param  requireCodeGrant
+     *         The new state for the selected {@link net.dv8tion.jda.client.entities.Application Application's} bot
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     *         <br>Update RestAction from {@link ApplicationManagerUpdatable#update() #update()}
+     *
+     * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#getDoesBotRequireCodeGrantField()
+     * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#update()
+     */
     public RestAction<Application> setDoesBotRequireCodeGrant(final boolean requireCodeGrant)
     {
         return this.updatable.getDoesBotRequireCodeGrantField().setValue(requireCodeGrant).update();
     }
 
     /**
-     * Changes the Icon of this Application.
-     * @param icon
-     *      The new icon to use, or null to remove old icon
-     * @return
+     * Sets the <b><u>icon</u></b> of the selected {@link net.dv8tion.jda.client.entities.Application Application}.
+     * <br>Wraps {@link net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#getIconField() ApplicationManagerUpdatable#getIconField()}.
+     *
+     * @param  icon
+     *         The new {@link net.dv8tion.jda.core.entities.Icon Icon}
+     *         for the selected {@link net.dv8tion.jda.client.entities.Application Application}
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     *         <br>Update RestAction from {@link ApplicationManagerUpdatable#update() #update()}
+     *
+     * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#getIconField()
+     * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#update()
      */
     public RestAction<Application> setIcon(final Icon icon)
     {
         return this.updatable.getIconField().setValue(icon).update();
     }
 
+    /**
+     * Sets the <b><u>public state</u></b> of the selected {@link net.dv8tion.jda.client.entities.Application Application's} bot.
+     *
+     * @param  botPublic
+     *         The new state for the selected {@link net.dv8tion.jda.client.entities.Application Application's} bot
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     *         <br>Update RestAction from {@link ApplicationManagerUpdatable#update() #update()}
+     *
+     * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#getIsBotPublicField()
+     * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#update()
+     */
     public RestAction<Application> setIsBotPublic(final boolean botPublic)
     {
         return this.updatable.getIsBotPublicField().setValue(botPublic).update();
     }
 
     /**
-     * Changes the name of this Application
-     * @param name
-     *      The new name of this Application
-     * @return
+     * Sets the <b><u>name</u></b> of the selected {@link net.dv8tion.jda.client.entities.Application Application}.
+     *
+     * <p>A name <b>must not</b> be {@code null} nor less than 2 characters or more than 32 characters long!
+     *
+     * @param  name
+     *         The new name for the selected {@link net.dv8tion.jda.client.entities.Application Application}
+     *
+     * @throws IllegalArgumentException
+     *         If the provided name is {@code null}, less than 2 or more than 32 characters long
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     *         <br>Update RestAction from {@link ApplicationManagerUpdatable#update() #update()}
+     *
+     * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#getNameField()
+     * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#update()
      */
     public RestAction<Application> setName(final String name)
     {
         return this.updatable.getNameField().setValue(name).update();
     }
 
+    /**
+     * Sets the <b><u>redirect uris</u></b> of the selected {@link net.dv8tion.jda.client.entities.Application Application}.
+     * <br>Wraps {@link net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#getIconField() ApplicationManagerUpdatable#getRedirectUrisField()}.
+     * 
+     * <p>The {@link java.util.List List} as well as all redirect uris <b>must not</b> be {@code null}!
+     * 
+     * @param  redirectUris
+     *         The new redirect uris
+     *         for the selected {@link net.dv8tion.jda.client.entities.Application Application}
+     *
+     * @throws IllegalArgumentException
+     *         If either the provided {@link java.util.List List} or one of the uris is {@code null}
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     *         <br>Update RestAction from {@link ApplicationManagerUpdatable#update() #update()}
+     *
+     * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#getIconField()
+     * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#update()
+     */
     public RestAction<Application> setRedirectUris(final List<String> redirectUris)
     {
         return this.updatable.getRedirectUrisField().setValue(redirectUris).update();
