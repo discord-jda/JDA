@@ -26,7 +26,7 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
-
+import org.apache.http.util.Args;
 import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -122,7 +122,7 @@ public class ApplicationManagerUpdatable
             @Override
             public void checkValue(final String value)
             {
-                Field.checkNull(value, "application description");
+                Args.notNull(value, "application description");
                 if (value.length() > 400)
                     throw new IllegalArgumentException("Application description must be 0 to 400 characters in length");
             }
@@ -133,7 +133,7 @@ public class ApplicationManagerUpdatable
             @Override
             public void checkValue(final Boolean value)
             {
-                Field.checkNull(value, "doesBotRequireCodeGrant");
+                Args.notNull(value, "doesBotRequireCodeGrant");
             }
         };
 
@@ -162,7 +162,7 @@ public class ApplicationManagerUpdatable
             @Override
             public void checkValue(final Boolean value)
             {
-                Field.checkNull(value, "isBotPublic");
+                Args.notNull(value, "isBotPublic");
             }
         };
 
@@ -171,7 +171,7 @@ public class ApplicationManagerUpdatable
             @Override
             public void checkValue(final String value)
             {
-                Field.checkNull(value, "application name");
+                Args.notNull(value, "application name");
                 if (value.length() < 2 || value.length() > 32)
                     throw new IllegalArgumentException("Application name must be 2 to 32 characters in length");
             }
@@ -192,11 +192,11 @@ public class ApplicationManagerUpdatable
             @Override
             public void checkValue(final List<String> value)
             {
-                Field.checkNull(value, "redirect uris");
+                Args.notNull(value, "redirect uris");
                 for (final String url : value)
                 {
 
-                    Field.checkNull(url, "redirect uri");
+                    Args.notNull(url, "redirect uri");
                     if (!ApplicationManagerUpdatable.URL_PATTERN.matcher(url).matches())
                         throw new IllegalArgumentException("URL must be a valid http or https url.");
                 }
