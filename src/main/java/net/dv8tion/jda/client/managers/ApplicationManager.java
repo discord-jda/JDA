@@ -29,6 +29,9 @@ import java.util.List;
  * <br>Simplifies managing flow for convenience.
  *
  * <p>This decoration allows to modify a single field by automatically building an update {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+ * 
+ * @since  JDA 3.0
+ * @author Aljoscha Grebe
  */
 public class ApplicationManager
 {

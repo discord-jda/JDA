@@ -23,6 +23,7 @@ import net.dv8tion.jda.client.managers.ApplicationManagerUpdatable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ISnowflake;
+import net.dv8tion.jda.core.managers.ChannelManager;
 import net.dv8tion.jda.core.requests.RestAction;
 
 /** 
@@ -112,10 +113,26 @@ public interface Application extends ISnowflake
      */
     JDA getJDA();
 
+    /**
+     * Returns the {@link net.dv8tion.jda.client.managers.ApplicationManager ApplicationManager} for this Application.
+     * In the ApplicationManager, you can modify things like the name and icon of this Application.
+     *
+     * @return The ApplicationManager of this Channel
+     *
+     * @see    #getManagerUpdatable()
+     */
     ApplicationManager getManager();
 
+    /**
+     * Returns the {@link net.dv8tion.jda.client.managers.ApplicationManagerUpdatable ApplicationManagerUpdatable} for this Application.
+     * In the ApplicationManager, you can modify things like the name and icon of this Application.
+     * <br>This can be used to bulk update application settings.
+     *
+     * @return The ApplicationManagerUpdatable of this Application
+     *
+     * @see    #getManager()
+     */
     ApplicationManagerUpdatable getManagerUpdatable();
-
 
     /**
      * Returns the name of the application.
@@ -124,8 +141,18 @@ public interface Application extends ISnowflake
      */
     String getName();
 
+    /**
+     * The redirect uris of this application.
+     * 
+     * @return A {@link java.util.List List} of current redirect uris of the application.
+     */
     List<String> getRedirectUris();
 
+    /**
+     * The rpc application state of this application.
+     * 
+     * @return The rpc application state of current redirect uris of the application.
+     */
     int getRpcApplicationState();
 
     /**

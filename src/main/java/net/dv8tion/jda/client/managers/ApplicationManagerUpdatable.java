@@ -186,7 +186,7 @@ public class ApplicationManagerUpdatable
      * <p>Modification to the provided {@link java.util.List List} after passing it to this {@link ApplicationManagerUpdatable}
      * will be ignored.
      *
-     * <p>The {@link java.util.List List} <b>must not</b> be {@code null} as well as all redirect uris <b>must not</b> be {@code null}!
+     * <p>The {@link java.util.List List} as well as all redirect uris <b>must not</b> be {@code null}!
      * <br>Otherwise {@link net.dv8tion.jda.core.managers.fields.Field#setValue(Object) Field.setValue(...)} will
      * throw an {@link IllegalArgumentException IllegalArgumentException}.
      *
