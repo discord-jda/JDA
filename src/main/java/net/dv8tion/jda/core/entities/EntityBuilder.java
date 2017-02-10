@@ -212,7 +212,7 @@ public class EntityBuilder
                 ChannelType type = ChannelType.fromId(channel.getInt("type"));
                 if (type == ChannelType.TEXT)
                 {
-                    TextChannel newChannel = createTextChannel(channel, guildObj.getId());
+                    TextChannel newChannel = createTextChannel(channel, guildObj.getId(), false);
                     if (newChannel.getId().equals(guildObj.getId()))
                         guildObj.setPublicChannel(newChannel);
                 }
@@ -575,6 +575,11 @@ public class EntityBuilder
 
     public TextChannel createTextChannel(JSONObject json, String guildId)
     {
+        return createTextChannel(json, guildId, true);
+
+    }
+    public TextChannel createTextChannel(JSONObject json, String guildId, boolean guildIsLoaded)
+    {
         String id = json.getString("id");
         TextChannelImpl channel = (TextChannelImpl) api.getTextChannelMap().get(id);
         if (channel == null)
@@ -583,6 +588,15 @@ public class EntityBuilder
             channel = new TextChannelImpl(id, guild);
             guild.getTextChannelsMap().put(id, channel);
             api.getTextChannelMap().put(id, channel);
+        }
+
+        if (!json.isNull("permission_overwrites") && guildIsLoaded)
+        {
+            JSONArray overrides = json.getJSONArray("permission_overwrites");
+            for (int i = 0; i < overrides.length(); i++)
+            {
+                createPermissionOverride(overrides.getJSONObject(i), channel);
+            }
         }
 
         return channel
