@@ -508,7 +508,7 @@ public class EntityBuilder
             Role r = guild.getRolesMap().get(roleId);
             if (r == null)
             {
-                WebSocketClient.LOG.fatal("Received a Member with an unknown Role. MemberId: "
+                WebSocketClient.LOG.debug("Received a Member with an unknown Role. MemberId: "
                         + member.getUser().getId() + " GuildId: " + guild.getId() + " roleId: " + roleId);
             }
             else
