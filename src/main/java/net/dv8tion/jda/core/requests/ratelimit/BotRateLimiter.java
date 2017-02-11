@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.requests.RateLimiter;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.core.requests.Route.CompiledRoute;
+import net.dv8tion.jda.core.requests.Route.RateLimit;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import org.json.JSONObject;
 
@@ -47,7 +48,7 @@ public class BotRateLimiter extends RateLimiter
     @Override
     public Long getRateLimit(CompiledRoute route)
     {
-        Bucket bucket = getBucket(route.getRatelimitRoute());
+        Bucket bucket = getBucket(route);
         synchronized (bucket)
         {
             return bucket.getRateLimit();
@@ -59,7 +60,7 @@ public class BotRateLimiter extends RateLimiter
     {
         if (isShutdown)
             throw new RejectedExecutionException("Cannot queue a request after shutdown");
-        Bucket bucket = getBucket(request.getRoute().getRatelimitRoute());
+        Bucket bucket = getBucket(request.getRoute());
         synchronized (bucket)
         {
             bucket.addToQueue(request);
@@ -69,7 +70,7 @@ public class BotRateLimiter extends RateLimiter
     @Override
     protected Long handleResponse(CompiledRoute route, HttpResponse<String> response)
     {
-        Bucket bucket = getBucket(route.getRatelimitRoute());
+        Bucket bucket = getBucket(route);
         synchronized (bucket)
         {
             Headers headers = response.getHeaders();
@@ -107,18 +108,19 @@ public class BotRateLimiter extends RateLimiter
 
     }
 
-    private Bucket getBucket(String route)
+    private Bucket getBucket(CompiledRoute route)
     {
-        Bucket bucket = (Bucket) buckets.get(route);
+        String rateLimitRoute = route.getBaseRoute().getRoute();
+        Bucket bucket = (Bucket) buckets.get(rateLimitRoute);
         if (bucket == null)
         {
             synchronized (buckets)
             {
-                bucket = (Bucket) buckets.get(route);
+                bucket = (Bucket) buckets.get(rateLimitRoute);
                 if (bucket == null)
                 {
-                    bucket = new Bucket(route);
-                    buckets.put(route, bucket);
+                    bucket = new Bucket(rateLimitRoute, route.getBaseRoute().getRatelimit());
+                    buckets.put(rateLimitRoute, bucket);
                 }
             }
         }
@@ -157,8 +159,17 @@ public class BotRateLimiter extends RateLimiter
     {
         try
         {
-            bucket.resetTime = Long.parseLong(headers.getFirst("X-RateLimit-Reset")) * 1000; //Seconds to milliseconds
-            bucket.routeUsageLimit = Integer.parseInt(headers.getFirst("X-RateLimit-Limit"));
+            if (bucket.hasRatelimit()) // Check if there's a hardcoded rate limit 
+            {
+                bucket.resetTime = bucket.getRatelimit().getResetTime();
+                bucket.routeUsageLimit = bucket.getRatelimit().getUsageLimit();
+            }
+            else
+            {
+                bucket.resetTime = Long.parseLong(headers.getFirst("X-RateLimit-Reset")) * 1000; //Seconds to milliseconds
+                bucket.routeUsageLimit = Integer.parseInt(headers.getFirst("X-RateLimit-Limit"));
+            }
+
             bucket.routeUsageRemaining = Integer.parseInt(headers.getFirst("X-RateLimit-Remaining"));
 
         }
@@ -179,14 +190,16 @@ public class BotRateLimiter extends RateLimiter
     private class Bucket implements IBucket, Runnable
     {
         final String route;
+        final RateLimit rateLimit;
         volatile long resetTime = 0;
         volatile int routeUsageRemaining = 1;    //These are default values to only allow 1 request until we have properly
         volatile int routeUsageLimit = 1;        // ratelimit information.
         volatile ConcurrentLinkedQueue<Request> requests = new ConcurrentLinkedQueue<>();
 
-        public Bucket(String route)
+        public Bucket(String route, RateLimit rateLimit)
         {
             this.route = route;
+            this.rateLimit = rateLimit;
         }
 
         void addToQueue(Request request)
@@ -311,6 +324,12 @@ public class BotRateLimiter extends RateLimiter
                 Requester.LOG.fatal("Requester system encountered an internal error from beyond the synchronized execution blocks. NOT GOOD!");
                 Requester.LOG.log(err);
             }
+        }
+
+        @Override
+        public RateLimit getRatelimit()
+        {
+            return rateLimit;
         }
 
         @Override

@@ -21,6 +21,8 @@ import net.dv8tion.jda.core.requests.RateLimiter;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.Route.CompiledRoute;
+import net.dv8tion.jda.core.requests.Route.RateLimit;
 import org.json.JSONObject;
 
 import java.util.Iterator;
@@ -41,7 +43,7 @@ public class ClientRateLimiter extends RateLimiter
     @Override
     public Long getRateLimit(Route.CompiledRoute route)
     {
-        Bucket bucket = getBucket(route.getBaseRoute().getRoute());
+        Bucket bucket = getBucket(route);
         synchronized (bucket)
         {
            return bucket.getRateLimit();
@@ -53,7 +55,7 @@ public class ClientRateLimiter extends RateLimiter
     {
         if (isShutdown)
             throw new RejectedExecutionException("Cannot queue a request after shutdown");
-        Bucket bucket = getBucket(request.getRoute().getBaseRoute().getRoute());
+        Bucket bucket = getBucket(request.getRoute());
         synchronized (bucket)
         {
             bucket.addToQueue(request);
@@ -63,7 +65,7 @@ public class ClientRateLimiter extends RateLimiter
     @Override
     protected Long handleResponse(Route.CompiledRoute route, HttpResponse<String> response)
     {
-        Bucket bucket = getBucket(route.getBaseRoute().getRoute());
+        Bucket bucket = getBucket(route);
         synchronized (bucket)
         {
             long now = System.currentTimeMillis();
@@ -89,18 +91,19 @@ public class ClientRateLimiter extends RateLimiter
         }
     }
 
-    private Bucket getBucket(String route)
+    private Bucket getBucket(CompiledRoute route)
     {
-        Bucket bucket = (Bucket) buckets.get(route);
+        String baseRoute = route.getBaseRoute().getRoute();
+        Bucket bucket = (Bucket) buckets.get(baseRoute);
         if (bucket == null)
         {
             synchronized (buckets)
             {
-                bucket = (Bucket) buckets.get(route);
+                bucket = (Bucket) buckets.get(baseRoute);
                 if (bucket == null)
                 {
-                    bucket = new Bucket(route);
-                    buckets.put(route, bucket);
+                    bucket = new Bucket(baseRoute, route.getBaseRoute().getRatelimit());
+                    buckets.put(baseRoute, bucket);
                 }
             }
         }
@@ -110,12 +113,14 @@ public class ClientRateLimiter extends RateLimiter
     private class Bucket implements IBucket, Runnable
     {
         final String route;
+        final RateLimit rateLimit;
         volatile long retryAfter = 0;
         volatile ConcurrentLinkedQueue<Request> requests = new ConcurrentLinkedQueue<>();
 
-        public Bucket(String route)
+        public Bucket(String route, RateLimit rateLimit)
         {
             this.route = route;
+            this.rateLimit = rateLimit;
         }
 
         void addToQueue(Request request)
@@ -234,6 +239,12 @@ public class ClientRateLimiter extends RateLimiter
                 Requester.LOG.fatal("Requester system encountered an internal error from beyond the synchronized execution blocks. NOT GOOD!");
                 Requester.LOG.log(err);
             }
+        }
+
+        @Override
+        public RateLimit getRatelimit()
+        {
+            return rateLimit;
         }
 
         @Override
