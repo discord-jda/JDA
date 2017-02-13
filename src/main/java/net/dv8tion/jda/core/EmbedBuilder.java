@@ -499,7 +499,10 @@ public class EmbedBuilder
     }
     
     /**
-     * Clears all fields from the embed.
+     * Clears all fields from the embed, such as those created with the 
+     * {@link net.dv8tion.jda.core.EmbedBuilder#EmbedBuilder(net.dv8tion.jda.core.entities.MessageEmbed) EmbedBuilder(MessageEmbed)}
+     * constructor or via the 
+     * {@link net.dv8tion.jda.core.EmbedBuilder#addField(net.dv8tion.jda.core.entities.MessageEmbed.Field) addField} methods.
      *
      * @return the builder after the field has been added
      */

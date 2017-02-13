@@ -292,7 +292,7 @@ public interface Message extends ISnowflake
      *         the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *         The edit was attempted after the Message had been deleted.</li>
+     *     <br>The edit was attempted after the Message had been deleted.</li>
      * </ul>
      *
      * @param  newContent
@@ -302,7 +302,8 @@ public interface Message extends ISnowflake
      *         If the message attempting to be edited was not created by the currently logged in account, or if
      *         {@code newContent}'s length is 0 or greater than 2000.
      *
-     * @return a new Message-Object for the edited message
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
+     *     <br>The {@link net.dv8tion.jda.core.entities.Message Message} with the updated content
      */
     RestAction<Message> editMessage(String newContent);
 
@@ -322,16 +323,18 @@ public interface Message extends ISnowflake
      *         the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *         The edit was attempted after the Message had been deleted.</li>
+     *     <br>The edit was attempted after the Message had been deleted.</li>
      * </ul>
      *
      * @param  newContent
      *         the new content of the Message
      *
      * @throws java.lang.IllegalStateException
-     *         If the message attempting to be edited was not created by the currently logged in account.
+     *         If the message attempting to be edited was not created by the currently logged in account, or
+     *         if the passed-in embed is null
      *
-     * @return a new Message-Object for the edited message
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
+     *     <br>The {@link net.dv8tion.jda.core.entities.Message Message} with the updated content
      */
     RestAction<Message> editMessage(MessageEmbed newContent); 
     
@@ -351,7 +354,7 @@ public interface Message extends ISnowflake
      *         the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *         The edit was attempted after the Message had been deleted.</li>
+     *     <br>The edit was attempted after the Message had been deleted.</li>
      * </ul>
      *
      * @param  newContent
@@ -361,7 +364,8 @@ public interface Message extends ISnowflake
      *         If the message attempting to be edited was not created by the currently logged in account, or if
      *         {@code newContent}'s length is 0 or greater than 2000.
      *
-     * @return a new Message-Object for the edited message
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
+     *     <br>The {@link net.dv8tion.jda.core.entities.Message Message} with the updated content
      */
     RestAction<Message> editMessage(Message newContent);
 
