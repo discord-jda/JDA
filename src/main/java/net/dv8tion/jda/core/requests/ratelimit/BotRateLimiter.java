@@ -110,7 +110,7 @@ public class BotRateLimiter extends RateLimiter
 
     private Bucket getBucket(CompiledRoute route)
     {
-        String rateLimitRoute = route.getBaseRoute().getRoute();
+        String rateLimitRoute = route.getBaseRoute().getRatelimitRoute();
         Bucket bucket = (Bucket) buckets.get(rateLimitRoute);
         if (bucket == null)
         {
@@ -161,7 +161,7 @@ public class BotRateLimiter extends RateLimiter
         {
             if (bucket.hasRatelimit()) // Check if there's a hardcoded rate limit 
             {
-                bucket.resetTime = bucket.getRatelimit().getResetTime();
+                bucket.resetTime = System.currentTimeMillis() + bucket.getRatelimit().getResetTime();
                 bucket.routeUsageLimit = bucket.getRatelimit().getUsageLimit();
             }
             else
