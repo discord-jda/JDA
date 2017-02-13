@@ -402,8 +402,15 @@ public interface MessageChannel extends ISnowflake
 
         if (message != null)
         {
-            body.field("content", message.getRawContent());
-            body.field("tts", message.isTTS());
+            if (message.getEmbeds().isEmpty())
+            {
+                body.field("content", message.getRawContent());
+                body.field("tts", message.isTTS());
+            }
+            else
+            {
+                body.field("payload_json", ((MessageImpl) message).toJSONObject().toString()); 
+            }
         }
 
         return new RestAction<Message>(getJDA(), route, body)
@@ -466,8 +473,15 @@ public interface MessageChannel extends ISnowflake
 
         if (message != null)
         {
-            body.field("content", message.getRawContent());
-            body.field("tts", message.isTTS());
+            if (message.getEmbeds().isEmpty())
+            {
+                body.field("content", message.getRawContent());
+                body.field("tts", message.isTTS());
+            }
+            else
+            {
+                body.field("payload_json", ((MessageImpl) message).toJSONObject().toString());
+            }
         }
 
         return new RestAction<Message>(getJDA(), route, body)
