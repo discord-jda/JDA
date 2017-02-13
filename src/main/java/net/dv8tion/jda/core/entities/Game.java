@@ -44,9 +44,9 @@ public interface Game
     String getUrl();
 
     /**
-     * The type of {@link net.dv8tion.jda.core.entities.Game Game}. This will return null for regular games.
+     * The type of {@link net.dv8tion.jda.core.entities.Game Game}.
      *
-     * @return Possibly-null int representing the type of Game
+     * @return Never-null {@link net.dv8tion.jda.core.entities.Game.GameType GameType} representing the type of Game
      */
     GameType getType();
 
