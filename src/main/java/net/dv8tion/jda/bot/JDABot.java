@@ -24,8 +24,8 @@ public interface JDABot
 {
     /**
      * Returns the {@link net.dv8tion.jda.core.JDA JDA} instance of this {@link JDABot}
-     * @return
-     *      the corresponding JDA instance
+     * 
+     * @return The corresponding JDA instance
      */
     JDA getJDA();
 

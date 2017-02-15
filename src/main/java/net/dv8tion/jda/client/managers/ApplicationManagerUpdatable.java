@@ -85,7 +85,7 @@ public class ApplicationManagerUpdatable
      * <p>To set the value use {@link net.dv8tion.jda.core.managers.fields.Field#setValue(Object) setValue(String)}
      * on the returned {@link net.dv8tion.jda.client.managers.fields.ApplicationField ApplicationField} instance.
      *
-     * <p>A description <b>must not</b> be {@code null} nor more than 400 characters long!
+     * <p>A description <b>must not</b> be more than 400 characters long!
      * <br>Otherwise {@link net.dv8tion.jda.core.managers.fields.Field#setValue(Object) Field.setValue(...)} will
      * throw an {@link IllegalArgumentException IllegalArgumentException}.
      *
@@ -226,9 +226,8 @@ public class ApplicationManagerUpdatable
             @Override
             public void checkValue(final String value)
             {
-                Args.notNull(value, "application description");
-                if (value.length() > 400)
-                    throw new IllegalArgumentException("Application description must be 0 to 400 characters in length");
+                if (value != null && value.length() > 400)
+                    throw new IllegalArgumentException("application description must not be more than 400 characters long");
             }
         };
 

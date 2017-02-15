@@ -16,9 +16,8 @@
 
 package net.dv8tion.jda.bot.entities.impl;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import net.dv8tion.jda.bot.entities.ApplicationInfo;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
@@ -77,7 +76,7 @@ public class ApplicationInfoImpl implements ApplicationInfo
     public String getIconUrl()
     {
         return this.iconId == null ? null
-                : "https://cdn.discordapp.com/app-icons/" + this.id + '/' + this.iconId + ".jpg";
+                : "https://cdn.discordapp.com/app-icons/" + this.id + '/' + this.iconId + ".png";
     }
 
     @Override
@@ -101,18 +100,28 @@ public class ApplicationInfoImpl implements ApplicationInfo
     @Override
     public String getInviteUrl(final String guildId, final Collection<Permission> permissions)
     {
-        return "https://discordapp.com/oauth2/authorize?client_id=" + this.getId() + "&scope=bot"
-                + (permissions == null || permissions.isEmpty() ? "" : "&permissions=" + Permission.getRaw(permissions))
-                + (guildId == null ? "" : "&guild_id=" + guildId);
+        StringBuilder builder = new StringBuilder("https://discordapp.com/oauth2/authorize?client_id=");
+        builder.append(this.getId());
+        builder.append("&scope=bot");
+        if (permissions != null && !permissions.isEmpty())
+        {
+            builder.append("&permissions=");
+            builder.append(Permission.getRaw(permissions));
+        }
+        if (guildId != null)
+        {
+            builder.append("&guild_id=");
+            builder.append(guildId);
+        }
+        return builder.toString();
     }
+
     @Override
     public String getInviteUrl(final String guildId, final Permission... permissions)
     {
-        return "https://discordapp.com/oauth2/authorize?client_id=" + this.getId() + "&scope=bot"
-                + (permissions == null || permissions.length == 0 ? ""
-                        : "&permissions=" + Permission.getRaw(permissions))
-                + (guildId == null ? "" : "&guild_id=" + guildId);
+        return this.getInviteUrl(guildId, permissions == null ? null : Arrays.asList(permissions));
     }
+
     @Override
     public JDA getJDA()
     {

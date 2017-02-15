@@ -17,7 +17,6 @@
 package net.dv8tion.jda.bot.entities;
 
 import java.util.Collection;
-import java.util.List;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ISnowflake;
@@ -26,7 +25,7 @@ import net.dv8tion.jda.core.entities.User;
 /**
  * Represents a Discord Application from it's bot's point of view.
  * 
- * @since  JDA 3.0
+ * @since  3.0
  * @author Aljoscha Grebe
  * 
  * @see {@link net.dv8tion.jda.bot.JDABot#getApplicationInfo() JDABot#getApplicationInfo()}
@@ -36,8 +35,10 @@ public interface ApplicationInfo extends ISnowflake
 
     /**
      * Whether the bot requires code grant to invite or not. 
-     * If your application requires multiple scopes then you may need the full OAuth2 flow to ensure a
-     * bot doesn't join before your application is granted a token.
+     * 
+     * <p>This means that additional OAuth2 steps are required to authorize the application to make a bot join a guild 
+     * like {@code &response_type=code} together with a valid {@code &redirect_uri}. 
+     * <br>For more information look at the <a href="https://discordapp.com/developers/docs/topics/oauth2">Discord OAuth2 documentation</a>.  
      * 
      * @return whether the bot requires code grant
      */
@@ -68,7 +69,7 @@ public interface ApplicationInfo extends ISnowflake
      * Creates a OAuth invite-link used to invite the bot.
      *  
      * @param  permissions
-     *         Possibly empty {@link java.util.List List} of {@link net.dv8tion.jda.core.Permission Permissions}
+     *         Possibly empty {@link java.util.Collection Collection} of {@link net.dv8tion.jda.core.Permission Permissions}
      *         that should be requested via invite.
      * 
      * @return The link used to invite the bot.

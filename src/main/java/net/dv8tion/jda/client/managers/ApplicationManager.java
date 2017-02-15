@@ -30,7 +30,7 @@ import java.util.List;
  *
  * <p>This decoration allows to modify a single field by automatically building an update {@link net.dv8tion.jda.core.requests.RestAction RestAction}
  * 
- * @since  JDA 3.0
+ * @since  3.0
  * @author Aljoscha Grebe
  */
 public class ApplicationManager
@@ -65,14 +65,15 @@ public class ApplicationManager
 
     /**
      * Sets the <b><u>description</u></b> of the selected {@link net.dv8tion.jda.client.entities.Application Application}.
+     * <br>Wraps {@link net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#getDescriptionField() ApplicationManagerUpdatable#getDescriptionField()}.
      *
-     * <p>A description <b>must not</b> be {@code null} nor more than 400 characters long!
+     * <p>A description <b>must not</b> be than 400 characters long!
      *
      * @param  description
      *         The new description for the selected {@link net.dv8tion.jda.client.entities.Application Application}
      *
      * @throws IllegalArgumentException
-     *         If the provided description is {@code null} or more than 400 characters long
+     *         If the provided description is more than 400 characters long
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction}
      *         <br>Update RestAction from {@link ApplicationManagerUpdatable#update() #update()}
@@ -87,6 +88,7 @@ public class ApplicationManager
 
     /**
      * Sets the <b><u>code grant state</u></b> of the selected {@link net.dv8tion.jda.client.entities.Application Application's} bot.
+     * <br>Wraps {@link net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#getDoesBotRequireCodeGrantField() ApplicationManagerUpdatable#getDoesBotRequireCodeGrantField()}.
      *
      * @param  requireCodeGrant
      *         The new state for the selected {@link net.dv8tion.jda.client.entities.Application Application's} bot
@@ -123,6 +125,7 @@ public class ApplicationManager
 
     /**
      * Sets the <b><u>public state</u></b> of the selected {@link net.dv8tion.jda.client.entities.Application Application's} bot.
+     * <br>Wraps {@link net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#getIsBotPublicField() ApplicationManagerUpdatable#getIsBotPublicField()}.
      *
      * @param  botPublic
      *         The new state for the selected {@link net.dv8tion.jda.client.entities.Application Application's} bot
@@ -140,6 +143,7 @@ public class ApplicationManager
 
     /**
      * Sets the <b><u>name</u></b> of the selected {@link net.dv8tion.jda.client.entities.Application Application}.
+     * <br>Wraps {@link net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#getNameField() ApplicationManagerUpdatable#getNameField()}.
      *
      * <p>A name <b>must not</b> be {@code null} nor less than 2 characters or more than 32 characters long!
      *
@@ -162,7 +166,7 @@ public class ApplicationManager
 
     /**
      * Sets the <b><u>redirect uris</u></b> of the selected {@link net.dv8tion.jda.client.entities.Application Application}.
-     * <br>Wraps {@link net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#getIconField() ApplicationManagerUpdatable#getRedirectUrisField()}.
+     * <br>Wraps {@link net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#getRedirectUrisField() ApplicationManagerUpdatable#getRedirectUrisField()}.
      * 
      * <p>The {@link java.util.List List} as well as all redirect uris <b>must not</b> be {@code null}!
      * 
@@ -183,5 +187,4 @@ public class ApplicationManager
     {
         return this.updatable.getRedirectUrisField().setValue(redirectUris).update();
     }
-
 }

@@ -23,13 +23,12 @@ import net.dv8tion.jda.client.managers.ApplicationManagerUpdatable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ISnowflake;
-import net.dv8tion.jda.core.managers.ChannelManager;
 import net.dv8tion.jda.core.requests.RestAction;
 
 /** 
  * Represents a Discord Application from it's owning client point of view
  * 
- * @since  JDA 3.0
+ * @since  3.0
  * @author Aljoscha Grebe
  * 
  * @see <a href="https://discordapp.com/developers/applications/me">Discord Documentation - My Apps</a>
@@ -45,6 +44,15 @@ public interface Application extends ISnowflake
      * A new Bot will only be created if no bot-account is already assigned, otherwise the existing one is returned.
      * A newly created Bot-account will have its name set to the name of the Application.
      *
+     * <p><b>Warning!</b> This endpoint has a really long ratelimit (multiple hours)!  
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} for this
+     * update include the following:
+     * <ul>
+     *      <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_APPLICATION UNKNOWN_APPLICATION}
+     *      <br>If the Application has been deleted</li>
+     * </ul>
+     *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} -
      *         Type: {@link Application.Bot}
      *         <br>The created bot account of this application. 
@@ -55,6 +63,13 @@ public interface Application extends ISnowflake
      * Deletes this Application and its assigned Bot (if present).
      * <b>This cannot be undone!</b>
      *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} for this
+     * update include the following:
+     * <ul>
+     *      <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_APPLICATION UNKNOWN_APPLICATION}
+     *      <br>If the Application has already been deleted</li>
+     * </ul>
+     *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} -
      *         Type: {@link Void}
      *         <br>The RestAction to delete this Application.
@@ -62,9 +77,11 @@ public interface Application extends ISnowflake
     RestAction<Void> delete();
 
     /**
-     * Whether the bot requires code grant to invite or not. 
-     * If your application requires multiple scopes then you may need the full OAuth2 flow to ensure a
-     * bot doesn't join before your application is granted a token.
+     * Whether the bot requires code grant to invite or not.
+     * 
+     * <p>This means that additional OAuth2 steps are required to authorize the application to make a bot join a guild 
+     * like {@code &response_type=code} together with a valid {@code &redirect_uri}. 
+     * <br>For more information look at the <a href="https://discordapp.com/developers/docs/topics/oauth2">Discord OAuth2 documentation</a>.  
      * 
      * @return whether the bot requires code grant
      */
@@ -157,15 +174,15 @@ public interface Application extends ISnowflake
 
     /**
      * Returns the Application secret (Used for oAuth)
-     * @return
-     *      The Application secret
+     * 
+     * @return The Application secret
      */
     String getSecret();
 
     /**
      * Returns whether or not this Application has a bot-account assigned
-     * @return
-     *      True if this Application has a bot-account assigned, false otherwise
+     * 
+     * @return True if this Application has a bot-account assigned, false otherwise
      */
     boolean hasBot();
 
@@ -180,6 +197,13 @@ public interface Application extends ISnowflake
     /**
      * Generates a new client secret for this Application. This invalidates the old one.
      *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} for this
+     * update include the following:
+     * <ul>
+     *      <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_APPLICATION UNKNOWN_APPLICATION}
+     *      <br>If the Application has been deleted</li>
+     * </ul>
+     * 
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} -
      *         Type: {@link Application}
      *         <br>This application with the updated secret.
@@ -195,29 +219,29 @@ public interface Application extends ISnowflake
 
         /**
          * Returns the Application of this Bot
-         * @return
-         *      The application of this Bot
+         * 
+         * @return The application of this Bot
          */
         Application getApplication();
 
         /**
          * Returns the avatar id of this Bot
-         * @return
-         *      The avatar id of this Bot or null, if no avatar is set
+         * 
+         * @return The avatar id of this Bot or null, if no avatar is set
          */
         String getAvatarId();
 
         /**
          * Returns the avatar-url of this Bot
-         * @return
-         *      The avatar-url of this Bot or null, if no avatar is set
+         * 
+         * @return The avatar-url of this Bot or null, if no avatar is set
          */
         String getAvatarUrl();
 
         /**
          * Returns the discriminator of this Bot
-         * @return
-         *      The discriminator of this Bot
+         * 
+         * @return The discriminator of this Bot
          */
         String getDiscriminator();
 
@@ -271,20 +295,27 @@ public interface Application extends ISnowflake
 
         /**
          * Returns the name of this Bot
-         * @return
-         *      The name of this Bot
+         * 
+         * @return The name of this Bot
          */
         String getName();
 
         /**
          * Returns the token used to login to JDA with this Bot
-         * @return
-         *      The login-token of this Bot
+         * 
+         * @return The login-token of this Bot
          */
         String getToken();
 
         /**
          * Generates a new token for this bot. This invalidates the old one.
+         *
+         * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} for this
+         * update include the following:
+         * <ul>
+         *      <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#ONLY_BOTS_ALLOWED ONLY_BOTS_ALLOWED}
+         *      <br>If the Bot doesn't exist</li>
+         * </ul>
          *
          * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} -
          *         Type: {@link Application.Bot}

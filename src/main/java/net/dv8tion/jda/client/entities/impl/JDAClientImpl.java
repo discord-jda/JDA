@@ -18,6 +18,7 @@ package net.dv8tion.jda.client.entities.impl;
 
 import net.dv8tion.jda.client.JDAClient;
 import net.dv8tion.jda.client.entities.*;
+import net.dv8tion.jda.client.requests.restaction.ApplicationAction;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Invite;
@@ -200,9 +201,16 @@ public class JDAClientImpl implements JDAClient
     }
 
     @Override
+    public ApplicationAction createApplication(String name)
+    {
+        return new ApplicationAction(api, name);
+    }
+
+    @Override
     public RestAction<List<Application>> getApplications()
     {
-        return new RestAction<List<Application>>(api, Route.Applications.GET_APPLICATIONS.compile(), null)
+        Route.CompiledRoute route = Route.Applications.GET_APPLICATIONS.compile();
+        return new RestAction<List<Application>>(api, route, null)
         {
             @Override
             protected void handleResponse(Response response, Request request)
@@ -229,7 +237,10 @@ public class JDAClientImpl implements JDAClient
     @Override
     public RestAction<Application> getApplicationById(String id)
     {
-        return new RestAction<Application>(api, Route.Applications.GET_APPLICATION.compile(id), null)
+        Args.notEmpty(id, "id");
+
+        Route.CompiledRoute route = Route.Applications.GET_APPLICATION.compile(id); 
+        return new RestAction<Application>(api, route, null)
         {
             @Override
             protected void handleResponse(Response response, Request request)
@@ -245,8 +256,8 @@ public class JDAClientImpl implements JDAClient
     @Override
     public RestAction<List<AuthorizedApplication>> getAuthorizedApplications()
     {
-        return new RestAction<List<AuthorizedApplication>>(api,
-                Route.Applications.GET_AUTHORIZED_APPLICATIONS.compile(), null)
+        Route.CompiledRoute route = Route.Applications.GET_AUTHORIZED_APPLICATIONS.compile();
+        return new RestAction<List<AuthorizedApplication>>(api, route, null)
         {
             @Override
             protected void handleResponse(Response response, Request request)
@@ -273,8 +284,10 @@ public class JDAClientImpl implements JDAClient
     @Override
     public RestAction<AuthorizedApplication> getAuthorizedApplicationById(String id)
     {
-        return new RestAction<AuthorizedApplication>(api, Route.Applications.GET_AUTHORIZED_APPLICATION.compile(id),
-                null)
+        Args.notEmpty(id, "id");
+
+        Route.CompiledRoute route = Route.Applications.GET_AUTHORIZED_APPLICATION.compile(id);
+        return new RestAction<AuthorizedApplication>(api, route, null)
         {
             @Override
             protected void handleResponse(Response response, Request request)
@@ -296,7 +309,7 @@ public class JDAClientImpl implements JDAClient
     @Override
     public RestAction<Invite> acceptInvite(String code)
     {
-        Args.notNull(code, "code");
+        Args.notEmpty(code, "code");
 
         final Route.CompiledRoute route = Route.Invites.ACCEPT_INVITE.compile(code);
 
