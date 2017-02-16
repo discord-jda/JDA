@@ -25,6 +25,7 @@ import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.audio.hooks.ListenerProxy;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
@@ -80,8 +81,13 @@ public class AudioManagerImpl implements AudioManager
         if (!guild.isAvailable())
             throw new GuildUnavailableException("Cannot open an Audio Connection with an unavailable guild. " +
                     "Please wait until this Guild is available to open a connection.");
-        if (!guild.getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT))
+        final Member self = guild.getSelfMember();
+        if (!self.hasPermission(channel, Permission.VOICE_CONNECT))
             throw new PermissionException(Permission.VOICE_CONNECT);
+        final int userLimit = channel.getUserLimit(); // userLimit is 0 if no limit is set!
+        if (!self.hasPermission(channel, Permission.MANAGE_CHANNEL) && userLimit > 0 && userLimit <= channel.getMembers().size())
+            throw new PermissionException(Permission.MANAGE_CHANNEL,
+                    "Unable to connect to VoiceChannel due to userlimit! Requires permission MANAGE_CHANNEL to bypass");
 
         if (audioConnection == null)
         {
