@@ -28,6 +28,7 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.InviteAction;
+import net.dv8tion.jda.core.requests.restaction.PermissionOverrideAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.http.util.Args;
 import org.json.JSONArray;
@@ -446,7 +447,7 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
-    public RestAction<PermissionOverride> createPermissionOverride(Member member)
+    public PermissionOverrideAction createPermissionOverride(Member member)
     {
         checkPermission(Permission.MANAGE_PERMISSIONS);
         Args.notNull(member, "member");
@@ -455,34 +456,12 @@ public class TextChannelImpl implements TextChannel
         if (getMemberOverrideMap().containsKey(member))
             throw new IllegalStateException("Provided member already has a PermissionOverride in this channel!");
 
-        final PermissionOverride override = new PermissionOverrideImpl(this, member, null);
-
-        JSONObject body = new JSONObject()
-                .put("id", member.getUser().getId())
-                .put("type", "member")
-                .put("allow", 0)
-                .put("deny", 0);
-
         Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(id, member.getUser().getId());
-        return new RestAction<PermissionOverride>(getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                if (!response.isOk())
-                {
-                    request.onFailure(response);
-                    return;
-                }
-
-                getMemberOverrideMap().put(member, override);
-                request.onSuccess(override);
-            }
-        };
+        return new PermissionOverrideAction(getJDA(), route, this, member);
     }
 
     @Override
-    public RestAction<PermissionOverride> createPermissionOverride(Role role)
+    public PermissionOverrideAction createPermissionOverride(Role role)
     {
         checkPermission(Permission.MANAGE_PERMISSIONS);
         Args.notNull(role, "role");
@@ -491,30 +470,8 @@ public class TextChannelImpl implements TextChannel
         if (getRoleOverrideMap().containsKey(role))
             throw new IllegalStateException("Provided role already has a PermissionOverride in this channel!");
 
-        final PermissionOverride override = new PermissionOverrideImpl(this, null, role);
-
-        JSONObject body = new JSONObject()
-                .put("id", role.getId())
-                .put("type", "role")
-                .put("allow", 0)
-                .put("deny", 0);
-
         Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(id, role.getId());
-        return new RestAction<PermissionOverride>(getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                if (!response.isOk())
-                {
-                    request.onFailure(response);
-                    return;
-                }
-
-                getRoleOverrideMap().put(role, override);
-                request.onSuccess(override);
-            }
-        };
+        return new PermissionOverrideAction(getJDA(), route, this, role);
     }
 
     @Override
