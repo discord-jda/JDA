@@ -211,7 +211,7 @@ public interface Channel extends ISnowflake
      * @throws java.lang.IllegalStateException
      *         If the specified Member already has a PermissionOverride. Use {@link #getPermissionOverride(Member)} to retrieve it.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: {@link net.dv8tion.jda.core.entities.PermissionOverride}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.PermissionOverrideAction PermissionOverrideAction}
      *         The newly created PermissionOverride for the specified Role
      *
      * @see    #createPermissionOverride(Role)
@@ -241,7 +241,7 @@ public interface Channel extends ISnowflake
      * @throws java.lang.IllegalStateException
      *         If the specified Role already has a PermissionOverride. Use {@link #getPermissionOverride(Role)} to retrieve it.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: {@link net.dv8tion.jda.core.entities.PermissionOverride}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.PermissionOverrideAction PermissionOverrideAction}
      *         The newly created PermissionOverride for the specified Role
      *
      * @see    #createPermissionOverride(Member)
