@@ -742,7 +742,7 @@ public interface MessageChannel extends ISnowflake
     default RestAction<MessageHistory> getHistoryAround(String messageId, int limit)
     {
         Args.notEmpty(messageId, "Provided messageId");
-        Args.check(limit > 100 || limit < 1, "Provided limit was out of bounds. Minimum: 1, Max: 100. Provided: %d", limit);
+        Args.check(limit >= 1 && limit <= 100, "Provided limit was out of bounds. Minimum: 1, Max: 100. Provided: %d", limit);
 
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY_AROUND.compile(this.getId(), Integer.toString(limit), messageId);
         return new RestAction<MessageHistory>(getJDA(), route, null)
