@@ -34,16 +34,23 @@ public abstract class OrderAction<T, M extends OrderAction> extends RestAction<V
 {
     protected final JDA api;
     protected final List<T> orderList;
+    protected final boolean ascendingOrder;
     protected int selectedPosition = -1;
 
     public OrderAction(JDA api, Route.CompiledRoute route)
     {
+        this(api, true, route);
+    }
+
+    public OrderAction(JDA api, boolean ascendingOrder, Route.CompiledRoute route)
+    {
         super(api, route, null);
         this.api = api;
         this.orderList = new ArrayList<>();
+        this.ascendingOrder = ascendingOrder;
     }
 
-    public List<T> currentOrder()
+    public List<T> getCurrentOrder()
     {
         return Collections.unmodifiableList(orderList);
     }
@@ -71,11 +78,23 @@ public abstract class OrderAction<T, M extends OrderAction> extends RestAction<V
         Args.notNegative(amount, "Provided amount");
         if (selectedPosition == -1)
             throw new IllegalStateException("Cannot move until an item has been selected. Use #selectPosition first.");
-        Args.check(selectedPosition - amount >= 0,
-                "Amount provided to move up is too large and would be out of bounds." +
-                        "Selected position: " + selectedPosition + " Amount: " + amount + " Largest Position: " + orderList.size());
+        if (ascendingOrder)
+        {
+            Args.check(selectedPosition - amount >= 0,
+                    "Amount provided to move up is too large and would be out of bounds." +
+                            "Selected position: " + selectedPosition + " Amount: " + amount + " Largest Position: " + orderList.size());
+        }
+        else
+        {
+            Args.check(selectedPosition + amount < orderList.size(),
+                    "Amount provided to move up is too large and would be out of bounds." +
+                            "Selected position: " + selectedPosition + " Amount: " + amount + " Largest Position: " + orderList.size());
+        }
 
-        return moveTo(selectedPosition - amount);
+        if (ascendingOrder)
+            return moveTo(selectedPosition - amount);
+        else
+            return moveTo(selectedPosition + amount);
     }
 
     public M moveDown(int amount)
@@ -84,11 +103,23 @@ public abstract class OrderAction<T, M extends OrderAction> extends RestAction<V
         if (selectedPosition == -1)
             throw new IllegalStateException("Cannot move until an item has been selected. Use #selectPosition first.");
 
-        Args.check(selectedPosition + amount < orderList.size(),
-                "Amount provided to move down is too large and would be out of bounds." +
-                        "Selected position: " + selectedPosition + " Amount: " + amount + " Largest Position: " + orderList.size());
+        if (ascendingOrder)
+        {
+            Args.check(selectedPosition + amount < orderList.size(),
+                    "Amount provided to move down is too large and would be out of bounds." +
+                            "Selected position: " + selectedPosition + " Amount: " + amount + " Largest Position: " + orderList.size());
+        }
+        else
+        {
+            Args.check(selectedPosition - amount >= orderList.size(),
+                    "Amount provided to move down is too large and would be out of bounds." +
+                            "Selected position: " + selectedPosition + " Amount: " + amount + " Largest Position: " + orderList.size());
+        }
 
-        return moveTo(selectedPosition + amount);
+        if (ascendingOrder)
+            return moveTo(selectedPosition + amount);
+        else
+            return moveTo(selectedPosition - amount);
     }
 
     public M moveTo(int position)

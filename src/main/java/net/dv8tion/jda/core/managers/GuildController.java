@@ -30,10 +30,7 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
-import net.dv8tion.jda.core.requests.restaction.ChannelAction;
-import net.dv8tion.jda.core.requests.restaction.ChannelOrderAction;
-import net.dv8tion.jda.core.requests.restaction.RoleAction;
-import net.dv8tion.jda.core.requests.restaction.WebhookAction;
+import net.dv8tion.jda.core.requests.restaction.*;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.apache.http.util.Args;
 import org.json.JSONArray;
@@ -1721,6 +1718,11 @@ public class GuildController
     public ChannelOrderAction modifyVoiceChannelPositions()
     {
         return new ChannelOrderAction(guild, false);
+    }
+
+    public RoleOrderAction modifyRolePositions()
+    {
+        return new RoleOrderAction(guild);
     }
 
     protected void checkAvailable()

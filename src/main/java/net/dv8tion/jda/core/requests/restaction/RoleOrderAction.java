@@ -31,12 +31,16 @@ public class RoleOrderAction extends OrderAction<Role, RoleOrderAction>
 
     public RoleOrderAction(Guild guild)
     {
-        super(guild.getJDA(), Route.Guilds.MODIFY_ROLES.compile(guild.getId()));
+        super(guild.getJDA(), false, Route.Guilds.MODIFY_ROLES.compile(guild.getId()));
         this.guild = guild;
 
         List<Role> roles = guild.getRoles();
         roles = roles.subList(0, roles.size() - 1); //Don't include the @everyone role.
-        this.orderList.addAll(roles);
+
+        //Add roles to orderList in reverse due to role position ordering being descending
+        // Top role starts at roles.size() - 1, bottom is 0.
+        for (int i = roles.size() - 1; i >= 0; i--)
+            this.orderList.add(roles.get(i));
     }
 
     @Override
@@ -45,10 +49,10 @@ public class RoleOrderAction extends OrderAction<Role, RoleOrderAction>
         JSONArray array = new JSONArray();
         for (int i = 0; i < orderList.size(); i++)
         {
-            Role chan = orderList.get(i);
+            Role role = orderList.get(i);
             array.put(new JSONObject()
-                    .put("id", chan.getId())
-                    .put("position", i));
+                    .put("id", role.getId())
+                    .put("position", i + 1)); //plus 1 because position 0 is the @everyone position.
         }
 
         this.data = array;
