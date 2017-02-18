@@ -43,6 +43,11 @@ public class RoleOrderAction extends OrderAction<Role, RoleOrderAction>
             this.orderList.add(roles.get(i));
     }
 
+    public Guild getGuild()
+    {
+        return guild;
+    }
+
     @Override
     protected void finalizeData()
     {

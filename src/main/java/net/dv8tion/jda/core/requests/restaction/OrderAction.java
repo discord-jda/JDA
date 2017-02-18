@@ -28,6 +28,7 @@ import org.apache.http.util.Args;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public abstract class OrderAction<T, M extends OrderAction> extends RestAction<Void>
@@ -48,6 +49,11 @@ public abstract class OrderAction<T, M extends OrderAction> extends RestAction<V
         this.api = api;
         this.orderList = new ArrayList<>();
         this.ascendingOrder = ascendingOrder;
+    }
+
+    public JDA getJDA()
+    {
+        return api;
     }
 
     public List<T> getCurrentOrder()
@@ -71,6 +77,19 @@ public abstract class OrderAction<T, M extends OrderAction> extends RestAction<V
         validateInput(selectedEntity);
 
         return selectPosition(orderList.indexOf(selectedEntity));
+    }
+
+    public int getSelectedPosition()
+    {
+        return selectedPosition;
+    }
+
+    public T getSelectedEntity()
+    {
+        if (selectedPosition == -1)
+            throw new IllegalStateException("No position has been selected yet");
+
+        return orderList.get(selectedPosition);
     }
 
     public M moveUp(int amount)
@@ -155,22 +174,24 @@ public abstract class OrderAction<T, M extends OrderAction> extends RestAction<V
         return swapPosition(orderList.indexOf(swapEntity));
     }
 
-    public JDA getJDA()
+    public M reverseOrder()
     {
-        return api;
+        Collections.reverse(this.orderList);
+        return (M) this;
     }
 
-    public int getSelectedPosition()
+    public M shuffleOrder()
     {
-        return selectedPosition;
+        Collections.shuffle(this.orderList);
+        return (M) this;
     }
 
-    public T getSelectedEntity()
+    public M sortOrder(final Comparator<T> comparator)
     {
-        if (selectedPosition == -1)
-            throw new IllegalStateException("No position has been selected yet");
+        Args.notNull(comparator, "Provided comparator");
 
-        return orderList.get(selectedPosition);
+        this.orderList.sort(comparator);
+        return (M) this;
     }
 
     @Override

@@ -37,6 +37,11 @@ public class ChannelOrderAction<T extends Channel> extends OrderAction<T, Channe
         this.orderList.addAll(chans);
     }
 
+    public Guild getGuild()
+    {
+        return guild;
+    }
+
     @Override
     protected void finalizeData()
     {
