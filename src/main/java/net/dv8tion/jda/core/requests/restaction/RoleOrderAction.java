@@ -27,37 +27,16 @@ import java.util.List;
 
 public class RoleOrderAction extends OrderAction<Role, RoleOrderAction>
 {
+    protected final Guild guild;
+
     public RoleOrderAction(Guild guild)
     {
-        super(guild, Route.Guilds.MODIFY_ROLES.compile(guild.getId()));
+        super(guild.getJDA(), Route.Guilds.MODIFY_ROLES.compile(guild.getId()));
+        this.guild = guild;
 
         List<Role> roles = guild.getRoles();
         roles = roles.subList(0, roles.size() - 1); //Don't include the @everyone role.
         this.orderList.addAll(roles);
-    }
-
-    public RoleOrderAction selectPosition(Role selectedRole)
-    {
-        Args.notNull(selectedRole, "Role");
-        Args.check(selectedRole.getGuild().equals(guild), "Provided selected role is not from this Guild!");
-
-        return selectPosition(orderList.indexOf(selectedRole));
-    }
-
-    public RoleOrderAction swapPosition(Role swapRole)
-    {
-        Args.notNull(swapRole, "Provided swapRole");
-        Args.check(swapRole.getGuild().equals(guild), "Provided selected role is not from this Guild!");
-
-        return swapPosition(orderList.indexOf(swapRole));
-    }
-
-    public Role getSelectedRole()
-    {
-        if (selectedPosition == -1)
-            throw new IllegalStateException("No position has been selected yet");
-
-        return orderList.get(selectedPosition);
     }
 
     @Override
@@ -73,6 +52,13 @@ public class RoleOrderAction extends OrderAction<Role, RoleOrderAction>
         }
 
         this.data = array;
+    }
+
+    @Override
+    protected void validateInput(Role entity)
+    {
+        Args.check(entity.getGuild().equals(guild), "Provided selected role is not from this Guild!");
+        Args.check(orderList.contains(entity), "Provided role is not in the list of orderable roles!");
     }
 }
 

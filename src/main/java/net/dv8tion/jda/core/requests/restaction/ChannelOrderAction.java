@@ -24,66 +24,17 @@ import org.json.JSONObject;
 
 import java.util.Collection;
 
-public class ChannelOrderAction extends OrderAction<Channel, ChannelOrderAction>
+public class ChannelOrderAction<T extends Channel> extends OrderAction<T, ChannelOrderAction>
 {
-    private final boolean textChannels;
+    protected final Guild guild;
 
     public ChannelOrderAction(Guild guild, boolean textChannels)
     {
-        super(guild, Route.Guilds.MODIFY_CHANNELS.compile(guild.getId()));
-        this.textChannels = textChannels;
+        super(guild.getJDA(), Route.Guilds.MODIFY_CHANNELS.compile(guild.getId()));
+        this.guild = guild;
 
         Collection chans = textChannels ? guild.getTextChannels() : guild.getVoiceChannels();
         this.orderList.addAll(chans);
-    }
-
-    public ChannelOrderAction selectPosition(Channel selectedChannel)
-    {
-        Args.notNull(selectedChannel, "Channel");
-        Args.check(selectedChannel.getGuild().equals(guild), "Provided selected channel is not from this Guild!");
-        Args.check(selectedChannel instanceof TextChannel == textChannels,
-                "Provided channel's type is not the same as the channel type being handled by this ChannelOrderAction.");
-
-        return selectPosition(orderList.indexOf(selectedChannel));
-    }
-
-    public ChannelOrderAction swapPosition(Channel swapChannel)
-    {
-        Args.notNull(swapChannel, "Provided swapChannel");
-        Args.check(swapChannel.getGuild().equals(guild), "Provided selected channel is not from this Guild!");
-        Args.check(swapChannel instanceof TextChannel == textChannels,
-                "Provided channel's type is not the same as the channel type being handled by this ChannelOrderAction.");
-
-        return swapPosition(orderList.indexOf(swapChannel));
-    }
-
-    public ChannelType getChannelType()
-    {
-        return textChannels ? ChannelType.TEXT : ChannelType.VOICE;
-    }
-
-    public Channel getSelectedChannel()
-    {
-        if (selectedPosition == -1)
-            throw new IllegalStateException("No position has been selected yet");
-
-        return orderList.get(selectedPosition);
-    }
-
-    public TextChannel getSelectedTextChannel()
-    {
-        if (!textChannels)
-            throw new IllegalStateException("This ChannelOrderAction is dealing with VoiceChannels, NOT TextChannels");
-
-        return (TextChannel) getSelectedChannel();
-    }
-
-    public VoiceChannel getSelectedVoiceChannel()
-    {
-        if (textChannels)
-            throw new IllegalStateException("This ChannelOrderAction is dealing with TextChannels, NOT VoiceChannels");
-
-        return (VoiceChannel) getSelectedChannel();
     }
 
     @Override
@@ -99,5 +50,12 @@ public class ChannelOrderAction extends OrderAction<Channel, ChannelOrderAction>
         }
 
         this.data = array;
+    }
+
+    @Override
+    protected void validateInput(T entity)
+    {
+        Args.check(entity.getGuild().equals(guild), "Provided channel is not from this Guild!");
+        Args.check(orderList.contains(entity), "Provided channel is not in the list of orderable channels!");
     }
 }

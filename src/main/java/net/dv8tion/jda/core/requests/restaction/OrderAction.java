@@ -16,7 +16,10 @@
 
 package net.dv8tion.jda.core.requests.restaction;
 
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
@@ -29,15 +32,14 @@ import java.util.List;
 
 public abstract class OrderAction<T, M extends OrderAction> extends RestAction<Void>
 {
-    protected final Guild guild;
+    protected final JDA api;
     protected final List<T> orderList;
     protected int selectedPosition = -1;
 
-    public OrderAction(Guild guild, Route.CompiledRoute route)
+    public OrderAction(JDA api, Route.CompiledRoute route)
     {
-        super(guild.getJDA(), route, null);
-
-        this.guild = guild;
+        super(api, route, null);
+        this.api = api;
         this.orderList = new ArrayList<>();
     }
 
@@ -54,6 +56,14 @@ public abstract class OrderAction<T, M extends OrderAction> extends RestAction<V
         this.selectedPosition = selectedPosition;
 
         return (M) this;
+    }
+
+    public M selectPosition(T selectedEntity)
+    {
+        Args.notNull(selectedEntity, "Channel");
+        validateInput(selectedEntity);
+
+        return selectPosition(orderList.indexOf(selectedEntity));
     }
 
     public M moveUp(int amount)
@@ -106,14 +116,30 @@ public abstract class OrderAction<T, M extends OrderAction> extends RestAction<V
         return (M) this;
     }
 
-    public Guild getGuild()
+    public M swapPosition(T swapEntity)
     {
-        return guild;
+        Args.notNull(swapEntity, "Provided swapEntity");
+        validateInput(swapEntity);
+
+        return swapPosition(orderList.indexOf(swapEntity));
+    }
+
+    public JDA getJDA()
+    {
+        return api;
     }
 
     public int getSelectedPosition()
     {
         return selectedPosition;
+    }
+
+    public T getSelectedEntity()
+    {
+        if (selectedPosition == -1)
+            throw new IllegalStateException("No position has been selected yet");
+
+        return orderList.get(selectedPosition);
     }
 
     @Override
@@ -127,4 +153,5 @@ public abstract class OrderAction<T, M extends OrderAction> extends RestAction<V
 
     @Override
     protected abstract void finalizeData();
+    protected abstract void validateInput(T entity);
 }
