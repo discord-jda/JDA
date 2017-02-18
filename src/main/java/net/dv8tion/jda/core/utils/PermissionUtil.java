@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,15 +9,18 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 package net.dv8tion.jda.core.utils;
 
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.entities.impl.*;
+import net.dv8tion.jda.core.entities.impl.GuildImpl;
+import net.dv8tion.jda.core.entities.impl.PermissionOverrideImpl;
+import net.dv8tion.jda.core.entities.impl.TextChannelImpl;
+import net.dv8tion.jda.core.entities.impl.VoiceChannelImpl;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
@@ -29,12 +32,15 @@ public class PermissionUtil
      * Checks if one given Member can interact with a 2nd given Member - in a permission sense (kick/ban/modify perms).
      * This only checks the Role-Position and does not check the actual permission (kick/ban/manage_role/...)
      *
-     * @param issuer
-     *      The member that tries to interact with 2nd member
-     * @param target
-     *      The member that is the target of the interaction
-     * @return
-     *      True, if issuer can interact with target in guild
+     * @param  issuer
+     *         The member that tries to interact with 2nd member
+     * @param  target
+     *         The member that is the target of the interaction
+     *
+     * @throws NullPointerException
+     *         if any of the provided parameters is null
+     *
+     * @return True, if issuer can interact with target in guild
      */
     public static boolean canInteract(Member issuer, Member target)
     {
@@ -57,12 +63,15 @@ public class PermissionUtil
      * Checks if a given Member can interact with a given Role - in a permission sense (kick/ban/modify perms).
      * This only checks the Role-Position and does not check the actual permission (kick/ban/manage_role/...)
      *
-     * @param issuer
-     *      The member that tries to interact with the role
-     * @param target
-     *      The role that is the target of the interaction
-     * @return
-     *      True, if issuer can interact with target
+     * @param  issuer
+     *         The member that tries to interact with the role
+     * @param  target
+     *         The role that is the target of the interaction
+     *
+     * @throws NullPointerException
+     *         if any of the provided parameters is null
+     *
+     * @return True, if issuer can interact with target
      */
     public static boolean canInteract(Member issuer, Role target)
     {
@@ -82,12 +91,15 @@ public class PermissionUtil
      * Checks if one given Role can interact with a 2nd given Role - in a permission sense (kick/ban/modify perms).
      * This only checks the Role-Position and does not check the actual permission (kick/ban/manage_role/...)
      *
-     * @param issuer
-     *      The role that tries to interact with 2nd role
-     * @param target
-     *      The role that is the target of the interaction
-     * @return
-     *      True, if issuer can interact with target
+     * @param  issuer
+     *         The role that tries to interact with 2nd role
+     * @param  target
+     *         The role that is the target of the interaction
+     *
+     * @throws NullPointerException
+     *         if any of the provided parameters is null
+     *
+     * @return True, if issuer can interact with target
      */
     public static boolean canInteract(Role issuer, Role target)
     {
@@ -100,19 +112,23 @@ public class PermissionUtil
     }
 
     /**
-     * Check whether the provided {@link net.dv8tion.jda.core.entities.Member Member} can use the specified {@link net.dv8tion.jda.core.entities.Emote Emote}.<p>
-     * If the specified Member is not in the emote's guild or the emote provided is fake this will return false.
+     * Check whether the provided {@link net.dv8tion.jda.core.entities.Member Member} can use the specified {@link net.dv8tion.jda.core.entities.Emote Emote}.
+     *
+     * <p>If the specified Member is not in the emote's guild or the emote provided is fake this will return false.
      * Otherwise it will check if the emote is restricted to any roles and if that is the case if the Member has one of these.
      * <br><b>Note</b>: This is not checking if the issuer owns the Guild or not.
      *
-     * @param issuer
-     *      The member that tries to interact with the Emote
-     * @param emote
-     *      The emote that is the target interaction
-     * @return
-     *      True, if the issuer can interact with the emote
+     * @param  issuer
+     *         The member that tries to interact with the Emote
+     * @param  emote
+     *         The emote that is the target interaction
+     *
+     * @throws NullPointerException
+     *         if any of the provided parameters is null
      * @throws IllegalArgumentException
-     *      if the specified issuer is not in the same Guild the provided target is in
+     *         if the specified issuer is not in the same Guild the provided target is in
+     *
+     * @return True, if the issuer can interact with the emote
      */
     public static boolean canInteract(Member issuer, Emote emote)
     {
@@ -128,18 +144,21 @@ public class PermissionUtil
 
     /**
      * Checks whether the specified {@link net.dv8tion.jda.core.entities.Emote Emote} can be used by the provided
-     * {@link net.dv8tion.jda.core.entities.User User} in the {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.<p>
+     * {@link net.dv8tion.jda.core.entities.User User} in the {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.
      *
-     * @param issuer
-     *      The user that tries to interact with the Emote
-     * @param emote
-     *      The emote that is the target interaction
-     * @param channel
-     *      The MessageChannel this emote should be interacted within
-     * @return
-     *      True, if the issuer can interact with the emote within the specified MessageChannel
+     * @param  issuer
+     *         The user that tries to interact with the Emote
+     * @param  emote
+     *         The emote that is the target interaction
+     * @param  channel
+     *         The MessageChannel this emote should be interacted within
+     *
+     * @throws NullPointerException
+     *         if any of the provided parameters is null
      * @throws IllegalArgumentException
-     *      if the specified issuer is not in the same Guild the provided target is in
+     *         if the specified issuer is not in the same Guild the provided target is in
+     *
+     * @return True, if the issuer can interact with the emote within the specified MessageChannel
      */
     public static boolean canInteract(User issuer, Emote emote, MessageChannel channel)
     {
@@ -181,20 +200,24 @@ public class PermissionUtil
     /**
      * Checks to see if the {@link net.dv8tion.jda.core.entities.Member Member} has the specified {@link net.dv8tion.jda.core.Permission Permissions}
      * in the specified {@link net.dv8tion.jda.core.entities.Guild Guild}. This method properly deals with Owner status.
-     * <p>
-     * <b>Note:</b> this is based on effective permissions, not literal permissions. If a member has permissions that would
-     * enable them to do something without the literal permission to do it, this will still return true.<br>
-     * Example: If a member has the {@link net.dv8tion.jda.core.Permission#ADMINISTRATOR} permission, they will be able to
+     *
+     * <p><b>Note:</b> this is based on effective permissions, not literal permissions. If a member has permissions that would
+     * enable them to do something without the literal permission to do it, this will still return true.
+     * <br>Example: If a member has the {@link net.dv8tion.jda.core.Permission#ADMINISTRATOR} permission, they will be able to
      * {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER} as well, even without the literal permissions.
      *
-     * @param guild
-     *          The {@link net.dv8tion.jda.core.entities.Guild Guild} being checked.
-     * @param member
-     *          The {@link net.dv8tion.jda.core.entities.Member Member} whose permissions are being checked.
-     * @param permissions
-     *          The {@link net.dv8tion.jda.core.Permission Permissions} being checked for.
-     * @return
-     *      True - if the {@link net.dv8tion.jda.core.entities.Member Member} effectively has the specified {@link net.dv8tion.jda.core.Permission Permissions}.
+     * @param  guild
+     *         The {@link net.dv8tion.jda.core.entities.Guild Guild} being checked.
+     * @param  member
+     *         The {@link net.dv8tion.jda.core.entities.Member Member} whose permissions are being checked.
+     * @param  permissions
+     *         The {@link net.dv8tion.jda.core.Permission Permissions} being checked for.
+     *
+     * @throws NullPointerException
+     *         if any of the provided parameters is null
+     *
+     * @return True -
+     *         if the {@link net.dv8tion.jda.core.entities.Member Member} effectively has the specified {@link net.dv8tion.jda.core.Permission Permissions}.
      */
     public static boolean checkPermission(Guild guild, Member member, Permission... permissions)
     {
@@ -223,20 +246,24 @@ public class PermissionUtil
      * Checks to see if the {@link net.dv8tion.jda.core.entities.Member Member} has the specified {@link net.dv8tion.jda.core.Permission Permissions}
      * in the specified {@link net.dv8tion.jda.core.entities.Channel Channel}. This method properly deals with
      * {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides} and Owner status.
-     * <p>
-     * <b>Note:</b> this is based on effective permissions, not literal permissions. If a member has permissions that would
-     * enable them to do something without the literal permission to do it, this will still return true.<br>
-     * Example: If a member has the {@link net.dv8tion.jda.core.Permission#ADMINISTRATOR} permission, they will be able to
+     *
+     * <p><b>Note:</b> this is based on effective permissions, not literal permissions. If a member has permissions that would
+     * enable them to do something without the literal permission to do it, this will still return true.
+     * <br>Example: If a member has the {@link net.dv8tion.jda.core.Permission#ADMINISTRATOR} permission, they will be able to
      * {@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE} in every channel.
      *
-     * @param member
-     *          The {@link net.dv8tion.jda.core.entities.Member Member} whose permissions are being checked.
-     * @param channel
-     *          The {@link net.dv8tion.jda.core.entities.Channel Channel} being checked.
-     * @param permissions
-     *          The {@link net.dv8tion.jda.core.Permission Permissions} being checked for.
-     * @return
-     *      True - if the {@link net.dv8tion.jda.core.entities.Member Member} effectively has the specified {@link net.dv8tion.jda.core.Permission Permissions}.
+     * @param  member
+     *         The {@link net.dv8tion.jda.core.entities.Member Member} whose permissions are being checked.
+     * @param  channel
+     *         The {@link net.dv8tion.jda.core.entities.Channel Channel} being checked.
+     * @param  permissions
+     *         The {@link net.dv8tion.jda.core.Permission Permissions} being checked for.
+     *
+     * @throws NullPointerException
+     *         if any of the provided parameters is null
+     *
+     * @return True -
+     *         if the {@link net.dv8tion.jda.core.entities.Member Member} effectively has the specified {@link net.dv8tion.jda.core.Permission Permissions}.
      */
     public static boolean checkPermission(Channel channel, Member member, Permission... permissions)
     {
@@ -275,19 +302,23 @@ public class PermissionUtil
     }
 
     /**
-     * Gets the <code>int</code> representation of the effective permissions allowed for this {@link net.dv8tion.jda.core.entities.Member Member}
+     * Gets the {@code long} representation of the effective permissions allowed for this {@link net.dv8tion.jda.core.entities.Member Member}
      * in this {@link net.dv8tion.jda.core.entities.Guild Guild}. This can be used in conjunction with
      * {@link net.dv8tion.jda.core.Permission#getPermissions(long) Permission.getPermissions(int)} to easily get a list of all
      * {@link net.dv8tion.jda.core.Permission Permissions} that this member has in this {@link net.dv8tion.jda.core.entities.Guild Guild}.
-     * <p>
-     * <b>This only returns the Guild-level permissions!</b>
      *
-     * @param guild
-     *          The {@link net.dv8tion.jda.core.entities.Guild Guild} being checked.
-     * @param member
-     *          The {@link net.dv8tion.jda.core.entities.Member Member} whose permissions are being checked.
-     * @return
-     *      The <code>long</code> representation of the literal permissions that this {@link net.dv8tion.jda.core.entities.Member Member} has in this {@link net.dv8tion.jda.core.entities.Guild Guild}.
+     * <p><b>This only returns the Guild-level permissions!</b>
+     *
+     * @param  guild
+     *         The {@link net.dv8tion.jda.core.entities.Guild Guild} being checked.
+     * @param  member
+     *         The {@link net.dv8tion.jda.core.entities.Member Member} whose permissions are being checked.
+     *
+     * @throws NullPointerException
+     *         if any of the provided parameters is null
+     *
+     * @return The {@code long} representation of the literal permissions that
+     *         this {@link net.dv8tion.jda.core.entities.Member Member} has in this {@link net.dv8tion.jda.core.entities.Guild Guild}.
      */
     public static long getEffectivePermission(Guild guild, Member member)
     {
@@ -306,19 +337,22 @@ public class PermissionUtil
     }
 
     /**
-     * Gets the <code>long</code> representation of the effective permissions allowed for this {@link net.dv8tion.jda.core.entities.Member Member}
+     * Gets the {@code long} representation of the effective permissions allowed for this {@link net.dv8tion.jda.core.entities.Member Member}
      * in this {@link net.dv8tion.jda.core.entities.Channel Channel}. This can be used in conjunction with
      * {@link net.dv8tion.jda.core.Permission#getPermissions(long) Permission.getPermissions(long)} to easily get a list of all
-     * {@link net.dv8tion.jda.core.Permission Permissions} that this member can use in this {@link net.dv8tion.jda.core.entities.Channel Channel}.<br>
-     * This functions very similarly to how {@link net.dv8tion.jda.core.entities.Role#getPermissionsRaw() Role.getPermissionsRaw()}.
+     * {@link net.dv8tion.jda.core.Permission Permissions} that this member can use in this {@link net.dv8tion.jda.core.entities.Channel Channel}.
+     * <br>This functions very similarly to how {@link net.dv8tion.jda.core.entities.Role#getPermissionsRaw() Role.getPermissionsRaw()}.
      *
-     * @param channel
-     *          The {@link net.dv8tion.jda.core.entities.Channel Channel} being checked.
-     * @param member
-     *          The {@link net.dv8tion.jda.core.entities.Member Member} whose permissions are being checked.
-     * @return
-     *      The <code>long</code> representation of the effective permissions that this {@link net.dv8tion.jda.core.entities.Member Member}
-     *      has in this {@link net.dv8tion.jda.core.entities.Channel Channel}.
+     * @param  channel
+     *         The {@link net.dv8tion.jda.core.entities.Channel Channel} being checked.
+     * @param  member
+     *         The {@link net.dv8tion.jda.core.entities.Member Member} whose permissions are being checked.
+     *
+     * @throws NullPointerException
+     *         if any of the provided parameters is null
+     *
+     * @return The {@code long} representation of the effective permissions that this {@link net.dv8tion.jda.core.entities.Member Member}
+     *         has in this {@link net.dv8tion.jda.core.entities.Channel Channel}.
      */
     public static long getEffectivePermission(Channel channel, Member member)
     {
@@ -341,18 +375,21 @@ public class PermissionUtil
     }
 
     /**
-     * Gets the <code>long</code> representation of the effective permissions allowed for this {@link net.dv8tion.jda.core.entities.Role Role}
+     * Gets the {@code long} representation of the effective permissions allowed for this {@link net.dv8tion.jda.core.entities.Role Role}
      * in this {@link net.dv8tion.jda.core.entities.Channel Channel}. This can be used in conjunction with
      * {@link net.dv8tion.jda.core.Permission#getPermissions(long) Permission.getPermissions(long)} to easily get a list of all
-     * {@link net.dv8tion.jda.core.Permission Permissions} that this role can use in this {@link net.dv8tion.jda.core.entities.Channel Channel}.<br>
+     * {@link net.dv8tion.jda.core.Permission Permissions} that this role can use in this {@link net.dv8tion.jda.core.entities.Channel Channel}.
      *
-     * @param channel
-     *          The {@link net.dv8tion.jda.core.entities.Channel Channel} in which permissions are being checked.
-     * @param role
-     *          The {@link net.dv8tion.jda.core.entities.Role Role} whose permissions are being checked.
-     * @return
-     *      The <code>long</code> representation of the effective permissions that this {@link net.dv8tion.jda.core.entities.Role Role}
-     *      has in this {@link net.dv8tion.jda.core.entities.Channel Channel}
+     * @param  channel
+     *         The {@link net.dv8tion.jda.core.entities.Channel Channel} in which permissions are being checked.
+     * @param  role
+     *         The {@link net.dv8tion.jda.core.entities.Role Role} whose permissions are being checked.
+     *
+     * @throws NullPointerException
+     *         if any of the provided parameters is null
+     *
+     * @return The {@code long} representation of the effective permissions that this {@link net.dv8tion.jda.core.entities.Role Role}
+     *         has in this {@link net.dv8tion.jda.core.entities.Channel Channel}
      */
     public static long getEffectivePermission(Channel channel, Role role)
     {
@@ -432,7 +469,7 @@ public class PermissionUtil
                 }
             }
         }
-        if (allow != -1 && deny != -1)  //If we found atleast 1 role with overrides.
+        if (allow != -1 && deny != -1)  //If we found at least 1 role with overrides.
         {
             permission = apply(permission, allow, deny);
         }

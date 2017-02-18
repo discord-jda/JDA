@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,9 @@ import org.json.JSONObject;
 
 /**
  * The Presence associated with the provided JDA instance
+ *
+ * @since  JDA 3.0
+ * @author Florian Spieß
  */
 public class PresenceImpl implements Presence
 {
@@ -38,7 +41,7 @@ public class PresenceImpl implements Presence
      * Creates a new Presence representation for the provided JDAImpl instance
      *
      * @param jda
-     *      The not-null JDAImpl instance to use
+     *        The not-null JDAImpl instance to use
      */
     public PresenceImpl(JDAImpl jda)
     {

@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,12 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Represents a Custom Emote. (Emoji in official Discord API terminology)
+ *
+ * @since  JDA 2.2
+ * @author Florian Spieß
+ */
 public class EmoteImpl implements Emote
 {
 
@@ -151,10 +157,12 @@ public class EmoteImpl implements Emote
         if (isFake())
             throw new IllegalStateException("The emote you are trying to delete is not an actual emote we have access to (it is fake)!");
         if (managed)
-            throw new IllegalStateException("You cannot delete a managed emote!");
+            throw new UnsupportedOperationException("You cannot delete a managed emote!");
         if (!PermissionUtil.checkPermission(guild, guild.getSelfMember(), Permission.MANAGE_EMOTES))
             throw new PermissionException(Permission.MANAGE_EMOTES);
-        return new RestAction<Void>(getJDA(), Route.Emotes.DELETE_EMOTE.compile(getGuild().getId(), getId()), null)
+
+        Route.CompiledRoute route = Route.Emotes.DELETE_EMOTE.compile(getGuild().getId(), getId());
+        return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
             protected void handleResponse(Response response, Request request)

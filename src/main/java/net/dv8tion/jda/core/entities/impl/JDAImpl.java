@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,9 +9,9 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 
 package net.dv8tion.jda.core.entities.impl;
@@ -44,10 +44,7 @@ import org.json.JSONObject;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class JDAImpl implements JDA
@@ -304,6 +301,26 @@ public class JDAImpl implements JDA
     }
 
     @Override
+    public List<Guild> getMutualGuilds(User... users)
+    {
+        Args.notNull(users, "users");
+        return getMutualGuilds(Arrays.asList(users));
+    }
+
+    @Override
+    public List<Guild> getMutualGuilds(Collection<User> users)
+    {
+        Args.notNull(users, "users");
+        for(User u : users)
+        {
+            Args.notNull(u, "All users");
+        }
+        return Collections.unmodifiableList(getGuilds().stream()
+                .filter(guild -> users.stream().allMatch(guild::isMember))
+                .collect(Collectors.toList()));
+    }
+
+    @Override
     public List<User> getUsersByName(String name, boolean ignoreCase)
     {
         return users.values().stream().filter(u ->
@@ -318,7 +335,8 @@ public class JDAImpl implements JDA
     {
         if (accountType != AccountType.BOT)
             throw new AccountTypeException(AccountType.BOT);
-        Args.notNull(id, "User id");
+        Args.notEmpty(id, "User id");
+
         // check cache
         User user = this.getUserById(id);
         if (user != null)

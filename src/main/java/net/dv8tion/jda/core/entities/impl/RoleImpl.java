@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,9 +9,9 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 
 package net.dv8tion.jda.core.entities.impl;
@@ -31,7 +31,7 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.apache.http.util.Args;
 
-import java.awt.*;
+import java.awt.Color;
 import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.Collections;
@@ -213,8 +213,8 @@ public class RoleImpl implements Role
     @Override
     public RestAction<Void> delete()
     {
-        if (!PermissionUtil.checkPermission(getGuild(), getGuild().getSelfMember(), Permission.MANAGE_PERMISSIONS))
-            throw new PermissionException(Permission.MANAGE_PERMISSIONS);
+        if (!PermissionUtil.checkPermission(getGuild(), getGuild().getSelfMember(), Permission.MANAGE_ROLES))
+            throw new PermissionException(Permission.MANAGE_ROLES);
         if(!PermissionUtil.canInteract(getGuild().getSelfMember(), this))
             throw new PermissionException("Can't delete role >= highest self-role");
         if (managed)

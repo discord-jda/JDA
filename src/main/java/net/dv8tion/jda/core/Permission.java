@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,9 +9,9 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 package net.dv8tion.jda.core;
 
@@ -21,6 +21,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Represents the bit offsets used by Discord for Permissions.
+ */
 public enum Permission
 {
     CREATE_INSTANT_INVITE(0, true, true),
@@ -58,6 +61,11 @@ public enum Permission
 
     UNKNOWN(-1, false, false);
 
+    /**
+     * Represents a raw set of all permissions
+     */
+    public static final long ALL_PERMISSIONS = Permission.getRaw(Permission.values());
+
     private final int offset;
     private final boolean isGuild, isChannel;
 
@@ -69,12 +77,11 @@ public enum Permission
     }
 
     /**
-     * The binary offset of the permission.<br>
-     * For more information about Discord's offset system refer to
+     * The binary offset of the permission.
+     * <br>For more information about Discord's offset system refer to
      * <a href="https://discordapi.readthedocs.org/en/latest/reference/channels/permissions.html#permissions-number">Discord Permission Numbers</a>.
      *
-     * @return
-     *      The offset that represents this {@link net.dv8tion.jda.core.Permission Permission}.
+     * @return The offset that represents this {@link net.dv8tion.jda.core.Permission Permission}.
      */
     public int getOffset()
     {
@@ -82,11 +89,10 @@ public enum Permission
     }
 
     /**
-     * The value of this permission when viewed as a raw value.<br>
-     * This is equvalent to <code>1 &lt;&lt; {@link #getOffset()}</code>
+     * The value of this permission when viewed as a raw value.
+     * <br>This is equivalent to: <code>1 {@literal <<} {@link #getOffset()}</code>
      *
-     * @return
-     *      The raw value of this specific permission.
+     * @return The raw value of this specific permission.
      */
     public long getRawValue()
     {
@@ -94,10 +100,10 @@ public enum Permission
     }
 
     /**
-     * Returns whether or not this Permission is present Guild-side (configurable via roles)
+     * Returns whether or not this Permission is present at the Guild level
+     * (configurable via {@link net.dv8tion.jda.core.entities.Role Roles})
      *
-     * @return
-     *      True if this permission is present Guild-side
+     * @return True if this permission is present at the Guild level.
      */
     public boolean isGuild()
     {
@@ -105,10 +111,10 @@ public enum Permission
     }
 
     /**
-     * Returns whether or not this Permission is present Channel-side (configurable via chanel-overrides)
+     * Returns whether or not this Permission is present Channel level
+     * (configurable via {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionsOverrides})
      *
-     * @return
-     *      True if this permission is present Channel-side
+     * @return True if this permission is present at the Channel level.
      */
     public boolean isChannel()
     {
@@ -116,14 +122,13 @@ public enum Permission
     }
 
     /**
-     * Gets the {@link net.dv8tion.jda.core.Permission Permission} relating to the provided offset.<br>
-     * If there is no {@link net.dv8tion.jda.core.Permission Permssions} that matches the provided
+     * Gets the {@link net.dv8tion.jda.core.Permission Permission} relating to the provided offset.
+     * <br>If there is no {@link net.dv8tion.jda.core.Permission Permssions} that matches the provided
      * offset, {@link net.dv8tion.jda.core.Permission#UNKNOWN Permission.UNKNOWN} is returned.
      *
-     * @param offset
-     *          The offset to match a {@link net.dv8tion.jda.core.Permission Permission} to.
-     * @return
-     *      {@link net.dv8tion.jda.core.Permission Permission} relating to the provided offset.
+     * @param  offset The offset to match a {@link net.dv8tion.jda.core.Permission Permission} to.
+     *
+     * @return {@link net.dv8tion.jda.core.Permission Permission} relating to the provided offset.
      */
     public static Permission getFromOffset(int offset)
     {
@@ -136,19 +141,19 @@ public enum Permission
     }
 
     /**
-     * A list of all {@link net.dv8tion.jda.core.Permission Permissions} that are specified by this raw int representation of
+     * A list of all {@link net.dv8tion.jda.core.Permission Permissions} that are specified by this raw long representation of
      * permissions. The is best used with the getRaw methods in {@link net.dv8tion.jda.core.entities.Role Role},
      * {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride} or {@link net.dv8tion.jda.core.utils.PermissionUtil}.
-     * <p>
-     * Examples:<br>
-     * {@link net.dv8tion.jda.core.utils.PermissionUtil#getEffectivePermission(net.dv8tion.jda.core.entities.Channel, net.dv8tion.jda.core.entities.Member) PermissionUtil.getEffectivePermission(channel, member)}<br>
-     * {@link net.dv8tion.jda.core.entities.PermissionOverride#getAllowedRaw() PermissionOverride.getAllowedRaw()}<br>
-     * {@link net.dv8tion.jda.core.entities.Role#getPermissionsRaw() Role.getPermissionsRaw()}
      *
-     * @param permissions
-     *          The raw <code>int</code> representation of permissions.
-     * @return
-     *      Possibly-empty list of {@link net.dv8tion.jda.core.Permission Permissions}.
+     * <p>Examples:
+     * <br>{@link net.dv8tion.jda.core.entities.Role#getPermissionsRaw() Role.getPermissionsRaw()}
+     * <br>{@link net.dv8tion.jda.core.utils.PermissionUtil#getEffectivePermission(net.dv8tion.jda.core.entities.Channel, net.dv8tion.jda.core.entities.Member)
+     * PermissionUtil.getEffectivePermission(Channel, Member)}
+     *
+     * @param  permissions
+     *         The raw {@code long} representation of permissions.
+     *
+     * @return Possibly-empty list of {@link net.dv8tion.jda.core.Permission Permissions}.
      */
     public static List<Permission> getPermissions(long permissions)
     {
@@ -163,15 +168,36 @@ public enum Permission
         return perms;
     }
 
+    /**
+     * This is effectively the opposite of {@link #getPermissions(long)}, this takes 1 or more {@link net.dv8tion.jda.core.Permission Permissions}
+     * and returns the raw offset {@code long} representation of the permissions.
+     *
+     * @param  permissions
+     *         The array of permissions of which to form into the raw long representation.
+     *
+     * @return Unsigned long representing the provided permissions.
+     */
     public static long getRaw(Permission... permissions)
     {
         long raw = 0;
         for (Permission perm : permissions)
-            raw |= (1 << perm.getOffset());
+        {
+            if (perm != UNKNOWN)
+                raw |= (1 << perm.getOffset());
+        }
 
         return raw;
     }
 
+    /**
+     * This is effectively the opposite of {@link #getPermissions(long)}, this takes a Collection of {@link net.dv8tion.jda.core.Permission Permissions}
+     * and returns the raw offset {@code long} representation of the permissions.
+     *
+     * @param  permissions
+     *         The Collection of permissions of which to form into the raw long representation.
+     *
+     * @return Unsigned long representing the provided permissions.
+     */
     public static long getRaw(Collection<Permission> permissions)
     {
         Args.notNull(permissions, "Permission Collection");

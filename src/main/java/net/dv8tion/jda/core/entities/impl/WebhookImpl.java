@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,14 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.managers.WebhookManager;
 import net.dv8tion.jda.core.managers.WebhookManagerUpdatable;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Requester;
-import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.*;
 
+/**
+ * The implementation for {@link net.dv8tion.jda.core.entities.Webhook Webhook}
+ *
+ * @since  JDA 3.0
+ * @author Florian Spieß
+ */
 public class WebhookImpl implements Webhook
 {
 

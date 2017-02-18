@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,9 +9,9 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 package net.dv8tion.jda.core.utils;
 
@@ -33,10 +33,10 @@ public class MiscUtil
      * Gets the creation-time of a JDA-entity by doing the reverse snowflake algorithm on its id.
      * This returns the creation-time of the actual entity on Discords side, not inside JDA.
      *
-     * @param entityId
-     *      The id of the JDA entity where the creation-time should be determined for
-     * @return
-     *      The creation time of the JDA entity as OffsetDateTime
+     * @param  entityId
+     *         The id of the JDA entity where the creation-time should be determined for
+     *
+     * @return The creation time of the JDA entity as OffsetDateTime
      */
     public static OffsetDateTime getCreationTime(String entityId) {
         try
@@ -57,10 +57,10 @@ public class MiscUtil
      * This returns the creation-time of the actual entity on Discords side, not inside JDA.
      * This will not work on entities, that do not have a getId() method and will return null in those cases!
      *
-     * @param entity
-     *      The JDA entity where the creation-time should be determined for
-     * @return
-     *      The creation time of the JDA entity as OffsetDateTime
+     * @param  entity
+     *         The JDA entity where the creation-time should be determined for
+     *
+     * @return The creation time of the JDA entity as OffsetDateTime
      */
     public static OffsetDateTime getCreationTime(Object entity)
     {
@@ -83,10 +83,10 @@ public class MiscUtil
     /**
      * Returns a prettier String-representation of a OffsetDateTime object
      *
-     * @param time
-     *      The OffsetDateTime object to format
-     * @return
-     *      The String of the formatted OffsetDateTime
+     * @param  time
+     *         The OffsetDateTime object to format
+     *
+     * @return The String of the formatted OffsetDateTime
      */
     public static String getDateTimeString(OffsetDateTime time)
     {
