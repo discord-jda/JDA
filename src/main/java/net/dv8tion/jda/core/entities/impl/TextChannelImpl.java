@@ -446,6 +446,21 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
+    public RestAction<Message> editMessageById(String id, Message newContent)
+    {
+        Args.notNull(newContent, "Message");
+
+        //checkVerification(); no verification needed to edit a message 
+        checkPermission(Permission.MESSAGE_READ);
+        checkPermission(Permission.MESSAGE_WRITE);
+        if (newContent.getRawContent().isEmpty() && !newContent.getEmbeds().isEmpty())
+            checkPermission(Permission.MESSAGE_EMBED_LINKS);
+
+        //Call MessageChannel's default
+        return TextChannel.super.editMessageById(id, newContent);
+    }
+    
+    @Override
     public RestAction<PermissionOverride> createPermissionOverride(Member member)
     {
         checkPermission(Permission.MANAGE_PERMISSIONS);
