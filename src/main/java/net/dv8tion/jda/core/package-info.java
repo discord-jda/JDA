@@ -15,9 +15,7 @@
  */
 
 /**
- * <b><u>net.dv8tion.jda.core</u></b>
- *
- * <p>The core JDA features that are both available for
+ * The core JDA features that are both available for
  * BOT and CLIENT applications.
  *
  * <p>This package contains information about the JDA version used by this library.

@@ -15,7 +15,10 @@
  */
 
 /**
- * Implementations of {@link net.dv8tion.jda.core.requests.RateLimiter RateLimiter}
- * that handle the rate limit responses for the {@link net.dv8tion.jda.core.requests.Requester Requester}!
+ * Events indicating that a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
+ * has been modified.
+ *
+ * <p>This provides both a {@link net.dv8tion.jda.core.events.channel.voice.GenericVoiceChannelEvent GenericVoiceChannelUpdateEvent}
+ * and event for specific TextChannel settings such as the {@link net.dv8tion.jda.core.events.channel.voice.update.VoiceChannelUpdateNameEvent name}.
  */
-package net.dv8tion.jda.core.requests.ratelimit;
+package net.dv8tion.jda.core.events.channel.voice.update;

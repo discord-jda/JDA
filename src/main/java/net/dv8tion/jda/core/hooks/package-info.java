@@ -15,7 +15,7 @@
  */
 
 /**
- * <b><u>net.dv8tion.jda.core.hooks</u></b>
+ * EventManager and EventListener implementations and interfaces.
  *
  * <p>Every JDA instance has an {@link net.dv8tion.jda.core.hooks.IEventManager EventManager} implementation
  * that deals with the handling and forwarding of {@link net.dv8tion.jda.core.events.Event Events}.

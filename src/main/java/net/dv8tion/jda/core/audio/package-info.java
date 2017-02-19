@@ -15,9 +15,7 @@
  */
 
 /**
- * <b><u>net.dv8tion.jda.core.audio</u></b>
- *
- * <p>The audio API for Discord.
+ * The audio API for Discord.
  * This is only available if not specifically disabled through the {@link net.dv8tion.jda.core.JDABuilder JDABuilder}.
  *
  * <p>We encode/decode opus audio packages that can be used in an {@link net.dv8tion.jda.core.audio.AudioConnection AudioConnection}.

@@ -15,10 +15,10 @@
  */
 
 /**
- * <b><u>net.dv8tion.jda</u></b>
+ * Root package of the Java Discord API library containing basic information about JDA
+ * and the builder system to connect to the Discord API
  *
- * <p>The Java Discord API library root.
- * From here you can navigate to the library features.
+ * <p>From here you can navigate to the library features.
  * <ul>
  *     <li>{@link net.dv8tion.jda.core Core Features}
  *     <br>Package which includes the core functionalities of JDA, available throughout all feature pacakges</li>

@@ -15,7 +15,8 @@
  */
 
 /**
- * Implementations of {@link net.dv8tion.jda.core.requests.RateLimiter RateLimiter}
- * that handle the rate limit responses for the {@link net.dv8tion.jda.core.requests.Requester Requester}!
+ * Events that indicate that a {@link net.dv8tion.jda.core.entities.Role Role}
+ * has been updated with a new setting.
+ * <br>Every explicit setting event extends the {@link net.dv8tion.jda.core.events.role.update.GenericRoleUpdateEvent GenericRoleUpdateEvent}!
  */
-package net.dv8tion.jda.core.requests.ratelimit;
+package net.dv8tion.jda.core.events.role.update;

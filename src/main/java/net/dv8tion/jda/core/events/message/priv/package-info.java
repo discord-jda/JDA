@@ -15,7 +15,7 @@
  */
 
 /**
- * Implementations of {@link net.dv8tion.jda.core.requests.RateLimiter RateLimiter}
- * that handle the rate limit responses for the {@link net.dv8tion.jda.core.requests.Requester Requester}!
+ * Events for {@link net.dv8tion.jda.core.entities.Message Messages}
+ * in {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannels}
  */
-package net.dv8tion.jda.core.requests.ratelimit;
+package net.dv8tion.jda.core.events.message.priv;

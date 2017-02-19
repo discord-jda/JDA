@@ -15,7 +15,8 @@
  */
 
 /**
- * Implementations of {@link net.dv8tion.jda.core.requests.RateLimiter RateLimiter}
- * that handle the rate limit responses for the {@link net.dv8tion.jda.core.requests.Requester Requester}!
+ * Events for the state of {@link net.dv8tion.jda.core.entities.Guild Guilds}
+ * such as whether the current logged in account joins/leaves a Guild.
+ * <br>This includes events that indicate whether a Guild becomes {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}!
  */
-package net.dv8tion.jda.core.requests.ratelimit;
+package net.dv8tion.jda.core.events.guild;

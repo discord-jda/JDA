@@ -15,8 +15,6 @@
  */
 
 /**
- * <b><u>net.dv8tion.jda.core.exceptions</u></b>
- *
- * <p>This package contains all custom exceptions of the JDA library.
+ * All custom exceptions of the JDA library
  */
 package net.dv8tion.jda.core.exceptions;

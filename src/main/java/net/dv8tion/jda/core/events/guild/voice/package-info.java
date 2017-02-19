@@ -15,7 +15,9 @@
  */
 
 /**
- * Implementations of {@link net.dv8tion.jda.core.requests.RateLimiter RateLimiter}
- * that handle the rate limit responses for the {@link net.dv8tion.jda.core.requests.Requester Requester}!
+ * Events indicating the {@link net.dv8tion.jda.core.entities.GuildVoiceState GuildVoiceState} updates
+ * for one of the {@link net.dv8tion.jda.core.entities.Guild Guild}'s {@link net.dv8tion.jda.core.entities.Member Members}.
+ * <br>Every update is an extensions of the {@link net.dv8tion.jda.core.events.guild.voice.GenericGuildVoiceEvent GenericGuildVoiceEvent}
+ * and has specifications for explicit voice state features such as mute/deafen
  */
-package net.dv8tion.jda.core.requests.ratelimit;
+package net.dv8tion.jda.core.events.guild.voice;

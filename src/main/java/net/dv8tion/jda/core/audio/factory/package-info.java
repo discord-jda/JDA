@@ -15,7 +15,8 @@
  */
 
 /**
- * Implementations of {@link net.dv8tion.jda.core.requests.RateLimiter RateLimiter}
- * that handle the rate limit responses for the {@link net.dv8tion.jda.core.requests.Requester Requester}!
+ * Audio send factories that can be implemented to generate
+ * custom audio send packages to be provided to Discord.
+ * <br>A default factory is provided.
  */
-package net.dv8tion.jda.core.requests.ratelimit;
+package net.dv8tion.jda.core.audio.factory;

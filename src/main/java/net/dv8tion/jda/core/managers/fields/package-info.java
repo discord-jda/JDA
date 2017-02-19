@@ -15,9 +15,7 @@
  */
 
 /**
- * <b><u>net.dv8tion.jda.core.managers.fields</u></b>
- *
- * <p>Abstract Manager-Field (AMF)
+ * Abstract Manager-Field (AMF)
  * <br>This is utilized in updatable Managers. Managers that allow
  * users to modify multiple {@code Field}s of an existing entity.
  */

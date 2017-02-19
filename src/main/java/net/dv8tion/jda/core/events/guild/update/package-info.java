@@ -15,7 +15,10 @@
  */
 
 /**
- * Implementations of {@link net.dv8tion.jda.core.requests.RateLimiter RateLimiter}
- * that handle the rate limit responses for the {@link net.dv8tion.jda.core.requests.Requester Requester}!
+ * Events indicating that a setting for a {@link net.dv8tion.jda.core.entities.Guild Guild}
+ * has been updated.
+ * <br>There is a {@link net.dv8tion.jda.core.events.guild.update.GenericGuildUpdateEvent GenericGuildUpdateEvent}
+ * which is fired for <b>every</b> update and specifications for explicit settings such
+ * as the {@link net.dv8tion.jda.core.events.guild.update.GuildUpdateNameEvent name} of the Guild.
  */
-package net.dv8tion.jda.core.requests.ratelimit;
+package net.dv8tion.jda.core.events.guild.update;

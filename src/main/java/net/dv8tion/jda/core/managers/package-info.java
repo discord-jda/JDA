@@ -15,10 +15,9 @@
  */
 
 /**
- * <b><u>net.dv8tion.jda.core.managers</u></b>
- *
- * <p>Managers that allow to modify (PATCH) existing entities
- * with either an update task or atomic setters.
+ * Managers that allow to modify (PATCH) existing entities
+ * with either an update task or atomic setters. This also includes classes which allow to
+ * operate on entities like the moderation of a {@link net.dv8tion.jda.core.entities.Guild Guild}.
  *
  * <p>XYZManager types allow to directly modify a single value
  * without an update task. (Auto-Updating Manager)

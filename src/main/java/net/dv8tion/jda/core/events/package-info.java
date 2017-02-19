@@ -15,7 +15,8 @@
  */
 
 /**
- * <b><u>net.dv8tion.jda.core.events</u></b>
+ * The core events that are fired by this library, informing
+ * the end-user about the connection state of the current JDA instance.
  *
  * <p>This package contains all implementations of {@link net.dv8tion.jda.core.events.Event Event}.
  * <br>These are specific depending on the event that has been received by the {@link net.dv8tion.jda.core.requests.WebSocketClient WebSocketClient}

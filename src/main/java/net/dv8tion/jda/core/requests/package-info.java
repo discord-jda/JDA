@@ -15,9 +15,7 @@
  */
 
 /**
- * <b><u>net.dv8tion.jda.core.requests</u></b>
- *
- * <p>Discord API connection internals.
+ * Discord API connection internals.
  * Includes REST and WebSocket connections
  *
  * <p><u><b>REST API</b></u>

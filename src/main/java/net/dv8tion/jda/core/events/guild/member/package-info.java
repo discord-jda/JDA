@@ -15,7 +15,8 @@
  */
 
 /**
- * Implementations of {@link net.dv8tion.jda.core.requests.RateLimiter RateLimiter}
- * that handle the rate limit responses for the {@link net.dv8tion.jda.core.requests.Requester Requester}!
+ * Events that indicate changes for the {@link net.dv8tion.jda.core.entities.Member Members}
+ * of a {@link net.dv8tion.jda.core.entities.Guild Guild} such as join/leave or
+ * updates of the specific Member such as new {@link net.dv8tion.jda.core.entities.Role Roles} or a new nickname.
  */
-package net.dv8tion.jda.core.requests.ratelimit;
+package net.dv8tion.jda.core.events.guild.member;
