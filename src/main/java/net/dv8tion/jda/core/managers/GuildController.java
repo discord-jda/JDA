@@ -1710,14 +1710,14 @@ public class GuildController
         };
     }
 
-    public ChannelOrderAction modifyTextChannelPositions()
+    public ChannelOrderAction<TextChannel> modifyTextChannelPositions()
     {
-        return new ChannelOrderAction(guild, true);
+        return new ChannelOrderAction(guild, ChannelType.TEXT);
     }
 
-    public ChannelOrderAction modifyVoiceChannelPositions()
+    public ChannelOrderAction<VoiceChannel> modifyVoiceChannelPositions()
     {
-        return new ChannelOrderAction(guild, false);
+        return new ChannelOrderAction(guild, ChannelType.VOICE);
     }
 
     public RoleOrderAction modifyRolePositions()

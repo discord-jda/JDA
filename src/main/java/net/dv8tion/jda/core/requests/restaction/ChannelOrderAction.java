@@ -27,19 +27,26 @@ import java.util.Collection;
 public class ChannelOrderAction<T extends Channel> extends OrderAction<T, ChannelOrderAction>
 {
     protected final Guild guild;
+    protected final ChannelType type;
 
-    public ChannelOrderAction(Guild guild, boolean textChannels)
+    public ChannelOrderAction(Guild guild, ChannelType type)
     {
         super(guild.getJDA(), Route.Guilds.MODIFY_CHANNELS.compile(guild.getId()));
         this.guild = guild;
+        this.type = type;
 
-        Collection chans = textChannels ? guild.getTextChannels() : guild.getVoiceChannels();
+        Collection chans = type == ChannelType.TEXT ? guild.getTextChannels() : guild.getVoiceChannels();
         this.orderList.addAll(chans);
     }
 
     public Guild getGuild()
     {
         return guild;
+    }
+
+    public ChannelType getChannelType()
+    {
+        return type;
     }
 
     @Override
