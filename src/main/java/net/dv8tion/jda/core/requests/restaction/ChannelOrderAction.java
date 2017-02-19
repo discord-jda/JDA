@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +24,33 @@ import org.json.JSONObject;
 
 import java.util.Collection;
 
+/**
+ * Implementation of {@link net.dv8tion.jda.core.requests.restaction.OrderAction OrderAction}
+ * to modify the order of {@link net.dv8tion.jda.core.entities.Channel Channels} for a {@link net.dv8tion.jda.core.entities.Guild Guild}.
+ * <br>To apply the changes you must finish the {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+ *
+ * @param <T>
+ *        The type of {@link net.dv8tion.jda.core.entities.Channel Channel} defining
+ *        which channels to order
+ *
+ * @since 3.0
+ */
 public class ChannelOrderAction<T extends Channel> extends OrderAction<T, ChannelOrderAction>
 {
     protected final Guild guild;
     protected final ChannelType type;
 
+    /**
+     * Creates a new ChannelOrderAction instance
+     *
+     * @param guild
+     *        The target {@link net.dv8tion.jda.core.entities.Guild Guild}
+     *        of which to order the channels defined by the specified type
+     * @param type
+     *        The {@link net.dv8tion.jda.core.entities.ChannelType ChannelType} corresponding
+     *        to the generic type of {@link net.dv8tion.jda.core.entities.Channel Channel} which
+     *        defines the type of channel that will be ordered
+     */
     public ChannelOrderAction(Guild guild, ChannelType type)
     {
         super(guild.getJDA(), Route.Guilds.MODIFY_CHANNELS.compile(guild.getId()));
@@ -39,11 +61,23 @@ public class ChannelOrderAction<T extends Channel> extends OrderAction<T, Channe
         this.orderList.addAll(chans);
     }
 
+    /**
+     * The {@link net.dv8tion.jda.core.entities.Guild Guild} which holds
+     * the channels from {@link #getCurrentOrder()}
+     *
+     * @return The corresponding {@link net.dv8tion.jda.core.entities.Guild Guild}
+     */
     public Guild getGuild()
     {
         return guild;
     }
 
+    /**
+     * The {@link net.dv8tion.jda.core.entities.ChannelType ChannelType} of
+     * all channels that are ordered by this ChannelOrderAction
+     *
+     * @return The corresponding {@link net.dv8tion.jda.core.entities.ChannelType ChannelType}
+     */
     public ChannelType getChannelType()
     {
         return type;

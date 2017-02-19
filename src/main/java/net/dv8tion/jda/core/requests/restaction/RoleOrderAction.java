@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,10 +25,27 @@ import org.json.JSONObject;
 
 import java.util.List;
 
+/**
+ * Implementation of {@link net.dv8tion.jda.core.requests.restaction.OrderAction OrderAction}
+ * designed to modify the order of {@link net.dv8tion.jda.core.entities.Role Roles} of the
+ * specified {@link net.dv8tion.jda.core.entities.Guild Guild}.
+ * <br>To apply the changes you must finish the {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+ *
+ * <p><b>This uses descending order!</b>
+ *
+ * @since 3.0
+ */
 public class RoleOrderAction extends OrderAction<Role, RoleOrderAction>
 {
     protected final Guild guild;
 
+    /**
+     * Creates a new RoleOrderAction instance
+     *
+     * @param guild
+     *        The target {@link net.dv8tion.jda.core.entities.Guild Guild} of which
+     *        to change the {@link net.dv8tion.jda.core.entities.Role Role} order
+     */
     public RoleOrderAction(Guild guild)
     {
         super(guild.getJDA(), false, Route.Guilds.MODIFY_ROLES.compile(guild.getId()));
@@ -43,6 +60,12 @@ public class RoleOrderAction extends OrderAction<Role, RoleOrderAction>
             this.orderList.add(roles.get(i));
     }
 
+    /**
+     * The {@link net.dv8tion.jda.core.entities.Guild Guild} which holds
+     * the roles from {@link #getCurrentOrder()}
+     *
+     * @return The corresponding {@link net.dv8tion.jda.core.entities.Guild Guild}
+     */
     public Guild getGuild()
     {
         return guild;
