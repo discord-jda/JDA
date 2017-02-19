@@ -49,7 +49,7 @@ public class EmbedBuilder
     
     private String url;
     private String title;
-    private String description;
+    private StringBuilder description = new StringBuilder();
     private OffsetDateTime timestamp;
     private Color color;
     private MessageEmbed.Thumbnail thumbnail;
@@ -78,9 +78,9 @@ public class EmbedBuilder
         fields = new LinkedList<>();
         if(embed != null)
         {
+            setDescription(embed.getDescription());
             this.url = embed.getUrl();
             this.title = embed.getTitle();
-            this.description = embed.getDescription();
             this.timestamp = embed.getTimestamp();
             this.color = embed.getColor();
             this.thumbnail = embed.getThumbnail();
@@ -104,9 +104,10 @@ public class EmbedBuilder
     public MessageEmbed build()
     {
         if (isEmpty())
-        {
             throw new IllegalStateException("Cannot build an empty embed!");
-        }
+        if (description.length() > TEXT_MAX_LENGTH)
+            throw new IllegalStateException(String.format("Description is longer than %d! Please limit your input!", TEXT_MAX_LENGTH));
+        final String description = this.description.length() < 1 ? null : this.description.toString();
         
         return new MessageEmbedImpl().setTitle(title)
                 .setUrl(url)
@@ -178,6 +179,18 @@ public class EmbedBuilder
         }
         return this;
     }
+
+    /**
+     * The {@link java.lang.StringBuilder StringBuilder} used to
+     * build the description for the embed.
+     * <br>Note: To reset the description use {@link #setDescription(String) setDescription(null)}
+     *
+     * @return StringBuilder with current description context
+     */
+    public StringBuilder getDescriptionBuilder()
+    {
+        return description;
+    }
     
     /**
      * Sets the Description of the embed. This is where the main chunk of text for an embed is typically placed.
@@ -185,58 +198,52 @@ public class EmbedBuilder
      * <p><b><a href="http://i.imgur.com/lbchtwk.png">Example</a></b>
      *
      * @param  description
-     *         the description of the embed
+     *         the description of the embed, {@code null} to reset
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the length of {@code description} is greater than {@link net.dv8tion.jda.core.EmbedBuilder#TEXT_MAX_LENGTH}
+     *
+     * @return the builder after the description has been set
+     */
+    public EmbedBuilder setDescription(CharSequence description)
+    {
+        if (description == null || description.length() < 1)
+        {
+            this.description = new StringBuilder();
+        }
+        else
+        {
+            Args.check(description.length() <= TEXT_MAX_LENGTH,
+                "Description cannot be longer than %d characters.", TEXT_MAX_LENGTH);
+            this.description = new StringBuilder(description);
+        }
+        return this;
+    }
+
+    /**
+     * Appends to the description of the embed. This is where the main chunk of text for an embed is typically placed.
+     *
+     * <p><b><a href="http://i.imgur.com/lbchtwk.png">Example</a></b>
+     *
+     * @param  description
+     *         the string to append to the description of the embed
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
-     *             <li>If the provided {@code description} String is empty.</li>
+     *             <li>If the provided {@code description} String is null</li>
      *             <li>If the length of {@code description} is greater than {@link net.dv8tion.jda.core.EmbedBuilder#TEXT_MAX_LENGTH}.</li>
      *         </ul>
      *
      * @return the builder after the description has been set
      */
-    public EmbedBuilder setDescription(String description)
+    public EmbedBuilder appendDescription(CharSequence description)
     {
-        if (description == null)
-        {
-            this.description = null;
-        }
-        else
-        {
-            if (description.isEmpty())
-                throw new IllegalArgumentException("Description must not be empty!");
-            if (description.length() > TEXT_MAX_LENGTH)
-                throw new IllegalArgumentException("Description cannot be longer than " + TEXT_MAX_LENGTH + " characters.");
-            this.description = description;
-        }
+        Args.notNull(description, "description");
+        Args.check(this.description.length() + description.length() <= TEXT_MAX_LENGTH,
+                "Description cannot be longer than %d characters.", TEXT_MAX_LENGTH);
+        this.description.append(description);
         return this;
     }
-	/**
-	 * Appends to the description of the embed. This is where the main chunk of text for an embed is typically placed.
-	 *
-	 * <p><b><a href="http://i.imgur.com/lbchtwk.png">Example</a></b>
-	 *
-	 * @param  description
-	 *         the string to append to the description of the embed
-	 *
-	 * @throws java.lang.IllegalArgumentException
-	 *         <ul>
-	 *             <li>If the provided {@code description} String is null</li>
-	 *             <li>If the length of {@code description} is greater than {@link net.dv8tion.jda.core.EmbedBuilder#TEXT_MAX_LENGTH}.</li>
-	 *         </ul>
-	 *
-	 * @return the builder after the description has been set
-	 */
-    public EmbedBuilder appendDescription(String description)
-    {
-		Args.notNull(description, "description");
-		if(((this.description == null) && (description.length() > TEXT_MAX_LENGTH))
-				|| ((this.description != null) && ((this.description.length() + description.length()) > TEXT_MAX_LENGTH))){
-			throw new IllegalArgumentException("Description cannot be longer than " + TEXT_MAX_LENGTH + " characters.");
-		}
-    	this.description = this.description == null ? description : this.description + description;
-		return this;
-	}
 
     /**
      * Sets the Timestamp of the embed.
