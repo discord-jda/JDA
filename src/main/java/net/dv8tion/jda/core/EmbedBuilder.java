@@ -19,7 +19,11 @@ import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.impl.MessageEmbedImpl;
 
 import java.awt.Color;
+import java.time.DateTimeException;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.temporal.TemporalAccessor;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,7 +44,7 @@ public class EmbedBuilder
     public final static int TEXT_MAX_LENGTH = 2048;
     public final static int URL_MAX_LENGTH = 2000;
     public final static String ZERO_WIDTH_SPACE = "\u200E";
-    public final static Pattern URL_PATTERN = Pattern.compile("\\s*https?:\\/\\/.+\\..{2,}\\s*", Pattern.CASE_INSENSITIVE);
+    public final static Pattern URL_PATTERN = Pattern.compile("\\s*(https?|attachment):\\/\\/.+\\..{2,}\\s*", Pattern.CASE_INSENSITIVE);
     
     private String url;
     private String title;
@@ -223,9 +227,43 @@ public class EmbedBuilder
     public EmbedBuilder setTimestamp(TemporalAccessor temporal)
     {
         if (temporal == null)
+        {
             this.timestamp = null;
+        }
+        else if (temporal instanceof OffsetDateTime)
+        {
+            this.timestamp = (OffsetDateTime) temporal;
+        }
         else
-            this.timestamp = OffsetDateTime.from(temporal);
+        {
+            ZoneOffset offset;
+            try
+            {
+                offset = ZoneOffset.from(temporal);
+            }
+            catch (DateTimeException ignore)
+            {
+                offset = ZoneOffset.UTC;
+            }
+            try
+            {
+                LocalDateTime ldt = LocalDateTime.from(temporal);
+                this.timestamp = OffsetDateTime.of(ldt, offset);
+            }
+            catch (DateTimeException ignore) 
+            {
+                try
+                {
+                    Instant instant = Instant.from(temporal);
+                    this.timestamp = OffsetDateTime.ofInstant(instant, offset);
+                }
+                catch (DateTimeException ex)
+                {
+                    throw new DateTimeException("Unable to obtain OffsetDateTime from TemporalAccessor: " +
+                            temporal + " of type " + temporal.getClass().getName(), ex);
+                }
+            }
+        }
         return this; 
     }
     
@@ -378,7 +416,7 @@ public class EmbedBuilder
         }
         else
         {
-            if (text != null && text.length() > TEXT_MAX_LENGTH)
+            if (text.length() > TEXT_MAX_LENGTH)
                 throw new IllegalArgumentException("Text cannot be longer than " + TEXT_MAX_LENGTH + " characters.");
             urlCheck(iconUrl);
             this.footer = new MessageEmbed.Footer(text, iconUrl, null);
@@ -397,7 +435,7 @@ public class EmbedBuilder
      */
     public EmbedBuilder addField(MessageEmbed.Field field)
     {
-        return addField(field.getName(), field.getValue(), field.isInline());
+        return field == null ? this : addField(field.getName(), field.getValue(), field.isInline());
     }
     
     /**
@@ -457,6 +495,20 @@ public class EmbedBuilder
     public EmbedBuilder addBlankField(boolean inline)
     {
         this.fields.add(new MessageEmbed.Field(ZERO_WIDTH_SPACE, ZERO_WIDTH_SPACE, inline));
+        return this;
+    }
+    
+    /**
+     * Clears all fields from the embed, such as those created with the 
+     * {@link net.dv8tion.jda.core.EmbedBuilder#EmbedBuilder(net.dv8tion.jda.core.entities.MessageEmbed) EmbedBuilder(MessageEmbed)}
+     * constructor or via the 
+     * {@link net.dv8tion.jda.core.EmbedBuilder#addField(net.dv8tion.jda.core.entities.MessageEmbed.Field) addField} methods.
+     *
+     * @return the builder after the field has been added
+     */
+    public EmbedBuilder clearFields()
+    {
+        this.fields.clear();
         return this;
     }
     
