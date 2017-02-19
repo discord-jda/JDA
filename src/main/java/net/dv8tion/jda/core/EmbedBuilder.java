@@ -17,9 +17,14 @@ package net.dv8tion.jda.core;
 
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.impl.MessageEmbedImpl;
+import org.apache.http.util.Args;
 
 import java.awt.Color;
+import java.time.DateTimeException;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.temporal.TemporalAccessor;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,11 +45,11 @@ public class EmbedBuilder
     public final static int TEXT_MAX_LENGTH = 2048;
     public final static int URL_MAX_LENGTH = 2000;
     public final static String ZERO_WIDTH_SPACE = "\u200E";
-    public final static Pattern URL_PATTERN = Pattern.compile("\\s*https?:\\/\\/.+\\..{2,}\\s*", Pattern.CASE_INSENSITIVE);
+    public final static Pattern URL_PATTERN = Pattern.compile("\\s*(https?|attachment):\\/\\/.+\\..{2,}\\s*", Pattern.CASE_INSENSITIVE);
     
     private String url;
     private String title;
-    private String description;
+    private StringBuilder description = new StringBuilder();
     private OffsetDateTime timestamp;
     private Color color;
     private MessageEmbed.Thumbnail thumbnail;
@@ -73,9 +78,9 @@ public class EmbedBuilder
         fields = new LinkedList<>();
         if(embed != null)
         {
+            setDescription(embed.getDescription());
             this.url = embed.getUrl();
             this.title = embed.getTitle();
-            this.description = embed.getDescription();
             this.timestamp = embed.getTimestamp();
             this.color = embed.getColor();
             this.thumbnail = embed.getThumbnail();
@@ -99,9 +104,10 @@ public class EmbedBuilder
     public MessageEmbed build()
     {
         if (isEmpty())
-        {
             throw new IllegalStateException("Cannot build an empty embed!");
-        }
+        if (description.length() > TEXT_MAX_LENGTH)
+            throw new IllegalStateException(String.format("Description is longer than %d! Please limit your input!", TEXT_MAX_LENGTH));
+        final String description = this.description.length() < 1 ? null : this.description.toString();
         
         return new MessageEmbedImpl().setTitle(title)
                 .setUrl(url)
@@ -173,6 +179,18 @@ public class EmbedBuilder
         }
         return this;
     }
+
+    /**
+     * The {@link java.lang.StringBuilder StringBuilder} used to
+     * build the description for the embed.
+     * <br>Note: To reset the description use {@link #setDescription(CharSequence) setDescription(null)}
+     *
+     * @return StringBuilder with current description context
+     */
+    public StringBuilder getDescriptionBuilder()
+    {
+        return description;
+    }
     
     /**
      * Sets the Description of the embed. This is where the main chunk of text for an embed is typically placed.
@@ -180,33 +198,53 @@ public class EmbedBuilder
      * <p><b><a href="http://i.imgur.com/lbchtwk.png">Example</a></b>
      *
      * @param  description
-     *         the description of the embed
+     *         the description of the embed, {@code null} to reset
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the length of {@code description} is greater than {@link net.dv8tion.jda.core.EmbedBuilder#TEXT_MAX_LENGTH}
+     *
+     * @return the builder after the description has been set
+     */
+    public EmbedBuilder setDescription(CharSequence description)
+    {
+        if (description == null || description.length() < 1)
+        {
+            this.description = new StringBuilder();
+        }
+        else
+        {
+            Args.check(description.length() <= TEXT_MAX_LENGTH,
+                "Description cannot be longer than %d characters.", TEXT_MAX_LENGTH);
+            this.description = new StringBuilder(description);
+        }
+        return this;
+    }
+
+    /**
+     * Appends to the description of the embed. This is where the main chunk of text for an embed is typically placed.
+     *
+     * <p><b><a href="http://i.imgur.com/lbchtwk.png">Example</a></b>
+     *
+     * @param  description
+     *         the string to append to the description of the embed
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
-     *             <li>If the provided {@code description} String is empty.</li>
+     *             <li>If the provided {@code description} String is null</li>
      *             <li>If the length of {@code description} is greater than {@link net.dv8tion.jda.core.EmbedBuilder#TEXT_MAX_LENGTH}.</li>
      *         </ul>
      *
      * @return the builder after the description has been set
      */
-    public EmbedBuilder setDescription(String description)
+    public EmbedBuilder appendDescription(CharSequence description)
     {
-        if (description == null)
-        {
-            this.description = null;
-        }
-        else
-        {
-            if (description.isEmpty())
-                throw new IllegalArgumentException("Description must not be empty!");
-            if (description.length() > TEXT_MAX_LENGTH)
-                throw new IllegalArgumentException("Description cannot be longer than " + TEXT_MAX_LENGTH + " characters.");
-            this.description = description;
-        }
+        Args.notNull(description, "description");
+        Args.check(this.description.length() + description.length() <= TEXT_MAX_LENGTH,
+                "Description cannot be longer than %d characters.", TEXT_MAX_LENGTH);
+        this.description.append(description);
         return this;
     }
-    
+
     /**
      * Sets the Timestamp of the embed.
      *
@@ -223,9 +261,43 @@ public class EmbedBuilder
     public EmbedBuilder setTimestamp(TemporalAccessor temporal)
     {
         if (temporal == null)
+        {
             this.timestamp = null;
+        }
+        else if (temporal instanceof OffsetDateTime)
+        {
+            this.timestamp = (OffsetDateTime) temporal;
+        }
         else
-            this.timestamp = OffsetDateTime.from(temporal);
+        {
+            ZoneOffset offset;
+            try
+            {
+                offset = ZoneOffset.from(temporal);
+            }
+            catch (DateTimeException ignore)
+            {
+                offset = ZoneOffset.UTC;
+            }
+            try
+            {
+                LocalDateTime ldt = LocalDateTime.from(temporal);
+                this.timestamp = OffsetDateTime.of(ldt, offset);
+            }
+            catch (DateTimeException ignore)
+            {
+                try
+                {
+                    Instant instant = Instant.from(temporal);
+                    this.timestamp = OffsetDateTime.ofInstant(instant, offset);
+                }
+                catch (DateTimeException ex)
+                {
+                    throw new DateTimeException("Unable to obtain OffsetDateTime from TemporalAccessor: " +
+                            temporal + " of type " + temporal.getClass().getName(), ex);
+                }
+            }
+        }
         return this; 
     }
     
@@ -378,7 +450,7 @@ public class EmbedBuilder
         }
         else
         {
-            if (text != null && text.length() > TEXT_MAX_LENGTH)
+            if (text.length() > TEXT_MAX_LENGTH)
                 throw new IllegalArgumentException("Text cannot be longer than " + TEXT_MAX_LENGTH + " characters.");
             urlCheck(iconUrl);
             this.footer = new MessageEmbed.Footer(text, iconUrl, null);
@@ -397,7 +469,7 @@ public class EmbedBuilder
      */
     public EmbedBuilder addField(MessageEmbed.Field field)
     {
-        return addField(field.getName(), field.getValue(), field.isInline());
+        return field == null ? this : addField(field.getName(), field.getValue(), field.isInline());
     }
     
     /**
@@ -459,7 +531,21 @@ public class EmbedBuilder
         this.fields.add(new MessageEmbed.Field(ZERO_WIDTH_SPACE, ZERO_WIDTH_SPACE, inline));
         return this;
     }
-    
+
+    /**
+     * Clears all fields from the embed, such as those created with the
+     * {@link net.dv8tion.jda.core.EmbedBuilder#EmbedBuilder(net.dv8tion.jda.core.entities.MessageEmbed) EmbedBuilder(MessageEmbed)}
+     * constructor or via the
+     * {@link net.dv8tion.jda.core.EmbedBuilder#addField(net.dv8tion.jda.core.entities.MessageEmbed.Field) addField} methods.
+     *
+     * @return the builder after the field has been added
+     */
+    public EmbedBuilder clearFields()
+    {
+        this.fields.clear();
+        return this;
+    }
+
     private void urlCheck(String url)
     {
         if (url == null)
