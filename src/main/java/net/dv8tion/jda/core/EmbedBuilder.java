@@ -17,6 +17,7 @@ package net.dv8tion.jda.core;
 
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.impl.MessageEmbedImpl;
+import org.apache.http.util.Args;
 
 import java.awt.Color;
 import java.time.DateTimeException;
@@ -210,7 +211,33 @@ public class EmbedBuilder
         }
         return this;
     }
-    
+	/**
+	 * Appends to the description of the embed. This is where the main chunk of text for an embed is typically placed.
+	 *
+	 * <p><b><a href="http://i.imgur.com/lbchtwk.png">Example</a></b>
+	 *
+	 * @param  description
+	 *         the string to append to the description of the embed
+	 *
+	 * @throws java.lang.IllegalArgumentException
+	 *         <ul>
+	 *             <li>If the provided {@code description} String is null</li>
+	 *             <li>If the length of {@code description} is greater than {@link net.dv8tion.jda.core.EmbedBuilder#TEXT_MAX_LENGTH}.</li>
+	 *         </ul>
+	 *
+	 * @return the builder after the description has been set
+	 */
+    public EmbedBuilder appendDescription(String description)
+    {
+		Args.notNull(description, "description");
+		if(((this.description == null) && (description.length() > TEXT_MAX_LENGTH))
+				|| ((this.description != null) && ((this.description.length() + description.length()) > TEXT_MAX_LENGTH))){
+			throw new IllegalArgumentException("Description cannot be longer than " + TEXT_MAX_LENGTH + " characters.");
+		}
+    	this.description = this.description == null ? description : this.description + description;
+		return this;
+	}
+
     /**
      * Sets the Timestamp of the embed.
      *
@@ -250,7 +277,7 @@ public class EmbedBuilder
                 LocalDateTime ldt = LocalDateTime.from(temporal);
                 this.timestamp = OffsetDateTime.of(ldt, offset);
             }
-            catch (DateTimeException ignore) 
+            catch (DateTimeException ignore)
             {
                 try
                 {
@@ -497,11 +524,11 @@ public class EmbedBuilder
         this.fields.add(new MessageEmbed.Field(ZERO_WIDTH_SPACE, ZERO_WIDTH_SPACE, inline));
         return this;
     }
-    
+
     /**
-     * Clears all fields from the embed, such as those created with the 
+     * Clears all fields from the embed, such as those created with the
      * {@link net.dv8tion.jda.core.EmbedBuilder#EmbedBuilder(net.dv8tion.jda.core.entities.MessageEmbed) EmbedBuilder(MessageEmbed)}
-     * constructor or via the 
+     * constructor or via the
      * {@link net.dv8tion.jda.core.EmbedBuilder#addField(net.dv8tion.jda.core.entities.MessageEmbed.Field) addField} methods.
      *
      * @return the builder after the field has been added
@@ -511,7 +538,7 @@ public class EmbedBuilder
         this.fields.clear();
         return this;
     }
-    
+
     private void urlCheck(String url)
     {
         if (url == null)
