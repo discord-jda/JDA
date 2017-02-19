@@ -183,7 +183,7 @@ public class EmbedBuilder
     /**
      * The {@link java.lang.StringBuilder StringBuilder} used to
      * build the description for the embed.
-     * <br>Note: To reset the description use {@link #setDescription(String) setDescription(null)}
+     * <br>Note: To reset the description use {@link #setDescription(CharSequence) setDescription(null)}
      *
      * @return StringBuilder with current description context
      */
