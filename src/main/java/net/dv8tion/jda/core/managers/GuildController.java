@@ -1722,7 +1722,12 @@ public class GuildController
 
     public RoleOrderAction modifyRolePositions()
     {
-        return new RoleOrderAction(guild);
+        return modifyRolePositions(true);
+    }
+
+    public RoleOrderAction modifyRolePositions(boolean useDiscordOrder)
+    {
+        return new RoleOrderAction(guild, useDiscordOrder);
     }
 
     protected void checkAvailable()

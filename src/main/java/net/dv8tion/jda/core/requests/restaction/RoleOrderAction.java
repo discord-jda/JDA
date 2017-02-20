@@ -23,6 +23,8 @@ import org.apache.http.util.Args;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -42,22 +44,38 @@ public class RoleOrderAction extends OrderAction<Role, RoleOrderAction>
     /**
      * Creates a new RoleOrderAction instance
      *
-     * @param guild
-     *        The target {@link net.dv8tion.jda.core.entities.Guild Guild} of which
-     *        to change the {@link net.dv8tion.jda.core.entities.Role Role} order
+     * @param  guild
+     *         The target {@link net.dv8tion.jda.core.entities.Guild Guild} of which
+     *         to change the {@link net.dv8tion.jda.core.entities.Role Role} order
+     * @param  useDiscordOrder
+     *         Defines the ordering of the OrderAction. If {@code true}, the OrderAction will be in the ordering
+     *         defined by Discord for roles, which is Descending. This means that the lowest role appears at index {@code 0}
+     *         and the highest role at index {@code n - 1}. Providing {@code false} will result in the ordering being
+     *         in ascending order, with the highest role at index {@code 0} and the lowest at index {@code n - 1}.
      */
-    public RoleOrderAction(Guild guild)
+    public RoleOrderAction(Guild guild, boolean useDiscordOrder)
     {
-        super(guild.getJDA(), false, Route.Guilds.MODIFY_ROLES.compile(guild.getId()));
+        super(guild.getJDA(), !useDiscordOrder, Route.Guilds.MODIFY_ROLES.compile(guild.getId()));
         this.guild = guild;
 
         List<Role> roles = guild.getRoles();
         roles = roles.subList(0, roles.size() - 1); //Don't include the @everyone role.
 
-        //Add roles to orderList in reverse due to role position ordering being descending
-        // Top role starts at roles.size() - 1, bottom is 0.
-        for (int i = roles.size() - 1; i >= 0; i--)
-            this.orderList.add(roles.get(i));
+        if (useDiscordOrder)
+        {
+            //Add roles to orderList in reverse due to role position ordering being descending
+            // Top role starts at roles.size() - 1, bottom is 0.
+            for (int i = roles.size() - 1; i >= 0; i--)
+                this.orderList.add(roles.get(i));
+        }
+        else
+        {
+            //If not using discord ordering, we are ascending, so we add from first to last.
+            // We add first to last because the roles provided from getRoles() are in ascending order already
+            // with the highest role at index 0.
+            this.orderList.addAll(roles);
+        }
+
     }
 
     /**
@@ -75,9 +93,16 @@ public class RoleOrderAction extends OrderAction<Role, RoleOrderAction>
     protected void finalizeData()
     {
         JSONArray array = new JSONArray();
-        for (int i = 0; i < orderList.size(); i++)
+        List<Role> ordering = new ArrayList<>(orderList);
+
+        //If not in normal discord order, reverse.
+        // Normal order is descending, not ascending.
+        if (ascendingOrder)
+            Collections.reverse(ordering);
+
+        for (int i = 0; i < ordering.size(); i++)
         {
-            Role role = orderList.get(i);
+            Role role = ordering.get(i);
             array.put(new JSONObject()
                     .put("id", role.getId())
                     .put("position", i + 1)); //plus 1 because position 0 is the @everyone position.
