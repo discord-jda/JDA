@@ -16,7 +16,9 @@
 
 package net.dv8tion.jda.core.requests.restaction;
 
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.requests.Route;
 import org.apache.http.util.Args;
 import org.json.JSONArray;
@@ -86,6 +88,9 @@ public class ChannelOrderAction<T extends Channel> extends OrderAction<T, Channe
     @Override
     protected void finalizeData()
     {
+        final Member self = guild.getSelfMember();
+        if (!self.hasPermission(Permission.MANAGE_CHANNEL))
+            throw new PermissionException(Permission.MANAGE_CHANNEL);
         JSONArray array = new JSONArray();
         for (int i = 0; i < orderList.size(); i++)
         {

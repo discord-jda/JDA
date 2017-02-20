@@ -16,8 +16,11 @@
 
 package net.dv8tion.jda.core.requests.restaction;
 
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.requests.Route;
 import org.apache.http.util.Args;
 import org.json.JSONArray;
@@ -92,6 +95,11 @@ public class RoleOrderAction extends OrderAction<Role, RoleOrderAction>
     @Override
     protected void finalizeData()
     {
+        final Member self = guild.getSelfMember();
+        final int selfPos = guild.getRoles().indexOf(self.getRoles().get(0));
+        if (!self.hasPermission(Permission.MANAGE_ROLES))
+            throw new PermissionException(Permission.MANAGE_ROLES);
+
         JSONArray array = new JSONArray();
         List<Role> ordering = new ArrayList<>(orderList);
 
@@ -103,6 +111,16 @@ public class RoleOrderAction extends OrderAction<Role, RoleOrderAction>
         for (int i = 0; i < ordering.size(); i++)
         {
             Role role = ordering.get(i);
+            final int initialPos = role.getPosition();
+            if (initialPos != i && !self.isOwner())
+            {
+                if (!self.canInteract(role))
+                    throw new PermissionException("Cannot change order: One of the moved roles is not available due to hierarchical power!");
+                if (selfPos > i)
+                    throw new PermissionException(String.format("Cannot change order: One of the roles has been moved " +
+                            "into a position which is not below your highest role! (%d -> %d)", initialPos, i));
+            }
+
             array.put(new JSONObject()
                     .put("id", role.getId())
                     .put("position", i + 1)); //plus 1 because position 0 is the @everyone position.

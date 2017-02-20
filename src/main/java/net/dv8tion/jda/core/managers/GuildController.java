@@ -1710,21 +1710,95 @@ public class GuildController
         };
     }
 
+    /**
+     * Modifies the positional order of {@link net.dv8tion.jda.core.entities.Guild#getTextChannels() Guild.getTextChannels()}
+     * using a specific {@link net.dv8tion.jda.core.requests.RestAction RestAction} extension to allow moving Channels
+     * {@link net.dv8tion.jda.core.requests.restaction.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.core.requests.restaction.OrderAction#moveDown(int)down}
+     * or {@link net.dv8tion.jda.core.requests.restaction.OrderAction#moveTo(int) to} a specific position.
+     * <br>This uses <b>ascending</b> order with a 0 based index.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNNKOWN_CHANNEL}
+     *     <br>One of the channels has been deleted before the completion of the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The currently logged in account was removed from the Guild</li>
+     * </ul>
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.ChannelOrderAction ChannelOrderAction} - Type: {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
+     */
     public ChannelOrderAction<TextChannel> modifyTextChannelPositions()
     {
         return new ChannelOrderAction(guild, ChannelType.TEXT);
     }
 
+    /**
+     * Modifies the positional order of {@link net.dv8tion.jda.core.entities.Guild#getVoiceChannels() Guild.getVoiceChannels()}
+     * using a specific {@link net.dv8tion.jda.core.requests.RestAction RestAction} extension to allow moving Channels
+     * {@link net.dv8tion.jda.core.requests.restaction.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.core.requests.restaction.OrderAction#moveDown(int)down}
+     * or {@link net.dv8tion.jda.core.requests.restaction.OrderAction#moveTo(int) to} a specific position.
+     * <br>This uses <b>ascending</b> order with a 0 based index.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNNKOWN_CHANNEL}
+     *     <br>One of the channels has been deleted before the completion of the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The currently logged in account was removed from the Guild</li>
+     * </ul>
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.ChannelOrderAction ChannelOrderAction} - Type: {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
+     */
     public ChannelOrderAction<VoiceChannel> modifyVoiceChannelPositions()
     {
         return new ChannelOrderAction(guild, ChannelType.VOICE);
     }
 
+    /**
+     * Modifies the positional order of {@link net.dv8tion.jda.core.entities.Guild#getRoles() Guild.getRoles()}
+     * using a specific {@link net.dv8tion.jda.core.requests.RestAction RestAction} extension to allow moving Roles
+     * {@link net.dv8tion.jda.core.requests.restaction.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.core.requests.restaction.OrderAction#moveDown(int)down}
+     * or {@link net.dv8tion.jda.core.requests.restaction.OrderAction#moveTo(int) to} a specific position.
+     * <br>This uses <b>ascending</b> order with a 0 based index.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_ROLE UNKNOWN_ROLE}
+     *     <br>One of the roles was deleted before the completion of the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The currently logged in account was removed from the Guild</li>
+     * </ul>
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.RoleOrderAction RoleOrderAction}
+     */
     public RoleOrderAction modifyRolePositions()
     {
         return modifyRolePositions(true);
     }
 
+    /**
+     * Modifies the positional order of {@link net.dv8tion.jda.core.entities.Guild#getRoles() Guild.getRoles()}
+     * using a specific {@link net.dv8tion.jda.core.requests.RestAction RestAction} extension to allow moving Roles
+     * {@link net.dv8tion.jda.core.requests.restaction.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.core.requests.restaction.OrderAction#moveDown(int)down}
+     * or {@link net.dv8tion.jda.core.requests.restaction.OrderAction#moveTo(int) to} a specific position.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_ROLE UNKNOWN_ROLE}
+     *     <br>One of the roles was deleted before the completion of the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The currently logged in account was removed from the Guild</li>
+     * </ul>
+     *
+     * @param  useDiscordOrder
+     *         Whether to use descending order or not
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.RoleOrderAction RoleOrderAction}
+     */
     public RoleOrderAction modifyRolePositions(boolean useDiscordOrder)
     {
         return new RoleOrderAction(guild, useDiscordOrder);
