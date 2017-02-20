@@ -401,10 +401,7 @@ public interface MessageChannel extends ISnowflake
         body.field("file", data, fileName);
 
         if (message != null)
-        {
-            body.field("content", message.getRawContent());
-            body.field("tts", message.isTTS());
-        }
+            body.field("payload_json", ((MessageImpl) message).toJSONObject().toString());
 
         return new RestAction<Message>(getJDA(), route, body)
         {
@@ -465,10 +462,7 @@ public interface MessageChannel extends ISnowflake
         body.field("file", data, fileName);
 
         if (message != null)
-        {
-            body.field("content", message.getRawContent());
-            body.field("tts", message.isTTS());
-        }
+            body.field("payload_json", ((MessageImpl) message).toJSONObject().toString());
 
         return new RestAction<Message>(getJDA(), route, body)
         {
@@ -742,7 +736,7 @@ public interface MessageChannel extends ISnowflake
     default RestAction<MessageHistory> getHistoryAround(String messageId, int limit)
     {
         Args.notEmpty(messageId, "Provided messageId");
-        Args.check(limit > 100 || limit < 1, "Provided limit was out of bounds. Minimum: 1, Max: 100. Provided: %d", limit);
+        Args.check(limit >= 1 && limit <= 100, "Provided limit was out of bounds. Minimum: 1, Max: 100. Provided: %d", limit);
 
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY_AROUND.compile(this.getId(), Integer.toString(limit), messageId);
         return new RestAction<MessageHistory>(getJDA(), route, null)
@@ -1246,5 +1240,50 @@ public interface MessageChannel extends ISnowflake
                 }
             }
         };
+    }
+
+    /**
+     * Attempts to edit a message by its id in this MessageChannel.
+     *
+     * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
+     *     <br>Attempted to edit a message that was not sent by the currently logged in account.
+     *         Discord does not allow editing of other users' Messages!</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the
+     *         {@link net.dv8tion.jda.core.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     *         was revoked in the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * @param  messageId
+     *         The id referencing the Message that should be edited
+     * @param  newEmbed
+     *         The new {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} for the edited message
+     *
+     * @throws IllegalArgumentException
+     *         If provided {@code messageId} is {@code null} or empty
+     * @throws IllegalStateException
+     *         If the provided MessageEmbed is {@code null}
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If this is a TextChannel and this account does not have
+     *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     *         or {@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message}
+     *         <br>The modified Message
+     */
+    default RestAction<Message> editMessageById(String messageId, MessageEmbed newEmbed)
+    {
+        return editMessageById(messageId, new MessageBuilder().setEmbed(newEmbed).build());
     }
 }

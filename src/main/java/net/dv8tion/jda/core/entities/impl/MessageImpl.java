@@ -438,6 +438,12 @@ public class MessageImpl implements Message
     {
         return editMessage(new MessageBuilder().append(newContent).build());
     }
+    
+    @Override
+    public RestAction<Message> editMessage(MessageEmbed newContent)
+    {
+        return editMessage(new MessageBuilder().setEmbed(newContent).build()); 
+    }
 
     @Override
     public RestAction<Message> editMessage(Message newContent)

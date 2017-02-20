@@ -292,7 +292,7 @@ public interface Message extends ISnowflake
      *         the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *         The edit was attempted after the Message had been deleted.</li>
+     *     <br>The edit was attempted after the Message had been deleted.</li>
      * </ul>
      *
      * @param  newContent
@@ -302,10 +302,42 @@ public interface Message extends ISnowflake
      *         If the message attempting to be edited was not created by the currently logged in account, or if
      *         {@code newContent}'s length is 0 or greater than 2000.
      *
-     * @return a new Message-Object for the edited message
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
+     *     <br>The {@link net.dv8tion.jda.core.entities.Message Message} with the updated content
      */
     RestAction<Message> editMessage(String newContent);
 
+    /**
+     * Edits this Message's content to the provided {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed}.
+     * <br><b>Messages can only be edited by the account that sent them!</b>.
+     *
+     * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The edit was attempted after the account lost access to the
+     *         {@link net.dv8tion.jda.core.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *         typically due to being kicked or removed.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The edit was attempted after the account lost {@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE} in
+     *         the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The edit was attempted after the Message had been deleted.</li>
+     * </ul>
+     *
+     * @param  newContent
+     *         the new content of the Message
+     *
+     * @throws java.lang.IllegalStateException
+     *         If the message attempting to be edited was not created by the currently logged in account, or
+     *         if the passed-in embed is null
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
+     *     <br>The {@link net.dv8tion.jda.core.entities.Message Message} with the updated content
+     */
+    RestAction<Message> editMessage(MessageEmbed newContent); 
+    
     /**
      * Edits this Message's content to the provided {@link net.dv8tion.jda.core.entities.Message Message}.
      * <br><b>Messages can only be edited by the account that sent them!</b>.
@@ -322,7 +354,7 @@ public interface Message extends ISnowflake
      *         the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *         The edit was attempted after the Message had been deleted.</li>
+     *     <br>The edit was attempted after the Message had been deleted.</li>
      * </ul>
      *
      * @param  newContent
@@ -332,7 +364,8 @@ public interface Message extends ISnowflake
      *         If the message attempting to be edited was not created by the currently logged in account, or if
      *         {@code newContent}'s length is 0 or greater than 2000.
      *
-     * @return a new Message-Object for the edited message
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
+     *     <br>The {@link net.dv8tion.jda.core.entities.Message Message} with the updated content
      */
     RestAction<Message> editMessage(Message newContent);
 
