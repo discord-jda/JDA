@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.managers.ChannelManager;
 import net.dv8tion.jda.core.managers.ChannelManagerUpdatable;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.InviteAction;
+import net.dv8tion.jda.core.requests.restaction.PermissionOverrideAction;
 
 import java.util.List;
 
@@ -210,12 +211,12 @@ public interface Channel extends ISnowflake
      * @throws java.lang.IllegalStateException
      *         If the specified Member already has a PermissionOverride. Use {@link #getPermissionOverride(Member)} to retrieve it.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: {@link net.dv8tion.jda.core.entities.PermissionOverride}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.PermissionOverrideAction PermissionOverrideAction}
      *         The newly created PermissionOverride for the specified Role
      *
      * @see    #createPermissionOverride(Role)
      */
-    RestAction<PermissionOverride> createPermissionOverride(Member member);
+    PermissionOverrideAction createPermissionOverride(Member member);
 
     /**
      * Creates a {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
@@ -240,12 +241,12 @@ public interface Channel extends ISnowflake
      * @throws java.lang.IllegalStateException
      *         If the specified Role already has a PermissionOverride. Use {@link #getPermissionOverride(Role)} to retrieve it.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: {@link net.dv8tion.jda.core.entities.PermissionOverride}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.PermissionOverrideAction PermissionOverrideAction}
      *         The newly created PermissionOverride for the specified Role
      *
      * @see    #createPermissionOverride(Member)
      */
-    RestAction<PermissionOverride> createPermissionOverride(Role role);
+    PermissionOverrideAction createPermissionOverride(Role role);
 
     /**
      * Creates a new {@link net.dv8tion.jda.core.requests.restaction.InviteAction InviteAction} which can be used to create a
