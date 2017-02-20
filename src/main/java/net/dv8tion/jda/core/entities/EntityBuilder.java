@@ -218,7 +218,7 @@ public class EntityBuilder
                 }
                 else if (type == ChannelType.VOICE)
                 {
-                    VoiceChannel newChannel = createVoiceChannel(channel, guildObj.getId());
+                    VoiceChannel newChannel = createVoiceChannel(channel, guildObj.getId(), false);
                     if (!guild.isNull("afk_channel_id")
                             && newChannel.getId().equals(guild.getString("afk_channel_id")))
                         guildObj.setAfkChannel(newChannel);
@@ -607,6 +607,10 @@ public class EntityBuilder
 
     public VoiceChannel createVoiceChannel(JSONObject json, String guildId)
     {
+        return createVoiceChannel(json, guildId, true);
+    }
+    public VoiceChannel createVoiceChannel(JSONObject json, String guildId, boolean guildIsLoaded)
+    {
         String id = json.getString("id");
         VoiceChannelImpl channel = ((VoiceChannelImpl) api.getVoiceChannelMap().get(id));
         if (channel == null)
@@ -615,6 +619,15 @@ public class EntityBuilder
             channel = new VoiceChannelImpl(id, guild);
             guild.getVoiceChannelMap().put(id, channel);
             api.getVoiceChannelMap().put(id, channel);
+        }
+
+        if (!json.isNull("permission_overwrites") && guildIsLoaded)
+        {
+            JSONArray overrides = json.getJSONArray("permission_overwrites");
+            for (int i = 0; i < overrides.length(); i++)
+            {
+                createPermissionOverride(overrides.getJSONObject(i), channel);
+            }
         }
 
         return channel
