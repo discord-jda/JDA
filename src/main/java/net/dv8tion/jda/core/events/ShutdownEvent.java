@@ -16,7 +16,7 @@
 package net.dv8tion.jda.core.events;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.requests.WebSocketClient;
+import net.dv8tion.jda.core.requests.CloseCode;
 
 import java.time.OffsetDateTime;
 
@@ -49,23 +49,23 @@ public class ShutdownEvent extends Event
     }
 
     /**
-     * Possibly-null {@link net.dv8tion.jda.core.requests.WebSocketClient.CloseCode CloseCode}
+     * Possibly-null {@link net.dv8tion.jda.core.requests.CloseCode CloseCode}
      * representing the meaning for this ShutdownEvent.
      * <br>The raw close code can be retrieved from {@link #getCode()}
      * <br>If this is {@code null}, JDA does not know what the meaning for the connection loss was.
      *
-     * @return Possibly-null {@link net.dv8tion.jda.core.requests.WebSocketClient.CloseCode CloseCode}
+     * @return Possibly-null {@link net.dv8tion.jda.core.requests.CloseCode CloseCode}
      */
-    public WebSocketClient.CloseCode getCloseCode()
+    public CloseCode getCloseCode()
     {
-        return WebSocketClient.CloseCode.from(code);
+        return CloseCode.from(code);
     }
 
     /**
      * The server close code that was in the disconnect close frame
      * of this JDA instance.
      *
-     * @return int close code of the
+     * @return int close code of the Server Close-Frame
      */
     public int getCode()
     {

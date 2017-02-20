@@ -17,7 +17,7 @@ package net.dv8tion.jda.core.events;
 
 import com.neovisionaries.ws.client.WebSocketFrame;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.requests.WebSocketClient;
+import net.dv8tion.jda.core.requests.CloseCode;
 
 import java.time.OffsetDateTime;
 
@@ -27,7 +27,8 @@ import java.time.OffsetDateTime;
  * unless {@link net.dv8tion.jda.core.JDABuilder#setAutoReconnect(boolean) JDABuilder.setAutoReconnect(Boolean)}
  * has been provided {@code false}!
  *
- * <p>When reconnecting was successful a {@link net.dv8tion.jda.core.events.ReconnectedEvent RecconectEvent} is fired
+ * <p>When reconnecting was successful either a {@link net.dv8tion.jda.core.events.ReconnectedEvent ReconnectEvent}
+ * or a {@link net.dv8tion.jda.core.events.ResumedEvent ResumedEvent} is fired
  */
 public class DisconnectEvent extends Event
 {
@@ -47,14 +48,14 @@ public class DisconnectEvent extends Event
     }
 
     /**
-     * Possibly-null {@link net.dv8tion.jda.core.requests.WebSocketClient.CloseCode CloseCode}
+     * Possibly-null {@link net.dv8tion.jda.core.requests.CloseCode CloseCode}
      * representing the meaning for this DisconnectEvent
      *
-     * @return Possibly-null {@link net.dv8tion.jda.core.requests.WebSocketClient.CloseCode CloseCode}
+     * @return Possibly-null {@link net.dv8tion.jda.core.requests.CloseCode CloseCode}
      */
-    public WebSocketClient.CloseCode getCloseCode()
+    public CloseCode getCloseCode()
     {
-        return serverCloseFrame != null ? WebSocketClient.CloseCode.from(serverCloseFrame.getCloseCode()) : null;
+        return serverCloseFrame != null ? CloseCode.from(serverCloseFrame.getCloseCode()) : null;
     }
 
     public WebSocketFrame getServiceCloseFrame()
