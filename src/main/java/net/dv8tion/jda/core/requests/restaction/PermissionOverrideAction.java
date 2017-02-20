@@ -47,7 +47,6 @@ public class PermissionOverrideAction extends RestAction<PermissionOverride>
 
     private long allow = 0;
     private long deny = 0;
-    private final OverrideType type;
     private final Channel channel;
 
     private final Member member;
@@ -68,7 +67,6 @@ public class PermissionOverrideAction extends RestAction<PermissionOverride>
     public PermissionOverrideAction(JDA api, Route.CompiledRoute route, Channel channel, Member member)
     {
         super(api, route, null);
-        this.type = OverrideType.MEMBER;
         this.channel = channel;
         this.member = member;
         this.role = null;
@@ -89,7 +87,6 @@ public class PermissionOverrideAction extends RestAction<PermissionOverride>
     public PermissionOverrideAction(JDA api, Route.CompiledRoute route, Channel channel, Role role)
     {
         super(api, route, null);
-        this.type = OverrideType.ROLE;
         this.channel = channel;
         this.member = null;
         this.role = role;
@@ -183,15 +180,29 @@ public class PermissionOverrideAction extends RestAction<PermissionOverride>
 
 
     /**
-     * The type of PermissionOverride
-     * that will be created by this action.
+     * Whether this Action will
+     * create a {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
+     * for a {@link net.dv8tion.jda.core.entities.Member Member} or not
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.PermissionOverrideAction.OverrideType OverrideType}
-     *         representing the type of PermissionOverride that will be created by this action
+     * @return True, if this is targeting a Member
+     *         If this is {@code false} it is targeting a {@link net.dv8tion.jda.core.entities.Role Role}. ({@link #isRole()})
      */
-    public OverrideType getType()
+    public boolean isMember()
     {
-        return type;
+        return member != null;
+    }
+
+    /**
+     * Whether this Action will
+     * create a {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
+     * for a {@link net.dv8tion.jda.core.entities.Role Role} or not
+     *
+     * @return True, if this is targeting a Role.
+     *         If this is {@code false} it is targeting a {@link net.dv8tion.jda.core.entities.Member Member}. ({@link #isMember()})
+     */
+    public boolean isRole()
+    {
+        return role != null;
     }
 
 
@@ -388,7 +399,7 @@ public class PermissionOverrideAction extends RestAction<PermissionOverride>
     protected void finalizeData()
     {
         JSONObject object = new JSONObject();
-        object.put("type", type.name);
+        object.put("type", isRole() ? "role" : "member");
         object.put("allow", allow);
         object.put("deny", deny);
 
@@ -410,24 +421,19 @@ public class PermissionOverrideAction extends RestAction<PermissionOverride>
 
         boolean isText = channel instanceof TextChannelImpl;
 
-        switch (type)
+        if (isMember())
         {
-            case MEMBER:
-            {
-                if (isText)
-                    ((TextChannelImpl) channel).getMemberOverrideMap().put(member, override);
-                else
-                    ((VoiceChannelImpl) channel).getMemberOverrideMap().put(member, override);
-                break;
-            }
-            case ROLE:
-            {
-                if (isText)
-                    ((TextChannelImpl) channel).getRoleOverrideMap().put(role, override);
-                else
-                    ((VoiceChannelImpl) channel).getRoleOverrideMap().put(role, override);
-                break;
-            }
+            if (isText)
+                ((TextChannelImpl) channel).getMemberOverrideMap().put(member, override);
+            else
+                ((VoiceChannelImpl) channel).getMemberOverrideMap().put(member, override);
+        }
+        else
+        {
+            if (isText)
+                ((TextChannelImpl) channel).getRoleOverrideMap().put(role, override);
+            else
+                ((VoiceChannelImpl) channel).getRoleOverrideMap().put(role, override);
         }
 
         request.onSuccess(override);
@@ -446,18 +452,4 @@ public class PermissionOverrideAction extends RestAction<PermissionOverride>
             Args.notNull(e, name);
     }
 
-    public enum OverrideType
-    {
-        ROLE(0, "role"),
-        MEMBER(1, "member");
-
-        private final int id;
-        private final String name;
-
-        OverrideType(int id, String name)
-        {
-            this.id = id;
-            this.name = name;
-        }
-    }
 }
