@@ -89,7 +89,7 @@ public enum CloseCode
     @Override
     public String toString()
     {
-        return "CloseCode[" + code + " / " + meaning + "]";
+        return "CloseCode(" + code + " / " + meaning + ")";
     }
 
     /**
