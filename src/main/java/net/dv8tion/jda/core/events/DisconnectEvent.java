@@ -17,14 +17,18 @@ package net.dv8tion.jda.core.events;
 
 import com.neovisionaries.ws.client.WebSocketFrame;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.requests.CloseCode;
 
 import java.time.OffsetDateTime;
 
 /**
- * <b><u>DisconnectEvent</u></b><br>
- * Fired if our connection to the WebSocket was disrupted.<br>
- * <br>
- * Use: Reconnect manually or stop background threads that need fired events to function properly.
+ * Indicates that JDA has been disconnected from the remote server.
+ * <br>When this event is fired JDA will try to reconnect if possible
+ * unless {@link net.dv8tion.jda.core.JDABuilder#setAutoReconnect(boolean) JDABuilder.setAutoReconnect(Boolean)}
+ * has been provided {@code false}!
+ *
+ * <p>When reconnecting was successful either a {@link net.dv8tion.jda.core.events.ReconnectedEvent ReconnectEvent}
+ * or a {@link net.dv8tion.jda.core.events.ResumedEvent ResumedEvent} is fired
  */
 public class DisconnectEvent extends Event
 {
@@ -41,6 +45,17 @@ public class DisconnectEvent extends Event
         this.clientCloseFrame = clientCloseFrame;
         this.closedByServer = closedByServer;
         this.disconnectTime = disconnectTime;
+    }
+
+    /**
+     * Possibly-null {@link net.dv8tion.jda.core.requests.CloseCode CloseCode}
+     * representing the meaning for this DisconnectEvent
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.core.requests.CloseCode CloseCode}
+     */
+    public CloseCode getCloseCode()
+    {
+        return serverCloseFrame != null ? CloseCode.from(serverCloseFrame.getCloseCode()) : null;
     }
 
     public WebSocketFrame getServiceCloseFrame()

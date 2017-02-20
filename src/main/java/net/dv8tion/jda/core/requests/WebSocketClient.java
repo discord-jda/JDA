@@ -370,22 +370,45 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         connected = false;
         api.setStatus(JDA.Status.DISCONNECTED);
+
+        CloseCode closeCode = null;
+        int rawCloseCode = 1000;
+
         if (keepAliveThread != null)
         {
             keepAliveThread.interrupt();
             keepAliveThread = null;
         }
-        if (serverCloseFrame != null && serverCloseFrame.getCloseCode() == 4008)
+        if (serverCloseFrame != null)
         {
-            LOG.fatal("WebSocket connection closed due to ratelimit! Sent more than 120 websocket messages in under 60 seconds!");
+            rawCloseCode = serverCloseFrame.getCloseCode();
+            closeCode = CloseCode.from(rawCloseCode);
+            if (closeCode == CloseCode.RATE_LIMITED)
+                LOG.fatal("WebSocket connection closed due to ratelimit! Sent more than 120 websocket messages in under 60 seconds!");
+            else if (closeCode != null)
+                LOG.debug("WebSocket connection closed with code " + closeCode);
+            else
+                LOG.warn("WebSocket connection closed with unknown meaning for close-code " + rawCloseCode);
         }
-        if (!shouldReconnect)        //we should not reconnect
+
+        // null is considered -reconnectable- as we do not know the close-code meaning
+        boolean closeCodeIsReconnect = closeCode == null || closeCode.isReconnect();
+        if (!shouldReconnect || !closeCodeIsReconnect) //we should not reconnect
         {
             if (ratelimitThread != null)
                 ratelimitThread.interrupt();
 
+            if (!closeCodeIsReconnect)
+            {
+                //it is possible that a token can be invalidated due to too many reconnect attempts
+                //or that a bot reached a new shard minimum and cannot connect with the current settings
+                //if that is the case we have to drop our connection and inform the user with a fatal error message
+                LOG.fatal("WebSocket connection was closed and cannot be recovered due to identification issues");
+                LOG.fatal(closeCode);
+            }
+
             api.setStatus(JDA.Status.SHUTDOWN);
-            api.getEventManager().handle(new ShutdownEvent(api, OffsetDateTime.now()));
+            api.getEventManager().handle(new ShutdownEvent(api, OffsetDateTime.now(), rawCloseCode));
         }
         else
         {
@@ -864,5 +887,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             });
         }
     }
+
 }
 
