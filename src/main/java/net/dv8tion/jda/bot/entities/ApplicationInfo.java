@@ -16,19 +16,20 @@
 
 package net.dv8tion.jda.bot.entities;
 
-import java.util.Collection;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.entities.User;
 
+import java.util.Collection;
+
 /**
- * Represents a Discord Application from it's bot's point of view.
+ * Represents a Discord Application from its bot's point of view.
  * 
  * @since  3.0
  * @author Aljoscha Grebe
  * 
- * @see {@link net.dv8tion.jda.bot.JDABot#getApplicationInfo() JDABot#getApplicationInfo()}
+ * @see    net.dv8tion.jda.bot.JDABot#getApplicationInfo() JDABot.getApplicationInfo()
  */
 public interface ApplicationInfo extends ISnowflake
 {
@@ -40,28 +41,28 @@ public interface ApplicationInfo extends ISnowflake
      * like {@code &response_type=code} together with a valid {@code &redirect_uri}. 
      * <br>For more information look at the <a href="https://discordapp.com/developers/docs/topics/oauth2">Discord OAuth2 documentation</a>.  
      * 
-     * @return whether the bot requires code grant
+     * @return Whether the bot requires code grant
      */
     boolean doesBotRequireCodeGrant();
 
     /**
-     * Returns the description of the bot's application.
+     * The description of the bot's application.
      * 
-     * @return The description of the bot's application or an empty {@link String} if no description is defined.
+     * @return The description of the bot's application or an empty {@link String} if no description is defined
      */
     String getDescription();
 
     /**
-     * Returns the icon id of the bot's application.
+     * The icon id of the bot's application.
      * 
-     * @return The icon id of the bot's application or null if no icon is defined.
+     * @return The icon id of the bot's application or null if no icon is defined
      */
     String getIconId();
 
     /**
-     * Returns the icon-url of the bot's application.
+     * The icon-url of the bot's application.
      * 
-     * @return The icon-url of the bot's application or null if no icon is defined.
+     * @return The icon-url of the bot's application or null if no icon is defined
      */
     String getIconUrl();
 
@@ -72,7 +73,7 @@ public interface ApplicationInfo extends ISnowflake
      *         Possibly empty {@link java.util.Collection Collection} of {@link net.dv8tion.jda.core.Permission Permissions}
      *         that should be requested via invite.
      * 
-     * @return The link used to invite the bot.
+     * @return The link used to invite the bot
      */
     String getInviteUrl(Collection<Permission> permissions);
 
@@ -80,10 +81,9 @@ public interface ApplicationInfo extends ISnowflake
      * Creates a OAuth invite-link used to invite the bot.
      * 
      * @param  permissions
-     *         Possibly empty array of {@link net.dv8tion.jda.core.Permission Permissions}
-     *         that should be requested via invite.
+     *         {@link net.dv8tion.jda.core.Permission Permissions} that should be requested via invite.
      * 
-     * @return The link used to invite the bot.
+     * @return The link used to invite the bot
      */
     String getInviteUrl(Permission... permissions);
 
@@ -93,10 +93,10 @@ public interface ApplicationInfo extends ISnowflake
      * @param  guildId
      *         The id of the pre-selected guild.
      * @param  permissions
-     *         Possibly empty {@link java.util.List List} of {@link net.dv8tion.jda.core.Permission Permissions} 
+     *         Possibly empty {@link java.util.Collection Collection} of {@link net.dv8tion.jda.core.Permission Permissions}
      *         that should be requested via invite.
      * 
-     * @return The link used to invite the bot.
+     * @return The link used to invite the bot
      */
     String getInviteUrl(String guildId, Collection<Permission> permissions);
 
@@ -109,7 +109,7 @@ public interface ApplicationInfo extends ISnowflake
      *         Possibly empty array of {@link net.dv8tion.jda.core.Permission Permissions} 
      *         that should be requested via invite.
      * 
-     * @return The link used to invite the bot.
+     * @return The link used to invite the bot
      */
     String getInviteUrl(String guildId, Permission... permissions);
 
@@ -117,27 +117,27 @@ public interface ApplicationInfo extends ISnowflake
      * The {@link net.dv8tion.jda.core.JDA JDA} instance of this ApplicationInfo
      * (the one logged into this application's bot account).
      * 
-     * @return The JDA instance of this ApplicationInfo.
+     * @return The JDA instance of this ApplicationInfo
      */
     JDA getJDA();
 
     /**
-     * Returns the name of the bot's application.
+     * The name of the bot's application.
      * 
      * @return The name of the bot's application.
      */
     String getName();
 
     /**
-     * Returns the owner of the bot's application.
+     * The owner of the bot's application.
      * 
-     * @return The owner of the bot's application.
+     * @return The owner of the bot's application
      */
     User getOwner();
 
     /**
      * Whether the bot is public or not. 
-     * Public bots can be added by anyone. When false only the owner can invite the bot to servers.
+     * Public bots can be added by anyone. When false only the owner can invite the bot to guilds.
      * 
      * @return Whether the bot is public
      */

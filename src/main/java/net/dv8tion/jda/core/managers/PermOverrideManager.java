@@ -26,7 +26,7 @@ import net.dv8tion.jda.core.requests.RestAction;
 import java.util.Collection;
 
 /**
- * Decoration for a {@link net.dv8tion.jda.core.managers.PermOverrideManagerUpdatable PermOverrideManagerUpdatable} instance.
+ * Facade for a {@link net.dv8tion.jda.core.managers.PermOverrideManagerUpdatable PermOverrideManagerUpdatable} instance.
  * <br>Simplifies managing flow for convenience.
  *
  * <p>This decoration allows to modify a single field by automatically building an update {@link net.dv8tion.jda.core.requests.RestAction RestAction}

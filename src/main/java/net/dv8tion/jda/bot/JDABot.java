@@ -32,8 +32,10 @@ public interface JDABot
     /**
      * Retrieves the {@link net.dv8tion.jda.bot.entities.ApplicationInfo ApplicationInfo} for
      * the application that owns the logged in Bot-account.
+     * <br>This contains information about the owner of the currently logged in bot account!
      *
-     * @return The {@link net.dv8tion.jda.bot.entities.ApplicationInfo ApplicationInfo} of the bot's application.
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.bot.entities.ApplicationInfo ApplicationInfo}
+     *         <br>The {@link net.dv8tion.jda.bot.entities.ApplicationInfo ApplicationInfo} of the bot's application.
      */
-    public RestAction<ApplicationInfo> getApplicationInfo();
+    RestAction<ApplicationInfo> getApplicationInfo();
 }

@@ -21,7 +21,6 @@ import net.dv8tion.jda.client.requests.restaction.ApplicationAction;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Invite;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.requests.RestAction;
 
@@ -93,11 +92,14 @@ public interface JDAClient
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_APPLICATION UNKNOWN_APPLICATION}
      *     <br>The Application did not exist (possibly deleted).</li>
      * </ul>
-     * 
-     * @throws IllegalArgumentException If the provided id is {@code null} or empty
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: 
-     *         {@link net.dv8tion.jda.client.entities.Application Application}
+     * @param  id
+     *         The id for the {@link net.dv8tion.jda.client.entities.Application Application}
+     * 
+     * @throws IllegalArgumentException
+     *         If the provided id is {@code null} or empty
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.client.entities.Application Application}
      *         <br>The Application behind the provided id.
      */
     RestAction<Application> getApplicationById(String id);
@@ -106,7 +108,7 @@ public interface JDAClient
      * Retrieves all {@link net.dv8tion.jda.client.entities.AuthorizedApplication AuthorizedApplications} authorized by this user account.
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: 
-     *         {@link java.util.List List}{@literal <}{@link net.dv8tion.jda.client.entities.AuthorizedApplication AuthorizedApplication}{@literal >}
+     *         List{@literal <}{@link net.dv8tion.jda.client.entities.AuthorizedApplication AuthorizedApplication}{@literal >}
      *         <br>A list of all AuthorizedApplications authorized by this user account.
      */
     RestAction<List<AuthorizedApplication>> getAuthorizedApplications();
@@ -119,6 +121,9 @@ public interface JDAClient
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_TOKEN UNKNOWN_TOKEN}
      *     <br>The Application either doesn't exist or isn't authorized by this user account.</li>
      * </ul>
+     *
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.client.entities.AuthorizedApplication AuthorizedApplication}
      * 
      * @throws IllegalArgumentException If the provided id is {@code null} or empty
      *

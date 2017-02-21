@@ -25,7 +25,7 @@ import net.dv8tion.jda.core.requests.RestAction;
 import java.util.List;
 
 /**
- * Decoration for an {@link net.dv8tion.jda.client.managers.ApplicationManagerUpdatable ApplicationManagerUpdatable} instance.
+ * Facade for an {@link net.dv8tion.jda.client.managers.ApplicationManagerUpdatable ApplicationManagerUpdatable} instance.
  * <br>Simplifies managing flow for convenience.
  *
  * <p>This decoration allows to modify a single field by automatically building an update {@link net.dv8tion.jda.core.requests.RestAction RestAction}

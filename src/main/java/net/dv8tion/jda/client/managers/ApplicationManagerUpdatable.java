@@ -48,7 +48,7 @@ import java.util.regex.Pattern;
  */
 public class ApplicationManagerUpdatable
 {
-    public final static Pattern URL_PATTERN = Pattern.compile("\\s*https?:\\/\\/.+\\..{2,}\\s*",
+    public final static Pattern URL_PATTERN = Pattern.compile("\\s*https?://.+\\..{2,}\\s*",
             Pattern.CASE_INSENSITIVE);
 
     private final ApplicationImpl application;
@@ -65,6 +65,16 @@ public class ApplicationManagerUpdatable
         this.application = application;
 
         this.setupFields();
+    }
+
+    /**
+     * The {@link net.dv8tion.jda.core.JDA JDA} instance of this Manager
+     *
+     * @return the corresponding JDA instance
+     */
+    public JDA getJDA()
+    {
+        return this.application.getJDA();
     }
 
     /**
@@ -123,7 +133,7 @@ public class ApplicationManagerUpdatable
      * on the returned {@link net.dv8tion.jda.client.managers.fields.ApplicationField ApplicationField} instance.
      *
      *  @return {@link net.dv8tion.jda.client.managers.fields.ApplicationField ApplicationField}
-     *   - Type: {@link net.dv8tion.jda.core.entities.Icon Icon}
+     *          - Type: {@link net.dv8tion.jda.core.entities.Icon Icon}
      */
     public final ApplicationField<Icon> getIconField()
     {
@@ -149,16 +159,6 @@ public class ApplicationManagerUpdatable
     }
 
     /**
-     * The {@link net.dv8tion.jda.core.JDA JDA} instance of this Manager
-     *
-     * @return the corresponding JDA instance
-     */
-    public JDA getJDA()
-    {
-        return this.application.getJDA();
-    }
-
-    /**
      * An {@link net.dv8tion.jda.client.managers.fields.ApplicationField ApplicationField}
      * for the <b><u>name</u></b> of the selected {@link net.dv8tion.jda.client.entities.Application Application}.
      *
@@ -180,7 +180,7 @@ public class ApplicationManagerUpdatable
      * An {@link net.dv8tion.jda.client.managers.fields.ApplicationField ApplicationField}
      * for the <b><u>redirect uris</u></b> of the selected {@link net.dv8tion.jda.client.entities.Application Application}.
      *
-     * <p>To set the value use {@link net.dv8tion.jda.core.managers.fields.Field#setValue(Object) setValue(List<String>)}
+     * <p>To set the value use {@link net.dv8tion.jda.core.managers.fields.Field#setValue(Object) setValue(List)}
      * on the returned {@link net.dv8tion.jda.client.managers.fields.ApplicationField ApplicationField} instance.
      *
      * <p>Modification to the provided {@link java.util.List List} after passing it to this {@link ApplicationManagerUpdatable}
@@ -197,13 +197,6 @@ public class ApplicationManagerUpdatable
         return this.redirectUris;
     }
 
-    protected boolean needsUpdate()
-    {
-        return this.description.shouldUpdate() || this.doesBotRequireCodeGrant.shouldUpdate()
-                || this.icon.shouldUpdate() || this.isBotPublic.shouldUpdate() || this.name.shouldUpdate()
-                || this.redirectUris.shouldUpdate();
-    }
-
     /**
      * Resets all {@link net.dv8tion.jda.core.managers.fields.ChannelField Fields}
      * for this manager instance by calling {@link net.dv8tion.jda.core.managers.fields.Field#reset() Field.reset()} sequentially
@@ -217,6 +210,13 @@ public class ApplicationManagerUpdatable
         this.isBotPublic.reset();
         this.name.reset();
         this.redirectUris.reset();
+    }
+
+    protected boolean needsUpdate()
+    {
+        return this.description.shouldUpdate() || this.doesBotRequireCodeGrant.shouldUpdate()
+                || this.icon.shouldUpdate() || this.isBotPublic.shouldUpdate() || this.name.shouldUpdate()
+                || this.redirectUris.shouldUpdate();
     }
 
     protected void setupFields()
@@ -315,7 +315,7 @@ public class ApplicationManagerUpdatable
      * <br>This is automatically called if this method returns successfully.
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
-     *         Updates all modified fields or does nothing if none of the {@link net.dv8tion.jda.core.managers.fields.Field Fields}
+     *         <br>Updates all modified fields or does nothing if none of the {@link net.dv8tion.jda.core.managers.fields.Field Fields}
      *         have been modified. ({@link net.dv8tion.jda.core.requests.RestAction.EmptyRestAction EmptyRestAction})
      */
     public RestAction<Application> update()

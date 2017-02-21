@@ -59,25 +59,24 @@ public class ApplicationAction extends RestAction<Application>
      * @throws IllegalArgumentException
      *         If the provided description is more than 400 characters long
      *
-     * @return The current ApplicationAction for chaining.
+     * @return The current ApplicationAction for chaining
      */
     public ApplicationAction setDescription(final String description)
     {
         if (description != null && description.length() > 400)
-            throw new IllegalArgumentException("The discription must not be more than 400 characters!");
+            throw new IllegalArgumentException("The description must not be more than 400 characters!");
 
         this.description = description;
         return this;
     }
 
     /**
-     * Sets the <b><u>icon</u></b> of the selected {@link net.dv8tion.jda.client.entities.Application Application}.
-     * Passing {@code null} will reset the icon.
+     * Sets the {@link net.dv8tion.jda.core.entities.Icon Icon} of the selected {@link net.dv8tion.jda.client.entities.Application Application}.
      *
      * @param  icon
      *         The {@link net.dv8tion.jda.core.entities.Icon Icon} for new {@link net.dv8tion.jda.client.entities.Application Application}
      *
-     * @return The current ApplicationAction for chaining.
+     * @return The current ApplicationAction for chaining
      */
     public ApplicationAction setIcon(final Icon icon)
     {
@@ -96,7 +95,7 @@ public class ApplicationAction extends RestAction<Application>
      * @throws IllegalArgumentException
      *         If the provided name is {@code null}, less than 2 or more than 32 characters long
      *
-     * @return The current ApplicationAction for chaining.
+     * @return The current ApplicationAction for chaining
      */
     public ApplicationAction setName(final String name)
     {

@@ -16,8 +16,6 @@
 
 package net.dv8tion.jda.client.entities;
 
-import java.util.Collection;
-import java.util.List;
 import net.dv8tion.jda.client.managers.ApplicationManager;
 import net.dv8tion.jda.client.managers.ApplicationManagerUpdatable;
 import net.dv8tion.jda.core.JDA;
@@ -25,15 +23,18 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.requests.RestAction;
 
+import java.util.Collection;
+import java.util.List;
+
 /** 
- * Represents a Discord Application from it's owning client point of view
+ * Represents a Discord Application from its owning client point of view
  * 
  * @since  3.0
  * @author Aljoscha Grebe
  * 
- * @see <a href="https://discordapp.com/developers/applications/me">Discord Documentation - My Apps</a>
- * @see {@link net.dv8tion.jda.client.JDAClient#getApplications() JDAClient#getApplications()}
- * @see {@link net.dv8tion.jda.client.JDAClient#getApplicationById(String) JDAClient#getApplicationById(String)}
+ * @see    <a href="https://discordapp.com/developers/applications/me">Discord Documentation - My Apps</a>
+ * @see    net.dv8tion.jda.client.JDAClient#getApplications() JDAClient.getApplications()
+ * @see    net.dv8tion.jda.client.JDAClient#getApplicationById(String) JDAClient.getApplicationById(String)
  */
 public interface Application extends ISnowflake
 {
@@ -53,8 +54,7 @@ public interface Application extends ISnowflake
      *      <br>If the Application has been deleted</li>
      * </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} -
-     *         Type: {@link Application.Bot}
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link Application.Bot}
      *         <br>The created bot account of this application. 
      */
     RestAction<Application.Bot> createBot();
@@ -70,8 +70,7 @@ public interface Application extends ISnowflake
      *      <br>If the Application has already been deleted</li>
      * </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} -
-     *         Type: {@link Void}
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link Void}
      *         <br>The RestAction to delete this Application.
      */
     RestAction<Void> delete();
@@ -83,42 +82,42 @@ public interface Application extends ISnowflake
      * like {@code &response_type=code} together with a valid {@code &redirect_uri}. 
      * <br>For more information look at the <a href="https://discordapp.com/developers/docs/topics/oauth2">Discord OAuth2 documentation</a>.  
      * 
-     * @return whether the bot requires code grant
+     * @return Whether the bot requires code grant
      */
     boolean doesBotRequireCodeGrant();
 
     /**
-     * Returns the Bot assigned to this Application
+     * The Bot assigned to this Application
      * 
-     * @return The {@link Application.Bot} assigned to this application, or null if no bot is assigned
+     * @return The {@link Application.Bot} assigned to this application, or {@code null} if no bot is assigned
      */
     Application.Bot getBot();
 
     /**
-     * Returns the description of the application.
+     * The description of the application.
      * 
-     * @return The description of the application or an empty {@link String} if no description is defined.
+     * @return The description of the application or an empty {@link String} if no description is defined
      */
     String getDescription();
 
     /**
-     * Returns the flags for this application. It's used for whitelisted apps.
+     * The flags for this application. These are used for whitelisted apps.
      * 
-     * @return The application flags.
+     * @return The application flags
      */
     int getFlags();
 
     /**
-     * Returns the icon id of the application.
+     * The icon id of the application.
      * 
-     * @return The iconId of the application or null if no icon is defined.
+     * @return The iconId of the application or {@code null} if no icon is defined
      */
     String getIconId();
 
     /**
-     * Returns the icon-url of the application.
+     * The icon-url of the application.
      * 
-     * @return The icon-url of the application or null if no icon is defined.
+     * @return The icon-url of the application or {@code null} if no icon is defined
      */
     String getIconUrl();
 
@@ -126,7 +125,7 @@ public interface Application extends ISnowflake
      * The {@link net.dv8tion.jda.core.JDA JDA} instance of this Application
      * (the one owning this application).
      * 
-     * @return The JDA instance of this Application.
+     * @return The JDA instance of this Application
      */
     JDA getJDA();
 
@@ -152,23 +151,23 @@ public interface Application extends ISnowflake
     ApplicationManagerUpdatable getManagerUpdatable();
 
     /**
-     * Returns the name of the application.
+     * The name of this application.
      * 
-     * @return The name of the application.
+     * @return The name of this application
      */
     String getName();
 
     /**
      * The redirect uris of this application.
      * 
-     * @return A {@link java.util.List List} of current redirect uris of the application.
+     * @return A {@link java.util.List List} of current redirect uris of the application
      */
     List<String> getRedirectUris();
 
     /**
      * The rpc application state of this application.
      * 
-     * @return The rpc application state of current redirect uris of the application.
+     * @return The rpc application state of current redirect uris of the application
      */
     int getRpcApplicationState();
 
@@ -182,7 +181,7 @@ public interface Application extends ISnowflake
     /**
      * Returns whether or not this Application has a bot-account assigned
      * 
-     * @return True if this Application has a bot-account assigned, false otherwise
+     * @return True, if this Application has a bot-account assigned, false otherwise
      */
     boolean hasBot();
 
@@ -218,28 +217,28 @@ public interface Application extends ISnowflake
     {
 
         /**
-         * Returns the Application of this Bot
+         * The Application for this Bot
          * 
-         * @return The application of this Bot
+         * @return The application for this Bot
          */
         Application getApplication();
 
         /**
-         * Returns the avatar id of this Bot
+         * The avatar id of this Bot
          * 
-         * @return The avatar id of this Bot or null, if no avatar is set
+         * @return The avatar id of this Bot or {@code null}, if no avatar is set
          */
         String getAvatarId();
 
         /**
-         * Returns the avatar-url of this Bot
+         * The avatar-url of this Bot
          * 
-         * @return The avatar-url of this Bot or null, if no avatar is set
+         * @return The avatar-url of this Bot or {@code null}, if no avatar is set
          */
         String getAvatarUrl();
 
         /**
-         * Returns the discriminator of this Bot
+         * The discriminator of this Bot
          * 
          * @return The discriminator of this Bot
          */
@@ -252,7 +251,7 @@ public interface Application extends ISnowflake
          *         Possibly empty {@link java.util.List List} of {@link net.dv8tion.jda.core.Permission Permissions}
          *         that should be requested via invite.
          * 
-         * @return The link used to invite the bot.
+         * @return The link used to invite the bot
          */
         String getInviteUrl(Collection<Permission> permissions);
 
@@ -263,7 +262,7 @@ public interface Application extends ISnowflake
          *         Possibly empty array of {@link net.dv8tion.jda.core.Permission Permissions}
          *         that should be requested via invite.
          * 
-         * @return The link used to invite the bot.
+         * @return The link used to invite the bot
          */
         String getInviteUrl(Permission... permissions);
 
@@ -276,7 +275,7 @@ public interface Application extends ISnowflake
          *         Possibly empty {@link java.util.List List} of {@link net.dv8tion.jda.core.Permission Permissions} 
          *         that should be requested via invite.
          * 
-         * @return The link used to invite the bot.
+         * @return The link used to invite the bot
          */
         String getInviteUrl(String guildId, Collection<Permission> permissions);
 
@@ -289,26 +288,28 @@ public interface Application extends ISnowflake
          *         Possibly empty array of {@link net.dv8tion.jda.core.Permission Permissions} 
          *         that should be requested via invite.
          * 
-         * @return The link used to invite the bot.
+         * @return The link used to invite the bot
          */
         String getInviteUrl(String guildId, Permission... permissions);
 
         /**
-         * Returns the name of this Bot
+         * The name of this Bot
          * 
          * @return The name of this Bot
          */
         String getName();
 
         /**
-         * Returns the token used to login to JDA with this Bot
+         * The token used to login to JDA with this Bot
+         * <br>This can be used in {@link net.dv8tion.jda.core.JDABuilder#setToken(String) JDABuilder.setToken(String)}
          * 
-         * @return The login-token of this Bot
+         * @return The authentication token of this Bot
          */
         String getToken();
 
         /**
-         * Generates a new token for this bot. This invalidates the old one.
+         * Generates a new token for this bot.
+         * <br><b>This invalidates the old one!</b>
          *
          * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} for this
          * update include the following:
@@ -317,8 +318,7 @@ public interface Application extends ISnowflake
          *      <br>If the Bot doesn't exist</li>
          * </ul>
          *
-         * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} -
-         *         Type: {@link Application.Bot}
+         * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link Application.Bot}
          *         <br>This bot with the updated token.
          */
         RestAction<Application.Bot> resetToken();
