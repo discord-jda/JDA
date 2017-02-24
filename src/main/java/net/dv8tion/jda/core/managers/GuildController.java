@@ -1761,7 +1761,11 @@ public class GuildController
      * using a specific {@link net.dv8tion.jda.core.requests.RestAction RestAction} extension to allow moving Roles
      * {@link net.dv8tion.jda.core.requests.restaction.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.core.requests.restaction.OrderAction#moveDown(int)down}
      * or {@link net.dv8tion.jda.core.requests.restaction.OrderAction#moveTo(int) to} a specific position.
-     * <br>This uses <b>ascending</b> order with a 0 based index.
+     *
+     * <p>This uses the ordering defined by Discord, which is <b>descending</b>!
+     * <br>This means the lowest role appears at index {@code 0} and the highest role at index {@code n - 1}.
+     * <br>Providing {@code false} to {@link #modifyRolePositions(boolean)} will result in the ordering being
+     * in ascending order, with the highest role at index {@code 0} and the lowest at index {@code n - 1}.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -1795,7 +1799,10 @@ public class GuildController
      * </ul>
      *
      * @param  useDiscordOrder
-     *         Whether to use descending order or not
+     *         Defines the ordering of the OrderAction. If {@code true}, the OrderAction will be in the ordering
+     *         defined by Discord for roles, which is Descending. This means that the lowest role appears at index {@code 0}
+     *         and the highest role at index {@code n - 1}. Providing {@code false} will result in the ordering being
+     *         in ascending order, with the highest role at index {@code 0} and the lowest at index {@code n - 1}.
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.RoleOrderAction RoleOrderAction}
      */

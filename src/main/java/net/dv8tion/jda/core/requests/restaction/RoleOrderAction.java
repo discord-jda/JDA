@@ -96,9 +96,15 @@ public class RoleOrderAction extends OrderAction<Role, RoleOrderAction>
     protected void finalizeData()
     {
         final Member self = guild.getSelfMember();
-        final int selfPos = guild.getRoles().indexOf(self.getRoles().get(0));
-        if (!self.hasPermission(Permission.MANAGE_ROLES))
-            throw new PermissionException(Permission.MANAGE_ROLES);
+        final boolean isOwner = self.isOwner();
+
+        if (!isOwner)
+        {
+            if (self.getRoles().isEmpty())
+                throw new IllegalStateException("Cannot move roles above your highest role unless you are the guild owner");
+            if (!self.hasPermission(Permission.MANAGE_ROLES))
+                throw new PermissionException(Permission.MANAGE_ROLES);
+        }
 
         JSONArray array = new JSONArray();
         List<Role> ordering = new ArrayList<>(orderList);
@@ -112,14 +118,9 @@ public class RoleOrderAction extends OrderAction<Role, RoleOrderAction>
         {
             Role role = ordering.get(i);
             final int initialPos = role.getPosition();
-            if (initialPos != i && !self.isOwner())
-            {
-                if (!self.canInteract(role))
-                    throw new PermissionException("Cannot change order: One of the moved roles is not available due to hierarchical power!");
-                if (selfPos > i)
-                    throw new PermissionException(String.format("Cannot change order: One of the roles has been moved " +
-                            "into a position which is not below your highest role! (%d -> %d)", initialPos, i));
-            }
+            if (initialPos != i && !isOwner && !self.canInteract(role))
+                // If the current role was moved, we are not owner and we can't interact with the role then throw a PermissionException
+                throw new IllegalStateException("Cannot change order: One of the roles could not be moved due to hierarchical power!");
 
             array.put(new JSONObject()
                     .put("id", role.getId())
