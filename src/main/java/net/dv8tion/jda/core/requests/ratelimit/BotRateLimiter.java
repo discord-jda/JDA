@@ -97,6 +97,7 @@ public class BotRateLimiter extends RateLimiter
                     //If it is global, lock down the threads.
                     globalCooldown.set(getNow() + retryAfter);
                 }
+
                 return retryAfter;
             }
             else
@@ -110,7 +111,7 @@ public class BotRateLimiter extends RateLimiter
 
     private Bucket getBucket(CompiledRoute route)
     {
-        String rateLimitRoute = route.getBaseRoute().getRatelimitRoute();
+        String rateLimitRoute = route.getRatelimitRoute();
         Bucket bucket = (Bucket) buckets.get(rateLimitRoute);
         if (bucket == null)
         {
@@ -161,8 +162,8 @@ public class BotRateLimiter extends RateLimiter
         {
             if (bucket.hasRatelimit()) // Check if there's a hardcoded rate limit 
             {
-                bucket.resetTime = System.currentTimeMillis() + bucket.getRatelimit().getResetTime();
-                bucket.routeUsageLimit = bucket.getRatelimit().getUsageLimit();
+                bucket.resetTime = getNow() + bucket.getRatelimit().getResetTime();
+                //routeUsageLimit provided by the ratelimit object already in the bucket.
             }
             else
             {
@@ -170,8 +171,18 @@ public class BotRateLimiter extends RateLimiter
                 bucket.routeUsageLimit = Integer.parseInt(headers.getFirst("X-RateLimit-Limit"));
             }
 
+            //Currently, we check the remaining amount even for hardcoded ratelimits just to further respect Discord
+            // however, if there should ever be a case where Discord informs that the remaining is less than what
+            // it actually is and we add a custom ratelimit to handle that, we will need to instead move this to the
+            // above else statement and add a bucket.routeUsageRemaining-- decrement to the above if body.
+            //An example of this statement needing to be moved would be if the custom ratelimit reset time interval is
+            // equal to or greater than 1000ms, and the remaining count provided by discord is less than the ACTUAL
+            // amount that their systems allow in such a way that isn't a bug.
+            //The custom ratelimit system is primarily for ratelimits that can't be properly represented by Discord's
+            // header system due to their headers only supporting accuracy to the second. The custom ratelimit system
+            // allows for hardcoded ratelimits that allow accuracy to the millisecond which is important for some
+            // ratelimits like Reactions which is 1/0.25s, but discord reports the ratelimit as 1/1s with headers.
             bucket.routeUsageRemaining = Integer.parseInt(headers.getFirst("X-RateLimit-Remaining"));
-
         }
         catch (NumberFormatException ex)
         {
@@ -200,6 +211,11 @@ public class BotRateLimiter extends RateLimiter
         {
             this.route = route;
             this.rateLimit = rateLimit;
+            if (rateLimit != null)
+            {
+                this.routeUsageRemaining = rateLimit.getUsageLimit();
+                this.routeUsageLimit = rateLimit.getUsageLimit();
+            }
         }
 
         void addToQueue(Request request)

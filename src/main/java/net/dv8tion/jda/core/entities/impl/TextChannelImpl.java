@@ -347,6 +347,7 @@ public class TextChannelImpl implements TextChannel
     public RestAction<Void> addReactionById(String messageId, String unicode)
     {
         checkPermission(Permission.MESSAGE_ADD_REACTION);
+        checkPermission(Permission.MESSAGE_HISTORY);
 
         //Call MessageChannel's default method
         return TextChannel.super.addReactionById(messageId, unicode);
@@ -356,6 +357,7 @@ public class TextChannelImpl implements TextChannel
     public RestAction<Void> addReactionById(String messageId, Emote emote)
     {
         checkPermission(Permission.MESSAGE_ADD_REACTION);
+        checkPermission(Permission.MESSAGE_HISTORY);
 
         //Call MessageChannel's default method
         return TextChannel.super.addReactionById(messageId, emote);
