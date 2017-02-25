@@ -674,7 +674,8 @@ public interface Message extends ISnowflake
 
         /**
          * The url of the Attachment, proxied by Discord.
-         * <br>The point of this URL is to prevent IP scraping when downloading attachments from Discord.
+         * <br>Url to the resource proxied by https://images.discordapp.net
+         * <br><b>Note: </b> This URL will most likely only work for images. ({@link #isImage()})
          *
          * @return Non-null String containing the proxied Attachment url.
          */
@@ -706,7 +707,7 @@ public interface Message extends ISnowflake
             InputStream in = null;
             try
             {
-                URL url = new URL(getProxyUrl());
+                URL url = new URL(getUrl());
                 URLConnection con;
                 if (jda.getGlobalProxy() == null)
                 {
