@@ -52,9 +52,11 @@ public class RoleOrderAction extends OrderAction<Role, RoleOrderAction>
      *         to change the {@link net.dv8tion.jda.core.entities.Role Role} order
      * @param  useDiscordOrder
      *         Defines the ordering of the OrderAction. If {@code true}, the OrderAction will be in the ordering
-     *         defined by Discord for roles, which is Descending. This means that the lowest role appears at index {@code 0}
-     *         and the highest role at index {@code n - 1}. Providing {@code false} will result in the ordering being
-     *         in ascending order, with the highest role at index {@code 0} and the lowest at index {@code n - 1}.
+     *         defined by Discord for roles, which is Descending. This means that the highest role appears at index {@code 0}
+     *         and the lowest role at index {@code n - 1}. Providing {@code false} will result in the ordering being
+     *         in ascending order, with the lower role at index {@code 0} and the highest at index {@code n - 1}.
+     *         <br>As a note: {@link net.dv8tion.jda.core.entities.Member#getRoles() Member.getRoles()}
+     *         and {@link net.dv8tion.jda.core.entities.Guild#getRoles() Guild.getRoles()} are both in descending order.
      */
     public RoleOrderAction(Guild guild, boolean useDiscordOrder)
     {

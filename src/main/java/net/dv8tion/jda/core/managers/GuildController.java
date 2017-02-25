@@ -1713,7 +1713,7 @@ public class GuildController
     /**
      * Modifies the positional order of {@link net.dv8tion.jda.core.entities.Guild#getTextChannels() Guild.getTextChannels()}
      * using a specific {@link net.dv8tion.jda.core.requests.RestAction RestAction} extension to allow moving Channels
-     * {@link net.dv8tion.jda.core.requests.restaction.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.core.requests.restaction.OrderAction#moveDown(int)down}
+     * {@link net.dv8tion.jda.core.requests.restaction.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.core.requests.restaction.OrderAction#moveDown(int) down}
      * or {@link net.dv8tion.jda.core.requests.restaction.OrderAction#moveTo(int) to} a specific position.
      * <br>This uses <b>ascending</b> order with a 0 based index.
      *
@@ -1736,7 +1736,7 @@ public class GuildController
     /**
      * Modifies the positional order of {@link net.dv8tion.jda.core.entities.Guild#getVoiceChannels() Guild.getVoiceChannels()}
      * using a specific {@link net.dv8tion.jda.core.requests.RestAction RestAction} extension to allow moving Channels
-     * {@link net.dv8tion.jda.core.requests.restaction.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.core.requests.restaction.OrderAction#moveDown(int)down}
+     * {@link net.dv8tion.jda.core.requests.restaction.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.core.requests.restaction.OrderAction#moveDown(int) down}
      * or {@link net.dv8tion.jda.core.requests.restaction.OrderAction#moveTo(int) to} a specific position.
      * <br>This uses <b>ascending</b> order with a 0 based index.
      *
@@ -1759,13 +1759,15 @@ public class GuildController
     /**
      * Modifies the positional order of {@link net.dv8tion.jda.core.entities.Guild#getRoles() Guild.getRoles()}
      * using a specific {@link net.dv8tion.jda.core.requests.RestAction RestAction} extension to allow moving Roles
-     * {@link net.dv8tion.jda.core.requests.restaction.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.core.requests.restaction.OrderAction#moveDown(int)down}
+     * {@link net.dv8tion.jda.core.requests.restaction.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.core.requests.restaction.OrderAction#moveDown(int) down}
      * or {@link net.dv8tion.jda.core.requests.restaction.OrderAction#moveTo(int) to} a specific position.
      *
      * <p>This uses the ordering defined by Discord, which is <b>descending</b>!
-     * <br>This means the lowest role appears at index {@code 0} and the highest role at index {@code n - 1}.
+     * <br>This means the highest role appears at index {@code 0} and the lower role at index {@code n - 1}.
      * <br>Providing {@code false} to {@link #modifyRolePositions(boolean)} will result in the ordering being
-     * in ascending order, with the highest role at index {@code 0} and the lowest at index {@code n - 1}.
+     * in ascending order, with the lower role at index {@code 0} and the highest at index {@code n - 1}.
+     * <br>As a note: {@link net.dv8tion.jda.core.entities.Member#getRoles() Member.getRoles()}
+     * and {@link net.dv8tion.jda.core.entities.Guild#getRoles() Guild.getRoles()} are both in descending order.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -1786,7 +1788,7 @@ public class GuildController
     /**
      * Modifies the positional order of {@link net.dv8tion.jda.core.entities.Guild#getRoles() Guild.getRoles()}
      * using a specific {@link net.dv8tion.jda.core.requests.RestAction RestAction} extension to allow moving Roles
-     * {@link net.dv8tion.jda.core.requests.restaction.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.core.requests.restaction.OrderAction#moveDown(int)down}
+     * {@link net.dv8tion.jda.core.requests.restaction.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.core.requests.restaction.OrderAction#moveDown(int) down}
      * or {@link net.dv8tion.jda.core.requests.restaction.OrderAction#moveTo(int) to} a specific position.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} include:
@@ -1800,9 +1802,11 @@ public class GuildController
      *
      * @param  useDiscordOrder
      *         Defines the ordering of the OrderAction. If {@code true}, the OrderAction will be in the ordering
-     *         defined by Discord for roles, which is Descending. This means that the lowest role appears at index {@code 0}
-     *         and the highest role at index {@code n - 1}. Providing {@code false} will result in the ordering being
-     *         in ascending order, with the highest role at index {@code 0} and the lowest at index {@code n - 1}.
+     *         defined by Discord for roles, which is Descending. This means that the highest role appears at index {@code 0}
+     *         and the lowest role at index {@code n - 1}. Providing {@code false} will result in the ordering being
+     *         in ascending order, with the lower role at index {@code 0} and the highest at index {@code n - 1}.
+     *         <br>As a note: {@link net.dv8tion.jda.core.entities.Member#getRoles() Member.getRoles()}
+     *         and {@link net.dv8tion.jda.core.entities.Guild#getRoles() Guild.getRoles()} are both in descending order.
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.RoleOrderAction RoleOrderAction}
      */
