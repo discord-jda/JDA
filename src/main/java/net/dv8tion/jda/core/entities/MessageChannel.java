@@ -829,7 +829,9 @@ public interface MessageChannel extends ISnowflake
      *     <br>The request was attempted after the account lost access to the
      *         {@link net.dv8tion.jda.core.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
-     *         was revoked in the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}</li>
+     *         was revoked in the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
+     *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
      *
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The request was attempted after the account lost
@@ -860,9 +862,12 @@ public interface MessageChannel extends ISnowflake
      *             <li>If provided {@code messageId} is {@code null} or empty.</li>
      *         </ul>
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the currently logged
-     *         in account does not have {@link net.dv8tion.jda.core.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION}
-     *         in this channel.
+     *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel
+     *         and the logged in account does not have
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION}</li>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *         </ul>
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: Void
      */
@@ -908,7 +913,9 @@ public interface MessageChannel extends ISnowflake
      *     <br>The request was attempted after the account lost access to the
      *         {@link net.dv8tion.jda.core.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
-     *         was revoked in the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}</li>
+     *         was revoked in the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
+     *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
      *
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The request was attempted after the account lost
@@ -938,9 +945,12 @@ public interface MessageChannel extends ISnowflake
      *             <li>If provided {@code emote} is {@code null}</li>
      *         </ul>
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the currently logged
-     *         in account does not have {@link net.dv8tion.jda.core.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION}
-     *         in this channel.
+     *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel
+     *         and the logged in account does not have
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION}</li>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *         </ul>
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: Void
      */

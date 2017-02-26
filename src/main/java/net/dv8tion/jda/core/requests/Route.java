@@ -119,16 +119,15 @@ public class Route
         public static final Route ADD_PINNED_MESSAGE =    new Route(PUT,    "channels/{channel_id}/pins/{message_id}",     "channel_id");
         public static final Route REMOVE_PINNED_MESSAGE = new Route(DELETE, "channels/{channel_id}/pins/{message_id}",     "channel_id");
 
-        public static final Route ADD_REACTION =         new Route(PUT,    "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}/@me",           "channel_id");
-        public static final Route REMOVE_REACTION =      new Route(DELETE, "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}/{user_id}",     "channel_id");
-        public static final Route REMOVE_ALL_REACTIONS = new Route(DELETE, "channels/{channel_id}/messages/{message_id}/reactions",                               "channel_id");
-        public static final Route GET_REACTION_USERS =   new Route(GET,    "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}?limit={limit}", "channel_id");
+        public static final Route ADD_REACTION =         new Route(PUT,    new RateLimit(1, 250), "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}/@me",           "channel_id");
+        public static final Route REMOVE_REACTION =      new Route(DELETE,                        "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}/{user_id}",     "channel_id");
+        public static final Route REMOVE_ALL_REACTIONS = new Route(DELETE,                        "channels/{channel_id}/messages/{message_id}/reactions",                               "channel_id");
+        public static final Route GET_REACTION_USERS =   new Route(GET,                           "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}?limit={limit}", "channel_id");
 
         public static final Route GET_MESSAGE_HISTORY =        new Route(GET, "channels/{channel_id}/messages?limit={}",           "channel_id");
         public static final Route GET_MESSAGE_HISTORY_BEFORE = new Route(GET, "channels/{channel_id}/messages?limit={}&before={}", "channel_id");
         public static final Route GET_MESSAGE_HISTORY_AFTER =  new Route(GET, "channels/{channel_id}/messages?limit={}&after={}",  "channel_id");
         public static final Route GET_MESSAGE_HISTORY_AROUND = new Route(GET, "channels/{channel_id}/messages?limit={}&around={}", "channel_id");
-
 
         //Bot only
         public static final Route GET_MESSAGE =     new Route(GET, "channels/{channel_id}/messages/{message_id}", "channel_id");
@@ -162,10 +161,17 @@ public class Route
     private final int paramCount;
     private final HttpMethod method;
     private final List<Integer> majorParamIndexes = new ArrayList<>();
+    private final RateLimit ratelimit;
 
     private Route(HttpMethod method, String route, String... majorParameters)
     {
+        this(method, null, route, majorParameters);
+    }
+
+    private Route(HttpMethod method, RateLimit rateLimit, String route, String... majorParameters)
+    {
         this.method = method;
+        this.ratelimit = rateLimit;
         this.route = route;
         this.paramCount = StringUtils.countMatches(route, '{'); //All parameters start with {
 
@@ -221,6 +227,11 @@ public class Route
     public String getRatelimitRoute()
     {
         return ratelimitRoute;
+    }
+
+    public final RateLimit getRatelimit()
+    {
+        return this.ratelimit;
     }
 
     public String getCompilableRoute()
@@ -337,6 +348,28 @@ public class Route
         public String toString()
         {
             return "CompiledRoute(" + method + ": " + compiledRoute + ")";
+        }
+    }
+    
+    public static class RateLimit
+    {
+        final int usageLimit;
+        final int resetTime; // in ms
+
+        public RateLimit(int usageLimit, int resetTime)
+        {
+            this.usageLimit = usageLimit;
+            this.resetTime = resetTime;
+        }
+
+        public final int getUsageLimit()
+        {
+            return this.usageLimit;
+        }
+
+        public final int getResetTime()
+        {
+            return this.resetTime;
         }
     }
 
