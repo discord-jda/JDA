@@ -47,12 +47,19 @@ public class GuildDeleteHandler extends SocketHandler
     @Override
     protected String handleInternally(JSONObject content)
     {
-        if (GuildLock.get(api).isLocked(content.getString("id")))
+        String guildId = content.getString("id");
+        GuildImpl guild = (GuildImpl) api.getGuildMap().get(guildId);
+
+        //If the event is attempting to mark the guild as unavailable, but it is already unavailable,
+        // ignore the event
+        if (!guild.isAvailable() && content.has("unavailable") && content.getBoolean("unavailable"))
+            return null;
+
+        if (GuildLock.get(api).isLocked(guildId))
         {
-            return content.getString("id");
+            return guildId;
         }
 
-        GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("id"));
         AudioManagerImpl manager = (AudioManagerImpl) api.getAudioManagerMap().get(guild.getId());
         if (manager != null)
             manager.closeAudioConnection(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD);
