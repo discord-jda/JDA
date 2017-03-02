@@ -86,8 +86,19 @@ public class Decoder
         return audio;
     }
 
-    protected void close()
+    protected synchronized void close()
     {
-        Opus.INSTANCE.opus_decoder_destroy(opusDecoder);
+        if (opusDecoder != null)
+        {
+            Opus.INSTANCE.opus_decoder_destroy(opusDecoder);
+            opusDecoder = null;
+        }
+    }
+
+    @Override
+    protected void finalize() throws Throwable
+    {
+        super.finalize();
+        close();
     }
 }
