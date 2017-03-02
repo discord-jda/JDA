@@ -40,7 +40,7 @@ import java.util.List;
 /**
  * Represents a Custom Emote. (Emoji in official Discord API terminology)
  *
- * @since  JDA 2.2
+ * @since  2.2
  * @author Florian Spieß
  */
 public class EmoteImpl implements Emote

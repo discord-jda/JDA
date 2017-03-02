@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
  * <br>A visual breakdown of an Embed and how it relates to this class is available at
  * <a href="http://imgur.com/a/yOb5n" target="_blank">http://imgur.com/a/yOb5n</a>.
  *
- * @since  JDA 3.0
+ * @since  3.0
  * @author John A. Grosh
  */
 public class EmbedBuilder 

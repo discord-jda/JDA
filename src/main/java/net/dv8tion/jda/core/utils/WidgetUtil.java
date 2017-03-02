@@ -39,7 +39,7 @@ import java.util.List;
  * The WidgetUtil is a class for interacting with various facets of Discord's
  * guild widgets
  *
- * @since  JDA 3.0
+ * @since  3.0
  * @author John A. Grosh
  */
 public class WidgetUtil 

@@ -25,7 +25,7 @@ import net.dv8tion.jda.core.requests.*;
 /**
  * The implementation for {@link net.dv8tion.jda.core.entities.Webhook Webhook}
  *
- * @since  JDA 3.0
+ * @since  3.0
  * @author Florian Spieß
  */
 public class WebhookImpl implements Webhook
