@@ -45,6 +45,8 @@ public class AudioManagerImpl implements AudioManager
 
     protected static boolean initialized = false;
 
+    public final Object CONNECTION_LOCK = new Object();
+
     protected final JDAImpl api;
     protected final Guild guild;
     protected AudioConnection audioConnection = null;
@@ -116,12 +118,15 @@ public class AudioManagerImpl implements AudioManager
 
     public void closeAudioConnection(ConnectionStatus reason)
     {
-        api.getClient().getQueuedAudioConnectionMap().remove(guild.getId());
-        this.queuedAudioConnection = null;
-        if (audioConnection == null)
-            return;
-        this.audioConnection.close(reason);
-        this.audioConnection = null;
+        synchronized (CONNECTION_LOCK)
+        {
+            api.getClient().getQueuedAudioConnectionMap().remove(guild.getId());
+            this.queuedAudioConnection = null;
+            if (audioConnection == null)
+                return;
+            this.audioConnection.close(reason);
+            this.audioConnection = null;
+        }
     }
 
     @Override

@@ -67,23 +67,26 @@ public class VoiceServerUpdateHandler extends SocketHandler
         endpoint = endpoint.replace(":80", "");
 
         AudioManagerImpl audioManager = (AudioManagerImpl) guild.getAudioManager();
-        if (audioManager.isConnected())
-            audioManager.prepareForRegionChange();
-        if (!audioManager.isAttemptingToConnect())
+        synchronized (audioManager.CONNECTION_LOCK) //Synchronized to prevent attempts to close while setting up initial objects.
         {
-            WebSocketClient.LOG.debug("Received a VOICE_SERVER_UPDATE but JDA is not currently connected nor attempted to connect " +
-                    "to a VoiceChannel. Assuming that this is caused by another client running on this account. Ignoring the event.");
+            if (audioManager.isConnected())
+                audioManager.prepareForRegionChange();
+            if (!audioManager.isAttemptingToConnect())
+            {
+                WebSocketClient.LOG.debug("Received a VOICE_SERVER_UPDATE but JDA is not currently connected nor attempted to connect " +
+                        "to a VoiceChannel. Assuming that this is caused by another client running on this account. Ignoring the event.");
+                return null;
+            }
+
+            try
+            {
+                AudioWebSocket socket = new AudioWebSocket(audioManager.getListenerProxy(), endpoint, api, guild, sessionId, token, audioManager.isAutoReconnect());
+                AudioConnection connection = new AudioConnection(socket, audioManager.getQueuedAudioConnection());
+                audioManager.setAudioConnection(connection);
+            }
+            catch (WebSocketException | IOException ignored) {} // handled in AudioWebSocket
+
             return null;
         }
-
-        try
-        {
-            AudioWebSocket socket = new AudioWebSocket(audioManager.getListenerProxy(), endpoint, api, guild, sessionId, token, audioManager.isAutoReconnect());
-            AudioConnection connection = new AudioConnection(socket, audioManager.getQueuedAudioConnection());
-            audioManager.setAudioConnection(connection);
-        }
-        catch (WebSocketException | IOException ignored) {} // handled in AudioWebSocket
-
-        return null;
     }
 }
