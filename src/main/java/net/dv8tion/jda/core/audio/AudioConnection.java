@@ -214,6 +214,15 @@ public class AudioConnection
             combinedAudioExecutor.shutdownNow();
             combinedAudioExecutor = null;
         }
+        if (opusEncoder != null)
+        {
+            Opus.INSTANCE.opus_encoder_destroy(opusEncoder);
+            opusEncoder = null;
+        }
+        if (opusDecoders != null)
+        {
+            opusDecoders.values().forEach(decoder -> decoder.close());
+        }
     }
 
     private synchronized void setupSendSystem()
