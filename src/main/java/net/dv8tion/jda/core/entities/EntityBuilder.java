@@ -396,7 +396,8 @@ public class EntityBuilder
                     }
                     catch (IllegalArgumentException e)
                     {
-                        WebSocketClient.LOG.warn(e.getMessage() + ". Ignoring PermissionOverride.");
+                        //Caused by Discord not properly clearing PermissionOverrides when a Member leaves a Guild.
+                        WebSocketClient.LOG.debug(e.getMessage() + ". Ignoring PermissionOverride.");
                     }
                 }
             }
