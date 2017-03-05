@@ -198,7 +198,7 @@ public class ApplicationManagerUpdatable
     }
 
     /**
-     * Resets all {@link net.dv8tion.jda.core.managers.fields.ChannelField Fields}
+     * Resets all {@link net.dv8tion.jda.client.managers.fields.ApplicationField Fields}
      * for this manager instance by calling {@link net.dv8tion.jda.core.managers.fields.Field#reset() Field.reset()} sequentially
      * <br>This is automatically called by {@link #update()}
      */

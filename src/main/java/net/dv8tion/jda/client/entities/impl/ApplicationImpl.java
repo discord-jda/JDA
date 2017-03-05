@@ -84,7 +84,7 @@ public class ApplicationImpl implements Application
             protected void handleResponse(final Response response, final Request request)
             {
                 if (response.isOk())
-                    request.onSuccess(Void.TYPE);
+                    request.onSuccess(null);
                 else
                     request.onFailure(response);
             }
@@ -257,7 +257,7 @@ public class ApplicationImpl implements Application
         this.doesBotRequireCodeGrant = object.getBoolean("bot_require_code_grant");
         this.description = object.getString("description");
         this.flags = object.getInt("flags");
-        this.iconId = object.has("icon") ? null : object.getString("icon");
+        this.iconId = object.has("icon") ? object.getString("icon") : null;
         this.id = object.getString("id");
         this.name = object.getString("name");
 

@@ -109,6 +109,7 @@ public interface Application extends ISnowflake
 
     /**
      * The icon id of the application.
+     * <br>The application icon is <b>not</b> necessarily the same as the bot's avatar!
      * 
      * @return The iconId of the application or {@code null} if no icon is defined
      */
@@ -116,6 +117,7 @@ public interface Application extends ISnowflake
 
     /**
      * The icon-url of the application.
+     * <br>The application icon is <b>not</b> necessarily the same as the bot's avatar!
      * 
      * @return The icon-url of the application or {@code null} if no icon is defined
      */
@@ -152,6 +154,7 @@ public interface Application extends ISnowflake
 
     /**
      * The name of this application.
+     * <br>The application name is <b>not</b> necessarily the same as the bot's name!
      * 
      * @return The name of this application
      */
@@ -246,6 +249,10 @@ public interface Application extends ISnowflake
 
         /**
          * Creates a OAuth invite-link used to invite the bot.
+         * 
+         * <p>The link is provided in the following format:
+         * <br>{@code https://discordapp.com/oauth2/authorize?client_id=APPLICATION_ID&scope=bot&permissions=PERMISSIONS}
+         * <br>Unnecessary query parameters are stripped.
          *  
          * @param  permissions
          *         Possibly empty {@link java.util.List List} of {@link net.dv8tion.jda.core.Permission Permissions}
@@ -258,6 +265,10 @@ public interface Application extends ISnowflake
         /**
          * Creates a OAuth invite-link used to invite the bot.
          * 
+         * <p>The link is provided in the following format:
+         * <br>{@code https://discordapp.com/oauth2/authorize?client_id=APPLICATION_ID&scope=bot&permissions=PERMISSIONS}
+         * <br>Unnecessary query parameters are stripped.
+         * 
          * @param  permissions
          *         Possibly empty array of {@link net.dv8tion.jda.core.Permission Permissions}
          *         that should be requested via invite.
@@ -268,6 +279,10 @@ public interface Application extends ISnowflake
 
         /**
          * Creates a OAuth invite-link used to invite the bot.
+         * 
+         * <p>The link is provided in the following format:
+         * <br>{@code https://discordapp.com/oauth2/authorize?client_id=APPLICATION_ID&scope=bot&permissions=PERMISSIONS&guild_id=GUILD_ID}
+         * <br>Unnecessary query parameters are stripped.
          * 
          * @param  guildId
          *         The id of the pre-selected guild.
@@ -280,7 +295,11 @@ public interface Application extends ISnowflake
         String getInviteUrl(String guildId, Collection<Permission> permissions);
 
         /**
-         * Creates a OAuth invite-link used to invite the bot. 
+         * Creates a OAuth invite-link used to invite the bot.
+         * 
+         * <p>The link is provided in the following format:
+         * <br>{@code https://discordapp.com/oauth2/authorize?client_id=APPLICATION_ID&scope=bot&permissions=PERMISSIONS&guild_id=GUILD_ID}
+         * <br>Unnecessary query parameters are stripped. 
          * 
          * @param  guildId 
          *         The id of the pre-selected guild.

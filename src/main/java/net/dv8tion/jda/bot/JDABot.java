@@ -23,7 +23,7 @@ import net.dv8tion.jda.core.requests.RestAction;
 public interface JDABot
 {
     /**
-     * Returns the {@link net.dv8tion.jda.core.JDA JDA} instance of this {@link JDABot}
+     * Returns the {@link net.dv8tion.jda.core.JDA JDA} instance of this JDABot
      * 
      * @return The corresponding JDA instance
      */
