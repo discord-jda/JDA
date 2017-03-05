@@ -71,7 +71,7 @@ public enum Permission
     }
     
     /**
-     * The readable name as used in the Discord client.<br>
+     * The readable name as used in the Discord client.
      *
      * @return
      *      The readable name of this {@link net.dv8tion.jda.core.Permission Permission}.
