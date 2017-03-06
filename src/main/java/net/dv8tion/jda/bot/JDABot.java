@@ -18,7 +18,10 @@ package net.dv8tion.jda.bot;
 
 import net.dv8tion.jda.bot.entities.ApplicationInfo;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.requests.RestAction;
+
+import java.util.Collection;
 
 public interface JDABot
 {
@@ -31,11 +34,41 @@ public interface JDABot
 
     /**
      * Retrieves the {@link net.dv8tion.jda.bot.entities.ApplicationInfo ApplicationInfo} for
-     * the application that owns the logged in Bot-account.
+     * the application that owns the logged in Bot-Account.
      * <br>This contains information about the owner of the currently logged in bot account!
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.bot.entities.ApplicationInfo ApplicationInfo}
      *         <br>The {@link net.dv8tion.jda.bot.entities.ApplicationInfo ApplicationInfo} of the bot's application.
      */
     RestAction<ApplicationInfo> getApplicationInfo();
+
+    /**
+     * Creates an authorization invite url for the currently logged in Bot-Account.
+     * <br>Example Format:
+     * {@code https://discordapp.com/oauth2/authorize?scope=bot&client_id=288202953599221761&permissions=8}
+     *
+     * <p><b>Hint:</b> To enable a pre-selected Guild of choice append the parameter {@code &guild_id=YOUR_GUILD_ID}
+     *
+     * @param  permissions
+     *         The permissions to use in your invite, these can be changed by the link user.
+     *         <br>If no permissions are provided the {@code permissions} parameter is omitted
+     *
+     * @return A valid OAuth2 invite url for the currently logged in Bot-Account
+     */
+    String getInviteUrl(Permission... permissions);
+
+    /**
+     * Creates an authorization invite url for the currently logged in Bot-Account.
+     * <br>Example Format:
+     * {@code https://discordapp.com/oauth2/authorize?scope=bot&client_id=288202953599221761&permissions=8}
+     *
+     * <p><b>Hint:</b> To enable a pre-selected Guild of choice append the parameter {@code &guild_id=YOUR_GUILD_ID}
+     *
+     * @param  permissions
+     *         The permissions to use in your invite, these can be changed by the link user.
+     *         <br>If no permissions are provided the {@code permissions} parameter is omitted
+     *
+     * @return A valid OAuth2 invite url for the currently logged in Bot-Account
+     */
+    String getInviteUrl(Collection<Permission> permissions);
 }
