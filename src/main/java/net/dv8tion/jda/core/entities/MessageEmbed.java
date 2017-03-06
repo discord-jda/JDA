@@ -471,7 +471,7 @@ public interface MessageEmbed
      * the field can display on the same line as previous fields if there is
      * enough space horizontally.
      *
-     * @since  JDA
+     * @since  3.0
      * @author John A. Grosh
      */
     class Field

@@ -24,7 +24,7 @@ import net.dv8tion.jda.core.requests.RestAction;
 /**
  * An object representing Webhooks in Discord
  *
- * @since  JDA
+ * @since  3.0
  * @author Florian Spieß
  */
 public interface Webhook extends ISnowflake
