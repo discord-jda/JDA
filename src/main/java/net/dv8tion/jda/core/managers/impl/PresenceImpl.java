@@ -26,7 +26,7 @@ import org.json.JSONObject;
 /**
  * The Presence associated with the provided JDA instance
  *
- * @since  JDA 3.0
+ * @since  3.0
  * @author Florian Spieß
  */
 public class PresenceImpl implements Presence

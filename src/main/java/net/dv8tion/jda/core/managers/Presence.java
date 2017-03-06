@@ -23,7 +23,7 @@ import net.dv8tion.jda.core.entities.Game;
 /**
  * The Presence associated with the provided JDA instance
  *
- * @since  JDA 3.0
+ * @since  3.0
  * @author Florian Spieß
  */
 public interface Presence
