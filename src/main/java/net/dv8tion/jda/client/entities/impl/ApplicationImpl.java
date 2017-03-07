@@ -416,7 +416,7 @@ public class ApplicationImpl implements Application
             this.discriminator = object.getString("discriminator");
             this.token = object.getString("token");
             this.id = object.getString("id");
-            this.avatarId = object.has("avatar") ? null : object.getString("avatar");
+            this.avatarId = object.has("avatar") ? object.getString("avatar") : null;
 
             return this;
         }

@@ -47,7 +47,7 @@ public class AuthorizedApplicationImpl implements AuthorizedApplication
         this.iconId = iconId;
         this.id = id;
         this.name = name;
-        this.scopes = scopes;
+        this.scopes = Collections.unmodifiableList(scopes);
     }
 
     @Override
@@ -61,7 +61,7 @@ public class AuthorizedApplicationImpl implements AuthorizedApplication
             protected void handleResponse(final Response response, final Request request)
             {
                 if (response.isOk())
-                    request.onSuccess(Void.TYPE);
+                    request.onSuccess(null);
                 else
                     request.onFailure(response);
             }
@@ -120,7 +120,7 @@ public class AuthorizedApplicationImpl implements AuthorizedApplication
     @Override
     public List<String> getScopes()
     {
-        return Collections.unmodifiableList(this.scopes);
+        return this.scopes;
     }
 
     @Override

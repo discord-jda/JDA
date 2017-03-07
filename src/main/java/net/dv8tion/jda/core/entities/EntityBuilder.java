@@ -1169,13 +1169,13 @@ public class EntityBuilder
     {
         final String description = object.getString("description");
         final boolean doesBotRequireCodeGrant = object.getBoolean("bot_require_code_grant");
-        final String iconId = object.has("icon") ? null : object.getString("icon");
+        final String iconId = object.has("icon") ? object.getString("icon") : null;
         final String id = object.getString("id");
         final String name = object.getString("name");
         final boolean isBotPublic = object.getBoolean("bot_public");
         final User owner = createFakeUser(object.getJSONObject("owner"), false);
 
-        return new ApplicationInfoImpl(api, description, doesBotRequireCodeGrant, iconId, id, false, name, owner);
+        return new ApplicationInfoImpl(api, description, doesBotRequireCodeGrant, iconId, id, isBotPublic, name, owner);
     }
 
     public Application createApplication(JSONObject object)
@@ -1196,7 +1196,7 @@ public class EntityBuilder
         JSONObject application = object.getJSONObject("application");
 
         final String description = application.getString("description");
-        final String iconId = application.has("icon") ? null : application.getString("icon");
+        final String iconId = application.has("icon") ? application.getString("icon") : null;
         final String id = application.getString("id");
         final String name = application.getString("name");
 
