@@ -224,7 +224,7 @@ public class JDAClientImpl implements JDAClient
                     for (int i = 0; i < array.length(); i++)
                         applications.add(entityBuilder.createApplication(array.getJSONObject(i)));
 
-                    request.onSuccess(applications);
+                    request.onSuccess(Collections.unmodifiableList(applications));
                 }
                 else
                 {
@@ -271,7 +271,7 @@ public class JDAClientImpl implements JDAClient
                     for (int i = 0; i < array.length(); i++)
                         applications.add(entityBuilder.createAuthorizedApplication(array.getJSONObject(i)));
 
-                    request.onSuccess(applications);
+                    request.onSuccess(Collections.unmodifiableList(applications));
                 }
                 else
                 {

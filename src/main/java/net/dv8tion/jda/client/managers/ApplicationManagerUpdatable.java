@@ -318,10 +318,10 @@ public class ApplicationManagerUpdatable
      *         <br>Updates all modified fields or does nothing if none of the {@link net.dv8tion.jda.core.managers.fields.Field Fields}
      *         have been modified. ({@link net.dv8tion.jda.core.requests.RestAction.EmptyRestAction EmptyRestAction})
      */
-    public RestAction<Application> update()
+    public RestAction<Void> update()
     {
         if (!this.needsUpdate())
-            return new RestAction.EmptyRestAction<>(this.application);
+            return new RestAction.EmptyRestAction<>(null);
 
         final JSONObject body = new JSONObject();
 
@@ -348,7 +348,7 @@ public class ApplicationManagerUpdatable
         reset();    //now that we've built our JSON object, reset the manager back to the non-modified state
 
         Route.CompiledRoute route = Route.Applications.MODIFY_APPLICATION.compile(this.application.getId());
-        return new RestAction<Application>(this.getJDA(), route, body)
+        return new RestAction<Void>(this.getJDA(), route, body)
         {
             @Override
             protected void handleResponse(final Response response, final Request request)
@@ -356,7 +356,7 @@ public class ApplicationManagerUpdatable
                 if (response.isOk())
                 {
                     ApplicationManagerUpdatable.this.application.updateFromJson(response.getObject());
-                    request.onSuccess(ApplicationManagerUpdatable.this.application);
+                    request.onSuccess(null);
                 }
                 else
                     request.onFailure(response);

@@ -28,10 +28,10 @@ public class ApplicationInfoImpl implements ApplicationInfo
     private final JDA api;
 
     private final String description;
-    private boolean doesBotRequireCodeGrant;
+    private final boolean doesBotRequireCodeGrant;
     private final String iconId;
     private final String id;
-    private boolean isBotPublic;
+    private final boolean isBotPublic;
     private final String name;
     private final User owner;
 

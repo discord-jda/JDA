@@ -96,7 +96,7 @@ public class AuthorizedApplicationImpl implements AuthorizedApplication
     public String getIconUrl()
     {
         return this.iconId == null ? null
-                : "https://cdn.discordapp.com/app-icons/" + this.id + '/' + this.iconId + ".jpg";
+                : "https://cdn.discordapp.com/app-icons/" + this.id + '/' + this.iconId + ".png";
     }
 
     @Override

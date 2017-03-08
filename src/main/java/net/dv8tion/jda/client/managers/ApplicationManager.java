@@ -81,7 +81,7 @@ public class ApplicationManager
      * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#getDescriptionField()
      * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#update()
      */
-    public RestAction<Application> setDescription(final String description)
+    public RestAction<Void> setDescription(final String description)
     {
         return this.updatable.getDescriptionField().setValue(description).update();
     }
@@ -99,7 +99,7 @@ public class ApplicationManager
      * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#getDoesBotRequireCodeGrantField()
      * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#update()
      */
-    public RestAction<Application> setDoesBotRequireCodeGrant(final boolean requireCodeGrant)
+    public RestAction<Void> setDoesBotRequireCodeGrant(final boolean requireCodeGrant)
     {
         return this.updatable.getDoesBotRequireCodeGrantField().setValue(requireCodeGrant).update();
     }
@@ -118,7 +118,7 @@ public class ApplicationManager
      * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#getIconField()
      * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#update()
      */
-    public RestAction<Application> setIcon(final Icon icon)
+    public RestAction<Void> setIcon(final Icon icon)
     {
         return this.updatable.getIconField().setValue(icon).update();
     }
@@ -136,7 +136,7 @@ public class ApplicationManager
      * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#getIsBotPublicField()
      * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#update()
      */
-    public RestAction<Application> setIsBotPublic(final boolean botPublic)
+    public RestAction<Void> setIsBotPublic(final boolean botPublic)
     {
         return this.updatable.getIsBotPublicField().setValue(botPublic).update();
     }
@@ -159,7 +159,7 @@ public class ApplicationManager
      * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#getNameField()
      * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#update()
      */
-    public RestAction<Application> setName(final String name)
+    public RestAction<Void> setName(final String name)
     {
         return this.updatable.getNameField().setValue(name).update();
     }
@@ -183,7 +183,7 @@ public class ApplicationManager
      * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#getIconField()
      * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#update()
      */
-    public RestAction<Application> setRedirectUris(final List<String> redirectUris)
+    public RestAction<Void> setRedirectUris(final List<String> redirectUris)
     {
         return this.updatable.getRedirectUrisField().setValue(redirectUris).update();
     }
