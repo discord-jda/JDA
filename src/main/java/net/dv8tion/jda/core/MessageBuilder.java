@@ -79,7 +79,7 @@ public class MessageBuilder implements Appendable
     
     /**
      * Adds a {@link net.dv8tion.jda.core.entities.MessageEmbed} to the Message. Embeds can be built using
-     * the {@link net.dv8tion.jda.core.EmbedBuilder} and offer specialized formatting.
+     * the {@link net.dv8tion.jda.core.AbstractEmbedBuilder} and offer specialized formatting.
      *
      * @param  embed
      *         the embed to add, or null to remove

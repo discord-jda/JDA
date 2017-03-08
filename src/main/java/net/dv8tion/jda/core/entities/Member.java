@@ -31,7 +31,7 @@ import java.util.List;
  *
  * @since 3.0
  */
-public interface Member extends IMentionable, IPermissionHolder
+public interface Member extends User, IMentionable, IPermissionHolder
 {
     /**
      * The user wrapped by this Entity.
@@ -114,6 +114,16 @@ public interface Member extends IMentionable, IPermissionHolder
      * @return An immutable List of {@link net.dv8tion.jda.core.entities.Role Roles} for this Member.
      */
     List<Role> getRoles();
+
+    /**
+     * Returns if the member has a role named by the argument.
+     *
+     * @param name
+     *        Name of role to check.
+     *
+     * @return True if the member has the named role.
+     */
+    boolean hasRoleNamed(String name);
 
     /**
      * The {@link java.awt.Color Color} of this Member's name in a Guild.

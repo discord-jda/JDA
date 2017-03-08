@@ -20,12 +20,14 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.apache.http.util.Args;
 
-import java.awt.Color;
+import java.awt.*;
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.List;
 
 public class MemberImpl implements Member
 {
@@ -56,6 +58,66 @@ public class MemberImpl implements Member
     public Guild getGuild()
     {
         return guild;
+    }
+
+    @Override
+    public String getName() {
+        return user.getName();
+    }
+
+    @Override
+    public String getDiscriminator() {
+        return user.getDiscriminator();
+    }
+
+    @Override
+    public String getAvatarId() {
+        return user.getAvatarId();
+    }
+
+    @Override
+    public String getAvatarUrl() {
+        return user.getAvatarUrl();
+    }
+
+    @Override
+    public String getDefaultAvatarId() {
+        return user.getDefaultAvatarId();
+    }
+
+    @Override
+    public String getDefaultAvatarUrl() {
+        return user.getDefaultAvatarUrl();
+    }
+
+    @Override
+    public String getEffectiveAvatarUrl() {
+        return user.getEffectiveAvatarUrl();
+    }
+
+    @Override
+    public boolean hasPrivateChannel() {
+        return user.hasPrivateChannel();
+    }
+
+    @Override
+    public RestAction<PrivateChannel> openPrivateChannel() {
+        return user.openPrivateChannel();
+    }
+
+    @Override
+    public List<Guild> getMutualGuilds() {
+        return user.getMutualGuilds();
+    }
+
+    @Override
+    public PrivateChannel getPrivateChannel() {
+        return user.getPrivateChannel();
+    }
+
+    @Override
+    public boolean isBot() {
+        return user.isBot();
     }
 
     @Override
@@ -104,9 +166,19 @@ public class MemberImpl implements Member
     public List<Role> getRoles()
     {
         List<Role> roleList = new ArrayList<>(roles);
-        roleList.sort((r1, r2) -> r2.compareTo(r1));
+        roleList.sort(Comparator.reverseOrder());
 
         return Collections.unmodifiableList(roleList);
+    }
+
+    @Override
+    public boolean hasRoleNamed(String name) {
+        for (Role role: getRoles()) {
+            if (role.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -245,5 +317,25 @@ public class MemberImpl implements Member
     public String getAsMention()
     {
         return user.getAsMention();
+    }
+
+    /**
+     * The Snowflake id of this entity. This is unique to every entity and will never change.
+     *
+     * @return Never-null String containing the Id.
+     */
+    @Override
+    public String getId() {
+        return user.getId();
+    }
+
+    /**
+     * Describes whether an entity is fake or not.
+     *
+     * @return False, if this is an actual JDA entity.
+     */
+    @Override
+    public boolean isFake() {
+        return user.isFake();
     }
 }

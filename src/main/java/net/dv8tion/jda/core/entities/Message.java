@@ -39,6 +39,12 @@ import java.util.List;
 public interface Message extends ISnowflake
 {
     /**
+     * Return a class with utilities to help send a message to this message's channel.
+     * @return helper class with utility methods.
+     */
+    ResponseAction respond();
+
+    /**
      * A immutable list of all mentioned users. if no user was mentioned, this list is empty.
      * <br>In {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel's}, this always returns an empty List
      *
@@ -528,7 +534,7 @@ public interface Message extends ISnowflake
      *        The {@link net.dv8tion.jda.core.entities.Emote Emote} to add as a reaction to this Message.
      *
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel
+     *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.core.entities.TextChannel} TextChannel
      *         and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION}</li>
@@ -577,7 +583,7 @@ public interface Message extends ISnowflake
      *        The UTF8 emoji to add as a reaction to this Message.
      *
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel
+     *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.core.entities.TextChannel} TextChannel
      *         and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION}</li>

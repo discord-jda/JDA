@@ -208,7 +208,7 @@ public class MessageListenerExample extends ListenerAdapter
                         if (!selfMember.canInteract(member))
                         {
                             channel.sendMessage("Cannot kicked member: " + member.getEffectiveName() +", they are higher " +
-                                    "in the hierachy than I am!").queue();
+                                    "in the hierarchy than I am!").queue();
                             continue;   //Continue to the next mentioned user to be kicked.
                         }
 

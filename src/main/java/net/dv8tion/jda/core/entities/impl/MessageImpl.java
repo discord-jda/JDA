@@ -99,6 +99,11 @@ public class MessageImpl implements Message
     }
 
     @Override
+    public ResponseAction respond() {
+        return new ResponseAction(channel);
+    }
+
+    @Override
     public RestAction<Void> addReaction(Emote emote)
     {
         Args.notNull(emote, "Emote");

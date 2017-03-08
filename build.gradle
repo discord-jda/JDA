@@ -16,8 +16,17 @@
 
 //to build everything:             "gradlew build"
 //to build and upload everything:  "gradlew bintrayUpload"
-
 import org.apache.tools.ant.filters.ReplaceTokens
+
+buildscript {
+    ext.kotlin_version = '1.1.0'
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
 
 plugins {
     id 'com.jfrog.bintray' version '1.7.2'
@@ -29,10 +38,12 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '1.2.4'
 }
 
-def versionObj = new Version(major: 3, minor: 0, revision: "BETA2")
+apply plugin: 'kotlin'
+
+def versionObj = new Version(major: 0, minor: 0, revision: 1)
 
 group = "net.dv8tion"
-archivesBaseName = "JDA"
+archivesBaseName = "JDA+K"
 version = "$versionObj"
 
 sourceCompatibility = 1.8
@@ -69,6 +80,7 @@ dependencies {
     //Sets the dependencies for the examples
     examplesCompile configurations.compile
     examplesRuntime configurations.runtime
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
 }
 
 task sourcesForRelease(type: Copy) {
@@ -78,7 +90,7 @@ task sourcesForRelease(type: Copy) {
             versionMajor: versionObj.major.toString(),
             versionMinor: versionObj.minor.toString(),
             versionRevision: versionObj.revision.toString(),
-            versionBuild: versionObj.build.toString()
+            //versionBuild: versionObj.build.toString()
         ])
 }
 
@@ -150,7 +162,7 @@ javadoc {
             "net/dv8tion/jda/core/requests/restaction/CompletedFuture.java",
             "net/dv8tion/jda/core/requests/restaction/RequestFuture.java")
 
-    //opuswrapper
+    //opus wrapper
     exclude("tomp2p/opuswrapper")
     
     //voice crypto
@@ -163,9 +175,9 @@ bintray {
     publications = ["BintrayRelease"]
     pkg {
         repo = 'maven'
-        name = 'JDA'
+        name = 'JDA+K'
         licenses = ['Apache-2.0']
-        vcsUrl = 'https://github.com/DV8FromTheWorld/JDA.git'
+        vcsUrl = 'https://github.com/Gnar-Team/k-JDA/'
         publish = true
         version {
             name = project.version
@@ -187,11 +199,9 @@ publishing {
     }
 }
 
-String getProjectProperty(String propertyName)
-{
+String getProjectProperty(String propertyName) {
     String property = ""
-    if (hasProperty(propertyName))
-    {
+    if (hasProperty(propertyName)) {
         property = this.properties[propertyName]
     }
     return property
@@ -200,7 +210,6 @@ String getProjectProperty(String propertyName)
 task wrapper(type: Wrapper) {
     gradleVersion = '3.1'
 }
-
 
 build {
     dependsOn clean
@@ -217,20 +226,16 @@ build {
 
 bintrayUpload {
     dependsOn build
-    
-    onlyIf { !getProjectProperty("bintrayUsername").empty }
+
+    //onlyIf { !getProjectProperty("bintrayUsername").empty }
     onlyIf { !getProjectProperty("bintrayApiKey").empty }
-    onlyIf { System.getenv("BUILD_NUMBER") }
+    //onlyIf { System.getenv("BUILD_NUMBER") ?: System.getProperty("BUILD_NUMBER") }
 }
 
 class Version {
     String major, minor, revision
 
-    String getBuild() {
-        System.getenv("BUILD_NUMBER") ?: System.getProperty("BUILD_NUMBER") ?: "DEV"
-    }
-
     String toString() {
-        "${major}.${minor}.${revision}_$build"
+        "${major}.${minor}.${revision}"
     }
 }

@@ -37,7 +37,7 @@
  *         send a message to a {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel} together with
  *         an {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} and Text-To-Speech!</li>
  *
- *     <li>{@link net.dv8tion.jda.core.EmbedBuilder EmbedBuilder}
+ *     <li>{@link net.dv8tion.jda.core.AbstractEmbedBuilder EmbedBuilder}
  *     <br>Used to build a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed}
  *         which can then be used in the message sending process (see above)</li>
  * </ul>
