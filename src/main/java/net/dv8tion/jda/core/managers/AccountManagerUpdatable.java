@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
 
 /**
  * An {@link #update(String) updatable} manager that allows
- * to modify account settings like the {@link #getNameField() username} or {@link #getAvatarField() avatar}.
+ * to modify account settings like the {@link #getNameField() username} or the {@link #getAvatarField() avatar}.
  *
  * <p>This manager allows to modify multiple fields at once
  * by getting the {@link net.dv8tion.jda.core.managers.fields.AccountField AccountFields} for specific

@@ -18,6 +18,7 @@ package net.dv8tion.jda.client.entities.impl;
 
 import net.dv8tion.jda.client.JDAClient;
 import net.dv8tion.jda.client.entities.*;
+import net.dv8tion.jda.client.requests.restaction.ApplicationAction;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Invite;
@@ -30,10 +31,10 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import org.apache.http.util.Args;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class JDAClientImpl implements JDAClient
@@ -200,6 +201,106 @@ public class JDAClientImpl implements JDAClient
     }
 
     @Override
+    public ApplicationAction createApplication(String name)
+    {
+        return new ApplicationAction(api, name);
+    }
+
+    @Override
+    public RestAction<List<Application>> getApplications()
+    {
+        Route.CompiledRoute route = Route.Applications.GET_APPLICATIONS.compile();
+        return new RestAction<List<Application>>(api, route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                {
+                    JSONArray array = response.getArray();
+                    List<Application> applications = new ArrayList<>(array.length());
+                    EntityBuilder entityBuilder = EntityBuilder.get(getJDA());
+
+                    for (int i = 0; i < array.length(); i++)
+                        applications.add(entityBuilder.createApplication(array.getJSONObject(i)));
+
+                    request.onSuccess(Collections.unmodifiableList(applications));
+                }
+                else
+                {
+                    request.onFailure(response);
+                }
+            }
+        };
+    }
+
+    @Override
+    public RestAction<Application> getApplicationById(String id)
+    {
+        Args.notEmpty(id, "id");
+
+        Route.CompiledRoute route = Route.Applications.GET_APPLICATION.compile(id); 
+        return new RestAction<Application>(api, route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                    request.onSuccess(EntityBuilder.get(getJDA()).createApplication(response.getObject()));
+                else
+                    request.onFailure(response);
+            }
+        };
+    }
+
+    @Override
+    public RestAction<List<AuthorizedApplication>> getAuthorizedApplications()
+    {
+        Route.CompiledRoute route = Route.Applications.GET_AUTHORIZED_APPLICATIONS.compile();
+        return new RestAction<List<AuthorizedApplication>>(api, route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                {
+                    JSONArray array = response.getArray();
+                    List<AuthorizedApplication> applications = new ArrayList<>(array.length());
+                    EntityBuilder entityBuilder = EntityBuilder.get(getJDA());
+
+                    for (int i = 0; i < array.length(); i++)
+                        applications.add(entityBuilder.createAuthorizedApplication(array.getJSONObject(i)));
+
+                    request.onSuccess(Collections.unmodifiableList(applications));
+                }
+                else
+                {
+                    request.onFailure(response);
+                }
+            }
+        };
+    }
+
+    @Override
+    public RestAction<AuthorizedApplication> getAuthorizedApplicationById(String id)
+    {
+        Args.notEmpty(id, "id");
+
+        Route.CompiledRoute route = Route.Applications.GET_AUTHORIZED_APPLICATION.compile(id);
+        return new RestAction<AuthorizedApplication>(api, route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (response.isOk())
+                    request.onSuccess(EntityBuilder.get(getJDA()).createAuthorizedApplication(response.getObject()));
+                else
+                    request.onFailure(response);
+            }
+        };
+    }
+
+    @Override
     public RestAction<Invite> acceptInvite(Invite invite)
     {
         return acceptInvite(invite.getCode());
@@ -208,7 +309,7 @@ public class JDAClientImpl implements JDAClient
     @Override
     public RestAction<Invite> acceptInvite(String code)
     {
-        Args.notNull(code, "code");
+        Args.notEmpty(code, "code");
 
         final Route.CompiledRoute route = Route.Invites.ACCEPT_INVITE.compile(code);
 

@@ -35,7 +35,7 @@ import org.json.JSONObject;
 /**
  * An {@link #update() updatable} manager that allows
  * to modify channel settings like the {@link #getNameField() name}
- * or for {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} the {@link #getTopicField() topic}.
+ * or for {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} or the {@link #getTopicField() topic}.
  *
  * <p>This manager allows to modify multiple fields at once
  * by getting the {@link net.dv8tion.jda.core.managers.fields.ChannelField ChannelFields} for specific

@@ -34,7 +34,7 @@ import java.awt.Color;
 
 /**
  * An {@link #update() updatable} manager that allows
- * to modify role settings like the {@link #getNameField() name} the {@link #getColorField() color}.
+ * to modify role settings like the {@link #getNameField() name} or the {@link #getColorField() color}.
  *
  * <p>This manager allows to modify multiple fields at once
  * by getting the {@link net.dv8tion.jda.core.managers.fields.RoleField RoleField} for specific

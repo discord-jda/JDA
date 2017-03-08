@@ -28,6 +28,28 @@ import static com.mashape.unirest.http.HttpMethod.*;
 
 public class Route
 {
+    public static class Applications
+    {
+        // Bot only
+        public static final Route GET_BOT_APPLICATION =             new Route(GET,    "oauth2/applications/@me");
+
+        // Client only
+        public static final Route GET_APPLICATIONS =                new Route(GET,    "oauth2/applications");
+        public static final Route CREATE_APPLICATION =              new Route(POST,   "oauth2/applications");
+        public static final Route GET_APPLICATION =                 new Route(GET,    "oauth2/applications/{application_id}");
+        public static final Route MODIFY_APPLICATION =              new Route(PUT,    "oauth2/applications/{application_id}");
+        public static final Route DELETE_APPLICATION =              new Route(DELETE, "oauth2/applications/{application_id}");
+
+        public static final Route CREATE_BOT =                      new Route(POST,   "oauth2/applications/{application_id}/bot");
+
+        public static final Route RESET_APPLICATION_SECRET =        new Route(POST,   "oauth2/applications/{application_id}/reset");
+        public static final Route RESET_BOT_TOKEN =                 new Route(POST,   "oauth2/applications/{application_id}/bot/reset");
+
+        public static final Route GET_AUTHORIZED_APPLICATIONS =     new Route(GET,    "oauth2/tokens");
+        public static final Route GET_AUTHORIZED_APPLICATION =      new Route(GET,    "oauth2/tokens/{auth_id}");
+        public static final Route DELETE_AUTHORIZED_APPLICATION =   new Route(DELETE, "oauth2/tokens/{auth_id}");
+    }
+    
     public static class Self
     {
         public static final Route GET_SELF =               new Route(GET,    "users/@me");

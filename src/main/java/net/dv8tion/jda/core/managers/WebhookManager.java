@@ -24,7 +24,7 @@ import net.dv8tion.jda.core.entities.Webhook;
 import net.dv8tion.jda.core.requests.RestAction;
 
 /**
- * Decoration for a {@link net.dv8tion.jda.core.managers.WebhookManagerUpdatable WebhookManagerUpdatable} instance.
+ * Facade for a {@link net.dv8tion.jda.core.managers.WebhookManagerUpdatable WebhookManagerUpdatable} instance.
  * <br>Simplifies managing flow for convenience.
  *
  * <p>This decoration allows to modify a single field by automatically building an update {@link net.dv8tion.jda.core.requests.RestAction RestAction}

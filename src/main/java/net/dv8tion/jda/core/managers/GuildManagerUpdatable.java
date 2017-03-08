@@ -35,7 +35,7 @@ import org.json.JSONObject;
 
 /**
  * An {@link #update() updatable} manager that allows
- * to modify guild settings like the {@link #getNameField() name}  the {@link #getSplashField() splash}.
+ * to modify guild settings like the {@link #getNameField() name} or the {@link #getSplashField() splash}.
  *
  * <p>This manager allows to modify multiple fields at once
  * by getting the {@link net.dv8tion.jda.core.managers.fields.GuildField GuildField} for specific
