@@ -10,6 +10,7 @@ k-JDA is an superset of JDA, the Java API for Discord. It's not much different f
     * Migrated `EmbedBuilder.java` to Kotlin.
     * Renamed methods.
     * Added methods to suit Kotlin development.
+* New event: `EntityCreationEvent`
 * `Message` / `MessageImpl`
     * `#respond()` extension that allows for access of utility methods that respond in the message's channel.
 * `Member` /` MemberImpl` now implements `User`.

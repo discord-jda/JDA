@@ -27,6 +27,7 @@ import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.MessageEmbed.*;
 import net.dv8tion.jda.core.entities.impl.*;
+import net.dv8tion.jda.core.events.EntityCreationEvent;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.handle.GuildMembersChunkHandler;
 import net.dv8tion.jda.core.handle.ReadyHandler;
@@ -476,11 +477,15 @@ public class EntityBuilder
             }
         }
 
-        return userObj
+        userObj
                 .setName(user.getString("username"))
                 .setDiscriminator(user.get("discriminator").toString())
                 .setAvatarId(user.isNull("avatar") ? null : user.getString("avatar"))
                 .setBot(user.has("bot") && user.getBoolean("bot"));
+
+        api.getEventManager().handle(new EntityCreationEvent(api, userObj));
+
+        return userObj;
     }
 
     public Member createMember(GuildImpl guild, JSONObject memberJson)
