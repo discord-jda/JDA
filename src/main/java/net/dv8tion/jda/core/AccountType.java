@@ -22,5 +22,5 @@ package net.dv8tion.jda.core;
  */
 public enum AccountType
 {
-    BOT, CLIENT;
+    BOT, CLIENT
 }

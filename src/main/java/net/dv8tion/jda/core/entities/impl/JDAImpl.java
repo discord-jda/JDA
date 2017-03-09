@@ -51,6 +51,7 @@ public class JDAImpl implements JDA
 {
     public static final SimpleLog LOG = SimpleLog.getLog("JDA");
 
+    protected final Map<String, Object> data = new WeakHashMap<>();
     protected final HashMap<String, User> users = new HashMap<>(200);
     protected final HashMap<String, Guild> guilds = new HashMap<>(10);
     protected final HashMap<String, TextChannel> textChannels = new HashMap<>();
@@ -98,6 +99,11 @@ public class JDAImpl implements JDA
 
         if (audioEnabled)
             ;   //TODO: setup audio system
+    }
+
+    @Override
+    public Map<String, Object> getData() {
+        return data;
     }
 
     public void login(String token, ShardInfo shardInfo) throws LoginException, RateLimitedException
