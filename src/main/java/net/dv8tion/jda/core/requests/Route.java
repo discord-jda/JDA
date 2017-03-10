@@ -163,9 +163,6 @@ public class Route
         public static final Route GET_GUILD_INVITES =   new Route(GET,    "guilds/{guild_id}/invites",     "guild_id");
         public static final Route GET_CHANNEL_INVITES = new Route(GET,    "channels/{channel_id}/invites", "channel_id");
         public static final Route CREATE_INVITE =       new Route(POST,   "channels/{channel_id}/invites", "channel_id");
-
-        //Client Only
-        public static final Route ACCEPT_INVITE =       new Route(POST,   "invites/{code}");
     }
 
     public static class Custom
@@ -393,20 +390,5 @@ public class Route
         {
             return this.resetTime;
         }
-    }
-
-    //TODO: Remove once all Routes have been implemented.
-    public static void main(String[] args)
-    {
-        System.out.println("Forcing static load to test for invalid {} parameters!");
-        Route r;
-        r = Self.CREATE_PRIVATE_CHANNEL;
-        r = Users.GET_USER;
-        r = Guilds.BAN;
-        r = Roles.CREATE_ROLE;
-        r = Channels.CREATE_PERM_OVERRIDE;
-        r = Messages.ADD_PINNED_MESSAGE;
-        r = Invites.ACCEPT_INVITE;
-        System.out.println("Done!");
     }
 }

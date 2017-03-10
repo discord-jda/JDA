@@ -1135,6 +1135,7 @@ public class EntityBuilder
 
         final JSONObject channelObject = object.getJSONObject("channel");
         final String channelTypeName = channelObject.getString("type");
+        final User inviter = object.has("inviter") ? this.createFakeUser(object.getJSONObject("inviter"), false) : null;
 
         final ChannelType channelType = channelTypeName.equals("text")
             ? ChannelType.TEXT
@@ -1155,7 +1156,6 @@ public class EntityBuilder
 
         final Invite.Guild guild = new InviteImpl.GuildImpl(guildId, guildIconId, guildName, guildSplashId);
 
-        final User inviter;
         final int maxAge;
         final int maxUses;
         final boolean temporary;
@@ -1163,10 +1163,9 @@ public class EntityBuilder
         final int uses;
         final boolean expanded;
 
-        if (object.has("inviter"))
+        if (object.has("max_uses"))
         {
             expanded = true;
-            inviter = this.createFakeUser(object.getJSONObject("inviter"), false);
             maxAge = object.getInt("max_age");
             maxUses = object.getInt("max_uses");
             uses = object.getInt("uses");
@@ -1176,7 +1175,6 @@ public class EntityBuilder
         else
         {
             expanded = false;
-            inviter = null;
             maxAge = -1;
             maxUses = -1;
             uses = -1;

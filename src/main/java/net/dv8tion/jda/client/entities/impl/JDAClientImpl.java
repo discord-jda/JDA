@@ -299,35 +299,4 @@ public class JDAClientImpl implements JDAClient
             }
         };
     }
-
-    @Override
-    public RestAction<Invite> acceptInvite(Invite invite)
-    {
-        return acceptInvite(invite.getCode());
-    }
-
-    @Override
-    public RestAction<Invite> acceptInvite(String code)
-    {
-        Args.notEmpty(code, "code");
-
-        final Route.CompiledRoute route = Route.Invites.ACCEPT_INVITE.compile(code);
-
-        return new RestAction<Invite>(api, route, null)
-        {
-            @Override
-            protected void handleResponse(final Response response, final Request request)
-            {
-                if (response.isOk())
-                {
-                    final Invite invite = EntityBuilder.get(this.api).createInvite(response.getObject());
-                    request.onSuccess(invite);
-                }
-                else
-                {
-                    request.onFailure(response);
-                }
-            }
-        };
-    }
 }

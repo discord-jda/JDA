@@ -54,26 +54,6 @@ public interface Invite
         return InviteImpl.resolve(api, code);
     }
 
-    /**
-     * Accepts this invite and joins the guild.
-     * <b>This works only on client accounts!</b>
-     *
-     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_INVITE Unknown Invite}
-     *     <br>The Invite did not exist (possibly deleted) or the account is banned in the guild.</li>
-     * </ul>
-     *
-     * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
-     *         if the currently logged in account is not from {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType#CLIENT}
-     *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Invite Invite}
-     *         <br>The Invite object
-     *
-     * @see    net.dv8tion.jda.client.JDAClient#acceptInvite(Invite)
-     */
-    RestAction<Invite> accept();
-
    /**
     * Deletes this invite.
     * <br>Requires {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} in the invite's channel.
@@ -147,17 +127,9 @@ public interface Invite
     Guild getGuild();
 
     /**
-     * The user who created this invite. This may be a fake user.
-     *
-     * <p>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
-     *
-     * @throws IllegalStateException
-     *         if this invite is not expanded
+     * The user who created this invite. This may be a fake user. For not expanded invites this may be null.
      *
      * @return The user who created this invite
-     *
-     * @see    #expand()
-     * @see    #isExpanded()
      */
     User getInviter();
 

@@ -88,12 +88,6 @@ public class InviteImpl implements Invite
     }
 
     @Override
-    public RestAction<Invite> accept()
-    {
-        return api.asClient().acceptInvite(this);
-    }
-
-    @Override
     public RestAction<Invite> delete()
     {
         final Route.CompiledRoute route = Route.Invites.DELETE_INVITE.compile(this.code);
@@ -205,8 +199,6 @@ public class InviteImpl implements Invite
     @Override
     public User getInviter()
     {
-        if (!this.expanded)
-            throw new IllegalStateException("Only valid for expanded invites");
         return this.inviter;
     }
 
