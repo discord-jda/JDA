@@ -559,8 +559,6 @@ public interface JDA
      */
     void shutdown(boolean free);
 
-    List<IBucket> shutdownNow(boolean free);
-
     /**
      * Installs an auxiliary cable into your system.
      *

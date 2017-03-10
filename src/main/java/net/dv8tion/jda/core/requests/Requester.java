@@ -169,11 +169,6 @@ public class Requester
         rateLimiter.shutdown();
     }
 
-    public List<IBucket> shutdownNow()
-    {
-        return rateLimiter.shutdownNow();
-    }
-
     private BaseRequest createRequest(Route.CompiledRoute route, String body)
     {
         String url = DISCORD_API_PREFIX + route.getCompiledRoute();

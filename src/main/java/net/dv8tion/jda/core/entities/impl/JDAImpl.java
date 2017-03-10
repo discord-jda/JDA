@@ -120,7 +120,7 @@ public class JDAImpl implements JDA
                 @Override
                 public void run()
                 {
-                    JDAImpl.this.shutdownNow(true);
+                    JDAImpl.this.shutdown(true);
                 }
             });
         }
@@ -476,17 +476,16 @@ public class JDAImpl implements JDA
         shutdown(true);
     }
 
-    //TODO: offer a timeout version.
     @Override
     public void shutdown(boolean free)
     {
         setStatus(Status.SHUTTING_DOWN);
+        audioManagers.forEach((guildId, mng) -> mng.closeAudioConnection());
+        if (AudioWebSocket.KEEP_ALIVE_POOLS.containsKey(this))
+            AudioWebSocket.KEEP_ALIVE_POOLS.get(this).shutdownNow();
+        getClient().setAutoReconnect(false);
+        getClient().close();
         getRequester().shutdown();
-        audioManagers.forEach((guildId, mng) -> mng.closeAudioConnection());
-        if (AudioWebSocket.KEEP_ALIVE_POOLS.containsKey(this))
-            AudioWebSocket.KEEP_ALIVE_POOLS.get(this).shutdownNow();
-        getClient().setAutoReconnect(false);
-        getClient().close();
 
         if (free)
         {
@@ -497,29 +496,6 @@ public class JDAImpl implements JDA
             catch (IOException ignored) {}
         }
         setStatus(Status.SHUTDOWN);
-    }
-
-    @Override
-    public List<IBucket> shutdownNow(boolean free)
-    {
-        setStatus(Status.SHUTTING_DOWN);
-        List<IBucket> buckets = getRequester().shutdownNow();
-        audioManagers.forEach((guildId, mng) -> mng.closeAudioConnection());
-        if (AudioWebSocket.KEEP_ALIVE_POOLS.containsKey(this))
-            AudioWebSocket.KEEP_ALIVE_POOLS.get(this).shutdownNow();
-        getClient().setAutoReconnect(false);
-        getClient().close();
-
-        if (free)
-        {
-            try
-            {
-                Unirest.shutdown();
-            }
-            catch (IOException ignored) {}
-        }
-        setStatus(Status.SHUTDOWN);
-        return buckets;
     }
 
     @Override
