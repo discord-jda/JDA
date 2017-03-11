@@ -480,7 +480,7 @@ public interface MessageEmbed
         protected final String value;
         protected final boolean inline;
 
-        public Field(String name, String value, boolean inline)
+        public Field(String name, boolean inline, String value)
         {
             this.name = name;
             this.value = value;

@@ -40,10 +40,10 @@ plugins {
 
 apply plugin: 'kotlin'
 
-def versionObj = new Version(major: 0, minor: 0, revision: 1)
+def versionObj = new Version(major: 0, minor: 0, revision: 7)
 
 group = "net.dv8tion"
-archivesBaseName = "JDA+K"
+archivesBaseName = "JDA_K"
 version = "$versionObj"
 
 sourceCompatibility = 1.8
@@ -175,9 +175,9 @@ bintray {
     publications = ["BintrayRelease"]
     pkg {
         repo = 'maven'
-        name = 'JDA+K'
+        name = 'JDA_K'
         licenses = ['Apache-2.0']
-        vcsUrl = 'https://github.com/Gnar-Team/k-JDA/'
+        vcsUrl = 'https://github.com/Gnar-Team/JDA-K/'
         publish = true
         version {
             name = project.version

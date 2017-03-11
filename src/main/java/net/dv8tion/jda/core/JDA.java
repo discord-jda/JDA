@@ -31,7 +31,7 @@ import java.util.List;
 /**
  * The core of JDA. Acts as a registry system of JDA. All parts of the the API can be accessed starting from this class.
  */
-public interface JDA extends DataHolder
+public interface JDA
 {
     /**
      * Represents the connection status of JDA and its Main WebSocket.

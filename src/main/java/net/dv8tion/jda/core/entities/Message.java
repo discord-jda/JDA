@@ -40,6 +40,7 @@ public interface Message extends ISnowflake
 {
     /**
      * Return a class with utilities to help send a message to this message's channel.
+     *
      * @return helper class with utility methods.
      */
     ResponseAction respond();

@@ -43,6 +43,15 @@ import java.util.List;
 public interface MessageChannel extends ISnowflake
 {
     /**
+     * Return a class with utilities to help send a message to this message's channel.
+     *
+     * @return helper class with utility methods.
+     */
+    default ResponseAction send() {
+        return new ResponseAction(this);
+    }
+
+    /**
      * This method is a shortcut method to return the following information in the following situation:
      * If the MessageChannel is instance of..
      * <ul>

@@ -15,7 +15,6 @@ class ResponseAction(val channel: MessageChannel) {
      */
     fun text(text: String): RestAction<Message> {
         val message = MessageBuilder().append(text).build()
-
         return channel.sendMessage(message)
     }
 
@@ -27,8 +26,10 @@ class ResponseAction(val channel: MessageChannel) {
      */
     fun info(msg: String): RestAction<Message> {
         return embed {
-            author("Info", null, "https://gnarbot.xyz/assets/img/info.png")
-            description(msg)
+            //setAuthor("Info", null, "https://gnarbot.xyz/assets/img/info.png")
+            title = "Info"
+            description = msg
+            color = Color.BLUE
         }.rest()
     }
 
@@ -40,46 +41,28 @@ class ResponseAction(val channel: MessageChannel) {
      */
     fun error(msg: String): RestAction<Message> {
         return embed {
-            author("Error", null, "https://gnarbot.xyz/assets/img/error.png")
-            description(msg)
-            color(Color.RED)
-        }.rest()
-    }
-
-    /**
-     * Send an embeded message.
-     *
-     * @param text The text to send.
-     * @return The Message created by this function.
-     */
-    @JvmOverloads
-    fun embed(title: String? = null,
-              text: String?,
-              color: Color? = null,
-              thumb: String? = null,
-              img: String? = null): RestAction<Message> {
-        return embed(title) {
-            description(text)
-            color?.let { color(it) }
-            thumbnail(thumb)
-            image(img)
+            //author("Error", null, "https://gnarbot.xyz/assets/img/error.png")
+            title = "Error"
+            description = msg
+            color = Color.RED
         }.rest()
     }
 
     @JvmOverloads
-    fun embed(title: String? = null): ResponseAbstractEmbedBuilder = ResponseAbstractEmbedBuilder(channel).title(title)
+    fun embed(title: String? = null): ResponseEmbedBuilder = ResponseEmbedBuilder(channel).setTitle(title)
 
-    fun embed(title: String? = null, block: Consumer<ResponseAbstractEmbedBuilder>): ResponseAbstractEmbedBuilder {
+    fun embed(title: String? = null, block: Consumer<ResponseEmbedBuilder>): ResponseEmbedBuilder {
         return embed(title).apply { block.accept(this) }
     }
 
-    inline fun embed(title: String? = null, value: ResponseAbstractEmbedBuilder.() -> Unit): ResponseAbstractEmbedBuilder {
+    inline fun embed(title: String? = null, value: ResponseEmbedBuilder.() -> Unit): ResponseEmbedBuilder {
         return embed(title).apply { value(this) }
     }
 
-    class ResponseAbstractEmbedBuilder(val channel: MessageChannel) : AbstractEmbedBuilder<ResponseAbstractEmbedBuilder>() {
+    class ResponseEmbedBuilder(val channel: MessageChannel) : AbstractEmbedBuilder<ResponseEmbedBuilder>() {
         fun rest(): RestAction<Message> {
             return channel.sendMessage(build())
         }
     }
 }
+

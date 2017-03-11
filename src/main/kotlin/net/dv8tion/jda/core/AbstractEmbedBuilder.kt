@@ -16,6 +16,7 @@
 package net.dv8tion.jda.core
 
 import net.dv8tion.jda.core.entities.MessageEmbed
+import net.dv8tion.jda.core.entities.User
 import net.dv8tion.jda.core.entities.impl.MessageEmbedImpl
 import org.apache.http.util.Args
 import java.awt.Color
@@ -25,7 +26,7 @@ import java.util.*
 import java.util.function.Consumer
 import java.util.regex.Pattern
 
-@Suppress("UNCHECKED_CAST")
+@Suppress("UNCHECKED_CAST", "NOTHING_TO_INLINE")
 /* **
  * Builder system used to build [MessageEmbeds][net.dv8tion.jda.core.entities.MessageEmbed].
  * <br></br>A visual breakdown of an Embed and how it relates to this class is available at
@@ -36,7 +37,6 @@ import java.util.regex.Pattern
  * @author John A. Grosh
  */
 abstract class AbstractEmbedBuilder<T : AbstractEmbedBuilder<T>> {
-
     private var url: String? = null
     private var title: String? = null
     /* **
@@ -73,9 +73,9 @@ abstract class AbstractEmbedBuilder<T : AbstractEmbedBuilder<T>> {
     fun build(): MessageEmbed {
         if (isEmpty)
             throw IllegalStateException("Cannot build an empty embed!")
-        if (descriptionBuilder!!.length > TEXT_MAX_LENGTH)
+        if (descriptionBuilder.length > TEXT_MAX_LENGTH)
             throw IllegalStateException(String.format("Description is longer than %d! Please limit your input!", TEXT_MAX_LENGTH))
-        val description = if (this.descriptionBuilder.isEmpty()) null else this.descriptionBuilder!!.toString()
+        val description = if (this.descriptionBuilder.isEmpty()) null else this.descriptionBuilder.toString()
 
         return MessageEmbedImpl().setTitle(title)
                 .setUrl(url)
@@ -130,7 +130,7 @@ abstract class AbstractEmbedBuilder<T : AbstractEmbedBuilder<T>> {
      * @return the builder after the title has been set
      */
     @JvmOverloads
-    fun title(title: String?, url: String? = null): T {
+    fun setTitle(title: String?, url: String? = null): T {
         if (title == null) {
             this.title = null
             this.url = null
@@ -144,6 +144,15 @@ abstract class AbstractEmbedBuilder<T : AbstractEmbedBuilder<T>> {
             this.title = title
             this.url = url
         }
+        return this as T
+    }
+
+    fun getTitle() = title
+    fun getUrl() = url
+
+    fun setUrl(url: String?): T {
+        urlCheck(url)
+        setTitle(getTitle(), url)
         return this as T
     }
 
@@ -163,7 +172,7 @@ abstract class AbstractEmbedBuilder<T : AbstractEmbedBuilder<T>> {
      *
      * @return the builder after the description has been set
      */
-    fun description(description: CharSequence?): T {
+    fun setDescription(description: CharSequence?): T {
         if (description == null || description.isEmpty()) {
             this.descriptionBuilder = StringBuilder()
         } else {
@@ -172,6 +181,12 @@ abstract class AbstractEmbedBuilder<T : AbstractEmbedBuilder<T>> {
             this.descriptionBuilder = StringBuilder(description)
         }
         return this as T
+    }
+
+    fun getDescription() = descriptionBuilder.toString()
+
+    fun setDescription(any: Any?): T {
+        return setDescription(any.toString())
     }
 
     fun description(block: Consumer<StringBuilder>): T {
@@ -227,7 +242,7 @@ abstract class AbstractEmbedBuilder<T : AbstractEmbedBuilder<T>> {
      *
      * @return the builder after the timestamp has been set
      */
-    fun timestamp(temporal: TemporalAccessor?): T {
+    fun setTimestamp(temporal: TemporalAccessor?): T {
         if (temporal == null) {
             this.timestamp = null
         } else if (temporal is OffsetDateTime) {
@@ -258,6 +273,8 @@ abstract class AbstractEmbedBuilder<T : AbstractEmbedBuilder<T>> {
         return this as T
     }
 
+    fun getTimestamp() = timestamp
+
     /* **
      * Sets the Color of the embed.
 
@@ -275,10 +292,12 @@ abstract class AbstractEmbedBuilder<T : AbstractEmbedBuilder<T>> {
      *
      * @return the builder after the color has been set
      */
-    fun color(color: Color): T {
+    fun setColor(color: Color?): T {
         this.color = color
         return this as T
     }
+
+    fun getColor() = color
 
     /* **
      * Sets the Thumbnail of the embed.
@@ -299,7 +318,7 @@ abstract class AbstractEmbedBuilder<T : AbstractEmbedBuilder<T>> {
      *
      * @return the builder after the thumbnail has been set
      */
-    fun thumbnail(url: String?): T {
+    fun setThumbnail(url: String?): T {
         if (url == null) {
             this.thumbnail = null
         } else {
@@ -308,6 +327,9 @@ abstract class AbstractEmbedBuilder<T : AbstractEmbedBuilder<T>> {
         }
         return this as T
     }
+
+    fun getThumbnail() = thumbnail?.url
+
 
     /* **
      * Sets the Image of the embed.
@@ -328,7 +350,7 @@ abstract class AbstractEmbedBuilder<T : AbstractEmbedBuilder<T>> {
      *
      * @return the builder after the image has been set
      */
-    fun image(url: String?): T {
+    fun setImage(url: String?): T {
         if (url == null) {
             this.image = null
         } else {
@@ -337,6 +359,8 @@ abstract class AbstractEmbedBuilder<T : AbstractEmbedBuilder<T>> {
         }
         return this as T
     }
+
+    fun getImage() = image?.url
 
     /* **
      * Sets the Author of the embed. The author appears in the top left of the embed and can have a small
@@ -366,7 +390,7 @@ abstract class AbstractEmbedBuilder<T : AbstractEmbedBuilder<T>> {
      *
      * @return the builder after the author has been set
      */
-    fun author(name: String?, url: String?, iconUrl: String): T {
+    fun setAuthor(name: String?, url: String?, iconUrl: String?): T {
         //We only check if the name is null because its presence is what determines if the
         // the author will appear in the embed.
         if (name == null) {
@@ -378,6 +402,12 @@ abstract class AbstractEmbedBuilder<T : AbstractEmbedBuilder<T>> {
         }
         return this as T
     }
+
+    fun setAuthor(user: User): T {
+        return setAuthor(user.name, null, user.avatarUrl)
+    }
+
+    fun getAuthor() = author
 
     /* **
      * Sets the Footer of the embed.
@@ -402,7 +432,7 @@ abstract class AbstractEmbedBuilder<T : AbstractEmbedBuilder<T>> {
      *
      * @return the builder after the footer has been set
      */
-    fun footer(text: String?, iconUrl: String): T {
+    fun setFooter(text: String?, iconUrl: String?): T {
         //We only check if the text is null because its presence is what determines if the
         // footer will appear in the embed.
         if (text == null) {
@@ -415,6 +445,8 @@ abstract class AbstractEmbedBuilder<T : AbstractEmbedBuilder<T>> {
         }
         return this as T
     }
+
+    fun getFooter() = footer
 
     /* **
      * Copies the provided Field into a new Field for this builder.
@@ -462,13 +494,11 @@ abstract class AbstractEmbedBuilder<T : AbstractEmbedBuilder<T>> {
      *
      * @return the builder after the field has been added
      */
-    fun field(name: String?, inline: Boolean, value: String?): T {
+    fun field(name: String, inline: Boolean, value: String?): T {
         var n = name
         var v = value
-        if (n == null && v == null)
+        if (v == null)
             return this as T
-        else if (n == null || v == null)
-            throw IllegalArgumentException("Both Name and Value must be set!")
         else if (n.length > TITLE_MAX_LENGTH)
             throw IllegalArgumentException("Name cannot be longer than $TITLE_MAX_LENGTH characters.")
         else if (v.length > VALUE_MAX_LENGTH)
@@ -477,8 +507,20 @@ abstract class AbstractEmbedBuilder<T : AbstractEmbedBuilder<T>> {
             n = ZERO_WIDTH_SPACE
         if (v.isEmpty())
             v = ZERO_WIDTH_SPACE
-        this.fields.add(MessageEmbed.Field(n, v, inline))
+        this.fields.add(MessageEmbed.Field(n, inline, v))
         return this as T
+    }
+
+    inline fun field(name: String, inline: Boolean = false, value: Any?): T {
+        return field(name, inline, value.toString())
+    }
+
+    inline fun field(name: String, inline: Boolean = false, block: StringBuilder.() -> Unit): T {
+        return field(name, inline, StringBuilder().apply { block() })
+    }
+
+    fun field(name: String, inline: Boolean, block: Consumer<StringBuilder>): T {
+        return field(name, inline, StringBuilder().apply { block.accept(this) })
     }
 
     /* **
@@ -496,7 +538,7 @@ abstract class AbstractEmbedBuilder<T : AbstractEmbedBuilder<T>> {
      * @return the builder after the field has been added
      */
     fun blankField(inline: Boolean): T {
-        this.fields.add(MessageEmbed.Field(ZERO_WIDTH_SPACE, ZERO_WIDTH_SPACE, inline))
+        this.fields.add(MessageEmbed.Field(ZERO_WIDTH_SPACE, inline, ZERO_WIDTH_SPACE))
         return this as T
     }
 
@@ -513,16 +555,18 @@ abstract class AbstractEmbedBuilder<T : AbstractEmbedBuilder<T>> {
         return this as T
     }
 
-    private fun urlCheck(url: String?) {
-        if (url == null)
-            return
-        else if (url.length > URL_MAX_LENGTH)
-            throw IllegalArgumentException("URL cannot be longer than $URL_MAX_LENGTH characters.")
-        else if (!URL_PATTERN.matcher(url).matches())
-            throw IllegalArgumentException("URL must be a valid http or https url.")
-    }
+    fun getFields() = fields
 
     companion object {
+        @JvmStatic fun urlCheck(url: String?) {
+            if (url == null)
+                return
+            else if (url.length > URL_MAX_LENGTH)
+                throw IllegalArgumentException("URL cannot be longer than $URL_MAX_LENGTH characters.")
+            else if (!URL_PATTERN.matcher(url).matches())
+                throw IllegalArgumentException("URL must be a valid http or https url.")
+        }
+
         @JvmField val TITLE_MAX_LENGTH = 256
         @JvmField val VALUE_MAX_LENGTH = 1024
         @JvmField val TEXT_MAX_LENGTH = 2048
@@ -530,4 +574,73 @@ abstract class AbstractEmbedBuilder<T : AbstractEmbedBuilder<T>> {
         @JvmField val ZERO_WIDTH_SPACE = "\u200E"
         @JvmField val URL_PATTERN = Pattern.compile("\\s*(https?|attachment):\\/\\/.+\\..{2,}\\s*", Pattern.CASE_INSENSITIVE)!!
     }
+
+
+    var AbstractEmbedBuilder<*>.title
+        inline get() = this.getTitle()
+        inline set(value) {
+            this.setTitle(value)
+        }
+
+    var AbstractEmbedBuilder<*>.url
+        inline get() = this.getUrl()
+        inline set(value) {
+            this.setTitle(getTitle(), value)
+        }
+
+    var AbstractEmbedBuilder<*>.author
+        inline get() = this.getAuthor()
+        inline set(value) {
+            this.setAuthor(value?.name, value?.url, value?.iconUrl)
+        }
+
+    var AbstractEmbedBuilder<*>.color
+        inline get() = this.getColor()
+        inline set(value) {
+            this.setColor(value)
+        }
+
+    var AbstractEmbedBuilder<*>.description
+        inline get() = this.getDescription()
+        inline set(value) {
+            this.setDescription(value)
+        }
+
+    var AbstractEmbedBuilder<*>.footer
+        inline get() = this.getFooter()
+        inline set(value) {
+            this.setFooter(value?.text, value?.iconUrl)
+        }
+
+    var AbstractEmbedBuilder<*>.image
+        inline get() = this.getImage()
+        inline set(value) {
+            this.setImage(value)
+        }
+
+    var AbstractEmbedBuilder<*>.thumbnail
+        inline get() = this.getThumbnail()
+        inline set(value) {
+            this.setThumbnail(value)
+        }
+
+    var AbstractEmbedBuilder<*>.timestamp
+        inline get() = this.getTimestamp()
+        inline set(value) {
+            this.setTimestamp(value)
+        }
+
+    inline fun AbstractEmbedBuilder<*>.highlight(string: String) = b("[$string]()")
+    //inline fun AbstractEmbedBuilder<*>.highlight(any: Any) = highlight(any.toString())
+
+    inline fun AbstractEmbedBuilder<*>.b(string: String) = "**$string**"
+    //inline fun AbstractEmbedBuilder<*>.b(any: Any?) = b(any.toString())
+    inline fun AbstractEmbedBuilder<*>.i(string: String) = "*$string*"
+    //inline fun AbstractEmbedBuilder<*>.i(any: Any?) = i(any.toString())
+    inline fun AbstractEmbedBuilder<*>.u(string: String) = "__${string}__"
+    //inline fun AbstractEmbedBuilder<*>.u(any: Any?) = u(any.toString())
+
+    inline fun AbstractEmbedBuilder<*>.link(string: String, url: String? = null) = "[$string]${if (url != null) "($url)" else "()"}"
+    inline fun AbstractEmbedBuilder<*>.link(any: Any, url: String? = null) = "[$any]${if (url != null) "($url)" else "()"}"
+
 }
