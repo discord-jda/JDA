@@ -24,7 +24,7 @@ JDA jda = new JDABuilder(AccountType.BOT).setToken("token").buildBlocking();
 
 ## Events
 There are a TON of events in JDA that you can listen to.<br>
-There are 2 ways of writing your Event-Listener:
+Currently there are 2 ways of writing your Event-Listener:
   1. Extend ListenerAdapter and use the provided methods that get fire dependent on the Event-Type. [Event Methods](https://github.com/DV8FromTheWorld/JDA/blob/master/src/main/java/net/dv8tion/jda/hooks/ListenerAdapter.java)
   2. Implement EventListener and listen to onEvent and figure out if it is the event you want (Not suggested)<br>
 
