@@ -40,12 +40,6 @@ import java.util.regex.Pattern;
  */
 public class EmbedBuilder 
 {
-    public final static int TITLE_MAX_LENGTH = 256;
-    public final static int VALUE_MAX_LENGTH = 1024;
-    public final static int TEXT_MAX_LENGTH = 2048;
-    public final static int URL_MAX_LENGTH = 2000;
-    public final static int EMBED_MAX_LENGTH_BOT = 4000;
-    public final static int EMBED_MAX_LENGTH_CLIENT = 2000;
     public final static String ZERO_WIDTH_SPACE = "\u200E";
     public final static Pattern URL_PATTERN = Pattern.compile("\\s*(https?|attachment):\\/\\/.+\\..{2,}\\s*", Pattern.CASE_INSENSITIVE);
     
@@ -107,8 +101,8 @@ public class EmbedBuilder
     {
         if (isEmpty())
             throw new IllegalStateException("Cannot build an empty embed!");
-        if (description.length() > TEXT_MAX_LENGTH)
-            throw new IllegalStateException(String.format("Description is longer than %d! Please limit your input!", TEXT_MAX_LENGTH));
+        if (description.length() > MessageEmbed.TEXT_MAX_LENGTH)
+            throw new IllegalStateException(String.format("Description is longer than %d! Please limit your input!", MessageEmbed.TEXT_MAX_LENGTH));
         final String description = this.description.length() < 1 ? null : this.description.toString();
         
         return new MessageEmbedImpl().setTitle(title)
@@ -154,8 +148,8 @@ public class EmbedBuilder
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If the provided {@code title} is an empty String.</li>
-     *             <li>If the length of {@code title} is greater than {@link net.dv8tion.jda.core.EmbedBuilder#TITLE_MAX_LENGTH}.</li>
-     *             <li>If the length of {@code url} is longer than {@link net.dv8tion.jda.core.EmbedBuilder#URL_MAX_LENGTH}.</li>
+     *             <li>If the length of {@code title} is greater than {@link net.dv8tion.jda.core.entities.MessageEmbed#TITLE_MAX_LENGTH}.</li>
+     *             <li>If the length of {@code url} is longer than {@link net.dv8tion.jda.core.entities.MessageEmbed#URL_MAX_LENGTH}.</li>
      *             <li>If the provided {@code url} is not a properly formatted http or https url.</li>
      *         </ul>
      *
@@ -172,8 +166,8 @@ public class EmbedBuilder
         {
             if (title.isEmpty())
                 throw new IllegalArgumentException("Title cannot be empty!");
-            if (title.length() > TITLE_MAX_LENGTH)
-                throw new IllegalArgumentException("Title cannot be longer than " + TITLE_MAX_LENGTH + " characters.");
+            if (title.length() > MessageEmbed.TITLE_MAX_LENGTH)
+                throw new IllegalArgumentException("Title cannot be longer than " + MessageEmbed.TITLE_MAX_LENGTH + " characters.");
             urlCheck(url);
 
             this.title = title;
@@ -203,7 +197,7 @@ public class EmbedBuilder
      *         the description of the embed, {@code null} to reset
      *
      * @throws java.lang.IllegalArgumentException
-     *         If the length of {@code description} is greater than {@link net.dv8tion.jda.core.EmbedBuilder#TEXT_MAX_LENGTH}
+     *         If the length of {@code description} is greater than {@link net.dv8tion.jda.core.entities.MessageEmbed#TEXT_MAX_LENGTH}
      *
      * @return the builder after the description has been set
      */
@@ -215,8 +209,8 @@ public class EmbedBuilder
         }
         else
         {
-            Args.check(description.length() <= TEXT_MAX_LENGTH,
-                "Description cannot be longer than %d characters.", TEXT_MAX_LENGTH);
+            Args.check(description.length() <= MessageEmbed.TEXT_MAX_LENGTH,
+                "Description cannot be longer than %d characters.", MessageEmbed.TEXT_MAX_LENGTH);
             this.description = new StringBuilder(description);
         }
         return this;
@@ -233,7 +227,7 @@ public class EmbedBuilder
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If the provided {@code description} String is null</li>
-     *             <li>If the length of {@code description} is greater than {@link net.dv8tion.jda.core.EmbedBuilder#TEXT_MAX_LENGTH}.</li>
+     *             <li>If the length of {@code description} is greater than {@link net.dv8tion.jda.core.entities.MessageEmbed#TEXT_MAX_LENGTH}.</li>
      *         </ul>
      *
      * @return the builder after the description has been set
@@ -241,8 +235,8 @@ public class EmbedBuilder
     public EmbedBuilder appendDescription(CharSequence description)
     {
         Args.notNull(description, "description");
-        Args.check(this.description.length() + description.length() <= TEXT_MAX_LENGTH,
-                "Description cannot be longer than %d characters.", TEXT_MAX_LENGTH);
+        Args.check(this.description.length() + description.length() <= MessageEmbed.TEXT_MAX_LENGTH,
+                "Description cannot be longer than %d characters.", MessageEmbed.TEXT_MAX_LENGTH);
         this.description.append(description);
         return this;
     }
@@ -333,7 +327,7 @@ public class EmbedBuilder
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
-     *             <li>If the length of {@code url} is longer than {@link net.dv8tion.jda.core.EmbedBuilder#URL_MAX_LENGTH}.</li>
+     *             <li>If the length of {@code url} is longer than {@link net.dv8tion.jda.core.entities.MessageEmbed#URL_MAX_LENGTH}.</li>
      *             <li>If the provided {@code url} is not a properly formatted http or https url.</li>
      *         </ul>
      *
@@ -363,7 +357,7 @@ public class EmbedBuilder
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
-     *             <li>If the length of {@code url} is longer than {@link net.dv8tion.jda.core.EmbedBuilder#URL_MAX_LENGTH}.</li>
+     *             <li>If the length of {@code url} is longer than {@link net.dv8tion.jda.core.entities.MessageEmbed#URL_MAX_LENGTH}.</li>
      *             <li>If the provided {@code url} is not a properly formatted http or https url.</li>
      *         </ul>
      *
@@ -398,9 +392,9 @@ public class EmbedBuilder
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
-     *             <li>If the length of {@code url} is longer than {@link net.dv8tion.jda.core.EmbedBuilder#URL_MAX_LENGTH}.</li>
+     *             <li>If the length of {@code url} is longer than {@link net.dv8tion.jda.core.entities.MessageEmbed#URL_MAX_LENGTH}.</li>
      *             <li>If the provided {@code url} is not a properly formatted http or https url.</li>
-     *             <li>If the length of {@code iconUrl} is longer than {@link net.dv8tion.jda.core.EmbedBuilder#URL_MAX_LENGTH}.</li>
+     *             <li>If the length of {@code iconUrl} is longer than {@link net.dv8tion.jda.core.entities.MessageEmbed#URL_MAX_LENGTH}.</li>
      *             <li>If the provided {@code iconUrl} is not a properly formatted http or https url.</li>
      *         </ul>
      *
@@ -435,8 +429,8 @@ public class EmbedBuilder
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
-     *             <li>If the length of {@code text} is longer than {@link net.dv8tion.jda.core.EmbedBuilder#TEXT_MAX_LENGTH}.</li>
-     *             <li>If the length of {@code iconUrl} is longer than {@link net.dv8tion.jda.core.EmbedBuilder#URL_MAX_LENGTH}.</li>
+     *             <li>If the length of {@code text} is longer than {@link net.dv8tion.jda.core.entities.MessageEmbed#TEXT_MAX_LENGTH}.</li>
+     *             <li>If the length of {@code iconUrl} is longer than {@link net.dv8tion.jda.core.entities.MessageEmbed#URL_MAX_LENGTH}.</li>
      *             <li>If the provided {@code iconUrl} is not a properly formatted http or https url.</li>
      *         </ul>
      *
@@ -452,8 +446,8 @@ public class EmbedBuilder
         }
         else
         {
-            if (text.length() > TEXT_MAX_LENGTH)
-                throw new IllegalArgumentException("Text cannot be longer than " + TEXT_MAX_LENGTH + " characters.");
+            if (text.length() > MessageEmbed.TEXT_MAX_LENGTH)
+                throw new IllegalArgumentException("Text cannot be longer than " + MessageEmbed.TEXT_MAX_LENGTH + " characters.");
             urlCheck(iconUrl);
             this.footer = new MessageEmbed.Footer(text, iconUrl, null);
         }
@@ -493,8 +487,8 @@ public class EmbedBuilder
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If only {@code name} or {@code value} is set. Both must be set.</li>
-     *             <li>If the length of {@code name} is greater than {@link net.dv8tion.jda.core.EmbedBuilder#TITLE_MAX_LENGTH}.</li>
-     *             <li>If the length of {@code value} is greater than {@link net.dv8tion.jda.core.EmbedBuilder#TEXT_MAX_LENGTH}.</li>
+     *             <li>If the length of {@code name} is greater than {@link net.dv8tion.jda.core.entities.MessageEmbed#TITLE_MAX_LENGTH}.</li>
+     *             <li>If the length of {@code value} is greater than {@link net.dv8tion.jda.core.entities.MessageEmbed#TEXT_MAX_LENGTH}.</li>
      *         </ul>
      *
      * @return the builder after the field has been added
@@ -505,10 +499,10 @@ public class EmbedBuilder
             return this;
         else if (name == null || value == null)
             throw new IllegalArgumentException("Both Name and Value must be set!");
-        else if (name.length() > TITLE_MAX_LENGTH)
-            throw new IllegalArgumentException("Name cannot be longer than " + TITLE_MAX_LENGTH + " characters.");
-        else if (value.length() > VALUE_MAX_LENGTH)
-            throw new IllegalArgumentException("Value cannot be longer than " + VALUE_MAX_LENGTH + " characters.");
+        else if (name.length() > MessageEmbed.TITLE_MAX_LENGTH)
+            throw new IllegalArgumentException("Name cannot be longer than " + MessageEmbed.TITLE_MAX_LENGTH + " characters.");
+        else if (value.length() > MessageEmbed.VALUE_MAX_LENGTH)
+            throw new IllegalArgumentException("Value cannot be longer than " + MessageEmbed.VALUE_MAX_LENGTH + " characters.");
         if (name.isEmpty())
             name = ZERO_WIDTH_SPACE;
         if (value.isEmpty())
@@ -552,8 +546,8 @@ public class EmbedBuilder
     {
         if (url == null)
             return;
-        else if (url.length() > URL_MAX_LENGTH)
-            throw new IllegalArgumentException("URL cannot be longer than " + URL_MAX_LENGTH + " characters.");
+        else if (url.length() > MessageEmbed.URL_MAX_LENGTH)
+            throw new IllegalArgumentException("URL cannot be longer than " + MessageEmbed.URL_MAX_LENGTH + " characters.");
         else if (!URL_PATTERN.matcher(url).matches())
             throw new IllegalArgumentException("URL must be a valid http or https url.");
     }

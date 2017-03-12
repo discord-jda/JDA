@@ -15,6 +15,9 @@
  */
 package net.dv8tion.jda.core.entities;
 
+import net.dv8tion.jda.core.AccountType;
+import org.apache.http.util.Args;
+
 import java.awt.Color;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -27,6 +30,13 @@ import java.util.List;
  */
 public interface MessageEmbed
 {
+    int TITLE_MAX_LENGTH = 256;
+    int VALUE_MAX_LENGTH = 1024;
+    int TEXT_MAX_LENGTH = 2048;
+    int URL_MAX_LENGTH = 2000;
+    int EMBED_MAX_LENGTH_BOT = 4000;
+    int EMBED_MAX_LENGTH_CLIENT = 2000;
+
     /**
      * The that was originally placed into chat that spawned this embed.
      *
@@ -143,15 +153,48 @@ public interface MessageEmbed
     /**
      * The total amount of characters that is displayed when this embed is displayed by the Discord client.
      *
-     * <p>An Embed can only have, at max, <b>4000</b> displayable text characters for {@link net.dv8tion.jda.core.AccountType#BOT AccountType.BOT}
-     * accounts or <b>2000</b> displayable text characters for {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT} accounts.
+     * <p>An Embed can only have, at max, {@value #EMBED_MAX_LENGTH_BOT} displayable text characters for {@link net.dv8tion.jda.core.AccountType#BOT AccountType.BOT}
+     * accounts or {@value #EMBED_MAX_LENGTH_CLIENT} displayable text characters for {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT} accounts.
      *
-     * <p>Both of these values are defined by {@link net.dv8tion.jda.core.EmbedBuilder#EMBED_MAX_LENGTH_BOT EmbedBuilder.EMBED_MAX_LENGTH_BOT} and
-     * {@link net.dv8tion.jda.core.EmbedBuilder#EMBED_MAX_LENGTH_CLIENT EmbedBuilder.EMBED_MAX_LENGTH_CLIENT} respectively.
+     * <p>Both of these values are defined by {@link #EMBED_MAX_LENGTH_BOT EMBED_MAX_LENGTH_BOT} and
+     * {@link #EMBED_MAX_LENGTH_CLIENT EMBED_MAX_LENGTH_CLIENT} respectively.
      *
      * @return A never-negative sum of all displayed text characters.
      */
     int getLength();
+
+    /**
+     * Whether this MessageEmbed can be used in a message.
+     * <br>This applies to {@link net.dv8tion.jda.core.AccountType#BOT Bot}- and {@link net.dv8tion.jda.core.AccountType#CLIENT Client Accounts}
+     *
+     * <p>Total Character Limits
+     * <ul>
+     *     <li>Bot: {@value #EMBED_MAX_LENGTH_BOT}</li>
+     *     <li>Client: {@value #EMBED_MAX_LENGTH_CLIENT}</li>
+     * </ul>
+     *
+     * @param  type
+     *         The {@link net.dv8tion.jda.core.AccountType AccountType} to inspect
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided AccountType is {@code null} or not supported by this operation
+     *
+     * @return True, if this MessageEmbed can be used to send messages for this specified AccountType
+     *
+     * @see    #getLength()
+     */
+    default boolean isSendable(AccountType type)
+    {
+        Args.notNull(type, "AccountType");
+        final int length = getLength();
+
+        switch (type)
+        {
+            case BOT: return length <= EMBED_MAX_LENGTH_BOT;
+            case CLIENT: return length <= EMBED_MAX_LENGTH_CLIENT;
+            default: throw new IllegalArgumentException(String.format("Cannot check against AccountType '%s'!", type));
+        }
+    }
 
     /**
      * Represents the information Discord provided about a thumbnail image that should be

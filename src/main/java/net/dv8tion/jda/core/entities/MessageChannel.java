@@ -18,7 +18,6 @@ package net.dv8tion.jda.core.entities;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.request.body.MultipartBody;
 import net.dv8tion.jda.core.AccountType;
-import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.impl.MessageImpl;
@@ -144,7 +143,8 @@ public interface MessageChannel extends ISnowflake
      *         {@link net.dv8tion.jda.core.entities.TextChannel#getGuild() TextChannel.getGuild()}{@link net.dv8tion.jda.core.entities.Guild#checkVerification() .checkVerification()}
      *         returns false.
      * @throws java.lang.IllegalArgumentException
-     *         if the provided embed is null
+     *         if the provided embed is {@code null} or if the provided {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed}
+     *         is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
      *         <br>The newly created Message after it has been sent to Discord.
@@ -205,7 +205,9 @@ public interface MessageChannel extends ISnowflake
      *         {@link net.dv8tion.jda.core.entities.TextChannel#getGuild() TextChannel.getGuild()}{@link net.dv8tion.jda.core.entities.Guild#checkVerification() .checkVerification()}
      *         returns false.
      * @throws java.lang.IllegalArgumentException
-     *         if the provided message is null
+     *         if the provided message is {@code null} or the provided {@link net.dv8tion.jda.core.entities.Message Message}
+     *         contains an {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed}
+     *         that is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
      *         <br>The newly created Message after it has been sent to Discord.
@@ -218,17 +220,11 @@ public interface MessageChannel extends ISnowflake
 
         if (!msg.getEmbeds().isEmpty())
         {
-            int length = msg.getEmbeds().get(0).getLength();
-            if (getJDA().getAccountType() == AccountType.BOT)
-            {
-                Args.check(length <= EmbedBuilder.EMBED_MAX_LENGTH_BOT,
-                        "Provided Message contains an embed with a length greater than 4000 characters, which is the max for BOT accounts!");
-            }
-            else
-            {
-                Args.check(length <= EmbedBuilder.EMBED_MAX_LENGTH_CLIENT,
-                        "Provided Message contains an embed with a length greater than 2000 characters, which is the max for CLIENT accounts!");
-            }
+            AccountType type = getJDA().getAccountType();
+            MessageEmbed embed = msg.getEmbeds().get(0);
+            Args.check(embed.isSendable(type),
+                "Provided Message contains an embed with a length greater than %d characters, which is the max for %s accounts!",
+                    type == AccountType.BOT ? MessageEmbed.EMBED_MAX_LENGTH_BOT : MessageEmbed.EMBED_MAX_LENGTH_CLIENT, type);
         }
 
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
@@ -275,6 +271,9 @@ public interface MessageChannel extends ISnowflake
      *             <li>Provided {@code file} does not exist.</li>
      *             <li>Provided {@code file} is unreadable.</li>
      *             <li>Provided {@code file} is greater than 8MB.</li>
+     *             <li>Provided {@link net.dv8tion.jda.core.entities.Message Message} is not {@code null} <b>and</b>
+     *                 contains a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} which
+     *                 is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
      *         </ul>
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
@@ -350,6 +349,9 @@ public interface MessageChannel extends ISnowflake
      *             <li>Provided {@code file} does not exist.</li>
      *             <li>Provided {@code file} is unreadable.</li>
      *             <li>Provided {@code file} is greater than 8MB.</li>
+     *             <li>Provided {@link net.dv8tion.jda.core.entities.Message Message} is not {@code null} <b>and</b>
+     *                 contains a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} which
+     *                 is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
      *         </ul>
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
@@ -366,10 +368,10 @@ public interface MessageChannel extends ISnowflake
     {
         Args.notNull(file, "file");
 
-        if(file == null || !file.exists() || !file.canRead())
-            throw new IllegalArgumentException("Provided file is either null, doesn't exist or is not readable!");
-        if (file.length() > 8<<20)   //8MB, TODO: deal with Discord Nitro allowing 50MB files.
-            throw new IllegalArgumentException("File is to big! Max file-size is 8MB");
+        Args.check(file.exists() && file.canRead(),
+            "Provided file is either null, doesn't exist or is not readable!");
+        Args.check(file.length() <= 8<<20,   //8MB, TODO: deal with Discord Nitro allowing 50MB files.
+            "File is to big! Max file-size is 8MB");
 
         return sendFile(IOUtil.readFully(file), fileName, message);
     }
@@ -417,7 +419,18 @@ public interface MessageChannel extends ISnowflake
         body.field("file", data, fileName);
 
         if (message != null)
+        {
+            if (!message.getEmbeds().isEmpty())
+            {
+                AccountType type = getJDA().getAccountType();
+                MessageEmbed embed = message.getEmbeds().get(0);
+                Args.check(embed.isSendable(type),
+                        "Provided Message contains an embed with a length greater than %d characters, which is the max for %s accounts!",
+                        type == AccountType.BOT ? MessageEmbed.EMBED_MAX_LENGTH_BOT : MessageEmbed.EMBED_MAX_LENGTH_CLIENT, type);
+            }
+
             body.field("payload_json", ((MessageImpl) message).toJSONObject().toString());
+        }
 
         return new RestAction<Message>(getJDA(), route, body)
         {
@@ -451,7 +464,12 @@ public interface MessageChannel extends ISnowflake
      *         The message to be sent along with the uploaded file. This value can be {@code null}.
      *
      * @throws java.lang.IllegalArgumentException
-     *         If the provided filename is {@code null} or {@code empty} or the provided data is larger than 8MB.
+     *         <ul>
+     *             <li>If the provided filename is {@code null} or {@code empty} or the provided data is larger than 8MB.</li>
+     *             <li>If the provided {@link net.dv8tion.jda.core.entities.Message Message}
+     *                 contains an {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed}
+     *                 that is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
+     *         </ul>
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
      *         <ul>
@@ -468,8 +486,8 @@ public interface MessageChannel extends ISnowflake
         Args.notNull(data, "file data[]");
         Args.notNull(fileName, "fileName");
 
-        if (data.length > 8<<20)   //8MB
-            throw new IllegalArgumentException("Provided data is too large! Max file-size is 8MB");
+        Args.check(data.length <= 8<<20,   //8MB
+            "Provided data is too large! Max file-size is 8MB");
 
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
         MultipartBody body = Unirest.post(Requester.DISCORD_API_PREFIX + route.getCompiledRoute())
@@ -478,7 +496,18 @@ public interface MessageChannel extends ISnowflake
         body.field("file", data, fileName);
 
         if (message != null)
+        {
+            if (!message.getEmbeds().isEmpty())
+            {
+                AccountType type = getJDA().getAccountType();
+                MessageEmbed embed = message.getEmbeds().get(0);
+                Args.check(embed.isSendable(type),
+                        "Provided Message contains an embed with a length greater than %d characters, which is the max for %s accounts!",
+                        type == AccountType.BOT ? MessageEmbed.EMBED_MAX_LENGTH_BOT : MessageEmbed.EMBED_MAX_LENGTH_CLIENT, type);
+            }
+
             body.field("payload_json", ((MessageImpl) message).toJSONObject().toString());
+        }
 
         return new RestAction<Message>(getJDA(), route, body)
         {
@@ -1235,6 +1264,9 @@ public interface MessageChannel extends ISnowflake
      *         <ul>
      *             <li>If provided {@code messageId} is {@code null} or empty.</li>
      *             <li>If provided {@code newContent} is {@code null}.</li>
+     *             <li>If provided {@link net.dv8tion.jda.core.entities.Message Message}
+     *                 contains a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} which
+     *                 is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
      *         </ul>
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         If this is a TextChannel and this account does not have
@@ -1248,6 +1280,14 @@ public interface MessageChannel extends ISnowflake
         Args.notEmpty(messageId, "messageId");
         Args.notNull(newContent, "message");
 
+        if (!newContent.getEmbeds().isEmpty())
+        {
+            AccountType type = getJDA().getAccountType();
+            MessageEmbed embed = newContent.getEmbeds().get(0);
+            Args.check(embed.isSendable(type),
+                    "Provided Message contains an embed with a length greater than %d characters, which is the max for %s accounts!",
+                    type == AccountType.BOT ? MessageEmbed.EMBED_MAX_LENGTH_BOT : MessageEmbed.EMBED_MAX_LENGTH_CLIENT, type);
+        }
         JSONObject json = ((MessageImpl) newContent).toJSONObject();
         Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getId(), messageId);
         return new RestAction<Message>(getJDA(), route, json)
@@ -1297,7 +1337,11 @@ public interface MessageChannel extends ISnowflake
      *         The new {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} for the edited message
      *
      * @throws IllegalArgumentException
-     *         If provided {@code messageId} is {@code null} or empty
+     *         <ul>
+     *             <li>If provided {@code messageId} is {@code null} or empty.</li>
+     *             <li>If provided {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed}
+     *                 is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
+     *         </ul>
      * @throws IllegalStateException
      *         If the provided MessageEmbed is {@code null}
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
