@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.core;
 
+import com.neovisionaries.ws.client.ProxySettings;
+import com.neovisionaries.ws.client.WebSocketFactory;
 import net.dv8tion.jda.core.JDA.Status;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.Game;
@@ -23,6 +25,7 @@ import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import org.apache.http.HttpHost;
+import org.apache.http.util.Args;
 
 import javax.security.auth.login.LoginException;
 import java.util.Arrays;
@@ -45,19 +48,22 @@ public class JDABuilder
 {
     protected static boolean jdaCreated = false;
     protected static HttpHost proxy = null;
+
     protected final List<Object> listeners;
+
     protected AccountType accountType;
     protected String token = null;
-    protected boolean enableVoice = true;
-    protected boolean enableShutdownHook = true;
-    protected boolean enableBulkDeleteSplitting = true;
-    protected boolean autoReconnect = true;
-    protected boolean idle = false;
     protected IEventManager eventManager = null;
     protected IAudioSendFactory audioSendFactory = null;
     protected JDA.ShardInfo shardInfo = null;
     protected Game game = null;
     protected OnlineStatus status = OnlineStatus.ONLINE;
+    protected int websocketTimeout = 0;
+    protected boolean enableVoice = true;
+    protected boolean enableShutdownHook = true;
+    protected boolean enableBulkDeleteSplitting = true;
+    protected boolean autoReconnect = true;
+    protected boolean idle = false;
 
     /**
      * Creates a completely empty JDABuilder.
@@ -130,6 +136,28 @@ public class JDABuilder
         if (jdaCreated)
             throw new UnsupportedOperationException("You cannot change the proxy after a JDA object has been created. Proxy settings are global among all instances!");
         this.proxy = proxy;
+        return this;
+    }
+
+    /**
+     * Sets the timeout (in milliseconds) for all Websockets created by JDA (MainWS and AudioWS's) for this instance.
+     *
+     * <p>By default, this is set to <b>0</b> which is supposed to represent infinite-timeout, however due to how the JVM
+     * is implemented at the lower level (typically C), an infinite timeout will usually not be respected, and as such
+     * providing an explicitly defined timeout will typically work better.
+     *
+     * <p>Default: <b>0 - Infinite-Timeout (maybe?)</b>
+     *
+     * @param  websocketTimeout
+     *         Non-negative int representing Websocket timeout in milliseconds.
+     *
+     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public JDABuilder setWebSocketTimeout(int websocketTimeout)
+    {
+        Args.notNegative(websocketTimeout, "Provided WebSocket timeout cannot be negative!");
+
+        this.websocketTimeout = websocketTimeout;
         return this;
     }
 
@@ -397,7 +425,16 @@ public class JDABuilder
     {
         jdaCreated = true;
 
-        JDAImpl jda = new JDAImpl(accountType, proxy, autoReconnect, enableVoice, enableShutdownHook,
+        WebSocketFactory wsFactory = new WebSocketFactory();
+        wsFactory.setConnectionTimeout(websocketTimeout);
+        if (proxy != null)
+        {
+            ProxySettings settings = wsFactory.getProxySettings();
+            settings.setHost(proxy.getHostName());
+            settings.setPort(proxy.getPort());
+        }
+
+        JDAImpl jda = new JDAImpl(accountType, proxy, wsFactory, autoReconnect, enableVoice, enableShutdownHook,
                 enableBulkDeleteSplitting);
 
         if (eventManager != null)

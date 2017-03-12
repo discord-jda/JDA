@@ -62,7 +62,6 @@ public class AudioWebSocket extends WebSocketAdapter
 
     private final JDAImpl api;
     private final Guild guild;
-    private final HttpHost proxy;
     private boolean connected = false;
     private boolean ready = false;
     private Runnable keepAliveRunnable;
@@ -107,18 +106,10 @@ public class AudioWebSocket extends WebSocketAdapter
         if (token == null || token.isEmpty())
             throw new IllegalArgumentException("Cannot create a voice connection using a null/empty token!");
 
-        proxy = api.getGlobalProxy();
-        WebSocketFactory factory = new WebSocketFactory();
-        if (proxy != null)
-        {
-            ProxySettings settings = factory.getProxySettings();
-            settings.setHost(proxy.getHostName());
-            settings.setPort(proxy.getPort());
-        }
-
         try
         {
-            socket = factory.createSocket(wssEndpoint)
+            socket = api.getWebSocketFactory()
+                    .createSocket(wssEndpoint)
                     .addListener(this);
             changeStatus(ConnectionStatus.CONNECTING_AWAITING_WEBSOCKET_CONNECT);
             socket.connect();

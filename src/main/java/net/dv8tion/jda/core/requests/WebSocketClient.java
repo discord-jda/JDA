@@ -286,13 +286,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         if (api.getStatus() != JDA.Status.ATTEMPTING_TO_RECONNECT)
             api.setStatus(JDA.Status.CONNECTING_TO_WEBSOCKET);
         initiating = true;
-        WebSocketFactory factory = new WebSocketFactory();
-        if (proxy != null)
-        {
-            ProxySettings settings = factory.getProxySettings();
-            settings.setHost(proxy.getHostName());
-            settings.setPort(proxy.getPort());
-        }
+
         try
         {
             if (gatewayUrl == null)
@@ -303,7 +297,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     throw new RuntimeException("Could not fetch WS-Gateway!");
                 }
             }
-            socket = factory.createSocket(gatewayUrl)
+            socket = api.getWebSocketFactory()
+                    .createSocket(gatewayUrl)
                     .addHeader("Accept-Encoding", "gzip")
                     .addListener(this);
             socket.connect();

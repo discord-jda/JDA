@@ -17,6 +17,7 @@
 package net.dv8tion.jda.core.entities.impl;
 
 import com.mashape.unirest.http.Unirest;
+import com.neovisionaries.ws.client.WebSocketFactory;
 import net.dv8tion.jda.bot.JDABot;
 import net.dv8tion.jda.bot.entities.impl.JDABotImpl;
 import net.dv8tion.jda.client.JDAClient;
@@ -36,7 +37,6 @@ import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.*;
-import net.dv8tion.jda.core.requests.ratelimit.IBucket;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import org.apache.http.HttpHost;
 import org.apache.http.util.Args;
@@ -62,12 +62,13 @@ public class JDAImpl implements JDA
 
     protected final HashMap<String, AudioManager> audioManagers = new HashMap<>();
 
+    protected final HttpHost proxy;
+    protected final WebSocketFactory wsFactory;
     protected final AccountType accountType;
     protected final PresenceImpl presence;
     protected final JDAClient jdaClient;
     protected final JDABot jdaBot;
 
-    protected HttpHost proxy;
     protected WebSocketClient client;
     protected Requester requester;
     protected IEventManager eventManager = new InterfacedEventManager();
@@ -82,12 +83,13 @@ public class JDAImpl implements JDA
     protected boolean autoReconnect;
     protected long responseTotal;
 
-    public JDAImpl(AccountType accountType, HttpHost proxy, boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled)
+    public JDAImpl(AccountType accountType, HttpHost proxy, WebSocketFactory wsFactory, boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled)
     {
         this.presence = new PresenceImpl(this);
         this.accountType = accountType;
         this.requester = new Requester(this);
         this.proxy = proxy;
+        this.wsFactory = wsFactory;
         this.autoReconnect = autoReconnect;
         this.audioEnabled = audioEnabled;
         this.useShutdownHook = useShutdownHook;
@@ -95,9 +97,6 @@ public class JDAImpl implements JDA
 
         this.jdaClient = accountType == AccountType.CLIENT ? new JDAClientImpl(this) : null;
         this.jdaBot = accountType == AccountType.BOT ? new JDABotImpl(this) : null;
-
-        if (audioEnabled)
-            ;   //TODO: setup audio system
     }
 
     public void login(String token, ShardInfo shardInfo) throws LoginException, RateLimitedException
@@ -593,6 +592,11 @@ public class JDAImpl implements JDA
         return eventManager;
     }
 
+    public WebSocketFactory getWebSocketFactory()
+    {
+        return wsFactory;
+    }
+
     public WebSocketClient getClient()
     {
         return client;
@@ -655,5 +659,6 @@ public class JDAImpl implements JDA
         else
             return "JDA";
     }
+
 
 }
