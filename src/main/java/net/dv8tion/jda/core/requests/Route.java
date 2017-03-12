@@ -142,9 +142,10 @@ public class Route
         public static final Route REMOVE_PINNED_MESSAGE = new Route(DELETE, "channels/{channel_id}/pins/{message_id}",     "channel_id");
 
         public static final Route ADD_REACTION =         new Route(PUT,    new RateLimit(1, 250), "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}/@me",           "channel_id");
-        public static final Route REMOVE_REACTION =      new Route(DELETE,                        "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}/{user_id}",     "channel_id");
-        public static final Route REMOVE_ALL_REACTIONS = new Route(DELETE,                        "channels/{channel_id}/messages/{message_id}/reactions",                               "channel_id");
-        public static final Route GET_REACTION_USERS =   new Route(GET,                           "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}?limit={limit}", "channel_id");
+        public static final Route REMOVE_REACTION =      new Route(DELETE, "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}/{user_id}",     "channel_id");
+        public static final Route REMOVE_ALL_REACTIONS = new Route(DELETE, "channels/{channel_id}/messages/{message_id}/reactions",                               "channel_id");
+        public static final Route GET_REACTION_USERS_LIMIT =   new Route(GET, "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}?limit={limit}", "channel_id");
+        public static final Route GET_REACTION_USERS_AFTER =   new Route(GET, "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}?limit={limit}&after={after}", "channel_id");
 
         public static final Route GET_MESSAGE_HISTORY =        new Route(GET, "channels/{channel_id}/messages?limit={}",           "channel_id");
         public static final Route GET_MESSAGE_HISTORY_BEFORE = new Route(GET, "channels/{channel_id}/messages?limit={}&before={}", "channel_id");

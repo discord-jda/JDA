@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.requests.restaction;
+package net.dv8tion.jda.core.requests.restaction.order;
 
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
@@ -27,7 +27,7 @@ import org.json.JSONObject;
 import java.util.Collection;
 
 /**
- * Implementation of {@link net.dv8tion.jda.core.requests.restaction.OrderAction OrderAction}
+ * Implementation of {@link OrderAction OrderAction}
  * to modify the order of {@link net.dv8tion.jda.core.entities.Channel Channels} for a {@link net.dv8tion.jda.core.entities.Guild Guild}.
  * <br>To apply the changes you must finish the {@link net.dv8tion.jda.core.requests.RestAction RestAction}
  *

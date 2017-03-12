@@ -24,6 +24,7 @@ import net.dv8tion.jda.core.entities.impl.MessageImpl;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.utils.IOUtil;
+import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.http.util.Args;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -31,8 +32,6 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -922,15 +921,7 @@ public interface MessageChannel extends ISnowflake
         Args.notEmpty(unicode, "Provided Unicode");
         Args.containsNoBlanks(unicode, "Provided Unicode");
 
-        String encoded;
-        try
-        {
-            encoded = URLEncoder.encode(unicode, "UTF-8");
-        }
-        catch (UnsupportedEncodingException e)
-        {
-            throw new RuntimeException(e); //thanks JDK 1.4
-        }
+        String encoded = MiscUtil.encodeUTF8(unicode);
         Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, encoded);
         return new RestAction<Void>(getJDA(), route, null)
         {
