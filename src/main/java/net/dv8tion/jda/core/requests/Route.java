@@ -28,26 +28,33 @@ import static com.mashape.unirest.http.HttpMethod.*;
 
 public class Route
 {
+    public static class Misc
+    {
+        public static final Route GET_VOICE_REGIONS = new Route(GET,  "voice/regions");
+        public static final Route GATEWAY =           new Route(GET,  "gateway");
+        public static final Route TRACK =             new Route(POST, "track");
+    }
+
     public static class Applications
     {
         // Bot only
-        public static final Route GET_BOT_APPLICATION =             new Route(GET,    "oauth2/applications/@me");
+        public static final Route GET_BOT_APPLICATION =           new Route(GET,    "oauth2/applications/@me");
 
         // Client only
-        public static final Route GET_APPLICATIONS =                new Route(GET,    "oauth2/applications");
-        public static final Route CREATE_APPLICATION =              new Route(POST,   "oauth2/applications");
-        public static final Route GET_APPLICATION =                 new Route(GET,    "oauth2/applications/{application_id}");
-        public static final Route MODIFY_APPLICATION =              new Route(PUT,    "oauth2/applications/{application_id}");
-        public static final Route DELETE_APPLICATION =              new Route(DELETE, "oauth2/applications/{application_id}");
+        public static final Route GET_APPLICATIONS =              new Route(GET,    "oauth2/applications");
+        public static final Route CREATE_APPLICATION =            new Route(POST,   "oauth2/applications");
+        public static final Route GET_APPLICATION =               new Route(GET,    "oauth2/applications/{application_id}");
+        public static final Route MODIFY_APPLICATION =            new Route(PUT,    "oauth2/applications/{application_id}");
+        public static final Route DELETE_APPLICATION =            new Route(DELETE, "oauth2/applications/{application_id}");
 
-        public static final Route CREATE_BOT =                      new Route(POST,   "oauth2/applications/{application_id}/bot");
+        public static final Route CREATE_BOT =                    new Route(POST,   "oauth2/applications/{application_id}/bot");
 
-        public static final Route RESET_APPLICATION_SECRET =        new Route(POST,   "oauth2/applications/{application_id}/reset");
-        public static final Route RESET_BOT_TOKEN =                 new Route(POST,   "oauth2/applications/{application_id}/bot/reset");
+        public static final Route RESET_APPLICATION_SECRET =      new Route(POST,   "oauth2/applications/{application_id}/reset");
+        public static final Route RESET_BOT_TOKEN =               new Route(POST,   "oauth2/applications/{application_id}/bot/reset");
 
-        public static final Route GET_AUTHORIZED_APPLICATIONS =     new Route(GET,    "oauth2/tokens");
-        public static final Route GET_AUTHORIZED_APPLICATION =      new Route(GET,    "oauth2/tokens/{auth_id}");
-        public static final Route DELETE_AUTHORIZED_APPLICATION =   new Route(DELETE, "oauth2/tokens/{auth_id}");
+        public static final Route GET_AUTHORIZED_APPLICATIONS =   new Route(GET,    "oauth2/tokens");
+        public static final Route GET_AUTHORIZED_APPLICATION =    new Route(GET,    "oauth2/tokens/{auth_id}");
+        public static final Route DELETE_AUTHORIZED_APPLICATION = new Route(DELETE, "oauth2/tokens/{auth_id}");
     }
     
     public static class Self
@@ -58,39 +65,65 @@ public class Route
         public static final Route LEAVE_GUILD =            new Route(DELETE, "users/@me/guilds/{guild_id}");
         public static final Route GET_PRIVATE_CHANNELS =   new Route(GET,    "users/@me/channels");
         public static final Route CREATE_PRIVATE_CHANNEL = new Route(POST,   "users/@me/channels");
-        public static final Route GATEWAY =                new Route(GET,    "gateway");
 
-        // Client-only
-        public static final Route USER_SETTINGS =          new Route(GET,    "users/@me/settings");
+        public static final Route GATEWAY_BOT =            new Route(GET, "gateway/bot");
+
+        // Client only
+        public static final Route USER_SETTINGS =       new Route(GET, "users/@me/settings");
+        public static final Route GET_CONNECTIONS =     new Route(GET, "users/@me/connections");
+        public static final Route GET_RECENT_MENTIONS = new Route(GET, "users/@me/mentions?limit={limit}&roles={}&everyone={}");
+        public static final Route FRIEND_SUGGESTIONS =  new Route(GET, "friend_suggestions");
     }
 
     public static class Users
     {
         public static final Route GET_USER = new Route(GET, "users/{user_id}");
+        public static final Route GET_NOTE = new Route(GET, "users/@me/notes/{user_id}");
+        public static final Route SET_NOTE = new Route(PUT, "users/@me/notes/{user_id}");
+    }
+
+    public static class Relationships
+    {
+        public static final Route GET_RELATIONSHIPS =   new Route(GET,    "users/@me/relationships"); // Get Friends/Blocks/Incoming/Outgoing
+        public static final Route GET_RELATIONSHIP =    new Route(GET,    "users/@me/relationships/{user_id}");
+        public static final Route ADD_RELATIONSHIP =    new Route(PUT,    "users/@me/relationships/{user_id}"); // Add Friend/ Block
+        public static final Route DELETE_RELATIONSHIP = new Route(DELETE, "users/@me/relationships/{user_id}"); // Delete Block/Unfriend/Ignore Request/Cancel Outgoing
     }
 
     public static class Guilds
     {
-        public static final Route GET_GUILD =        new Route(GET,    "guilds/{guild_id}",                   "guild_id");
-        public static final Route MODIFY_GUILD =     new Route(PATCH,  "guilds/{guild_id}",                   "guild_id");
-        public static final Route CREATE_CHANNEL =   new Route(POST,   "guilds/{guild_id}/channels",          "guild_id");
-        public static final Route GET_CHANNELS =     new Route(GET,    "guilds/{guild_id}/channels",          "guild_id");
-        public static final Route MODIFY_CHANNELS =  new Route(PATCH,  "guilds/{guild_id}/channels",          "guild_id");
-        public static final Route MODIFY_ROLES =     new Route(PATCH,  "guilds/{guild_id}/roles",             "guild_id");
-        public static final Route GET_BANS =         new Route(GET,    "guilds/{guild_id}/bans",              "guild_id");
-        public static final Route BAN =              new Route(PUT,    "guilds/{guild_id}/bans/{user_id}",    "guild_id");
-        public static final Route BAN_WITH_DELETE =  new Route(PUT,    "guilds/{guild_id}/bans/{user_id}?delete-message-days={}",    "guild_id");
-        public static final Route UNBAN =            new Route(DELETE, "guilds/{guild_id}/bans/{user_id}",    "guild_id");
-        public static final Route KICK_MEMBER =      new Route(DELETE, "guilds/{guild_id}/members/{user_id}", "guild_id");
-        public static final Route MODIFY_MEMBER =    new Route(PATCH,  "guilds/{guild_id}/members/{user_id}", "guild_id");
-        public static final Route MODIFY_SELF_NICK = new Route(PATCH,  "guilds/{guild_id}/members/@me/nick",  "guild_id");
-        public static final Route PRUNABLE_COUNT =   new Route(GET,    "guilds/{guild_id}/prune?days={}",     "guild_id");
-        public static final Route PRUNE_MEMBERS =    new Route(POST,   "guilds/{guild_id}/prune?days={}",     "guild_id");
-        public static final Route GET_WEBHOOKS =     new Route(GET,    "guilds/{guild_id}/webhooks",          "guild_id");
+        public static final Route GET_GUILD =          new Route(GET,    "guilds/{guild_id}",                   "guild_id");
+        public static final Route MODIFY_GUILD =       new Route(PATCH,  "guilds/{guild_id}",                   "guild_id");
+        public static final Route CREATE_CHANNEL =     new Route(POST,   "guilds/{guild_id}/channels",          "guild_id");
+        public static final Route GET_CHANNELS =       new Route(GET,    "guilds/{guild_id}/channels",          "guild_id");
+        public static final Route MODIFY_CHANNELS =    new Route(PATCH,  "guilds/{guild_id}/channels",          "guild_id");
+        public static final Route MODIFY_ROLES =       new Route(PATCH,  "guilds/{guild_id}/roles",             "guild_id");
+        public static final Route GET_BANS =           new Route(GET,    "guilds/{guild_id}/bans",              "guild_id");
+        public static final Route BAN =                new Route(PUT,    "guilds/{guild_id}/bans/{user_id}",    "guild_id");
+        public static final Route BAN_WITH_DELETE =    new Route(PUT,    "guilds/{guild_id}/bans/{user_id}?delete-message-days={}",    "guild_id");
+        public static final Route UNBAN =              new Route(DELETE, "guilds/{guild_id}/bans/{user_id}",    "guild_id");
+        public static final Route KICK_MEMBER =        new Route(DELETE, "guilds/{guild_id}/members/{user_id}", "guild_id");
+        public static final Route MODIFY_MEMBER =      new Route(PATCH,  "guilds/{guild_id}/members/{user_id}", "guild_id");
+        public static final Route MODIFY_SELF_NICK =   new Route(PATCH,  "guilds/{guild_id}/members/@me/nick",  "guild_id");
+        public static final Route PRUNABLE_COUNT =     new Route(GET,    "guilds/{guild_id}/prune?days={}",     "guild_id");
+        public static final Route PRUNE_MEMBERS =      new Route(POST,   "guilds/{guild_id}/prune?days={}",     "guild_id");
+        public static final Route GET_WEBHOOKS =       new Route(GET,    "guilds/{guild_id}/webhooks",          "guild_id");
+        public static final Route GET_GUILD_EMBED =    new Route(GET,    "guilds/{guild_id}/embed",             "guild_id");
+        public static final Route MODIFY_GUILD_EMBED = new Route(PATCH,  "guilds/{guild_id}/embed",             "guild_id");
+        public static final Route GET_GUILD_EMOTES =   new Route(GET,    "guilds/{guild_id}/emojis",            "guild_id");
+
+        public static final Route GET_INTEGRATIONS =   new Route(GET,    "guilds/{guild_id}/integrations",                       "guild_id");
+        public static final Route CREATE_INTEGRATION = new Route(POST,   "guilds/{guild_id}/integrations",                       "guild_id");
+        public static final Route DELETE_INTEGRATION = new Route(DELETE, "guilds/{guild_id}/integrations/{integration_id}",      "guild_id");
+        public static final Route MODIFY_INTEGRATION = new Route(PATCH,  "guilds/{guild_id}/integrations/{integration_id}",      "guild_id");
+        public static final Route SYNC_INTEGRATION =   new Route(POST,   "guilds/{guild_id}/integrations/{integration_id}/sync", "guild_id");
 
         //Client Only
-        public static final Route CREATE_GUILD =     new Route(POST,   "guilds");
-        public static final Route DELETE_GUILD =     new Route(POST,   "guilds/{guild_id}/delete");
+        public static final Route CREATE_GUILD = new Route(POST, "guilds");
+        public static final Route DELETE_GUILD = new Route(POST, "guilds/{guild_id}/delete");
+        public static final Route ACK_GUILD =    new Route(POST, "guilds/{guild_id}/ack");
+
+        public static final Route MODIFY_NOTIFICATION_SETTINGS = new Route(PATCH, "users/@me/guilds/{guild_id}/settings");
     }
 
     public static class Emotes
@@ -103,10 +136,17 @@ public class Route
 
     public static class Webhooks
     {
+        public static final Route GET_WEBHOOK          = new Route(GET,    "webhooks/{webhook_id}");
+        public static final Route GET_TOKEN_WEBHOOK    = new Route(GET,    "webhooks/{webhook_id}/{token}");
         public static final Route DELETE_WEBHOOK       = new Route(DELETE, "webhooks/{webhook_id}");
         public static final Route DELETE_TOKEN_WEBHOOK = new Route(DELETE, "webhooks/{webhook_id}/{token}");
         public static final Route MODIFY_WEBHOOK       = new Route(PATCH,  "webhooks/{webhook_id}");
         public static final Route MODIFY_TOKEN_WEBHOOK = new Route(PATCH,  "webhooks/{webhook_id}/{token}");
+
+        // Separate
+        public static final Route EXECUTE_WEBHOOK        = new Route(POST, "webhooks/{webhook_id}/{token}",        "webhook_id");
+        public static final Route EXECUTE_WEBHOOK_SLACK  = new Route(POST, "webhooks/{webhook_id}/{token}/slack",  "webhook_id");
+        public static final Route EXECUTE_WEBHOOK_GITHUB = new Route(POST, "webhooks/{webhook_id}/{token}/github", "webhook_id");
     }
 
     public static class Roles
@@ -130,6 +170,14 @@ public class Route
         public static final Route CREATE_PERM_OVERRIDE = new Route(PUT,    "channels/{channel_id}/permissions/{permoverride_id}", "channel_id");
         public static final Route MODIFY_PERM_OVERRIDE = new Route(PUT,    "channels/{channel_id}/permissions/{permoverride_id}", "channel_id");
         public static final Route DELETE_PERM_OVERRIDE = new Route(DELETE, "channels/{channel_id}/permissions/{permoverride_id}", "channel_id");
+
+        // Client Only
+        public static final Route GET_RECIPIENTS =   new Route(GET,    "channels/{channel_id}/recipients");
+        public static final Route GET_RECIPIENT =    new Route(GET,    "channels/{channel_id}/recipients/{user_id}");
+        public static final Route ADD_RECIPIENT =    new Route(PUT,    "channels/{channel_id}/recipients/{user_id}");
+        public static final Route REMOVE_RECIPIENT = new Route(DELETE, "channels/{channel_id}/recipients/{user_id}");
+        public static final Route START_CALL =       new Route(POST,   "channels/{channel_id}/call/ring");
+        public static final Route STOP_CALL =        new Route(POST,   "channels/{channel_id}/call/stop_ringing"); // aka deny or end call
     }
 
     public static class Messages
@@ -141,10 +189,11 @@ public class Route
         public static final Route ADD_PINNED_MESSAGE =    new Route(PUT,    "channels/{channel_id}/pins/{message_id}",     "channel_id");
         public static final Route REMOVE_PINNED_MESSAGE = new Route(DELETE, "channels/{channel_id}/pins/{message_id}",     "channel_id");
 
-        public static final Route ADD_REACTION =         new Route(PUT,    new RateLimit(1, 250), "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}/@me",           "channel_id");
-        public static final Route REMOVE_REACTION =      new Route(DELETE,                        "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}/{user_id}",     "channel_id");
-        public static final Route REMOVE_ALL_REACTIONS = new Route(DELETE,                        "channels/{channel_id}/messages/{message_id}/reactions",                               "channel_id");
-        public static final Route GET_REACTION_USERS =   new Route(GET,                           "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}?limit={limit}", "channel_id");
+        public static final Route ADD_REACTION =         new Route(PUT,    new RateLimit(1, 250),
+                                                                           "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}/@me",           "channel_id");
+        public static final Route REMOVE_REACTION =      new Route(DELETE, "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}/{user_id}",     "channel_id");
+        public static final Route REMOVE_ALL_REACTIONS = new Route(DELETE, "channels/{channel_id}/messages/{message_id}/reactions",                               "channel_id");
+        public static final Route GET_REACTION_USERS =   new Route(GET,    "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}?limit={limit}", "channel_id");
 
         public static final Route GET_MESSAGE_HISTORY =        new Route(GET, "channels/{channel_id}/messages?limit={}",           "channel_id");
         public static final Route GET_MESSAGE_HISTORY_BEFORE = new Route(GET, "channels/{channel_id}/messages?limit={}&before={}", "channel_id");
@@ -152,8 +201,11 @@ public class Route
         public static final Route GET_MESSAGE_HISTORY_AROUND = new Route(GET, "channels/{channel_id}/messages?limit={}&around={}", "channel_id");
 
         //Bot only
-        public static final Route GET_MESSAGE =     new Route(GET, "channels/{channel_id}/messages/{message_id}", "channel_id");
+        public static final Route GET_MESSAGE =     new Route(GET,  "channels/{channel_id}/messages/{message_id}", "channel_id");
         public static final Route DELETE_MESSAGES = new Route(POST, "channels/{channel_id}/messages/bulk-delete",  "channel_id");
+
+        //Client only
+        public static final Route ACK_MESSAGE = new Route(POST, "channels/{channel_id}/messages/{message_id}/ack");
     }
 
     public static class Invites

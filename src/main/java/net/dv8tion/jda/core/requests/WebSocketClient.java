@@ -314,7 +314,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         try
         {
-            RestAction<String> gateway = new RestAction<String>(api, Route.Self.GATEWAY.compile(),null)
+            RestAction<String> gateway = new RestAction<String>(api, Route.Misc.GATEWAY.compile(),null)
             {
                 @Override
                 protected void handleResponse(Response response, Request request)
