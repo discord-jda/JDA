@@ -44,6 +44,8 @@ public class EmbedBuilder
     public final static int VALUE_MAX_LENGTH = 1024;
     public final static int TEXT_MAX_LENGTH = 2048;
     public final static int URL_MAX_LENGTH = 2000;
+    public final static int EMBED_MAX_LENGTH_BOT = 4000;
+    public final static int EMBED_MAX_LENGTH_CLIENT = 2000;
     public final static String ZERO_WIDTH_SPACE = "\u200E";
     public final static Pattern URL_PATTERN = Pattern.compile("\\s*(https?|attachment):\\/\\/.+\\..{2,}\\s*", Pattern.CASE_INSENSITIVE);
     

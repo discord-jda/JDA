@@ -18,6 +18,7 @@ package net.dv8tion.jda.core.entities;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.request.body.MultipartBody;
 import net.dv8tion.jda.core.AccountType;
+import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.impl.MessageImpl;
@@ -214,6 +215,21 @@ public interface MessageChannel extends ISnowflake
     default RestAction<Message> sendMessage(Message msg)
     {
         Args.notNull(msg, "Message");
+
+        if (!msg.getEmbeds().isEmpty())
+        {
+            int length = msg.getEmbeds().get(0).getLength();
+            if (getJDA().getAccountType() == AccountType.BOT)
+            {
+                Args.check(length <= EmbedBuilder.EMBED_MAX_LENGTH_BOT,
+                        "Provided Message contains an embed with a length greater than 4000 characters, which is the max for BOT accounts!");
+            }
+            else
+            {
+                Args.check(length <= EmbedBuilder.EMBED_MAX_LENGTH_CLIENT,
+                        "Provided Message contains an embed with a length greater than 2000 characters, which is the max for CLIENT accounts!");
+            }
+        }
 
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
         JSONObject json = ((MessageImpl) msg).toJSONObject();

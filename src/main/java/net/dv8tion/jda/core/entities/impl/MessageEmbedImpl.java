@@ -115,6 +115,30 @@ public class MessageEmbedImpl implements MessageEmbed
         return timestamp;
     }
 
+    @Override
+    public int getLength()
+    {
+        int len = 0;
+
+        if (title != null)
+            len += title.length();
+        if (description != null)
+            len += description.length();
+        if (author != null)
+            len += author.getName().length();
+        if (footer != null)
+            len += footer.getText().length();
+        if (fields != null)
+        {
+            for (Field f : fields)
+            {
+                len += f.getName().length() + f.getValue().length();
+            }
+        }
+
+        return len;
+    }
+
     public MessageEmbedImpl setUrl(String url)
     {
         this.url = url;

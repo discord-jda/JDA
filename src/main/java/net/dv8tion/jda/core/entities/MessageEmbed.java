@@ -141,6 +141,19 @@ public interface MessageEmbed
     OffsetDateTime getTimestamp();
 
     /**
+     * The total amount of characters that is displayed when this embed is displayed by the Discord client.
+     *
+     * <p>An Embed can only have, at max, <b>4000</b> displayable text characters for {@link net.dv8tion.jda.core.AccountType#BOT AccountType.BOT}
+     * accounts or <b>2000</b> displayable text characters for {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT} accounts.
+     *
+     * <p>Both of these values are defined by {@link net.dv8tion.jda.core.EmbedBuilder#EMBED_MAX_LENGTH_BOT EmbedBuilder.EMBED_MAX_LENGTH_BOT} and
+     * {@link net.dv8tion.jda.core.EmbedBuilder#EMBED_MAX_LENGTH_CLIENT EmbedBuilder.EMBED_MAX_LENGTH_CLIENT} respectively.
+     *
+     * @return A never-negative sum of all displayed text characters.
+     */
+    int getLength();
+
+    /**
      * Represents the information Discord provided about a thumbnail image that should be
      * displayed with an embed message.
      */
