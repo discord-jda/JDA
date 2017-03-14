@@ -18,6 +18,7 @@ package net.dv8tion.jda.core.handle;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.impl.*;
+import net.dv8tion.jda.core.events.guild.member.GuildMemberGameUpdateEvent;
 import net.dv8tion.jda.core.events.user.UserAvatarUpdateEvent;
 import net.dv8tion.jda.core.events.user.UserGameUpdateEvent;
 import net.dv8tion.jda.core.events.user.UserNameUpdateEvent;
@@ -150,6 +151,9 @@ public class PresenceUpdateHandler extends SocketHandler
                                 new UserGameUpdateEvent(
                                         api, responseNumber,
                                         user, guild, oldGame));
+                        api.getEventManager().handle(
+                                new GuildMemberGameUpdateEvent(api, responseNumber,
+                                        guild, member, oldGame));
                     }
                 }
             }
