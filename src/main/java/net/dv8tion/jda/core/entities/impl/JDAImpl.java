@@ -163,10 +163,10 @@ public class JDAImpl implements JDA
             }
         };
 
-        JSONObject userResponse = null;
+        JSONObject userResponse;
         try
         {
-            userResponse = login.block();
+            userResponse = login.complete(false);
         }
         catch (RuntimeException e)
         {
@@ -206,7 +206,7 @@ public class JDAImpl implements JDA
             try
             {
                 //Now that we have reversed the AccountTypes, attempt to get User info again.
-                userResponse = login.block();
+                userResponse = login.complete(false);
             }
             catch (RuntimeException e)
             {

@@ -35,6 +35,7 @@ Listeners can be registered either in the JDABuilder (will catch all Events; rec
 public class ReadyListener implements EventListener
 {
     public static void main(String[] args)
+            throws LoginException, RateLimitedException, InterruptedException
     {
         // Note: It is important to register your ReadyListener before building
         JDA jda = new JDABuilder(AccountType.BOT)
@@ -56,6 +57,7 @@ public class ReadyListener implements EventListener
 public class MessageListener extends ListenerAdapter
 {
     public static void main(String[] args)
+            throws LoginException, RateLimitedException, InterruptedException
     {
         JDA jda = new JDABuilder(AccountType.BOT).setToken("token").buildBlocking();
         jda.addEventListener(new MessageListener());

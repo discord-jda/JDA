@@ -374,16 +374,6 @@ public interface Message extends ISnowflake
     RestAction<Message> editMessage(Message newContent);
 
     /**
-     * Use {@link #delete()} instead.
-     *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
-     *
-     * @deprecated Use {@link #delete()} instead.
-     */
-    @Deprecated
-    RestAction<Void> deleteMessage();
-
-    /**
      * Deletes this Message from Discord.
      * <br>If this Message was not sent by the currently logged in account, then this will fail unless the Message is from
      * a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the current account has
