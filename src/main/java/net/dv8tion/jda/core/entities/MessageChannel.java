@@ -42,6 +42,36 @@ import java.util.List;
  */
 public interface MessageChannel extends ISnowflake
 {
+
+    /**
+     * The id for the most recent message sent
+     * in this current MessageChannel.
+     * <br>This should only be used if {@link #hasLatestMessage()} returns {@code true}!
+     *
+     * <p>This value is updated on each {@link net.dv8tion.jda.core.events.message.MessageReceivedEvent MessageReceivedEvent}
+     * and <u><b>will be reset to {@code null} if the message associated with this ID gets deleted</b></u>
+     *
+     * @throws java.lang.IllegalStateException
+     *         If no message id is available
+     *
+     * @return The most recent message's id
+     */
+    String getLatestMessageId();
+
+    /**
+     * Whether this MessageChannel contains a tracked most recent
+     * message or not.
+     *
+     * <p>This does not directly mean that {@link #getHistory()} will be unable to retrieve past messages,
+     * it merely means that the latest message is untracked by our internal cache meaning that
+     * if this returns {@code false} the {@link #getLatestMessageId()} method will throw an {@link java.lang.IllegalStateException IllegalStateException}
+     *
+     * @return True, if a latest message id is available for retrieval by {@link #getLatestMessageId()}
+     *
+     * @see    #getLatestMessageId()
+     */
+    boolean hasLatestMessage();
+
     /**
      * This method is a shortcut method to return the following information in the following situation:
      * If the MessageChannel is instance of..
@@ -638,6 +668,65 @@ public interface MessageChannel extends ISnowflake
                 {
                     request.onFailure(response);
                 }
+            }
+        };
+    }
+
+    /**
+     * Retrieves the most recent {@link net.dv8tion.jda.core.entities.Message Message}
+     * sent in this MessageChannel
+     * <br><b>Only use if {@link #hasLatestMessage()} is {@code true}</b>
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>If the message for the {@link #getLatestMessageId() most recent id} has been removed</li>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>If this channel has been removed before finishing the RestAction task</li>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>If we lost access to this channel before finishing the RestAction task (possibly kicked)</li>
+     * </ul>
+     *
+     * @throws java.lang.IllegalStateException
+     *         If this MessageChannel has no tracked latest message id. See {@link #hasLatestMessage()}
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}  and the currently logged in account
+     *         does not have the {@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY MESSAGE_HISTORY} Permissions
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
+     *         <br>The most recent message sent in this MessageChannel
+     *
+     * @see    #hasLatestMessage()
+     * @see    #getLatestMessageId()
+     */
+    default RestAction<Message> getLatestMessage()
+    {
+        final String id = getLatestMessageId();
+        if (getJDA().getAccountType() == AccountType.BOT)
+            return getMessageById(id);
+
+        Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY.compile(getId(), String.valueOf(1));
+        return new RestAction<Message>(getJDA(), route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request request)
+            {
+                if (!response.isOk())
+                {
+                    request.onFailure(response);
+                    return;
+                }
+
+                JSONArray array = response.getArray();
+                if (array.length() < 1)
+                {
+                    request.onFailure(
+                        new IllegalStateException(String.format("MessageHistory for MessageChannel with ID: %s is empty!", getId())));
+                    return;
+                }
+                Message msg = EntityBuilder.get(api).createMessage(array.getJSONObject(0), MessageChannel.this, false);
+
+                request.onSuccess(msg);
             }
         };
     }
