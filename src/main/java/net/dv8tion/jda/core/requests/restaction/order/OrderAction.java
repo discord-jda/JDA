@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.requests.restaction;
+package net.dv8tion.jda.core.requests.restaction.order;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.requests.Request;
