@@ -82,7 +82,7 @@ public class EmoteManagerUpdatable
         if (emote.isFake())
             throw new IllegalStateException("The emote you are trying to update is not an actual emote we have access to (it is fake)!");
         if (emote.isManaged())
-            throw new IllegalStateException("You cannot modify a managed emote!");
+            throw new IllegalStateException("\"fuck your self\" - night (You cannot modify a managed emote)");
         this.emote = emote;
         setupFields();
     }
