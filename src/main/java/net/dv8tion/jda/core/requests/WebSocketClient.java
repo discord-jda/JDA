@@ -333,7 +333,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 }
             };
 
-            return gateway.block() + "?encoding=json&v=" + DISCORD_GATEWAY_VERSION;
+            return gateway.complete(false) + "?encoding=json&v=" + DISCORD_GATEWAY_VERSION;
         }
         catch (Exception ex)
         {

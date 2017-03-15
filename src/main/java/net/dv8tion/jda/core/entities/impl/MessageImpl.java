@@ -455,13 +455,6 @@ public class MessageImpl implements Message
     }
 
     @Override
-    @Deprecated
-    public RestAction<Void> deleteMessage()
-    {
-        return delete();
-    }
-
-    @Override
     public RestAction<Void> delete()
     {
         if (!getJDA().getSelfUser().equals(getAuthor()))

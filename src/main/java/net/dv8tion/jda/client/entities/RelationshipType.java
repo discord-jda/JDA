@@ -27,7 +27,7 @@ public enum RelationshipType
 
     private final int key;
 
-    private RelationshipType(int key)
+    RelationshipType(int key)
     {
         this.key = key;
     }
