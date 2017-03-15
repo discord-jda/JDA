@@ -22,7 +22,6 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.requests.ratelimit.IBucket;
 import org.apache.http.HttpHost;
 
 import java.util.Collection;
@@ -145,6 +144,17 @@ public interface JDA
      * @return Current JDA status.
      */
     Status getStatus();
+
+    /**
+     * The time in milliseconds that discord took to respond to our last heartbeat
+     * <br>This roughly represents the WebSocket ping of this session
+     *
+     * <p>{@link net.dv8tion.jda.core.requests.RestAction RestAction} request times do not
+     * correlate to this value!
+     *
+     * @return time in milliseconds between heartbeat and the heartbeat ack response
+     */
+    long getPing();
 
     /**
      * Changes the internal EventManager.
