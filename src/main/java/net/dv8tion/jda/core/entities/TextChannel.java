@@ -40,11 +40,11 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
 
     /**
      * Bulk deletes a list of messages.
-     * <b>This is not the same as calling {@link net.dv8tion.jda.core.entities.Message#deleteMessage()} in a loop.</b>
+     * <b>This is not the same as calling {@link net.dv8tion.jda.core.entities.Message#delete()} in a loop.</b>
      * <br>This is much more efficient, but it has a different ratelimit. You may call this once per second per Guild.
      *
      * <p>Must be at least 2 messages and not be more than 100 messages at a time.
-     * <br>If you only have 1 message, use the {@link Message#deleteMessage()} method instead.
+     * <br>If you only have 1 message, use the {@link Message#delete()} method instead.
      *
      * <br><p>You must have the Permission {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE MESSAGE_MANAGE} in this channel to use
      * this function.
@@ -88,7 +88,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * <br>This is much more efficient, but it has a different ratelimit. You may call this once per second per Guild.
      *
      * <p>Must be at least 2 messages and not be more than 100 messages at a time.
-     * <br>If you only have 1 message, use the {@link net.dv8tion.jda.core.entities.Message#deleteMessage()} method instead.
+     * <br>If you only have 1 message, use the {@link net.dv8tion.jda.core.entities.Message#delete()} method instead.
      *
      * <br><p>You must have {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in this channel to use
      * this function.

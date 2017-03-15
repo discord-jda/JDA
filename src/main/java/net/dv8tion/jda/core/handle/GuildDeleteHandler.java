@@ -34,6 +34,7 @@ import net.dv8tion.jda.core.requests.GuildLock;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -80,7 +81,8 @@ public class GuildDeleteHandler extends SocketHandler
 
         //cleaning up all users that we do not share a guild with anymore
         // Anything left in memberIds will be removed from the main userMap
-        Set<String> memberIds = guild.getMembersMap().keySet();
+        //Use a new HashSet so that we don't actually modify the Member map so it doesn't affect Guild#getMembers for the leave event.
+        Set<String> memberIds = new HashSet(guild.getMembersMap().keySet());
         for (Guild guildI : api.getGuilds())
         {
             GuildImpl g = (GuildImpl) guildI;

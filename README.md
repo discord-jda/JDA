@@ -35,6 +35,7 @@ Listeners can be registered either in the JDABuilder (will catch all Events; rec
 public class ReadyListener implements EventListener
 {
     public static void main(String[] args)
+            throws LoginException, RateLimitedException, InterruptedException
     {
         // Note: It is important to register your ReadyListener before building
         JDA jda = new JDABuilder(AccountType.BOT)
@@ -56,6 +57,7 @@ public class ReadyListener implements EventListener
 public class MessageListener extends ListenerAdapter
 {
     public static void main(String[] args)
+            throws LoginException, RateLimitedException, InterruptedException
     {
         JDA jda = new JDABuilder(AccountType.BOT).setToken("token").buildBlocking();
         jda.addEventListener(new MessageListener());
@@ -86,30 +88,42 @@ public class MessageListener extends ListenerAdapter
 We provide a small set of Examples in the [Example Directory](https://github.com/DV8FromTheWorld/JDA/tree/master/src/examples/java).
 
 ## Download
-Current Promoted Version:
+Latest Version:
+[ ![Download](https://api.bintray.com/packages/dv8fromtheworld/maven/JDA/images/download.svg) ](https://bintray.com/dv8fromtheworld/maven/JDA/_latestVersion)
 
-[ ![JDA promoted verison](https://www.dropbox.com/s/4jddygn33340uf4/version.png?dl=1) ](https://github.com/DV8FromTheWorld/JDA/releases/latest)
+Be sure to replace the **VERSION** key below with the latest version shown above!
 
-You can get the latest promoted builds here:
-[Promoted Downloads](https://github.com/DV8FromTheWorld/JDA/releases)<br>
-(Contains information about Maven and Gradle distribution)
+Maven
+```
+<dependency>
+    <groupId>net.dv8tion</groupId>
+    <artifactId>JDA</artifactId>
+    <version>VERSION</version>
+</dependency>
 
+<repository>
+    <id>jcenter</id>
+    <name>jcenter-bintray</name>
+    <url>http://jcenter.bintray.com</url>
+</repository>
+```
 
-If you want the most up-to-date builds, you can get them here: [Beta Build Downloads](http://home.dv8tion.net:8080/job/JDA/)<br>
-**Note:** It is quite possible that these are broken or bugged. Use with caution.<br>
-The dev builds are also available for maven/gradle on JCenter through Bintray [JDA JCenter Bintray](https://bintray.com/dv8fromtheworld/maven/JDA/)
+Gradle
+```
+dependencies {
+    compile 'net.dv8tion:JDA:VERSION'
+}
+
+repositories {
+    jcenter()
+}
+```
+
+The builds are distributed using JCenter through Bintray [JDA JCenter Bintray](https://bintray.com/dv8fromtheworld/maven/JDA/)
 
 ## Docs
-Javadocs are available in both jar format and web format.<br>
-The jar format is available on the [Promoted Downloads](https://github.com/DV8FromTheWorld/JDA/releases) page or on any of the
-build pages of the [Latest Downloads](http://home.dv8tion.net:8080/job/JDA/).
-
-The web format allows for viewing of the [Latest Docs](http://home.dv8tion.net:8080/job/JDA/lastSuccessfulBuild/javadoc/)
-and also viewing of each individual build's javadoc. To view the javadoc for a specific build, you will need to go to that build's page
-on [the build server](http://home.dv8tion.net:8080/job/JDA/) and click the javadoc button on the left side of the build page.<br>
-A shortcut would be: http://home.dv8tion.net:8080/job/JDA/BUILD_NUMBER_GOES_HERE/javadoc/, you just need to replace the 
-"BUILD_NUMBER_GOES_HERE" with the build you want.<br>
-Example: Build 90's javadoc url would be http://home.dv8tion.net:8080/job/JDA/90/javadoc/
+Docs can be found on the [Jenkins](http://home.dv8tion.net:8080/) or directly [here](http://home.dv8tion.net:8080/job/JDA/javadoc/)
+<br>A simple Wiki can also be found in this repo's [Wiki section](https://github.com/DV8FromTheWorld/JDA/wiki)
 
 ## Getting Help
 If you need help, or just want to talk with the JDA or other Discord Devs, you can join the [Unofficial Discord API](https://discord.gg/0SBTUU1wZTUydsWv) Guild.

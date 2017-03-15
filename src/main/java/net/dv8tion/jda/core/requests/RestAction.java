@@ -251,20 +251,6 @@ public abstract class RestAction<T>
         }
     }
 
-    /**
-     * @deprecated use {@link #complete(boolean)} instead!
-     *
-     * @throws net.dv8tion.jda.core.exceptions.RateLimitedException
-     *         If the request was ratelimited.
-     *
-     * @return The never-null response value
-     */
-    @Deprecated
-    public T block() throws RateLimitedException
-    {
-        return complete(false);
-    }
-
     protected void finalizeData() { }
 
     protected abstract void handleResponse(Response response, Request request);
