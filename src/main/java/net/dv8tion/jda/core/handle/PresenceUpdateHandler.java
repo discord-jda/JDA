@@ -153,7 +153,7 @@ public class PresenceUpdateHandler extends SocketHandler
                                         user, guild, oldGame));
                         api.getEventManager().handle(
                                 new GuildMemberGameUpdateEvent(api, responseNumber,
-                                        guild, member, oldGame));
+                                        guild, member, oldGame, nextGame));
                     }
                 }
             }
