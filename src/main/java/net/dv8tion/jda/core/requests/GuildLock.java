@@ -24,8 +24,8 @@ import java.util.*;
 
 public class GuildLock
 {
-    public static SimpleLog LOG = SimpleLog.getLog("JDAGuildLock");
-    private static Map<JDA, GuildLock> locks = new HashMap<>();
+    public static final SimpleLog LOG = SimpleLog.getLog("JDAGuildLock");
+    private static final Map<JDA, GuildLock> locks = new HashMap<>();
 
     public static synchronized GuildLock get(JDA jda)
     {

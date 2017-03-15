@@ -25,7 +25,7 @@ import java.util.List;
 public class EventCache
 {
     public static final SimpleLog LOG = SimpleLog.getLog("EventCache");
-    private static HashMap<JDA, EventCache> caches = new HashMap<>();
+    private static final HashMap<JDA, EventCache> caches = new HashMap<>();
     private HashMap<Type, HashMap<String, List<Runnable>>> eventCache = new HashMap<>();
 
     public static EventCache get(JDA jda)

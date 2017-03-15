@@ -24,9 +24,10 @@ import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.requests.restaction.CompletedFuture;
 import net.dv8tion.jda.core.requests.restaction.RequestFuture;
 import net.dv8tion.jda.core.utils.SimpleLog;
+import org.apache.http.util.Args;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 /**
@@ -63,6 +64,9 @@ import java.util.function.Consumer;
 public abstract class RestAction<T>
 {
     public static final SimpleLog LOG = SimpleLog.getLog("RestAction");
+    private static ScheduledExecutorService executor = null;
+    // TODO; Sedmelluq: use global executor?
+    // This is created when needed (lazy)
 
     public static Consumer DEFAULT_SUCCESS = o -> {};
     public static Consumer<Throwable> DEFAULT_FAILURE = t ->
@@ -191,6 +195,50 @@ public abstract class RestAction<T>
         return new RequestFuture<T>(this, shouldQueue);
     }
 
+    public ScheduledFuture<T> schedule(long delay, TimeUnit unit)
+    {
+        return schedule(delay, unit, globalPool());
+    }
+
+    public ScheduledFuture<T> schedule(long delay, TimeUnit unit, ScheduledExecutorService executor)
+    {
+        Args.notNull(executor, "Scheduler");
+        Args.notNull(unit, "TimeUnit");
+        return executor.schedule((Callable<T>) this::complete, delay, unit);
+    }
+
+    public ScheduledFuture<?> scheduleAsync(long delay, TimeUnit unit)
+    {
+        return scheduleAsync(delay, unit, globalPool());
+    }
+
+    public ScheduledFuture<?> scheduleAsync(long delay, TimeUnit unit, Consumer<T> success)
+    {
+        return scheduleAsync(delay, unit, success, globalPool());
+    }
+
+    public ScheduledFuture<?> scheduleAsync(long delay, TimeUnit unit, Consumer<T> success, Consumer<Throwable> failure)
+    {
+        return scheduleAsync(delay, unit, success, failure, globalPool());
+    }
+
+    public ScheduledFuture<?> scheduleAsync(long delay, TimeUnit unit, ScheduledExecutorService executor)
+    {
+        return scheduleAsync(delay, unit, null, executor);
+    }
+
+    public ScheduledFuture<?> scheduleAsync(long delay, TimeUnit unit, Consumer<T> success, ScheduledExecutorService executor)
+    {
+        return scheduleAsync(delay, unit, success, null, executor);
+    }
+
+    public ScheduledFuture<?> scheduleAsync(long delay, TimeUnit unit, Consumer<T> success, Consumer<Throwable> failure, ScheduledExecutorService executor)
+    {
+        Args.notNull(executor, "Scheduler");
+        Args.notNull(unit, "TimeUnit");
+        return executor.schedule(() -> queue(success, failure), delay, unit);
+    }
+
     /**
      * Blocks the current Thread and awaits the completion
      * of an {@link #submit()} request.
@@ -255,6 +303,13 @@ public abstract class RestAction<T>
 
     protected abstract void handleResponse(Response response, Request request);
 
+    static ScheduledExecutorService globalPool()
+    {
+        if (executor == null)
+            executor = Executors.newScheduledThreadPool(1, new RestActionThreadFactory());
+        return executor;
+    }
+
     /**
      * Specialized form of {@link net.dv8tion.jda.core.requests.RestAction} that is used to provide information that
      * has already been retrieved or generated so that another request does not need to be made to Discord.
@@ -294,5 +349,21 @@ public abstract class RestAction<T>
 
         @Override
         protected void handleResponse(Response response, Request request) { }
+    }
+
+    protected static class RestActionThreadFactory implements ThreadFactory
+    {
+        private final AtomicInteger threadCount = new AtomicInteger(1);
+
+        public RestActionThreadFactory() { }
+
+        @Override
+        public Thread newThread(Runnable r)
+        {
+            final Thread thread = new Thread(r, "RestActionThread " + threadCount.getAndIncrement());
+            thread.setDaemon(true);
+
+            return thread;
+        }
     }
 }
