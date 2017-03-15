@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * An object representing a single MessageReaction from Discord.
+ * This is an immutable object and is not updated by method calls or changes in Discord. A new snapshot instance
+ * built from Discord is needed to see changes.
+ *
+ * @since  3.0
+ * @author Florian Spieß
+ */
 public class MessageReaction
 {
 
@@ -42,6 +50,20 @@ public class MessageReaction
     private final boolean self;
     private final int count;
 
+    /**
+     * Creates a new MessageReaction instance
+     *
+     * @param  channel
+     *         The {@link net.dv8tion.jda.core.entities.MessageChannel} this Reaction was used in
+     * @param  emote
+     *         The {@link net.dv8tion.jda.core.entities.MessageReaction.ReactionEmote ReactionEmote} that was used
+     * @param  messageId
+     *         The message id this reaction is attached to
+     * @param  self
+     *         Whether we already reacted with this Reaction
+     * @param  count
+     *         The amount of people that reacted with this Reaction
+     */
     public MessageReaction(MessageChannel channel, ReactionEmote emote, String messageId, boolean self, int count)
     {
         this.channel = channel;
@@ -51,41 +73,120 @@ public class MessageReaction
         this.count = count;
     }
 
-    public boolean isSelf()
-    {
-        return self;
-    }
-
-    public int getCount()
-    {
-        return count;
-    }
-
-    public MessageChannel getChannel()
-    {
-        return channel;
-    }
-
-    public ReactionEmote getEmote()
-    {
-        return emote;
-    }
-
-    public String getMessageId()
-    {
-        return messageId;
-    }
-
+    /**
+     * The JDA instance of this Reaction
+     *
+     * @return The JDA instance of this Reaction
+     */
     public JDA getJDA()
     {
         return channel.getJDA();
     }
 
+    /**
+     * Whether the currently logged in account has reacted with this reaction
+     *
+     * @return True, if we reacted with this reaction
+     */
+    public boolean isSelf()
+    {
+        return self;
+    }
+
+    /**
+     * The amount of users that already reacted with this Reaction
+     * <br><b>This is not updated, it is a {@code final int} per Reaction instance</b>
+     *
+     * @return The amount of users that reacted with this Reaction
+     */
+    public int getCount()
+    {
+        return count;
+    }
+
+    /**
+     * The {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}
+     * this Reaction was used in.
+     *
+     * @return The channel this Reaction was used in
+     */
+    public MessageChannel getChannel()
+    {
+        return channel;
+    }
+
+    /**
+     * The {@link net.dv8tion.jda.core.entities.MessageReaction.ReactionEmote ReactionEmote}
+     * of this Reaction
+     *
+     * @return The final instance of this Reaction's Emote/Emoji
+     */
+    public ReactionEmote getEmote()
+    {
+        return emote;
+    }
+
+    /**
+     * The message id this reaction is attached to
+     *
+     * @return The message id this reaction is attached to
+     */
+    public String getMessageId()
+    {
+        return messageId;
+    }
+
+    /**
+     * Retrieves the {@link net.dv8tion.jda.core.entities.User Users} that
+     * already reacted with this MessageReaction.
+     * <br>This is an overload of {@link #getUsers(int)} with {@code 100}.
+     *
+     * <p>Possible ErrorResponses include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>If the message this reaction was attached to got deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>If the channel this reaction was used in got deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>If we were removed from the channel/guild</li>
+     * </ul>
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.core.entities.User User}{@literal >}
+     *         <br>Retrieves an immutable list of users that reacted with this Reaction.
+     */
     public RestAction<List<User>> getUsers()
     {
         return getUsers(100);
     }
 
+    /**
+     * Retrieves the {@link net.dv8tion.jda.core.entities.User Users} that
+     * already reacted with this MessageReaction. The maximum amount of users
+     * that can be retrieved is 100.
+     *
+     * <p>Possible ErrorResponses include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>If the message this reaction was attached to got deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>If the channel this reaction was used in got deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>If we were removed from the channel/guild</li>
+     * </ul>
+     *
+     * @param  amount
+     *         the amount of users to retrieve
+     *
+     * @throws IllegalArgumentException
+     *         if the provided amount is not between 1-100
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.core.entities.User User}{@literal >}
+     *         <br>Retrieves an immutable list of users that reacted with this Reaction.
+     */
     public RestAction<List<User>> getUsers(int amount)
     {
         if (amount < 1 || amount > 100)
@@ -122,11 +223,63 @@ public class MessageReaction
         };
     }
 
+    /**
+     * Removes this Reaction from the Message.
+     * <br>This will remove our own reaction as an overload
+     * of {@link #removeReaction(User)}.
+     *
+     * <p>Possible ErrorResponses include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>If the message this reaction was attached to got deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>If the channel this reaction was used in got deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>If we were removed from the channel/guild</li>
+     * </ul>
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
+     *         Nothing is returned on success
+     */
     public RestAction<Void> removeReaction()
     {
         return removeReaction(getJDA().getSelfUser());
     }
 
+    /**
+     * Removes this Reaction from the Message.
+     * <br>This will remove the reaction of the {@link net.dv8tion.jda.core.entities.User User}
+     * provided.
+     *
+     * <p>If the provided User did not react with this Reaction this does nothing.
+     *
+     * <p>Possible ErrorResponses include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>If the message this reaction was attached to got deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>If the channel this reaction was used in got deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>If we were removed from the channel/guild</li>
+     * </ul>
+     *
+     * @param  user
+     *         The User of which to remove the reaction
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided {@code user} is null.
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         if the provided User is not us and we do not have permission to
+     *         {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE manage messages}
+     *         in the channel this reaction was used in
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
+     *         Nothing is returned on success
+     */
     public RestAction<Void> removeReaction(User user)
     {
         if (user == null)
@@ -189,6 +342,10 @@ public class MessageReaction
         }
     }
 
+    /**
+     * Represents an Emoji/Emote of a MessageReaction
+     * <br>This is used to wrap both emojis and emotes
+     */
     public static class ReactionEmote implements ISnowflake
     {
 
@@ -208,6 +365,12 @@ public class MessageReaction
             this(emote.getName(), emote.getId(), emote.getJDA());
         }
 
+        /**
+         * Whether this is an {@link net.dv8tion.jda.core.entities.Emote Emote}
+         * wrapper.
+         *
+         * @return True, if {@link #getId()} is not null
+         */
         public boolean isEmote()
         {
             return id != null;
@@ -219,11 +382,23 @@ public class MessageReaction
             return id;
         }
 
+        /**
+         * The name for this emote/emoji
+         *
+         * @return The name for this emote/emoji
+         */
         public String getName()
         {
             return name;
         }
 
+        /**
+         * The instance of {@link net.dv8tion.jda.core.entities.Emote Emote}
+         * for the Reaction instance.
+         * <br>Might be null if {@link #getId()} returns null.
+         *
+         * @return The possibly-null Emote for the Reaction instance
+         */
         public Emote getEmote()
         {
             if (!isEmote())
@@ -232,6 +407,11 @@ public class MessageReaction
             return e != null ? e : new EmoteImpl(id, api).setName(name);
         }
 
+        /**
+         * The current JDA instance for the Reaction
+         *
+         * @return The JDA instance of the Reaction
+         */
         public JDA getJDA()
         {
             return api;

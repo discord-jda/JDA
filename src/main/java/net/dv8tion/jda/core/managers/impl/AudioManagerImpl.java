@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.audio.hooks.ListenerProxy;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
@@ -43,6 +44,8 @@ public class AudioManagerImpl implements AudioManager
     public static String OPUS_LIB_NAME;
 
     protected static boolean initialized = false;
+
+    public final Object CONNECTION_LOCK = new Object();
 
     protected final JDAImpl api;
     protected final Guild guild;
@@ -80,8 +83,13 @@ public class AudioManagerImpl implements AudioManager
         if (!guild.isAvailable())
             throw new GuildUnavailableException("Cannot open an Audio Connection with an unavailable guild. " +
                     "Please wait until this Guild is available to open a connection.");
-        if (!guild.getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT))
+        final Member self = guild.getSelfMember();
+        if (!self.hasPermission(channel, Permission.VOICE_CONNECT))
             throw new PermissionException(Permission.VOICE_CONNECT);
+        final int userLimit = channel.getUserLimit(); // userLimit is 0 if no limit is set!
+        if (!self.hasPermission(channel, Permission.MANAGE_CHANNEL) && userLimit > 0 && userLimit <= channel.getMembers().size())
+            throw new PermissionException(Permission.MANAGE_CHANNEL,
+                    "Unable to connect to VoiceChannel due to userlimit! Requires permission MANAGE_CHANNEL to bypass");
 
         if (audioConnection == null)
         {
@@ -110,12 +118,15 @@ public class AudioManagerImpl implements AudioManager
 
     public void closeAudioConnection(ConnectionStatus reason)
     {
-        api.getClient().getQueuedAudioConnectionMap().remove(guild.getId());
-        this.queuedAudioConnection = null;
-        if (audioConnection == null)
-            return;
-        this.audioConnection.close(reason);
-        this.audioConnection = null;
+        synchronized (CONNECTION_LOCK)
+        {
+            api.getClient().getQueuedAudioConnectionMap().remove(guild.getId());
+            this.queuedAudioConnection = null;
+            if (audioConnection == null)
+                return;
+            this.audioConnection.close(reason);
+            this.audioConnection = null;
+        }
     }
 
     @Override

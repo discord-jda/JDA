@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,9 +9,9 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 
 package net.dv8tion.jda.core.requests;
@@ -286,13 +286,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         if (api.getStatus() != JDA.Status.ATTEMPTING_TO_RECONNECT)
             api.setStatus(JDA.Status.CONNECTING_TO_WEBSOCKET);
         initiating = true;
-        WebSocketFactory factory = new WebSocketFactory();
-        if (proxy != null)
-        {
-            ProxySettings settings = factory.getProxySettings();
-            settings.setHost(proxy.getHostName());
-            settings.setPort(proxy.getPort());
-        }
+
         try
         {
             if (gatewayUrl == null)
@@ -303,7 +297,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     throw new RuntimeException("Could not fetch WS-Gateway!");
                 }
             }
-            socket = factory.createSocket(gatewayUrl)
+            socket = api.getWebSocketFactory()
+                    .createSocket(gatewayUrl)
                     .addHeader("Accept-Encoding", "gzip")
                     .addListener(this);
             socket.connect();
@@ -319,7 +314,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         try
         {
-            RestAction<String> gateway = new RestAction<String>(api, Route.Self.GATEWAY.compile(),null)
+            RestAction<String> gateway = new RestAction<String>(api, Route.Misc.GATEWAY.compile(),null)
             {
                 @Override
                 protected void handleResponse(Response response, Request request)
@@ -338,7 +333,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 }
             };
 
-            return gateway.block() + "?encoding=json&v=" + DISCORD_GATEWAY_VERSION;
+            return gateway.complete(false) + "?encoding=json&v=" + DISCORD_GATEWAY_VERSION;
         }
         catch (Exception ex)
         {
@@ -370,22 +365,45 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         connected = false;
         api.setStatus(JDA.Status.DISCONNECTED);
+
+        CloseCode closeCode = null;
+        int rawCloseCode = 1000;
+
         if (keepAliveThread != null)
         {
             keepAliveThread.interrupt();
             keepAliveThread = null;
         }
-        if (serverCloseFrame != null && serverCloseFrame.getCloseCode() == 4008)
+        if (serverCloseFrame != null)
         {
-            LOG.fatal("WebSocket connection closed due to ratelimit! Sent more than 120 websocket messages in under 60 seconds!");
+            rawCloseCode = serverCloseFrame.getCloseCode();
+            closeCode = CloseCode.from(rawCloseCode);
+            if (closeCode == CloseCode.RATE_LIMITED)
+                LOG.fatal("WebSocket connection closed due to ratelimit! Sent more than 120 websocket messages in under 60 seconds!");
+            else if (closeCode != null)
+                LOG.debug("WebSocket connection closed with code " + closeCode);
+            else
+                LOG.warn("WebSocket connection closed with unknown meaning for close-code " + rawCloseCode);
         }
-        if (!shouldReconnect)        //we should not reconnect
+
+        // null is considered -reconnectable- as we do not know the close-code meaning
+        boolean closeCodeIsReconnect = closeCode == null || closeCode.isReconnect();
+        if (!shouldReconnect || !closeCodeIsReconnect) //we should not reconnect
         {
             if (ratelimitThread != null)
                 ratelimitThread.interrupt();
 
+            if (!closeCodeIsReconnect)
+            {
+                //it is possible that a token can be invalidated due to too many reconnect attempts
+                //or that a bot reached a new shard minimum and cannot connect with the current settings
+                //if that is the case we have to drop our connection and inform the user with a fatal error message
+                LOG.fatal("WebSocket connection was closed and cannot be recovered due to identification issues");
+                LOG.fatal(closeCode);
+            }
+
             api.setStatus(JDA.Status.SHUTDOWN);
-            api.getEventManager().handle(new ShutdownEvent(api, OffsetDateTime.now()));
+            api.getEventManager().handle(new ShutdownEvent(api, OffsetDateTime.now(), rawCloseCode));
         }
         else
         {
@@ -639,16 +657,27 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         //If initiating, only allows READY, RESUMED, GUILD_MEMBERS_CHUNK, GUILD_SYNC, and GUILD_CREATE through.
         // If we are currently chunking, we don't allow GUILD_CREATE through anymore.
-        if (initiating
-                &&  !(type.equals("READY")
+        if (initiating &&  !(type.equals("READY")
                 || type.equals("GUILD_MEMBERS_CHUNK")
                 || type.equals("RESUMED")
                 || type.equals("GUILD_SYNC")
                 || (!chunkingAndSyncing && type.equals("GUILD_CREATE"))))
         {
-            LOG.debug("Caching " + type + " event during init!");
-            cachedEvents.add(raw);
-            return;
+            //If we are currently GuildStreaming, and we get a GUILD_DELETE informing us that a Guild is unavailable
+            // convert it to a GUILD_CREATE for handling.
+            JSONObject content = raw.getJSONObject("d");
+            if (!chunkingAndSyncing && type.equals("GUILD_DELETE") && content.has("unavailable") && content.getBoolean("unavailable"))
+            {
+                type = "GUILD_CREATE";
+                raw.put("t", "GUILD_CREATE")
+                        .put("jda-field","This event was originally a GUILD_DELETE but was converted to GUILD_CREATE for WS init Guild streaming");
+            }
+            else
+            {
+                LOG.debug("Caching " + type + " event during init!");
+                cachedEvents.add(raw);
+                return;
+            }
         }
 //
 //        // Needs special handling due to content of "d" being an array
@@ -864,5 +893,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             });
         }
     }
+
 }
 

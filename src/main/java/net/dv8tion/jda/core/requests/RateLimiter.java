@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,17 +9,17 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 
 package net.dv8tion.jda.core.requests;
 
 import com.mashape.unirest.http.HttpResponse;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Route.CompiledRoute;
+import net.dv8tion.jda.core.requests.Route.RateLimit;
 import net.dv8tion.jda.core.requests.ratelimit.IBucket;
 
 import java.util.ArrayList;
@@ -80,30 +80,7 @@ public abstract class RateLimiter
     {
         isShutdown = true;
 
-        try
-        {
-            while (!submittedBuckets.isEmpty())
-            {
-                Thread.sleep(100);
-            }
-        }
-        catch (InterruptedException ignored) {}
-
         pool.shutdownNow();
-    }
-
-    protected List<IBucket> shutdownNow()
-    {
-        isShutdown = true;
-        pool.shutdownNow(); //We don't get the runnable list returned here because some buckets might've failed to actually finish properly and aren't in this list.
-
-        try
-        {
-            while (!pool.awaitTermination(100, TimeUnit.MILLISECONDS));
-        }
-        catch (InterruptedException ignored) {}
-
-        return buckets.values().stream().filter(b -> !b.getRequests().isEmpty()).collect(Collectors.toList());
     }
 
     private class RateLimitThreadFactory implements ThreadFactory

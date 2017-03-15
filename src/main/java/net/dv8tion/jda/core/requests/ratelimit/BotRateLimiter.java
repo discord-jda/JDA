@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,9 +9,9 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 
 package net.dv8tion.jda.core.requests.ratelimit;
@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.requests.RateLimiter;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.core.requests.Route.CompiledRoute;
+import net.dv8tion.jda.core.requests.Route.RateLimit;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import org.json.JSONObject;
 
@@ -32,11 +33,12 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class BotRateLimiter extends RateLimiter
 {
     volatile Long timeOffset = null;
-    volatile Long globalCooldown = null;
+    volatile AtomicLong globalCooldown = new AtomicLong(Long.MIN_VALUE);
 
     public BotRateLimiter(Requester requester, int poolSize)
     {
@@ -46,7 +48,7 @@ public class BotRateLimiter extends RateLimiter
     @Override
     public Long getRateLimit(CompiledRoute route)
     {
-        Bucket bucket = getBucket(route.getRatelimitRoute());
+        Bucket bucket = getBucket(route);
         synchronized (bucket)
         {
             return bucket.getRateLimit();
@@ -58,7 +60,7 @@ public class BotRateLimiter extends RateLimiter
     {
         if (isShutdown)
             throw new RejectedExecutionException("Cannot queue a request after shutdown");
-        Bucket bucket = getBucket(request.getRoute().getRatelimitRoute());
+        Bucket bucket = getBucket(request.getRoute());
         synchronized (bucket)
         {
             bucket.addToQueue(request);
@@ -68,7 +70,7 @@ public class BotRateLimiter extends RateLimiter
     @Override
     protected Long handleResponse(CompiledRoute route, HttpResponse<String> response)
     {
-        Bucket bucket = getBucket(route.getRatelimitRoute());
+        Bucket bucket = getBucket(route);
         synchronized (bucket)
         {
             Headers headers = response.getHeaders();
@@ -93,8 +95,9 @@ public class BotRateLimiter extends RateLimiter
                 else
                 {
                     //If it is global, lock down the threads.
-                    globalCooldown = getNow() + retryAfter;
+                    globalCooldown.set(getNow() + retryAfter);
                 }
+
                 return retryAfter;
             }
             else
@@ -106,18 +109,19 @@ public class BotRateLimiter extends RateLimiter
 
     }
 
-    private Bucket getBucket(String route)
+    private Bucket getBucket(CompiledRoute route)
     {
-        Bucket bucket = (Bucket) buckets.get(route);
+        String rateLimitRoute = route.getRatelimitRoute();
+        Bucket bucket = (Bucket) buckets.get(rateLimitRoute);
         if (bucket == null)
         {
             synchronized (buckets)
             {
-                bucket = (Bucket) buckets.get(route);
+                bucket = (Bucket) buckets.get(rateLimitRoute);
                 if (bucket == null)
                 {
-                    bucket = new Bucket(route);
-                    buckets.put(route, bucket);
+                    bucket = new Bucket(rateLimitRoute, route.getBaseRoute().getRatelimit());
+                    buckets.put(rateLimitRoute, bucket);
                 }
             }
         }
@@ -156,10 +160,29 @@ public class BotRateLimiter extends RateLimiter
     {
         try
         {
-            bucket.resetTime = Long.parseLong(headers.getFirst("X-RateLimit-Reset")) * 1000; //Seconds to milliseconds
-            bucket.routeUsageLimit = Integer.parseInt(headers.getFirst("X-RateLimit-Limit"));
-            bucket.routeUsageRemaining = Integer.parseInt(headers.getFirst("X-RateLimit-Remaining"));
+            if (bucket.hasRatelimit()) // Check if there's a hardcoded rate limit 
+            {
+                bucket.resetTime = getNow() + bucket.getRatelimit().getResetTime();
+                //routeUsageLimit provided by the ratelimit object already in the bucket.
+            }
+            else
+            {
+                bucket.resetTime = Long.parseLong(headers.getFirst("X-RateLimit-Reset")) * 1000; //Seconds to milliseconds
+                bucket.routeUsageLimit = Integer.parseInt(headers.getFirst("X-RateLimit-Limit"));
+            }
 
+            //Currently, we check the remaining amount even for hardcoded ratelimits just to further respect Discord
+            // however, if there should ever be a case where Discord informs that the remaining is less than what
+            // it actually is and we add a custom ratelimit to handle that, we will need to instead move this to the
+            // above else statement and add a bucket.routeUsageRemaining-- decrement to the above if body.
+            //An example of this statement needing to be moved would be if the custom ratelimit reset time interval is
+            // equal to or greater than 1000ms, and the remaining count provided by discord is less than the ACTUAL
+            // amount that their systems allow in such a way that isn't a bug.
+            //The custom ratelimit system is primarily for ratelimits that can't be properly represented by Discord's
+            // header system due to their headers only supporting accuracy to the second. The custom ratelimit system
+            // allows for hardcoded ratelimits that allow accuracy to the millisecond which is important for some
+            // ratelimits like Reactions which is 1/0.25s, but discord reports the ratelimit as 1/1s with headers.
+            bucket.routeUsageRemaining = Integer.parseInt(headers.getFirst("X-RateLimit-Remaining"));
         }
         catch (NumberFormatException ex)
         {
@@ -167,10 +190,9 @@ public class BotRateLimiter extends RateLimiter
                     && !bucket.getRoute().equals("users/@me")
                     && Requester.LOG.getEffectiveLevel().getPriority() <= SimpleLog.Level.DEBUG.getPriority())
             {
-                Requester.LOG.fatal("Encountered issue with headers when updating a bucket"
+                Requester.LOG.debug("Encountered issue with headers when updating a bucket"
                                   + "\nRoute: " + bucket.getRoute()
                                   + "\nHeaders: " + headers);
-                Requester.LOG.log(ex);
             }
 
         }
@@ -179,14 +201,21 @@ public class BotRateLimiter extends RateLimiter
     private class Bucket implements IBucket, Runnable
     {
         final String route;
+        final RateLimit rateLimit;
         volatile long resetTime = 0;
         volatile int routeUsageRemaining = 1;    //These are default values to only allow 1 request until we have properly
         volatile int routeUsageLimit = 1;        // ratelimit information.
         volatile ConcurrentLinkedQueue<Request> requests = new ConcurrentLinkedQueue<>();
 
-        public Bucket(String route)
+        public Bucket(String route, RateLimit rateLimit)
         {
             this.route = route;
+            this.rateLimit = rateLimit;
+            if (rateLimit != null)
+            {
+                this.routeUsageRemaining = rateLimit.getUsageLimit();
+                this.routeUsageLimit = rateLimit.getUsageLimit();
+            }
         }
 
         void addToQueue(Request request)
@@ -213,15 +242,17 @@ public class BotRateLimiter extends RateLimiter
 
         Long getRateLimit()
         {
-            if (globalCooldown != null) //Are we on global cooldown?
+            long gCooldown = globalCooldown.get();
+            if (gCooldown != Long.MIN_VALUE) //Are we on global cooldown?
             {
                 long now = getNow();
-                if (now > globalCooldown)   //Verify that we should still be on cooldown.
+                if (now > gCooldown)   //Verify that we should still be on cooldown.
                 {
-                    globalCooldown = null;  //If we are done cooling down, reset the globalCooldown and continue.
-                } else
+                    globalCooldown.set(Long.MIN_VALUE);  //If we are done cooling down, reset the globalCooldown and continue.
+                }
+                else
                 {
-                    return globalCooldown - now;    //If we should still be on cooldown, return when we can go again.
+                    return gCooldown - now;    //If we should still be on cooldown, return when we can go again.
                 }
             }
             if (this.routeUsageRemaining <= 0)
@@ -306,9 +337,15 @@ public class BotRateLimiter extends RateLimiter
             }
             catch (Throwable err)
             {
-                Requester.LOG.fatal("Requester system encountered an internal error from beyond the sychronized execution blocks. NOT GOOD!");
+                Requester.LOG.fatal("Requester system encountered an internal error from beyond the synchronized execution blocks. NOT GOOD!");
                 Requester.LOG.log(err);
             }
+        }
+
+        @Override
+        public RateLimit getRatelimit()
+        {
+            return rateLimit;
         }
 
         @Override

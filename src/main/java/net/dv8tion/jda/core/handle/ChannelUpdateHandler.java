@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,9 +9,9 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 
 package net.dv8tion.jda.core.handle;
@@ -73,7 +73,7 @@ public class ChannelUpdateHandler extends SocketHandler
                     {
                         handle(responseNumber, allContent);
                     });
-                    EventCache.LOG.debug("CHANNEL_UPDATE attemped to update a TextChannel that does not exist. JSON: " + content);
+                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a TextChannel that does not exist. JSON: " + content);
                     return null;
                 }
 
@@ -151,7 +151,7 @@ public class ChannelUpdateHandler extends SocketHandler
                     {
                         handle(responseNumber, allContent);
                     });
-                    EventCache.LOG.debug("CHANNEL_UPDATE attemped to update a VoiceChannel that does not exist. JSON: " + content);
+                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a VoiceChannel that does not exist. JSON: " + content);
                     return null;
                 }
                 //If any properties changed, update the values and fire the proper events.
@@ -326,7 +326,7 @@ public class ChannelUpdateHandler extends SocketHandler
             {
                 handle(responseNumber, allContent);
             });
-            EventCache.LOG.debug("Recieved CHANNEL_UPDATE for a group that was not yet cached. JSON: " + content);
+            EventCache.LOG.debug("Received CHANNEL_UPDATE for a group that was not yet cached. JSON: " + content);
             return;
         }
 

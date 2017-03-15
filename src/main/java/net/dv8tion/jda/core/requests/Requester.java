@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,9 +9,9 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 
 package net.dv8tion.jda.core.requests;
@@ -34,8 +34,6 @@ import net.dv8tion.jda.core.requests.ratelimit.IBucket;
 import net.dv8tion.jda.core.utils.SimpleLog;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class Requester
 {
@@ -117,6 +115,10 @@ public class Requester
 
         try
         {
+            //If the request has been canceled via the Future, don't execute.
+            if (apiRequest.isCanceled())
+                return null;
+
             HttpResponse<String> response = request.asString();
             int attempt = 1;
             while (attempt < 4 && response.getStatus() != 429 && response.getBody() != null && response.getBody().startsWith("<"))
@@ -129,15 +131,17 @@ public class Requester
                 {
                     Thread.sleep(50 * attempt);
                 }
-                catch (InterruptedException ignored)
-                {
-                }
+                catch (InterruptedException ignored) {}
+
+                //If the request has been canceled via the Future, don't execute.
+                if (apiRequest.isCanceled())
+                    return null;
                 response = request.asString();
                 attempt++;
             }
             if (response.getBody() != null && response.getBody().startsWith("<"))
             {
-                //Epic failure due to cloudfare. Attempted 4 times.
+                //Epic failure due to cloudflare. Attempted 4 times.
                 return null;
             }
 
@@ -163,11 +167,6 @@ public class Requester
     public void shutdown()
     {
         rateLimiter.shutdown();
-    }
-
-    public List<IBucket> shutdownNow()
-    {
-        return rateLimiter.shutdownNow();
     }
 
     private BaseRequest createRequest(Route.CompiledRoute route, String body)

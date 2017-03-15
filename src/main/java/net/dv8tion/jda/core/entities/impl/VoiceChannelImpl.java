@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,9 +9,9 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 
 package net.dv8tion.jda.core.entities.impl;
@@ -26,9 +26,10 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
-import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.core.requests.restaction.InviteAction;
+import net.dv8tion.jda.core.requests.restaction.PermissionOverrideAction;
 import org.apache.http.util.Args;
-import org.json.JSONObject;
+import org.json.JSONArray;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -199,7 +200,7 @@ public class VoiceChannelImpl implements VoiceChannel
     }
 
     @Override
-    public RestAction<PermissionOverride> createPermissionOverride(Member member)
+    public PermissionOverrideAction createPermissionOverride(Member member)
     {
         checkPermission(Permission.MANAGE_PERMISSIONS);
         Args.notNull(member, "member");
@@ -208,34 +209,12 @@ public class VoiceChannelImpl implements VoiceChannel
         if (getMemberOverrideMap().containsKey(member))
             throw new IllegalStateException("Provided member already has a PermissionOverride in this channel!");
 
-        final PermissionOverride override = new PermissionOverrideImpl(this, member, null);
-
-        JSONObject body = new JSONObject()
-                .put("id", member.getUser().getId())
-                .put("type", "member")
-                .put("allow", 0)
-                .put("deny", 0);
-
         Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(id, member.getUser().getId());
-        return new RestAction<PermissionOverride>(getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                if (!response.isOk())
-                {
-                    request.onFailure(response);
-                    return;
-                }
-
-                getMemberOverrideMap().put(member, override);
-                request.onSuccess(override);
-            }
-        };
+        return new PermissionOverrideAction(getJDA(), route, this, member);
     }
 
     @Override
-    public RestAction<PermissionOverride> createPermissionOverride(Role role)
+    public PermissionOverrideAction createPermissionOverride(Role role)
     {
         checkPermission(Permission.MANAGE_PERMISSIONS);
         Args.notNull(role, "role");
@@ -244,30 +223,8 @@ public class VoiceChannelImpl implements VoiceChannel
         if (getRoleOverrideMap().containsKey(role))
             throw new IllegalStateException("Provided role already has a PermissionOverride in this channel!");
 
-        final PermissionOverride override = new PermissionOverrideImpl(this, null, role);
-
-        JSONObject body = new JSONObject()
-                .put("id", role.getId())
-                .put("type", "role")
-                .put("allow", 0)
-                .put("deny", 0);
-
         Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(id, role.getId());
-        return new RestAction<PermissionOverride>(getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                if (!response.isOk())
-                {
-                    request.onFailure(response);
-                    return;
-                };
-
-                getRoleOverrideMap().put(role, override);
-                request.onSuccess(override);
-            }
-        };
+        return new PermissionOverrideAction(getJDA(), route, this, role);
     }
 
     @Override
@@ -371,5 +328,46 @@ public class VoiceChannelImpl implements VoiceChannel
             else
                 throw new PermissionException(permission);
         }
+    }
+
+    @Override
+    public RestAction<List<Invite>> getInvites()
+    {
+        if (!this.guild.getSelfMember().hasPermission(this, Permission.MANAGE_CHANNEL))
+            throw new PermissionException(Permission.MANAGE_CHANNEL);
+
+        final Route.CompiledRoute route = Route.Invites.GET_CHANNEL_INVITES.compile(getId());
+
+        return new RestAction<List<Invite>>(getJDA(), route, null)
+        {
+            @Override
+            protected void handleResponse(final Response response, final Request request)
+            {
+                if (response.isOk())
+                {
+                    EntityBuilder entityBuilder = EntityBuilder.get(this.api);
+                    JSONArray array = response.getArray();
+                    List<Invite> invites = new ArrayList<>(array.length());
+                    for (int i = 0; i < array.length(); i++)
+                    {
+                        invites.add(entityBuilder.createInvite(array.getJSONObject(i)));
+                    }
+                    request.onSuccess(invites);
+                }
+                else
+                {
+                    request.onFailure(response);
+                }
+            }
+        };
+    }
+
+    @Override
+    public InviteAction createInvite()
+    {
+        if (!this.guild.getSelfMember().hasPermission(this, Permission.CREATE_INSTANT_INVITE))
+            throw new PermissionException(Permission.CREATE_INSTANT_INVITE);
+
+        return new InviteAction(this.getJDA(), this.getId());
     }
 }

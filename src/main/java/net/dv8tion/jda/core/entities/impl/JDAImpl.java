@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,14 +9,15 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 
 package net.dv8tion.jda.core.entities.impl;
 
 import com.mashape.unirest.http.Unirest;
+import com.neovisionaries.ws.client.WebSocketFactory;
 import net.dv8tion.jda.bot.JDABot;
 import net.dv8tion.jda.bot.entities.impl.JDABotImpl;
 import net.dv8tion.jda.client.JDAClient;
@@ -27,6 +28,7 @@ import net.dv8tion.jda.core.audio.AudioWebSocket;
 import net.dv8tion.jda.core.audio.factory.DefaultSendFactory;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.events.StatusChangeEvent;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.IEventManager;
@@ -35,7 +37,6 @@ import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.*;
-import net.dv8tion.jda.core.requests.ratelimit.IBucket;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import org.apache.http.HttpHost;
 import org.apache.http.util.Args;
@@ -43,10 +44,7 @@ import org.json.JSONObject;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class JDAImpl implements JDA
@@ -64,12 +62,13 @@ public class JDAImpl implements JDA
 
     protected final HashMap<String, AudioManager> audioManagers = new HashMap<>();
 
+    protected final HttpHost proxy;
+    protected final WebSocketFactory wsFactory;
     protected final AccountType accountType;
     protected final PresenceImpl presence;
     protected final JDAClient jdaClient;
     protected final JDABot jdaBot;
 
-    protected HttpHost proxy;
     protected WebSocketClient client;
     protected Requester requester;
     protected IEventManager eventManager = new InterfacedEventManager();
@@ -84,12 +83,13 @@ public class JDAImpl implements JDA
     protected boolean autoReconnect;
     protected long responseTotal;
 
-    public JDAImpl(AccountType accountType, HttpHost proxy, boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled)
+    public JDAImpl(AccountType accountType, HttpHost proxy, WebSocketFactory wsFactory, boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled)
     {
         this.presence = new PresenceImpl(this);
         this.accountType = accountType;
         this.requester = new Requester(this);
         this.proxy = proxy;
+        this.wsFactory = wsFactory;
         this.autoReconnect = autoReconnect;
         this.audioEnabled = audioEnabled;
         this.useShutdownHook = useShutdownHook;
@@ -97,9 +97,6 @@ public class JDAImpl implements JDA
 
         this.jdaClient = accountType == AccountType.CLIENT ? new JDAClientImpl(this) : null;
         this.jdaBot = accountType == AccountType.BOT ? new JDABotImpl(this) : null;
-
-        if (audioEnabled)
-            ;   //TODO: setup audio system
     }
 
     public void login(String token, ShardInfo shardInfo) throws LoginException, RateLimitedException
@@ -122,7 +119,7 @@ public class JDAImpl implements JDA
                 @Override
                 public void run()
                 {
-                    JDAImpl.this.shutdownNow(true);
+                    JDAImpl.this.shutdown(true);
                 }
             });
         }
@@ -135,8 +132,7 @@ public class JDAImpl implements JDA
             Status oldStatus = this.status;
             this.status = status;
 
-            //TODO: Fire status change event.
-//            eventManager.handle(new StatusChangeEvent(this, status, oldStatus));
+            eventManager.handle(new StatusChangeEvent(this, status, oldStatus));
         }
     }
 
@@ -167,10 +163,10 @@ public class JDAImpl implements JDA
             }
         };
 
-        JSONObject userResponse = null;
+        JSONObject userResponse;
         try
         {
-            userResponse = login.block();
+            userResponse = login.complete(false);
         }
         catch (RuntimeException e)
         {
@@ -210,7 +206,7 @@ public class JDAImpl implements JDA
             try
             {
                 //Now that we have reversed the AccountTypes, attempt to get User info again.
-                userResponse = login.block();
+                userResponse = login.complete(false);
             }
             catch (RuntimeException e)
             {
@@ -304,6 +300,26 @@ public class JDAImpl implements JDA
     }
 
     @Override
+    public List<Guild> getMutualGuilds(User... users)
+    {
+        Args.notNull(users, "users");
+        return getMutualGuilds(Arrays.asList(users));
+    }
+
+    @Override
+    public List<Guild> getMutualGuilds(Collection<User> users)
+    {
+        Args.notNull(users, "users");
+        for(User u : users)
+        {
+            Args.notNull(u, "All users");
+        }
+        return Collections.unmodifiableList(getGuilds().stream()
+                .filter(guild -> users.stream().allMatch(guild::isMember))
+                .collect(Collectors.toList()));
+    }
+
+    @Override
     public List<User> getUsersByName(String name, boolean ignoreCase)
     {
         return users.values().stream().filter(u ->
@@ -318,7 +334,8 @@ public class JDAImpl implements JDA
     {
         if (accountType != AccountType.BOT)
             throw new AccountTypeException(AccountType.BOT);
-        Args.notNull(id, "User id");
+        Args.notEmpty(id, "User id");
+
         // check cache
         User user = this.getUserById(id);
         if (user != null)
@@ -458,17 +475,16 @@ public class JDAImpl implements JDA
         shutdown(true);
     }
 
-    //TODO: offer a timeout version.
     @Override
     public void shutdown(boolean free)
     {
         setStatus(Status.SHUTTING_DOWN);
+        audioManagers.forEach((guildId, mng) -> mng.closeAudioConnection());
+        if (AudioWebSocket.KEEP_ALIVE_POOLS.containsKey(this))
+            AudioWebSocket.KEEP_ALIVE_POOLS.get(this).shutdownNow();
+        getClient().setAutoReconnect(false);
+        getClient().close();
         getRequester().shutdown();
-        audioManagers.forEach((guildId, mng) -> mng.closeAudioConnection());
-        if (AudioWebSocket.KEEP_ALIVE_POOLS.containsKey(this))
-            AudioWebSocket.KEEP_ALIVE_POOLS.get(this).shutdownNow();
-        getClient().setAutoReconnect(false);
-        getClient().close();
 
         if (free)
         {
@@ -479,29 +495,6 @@ public class JDAImpl implements JDA
             catch (IOException ignored) {}
         }
         setStatus(Status.SHUTDOWN);
-    }
-
-    @Override
-    public List<IBucket> shutdownNow(boolean free)
-    {
-        setStatus(Status.SHUTTING_DOWN);
-        List<IBucket> buckets = getRequester().shutdownNow();
-        audioManagers.forEach((guildId, mng) -> mng.closeAudioConnection());
-        if (AudioWebSocket.KEEP_ALIVE_POOLS.containsKey(this))
-            AudioWebSocket.KEEP_ALIVE_POOLS.get(this).shutdownNow();
-        getClient().setAutoReconnect(false);
-        getClient().close();
-
-        if (free)
-        {
-            try
-            {
-                Unirest.shutdown();
-            }
-            catch (IOException ignored) {}
-        }
-        setStatus(Status.SHUTDOWN);
-        return buckets;
     }
 
     @Override
@@ -599,6 +592,11 @@ public class JDAImpl implements JDA
         return eventManager;
     }
 
+    public WebSocketFactory getWebSocketFactory()
+    {
+        return wsFactory;
+    }
+
     public WebSocketClient getClient()
     {
         return client;
@@ -661,5 +659,6 @@ public class JDAImpl implements JDA
         else
             return "JDA";
     }
+
 
 }

@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,21 +21,21 @@ import net.dv8tion.jda.core.entities.Guild;
 
 public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent
 {
-    private final String oldSpashId;
+    private final String oldSplashId;
 
-    public GuildUpdateSplashEvent(JDA api, long responseNumber, Guild guild, String oldSpashId)
+    public GuildUpdateSplashEvent(JDA api, long responseNumber, Guild guild, String oldSplashId)
     {
         super(api, responseNumber, guild);
-        this.oldSpashId = oldSpashId;
+        this.oldSplashId = oldSplashId;
     }
 
-    public String getOldSpashId()
+    public String getOldSplashId()
     {
-        return oldSpashId;
+        return oldSplashId;
     }
 
-    public String getOldSpashUrl()
+    public String getOldSplashUrl()
     {
-        return oldSpashId == null ? null : "https://cdn.discordapp.com/splashes/" + guild.getId() + "/" + oldSpashId + ".jpg";
+        return oldSplashId == null ? null : "https://cdn.discordapp.com/splashes/" + guild.getId() + "/" + oldSplashId + ".jpg";
     }
 }
