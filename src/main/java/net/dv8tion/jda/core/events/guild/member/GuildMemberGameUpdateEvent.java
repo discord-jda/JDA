@@ -14,24 +14,19 @@ import net.dv8tion.jda.core.entities.Member;
 public class GuildMemberGameUpdateEvent extends GenericGuildMemberEvent {
 
     private final Game previousGame;
-    private final Game updatedGame;
+    private final Game newGame;
 
     public GuildMemberGameUpdateEvent(JDA api, long responseNumber, Guild guild, Member member, Game oldGame, Game newGame) {
         super(api, responseNumber, guild, member);
-        previousGame = oldGame;
-        updatedGame = newGame;
+        this.previousGame = oldGame;
+        this.newGame = newGame;
     }
 
-    public Game getPreviousGame() {
+    public Game getPrevGame() {
         return previousGame;
     }
 
-
-    /**
-     *
-     * @return the game of which the member's presence had updated to.
-     */
-    public Game getUpdatedGame() {
-        return updatedGame;
+    public Game getNewGame() {
+        return newGame;
     }
 }
