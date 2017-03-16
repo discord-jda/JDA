@@ -71,8 +71,13 @@ public class Route
         // Client only
         public static final Route USER_SETTINGS =       new Route(GET, "users/@me/settings");
         public static final Route GET_CONNECTIONS =     new Route(GET, "users/@me/connections");
-        public static final Route GET_RECENT_MENTIONS = new Route(GET, "users/@me/mentions?limit={limit}&roles={}&everyone={}");
         public static final Route FRIEND_SUGGESTIONS =  new Route(GET, "friend_suggestions");
+
+        public static final Route GET_RECENT_MENTIONS        = new Route(GET, "users/@me/mentions?limit={limit}&roles={}&everyone={}");
+        public static final Route GET_RECENT_MENTIONS_BEFORE = new Route(GET, "users/@me/mentions?limit={limit}&roles={}&everyone={}&before={}");
+
+        public static final Route GET_RECENT_MENTIONS_GUILD        = new Route(GET, "users/@me/mentions?limit={limit}&roles={}&everyone={}&guild_id={guild_id}");
+        public static final Route GET_RECENT_MENTIONS_GUILD_BEFORE = new Route(GET, "users/@me/mentions?limit={limit}&roles={}&everyone={}&guild_id={guild_id}&before={}");
     }
 
     public static class Users

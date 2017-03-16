@@ -19,9 +19,10 @@ package net.dv8tion.jda.client.entities.impl;
 import net.dv8tion.jda.client.JDAClient;
 import net.dv8tion.jda.client.entities.*;
 import net.dv8tion.jda.client.requests.restaction.ApplicationAction;
+import net.dv8tion.jda.client.requests.restaction.pagination.MentionPaginationAction;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.EntityBuilder;
-import net.dv8tion.jda.core.entities.Invite;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
@@ -30,11 +31,12 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import org.apache.http.util.Args;
-
 import org.json.JSONArray;
-import org.json.JSONObject;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class JDAClientImpl implements JDAClient
@@ -177,6 +179,20 @@ public class JDAClientImpl implements JDAClient
     public Friend getFriendById(String id)
     {
         return (Friend) getRelationshipById(id, RelationshipType.FRIEND);
+    }
+
+    @Override
+    public MentionPaginationAction getRecentMentions()
+    {
+        return new MentionPaginationAction(getJDA());
+    }
+
+    @Override
+    public MentionPaginationAction getRecentMentions(Guild guild)
+    {
+        Args.notNull(guild, "Guild");
+        Args.check(guild.isAvailable(), "Guild is currently not available!");
+        return new MentionPaginationAction(guild);
     }
 
     @Override
