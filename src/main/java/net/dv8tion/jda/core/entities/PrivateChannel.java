@@ -18,6 +18,11 @@ package net.dv8tion.jda.core.entities;
 import net.dv8tion.jda.client.entities.CallableChannel;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.requests.RestAction;
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.IOException;
+import java.util.FormattableFlags;
+import java.util.Formatter;
 
 /**
  * Represents the connection used for direct messaging.
@@ -46,4 +51,37 @@ public interface PrivateChannel extends MessageChannel, CallableChannel, IFakeab
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
      */
     RestAction<Void> close();
+
+    @Override
+    default void formatTo(Formatter formatter, int flags, int width, int precision)
+    {
+        boolean leftJustified = (flags & FormattableFlags.LEFT_JUSTIFY) == FormattableFlags.LEFT_JUSTIFY;
+        boolean upper = (flags & FormattableFlags.UPPERCASE) == FormattableFlags.UPPERCASE;
+        boolean alt = (flags & FormattableFlags.ALTERNATE) == FormattableFlags.ALTERNATE;
+        String out;
+
+        if (alt)
+            out = "#" + (upper ?  getName().toUpperCase(formatter.locale()) : getName());
+        else
+            out = upper ?  getName().toUpperCase(formatter.locale()) : getName();
+
+        try
+        {
+            Appendable appendable = formatter.out();
+            if (precision > -1 && out.length() > precision)
+            {
+                appendable.append(StringUtils.truncate(out, precision));
+                return;
+            }
+
+            if (leftJustified)
+                appendable.append(StringUtils.rightPad(out, width));
+            else
+                appendable.append(StringUtils.leftPad(out, width));
+        }
+        catch (IOException e)
+        {
+            throw new AssertionError(e);
+        }
+    }
 }

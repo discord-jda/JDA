@@ -34,13 +34,14 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Collections;
+import java.util.Formattable;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Represents a Discord channel that can have {@link net.dv8tion.jda.core.entities.Message Messages} and files sent to it.
  */
-public interface MessageChannel extends ISnowflake
+public interface MessageChannel extends ISnowflake, Formattable
 {
     /**
      * This method is a shortcut method to return the following information in the following situation:
@@ -111,6 +112,48 @@ public interface MessageChannel extends ISnowflake
         Args.check(text.length() <= 2000, "Provided text for message must be less than 2000 characters in length");
 
         return sendMessage(new MessageBuilder().append(text).build());
+    }
+
+    /**
+     * Sends a formatted text message to this channel.
+     * <br>This will fail if this channel is an instance of {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and
+     * the currently logged in account does not have permissions to send a message to this channel.
+     * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
+     * use {@link net.dv8tion.jda.core.entities.TextChannel#canTalk() TextChannel.canTalk()}.
+     *
+     * <p>This method is a shortcut to {@link #sendMessage(Message)} by way of using a {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder}
+     * and using its {@link net.dv8tion.jda.core.MessageBuilder#appendFormat(String, Object...)} method.
+     * <br>For more information on how to format your input, refer to the docs of the method mentioned above.
+     *
+     * <p>For {@link net.dv8tion.jda.core.requests.ErrorResponse} information, refer to {@link #sendMessage(Message)}.
+     *
+     * @param  format
+     *         The string that should be formatted, if this is {@code null} or empty
+     *         the content of the Message would be empty and cause a builder exception.
+     * @param  args
+     *         The arguments for your format
+     *
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does
+     *         not have
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.client.exceptions.VerificationLevelException
+     *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel} and
+     *         {@link net.dv8tion.jda.core.entities.TextChannel#getGuild() TextChannel.getGuild()}{@link net.dv8tion.jda.core.entities.Guild#checkVerification() .checkVerification()}
+     *         returns false.
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided format text is {@code null}, empty or longer than 2000 characters
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
+     *         <br>The newly created Message after it has been sent to Discord.
+     */
+    default RestAction<Message> sendMessage(String format, Object... args)
+    {
+        Args.notEmpty(format, "Format");
+        return sendMessage(new MessageBuilder().appendFormat(format, args).build());
     }
 
     /**
