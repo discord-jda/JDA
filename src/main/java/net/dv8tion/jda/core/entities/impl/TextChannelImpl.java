@@ -322,13 +322,6 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
-    public RestAction<Message> getLatestMessage()
-    {
-        checkPermission(Permission.MESSAGE_HISTORY);
-        return TextChannel.super.getLatestMessage();
-    }
-
-    @Override
     public RestAction<MessageHistory> getHistoryAround(String messageId, int limit)
     {
         checkPermission(Permission.MESSAGE_READ);

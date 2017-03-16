@@ -673,65 +673,6 @@ public interface MessageChannel extends ISnowflake
     }
 
     /**
-     * Retrieves the most recent {@link net.dv8tion.jda.core.entities.Message Message}
-     * sent in this MessageChannel
-     * <br><b>Only use if {@link #hasLatestMessage()} is {@code true}</b>
-     *
-     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>If the message for the {@link #getLatestMessageId() most recent id} has been removed</li>
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
-     *     <br>If this channel has been removed before finishing the RestAction task</li>
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>If we lost access to this channel before finishing the RestAction task (possibly kicked)</li>
-     * </ul>
-     *
-     * @throws java.lang.IllegalStateException
-     *         If this MessageChannel has no tracked latest message id. See {@link #hasLatestMessage()}
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}  and the currently logged in account
-     *         does not have the {@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY MESSAGE_HISTORY} Permissions
-     *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
-     *         <br>The most recent message sent in this MessageChannel
-     *
-     * @see    #hasLatestMessage()
-     * @see    #getLatestMessageId()
-     */
-    default RestAction<Message> getLatestMessage()
-    {
-        final String id = getLatestMessageId();
-        if (getJDA().getAccountType() == AccountType.BOT)
-            return getMessageById(id);
-
-        Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY.compile(getId(), String.valueOf(1));
-        return new RestAction<Message>(getJDA(), route, null)
-        {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                if (!response.isOk())
-                {
-                    request.onFailure(response);
-                    return;
-                }
-
-                JSONArray array = response.getArray();
-                if (array.length() < 1)
-                {
-                    request.onFailure(
-                        new IllegalStateException(String.format("MessageHistory for MessageChannel with ID: %s is empty!", getId())));
-                    return;
-                }
-                Message msg = EntityBuilder.get(api).createMessage(array.getJSONObject(0), MessageChannel.this, false);
-
-                request.onSuccess(msg);
-            }
-        };
-    }
-
-    /**
      * Creates a new {@link MessageHistory MessageHistory} object for each call of this method.
      * <br>MessageHistory is <b>NOT</b> an internal message cache, but rather it queries the Discord servers for previously sent messages.
      *
