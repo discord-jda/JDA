@@ -1195,7 +1195,7 @@ public class EntityBuilder
     {
         final String description = object.getString("description");
         final boolean doesBotRequireCodeGrant = object.getBoolean("bot_require_code_grant");
-        final String iconId = object.has("icon") ? object.getString("icon") : null;
+        final String iconId = object.has("icon") && !object.isNull("icon") ? object.getString("icon") : null;
         final String id = object.getString("id");
         final String name = object.getString("name");
         final boolean isBotPublic = object.getBoolean("bot_public");
