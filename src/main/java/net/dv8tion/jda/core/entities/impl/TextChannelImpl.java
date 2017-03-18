@@ -214,9 +214,8 @@ public class TextChannelImpl implements TextChannel
     @Override
     public List<Member> getMembers()
     {
-        return Collections.unmodifiableList(
-        ((GuildImpl) getGuild()).getMembersMap().values().stream()
-                .filter(m -> m.getPermissions(this).contains(Permission.MESSAGE_READ))
+        return Collections.unmodifiableList(guild.getMembersMap().values().stream()
+                .filter(m -> m.hasPermission(this, Permission.MESSAGE_READ))
                 .collect(Collectors.toList()));
     }
 
@@ -298,7 +297,7 @@ public class TextChannelImpl implements TextChannel
     @Override
     public RestAction<Void> deleteMessageById(String messageId)
     {
-        checkNull(messageId, "messageId");
+        Args.notEmpty(messageId, "messageId");
         checkPermission(Permission.MESSAGE_READ);
 
         //Call MessageChannel's default method
@@ -583,12 +582,6 @@ public class TextChannelImpl implements TextChannel
             else
                 throw new PermissionException(permission);
         }
-    }
-
-    private void checkNull(Object obj, String name)
-    {
-        if (obj == null)
-            throw new NullPointerException("Provided " + name + " was null!");
     }
 
     @Override

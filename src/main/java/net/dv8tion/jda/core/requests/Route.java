@@ -71,7 +71,7 @@ public class Route
         // Client only
         public static final Route USER_SETTINGS =       new Route(GET, "users/@me/settings");
         public static final Route GET_CONNECTIONS =     new Route(GET, "users/@me/connections");
-        public static final Route FRIEND_SUGGESTIONS =  new Route(GET, "friend_suggestions");
+        public static final Route FRIEND_SUGGESTIONS =  new Route(GET, "friend-suggestions");
 
         public static final Route GET_RECENT_MENTIONS        = new Route(GET, "users/@me/mentions?limit={limit}&roles={}&everyone={}");
         public static final Route GET_RECENT_MENTIONS_BEFORE = new Route(GET, "users/@me/mentions?limit={limit}&roles={}&everyone={}&before={}");
@@ -82,9 +82,10 @@ public class Route
 
     public static class Users
     {
-        public static final Route GET_USER = new Route(GET, "users/{user_id}");
-        public static final Route GET_NOTE = new Route(GET, "users/@me/notes/{user_id}");
-        public static final Route SET_NOTE = new Route(PUT, "users/@me/notes/{user_id}");
+        public static final Route GET_USER    = new Route(GET, "users/{user_id}");
+        public static final Route GET_PROFILE = new Route(GET, "users/{user_id}/profile");
+        public static final Route GET_NOTE    = new Route(GET, "users/@me/notes/{user_id}");
+        public static final Route SET_NOTE    = new Route(PUT, "users/@me/notes/{user_id}");
     }
 
     public static class Relationships
