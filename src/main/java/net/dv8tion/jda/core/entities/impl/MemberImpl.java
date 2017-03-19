@@ -23,7 +23,6 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.apache.http.util.Args;
 
-import java.awt.*;
 import java.time.OffsetDateTime;
 
 public class MemberImpl implements Member
