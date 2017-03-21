@@ -32,7 +32,7 @@ public class UserUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
         SelfUserImpl self = (SelfUserImpl) api.getSelfUser();
 

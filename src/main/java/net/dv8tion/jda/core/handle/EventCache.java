@@ -15,38 +15,31 @@
  */
 package net.dv8tion.jda.core.handle;
 
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.utils.SimpleLog;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class EventCache
 {
     public static final SimpleLog LOG = SimpleLog.getLog("EventCache");
-    private static HashMap<JDA, EventCache> caches = new HashMap<>();
-    private HashMap<Type, HashMap<String, List<Runnable>>> eventCache = new HashMap<>();
+    private static Map<JDA, EventCache> caches = new HashMap<>();
+    private Map<Type, TLongObjectMap<List<Runnable>>> eventCache = new HashMap<>();
 
     public static EventCache get(JDA jda)
     {
-        EventCache cache = caches.get(jda);
-        if (cache == null)
-        {
-            cache = new EventCache();
-            caches.put(jda, cache);
-        }
-        return cache;
+        return caches.computeIfAbsent(jda, k -> new EventCache());
     }
 
-    public void cache(Type type, String triggerId, Runnable handler)
+    public void cache(Type type, long triggerId, Runnable handler)
     {
-        HashMap<String, List<Runnable>> triggerCache = eventCache.get(type);
-        if (triggerCache == null)
-        {
-            triggerCache = new HashMap<>();
-            eventCache.put(type, triggerCache);
-        }
+        TLongObjectMap<List<Runnable>> triggerCache =
+                eventCache.computeIfAbsent(type, k -> new TLongObjectHashMap<>());
 
         List<Runnable> items = triggerCache.get(triggerId);
         if (items == null)
@@ -58,7 +51,7 @@ public class EventCache
         items.add(handler);
     }
 
-    public void playbackCache(Type type, String triggerId)
+    public void playbackCache(Type type, long triggerId)
     {
         List<Runnable> items;
         try
@@ -85,15 +78,10 @@ public class EventCache
 
     public int size()
     {
-        int count = 0;
-        for (HashMap<String, List<Runnable>> typeMap : eventCache.values())
-        {
-            for (List<Runnable> eventList : typeMap.values())
-            {
-                count += eventList.size();
-            }
-        }
-        return count;
+        return (int) eventCache.values().stream()
+                .mapToLong(typeMap ->
+                    typeMap.valueCollection().stream().mapToLong(List::size).sum())
+                .sum();
     }
 
     public void clear()

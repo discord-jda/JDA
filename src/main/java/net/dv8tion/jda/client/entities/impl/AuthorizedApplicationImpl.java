@@ -31,15 +31,15 @@ public class AuthorizedApplicationImpl implements AuthorizedApplication
 {
     private final JDA api;
 
-    private final String authId;
+    private final long id;
+    private final long authId;
     private final String description;
     private final String iconId;
-    private final String id;
     private final String name;
     private final List<String> scopes;
 
-    public AuthorizedApplicationImpl(final JDA api, final String authId, final String description, final String iconId,
-            final String id, final String name, final List<String> scopes)
+    public AuthorizedApplicationImpl(final JDA api, final long authId, final String description, final String iconId,
+            final long id, final String name, final List<String> scopes)
     {
         this.api = api;
         this.authId = authId;
@@ -53,7 +53,7 @@ public class AuthorizedApplicationImpl implements AuthorizedApplication
     @Override
     public RestAction<Void> delete()
     {
-        CompiledRoute route = Route.Applications.DELETE_AUTHORIZED_APPLICATION.compile(this.authId);
+        CompiledRoute route = Route.Applications.DELETE_AUTHORIZED_APPLICATION.compile(getAuthId());
 
         return new RestAction<Void>(this.api, route, null)
         {
@@ -71,13 +71,13 @@ public class AuthorizedApplicationImpl implements AuthorizedApplication
     @Override
     public boolean equals(final Object obj)
     {
-        return obj instanceof AuthorizedApplicationImpl && this.id.equals(((AuthorizedApplicationImpl) obj).id);
+        return obj instanceof AuthorizedApplicationImpl && this.id == ((AuthorizedApplicationImpl) obj).id;
     }
 
     @Override
     public String getAuthId()
     {
-        return this.authId;
+        return String.valueOf(this.authId);
     }
 
     @Override
@@ -100,7 +100,7 @@ public class AuthorizedApplicationImpl implements AuthorizedApplication
     }
 
     @Override
-    public String getId()
+    public long getIdLong()
     {
         return this.id;
     }
@@ -126,7 +126,7 @@ public class AuthorizedApplicationImpl implements AuthorizedApplication
     @Override
     public int hashCode()
     {
-        return this.id.hashCode();
+        return Long.hashCode(id);
     }
 
     @Override

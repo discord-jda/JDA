@@ -37,24 +37,28 @@ public class MessageDeleteHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
-        String messageId = content.getString("id");
-        String channelId = content.getString("channel_id");
+        final String messageIdString = content.getString("id");
+        final long messageId = Long.parseLong(messageIdString);
+        final long channelId = content.getLong("channel_id");
 
         MessageChannel channel = api.getTextChannelById(channelId);
         if (channel == null)
+        {
             channel = api.getPrivateChannelById(channelId);
-        if (channel == null)
-            channel = api.getFakePrivateChannelMap().get(channelId);
-        if (channel == null && api.getAccountType() == AccountType.CLIENT)
-            channel = api.asClient().getGroupById(channelId);
+        }
         if (channel == null)
         {
-            EventCache.get(api).cache(EventCache.Type.CHANNEL, channelId, () ->
-            {
-                handle(responseNumber, allContent);
-            });
+            channel = api.getFakePrivateChannelMap().get(channelId);
+        }
+        if (channel == null && api.getAccountType() == AccountType.CLIENT)
+        {
+            channel = api.asClient().getGroupById(channelId);
+        }
+        if (channel == null)
+        {
+            EventCache.get(api).cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("Got message delete for a channel/group that is not yet cached. ChannelId: " + channelId);
             return null;
         }
@@ -62,35 +66,33 @@ public class MessageDeleteHandler extends SocketHandler
         if (channel instanceof TextChannel)
         {
             TextChannel tChan = (TextChannel) channel;
-            if (GuildLock.get(api).isLocked(tChan.getGuild().getId()))
-            {
-                return tChan.getGuild().getId();
-            }
+            if (GuildLock.get(api).isLocked(tChan.getGuild().getIdLong()))
+                return tChan.getGuild().getIdLong();
             api.getEventManager().handle(
                     new GuildMessageDeleteEvent(
                             api, responseNumber,
-                            messageId, tChan));
+                            messageIdString, tChan));
         }
         else if (channel instanceof PrivateChannel)
         {
             api.getEventManager().handle(
                     new PrivateMessageDeleteEvent(
                             api, responseNumber,
-                            messageId, (PrivateChannel) channel));
+                            messageIdString, (PrivateChannel) channel));
         }
         else
         {
             api.getEventManager().handle(
                     new GroupMessageDeleteEvent(
                             api, responseNumber,
-                            messageId, (Group) channel));
+                            messageIdString, (Group) channel));
         }
 
         //Combo event
         api.getEventManager().handle(
                 new MessageDeleteEvent(
                         api, responseNumber,
-                        messageId, channel));
+                        messageIdString, channel));
         return null;
     }
 }

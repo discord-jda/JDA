@@ -163,7 +163,7 @@ public class GuildController
         return new RestAction<Void>(guild.getJDA(), route, body)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
@@ -248,7 +248,7 @@ public class GuildController
         return new RestAction<Void>(guild.getJDA(), route, body)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
@@ -299,7 +299,7 @@ public class GuildController
         return new RestAction<Integer>(guild.getJDA(), route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Integer> request)
             {
                 if (response.isOk())
                     request.onSuccess(response.getObject().getInt("pruned"));
@@ -348,7 +348,7 @@ public class GuildController
         return new RestAction<Integer>(guild.getJDA(), route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Integer> request)
             {
                 if (response.isOk())
                     request.onSuccess(response.getObject().getInt("pruned"));
@@ -406,7 +406,7 @@ public class GuildController
         return new RestAction<Void>(guild.getJDA(), route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
@@ -581,7 +581,7 @@ public class GuildController
         return new RestAction<Void>(guild.getJDA(), route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
@@ -653,7 +653,7 @@ public class GuildController
         return new RestAction<Void>(guild.getJDA(), route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
@@ -738,7 +738,7 @@ public class GuildController
         return new RestAction<Void>(guild.getJDA(), route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
@@ -807,7 +807,7 @@ public class GuildController
         return new RestAction<Void>(guild.getJDA(), route, body)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
@@ -874,7 +874,7 @@ public class GuildController
         return new RestAction<Void>(guild.getJDA(), route, body)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
@@ -916,7 +916,7 @@ public class GuildController
         return new RestAction<List<User>>(guild.getJDA(), route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<List<User>> request)
             {
                 if (!response.isOk())
                 {
@@ -1205,7 +1205,7 @@ public class GuildController
         return new RestAction<Void>(guild.getJDA(), route, body)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
@@ -1319,16 +1319,11 @@ public class GuildController
             throw new IllegalArgumentException("Cannot add the PublicRole of a Guild to a Member. All members have this role by default!");
 
         //Make sure that the current managed roles are preserved and no new ones are added.
-        List<Role> currentManaged = roles.stream().filter(r -> r.isManaged()).collect(Collectors.toList());
-        List<Role> newManaged = roles.stream().filter(r -> r.isManaged()).collect(Collectors.toList());
+        List<Role> currentManaged = roles.stream().filter(Role::isManaged).collect(Collectors.toList());
+        List<Role> newManaged = roles.stream().filter(Role::isManaged).collect(Collectors.toList());
         if (currentManaged.size() != 0 || newManaged.size() != 0)
         {
-            for (Iterator<Role> it = currentManaged.iterator(); it.hasNext();)
-            {
-                Role r = it.next();
-                if (newManaged.contains(r))
-                    it.remove();
-            }
+            currentManaged.removeIf(newManaged::contains);
 
             if (currentManaged.size() > 0)
                 throw new IllegalArgumentException("Cannot remove managed roles from a member! Roles: " + currentManaged.toString());
@@ -1344,7 +1339,7 @@ public class GuildController
         return new RestAction<Void>(guild.getJDA(), route, body)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
@@ -1406,7 +1401,7 @@ public class GuildController
         return new RestAction<Void>(guild.getJDA(), route, body)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
@@ -1682,12 +1677,12 @@ public class GuildController
         return new RestAction<Emote>(getJDA(), route, body)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Emote> request)
             {
                 if (response.isOk())
                 {
                     JSONObject obj = response.getObject();
-                    String id = obj.getString("id");
+                    final long id = obj.getLong("id");
                     String name = obj.getString("name");
                     EmoteImpl emote = new EmoteImpl(id, guild).setName(name);
                     // managed is false by default, should always be false for emotes created by client accounts.
@@ -1730,7 +1725,7 @@ public class GuildController
      */
     public ChannelOrderAction<TextChannel> modifyTextChannelPositions()
     {
-        return new ChannelOrderAction(guild, ChannelType.TEXT);
+        return new ChannelOrderAction<>(guild, ChannelType.TEXT);
     }
 
     /**
@@ -1753,7 +1748,7 @@ public class GuildController
      */
     public ChannelOrderAction<VoiceChannel> modifyVoiceChannelPositions()
     {
-        return new ChannelOrderAction(guild, ChannelType.VOICE);
+        return new ChannelOrderAction<>(guild, ChannelType.VOICE);
     }
 
     /**

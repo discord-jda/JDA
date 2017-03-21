@@ -15,9 +15,12 @@
  */
 package net.dv8tion.jda.core.utils;
 
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import gnu.trove.TCollections;
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
+import net.dv8tion.jda.core.entities.ISnowflake;
+import org.apache.http.util.Args;
 
-import java.lang.reflect.Method;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
@@ -38,10 +41,10 @@ public class MiscUtil
      *
      * @return The creation time of the JDA entity as OffsetDateTime
      */
-    public static OffsetDateTime getCreationTime(String entityId) {
+    public static OffsetDateTime getCreationTime(long entityId) {
         try
         {
-            long timestamp = ((Long.parseLong(entityId) >> TIMESTAMP_OFFSET) + DISCORD_EPOCH);
+            long timestamp = ((entityId >> TIMESTAMP_OFFSET) + DISCORD_EPOCH);
             Calendar gmt = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
             gmt.setTimeInMillis(timestamp);
             return OffsetDateTime.ofInstant(gmt.toInstant(), gmt.getTimeZone().toZoneId());
@@ -55,29 +58,19 @@ public class MiscUtil
     /**
      * Gets the creation-time of a JDA-entity by doing the reverse snowflake algorithm on its id.
      * This returns the creation-time of the actual entity on Discords side, not inside JDA.
-     * This will not work on entities, that do not have a getId() method and will return null in those cases!
      *
      * @param  entity
      *         The JDA entity where the creation-time should be determined for
      *
+     * @throws IllegalArgumentException
+     *         If the provided entity is {@code null}
+     *
      * @return The creation time of the JDA entity as OffsetDateTime
      */
-    public static OffsetDateTime getCreationTime(Object entity)
+    public static OffsetDateTime getCreationTime(ISnowflake entity)
     {
-        try {
-            Method idMethod = entity.getClass().getMethod("getId");
-            if(idMethod.getReturnType() != String.class)
-            {
-                JDAImpl.LOG.warn("Tried to look up creation-time for entity of class " + entity.getClass().getName() + " which doesn't have the correct id getter");
-                return null;
-            }
-            String objId = (String) idMethod.invoke(entity);
-            return getCreationTime(objId);
-        } catch(Exception e)
-        {
-            JDAImpl.LOG.warn("Tried to look up creation-time for entity of class " + entity.getClass().getName() + " which doesn't have the correct id getter");
-            return null;
-        }
+        Args.notNull(entity, "Entity");
+        return getCreationTime(entity.getIdLong());
     }
 
     /**
@@ -91,5 +84,17 @@ public class MiscUtil
     public static String getDateTimeString(OffsetDateTime time)
     {
         return time.format(dtFormatter);
+    }
+
+    /**
+     * Generates a new thread-safe {@link gnu.trove.map.TLongObjectMap TLongObjectMap}
+     * @param  <T>
+     *         The Object type
+     *
+     * @return a new thread-safe {@link gnu.trove.map.TLongObjectMap TLongObjectMap}
+     */
+    public static <T> TLongObjectMap<T> newLongMap()
+    {
+        return TCollections.synchronizedMap(new TLongObjectHashMap<T>());
     }
 }

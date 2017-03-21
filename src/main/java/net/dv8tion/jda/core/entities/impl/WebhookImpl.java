@@ -36,14 +36,14 @@ public class WebhookImpl implements Webhook
 
     private final Object mngLock = new Object();
     private final TextChannel channel;
-    private final String id;
+    private final long id;
 
     private Member owner;
     private User user;
     private String token;
 
 
-    public WebhookImpl(TextChannel channel, String id)
+    public WebhookImpl(TextChannel channel, long id)
     {
         this.channel = channel;
         this.id = id;
@@ -100,11 +100,11 @@ public class WebhookImpl implements Webhook
     @Override
     public RestAction<Void> delete()
     {
-        Route.CompiledRoute route = Route.Webhooks.DELETE_TOKEN_WEBHOOK.compile(id, token);
+        Route.CompiledRoute route = Route.Webhooks.DELETE_TOKEN_WEBHOOK.compile(getId(), token);
         return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
@@ -147,7 +147,7 @@ public class WebhookImpl implements Webhook
     }
 
     @Override
-    public String getId()
+    public long getIdLong()
     {
         return id;
     }
@@ -177,14 +177,14 @@ public class WebhookImpl implements Webhook
     @Override
     public int hashCode()
     {
-        return getId().hashCode();
+        return Long.hashCode(id);
     }
 
     @Override
     public boolean equals(Object obj)
     {
-        return obj instanceof Webhook
-                && ((Webhook) obj).getId().equals(id);
+        return obj instanceof WebhookImpl
+                && ((WebhookImpl) obj).id == this.id;
     }
 
     @Override

@@ -22,7 +22,6 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.requests.ratelimit.IBucket;
 import org.apache.http.HttpHost;
 
 import java.util.Collection;
@@ -208,6 +207,8 @@ public interface JDA
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.User User} with matching id.
      */
     User getUserById(String id);
+    //todo docs
+    User getUserById(long id);
 
     /**
      * Gets all {@link net.dv8tion.jda.core.entities.Guild Guilds} that contain all given users as their members.
@@ -298,6 +299,8 @@ public interface JDA
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Guild Guild} with matching id.
      */
     Guild getGuildById(String id);
+    //todo docs
+    Guild getGuildById(long id);
 
     /**
      * An unmodifiable list of all {@link net.dv8tion.jda.core.entities.Guild Guilds} that have the same name as the one provided.
@@ -312,6 +315,13 @@ public interface JDA
      *      the provided name.
      */
     List<Guild> getGuildsByName(String name, boolean ignoreCase);
+    //todo docs
+    List<Role> getRoles();
+    //todo docs
+    Role getRoleById(String id);
+    Role getRoleById(long id);
+    //todo docs
+    List<Role> getRolesByName(String name, boolean ignoreCase);
 
     /**
      * An unmodifiable List of all {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} of all connected
@@ -344,6 +354,8 @@ public interface JDA
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} with matching id.
      */
     TextChannel getTextChannelById(String id);
+    //todo docs
+    TextChannel getTextChannelById(long id);
 
     /**
      * An unmodifiable list of all {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} that have the same name as the one provided.
@@ -383,6 +395,8 @@ public interface JDA
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} with matching id.
      */
     VoiceChannel getVoiceChannelById(String id);
+    //todo docs
+    VoiceChannel getVoiceChannelById(long id);
 
     /**
      * An unmodifiable list of all {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels} that have the same name as the one provided.
@@ -416,6 +430,8 @@ public interface JDA
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} with matching id.
      */
     PrivateChannel getPrivateChannelById(String id);
+    //todo docs
+    PrivateChannel getPrivateChannelById(long id);
 
     /**
      * A collection of all to us known emotes (managed/restricted included).
@@ -437,6 +453,8 @@ public interface JDA
      * @return An {@link net.dv8tion.jda.core.entities.Emote Emote} represented by this id or null if none is found in our cache.
      */
     Emote getEmoteById(String id);
+    //todo docs
+    Emote getEmoteById(long id);
 
     /**
      * An unmodifiable list of all {@link net.dv8tion.jda.core.entities.Emote Emotes} that have the same name as the one provided.
@@ -558,6 +576,13 @@ public interface JDA
      * @param  free If true, shuts down JDA's rest system permanently for all current and future instances.
      */
     void shutdown(boolean free);
+
+    /**
+     * The time between the WebSocket keepAlive message and its ack response by Discord.
+     *
+     * @return Time in milliseconds between discord and the local JDA WebSocketClient
+     */
+    long getPing();
 
     /**
      * Installs an auxiliary cable into your system.

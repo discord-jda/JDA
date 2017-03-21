@@ -38,14 +38,15 @@ import org.json.JSONObject;
 import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class TextChannelImpl implements TextChannel
 {
-    private final String id;
+    private final long id;
     private final GuildImpl guild;
-    private final HashMap<Member, PermissionOverride> memberOverrides = new HashMap<>();
-    private final HashMap<Role, PermissionOverride> roleOverrides = new HashMap<>();
+    private final Map<Member, PermissionOverride> memberOverrides = new ConcurrentHashMap<>();
+    private final Map<Role, PermissionOverride> roleOverrides = new ConcurrentHashMap<>();
 
     private volatile ChannelManager manager;
     private volatile ChannelManagerUpdatable managerUpdatable;
@@ -55,7 +56,7 @@ public class TextChannelImpl implements TextChannel
     private String topic;
     private int rawPosition;
 
-    public TextChannelImpl(String id, Guild guild)
+    public TextChannelImpl(long id, Guild guild)
     {
         this.id = id;
         this.guild = (GuildImpl) guild;
@@ -64,11 +65,11 @@ public class TextChannelImpl implements TextChannel
     @Override
     public String getAsMention()
     {
-        return "<#" + getId() + '>';
+        return "<#" + id + '>';
     }
 
     @Override
-    public String getId()
+    public long getIdLong()
     {
         return id;
     }
@@ -98,11 +99,11 @@ public class TextChannelImpl implements TextChannel
         }
 
         JSONObject body = new JSONObject().put("messages", messageIds);
-        Route.CompiledRoute route = Route.Messages.DELETE_MESSAGES.compile(id);
+        Route.CompiledRoute route = Route.Messages.DELETE_MESSAGES.compile(getId());
         return new RestAction<Void>(getJDA(), route, body)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
@@ -117,11 +118,11 @@ public class TextChannelImpl implements TextChannel
     {
         checkPermission(Permission.MANAGE_WEBHOOKS);
 
-        Route.CompiledRoute route = Route.Channels.GET_WEBHOOKS.compile(id);
+        Route.CompiledRoute route = Route.Channels.GET_WEBHOOKS.compile(getId());
         return new RestAction<List<Webhook>>(getJDA(), route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<List<Webhook>> request)
             {
                 if (!response.isOk())
                 {
@@ -162,7 +163,7 @@ public class TextChannelImpl implements TextChannel
         return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
@@ -214,7 +215,7 @@ public class TextChannelImpl implements TextChannel
     @Override
     public List<Member> getMembers()
     {
-        return Collections.unmodifiableList(guild.getMembersMap().values().stream()
+        return Collections.unmodifiableList(guild.getMembersMap().valueCollection().stream()
                 .filter(m -> m.hasPermission(this, Permission.MESSAGE_READ))
                 .collect(Collectors.toList()));
     }
@@ -433,11 +434,11 @@ public class TextChannelImpl implements TextChannel
     {
         checkPermission(Permission.MANAGE_CHANNEL);
 
-        Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(id);
+        Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(getId());
         return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
@@ -472,7 +473,7 @@ public class TextChannelImpl implements TextChannel
         if (getMemberOverrideMap().containsKey(member))
             throw new IllegalStateException("Provided member already has a PermissionOverride in this channel!");
 
-        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(id, member.getUser().getId());
+        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(getId(), member.getUser().getId());
         return new PermissionOverrideAction(getJDA(), route, this, member);
     }
 
@@ -486,29 +487,29 @@ public class TextChannelImpl implements TextChannel
         if (getRoleOverrideMap().containsKey(role))
             throw new IllegalStateException("Provided role already has a PermissionOverride in this channel!");
 
-        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(id, role.getId());
+        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(getId(), role.getId());
         return new PermissionOverrideAction(getJDA(), route, this, role);
     }
 
     @Override
     public boolean equals(Object o)
     {
-        if (!(o instanceof TextChannel))
+        if (!(o instanceof TextChannelImpl))
             return false;
-        TextChannel oTChannel = (TextChannel) o;
-        return this == oTChannel || this.getId().equals(oTChannel.getId());
+        TextChannelImpl oTChannel = (TextChannelImpl) o;
+        return this == oTChannel || this.id == oTChannel.id;
     }
 
     @Override
     public int hashCode()
     {
-        return getId().hashCode();
+        return Long.hashCode(id);
     }
 
     @Override
     public String toString()
     {
-        return "TC:" + getName() + '(' + getId() + ')';
+        return "TC:" + getName() + '(' + id + ')';
     }
 
     @Override
@@ -517,7 +518,7 @@ public class TextChannelImpl implements TextChannel
         if (this == chan)
             return 0;
 
-        if (this.getGuild() != chan.getGuild())
+        if (!this.getGuild().equals(chan.getGuild()))
             throw new IllegalArgumentException("Cannot compare TextChannels that aren't from the same guild!");
 
         if (this.getPositionRaw() != chan.getPositionRaw())
@@ -554,12 +555,12 @@ public class TextChannelImpl implements TextChannel
 
     // -- Map Getters --
 
-    public HashMap<Member, PermissionOverride> getMemberOverrideMap()
+    public Map<Member, PermissionOverride> getMemberOverrideMap()
     {
         return memberOverrides;
     }
 
-    public HashMap<Role, PermissionOverride> getRoleOverrideMap()
+    public Map<Role, PermissionOverride> getRoleOverrideMap()
     {
         return roleOverrides;
     }
@@ -595,7 +596,7 @@ public class TextChannelImpl implements TextChannel
         return new RestAction<List<Invite>>(getJDA(), route, null)
         {
             @Override
-            protected void handleResponse(final Response response, final Request request)
+            protected void handleResponse(final Response response, final Request<List<Invite>> request)
             {
                 if (response.isOk())
                 {

@@ -36,7 +36,7 @@ public class RelationshipAddHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
         Relationship relationship = EntityBuilder.get(api).createRelationship(content);
         if (relationship == null)
@@ -74,8 +74,8 @@ public class RelationshipAddHandler extends SocketHandler
                 WebSocketClient.LOG.warn("Received a RELATIONSHIP_ADD with an unknown type! JSON: " + content);
                 return null;
         }
-        EventCache.get(api).playbackCache(EventCache.Type.RELATIONSHIP, relationship.getUser().getId());
-        EventCache.get(api).playbackCache(EventCache.Type.USER, relationship.getUser().getId());
+        EventCache.get(api).playbackCache(EventCache.Type.RELATIONSHIP, relationship.getUser().getIdLong());
+        EventCache.get(api).playbackCache(EventCache.Type.USER, relationship.getUser().getIdLong());
         return null;
     }
 }

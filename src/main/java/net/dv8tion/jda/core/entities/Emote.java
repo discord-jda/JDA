@@ -159,7 +159,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
     @Override
     default String getAsMention()
     {
-        return "<:" + getName() + ":" + getId() + ">";
+        return "<:" + getName() + ":" + getIdLong() + ">";
     }
 
     /**

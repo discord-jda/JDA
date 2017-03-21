@@ -17,6 +17,8 @@
 package net.dv8tion.jda.core.requests;
 
 import com.neovisionaries.ws.client.*;
+import gnu.trove.iterator.TLongObjectIterator;
+import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.client.handle.*;
 import net.dv8tion.jda.core.AccountType;
@@ -33,6 +35,7 @@ import net.dv8tion.jda.core.handle.*;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
+import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.http.HttpHost;
@@ -55,7 +58,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected final JDAImpl api;
     protected final JDA.ShardInfo shardInfo;
     protected final HttpHost proxy;
-    protected final HashMap<String, SocketHandler> handlers = new HashMap<>();
+    protected final Map<String, SocketHandler> handlers = new HashMap<>();
 
     protected WebSocket socket;
     protected String gatewayUrl = null;
@@ -73,11 +76,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected int reconnectTimeoutS = 2;
 
     //GuildId, <TimeOfNextAttempt, AudioConnection>
-    protected final HashMap<String, MutablePair<Long, VoiceChannel>> queuedAudioConnections = new HashMap<>();
+    protected final TLongObjectMap<MutablePair<Long, VoiceChannel>> queuedAudioConnections = MiscUtil.newLongMap();
 
     protected final LinkedList<String> ratelimitQueue = new LinkedList<>();
     protected volatile Thread ratelimitThread = null;
     protected volatile long ratelimitResetTime;
+    protected volatile long heartbeatStart = 0;
     protected volatile int messagesSent;
     protected volatile boolean printedRateLimitMessage = false;
 
@@ -237,7 +241,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                                 // that event just for a move, so we remove it here after successfully sending.
                                 if (audioManager.isConnected())
                                 {
-                                    queuedAudioConnections.remove(channel.getGuild().getId());
+                                    queuedAudioConnections.remove(channel.getGuild().getIdLong());
                                 }
                             }
                             attemptedToSend = true;
@@ -317,7 +321,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             RestAction<String> gateway = new RestAction<String>(api, Route.Misc.GATEWAY.compile(),null)
             {
                 @Override
-                protected void handleResponse(Response response, Request request)
+                protected void handleResponse(Response response, Request<String> request)
                 {
                     try
                     {
@@ -444,7 +448,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         JSONObject content = new JSONObject(message);
         int opCode = content.getInt("op");
 
-        if (content.has("s") && !content.isNull("s"))
+        if (!content.isNull("s"))
         {
             api.setResponseTotal(content.getInt("s"));
         }
@@ -473,6 +477,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 break;
             case 11:
                 LOG.trace("Got Heartbeat Ack (OP 11).");
+                api.setPing(System.currentTimeMillis() - heartbeatStart);
                 break;
             default:
                 LOG.debug("Got unknown op-code: " + opCode + " with content: " + message);
@@ -515,7 +520,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         if (!send(keepAlivePacket, true))
             ratelimitQueue.addLast(keepAlivePacket);
-
+        heartbeatStart = System.currentTimeMillis();
     }
 
     protected void sendIdentify()
@@ -593,20 +598,19 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         if (api.getAudioManagerMap().size() > 0)
             LOG.trace("Updating AudioManager references");
 
-        api.getAudioManagerMap().entrySet().forEach(entry ->
+        api.getAudioManagerMap().transformValues(mng ->
         {
-            String guildId = entry.getKey();
-            AudioManager mng = entry.getValue();
+            final long guildId = mng.getGuild().getIdLong();
             ConnectionListener listener = mng.getConnectionListener();
 
             Guild guild = api.getGuildById(guildId);
             if (guild == null)
             {
                 //We no longer have access to the guild that this audio manager was for. Set the value to null.
-                entry.setValue(null);
                 queuedAudioConnections.remove(guildId);
                 if (listener != null)
                     listener.onStatusChange(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD);
+                return null;
             }
             else
             {
@@ -639,10 +643,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     }
                 }
             }
+
+            return mng;
         });
 
-        //Removes all null AudioManagers set null by the above guild-missing check.
-        api.getAudioManagerMap().values().removeIf(Objects::isNull);
+        api.getAudioManagerMap().valueCollection().removeIf(Objects::isNull);
     }
 
     protected void handleEvent(JSONObject raw)
@@ -651,9 +656,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         long responseTotal = api.getResponseTotal();
 
         if (type.equals("GUILD_MEMBER_ADD"))
-            ((GuildMembersChunkHandler) getHandler("GUILD_MEMBERS_CHUNK")).modifyExpectedGuildMember(raw.getJSONObject("d").getString("guild_id"), 1);
+            ((GuildMembersChunkHandler) getHandler("GUILD_MEMBERS_CHUNK")).modifyExpectedGuildMember(raw.getJSONObject("d").getLong("guild_id"), 1);
         if (type.equals("GUILD_MEMBER_REMOVE"))
-            ((GuildMembersChunkHandler) getHandler("GUILD_MEMBERS_CHUNK")).modifyExpectedGuildMember(raw.getJSONObject("d").getString("guild_id"), -1);
+            ((GuildMembersChunkHandler) getHandler("GUILD_MEMBERS_CHUNK")).modifyExpectedGuildMember(raw.getJSONObject("d").getLong("guild_id"), -1);
 
         //If initiating, only allows READY, RESUMED, GUILD_MEMBERS_CHUNK, GUILD_SYNC, and GUILD_CREATE through.
         // If we are currently chunking, we don't allow GUILD_CREATE through anymore.
@@ -769,10 +774,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     public void queueAudioConnect(VoiceChannel channel)
     {
-        queuedAudioConnections.put(channel.getGuild().getId(), new MutablePair<>(System.currentTimeMillis(), channel));
+        queuedAudioConnections.put(channel.getGuild().getIdLong(), new MutablePair<>(System.currentTimeMillis(), channel));
     }
 
-    public HashMap<String, MutablePair<Long, VoiceChannel>> getQueuedAudioConnectionMap()
+    public TLongObjectMap<MutablePair<Long, VoiceChannel>> getQueuedAudioConnectionMap()
     {
         return queuedAudioConnections;
     }
@@ -786,17 +791,18 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         synchronized (queuedAudioConnections)
         {
             long now = System.currentTimeMillis();
-            Iterator<MutablePair<Long, VoiceChannel>> it =  queuedAudioConnections.values().iterator();
+            TLongObjectIterator<MutablePair<Long, VoiceChannel>> it =  queuedAudioConnections.iterator();
             while (it.hasNext())
             {
-                MutablePair<Long, VoiceChannel> audioRequest = it.next();
+                it.advance();
+                MutablePair<Long, VoiceChannel> audioRequest = it.value();
                 if (audioRequest.getLeft() < now)
                 {
                     VoiceChannel channel = audioRequest.getRight();
                     Guild guild = channel.getGuild();
                     ConnectionListener listener = guild.getAudioManager().getConnectionListener();
 
-                    Guild connGuild = api.getGuildById(guild.getId());
+                    Guild connGuild = api.getGuildById(guild.getIdLong());
                     if (connGuild == null)
                     {
                         it.remove();
@@ -805,7 +811,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                         continue;
                     }
 
-                    VoiceChannel connChannel = connGuild.getVoiceChannelById(channel.getId());
+                    VoiceChannel connChannel = connGuild.getVoiceChannelById(channel.getIdLong());
                     if (connChannel == null)
                     {
                         it.remove();
@@ -830,7 +836,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         return null;
     }
 
-    public HashMap<String, SocketHandler> getHandlers()
+    public Map<String, SocketHandler> getHandlers()
     {
         return handlers;
     }
@@ -886,7 +892,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             handlers.put("MESSAGE_ACK", new SocketHandler(api)
             {
                 @Override
-                protected String handleInternally(JSONObject content)
+                protected Long handleInternally(JSONObject content)
                 {
                     return null;
                 }

@@ -51,7 +51,7 @@ public class BlockedUserImpl implements BlockedUser
     @Override
     public String toString()
     {
-        return "BlockedUser:" + user.getName() + "(" + user.getId() + ")";
+        return "BlockedUser:" + user.getName() + "(" + user.getIdLong() + ")";
     }
 
     @Override

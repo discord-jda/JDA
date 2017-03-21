@@ -33,7 +33,7 @@ import org.json.JSONObject;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ReadyHandler extends SocketHandler
+public class ReadyHandler extends SocketHandler //todo longs
 {
     private final Set<String> incompleteGuilds = new HashSet<>();
     private final Set<String> acknowledgedGuilds = new HashSet<>();
@@ -47,7 +47,7 @@ public class ReadyHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
         EntityBuilder builder = EntityBuilder.get(api);
 

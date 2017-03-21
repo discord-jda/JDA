@@ -120,7 +120,7 @@ public class AudioManagerImpl implements AudioManager
     {
         synchronized (CONNECTION_LOCK)
         {
-            api.getClient().getQueuedAudioConnectionMap().remove(guild.getId());
+            api.getClient().getQueuedAudioConnectionMap().remove(guild.getIdLong());
             this.queuedAudioConnection = null;
             if (audioConnection == null)
                 return;

@@ -180,6 +180,8 @@ public interface Guild extends ISnowflake
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Member Member} with the related {@code userId}.
      */
     Member getMemberById(String userId);
+    //todo docs
+    Member getMemberById(long userId);
 
     /**
      * A list of all {@link net.dv8tion.jda.core.entities.Member Members} in this Guild.
@@ -277,6 +279,8 @@ public interface Guild extends ISnowflake
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} with matching id.
      */
     TextChannel getTextChannelById(String id);
+    //todo docs
+    TextChannel getTextChannelById(long id);
 
     /**
      * Gets all {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} in this {@link net.dv8tion.jda.core.entities.Guild Guild}.
@@ -313,6 +317,8 @@ public interface Guild extends ISnowflake
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} with matching id.
      */
     VoiceChannel getVoiceChannelById(String id);
+    //todo docs
+    VoiceChannel getVoiceChannelById(long id);
 
     /**
      * Gets all {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels} in this {@link net.dv8tion.jda.core.entities.Guild Guild}.
@@ -348,6 +354,8 @@ public interface Guild extends ISnowflake
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Role Role} with matching id.
      */
     Role getRoleById(String id);
+    //todo docs
+    Role getRoleById(long id);
 
     /**
      * Gets all {@link net.dv8tion.jda.core.entities.Role Roles} in this {@link net.dv8tion.jda.core.entities.Guild Guild}.
@@ -383,6 +391,8 @@ public interface Guild extends ISnowflake
      * @return An Emote matching the specified Id.
      */
     Emote getEmoteById(String id);
+    //todo docs
+    Emote getEmoteById(long id);
 
     /**
      * Gets all custom {@link net.dv8tion.jda.core.entities.Emote Emotes} belonging to this {@link net.dv8tion.jda.core.entities.Guild Guild}.

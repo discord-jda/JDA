@@ -39,7 +39,7 @@ import java.util.List;
 
 public class RoleImpl implements Role
 {
-    private final String id;
+    private final long id;
     private final Guild guild;
 
     private volatile RoleManager manager;
@@ -54,7 +54,7 @@ public class RoleImpl implements Role
     private long rawPermissions;
     private int rawPosition;
 
-    public RoleImpl(String id, Guild guild)
+    public RoleImpl(long id, Guild guild)
     {
         this.id = id;
         this.guild = guild;
@@ -220,11 +220,11 @@ public class RoleImpl implements Role
         if (managed)
             throw new UnsupportedOperationException("Cannot delete a Role that is managed. ");
 
-        Route.CompiledRoute route = Route.Roles.DELETE_ROLE.compile(guild.getId(), id);
+        Route.CompiledRoute route = Route.Roles.DELETE_ROLE.compile(guild.getId(), getId());
         return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
@@ -247,7 +247,7 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public String getId()
+    public long getIdLong()
     {
         return id;
     }
@@ -258,19 +258,19 @@ public class RoleImpl implements Role
         if (!(o instanceof Role))
             return false;
         Role oRole = (Role) o;
-        return this == oRole || this.getId().equals(oRole.getId());
+        return this == oRole || this.getIdLong() == oRole.getIdLong();
     }
 
     @Override
     public int hashCode()
     {
-        return getId().hashCode();
+        return Long.hashCode(id);
     }
 
     @Override
     public String toString()
     {
-        return "R:" + getName() + '(' + getId() + ')';
+        return "R:" + getName() + '(' + id + ')';
     }
 
     @Override
@@ -279,7 +279,7 @@ public class RoleImpl implements Role
         if (this == r)
             return 0;
 
-        if (this.getGuild() != r.getGuild())
+        if (!this.getGuild().equals(r.getGuild()))
             throw new IllegalArgumentException("Cannot compare roles that aren't from the same guild!");
 
         if (this.getPositionRaw() != r.getPositionRaw())

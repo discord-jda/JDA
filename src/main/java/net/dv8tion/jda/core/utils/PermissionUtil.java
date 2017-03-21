@@ -168,14 +168,14 @@ public class PermissionUtil
 
         if (emote.isFake() || !emote.getGuild().isMember(issuer))
             return false; // cannot use an emote if you're not in its guild
-        Member member = emote.getGuild().getMemberById(issuer.getId());
+        Member member = emote.getGuild().getMemberById(issuer.getIdLong());
         if (!canInteract(member, emote))
             return false;
         switch (channel.getType())
         {
             case TEXT:
                 TextChannel text = (TextChannel) channel;
-                member = text.getGuild().getMemberById(issuer.getId());
+                member = text.getGuild().getMemberById(issuer.getIdLong());
                 return emote.getGuild().equals(text.getGuild()) // within the same guild
                     || (emote.isManaged() && checkPermission(text, member, Permission.MESSAGE_EXT_EMOJI)); // in different guild
             default:
@@ -236,7 +236,7 @@ public class PermissionUtil
         for (Permission perm : permissions)
         {
             if (!guild.getPublicRole().hasPermission(perm)
-                    && !roles.parallelStream().anyMatch(role -> role.hasPermission(perm)))
+                    && roles.parallelStream().noneMatch(role -> role.hasPermission(perm)))
                 return false;
         }
         return true;

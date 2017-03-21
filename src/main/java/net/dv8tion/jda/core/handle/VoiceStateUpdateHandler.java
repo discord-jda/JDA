@@ -47,31 +47,25 @@ public class VoiceStateUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
-        String guildId = content.has("guild_id") ? content.getString("guild_id") : null;
+        final Long guildId = content.has("guild_id") ? content.getLong("guild_id") : null;
         if (guildId != null && GuildLock.get(api).isLocked(guildId))
-        {
             return guildId;
-        }
 
         if (guildId != null)
-        {
             handleGuildVoiceState(content);
-        }
         else
-        {
             handleCallVoiceState(content);
-        }
         return null;
     }
 
     private void handleGuildVoiceState(JSONObject content)
     {
-        String userId = content.getString("user_id");
-        String guildId = content.getString("guild_id");
-        String channelId = !content.isNull("channel_id") ? content.getString("channel_id") : null;
-        String sessionId = !content.isNull("session_id") ? content.getString("session_id") : null;
+        final long userId = content.getLong("user_id");
+        final long guildId = content.getLong("guild_id");
+        final Long channelId = !content.isNull("channel_id") ? content.getLong("channel_id") : null;
+        final String sessionId = !content.isNull("session_id") ? content.getString("session_id") : null;
         boolean selfMuted = content.getBoolean("self_mute");
         boolean selfDeafened = content.getBoolean("self_deaf");
         boolean guildMuted = content.getBoolean("mute");
@@ -81,21 +75,15 @@ public class VoiceStateUpdateHandler extends SocketHandler
         Guild guild = api.getGuildById(guildId);
         if (guild == null)
         {
-            EventCache.get(api).cache(EventCache.Type.GUILD, content.getString("guild_id"), () ->
-            {
-                handle(responseNumber, allContent);
-            });
+            EventCache.get(api).cache(EventCache.Type.GUILD, guildId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("Received a VOICE_STATE_UPDATE for a Guild that has yet to be cached. JSON: " + content);
             return;
         }
 
-        VoiceChannelImpl channel = (VoiceChannelImpl) guild.getVoiceChannelById(channelId);
+        VoiceChannelImpl channel = channelId != null ? (VoiceChannelImpl) guild.getVoiceChannelById(channelId) : null;
         if (channel == null && channelId != null)
         {
-            EventCache.get(api).cache(EventCache.Type.CHANNEL, channelId, () ->
-            {
-                handle(responseNumber, allContent);
-            });
+            EventCache.get(api).cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("Received VOICE_STATE_UPDATE for a VoiceChannel that has yet to be cached. JSON: " + content);
             return;
         }
@@ -113,10 +101,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
             // in fact the issue was that the VOICE_STATE_UPDATE was sent after they had left, however, by caching
             // it we will preserve the integrity of the cache in the event that it was actually a mis-ordering of
             // GUILD_MEMBER_ADD and VOICE_STATE_UPDATE. I'll take some bad-data events over an invalid cache.
-            EventCache.get(api).cache(EventCache.Type.USER, userId, () ->
-            {
-                handle(responseNumber, allContent);
-            });
+            EventCache.get(api).cache(EventCache.Type.USER, userId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("Received VOICE_STATE_UPDATE for a Member that has yet to be cached. JSON: " + content);
             return;
         }
@@ -201,8 +186,8 @@ public class VoiceStateUpdateHandler extends SocketHandler
 
     private void handleCallVoiceState(JSONObject content)
     {
-        String userId = content.getString("user_id");
-        String channelId = !content.isNull("channel_id") ? content.getString("channel_id") : null;
+        final long userId = content.getLong("user_id");
+        final Long channelId = !content.isNull("channel_id") ? content.getLong("channel_id") : null;
         String sessionId = !content.isNull("session_id") ? content.getString("session_id") : null;
         boolean selfMuted = content.getBoolean("self_mute");
         boolean selfDeafened = content.getBoolean("self_deaf");
@@ -232,7 +217,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
             }
 
             CallUser cUser = ((JDAClientImpl) api.asClient()).getCallUserMap().get(userId);
-            if (cUser != null && !channelId.equals(cUser.getCall().getCallableChannel().getId()))
+            if (cUser != null && channelId != cUser.getCall().getCallableChannel().getIdLong())
             {
                 WebSocketClient.LOG.fatal("Received a VOICE_STATE_UPDATE for a user joining a call, but the user was already in a different call! Big error! JSON: " + content);
                 ((CallVoiceStateImpl) cUser.getVoiceState()).setInCall(false);

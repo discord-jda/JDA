@@ -36,15 +36,14 @@ public class GuildUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
-        if (GuildLock.get(api).isLocked(content.getString("id")))
-        {
-            return content.getString("id");
-        }
+        final long id = content.getLong("id");
+        if (GuildLock.get(api).isLocked(id))
+            return id;
 
-        GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("id"));
-        Member owner = guild.getMembersMap().get(content.getString("owner_id"));
+        GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
+        Member owner = guild.getMembersMap().get(content.getLong("owner_id"));
         String name = content.getString("name");
         String iconId = !content.isNull("icon") ? content.getString("icon") : null;
         String splashId = !content.isNull("splash") ? content.getString("splash") : null;
@@ -54,7 +53,7 @@ public class GuildUpdateHandler extends SocketHandler
         Guild.MFALevel mfaLevel = Guild.MFALevel.fromKey(content.getInt("mfa_level"));
         Guild.Timeout afkTimeout = Guild.Timeout.fromKey(content.getInt("afk_timeout"));
         VoiceChannel afkChannel = !content.isNull("afk_channel_id")
-                ? guild.getVoiceChannelMap().get(content.getString("afk_channel_id"))
+                ? guild.getVoiceChannelMap().get(content.getLong("afk_channel_id"))
                 : null;
 
         if (!Objects.equals(owner, guild.getOwner()))

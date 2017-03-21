@@ -403,7 +403,7 @@ public class MessageBuilder implements Appendable
         if (message.length() > 2000)
             throw new IllegalStateException("Cannot build a Message with more than 2000 characters. Please limit your input.");
 
-        return new MessageImpl("", null, false).setContent(message).setTTS(isTTS)
+        return new MessageImpl(-1, null, false).setContent(message).setTTS(isTTS)
                 .setEmbeds(embed == null ? new LinkedList<>() : Collections.singletonList(embed));
     }
 
@@ -849,7 +849,7 @@ public class MessageBuilder implements Appendable
 
     protected Message build(int beginIndex, int endIndex)
     {
-        return new MessageImpl("", null, false).setContent(builder.substring(beginIndex, endIndex)).setTTS(isTTS);
+        return new MessageImpl(-1, null, false).setContent(builder.substring(beginIndex, endIndex)).setTTS(isTTS);
     }
 
     /**

@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
+import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
@@ -28,6 +29,7 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.InviteAction;
 import net.dv8tion.jda.core.requests.restaction.PermissionOverrideAction;
+import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.http.util.Args;
 import org.json.JSONArray;
 
@@ -39,12 +41,12 @@ import java.util.List;
 
 public class VoiceChannelImpl implements VoiceChannel
 {
-    private final String id;
+    private final long id;
     private final GuildImpl guild;
 
     private final HashMap<Member, PermissionOverride> memberOverrides = new HashMap<>();
     private final HashMap<Role, PermissionOverride> roleOverrides = new HashMap<>();
-    private final HashMap<String, Member> connectedMembers = new HashMap<>();
+    private final TLongObjectMap<Member> connectedMembers = MiscUtil.newLongMap();
 
     private volatile ChannelManager manager;
     private volatile ChannelManagerUpdatable managerUpdatable;
@@ -55,7 +57,7 @@ public class VoiceChannelImpl implements VoiceChannel
     private int userLimit;
     private int bitrate;
 
-    public VoiceChannelImpl(String id, Guild guild)
+    public VoiceChannelImpl(long id, Guild guild)
     {
         this.id = id;
         this.guild = (GuildImpl) guild;
@@ -88,7 +90,7 @@ public class VoiceChannelImpl implements VoiceChannel
     @Override
     public List<Member> getMembers()
     {
-        return Collections.unmodifiableList(new ArrayList<>(connectedMembers.values()));
+        return Collections.unmodifiableList(new ArrayList<>(connectedMembers.valueCollection()));
     }
 
     @Override
@@ -185,11 +187,11 @@ public class VoiceChannelImpl implements VoiceChannel
     {
         checkPermission(Permission.MANAGE_CHANNEL);
 
-        Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(id);
+        Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(getId());
         return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
@@ -209,7 +211,7 @@ public class VoiceChannelImpl implements VoiceChannel
         if (getMemberOverrideMap().containsKey(member))
             throw new IllegalStateException("Provided member already has a PermissionOverride in this channel!");
 
-        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(id, member.getUser().getId());
+        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(getId(), member.getUser().getId());
         return new PermissionOverrideAction(getJDA(), route, this, member);
     }
 
@@ -223,12 +225,12 @@ public class VoiceChannelImpl implements VoiceChannel
         if (getRoleOverrideMap().containsKey(role))
             throw new IllegalStateException("Provided role already has a PermissionOverride in this channel!");
 
-        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(id, role.getId());
+        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(getId(), role.getId());
         return new PermissionOverrideAction(getJDA(), route, this, role);
     }
 
     @Override
-    public String getId()
+    public long getIdLong()
     {
         return id;
     }
@@ -239,19 +241,19 @@ public class VoiceChannelImpl implements VoiceChannel
         if (!(o instanceof VoiceChannel))
             return false;
         VoiceChannel oVChannel = (VoiceChannel) o;
-        return this == oVChannel || this.getId().equals(oVChannel.getId());
+        return this == oVChannel || this.id == oVChannel.getIdLong();
     }
 
     @Override
     public int hashCode()
     {
-        return getId().hashCode();
+        return Long.hashCode(id);
     }
 
     @Override
     public String toString()
     {
-        return "VC:" + getName() + '(' + getId() + ')';
+        return "VC:" + getName() + '(' + id + ')';
     }
 
     @Override
@@ -313,7 +315,7 @@ public class VoiceChannelImpl implements VoiceChannel
         return roleOverrides;
     }
 
-    public HashMap<String, Member> getConnectedMembersMap()
+    public TLongObjectMap<Member> getConnectedMembersMap()
     {
         return connectedMembers;
     }
@@ -341,7 +343,7 @@ public class VoiceChannelImpl implements VoiceChannel
         return new RestAction<List<Invite>>(getJDA(), route, null)
         {
             @Override
-            protected void handleResponse(final Response response, final Request request)
+            protected void handleResponse(final Response response, final Request<List<Invite>> request)
             {
                 if (response.isOk())
                 {

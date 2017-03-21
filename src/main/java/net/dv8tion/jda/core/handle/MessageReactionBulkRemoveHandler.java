@@ -30,30 +30,34 @@ public class MessageReactionBulkRemoveHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
-        String messageId = content.getString("message_id");
-        String channelId = content.getString("channel_id");
+        final String messageIdString = content.getString("message_id");
+        final long messageId = Long.parseLong(messageIdString);
+        final long channelId = content.getLong("channel_id");
         MessageChannel channel = api.getTextChannelById(channelId);
         if (channel == null)
+        {
             channel = api.getPrivateChannelById(channelId);
+        }
         if (channel == null && api.getAccountType() == AccountType.CLIENT)
+        {
             channel = api.asClient().getGroupById(channelId);
-        if (channel == null)
-            channel = api.getFakePrivateChannelMap().get(channelId);
+        }
         if (channel == null)
         {
-            EventCache.get(api).cache(EventCache.Type.CHANNEL, channelId, () ->
-            {
-                handle(responseNumber, allContent);
-            });
+            channel = api.getFakePrivateChannelMap().get(channelId);
+        }
+        if (channel == null)
+        {
+            EventCache.get(api).cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("Received a reaction for a channel that JDA does not currently have cached");
             return null;
         }
         api.getEventManager().handle(
                 new MessageReactionRemoveAllEvent(
                         api, responseNumber,
-                        messageId, channel));
+                        messageIdString, channel));
         return null;
     }
 }

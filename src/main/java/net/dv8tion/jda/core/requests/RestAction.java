@@ -253,7 +253,7 @@ public abstract class RestAction<T>
 
     protected void finalizeData() { }
 
-    protected abstract void handleResponse(Response response, Request request);
+    protected abstract void handleResponse(Response response, Request<T> request);
 
     /**
      * Specialized form of {@link net.dv8tion.jda.core.requests.RestAction} that is used to provide information that
@@ -293,6 +293,6 @@ public abstract class RestAction<T>
         }
 
         @Override
-        protected void handleResponse(Response response, Request request) { }
+        protected void handleResponse(Response response, Request<T> request) { }
     }
 }

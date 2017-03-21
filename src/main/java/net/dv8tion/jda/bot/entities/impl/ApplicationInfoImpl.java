@@ -16,26 +16,28 @@
 
 package net.dv8tion.jda.bot.entities.impl;
 
-import java.util.Arrays;
-import java.util.Collection;
 import net.dv8tion.jda.bot.entities.ApplicationInfo;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.User;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 public class ApplicationInfoImpl implements ApplicationInfo
 {
     private final JDA api;
 
-    private final String description;
+
     private final boolean doesBotRequireCodeGrant;
-    private final String iconId;
-    private final String id;
     private final boolean isBotPublic;
+    private final long id;
+    private final String iconId;
+    private final String description;
     private final String name;
     private final User owner;
 
-    public ApplicationInfoImpl(JDA api, String description, boolean doesBotRequireCodeGrant, String iconId, String id,
+    public ApplicationInfoImpl(JDA api, String description, boolean doesBotRequireCodeGrant, String iconId, long id,
             boolean isBotPublic, String name, User owner)
     {
         this.api = api;
@@ -57,7 +59,7 @@ public class ApplicationInfoImpl implements ApplicationInfo
     @Override
     public boolean equals(final Object obj)
     {
-        return obj instanceof ApplicationInfoImpl && this.id.equals(((ApplicationInfoImpl) obj).id);
+        return obj instanceof ApplicationInfoImpl && this.id == ((ApplicationInfoImpl) obj).id;
     }
 
     @Override
@@ -80,7 +82,7 @@ public class ApplicationInfoImpl implements ApplicationInfo
     }
 
     @Override
-    public String getId()
+    public long getIdLong()
     {
         return this.id;
     }
@@ -143,7 +145,7 @@ public class ApplicationInfoImpl implements ApplicationInfo
     @Override
     public int hashCode()
     {
-        return this.id.hashCode();
+        return Long.hashCode(this.id);
     }
 
     @Override

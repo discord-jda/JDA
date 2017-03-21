@@ -16,33 +16,35 @@
 
 package net.dv8tion.jda.client.entities.impl;
 
+import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.client.entities.Call;
 import net.dv8tion.jda.client.entities.Friend;
 import net.dv8tion.jda.client.entities.Group;
+import net.dv8tion.jda.client.entities.Relationship;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.utils.MiscUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 public class GroupImpl implements Group
 {
-    private final String id;
+    private final long id;
     private final JDAImpl api;
 
-    private HashMap<String, User> userMap = new HashMap<>();
+    private TLongObjectMap<User> userMap = MiscUtil.newLongMap();
 
     private Call currentCall;
     private User owner;
     private String name;
     private String iconId;
 
-    public GroupImpl(String id, JDAImpl api)
+    public GroupImpl(long id, JDAImpl api)
     {
         this.id = id;
         this.api = api;
@@ -83,18 +85,21 @@ public class GroupImpl implements Group
     {
         return Collections.unmodifiableList(
                 new ArrayList<>(
-                        userMap.values()));
+                        userMap.valueCollection()));
     }
 
     @Override
     public List<User> getNonFriendUsers()
     {
         List<User> nonFriends = new ArrayList<>();
-        userMap.forEach((userId, user) ->
+        TLongObjectMap<Relationship> map = ((JDAClientImpl) api.asClient()).getRelationshipMap();
+        userMap.forEachEntry((userId, user) ->
         {
-            Friend friend = api.asClient().getFriendById(userId);
+            Relationship relationship = map.get(userId);
+            Friend friend = relationship instanceof Friend ? (Friend) relationship : null;
             if (friend == null)
                 nonFriends.add(user);
+            return true;
         });
         return Collections.unmodifiableList(nonFriends);
     }
@@ -103,12 +108,15 @@ public class GroupImpl implements Group
     public List<Friend> getFriends()
     {
         List<Friend> friends = new ArrayList<>();
-        for (String userId : userMap.keySet())
+        TLongObjectMap<Relationship> map = ((JDAClientImpl) api.asClient()).getRelationshipMap();
+        userMap.forEachKey(userId ->
         {
-            Friend friend = api.asClient().getFriendById(userId);
+            Relationship relationship = map.get(userId);
+            Friend friend = relationship instanceof Friend ? (Friend) relationship : null;
             if (friend != null)
                 friends.add(friend);
-        }
+            return true;
+        });
         return Collections.unmodifiableList(friends);
     }
 
@@ -131,12 +139,6 @@ public class GroupImpl implements Group
     }
 
     @Override
-    public String getId()
-    {
-        return id;
-    }
-
-    @Override
     public JDA getJDA()
     {
         return api;
@@ -145,26 +147,26 @@ public class GroupImpl implements Group
     @Override
     public String toString()
     {
-        return String.format("G:%s(%s)", getName(), getId());
+        return String.format("G:%s(%d)", getName(), id);
     }
 
     @Override
     public boolean equals(Object o)
     {
-        if (!(o instanceof Group))
+        if (!(o instanceof GroupImpl))
             return false;
 
-        Group oGroup = (Group) o;
-        return id.equals(oGroup.getId());
+        GroupImpl oGroup = (GroupImpl) o;
+        return id == oGroup.id;
     }
 
     @Override
     public int hashCode()
     {
-        return id.hashCode();
+        return Long.hashCode(id);
     }
 
-    public HashMap<String, User> getUserMap()
+    public TLongObjectMap<User> getUserMap()
     {
         return userMap;
     }
@@ -197,5 +199,11 @@ public class GroupImpl implements Group
     {
         if (obj == null)
             throw new NullPointerException("Provided " + name + " was null!");
+    }
+
+    @Override
+    public long getIdLong()
+    {
+        return id;
     }
 }

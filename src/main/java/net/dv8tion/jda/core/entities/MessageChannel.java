@@ -232,7 +232,7 @@ public interface MessageChannel extends ISnowflake
         return new RestAction<Message>(getJDA(), route, json)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Message> request)
             {
                 if (response.isOk())
                 {
@@ -435,7 +435,7 @@ public interface MessageChannel extends ISnowflake
         return new RestAction<Message>(getJDA(), route, body)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Message> request)
             {
                 if (response.isOk())
                     request.onSuccess(EntityBuilder.get(api).createMessage(response.getObject(), MessageChannel.this, false));
@@ -512,7 +512,7 @@ public interface MessageChannel extends ISnowflake
         return new RestAction<Message>(getJDA(), route, body)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Message> request)
             {
                 if (response.isOk())
                     request.onSuccess(EntityBuilder.get(api).createMessage(response.getObject(), MessageChannel.this, false));
@@ -571,7 +571,7 @@ public interface MessageChannel extends ISnowflake
         return new RestAction<Message>(getJDA(), route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Message> request)
             {
                 if (response.isOk())
                 {
@@ -583,6 +583,12 @@ public interface MessageChannel extends ISnowflake
 
             }
         };
+    }
+
+    default RestAction<Message> getMessageById(long messageId)
+    {
+        Args.notNegative(messageId, "Message ID");
+        return getMessageById(String.valueOf(messageId));
     }
 
     /**
@@ -630,16 +636,20 @@ public interface MessageChannel extends ISnowflake
         Route.CompiledRoute route = Route.Messages.DELETE_MESSAGE.compile(getId(), messageId);
         return new RestAction<Void>(getJDA(), route, null) {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
                 else
-                {
                     request.onFailure(response);
-                }
             }
         };
+    }
+    //todo docs
+    default RestAction<Void> deleteMessageById(long messageId)
+    {
+        Args.notNegative(messageId, "Message ID");
+        return deleteMessageById(String.valueOf(messageId));
     }
 
     /**
@@ -787,7 +797,7 @@ public interface MessageChannel extends ISnowflake
         return new RestAction<MessageHistory>(getJDA(), route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<MessageHistory> request)
             {
                 if (!response.isOk())
                 {
@@ -804,10 +814,17 @@ public interface MessageChannel extends ISnowflake
                 for (int i = 0; i < historyJson.length(); i++)
                     msgs.add(builder.createMessage(historyJson.getJSONObject(i), MessageChannel.this, false));
 
-                msgs.forEach(msg -> mHistory.history.put(msg.getId(), msg));
+                msgs.forEach(msg -> mHistory.history.put(msg.getIdLong(), msg));
                 request.onSuccess(mHistory);
             }
         };
+    }
+
+    //todo docs
+    default RestAction<MessageHistory> getHistoryAround(long messageId, int limit)
+    {
+        Args.notNegative(messageId, "Message ID");
+        return getHistoryAround(String.valueOf(messageId), limit);
     }
 
     /**
@@ -845,7 +862,7 @@ public interface MessageChannel extends ISnowflake
         return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
@@ -935,7 +952,7 @@ public interface MessageChannel extends ISnowflake
         return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
@@ -943,6 +960,12 @@ public interface MessageChannel extends ISnowflake
                     request.onFailure(response);
             }
         };
+    }
+    //todo docs
+    default RestAction<Void> addReactionById(long messageId, String unicode)
+    {
+        Args.notNegative(messageId, "Message ID");
+        return addReactionById(String.valueOf(messageId), unicode);
     }
 
     /**
@@ -1008,7 +1031,7 @@ public interface MessageChannel extends ISnowflake
         return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
@@ -1016,6 +1039,12 @@ public interface MessageChannel extends ISnowflake
                     request.onFailure(response);
             }
         };
+    }
+    //todo docs
+    default RestAction<Void> addReactionById(long messageId, Emote emote)
+    {
+        Args.notNegative(messageId, "Message ID");
+        return addReactionById(String.valueOf(messageId), emote);
     }
 
     /**
@@ -1064,7 +1093,7 @@ public interface MessageChannel extends ISnowflake
         return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
@@ -1072,6 +1101,12 @@ public interface MessageChannel extends ISnowflake
                     request.onFailure(response);
             }
         };
+    }
+    //todo docs
+    default RestAction<Void> pinMessageById(long messageId)
+    {
+        Args.notNegative(messageId, "Message ID");
+        return pinMessageById(String.valueOf(messageId));
     }
 
     /**
@@ -1120,7 +1155,7 @@ public interface MessageChannel extends ISnowflake
         return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
@@ -1128,6 +1163,11 @@ public interface MessageChannel extends ISnowflake
                     request.onFailure(response);
             }
         };
+    }
+    //todo docs
+    default RestAction<Void> unpinMessageById(long messageId)
+    {
+        return unpinMessageById(String.valueOf(messageId));
     }
 
     /**
@@ -1159,7 +1199,7 @@ public interface MessageChannel extends ISnowflake
         return new RestAction<List<Message>>(getJDA(), route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<List<Message>> request)
             {
                 if (response.isOk())
                 {
@@ -1293,7 +1333,7 @@ public interface MessageChannel extends ISnowflake
         return new RestAction<Message>(getJDA(), route, json)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Message> request)
             {
                 if (response.isOk())
                 {
@@ -1306,6 +1346,12 @@ public interface MessageChannel extends ISnowflake
                 }
             }
         };
+    }
+    //todo docs
+    default RestAction<Message> editMessageById(long id, Message newContent)
+    {
+        Args.notNegative(id, "Message ID");
+        return editMessageById(String.valueOf(id), newContent);
     }
 
     /**
@@ -1355,5 +1401,11 @@ public interface MessageChannel extends ISnowflake
     default RestAction<Message> editMessageById(String messageId, MessageEmbed newEmbed)
     {
         return editMessageById(messageId, new MessageBuilder().setEmbed(newEmbed).build());
+    }
+    //todo docs
+    default RestAction<Message> editMessageById(long id, MessageEmbed newEmbed)
+    {
+        Args.notNegative(id, "Message ID");
+        return editMessageById(String.valueOf(id), newEmbed);
     }
 }

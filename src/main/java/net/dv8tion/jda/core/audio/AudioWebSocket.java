@@ -16,7 +16,10 @@
 
 package net.dv8tion.jda.core.audio;
 
-import com.neovisionaries.ws.client.*;
+import com.neovisionaries.ws.client.WebSocket;
+import com.neovisionaries.ws.client.WebSocketAdapter;
+import com.neovisionaries.ws.client.WebSocketException;
+import com.neovisionaries.ws.client.WebSocketFrame;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
@@ -26,7 +29,6 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.utils.SimpleLog;
-import org.apache.http.HttpHost;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -228,20 +230,25 @@ public class AudioWebSocket extends WebSocketAdapter
                 JSONObject content = contentAll.getJSONObject("d");
                 boolean speaking = content.getBoolean("speaking");
                 int ssrc = content.getInt("ssrc");
-                String userId = content.getString("user_id");
+                final long userId = content.getLong("user_id");
 
-                User user = api.getUserById(userId);
-                if (user == null)
+                User user;
+                if (!api.getUserMap().containsKey(userId))
                 {
-                    LOG.warn("Got an Audio USER_SPEAKING_UPDATE for a non-existent User. JSON: " + contentAll);
-                    return;
+                    if (!api.getFakeUserMap().containsKey(userId))
+                    {
+                        LOG.warn("Got an Audio USER_SPEAKING_UPDATE for a non-existent User. JSON: " + contentAll);
+                        return;
+                    }
+                    user = api.getFakeUserMap().get(userId);
+                }
+                else
+                {
+                    user = api.getUserById(userId);
                 }
 
                 audioConnection.updateUserSSRC(ssrc, userId, speaking);
-                if (user != null)
-                {
-                    listener.onUserSpeaking(user, speaking);
-                }
+                listener.onUserSpeaking(user, speaking);
                 break;
             }
             default:
@@ -334,7 +341,7 @@ public class AudioWebSocket extends WebSocketAdapter
             Guild connGuild = api.getGuildById(guild.getId());
             if (connGuild != null)
             {
-                if (connGuild.getVoiceChannelById(audioConnection.getChannel().getId()) == null)
+                if (connGuild.getVoiceChannelById(audioConnection.getChannel().getIdLong()) == null)
                     closeStatus = ConnectionStatus.DISCONNECTED_CHANNEL_DELETED;
             }
         }

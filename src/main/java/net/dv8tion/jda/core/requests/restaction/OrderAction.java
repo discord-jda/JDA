@@ -402,7 +402,7 @@ public abstract class OrderAction<T, M extends OrderAction> extends RestAction<V
     }
 
     @Override
-    protected void handleResponse(Response response, Request request)
+    protected void handleResponse(Response response, Request<Void> request)
     {
         if (response.isOk())
             request.onSuccess(null);

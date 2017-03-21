@@ -20,11 +20,7 @@ import net.dv8tion.jda.core.entities.impl.MessageEmbedImpl;
 import org.apache.http.util.Args;
 
 import java.awt.Color;
-import java.time.DateTimeException;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.time.temporal.TemporalAccessor;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,7 +34,7 @@ import java.util.regex.Pattern;
  * @since  3.0
  * @author John A. Grosh
  */
-public class EmbedBuilder 
+public class EmbedBuilder
 {
     public final static String ZERO_WIDTH_SPACE = "\u200E";
     public final static Pattern URL_PATTERN = Pattern.compile("\\s*(https?|attachment):\\/\\/.+\\..{2,}\\s*", Pattern.CASE_INSENSITIVE);
@@ -187,7 +183,7 @@ public class EmbedBuilder
     {
         return description;
     }
-    
+
     /**
      * Sets the Description of the embed. This is where the main chunk of text for an embed is typically placed.
      *
@@ -299,16 +295,7 @@ public class EmbedBuilder
     
     /**
      * Sets the Color of the embed.
-     *
-     * <p><b><a href="http://i.imgur.com/2YnxnRM.png">Example</a></b>
-     *
-     * <p><b>Hint:</b> You can use a predefined color like {@link java.awt.Color#BLUE} or you can define
-     * your own color using one of Color's constructors.
-     * <br>Example: {@link java.awt.Color#Color(int, int, int) new Color(0, 0, 255)}. This is the same as {@link java.awt.Color#BLUE}
-     *
-     * @param  color
-     *         the color of the embed
-     *
+     * @param color the color of the embed
      * @return the builder after the color has been set
      */
     public EmbedBuilder setColor(Color color)
@@ -476,7 +463,7 @@ public class EmbedBuilder
      *
      * <p><b><a href="http://i.imgur.com/gnjzCoo.png">Example of Inline</a></b>
      * <p><b><a href="http://i.imgur.com/Ky0KlsT.png">Example if Non-inline</a></b>
-     * 
+     *
      * @param  name
      *         the name of the Field, displayed in bold above the {@code value}.
      * @param  value

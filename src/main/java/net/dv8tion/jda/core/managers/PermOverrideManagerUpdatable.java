@@ -443,7 +443,7 @@ public class PermOverrideManagerUpdatable
         return new RestAction<Void>(getJDA(), route, body)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);

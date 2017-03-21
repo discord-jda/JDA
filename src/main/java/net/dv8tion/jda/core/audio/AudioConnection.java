@@ -17,6 +17,10 @@
 package net.dv8tion.jda.core.audio;
 
 import com.sun.jna.ptr.PointerByReference;
+import gnu.trove.map.TIntLongMap;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntLongHashMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.audio.factory.IAudioSendSystem;
@@ -59,8 +63,8 @@ public class AudioConnection
     private volatile AudioSendHandler sendHandler = null;
     private volatile AudioReceiveHandler receiveHandler = null;
     private PointerByReference opusEncoder;
-    private volatile HashMap<Integer, String> ssrcMap = new HashMap<>();
-    private volatile HashMap<Integer, Decoder> opusDecoders = new HashMap<>();
+    private volatile TIntLongMap ssrcMap = new TIntLongHashMap();
+    private volatile TIntObjectMap<Decoder> opusDecoders = new TIntObjectHashMap<>();
     private volatile HashMap<User, Queue<Pair<Long, short[]>>> combinedQueue = new HashMap<>();
     private ScheduledExecutorService combinedAudioExecutor;
 
@@ -167,12 +171,12 @@ public class AudioConnection
         return channel.getGuild();
     }
 
-    public void updateUserSSRC(int ssrc, String userId, boolean talking)
+    public void updateUserSSRC(int ssrc, long userId, boolean talking)
     {
-        String previousId = ssrcMap.get(ssrc);
-        if (previousId != null)
+        if (ssrcMap.containsKey(ssrc))
         {
-            if (!previousId.equals(userId))
+            long previousId = ssrcMap.get(ssrc);
+            if (previousId != userId)
             {
                 //Different User already existed with this ssrc. What should we do? Just replace? Probably should nuke the old opusDecoder.
                 //Log for now and see if any user report the error.
@@ -220,7 +224,7 @@ public class AudioConnection
             opusEncoder = null;
         }
 
-        opusDecoders.values().forEach(decoder -> decoder.close());
+        opusDecoders.valueCollection().forEach(Decoder::close);
         opusDecoders.clear();
     }
 
@@ -265,7 +269,7 @@ public class AudioConnection
                 combinedAudioExecutor = null;
             }
 
-            opusDecoders.values().forEach(decoder -> decoder.close());
+            opusDecoders.valueCollection().forEach(Decoder::close);
             opusDecoders.clear();
         }
         else if (receiveHandler != null && !receiveHandler.canReceiveCombined() && combinedAudioExecutor != null)
@@ -309,9 +313,9 @@ public class AudioConnection
                                 AudioPacket decryptedPacket = AudioPacket.decryptAudioPacket(receivedPacket, webSocket.getSecretKey());
 
                                 int ssrc = decryptedPacket.getSSRC();
-                                String userId = ssrcMap.get(ssrc);
+                                final long userId = ssrcMap.get(ssrc);
                                 Decoder decoder = opusDecoders.get(ssrc);
-                                if (userId == null)
+                                if (userId == ssrcMap.getNoEntryValue())
                                 {
                                     byte[] audio = decryptedPacket.getEncodedAudio();
 
