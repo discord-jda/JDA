@@ -82,6 +82,7 @@ public class JDAImpl implements JDA
     protected boolean bulkDeleteSplittingEnabled;
     protected boolean autoReconnect;
     protected long responseTotal;
+    protected long ping = -1;
 
     public JDAImpl(AccountType accountType, HttpHost proxy, WebSocketFactory wsFactory, boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled)
     {
@@ -285,6 +286,12 @@ public class JDAImpl implements JDA
     public Status getStatus()
     {
         return status;
+    }
+
+    @Override
+    public long getPing()
+    {
+        return ping;
     }
 
     @Override
@@ -580,6 +587,11 @@ public class JDAImpl implements JDA
     {
         Args.notNull(factory, "Provided IAudioSendFactory");
         this.audioSendFactory = factory;
+    }
+
+    public void setPing(long ping)
+    {
+        this.ping = ping;
     }
 
     public Requester getRequester()
