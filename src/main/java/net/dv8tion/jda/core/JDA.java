@@ -149,8 +149,8 @@ public interface JDA
      * The time in milliseconds that discord took to respond to our last heartbeat
      * <br>This roughly represents the WebSocket ping of this session
      *
-     * <p>{@link net.dv8tion.jda.core.requests.RestAction RestAction} request times do not
-     * correlate to this value!
+     * <p><b>{@link net.dv8tion.jda.core.requests.RestAction RestAction} request times do not
+     * correlate to this value!</b>
      *
      * @return time in milliseconds between heartbeat and the heartbeat ack response
      */
