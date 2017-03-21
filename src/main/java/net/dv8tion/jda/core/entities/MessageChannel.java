@@ -42,6 +42,36 @@ import java.util.List;
  */
 public interface MessageChannel extends ISnowflake
 {
+
+    /**
+     * The id for the most recent message sent
+     * in this current MessageChannel.
+     * <br>This should only be used if {@link #hasLatestMessage()} returns {@code true}!
+     *
+     * <p>This value is updated on each {@link net.dv8tion.jda.core.events.message.MessageReceivedEvent MessageReceivedEvent}
+     * and <u><b>will be reset to {@code null} if the message associated with this ID gets deleted</b></u>
+     *
+     * @throws java.lang.IllegalStateException
+     *         If no message id is available
+     *
+     * @return The most recent message's id
+     */
+    String getLatestMessageId();
+
+    /**
+     * Whether this MessageChannel contains a tracked most recent
+     * message or not.
+     *
+     * <p>This does not directly mean that {@link #getHistory()} will be unable to retrieve past messages,
+     * it merely means that the latest message is untracked by our internal cache meaning that
+     * if this returns {@code false} the {@link #getLatestMessageId()} method will throw an {@link java.lang.IllegalStateException IllegalStateException}
+     *
+     * @return True, if a latest message id is available for retrieval by {@link #getLatestMessageId()}
+     *
+     * @see    #getLatestMessageId()
+     */
+    boolean hasLatestMessage();
+
     /**
      * This method is a shortcut method to return the following information in the following situation:
      * If the MessageChannel is instance of..

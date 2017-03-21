@@ -16,8 +16,8 @@
 
 package net.dv8tion.jda.core.entities;
 
+import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
@@ -37,7 +37,6 @@ import java.util.*;
  */
 public class MessageHistory
 {
-    protected final JDAImpl api;
     protected final MessageChannel channel;
 
     protected ListOrderedMap<String, Message> history = new ListOrderedMap<>();
@@ -50,11 +49,20 @@ public class MessageHistory
      */
     public MessageHistory(MessageChannel channel)
     {
-        this.api = (JDAImpl) channel.getJDA();
         this.channel = channel;
         if (channel instanceof TextChannel &&
-                !((TextChannel) channel).getGuild().getMember(api.getSelfUser()).hasPermission(Permission.MESSAGE_HISTORY))
+                !((TextChannel) channel).getGuild().getSelfMember().hasPermission(Permission.MESSAGE_HISTORY))
             throw new PermissionException(Permission.MESSAGE_HISTORY);
+    }
+
+    /**
+     * The corresponding JDA instance for this MessageHistory
+     *
+     * @return The corresponding JDA instance
+     */
+    public JDA getJDA()
+    {
+        return channel.getJDA();
     }
 
     /**
@@ -130,7 +138,7 @@ public class MessageHistory
             route = Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId(), Integer.toString(amount));
         else
             route = Route.Messages.GET_MESSAGE_HISTORY_BEFORE.compile(channel.getId(), Integer.toString(amount), history.lastKey());
-        return new RestAction<List<Message>>(api, route, null)
+        return new RestAction<List<Message>>(getJDA(), route, null)
         {
             @Override
             protected void handleResponse(Response response, Request request)
@@ -207,7 +215,7 @@ public class MessageHistory
             throw new IllegalStateException("No messages have been retrieved yet, so there is no message to act as a marker to retrieve more recent messages based on.");
 
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY_AFTER.compile(channel.getId(), Integer.toString(amount), history.firstKey());
-        return new RestAction<List<Message>>(api, route, null)
+        return new RestAction<List<Message>>(getJDA(), route, null)
         {
             @Override
             protected void handleResponse(Response response, Request request)
