@@ -291,6 +291,12 @@ public class JDAImpl implements JDA
     }
 
     @Override
+    public long getPing()
+    {
+        return ping;
+    }
+
+    @Override
     public List<User> getUsers()
     {
         return Collections.unmodifiableList(new ArrayList<>(users.valueCollection()));
@@ -572,12 +578,6 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public long getPing()
-    {
-        return ping;
-    }
-
-    @Override
     public JDAClient asClient()
     {
         if (getAccountType() != AccountType.CLIENT)
@@ -662,6 +662,11 @@ public class JDAImpl implements JDA
         this.audioSendFactory = factory;
     }
 
+    public void setPing(long ping)
+    {
+        this.ping = ping;
+    }
+
     public Requester getRequester()
     {
         return requester;
@@ -730,11 +735,6 @@ public class JDAImpl implements JDA
     public void setResponseTotal(int responseTotal)
     {
         this.responseTotal = responseTotal;
-    }
-
-    public void setPing(long ping)
-    {
-        this.ping = ping;
     }
 
     public String getIdentifierString()

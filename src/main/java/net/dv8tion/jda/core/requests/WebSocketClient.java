@@ -74,6 +74,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected boolean shouldReconnect = true;
     protected int reconnectTimeoutS = 2;
+    protected long heartbeatStartTime;
 
     //GuildId, <TimeOfNextAttempt, AudioConnection>
     protected final TLongObjectMap<MutablePair<Long, VoiceChannel>> queuedAudioConnections = MiscUtil.newLongMap();
@@ -81,7 +82,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected final LinkedList<String> ratelimitQueue = new LinkedList<>();
     protected volatile Thread ratelimitThread = null;
     protected volatile long ratelimitResetTime;
-    protected volatile long heartbeatStart = 0;
     protected volatile int messagesSent;
     protected volatile boolean printedRateLimitMessage = false;
 
@@ -477,7 +477,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 break;
             case 11:
                 LOG.trace("Got Heartbeat Ack (OP 11).");
-                api.setPing(System.currentTimeMillis() - heartbeatStart);
+                api.setPing(System.currentTimeMillis() - heartbeatStartTime);
                 break;
             default:
                 LOG.debug("Got unknown op-code: " + opCode + " with content: " + message);
@@ -520,7 +520,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         if (!send(keepAlivePacket, true))
             ratelimitQueue.addLast(keepAlivePacket);
-        heartbeatStart = System.currentTimeMillis();
+        heartbeatStartTime = System.currentTimeMillis();
     }
 
     protected void sendIdentify()

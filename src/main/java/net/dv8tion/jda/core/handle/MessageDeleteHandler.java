@@ -15,13 +15,15 @@
  */
 package net.dv8tion.jda.core.handle;
 
-import net.dv8tion.jda.client.entities.Group;
+import net.dv8tion.jda.client.entities.impl.GroupImpl;
 import net.dv8tion.jda.client.events.message.group.GroupMessageDeleteEvent;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.entities.impl.PrivateChannelImpl;
+import net.dv8tion.jda.core.entities.impl.TextChannelImpl;
 import net.dv8tion.jda.core.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent;
 import net.dv8tion.jda.core.events.message.priv.PrivateMessageDeleteEvent;
@@ -65,9 +67,13 @@ public class MessageDeleteHandler extends SocketHandler
 
         if (channel instanceof TextChannel)
         {
-            TextChannel tChan = (TextChannel) channel;
+            TextChannelImpl tChan = (TextChannelImpl) channel;
             if (GuildLock.get(api).isLocked(tChan.getGuild().getIdLong()))
+            {
                 return tChan.getGuild().getIdLong();
+            }
+            if (tChan.hasLatestMessage() && messageId == Long.parseLong(tChan.getLatestMessageId()))
+                tChan.setLastMessageId(null); // Reset latest message id as it was deleted.
             api.getEventManager().handle(
                     new GuildMessageDeleteEvent(
                             api, responseNumber,
@@ -75,17 +81,23 @@ public class MessageDeleteHandler extends SocketHandler
         }
         else if (channel instanceof PrivateChannel)
         {
+            PrivateChannelImpl pChan = (PrivateChannelImpl) channel;
+            if (channel.hasLatestMessage() && messageId == Long.parseLong(channel.getLatestMessageId()))
+                pChan.setLastMessageId(null); // Reset latest message id as it was deleted.
             api.getEventManager().handle(
                     new PrivateMessageDeleteEvent(
                             api, responseNumber,
-                            messageIdString, (PrivateChannel) channel));
+                            messageIdString, pChan));
         }
         else
         {
+            GroupImpl group = (GroupImpl) channel;
+            if (channel.hasLatestMessage() && messageId == Long.parseLong(channel.getLatestMessageId()))
+                group.setLastMessageId(null); // Reset latest message id as it was deleted.
             api.getEventManager().handle(
                     new GroupMessageDeleteEvent(
                             api, responseNumber,
-                            messageIdString, (Group) channel));
+                            messageIdString, group));
         }
 
         //Combo event

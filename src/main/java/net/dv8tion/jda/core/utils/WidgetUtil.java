@@ -396,7 +396,18 @@ public class WidgetUtil
 
             return channels.get(Long.parseLong(id));
         }
-        //todo docs
+
+        /**
+         * Gets a voice channel with the given ID, or {@code null} if the voice channel is not found
+         *
+         * @param  id
+         *         the ID of the voice channel
+         *
+         * @throws IllegalStateException
+         *         If the widget is not {@link #isAvailable() available}
+         *
+         * @return possibly-null VoiceChannel with the given ID.
+         */
         public VoiceChannel getVoiceChannelById(long id)
         {
             checkAvailable();
@@ -437,7 +448,17 @@ public class WidgetUtil
             return members.get(Long.parseLong(id));
         }
 
-        //todo docs
+        /**
+         * Gets a member with the given ID, or {@code null} if the member is not found
+         *
+         * @param  id
+         *         the ID of the member
+         *
+         * @throws IllegalStateException
+         *         If the widget is not {@link #isAvailable() available}
+         *
+         * @return possibly-null Member with the given ID.
+         */
         public Member getMemberById(long id)
         {
             checkAvailable();

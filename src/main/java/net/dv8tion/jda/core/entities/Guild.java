@@ -180,7 +180,18 @@ public interface Guild extends ISnowflake
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Member Member} with the related {@code userId}.
      */
     Member getMemberById(String userId);
-    //todo docs
+
+    /**
+     * Gets a {@link net.dv8tion.jda.core.entities.Member Member} object via the id of the user. The id relates to
+     * {@link net.dv8tion.jda.core.entities.User#getIdLong()}, and this method is similar to {@link JDA#getUserById(long)}
+     * <br>This is more efficient that using {@link JDA#getUserById(long)} and {@link #getMember(User)}.
+     * <br>If no Member in this Guild has the {@code userId} provided, this returns {@code null}.
+     *
+     * @param  userId
+     *         The Discord id of the User for which a Member object is requested.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.Member Member} with the related {@code userId}.
+     */
     Member getMemberById(long userId);
 
     /**
@@ -279,7 +290,19 @@ public interface Guild extends ISnowflake
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} with matching id.
      */
     TextChannel getTextChannelById(String id);
-    //todo docs
+
+    /**
+     * Gets a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} from this guild that has the same id as the
+     * one provided. This method is similar to {@link net.dv8tion.jda.core.JDA#getTextChannelById(long)}, but it only
+     * checks this specific Guild for a TextChannel.
+     * <br>If there is no {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} with matching id.
+     */
     TextChannel getTextChannelById(long id);
 
     /**
@@ -317,7 +340,19 @@ public interface Guild extends ISnowflake
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} with matching id.
      */
     VoiceChannel getVoiceChannelById(String id);
-    //todo docs
+
+    /**
+     * Gets a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} from this guild that has the same id as the
+     * one provided. This method is similar to {@link net.dv8tion.jda.core.JDA#getVoiceChannelById(long)}, but it only
+     * checks this specific Guild for a VoiceChannel.
+     * <br>If there is no {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} with matching id.
+     */
     VoiceChannel getVoiceChannelById(long id);
 
     /**
@@ -354,7 +389,18 @@ public interface Guild extends ISnowflake
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Role Role} with matching id.
      */
     Role getRoleById(String id);
-    //todo docs
+
+    /**
+     * Gets a {@link net.dv8tion.jda.core.entities.Role Role} from this guild that has the same id as the
+     * one provided.
+     * <br>If there is no {@link net.dv8tion.jda.core.entities.Role Role} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.core.entities.Role Role}.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.Role Role} with matching id.
+     */
     Role getRoleById(long id);
 
     /**
@@ -391,7 +437,18 @@ public interface Guild extends ISnowflake
      * @return An Emote matching the specified Id.
      */
     Emote getEmoteById(String id);
-    //todo docs
+
+    /**
+     * Gets an {@link net.dv8tion.jda.core.entities.Emote Emote} from this guild that has the same id as the
+     * one provided.
+     * <br>If there is no {@link net.dv8tion.jda.core.entities.Emote Emote} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * @param  id
+     *         the emote id
+     *
+     * @return An Emote matching the specified Id.
+     */
     Emote getEmoteById(long id);
 
     /**

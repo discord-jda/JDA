@@ -604,6 +604,7 @@ public class EntityBuilder
         }
 
         return channel
+                .setLastMessageId(json.isNull("last_message_id") ? null : json.getString("last_message_id"))
                 .setName(json.getString("name"))
                 .setTopic(json.isNull("topic") ? "" : json.getString("topic"))
                 .setRawPosition(json.getInt("position"));
@@ -655,7 +656,8 @@ public class EntityBuilder
         }
 
         final long channelId = privatechat.getLong("id");
-        PrivateChannelImpl priv = new PrivateChannelImpl(channelId, user);
+        PrivateChannelImpl priv = new PrivateChannelImpl(channelId, user)
+                .setLastMessageId(privatechat.isNull("last_message_id") ? null : privatechat.getString("last_message_id"));
         user.setPrivateChannel(priv);
 
         if (user.isFake())
@@ -1107,6 +1109,7 @@ public class EntityBuilder
         final long ownerId = groupJson.getLong("owner_id");
         String name = !groupJson.isNull("name") ? groupJson.getString("name") : null;
         String iconId = !groupJson.isNull("icon") ? groupJson.getString("icon") : null;
+        String lastMessage = !groupJson.isNull("last_message_id") ? groupJson.getString("last_message_id") : null;
 
         GroupImpl group = (GroupImpl) api.asClient().getGroupById(groupId);
         if (group == null)
@@ -1130,7 +1133,9 @@ public class EntityBuilder
             throw new IllegalArgumentException("Attempted to build a Group, but could not find user by provided owner id." +
                     "This should not be possible because the owner should be IN the group!");
 
-        return group.setOwner(owner)
+        return group
+                .setOwner(owner)
+                .setLastMessageId(lastMessage)
                 .setName(name)
                 .setIconId(iconId);
     }

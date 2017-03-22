@@ -33,7 +33,7 @@ import org.json.JSONObject;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ReadyHandler extends SocketHandler //todo longs
+public class ReadyHandler extends SocketHandler
 {
     private final Set<String> incompleteGuilds = new HashSet<>();
     private final Set<String> acknowledgedGuilds = new HashSet<>();

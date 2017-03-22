@@ -54,6 +54,7 @@ public class TextChannelImpl implements TextChannel
 
     private String name;
     private String topic;
+    private String lastMessageId;
     private int rawPosition;
 
     public TextChannelImpl(long id, Guild guild)
@@ -186,6 +187,21 @@ public class TextChannelImpl implements TextChannel
             throw new IllegalArgumentException("Provided Member is not from the Guild that this TextChannel is part of.");
 
         return member.hasPermission(this, Permission.MESSAGE_READ, Permission.MESSAGE_WRITE);
+    }
+
+    @Override
+    public String getLatestMessageId()
+    {
+        String messageId = lastMessageId;
+        if (messageId == null)
+            throw new IllegalStateException("No last message id found.");
+        return messageId;
+    }
+
+    @Override
+    public boolean hasLatestMessage()
+    {
+        return lastMessageId != null;
     }
 
     @Override
@@ -550,6 +566,12 @@ public class TextChannelImpl implements TextChannel
     public TextChannelImpl setRawPosition(int rawPosition)
     {
         this.rawPosition = rawPosition;
+        return this;
+    }
+
+    public TextChannelImpl setLastMessageId(String id)
+    {
+        this.lastMessageId = id;
         return this;
     }
 
