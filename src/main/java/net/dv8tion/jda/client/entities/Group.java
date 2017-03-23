@@ -19,11 +19,7 @@ package net.dv8tion.jda.client.entities;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.requests.RestAction;
-import org.apache.commons.lang3.StringUtils;
 
-import java.io.IOException;
-import java.util.FormattableFlags;
-import java.util.Formatter;
 import java.util.List;
 
 public interface Group extends MessageChannel, CallableChannel
@@ -48,37 +44,4 @@ public interface Group extends MessageChannel, CallableChannel
 
 
     RestAction leaveGroup();
-
-    @Override
-    default void formatTo(Formatter formatter, int flags, int width, int precision)
-    {
-        boolean leftJustified = (flags & FormattableFlags.LEFT_JUSTIFY) == FormattableFlags.LEFT_JUSTIFY;
-        boolean upper = (flags & FormattableFlags.UPPERCASE) == FormattableFlags.UPPERCASE;
-        boolean alt = (flags & FormattableFlags.ALTERNATE) == FormattableFlags.ALTERNATE;
-        String out;
-
-        if (alt)
-            out = "#" + (upper ?  getName().toUpperCase(formatter.locale()) : getName());
-        else
-            out = upper ?  getName().toUpperCase(formatter.locale()) : getName();
-
-        try
-        {
-            Appendable appendable = formatter.out();
-            if (precision > -1 && out.length() > precision)
-            {
-                appendable.append(StringUtils.truncate(out, precision));
-                return;
-            }
-
-            if (leftJustified)
-                appendable.append(StringUtils.rightPad(out, width));
-            else
-                appendable.append(StringUtils.leftPad(out, width));
-        }
-        catch (IOException e)
-        {
-            throw new AssertionError(e);
-        }
-    }
 }

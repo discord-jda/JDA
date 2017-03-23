@@ -24,6 +24,7 @@ import net.dv8tion.jda.core.entities.impl.MessageImpl;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.utils.IOUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.util.Args;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -33,10 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Collections;
-import java.util.Formattable;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Represents a Discord channel that can have {@link net.dv8tion.jda.core.entities.Message Messages} and files sent to it.
@@ -1398,5 +1396,38 @@ public interface MessageChannel extends ISnowflake, Formattable
     default RestAction<Message> editMessageById(String messageId, MessageEmbed newEmbed)
     {
         return editMessageById(messageId, new MessageBuilder().setEmbed(newEmbed).build());
+    }
+
+    @Override
+    default void formatTo(Formatter formatter, int flags, int width, int precision)
+    {
+        boolean leftJustified = (flags & FormattableFlags.LEFT_JUSTIFY) == FormattableFlags.LEFT_JUSTIFY;
+        boolean upper = (flags & FormattableFlags.UPPERCASE) == FormattableFlags.UPPERCASE;
+        boolean alt = (flags & FormattableFlags.ALTERNATE) == FormattableFlags.ALTERNATE;
+        String out;
+
+        if (alt)
+            out = "#" + (upper ?  getName().toUpperCase(formatter.locale()) : getName());
+        else
+            out = upper ?  getName().toUpperCase(formatter.locale()) : getName();
+
+        try
+        {
+            Appendable appendable = formatter.out();
+            if (precision > -1 && out.length() > precision)
+            {
+                appendable.append(StringUtils.truncate(out, precision));
+                return;
+            }
+
+            if (leftJustified)
+                appendable.append(StringUtils.rightPad(out, width));
+            else
+                appendable.append(StringUtils.leftPad(out, width));
+        }
+        catch (IOException e)
+        {
+            throw new AssertionError(e);
+        }
     }
 }
