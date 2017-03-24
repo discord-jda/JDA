@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.requests;
 
+import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 
@@ -23,6 +24,7 @@ import java.util.function.Consumer;
 
 public class Request<T>
 {
+    private final JDAImpl api;
     private final RestAction<T> restAction;
     private final Object data;
     private final Consumer<T> onSuccess;
@@ -38,11 +40,12 @@ public class Request<T>
         this.onSuccess = onSuccess;
         this.onFailure = onFailure;
         this.shouldQueue = shouldQueue;
+        this.api = (JDAImpl) restAction.getJDA();
     }
 
     public void onSuccess(T successObj)
     {
-        Requester.THREAD_POOL.execute(() ->
+        api.getRequester().pool.execute(() ->
         {
             try
             {
@@ -71,7 +74,7 @@ public class Request<T>
 
     public void onFailure(Throwable failException)
     {
-        Requester.THREAD_POOL.execute(() ->
+        api.getRequester().pool.execute(() ->
         {
             try
             {

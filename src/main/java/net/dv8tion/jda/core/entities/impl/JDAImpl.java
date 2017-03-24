@@ -45,11 +45,16 @@ import org.json.JSONObject;
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 import java.util.stream.Collectors;
 
 public class JDAImpl implements JDA
 {
     public static final SimpleLog LOG = SimpleLog.getLog("JDA");
+
+    public final ScheduledExecutorService pool;
 
     protected final HashMap<String, User> users = new HashMap<>(200);
     protected final HashMap<String, Guild> guilds = new HashMap<>(10);
@@ -82,8 +87,11 @@ public class JDAImpl implements JDA
     protected boolean bulkDeleteSplittingEnabled;
     protected boolean autoReconnect;
     protected long responseTotal;
+    protected long ping = -1;
 
-    public JDAImpl(AccountType accountType, HttpHost proxy, WebSocketFactory wsFactory, boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled)
+    public JDAImpl(AccountType accountType, HttpHost proxy, WebSocketFactory wsFactory,
+                   boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled,
+                   int corePoolSize)
     {
         this.presence = new PresenceImpl(this);
         this.accountType = accountType;
@@ -94,6 +102,7 @@ public class JDAImpl implements JDA
         this.audioEnabled = audioEnabled;
         this.useShutdownHook = useShutdownHook;
         this.bulkDeleteSplittingEnabled = bulkDeleteSplittingEnabled;
+        this.pool = Executors.newScheduledThreadPool(corePoolSize, new JDAThreadFactory());
 
         this.jdaClient = accountType == AccountType.CLIENT ? new JDAClientImpl(this) : null;
         this.jdaBot = accountType == AccountType.BOT ? new JDABotImpl(this) : null;
@@ -285,6 +294,12 @@ public class JDAImpl implements JDA
     public Status getStatus()
     {
         return status;
+    }
+
+    @Override
+    public long getPing()
+    {
+        return ping;
     }
 
     @Override
@@ -488,7 +503,6 @@ public class JDAImpl implements JDA
 
         if (free)
         {
-            Requester.destroy();
             try
             {
                 Unirest.shutdown();
@@ -583,6 +597,11 @@ public class JDAImpl implements JDA
         this.audioSendFactory = factory;
     }
 
+    public void setPing(long ping)
+    {
+        this.ping = ping;
+    }
+
     public Requester getRequester()
     {
         return requester;
@@ -661,5 +680,27 @@ public class JDAImpl implements JDA
             return "JDA";
     }
 
+    private class JDAThreadFactory implements ThreadFactory
+    {
+        @Override
+        public Thread newThread(Runnable r)
+        {
+            final Thread thread = new Thread(r, "JDA-Thread " + getIdentifierString());
+            thread.setDaemon(true);
+            thread.setUncaughtExceptionHandler(UncaughtExceptionHandler.INSTANCE);
+            return thread;
+        }
+    }
 
+    private static class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
+    {
+        private static UncaughtExceptionHandler INSTANCE = new UncaughtExceptionHandler();
+
+        @Override
+        public void uncaughtException(Thread t, Throwable e)
+        {
+            LOG.fatal(String.format("Uncaught Exception in JDA Schedule Thread [%s]", t.getName()));
+            LOG.log(e);
+        }
+    }
 }

@@ -53,6 +53,7 @@ public class TextChannelImpl implements TextChannel
 
     private String name;
     private String topic;
+    private String lastMessageId;
     private int rawPosition;
 
     public TextChannelImpl(String id, Guild guild)
@@ -188,6 +189,21 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
+    public String getLatestMessageId()
+    {
+        String messageId = lastMessageId;
+        if (messageId == null)
+            throw new IllegalStateException("No last message id found.");
+        return messageId;
+    }
+
+    @Override
+    public boolean hasLatestMessage()
+    {
+        return lastMessageId != null;
+    }
+
+    @Override
     public String getName()
     {
         return name;
@@ -214,9 +230,8 @@ public class TextChannelImpl implements TextChannel
     @Override
     public List<Member> getMembers()
     {
-        return Collections.unmodifiableList(
-        ((GuildImpl) getGuild()).getMembersMap().values().stream()
-                .filter(m -> m.getPermissions(this).contains(Permission.MESSAGE_READ))
+        return Collections.unmodifiableList(guild.getMembersMap().values().stream()
+                .filter(m -> m.hasPermission(this, Permission.MESSAGE_READ))
                 .collect(Collectors.toList()));
     }
 
@@ -298,7 +313,7 @@ public class TextChannelImpl implements TextChannel
     @Override
     public RestAction<Void> deleteMessageById(String messageId)
     {
-        checkNull(messageId, "messageId");
+        Args.notEmpty(messageId, "messageId");
         checkPermission(Permission.MESSAGE_READ);
 
         //Call MessageChannel's default method
@@ -553,6 +568,12 @@ public class TextChannelImpl implements TextChannel
         return this;
     }
 
+    public TextChannelImpl setLastMessageId(String id)
+    {
+        this.lastMessageId = id;
+        return this;
+    }
+
     // -- Map Getters --
 
     public HashMap<Member, PermissionOverride> getMemberOverrideMap()
@@ -583,12 +604,6 @@ public class TextChannelImpl implements TextChannel
             else
                 throw new PermissionException(permission);
         }
-    }
-
-    private void checkNull(Object obj, String name)
-    {
-        if (obj == null)
-            throw new NullPointerException("Provided " + name + " was null!");
     }
 
     @Override

@@ -42,10 +42,12 @@ public class Requester
     public static final SimpleLog LOG = SimpleLog.getLog("JDARequester");
     public static final String DISCORD_API_PREFIX = "https://discordapp.com/api/";
     public static String USER_AGENT = "JDA DiscordBot (" + JDAInfo.GITHUB + ", " + JDAInfo.VERSION + ")";
-    static final ExecutorService THREAD_POOL = Executors.newCachedThreadPool(new ResponseHandlerThreadFactory());
 
     private final JDAImpl api;
     private final RateLimiter rateLimiter;
+
+    // use this for callback computation rather than global pool to avoid deadlocks
+    final ExecutorService pool = Executors.newCachedThreadPool(new ResponseHandlerThreadFactory());
 
     public Requester(JDA api)
     {
@@ -169,6 +171,7 @@ public class Requester
 
     public void shutdown()
     {
+        pool.shutdown();
         rateLimiter.shutdown();
     }
 
@@ -214,11 +217,6 @@ public class Requester
         request.header("user-agent", USER_AGENT);
         request.header("Accept-Encoding", "gzip");
         return baseRequest;
-    }
-
-    public static void destroy()
-    {
-        THREAD_POOL.shutdown();
     }
 
     private static final class ResponseHandlerThreadFactory implements ThreadFactory
