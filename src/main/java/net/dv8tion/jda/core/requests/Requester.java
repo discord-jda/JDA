@@ -137,7 +137,7 @@ public class Requester
                 }
                 catch (InterruptedException ignored) {}
             }
-            while (attempt < 4 && response.getStatus() >= 500);
+            while (attempt < 3 && response.getStatus() >= 500);
 
             if (response.getStatus() >= 500)
             {
