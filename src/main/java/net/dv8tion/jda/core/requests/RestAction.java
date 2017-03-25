@@ -56,18 +56,18 @@ import java.util.function.Consumer;
  * The most efficient way to use a RestAction is by using the asynchronous {@link #queue()} operations.
  * <br>These allow users to provide success and failure callbacks which will be called at a convenient time.
  *
- * <h1>Planning Execution</h1>
+ * <h2>Planning Execution</h2>
  * To <u>schedule</u> a RestAction we provide both {@link #queue()} and {@link #complete()} versions that
  * will be executed by a {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} after a
  * specified delay:
  * <ul>
- *     <li>{@link #queueAfter(long, java.util.concurrent.TimeUnit)}
+ *     <li>{@link #queueAfter(long, TimeUnit)}
  *     <br>Schedules a call to {@link #queue()} with default callback {@link java.util.function.Consumer Consumers} to be executed after the specified {@code delay}.
  *     <br>The {@link java.util.concurrent.TimeUnit TimeUnit} is used to convert the provided long into a delay time.
  *     <br>Example: {@code queueAfter(1, TimeUnit.SECONDS);}
  *     <br>will call {@link #queue()} <b>1 second</b> later.</li>
  *
- *     <li>{@link #completeAfter(long, java.util.concurrent.TimeUnit)}
+ *     <li>{@link #completeAfter(long, TimeUnit)}
  *     <br>This returns a {@link java.util.concurrent.ScheduledFuture ScheduledFuture} which
  *         can be joined into the current Thread using {@link java.util.concurrent.ScheduledFuture#get()}
  *     <br>The blocking call to {@code completeAfter(delay, unit).get()} will return
@@ -76,9 +76,60 @@ import java.util.function.Consumer;
  *
  * <p>All of those operations provide overloads for optional parameters such as a custom
  * {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} instead of using the default
- * global JDA executor. Specifically {@link #queueAfter(long, java.util.concurrent.TimeUnit)} has overloads
+ * global JDA executor. Specifically {@link #queueAfter(long, TimeUnit)} has overloads
  * to provide a success and/or failure callback due to the returned {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
  * not being able to provide the response values of the {@link #queue()} callbacks.
+ *
+ * <h1>Using RestActions</h1>
+ * The most common way to use a RestAction is not using the returned value.
+ * <br>For instance sending messages usually means you will not require to view the message once
+ * it was sent. Thus we can simply use the <b>asynchronous</b> {@link #queue()} operation which will
+ * be executed on a rate limit worker thread in the background, without blocking your current thread:
+ * <pre><code>
+ *      {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel} channel = event.getChannel();
+ *     {@literal RestAction<Message>} action = channel.sendMessage("Hello World");
+ *      action.{@link #queue() queue()}; // Execute the rest action asynchronously
+ * </code></pre>
+ *
+ * <p>Sometimes it is important to access the response value, possibly to modify it later.
+ * <br>Now we have two options to actually access the response value, either using an asynchronous
+ * callback {@link java.util.function.Consumer Consumer} or the (not recommended) {@link #complete()} which will block
+ * the current thread until the response has been processed and joins with the current thread.
+ *
+ * <h2>Example Queue: (recommended)</h2>
+ * <pre><code>
+ *     {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel} channel = event.getChannel();
+ *     final long time = System.currentTimeMillis();
+ *    {@literal RestAction<Message>} action = channel.sendMessage("Calculating Response Time...");
+ *     {@link java.util.function.Consumer Consumer}{@literal <Message>} callback = (message) {@literal ->  {
+ *        Message m = message; // ^This is a lambda parameter!^
+ *        m.editMessage("Response Time: " + (System.currentTimeMillis() - time) + "ms").queue();
+ *        // End with queue() to not block the callback thread!
+ *      }};
+ *     // You can also inline this with the queue parameter: action.queue(m {@literal ->} m.editMessage(...).queue());
+ *     action.{@link #queue(Consumer) queue(callback)};
+ * </code></pre>
+ *
+ * <h2>Example Complete: (not recommended)</h2>
+ * <pre><code>
+ *     {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel} channel = event.getChannel();
+ *     final long time = System.currentTimeMillis();
+ *    {@literal RestAction<Message>} action = channel.sendMessage("Calculating Response Time...");
+ *     Message message = action.{@link #complete() complete()};
+ *     message.editMessage("Response Time: " + (System.currentTimeMillis() - time) + "ms").queue();
+ *     // End with {@link #queue() queue()} to not block the callback thread!
+ * </code></pre>
+ *
+ * <h2>Example Planning:</h2>
+ * <pre><code>
+ *     {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel} channel = event.getChannel();
+ *    {@literal RestAction<Message>} action = channel.sendMessage("This message will destroy itself in 5 seconds!");
+ *     action.queue((message) {@literal ->} message.delete().{@link #queueAfter(long, TimeUnit) queueAfter(5, TimeUnit.SECONDS)});
+ * </code></pre>
+ *
+ * <p><b>Developer Note:</b> It is generally a good practice to use asynchronous logic because blocking threads requires resources
+ * which can be avoided by using callbacks over blocking operations:
+ * <br>{@link #queue(Consumer)} {@literal >} {@link #complete()}
  *
  * @param <T>
  *        The generic response type for this RestAction
