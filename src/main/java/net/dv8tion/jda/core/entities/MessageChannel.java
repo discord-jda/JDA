@@ -24,7 +24,7 @@ import net.dv8tion.jda.core.entities.impl.MessageImpl;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.utils.IOUtil;
-import org.apache.commons.lang3.StringUtils;
+import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.http.util.Args;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -1406,28 +1406,10 @@ public interface MessageChannel extends ISnowflake, Formattable
         boolean alt = (flags & FormattableFlags.ALTERNATE) == FormattableFlags.ALTERNATE;
         String out;
 
+        out = upper ?  getName().toUpperCase(formatter.locale()) : getName();
         if (alt)
-            out = "#" + (upper ?  getName().toUpperCase(formatter.locale()) : getName());
-        else
-            out = upper ?  getName().toUpperCase(formatter.locale()) : getName();
+            out = "#" + out;
 
-        try
-        {
-            Appendable appendable = formatter.out();
-            if (precision > -1 && out.length() > precision)
-            {
-                appendable.append(StringUtils.truncate(out, precision));
-                return;
-            }
-
-            if (leftJustified)
-                appendable.append(StringUtils.rightPad(out, width));
-            else
-                appendable.append(StringUtils.leftPad(out, width));
-        }
-        catch (IOException e)
-        {
-            throw new AssertionError(e);
-        }
+        MiscUtil.appendTo(formatter, width, precision, leftJustified, out);
     }
 }

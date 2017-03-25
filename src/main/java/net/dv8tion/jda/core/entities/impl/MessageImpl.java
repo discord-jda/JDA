@@ -602,11 +602,7 @@ public class MessageImpl implements Message
         boolean leftJustified = (flags & FormattableFlags.LEFT_JUSTIFY) == FormattableFlags.LEFT_JUSTIFY;
         boolean alt = (flags & FormattableFlags.ALTERNATE) == FormattableFlags.ALTERNATE;
 
-        String out;
-        if (alt)
-            out = getRawContent();
-        else
-            out = getContent();
+        String out = alt ? getRawContent() : getContent();
 
         if (upper)
             out = out.toUpperCase(formatter.locale());

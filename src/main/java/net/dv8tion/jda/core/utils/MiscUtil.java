@@ -16,11 +16,14 @@
 package net.dv8tion.jda.core.utils;
 
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import org.apache.commons.lang3.StringUtils;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
+import java.util.Formatter;
 import java.util.TimeZone;
 
 public class MiscUtil
@@ -91,5 +94,41 @@ public class MiscUtil
     public static String getDateTimeString(OffsetDateTime time)
     {
         return time.format(dtFormatter);
+    }
+
+    /**
+     * Can be used to append a String to a formatter.
+     *
+     * @param formatter
+     *        The {@link java.util.Formatter Formatter}
+     * @param width
+     *        Minimum width to meet, filled with space if needed
+     * @param precision
+     *        Maximum amount of characters to append
+     * @param leftJustified
+     *        Whether or not to left-justify the value
+     * @param out
+     *        The String to append
+     */
+    public static void appendTo(Formatter formatter, int width, int precision, boolean leftJustified, String out)
+    {
+        try
+        {
+            Appendable appendable = formatter.out();
+            if (precision > -1 && out.length() > precision)
+            {
+                appendable.append(StringUtils.truncate(out, precision));
+                return;
+            }
+
+            if (leftJustified)
+                appendable.append(StringUtils.rightPad(out, width));
+            else
+                appendable.append(StringUtils.leftPad(out, width));
+        }
+        catch (IOException e)
+        {
+            throw new AssertionError(e);
+        }
     }
 }

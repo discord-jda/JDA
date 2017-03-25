@@ -17,15 +17,17 @@
 package net.dv8tion.jda.core.entities.impl;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.EntityBuilder;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.PrivateChannel;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
-import org.apache.commons.lang3.StringUtils;
+import net.dv8tion.jda.core.utils.MiscUtil;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.FormattableFlags;
 import java.util.Formatter;
 import java.util.List;
@@ -236,40 +238,18 @@ public class UserImpl implements User
     public void formatTo(Formatter formatter, int flags, int width, int precision)
     {
         boolean alt = (flags & FormattableFlags.ALTERNATE) == FormattableFlags.ALTERNATE;
-        if (!alt)
-        {
-            User.super.formatTo(formatter, flags, width, precision);
-            return;
-        }
-
-        String out;
         boolean upper = (flags & FormattableFlags.UPPERCASE) == FormattableFlags.UPPERCASE;
         boolean leftJustified = (flags & FormattableFlags.LEFT_JUSTIFY) == FormattableFlags.LEFT_JUSTIFY;
 
-        if (upper)
+        String out;
+        if (!alt)
+            out = getAsMention();
+        else if (upper)
             out = String.format(formatter.locale(), "%S#%s", getName(), getDiscriminator());
         else
             out = String.format(formatter.locale(), "%s#%s", getName(), getDiscriminator());
 
-
-        try
-        {
-            Appendable appendable = formatter.out();
-            if (precision > -1 && out.length() > precision)
-            {
-                appendable.append(StringUtils.truncate(out, precision));
-                return;
-            }
-
-            if (leftJustified)
-                appendable.append(StringUtils.rightPad(out, width));
-            else
-                appendable.append(StringUtils.leftPad(out, width));
-        }
-        catch (IOException e)
-        {
-            throw new AssertionError(e);
-        }
+        MiscUtil.appendTo(formatter, width, precision, leftJustified, out);
     }
 
     public enum DefaultAvatar

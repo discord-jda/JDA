@@ -16,9 +16,8 @@
 
 package net.dv8tion.jda.core.entities;
 
-import org.apache.commons.lang3.StringUtils;
+import net.dv8tion.jda.core.utils.MiscUtil;
 
-import java.io.IOException;
 import java.util.Formattable;
 import java.util.FormattableFlags;
 import java.util.Formatter;
@@ -44,23 +43,6 @@ public interface IMentionable extends Formattable
         boolean upper = (flags & FormattableFlags.UPPERCASE) == FormattableFlags.UPPERCASE;
         String out = upper ? getAsMention().toUpperCase(formatter.locale()) : getAsMention();
 
-        try
-        {
-            Appendable appendable = formatter.out();
-            if (precision > -1 && out.length() > precision)
-            {
-                appendable.append(StringUtils.truncate(out, precision));
-                return;
-            }
-
-            if (leftJustified)
-                appendable.append(StringUtils.rightPad(out, width));
-            else
-                appendable.append(StringUtils.leftPad(out, width));
-        }
-        catch (IOException e)
-        {
-            throw new AssertionError(e);
-        }
+        MiscUtil.appendTo(formatter, width, precision, leftJustified, out);
     }
 }

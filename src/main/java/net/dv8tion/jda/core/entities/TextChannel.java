@@ -16,9 +16,8 @@
 package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.requests.RestAction;
-import org.apache.commons.lang3.StringUtils;
+import net.dv8tion.jda.core.utils.MiscUtil;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.FormattableFlags;
 import java.util.Formatter;
@@ -216,25 +215,8 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
         if (alt)
             out = "#" + (upper ?  getName().toUpperCase(formatter.locale()) : getName());
         else
-            out = upper ?  getAsMention().toUpperCase(formatter.locale()) : getAsMention();
+            out = getAsMention();
 
-        try
-        {
-            Appendable appendable = formatter.out();
-            if (precision > -1 && out.length() > precision)
-            {
-                appendable.append(StringUtils.truncate(out, precision));
-                return;
-            }
-
-            if (leftJustified)
-                appendable.append(StringUtils.rightPad(out, width));
-            else
-                appendable.append(StringUtils.leftPad(out, width));
-        }
-        catch (IOException e)
-        {
-            throw new AssertionError(e);
-        }
+        MiscUtil.appendTo(formatter, width, precision, leftJustified, out);
     }
 }
