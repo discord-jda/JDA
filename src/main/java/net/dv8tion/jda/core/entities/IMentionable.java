@@ -16,12 +16,18 @@
 
 package net.dv8tion.jda.core.entities;
 
+import net.dv8tion.jda.core.utils.MiscUtil;
+
+import java.util.Formattable;
+import java.util.FormattableFlags;
+import java.util.Formatter;
+
 /**
  * Marks a mentionable entity.
  *
  * @since 3.0
  */
-public interface IMentionable
+public interface IMentionable extends Formattable
 {
     /**
      * Retrieve a Mention for this Entity.
@@ -29,4 +35,14 @@ public interface IMentionable
      * @return A resolvable mention.
      */
     String getAsMention();
+
+    @Override
+    default void formatTo(Formatter formatter, int flags, int width, int precision)
+    {
+        boolean leftJustified = (flags & FormattableFlags.LEFT_JUSTIFY) == FormattableFlags.LEFT_JUSTIFY;
+        boolean upper = (flags & FormattableFlags.UPPERCASE) == FormattableFlags.UPPERCASE;
+        String out = upper ? getAsMention().toUpperCase(formatter.locale()) : getAsMention();
+
+        MiscUtil.appendTo(formatter, width, precision, leftJustified, out);
+    }
 }

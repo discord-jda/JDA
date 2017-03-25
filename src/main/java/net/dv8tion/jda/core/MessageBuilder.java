@@ -17,6 +17,7 @@ package net.dv8tion.jda.core;
 
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.MessageImpl;
+import org.apache.http.util.Args;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -33,23 +34,6 @@ import java.util.regex.Pattern;
  */
 public class MessageBuilder implements Appendable
 {
-    public static final String USER_KEY = "%U%";
-    public static final String ROLE_KEY = "%R%";
-    public static final String TEXTCHANNEL_KEY = "%TC%";
-    public static final String EVERYONE_KEY = "%E%";
-    public static final String HERE_KEY = "%H%";
-
-    /**
-     * A constant for <b>@everyone</b> mentions. Used in {@link #append(IMentionable)}
-     */
-    public static final IMentionable EVERYONE_MENTION = () -> "@everyone";
-
-    /**
-     * A constant for <b>@here</b> mentions. Used in {@link #append(IMentionable)}
-     */
-    public static final IMentionable HERE_MENTION = () -> "@here";
-
-    protected static final Pattern FORMAT_PATTERN = Pattern.compile(String.format("%s|%s|%s|%s|%s", USER_KEY, ROLE_KEY, TEXTCHANNEL_KEY, EVERYONE_KEY, HERE_KEY));
     protected static final Pattern USER_MENTION_PATTERN = Pattern.compile("<@!?([0-9]+)>");
     protected static final Pattern CHANNEL_MENTION_PATTERN = Pattern.compile("<#!?([0-9]+)>");
     protected static final Pattern ROLE_MENTION_PATTERN = Pattern.compile("<@&!?([0-9]+)>");
@@ -190,27 +174,19 @@ public class MessageBuilder implements Appendable
 
     /**
      * This method is an extended form of {@link String#format(String, Object...)}. It allows for all of
-     * the token replacement functionality that String.format(String, Object...) supports, but it also supports
-     * specialized token replacement specific to JDA objects.
-     *
-     * <p>Current tokens:
+     * the token replacement functionality that String.format(String, Object...) supports.
+     * <br>A lot of JDA entities implement {@link java.util.Formattable Formattable} and will provide
+     * specific format outputs for their specific type.
      * <ul>
-     *     <li><b>%U%</b> - Defined as {@link net.dv8tion.jda.core.MessageBuilder#USER_KEY USER_KEY}
-     *          Used to mention a {@link net.dv8tion.jda.core.entities.User User}.
-     *          Same as {@link #append(IMentionable) append(User)}
-     *          </li>
-     *     <li><b>%R%</b> - Defined as {@link net.dv8tion.jda.core.MessageBuilder#ROLE_KEY ROLE_KEY}
-     *          Used to mention a {@link net.dv8tion.jda.core.entities.Role Role}.
-     *          Same as {@link #append(IMentionable) append(Role)}</li>
-     *     <li><b>%TC%</b> - Defined as {@link net.dv8tion.jda.core.MessageBuilder#TEXTCHANNEL_KEY TEXTCHANNEL_KEY}
-     *          Used to mention a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
-     *          Same as {@link #append(IMentionable) append(Role)}</li>
-     *     <li><b>%E%</b> - Defined as {@link net.dv8tion.jda.core.MessageBuilder#EVERYONE_KEY EVERYONE_KEY}
-     *          Used to mention {@code @everyone}.
-     *          Same as {@link #append(CharSequence) append("@everyone")}</li>
-     *     <li><b>%H%</b> - Defined as {@link net.dv8tion.jda.core.MessageBuilder#HERE_KEY HERE_KEY}
-     *          Used to mention {@code @here}.
-     *          Same as {@link #append(CharSequence) append("@here")}</li>
+     *     <li>{@link net.dv8tion.jda.core.entities.IMentionable IMentionable}
+     *     <br>These will output their {@link net.dv8tion.jda.core.entities.IMentionable#getAsMention() getAsMention} by default,
+     *         some implementations have alternatives such as {@link net.dv8tion.jda.core.entities.User User} and {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.</li>
+     *     <li>{@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}
+     *     <br>All message channels format to {@code "#" + getName()} by default, TextChannel has special handling
+     *         and uses the getAsMention output by default and the MessageChannel output as alternative ({@code #} flag).</li>
+     *     <li>{@link net.dv8tion.jda.core.entities.Message Message}
+     *     <br>Messages by default output their {@link net.dv8tion.jda.core.entities.Message#getContent() getContent()} value and
+     *         as alternative use the {@link net.dv8tion.jda.core.entities.Message#getRawContent() getRawContent()} value</li>
      * </ul>
      *
      * <p>Example:
@@ -219,13 +195,15 @@ public class MessageBuilder implements Appendable
      * <br><pre>{@code
      * User user = event.getAuthor();
      * MessageBuilder builder = new MessageBuilder();
-     * builder.appendFormat("%U% is really cool!", user);
+     * builder.appendFormat("%#s is really cool!", user);
      * builder.build();
      * }</pre>
      *
      * It would build a message that mentions the author and says that he is really cool!. If the user's
-     * name was "Bob", it would say:
-     * <br><pre>  "Bob is really cool!"</pre>
+     * name was "Minn" and his discriminator "6688", it would say:
+     * <br><pre>  "Minn#6688 is really cool!"</pre>
+     * <br>Note that this uses the {@code #} flag to utilize the alternative format for {@link net.dv8tion.jda.core.entities.User User}.
+     * <br>By default it would fallback to {@link net.dv8tion.jda.core.entities.IMentionable#getAsMention()}
      *
      * @param  format
      *         a format string.
@@ -234,104 +212,14 @@ public class MessageBuilder implements Appendable
      *         provided in the order that the tokens appear in the provided format string.
      *
      * @throws java.lang.IllegalArgumentException
-     *         If an object is provided for a key that it does not match.
+     *         If the provided format string is {@code null} or empty
      *
-     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
+     * @return The {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
      */
     public MessageBuilder appendFormat(String format, Object... args)
     {
-        if (format == null || format.isEmpty())
-            return this;
-
-        int index = 0;
-        int stringIndex = 0;
-        StringBuilder sb = new StringBuilder();
-        Matcher m = FORMAT_PATTERN.matcher(format);
-        List<Class< ? extends IMentionable>> classes = Arrays.asList(User.class, TextChannel.class, Role.class);
-        while (m.find() && stringIndex < format.length())
-        {
-            Class<? extends IMentionable> target = null;
-            boolean everyone = false;
-            switch (m.group())
-            {
-                case USER_KEY:
-                    target = User.class;
-                    break;
-                case TEXTCHANNEL_KEY:
-                    target = TextChannel.class;
-                    break;
-                case ROLE_KEY:
-                    target = Role.class;
-                    break;
-                case EVERYONE_KEY:
-                    everyone = true;
-                    break;
-                case HERE_KEY:
-                    everyone = false;
-                    break;
-                default:
-                    throw new IllegalArgumentException("MessageBuilder's format regex triggered on an unknown key. How?!");
-            }
-
-            sb.append(format.substring(stringIndex, m.start())).append("%s");
-            stringIndex = m.end();
-            if (target != null)
-            {
-                boolean found = false;
-                for (int i = index; i < args.length; i++)
-                {
-                    Object arg = args[i];
-
-                    //This is a JDA object. If it isn't, skip it.
-                    if (classes.stream().anyMatch(c -> c.isInstance(arg)))
-                    {
-                        //This isn't the object type we were expecting.
-                        if (!target.isInstance(arg))
-                            throw new IllegalArgumentException(String.format("Expected: %s at args index: %d but received: %s instead",
-                                    target.getSimpleName(), index, arg.getClass().getSimpleName()));
-                        if (arg instanceof User)
-                        {
-                            User u = (User) arg;
-                            args[i] = u.getAsMention();
-                        }
-                        else if (arg instanceof TextChannel)
-                        {
-                            TextChannel tc = (TextChannel) arg;
-                            args[i] = tc.getAsMention();
-                        }
-                        else if (arg instanceof Role)
-                        {
-                            Role r = (Role) arg;
-                            args[i] = r.getAsMention();
-                        }
-                        else
-                            throw new IllegalArgumentException("When checking instances of arguments, something failed. Contact dev.");
-
-                        index++;
-                        found = true;
-                        break;
-                    }
-                    index++;
-                }
-                if (!found)
-                    throw new MissingFormatArgumentException(m.group());
-            }
-            else
-            {
-                if (everyone)
-                {
-                    sb.append("@everyone");
-                }
-                else
-                {
-                    sb.append("@here");
-                }
-            }
-        }
-        if (stringIndex < format.length())
-            sb.append(format.substring(stringIndex, format.length()));
-        String finalFormat = String.format(sb.toString(), args);
-        builder.append(finalFormat);
+        Args.notEmpty(format, "Format String");
+        this.append(String.format(format, args));
         return this;
     }
 
