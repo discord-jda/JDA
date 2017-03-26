@@ -72,8 +72,8 @@ public class MessageDeleteHandler extends SocketHandler
             {
                 return tChan.getGuild().getIdLong();
             }
-            if (tChan.hasLatestMessage() && messageId == Long.parseLong(tChan.getLatestMessageId()))
-                tChan.setLastMessageId(null); // Reset latest message id as it was deleted.
+            if (tChan.hasLatestMessage() && messageId == channel.getLatestMessageIdLong())
+                tChan.setLastMessageId(-1); // Reset latest message id as it was deleted.
             api.getEventManager().handle(
                     new GuildMessageDeleteEvent(
                             api, responseNumber,
@@ -82,8 +82,8 @@ public class MessageDeleteHandler extends SocketHandler
         else if (channel instanceof PrivateChannel)
         {
             PrivateChannelImpl pChan = (PrivateChannelImpl) channel;
-            if (channel.hasLatestMessage() && messageId == Long.parseLong(channel.getLatestMessageId()))
-                pChan.setLastMessageId(null); // Reset latest message id as it was deleted.
+            if (channel.hasLatestMessage() && messageId == channel.getLatestMessageIdLong())
+                pChan.setLastMessageId(-1); // Reset latest message id as it was deleted.
             api.getEventManager().handle(
                     new PrivateMessageDeleteEvent(
                             api, responseNumber,
@@ -92,8 +92,8 @@ public class MessageDeleteHandler extends SocketHandler
         else
         {
             GroupImpl group = (GroupImpl) channel;
-            if (channel.hasLatestMessage() && messageId == Long.parseLong(channel.getLatestMessageId()))
-                group.setLastMessageId(null); // Reset latest message id as it was deleted.
+            if (channel.hasLatestMessage() && messageId == channel.getLatestMessageIdLong())
+                group.setLastMessageId(-1); // Reset latest message id as it was deleted.
             api.getEventManager().handle(
                     new GroupMessageDeleteEvent(
                             api, responseNumber,

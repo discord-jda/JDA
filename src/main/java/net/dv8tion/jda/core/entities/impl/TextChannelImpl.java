@@ -54,7 +54,7 @@ public class TextChannelImpl implements TextChannel
 
     private String name;
     private String topic;
-    private String lastMessageId;
+    private long lastMessageId;
     private int rawPosition;
 
     public TextChannelImpl(long id, Guild guild)
@@ -190,10 +190,10 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
-    public String getLatestMessageId()
+    public long getLatestMessageIdLong()
     {
-        String messageId = lastMessageId;
-        if (messageId == null)
+        final long messageId = lastMessageId;
+        if (messageId < 0)
             throw new IllegalStateException("No last message id found.");
         return messageId;
     }
@@ -201,7 +201,7 @@ public class TextChannelImpl implements TextChannel
     @Override
     public boolean hasLatestMessage()
     {
-        return lastMessageId != null;
+        return lastMessageId > 0;
     }
 
     @Override
@@ -569,7 +569,7 @@ public class TextChannelImpl implements TextChannel
         return this;
     }
 
-    public TextChannelImpl setLastMessageId(String id)
+    public TextChannelImpl setLastMessageId(long id)
     {
         this.lastMessageId = id;
         return this;

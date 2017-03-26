@@ -80,12 +80,14 @@ public class Requester
     }
 
     /**
-     * Used to execute an Request. Processes request related to provided bucket.
+     * Used to execute a Request. Processes request related to provided bucket.
      *
-     * @param apiRequest The API request that needs to be sent
-     * @return Returns non-null if the request was ratelimited. Returns a Long containing retry_after milliseconds until
-     * the request can be made again. This could either be for the Per-Route ratelimit or the Global ratelimit.
-     * Check if globalCooldown is null to determine if it was Per-Route or Global.
+     * @param  apiRequest
+     *         The API request that needs to be sent
+     *
+     * @return Non-null if the request was ratelimited. Returns a Long containing retry_after milliseconds until
+     *         the request can be made again. This could either be for the Per-Route ratelimit or the Global ratelimit.
+     *         <br>Check if globalCooldown is {@code null} to determine if it was Per-Route or Global.
      */
     public <T> Long execute(Request<T> apiRequest)
     {
@@ -112,33 +114,34 @@ public class Requester
 
         try
         {
-            //If the request has been canceled via the Future, don't execute.
-            if (apiRequest.isCanceled())
-                return null;
-
-            HttpResponse<String> response = request.asString();
-            int attempt = 1;
-            while (attempt < 4 && response.getStatus() != 429 && response.getBody() != null && response.getBody().startsWith("<"))
+            HttpResponse<String> response;
+            int attempt = 0;
+            do
             {
-                LOG.debug(String.format("Requesting %s -> %s returned HTML... retrying (attempt %d)",
+                //If the request has been canceled via the Future, don't execute.
+                if (apiRequest.isCanceled())
+                    return null;
+                response = request.asString();
+
+                if (response.getStatus() < 500)
+                    break;
+
+                attempt++;
+                LOG.debug(String.format("Requesting %s -> %s returned status %d... retrying (attempt %d)",
                         request.getHttpRequest().getHttpMethod().name(),
                         request.getHttpRequest().getUrl(),
-                        attempt));
+                        response.getStatus(), attempt));
                 try
                 {
                     Thread.sleep(50 * attempt);
                 }
                 catch (InterruptedException ignored) {}
-
-                //If the request has been canceled via the Future, don't execute.
-                if (apiRequest.isCanceled())
-                    return null;
-                response = request.asString();
-                attempt++;
             }
-            if (response.getBody() != null && response.getBody().startsWith("<"))
+            while (attempt < 3 && response.getStatus() >= 500);
+
+            if (response.getStatus() >= 500)
             {
-                //Epic failure due to cloudflare. Attempted 4 times.
+                //Epic failure from other end. Attempted 4 times.
                 return null;
             }
 

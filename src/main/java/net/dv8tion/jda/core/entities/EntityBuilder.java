@@ -604,7 +604,7 @@ public class EntityBuilder
         }
 
         return channel
-                .setLastMessageId(json.isNull("last_message_id") ? null : json.getString("last_message_id"))
+                .setLastMessageId(json.isNull("last_message_id") ? -1 : json.getLong("last_message_id"))
                 .setName(json.getString("name"))
                 .setTopic(json.isNull("topic") ? "" : json.getString("topic"))
                 .setRawPosition(json.getInt("position"));
@@ -657,7 +657,7 @@ public class EntityBuilder
 
         final long channelId = privatechat.getLong("id");
         PrivateChannelImpl priv = new PrivateChannelImpl(channelId, user)
-                .setLastMessageId(privatechat.isNull("last_message_id") ? null : privatechat.getString("last_message_id"));
+                .setLastMessageId(privatechat.isNull("last_message_id") ? -1 : privatechat.getLong("last_message_id"));
         user.setPrivateChannel(priv);
 
         if (user.isFake())
@@ -1109,7 +1109,7 @@ public class EntityBuilder
         final long ownerId = groupJson.getLong("owner_id");
         String name = !groupJson.isNull("name") ? groupJson.getString("name") : null;
         String iconId = !groupJson.isNull("icon") ? groupJson.getString("icon") : null;
-        String lastMessage = !groupJson.isNull("last_message_id") ? groupJson.getString("last_message_id") : null;
+        long lastMessage = !groupJson.isNull("last_message_id") ? groupJson.getLong("last_message_id") : -1;
 
         GroupImpl group = (GroupImpl) api.asClient().getGroupById(groupId);
         if (group == null)

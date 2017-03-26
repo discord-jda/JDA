@@ -31,7 +31,7 @@ public class PrivateChannelImpl implements PrivateChannel
     private final long id;
     private final User user;
 
-    private String lastMessageId;
+    private long lastMessageId;
     private Call currentCall = null;
     private boolean fake = false;
 
@@ -48,10 +48,10 @@ public class PrivateChannelImpl implements PrivateChannel
     }
 
     @Override
-    public String getLatestMessageId()
+    public long getLatestMessageIdLong()
     {
-        String messageId = lastMessageId;
-        if (messageId == null)
+        final long messageId = lastMessageId;
+        if (messageId < 0)
             throw new IllegalStateException("No last message id found.");
         return messageId;
     }
@@ -59,7 +59,7 @@ public class PrivateChannelImpl implements PrivateChannel
     @Override
     public boolean hasLatestMessage()
     {
-        return lastMessageId != null;
+        return lastMessageId > 0;
     }
 
     @Override
@@ -133,7 +133,7 @@ public class PrivateChannelImpl implements PrivateChannel
         return this;
     }
 
-    public PrivateChannelImpl setLastMessageId(String id)
+    public PrivateChannelImpl setLastMessageId(long id)
     {
         this.lastMessageId = id;
         return this;

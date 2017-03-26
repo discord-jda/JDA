@@ -30,13 +30,14 @@ import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.OffsetDateTime;
+import java.util.Formattable;
 import java.util.List;
 
 /**
  * Represents a Text message received from Discord.
  * <br>This represents messages received from {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannels}.
  */
-public interface Message extends ISnowflake
+public interface Message extends ISnowflake, Formattable
 {
     /**
      * A immutable list of all mentioned users. if no user was mentioned, this list is empty.

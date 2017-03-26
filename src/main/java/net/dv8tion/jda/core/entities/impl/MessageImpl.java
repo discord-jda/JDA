@@ -26,9 +26,11 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.util.Args;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -565,12 +567,7 @@ public class MessageImpl implements Message
     @Override
     public String toString()
     {
-        String content = getContent();
-        if (content.length() > 20)
-        {
-            content = content.substring(0, 17) + "...";
-        }
-        return "M:" + author.getName() + ':' + content + '(' + id + ')';
+        return String.format("M:%#s:%.20s(%s)", author, this, getId());
     }
 
     public JSONObject toJSONObject()
@@ -597,6 +594,38 @@ public class MessageImpl implements Message
     {
         if (o.isFake())
             throw new IllegalArgumentException("We are unable to use a fake " + name + " in this situation!");
+    }
+
+    @Override
+    public void formatTo(Formatter formatter, int flags, int width, int precision)
+    {
+        boolean upper = (flags & FormattableFlags.UPPERCASE) == FormattableFlags.UPPERCASE;
+        boolean leftJustified = (flags & FormattableFlags.LEFT_JUSTIFY) == FormattableFlags.LEFT_JUSTIFY;
+        boolean alt = (flags & FormattableFlags.ALTERNATE) == FormattableFlags.ALTERNATE;
+
+        String out = alt ? getRawContent() : getContent();
+
+        if (upper)
+            out = out.toUpperCase(formatter.locale());
+
+        try
+        {
+            Appendable appendable = formatter.out();
+            if (precision > -1 && out.length() > precision)
+            {
+                appendable.append(StringUtils.truncate(out, precision - 3)).append("...");
+                return;
+            }
+
+            if (leftJustified)
+                appendable.append(StringUtils.rightPad(out, width));
+            else
+                appendable.append(StringUtils.leftPad(out, width));
+        }
+        catch (IOException e)
+        {
+            throw new AssertionError(e);
+        }
     }
 
     private static class FormatToken {

@@ -24,6 +24,7 @@ import net.dv8tion.jda.core.entities.impl.MessageImpl;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.utils.IOUtil;
+import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.http.util.Args;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -33,14 +34,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Represents a Discord channel that can have {@link net.dv8tion.jda.core.entities.Message Messages} and files sent to it.
  */
-public interface MessageChannel extends ISnowflake
+public interface MessageChannel extends ISnowflake, Formattable
 {
 
     /**
@@ -56,7 +55,25 @@ public interface MessageChannel extends ISnowflake
      *
      * @return The most recent message's id
      */
-    String getLatestMessageId();
+    default String getLatestMessageId()
+    {
+        return String.valueOf(getLatestMessageIdLong());
+    }
+
+    /**
+     * The id for the most recent message sent
+     * in this current MessageChannel.
+     * <br>This should only be used if {@link #hasLatestMessage()} returns {@code true}!
+     *
+     * <p>This value is updated on each {@link net.dv8tion.jda.core.events.message.MessageReceivedEvent MessageReceivedEvent}
+     * and <u><b>will be reset to {@code null} if the message associated with this ID gets deleted</b></u>
+     *
+     * @throws java.lang.IllegalStateException
+     *         If no message id is available
+     *
+     * @return The most recent message's id
+     */
+    long getLatestMessageIdLong();
 
     /**
      * Whether this MessageChannel contains a tracked most recent
@@ -141,6 +158,48 @@ public interface MessageChannel extends ISnowflake
         Args.check(text.length() <= 2000, "Provided text for message must be less than 2000 characters in length");
 
         return sendMessage(new MessageBuilder().append(text).build());
+    }
+
+    /**
+     * Sends a formatted text message to this channel.
+     * <br>This will fail if this channel is an instance of {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and
+     * the currently logged in account does not have permissions to send a message to this channel.
+     * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
+     * use {@link net.dv8tion.jda.core.entities.TextChannel#canTalk() TextChannel.canTalk()}.
+     *
+     * <p>This method is a shortcut to {@link #sendMessage(Message)} by way of using a {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder}
+     * and using its {@link net.dv8tion.jda.core.MessageBuilder#appendFormat(String, Object...)} method.
+     * <br>For more information on how to format your input, refer to the docs of the method mentioned above.
+     *
+     * <p>For {@link net.dv8tion.jda.core.requests.ErrorResponse} information, refer to {@link #sendMessage(Message)}.
+     *
+     * @param  format
+     *         The string that should be formatted, if this is {@code null} or empty
+     *         the content of the Message would be empty and cause a builder exception.
+     * @param  args
+     *         The arguments for your format
+     *
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does
+     *         not have
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.client.exceptions.VerificationLevelException
+     *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel} and
+     *         {@link net.dv8tion.jda.core.entities.TextChannel#getGuild() TextChannel.getGuild()}{@link net.dv8tion.jda.core.entities.Guild#checkVerification() .checkVerification()}
+     *         returns false.
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided format text is {@code null}, empty or longer than 2000 characters
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
+     *         <br>The newly created Message after it has been sent to Discord.
+     */
+    default RestAction<Message> sendMessage(String format, Object... args)
+    {
+        Args.notEmpty(format, "Format");
+        return sendMessage(new MessageBuilder().appendFormat(format, args).build());
     }
 
     /**
@@ -1706,10 +1765,10 @@ public interface MessageChannel extends ISnowflake
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message}
      *         <br>The modified Message
      */
-    default RestAction<Message> editMessageById(long id, Message newContent)
+    default RestAction<Message> editMessageById(long messageId, Message newContent)
     {
-        Args.positive(id, "Message ID");
-        return editMessageById(String.valueOf(id), newContent);
+        Args.positive(messageId, "Message ID");
+        return editMessageById(String.valueOf(messageId), newContent);
     }
 
     /**
@@ -1805,9 +1864,24 @@ public interface MessageChannel extends ISnowflake
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message}
      *         <br>The modified Message
      */
-    default RestAction<Message> editMessageById(long id, MessageEmbed newEmbed)
+    default RestAction<Message> editMessageById(long messageId, MessageEmbed newEmbed)
     {
-        Args.positive(id, "Message ID");
-        return editMessageById(String.valueOf(id), newEmbed);
+        Args.positive(messageId, "Message ID");
+        return editMessageById(String.valueOf(messageId), newEmbed);
+    }
+
+    @Override
+    default void formatTo(Formatter formatter, int flags, int width, int precision)
+    {
+        boolean leftJustified = (flags & FormattableFlags.LEFT_JUSTIFY) == FormattableFlags.LEFT_JUSTIFY;
+        boolean upper = (flags & FormattableFlags.UPPERCASE) == FormattableFlags.UPPERCASE;
+        boolean alt = (flags & FormattableFlags.ALTERNATE) == FormattableFlags.ALTERNATE;
+        String out;
+
+        out = upper ?  getName().toUpperCase(formatter.locale()) : getName();
+        if (alt)
+            out = "#" + out;
+
+        MiscUtil.appendTo(formatter, width, precision, leftJustified, out);
     }
 }

@@ -93,7 +93,7 @@ public class MessageCreateHandler extends SocketHandler
                 {
                     return channel.getGuild().getIdLong();
                 }
-                channel.setLastMessageId(message.getId());
+                channel.setLastMessageId(message.getIdLong());
                 api.getEventManager().handle(
                         new GuildMessageReceivedEvent(
                                 api, responseNumber,
@@ -103,7 +103,7 @@ public class MessageCreateHandler extends SocketHandler
             case PRIVATE:
             {
                 PrivateChannelImpl channel = (PrivateChannelImpl) message.getPrivateChannel();
-                channel.setLastMessageId(message.getId());
+                channel.setLastMessageId(message.getIdLong());
                 api.getEventManager().handle(
                         new PrivateMessageReceivedEvent(
                                 api, responseNumber,
@@ -113,7 +113,7 @@ public class MessageCreateHandler extends SocketHandler
             case GROUP:
             {
                 GroupImpl channel = (GroupImpl) message.getGroup();
-                channel.setLastMessageId(message.getId());
+                channel.setLastMessageId(message.getIdLong());
                 api.getEventManager().handle(
                         new GroupMessageReceivedEvent(
                                 api, responseNumber,
