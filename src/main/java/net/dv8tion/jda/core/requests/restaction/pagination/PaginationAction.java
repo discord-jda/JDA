@@ -96,7 +96,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>> exte
 
     /**
      * Whether the cache of this PaginationAction is empty.
-     * <br>Logically equivalent to {@code recentSie() == 0}.
+     * <br>Logically equivalent to {@code recentSize() == 0}.
      *
      * @return True, if no entities have been retrieve yet.
      */

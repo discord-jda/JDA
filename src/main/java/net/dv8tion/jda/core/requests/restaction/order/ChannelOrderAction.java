@@ -30,7 +30,7 @@ import org.json.JSONObject;
 import java.util.Collection;
 
 /**
- * Implementation of {@link OrderAction OrderAction}
+ * Implementation of {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction OrderAction}
  * to modify the order of {@link net.dv8tion.jda.core.entities.Channel Channels} for a {@link net.dv8tion.jda.core.entities.Guild Guild}.
  * <br>To apply the changes you must finish the {@link net.dv8tion.jda.core.requests.RestAction RestAction}
  *
