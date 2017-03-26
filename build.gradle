@@ -56,10 +56,10 @@ dependencies {
     compile 'org.json:json:20160810'
 
     //Native Library Support
-    compile 'net.java.dev.jna:jna:4.2.2'
+    compile 'net.java.dev.jna:jna:4.4.0'
 
     //Web Connection Support
-    compile 'com.neovisionaries:nv-websocket-client:1.30'
+    compile 'com.neovisionaries:nv-websocket-client:1.31'
     compile ( 'com.mashape.unirest:unirest-java:1.4.9' ) {
         exclude group: 'junit', module: 'junit'
     }

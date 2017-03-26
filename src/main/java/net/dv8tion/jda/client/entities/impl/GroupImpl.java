@@ -41,11 +41,27 @@ public class GroupImpl implements Group
     private User owner;
     private String name;
     private String iconId;
+    private String lastMessageId;
 
     public GroupImpl(String id, JDAImpl api)
     {
         this.id = id;
         this.api = api;
+    }
+
+    @Override
+    public String getLatestMessageId()
+    {
+        String messageId = lastMessageId;
+        if (messageId == null)
+            throw new IllegalStateException("No last message id found.");
+        return messageId;
+    }
+
+    @Override
+    public boolean hasLatestMessage()
+    {
+        return lastMessageId != null;
     }
 
     @Override
@@ -190,6 +206,12 @@ public class GroupImpl implements Group
     public GroupImpl setIconId(String iconId)
     {
         this.iconId = iconId;
+        return this;
+    }
+
+    public GroupImpl setLastMessageId(String lastMessageId)
+    {
+        this.lastMessageId = lastMessageId;
         return this;
     }
 

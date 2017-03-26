@@ -15,12 +15,14 @@
  */
 package net.dv8tion.jda.core.handle;
 
+import net.dv8tion.jda.client.entities.impl.GroupImpl;
 import net.dv8tion.jda.client.events.message.group.GroupMessageReceivedEvent;
 import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageType;
-import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.entities.impl.PrivateChannelImpl;
+import net.dv8tion.jda.core.entities.impl.TextChannelImpl;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
@@ -92,11 +94,12 @@ public class MessageCreateHandler extends SocketHandler
         {
             case TEXT:
             {
-                TextChannel channel = message.getTextChannel();
+                TextChannelImpl channel = (TextChannelImpl) message.getTextChannel();
                 if (GuildLock.get(api).isLocked(channel.getGuild().getId()))
                 {
                     return channel.getGuild().getId();
                 }
+                channel.setLastMessageId(message.getId());
                 api.getEventManager().handle(
                         new GuildMessageReceivedEvent(
                                 api, responseNumber,
@@ -105,6 +108,8 @@ public class MessageCreateHandler extends SocketHandler
             }
             case PRIVATE:
             {
+                PrivateChannelImpl channel = (PrivateChannelImpl) message.getPrivateChannel();
+                channel.setLastMessageId(message.getId());
                 api.getEventManager().handle(
                         new PrivateMessageReceivedEvent(
                                 api, responseNumber,
@@ -113,6 +118,8 @@ public class MessageCreateHandler extends SocketHandler
             }
             case GROUP:
             {
+                GroupImpl channel = (GroupImpl) message.getGroup();
+                channel.setLastMessageId(message.getId());
                 api.getEventManager().handle(
                         new GroupMessageReceivedEvent(
                                 api, responseNumber,
