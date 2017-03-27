@@ -152,7 +152,7 @@ public interface JDA
      * <p><b>{@link net.dv8tion.jda.core.requests.RestAction RestAction} request times do not
      * correlate to this value!</b>
      *
-     * @return time in milliseconds between heartbeat and the heartbeat ack response
+     * @return time in milliseconds between heartbeat and the heartbeat back response
      */
     long getPing();
 
