@@ -146,7 +146,7 @@ More information can be found at the wiki page [5) Contributing](https://github.
 This project requires **Java 8**.<br>
 All dependencies are managed automatically by Gradle.
  * NV Websocket Client
-   * Version: **1.30**
+   * Version: **1.31**
    * [Github](https://github.com/TakahikoKawasaki/nv-websocket-client)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/com.neovisionaries%3Anv-websocket-client/view)
  * Unirest
@@ -166,6 +166,10 @@ All dependencies are managed automatically by Gradle.
    * [Github](https://github.com/douglascrockford/JSON-java)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/org.json%3Ajson/view)
  * JNA
-   * Version: **4.2.2**
+   * Version: **4.4.0**
    * [Github](https://github.com/java-native-access/jna)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/net.java.dev.jna%3Ajna/view)
+ * Trove4j
+   * Version: **3.0.3**
+   * [BitBucket](https://bitbucket.org/trove4j/trove)
+   * [JCenter Repository](https://bintray.com/bintray/jcenter/net.sf.trove4j%3Atrove4j/view)
