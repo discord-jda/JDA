@@ -1381,6 +1381,57 @@ public interface MessageChannel extends ISnowflake, Formattable
 
     /**
      * Attempts to edit a message by its id in this MessageChannel.
+     * <br>Shortcut for {@link net.dv8tion.jda.core.MessageBuilder#appendFormat(String, Object...)}.
+     *
+     * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
+     *     <br>Attempted to edit a message that was not sent by the currently logged in account.
+     *         Discord does not allow editing of other users' Messages!</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the
+     *         {@link net.dv8tion.jda.core.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     *         was revoked in the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * @param  messageId
+     *         The id referencing the Message that should be edited
+     * @param  format
+     *         Format String used to generate new Content
+     * @param  args
+     *         The arguments which should be used to format the given format String
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If provided {@code messageId} is {@code null} or empty.</li>
+     *             <li>If provided {@code format} is {@code null} or blank.</li>
+     *         </ul>
+     * @throws IllegalStateException
+     *         If the resulting message is either empty or too long to be sent
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If this is a TextChannel and this account does not have
+     *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message}
+     *         <br>The modified Message
+     */
+    default RestAction<Message> editMessageById(String messageId, String format, Object... args)
+    {
+        Args.notBlank(format, "Format String");
+        return editMessageById(messageId, new MessageBuilder().appendFormat(format, args).build());
+    }
+
+    /**
+     * Attempts to edit a message by its id in this MessageChannel.
      *
      * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>

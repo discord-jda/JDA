@@ -448,6 +448,13 @@ public class MessageImpl implements Message
     }
 
     @Override
+    public RestAction<Message> editMessage(String format, Object... args)
+    {
+        Args.notBlank(format, "Format String");
+        return editMessage(new MessageBuilder().appendFormat(format, args).build());
+    }
+
+    @Override
     public RestAction<Message> editMessage(Message newContent)
     {
         if (!api.getSelfUser().equals(getAuthor()))

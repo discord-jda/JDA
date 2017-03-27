@@ -122,12 +122,12 @@ public class MessageBuilder implements Appendable
     /**
      * Appends a mention to the Message.
      * <br>Typical usage would be providing an {@link net.dv8tion.jda.core.entities.IMentionable IMentionable} like
-     * {@link net.dv8tion.jda.core.entities.User User} or {@link net.dv8tion.jda.core.MessageBuilder#EVERYONE_MENTION}.
+     * {@link net.dv8tion.jda.core.entities.User User} or {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
      *
      * @param  mention
      *         the mention to append
      *
-     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
+     * @return The {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
      */
     public MessageBuilder append(IMentionable mention)
     {
