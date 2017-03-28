@@ -640,7 +640,7 @@ public interface Guild extends ISnowflake
         private final int seconds;
         private final String description;
 
-        Timeout(int seconds)
+        Timeout(int seconds, String description)
         {
             this.seconds = seconds;
             this.description = description;
@@ -831,12 +831,12 @@ public interface Guild extends ISnowflake
         UNKNOWN(-1, "Unknown");
 
         private final int key;
-        private final String description;
+        private final String level;
 
-        MFALevel(int key, String description);
+        MFALevel(int key, String level)
         {
             this.key = key;
-            this.description = description;
+            this.level = level;
         }
 
         /**
@@ -856,13 +856,8 @@ public interface Guild extends ISnowflake
          */
          public String getDescription()
          {
-            return description;
+            return level;
          }
-         
-        public int getKey()
-        {
-            return key;
-        }
 
         /**
          * Used to retrieve a {@link net.dv8tion.jda.core.entities.Guild.MFALevel MFALevel} based
