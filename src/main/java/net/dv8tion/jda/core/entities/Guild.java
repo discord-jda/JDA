@@ -631,17 +631,19 @@ public interface Guild extends ISnowflake
      */
     enum Timeout
     {
-        SECONDS_60(60),
-        SECONDS_300(300),
-        SECONDS_900(900),
-        SECONDS_1800(1800),
-        SECONDS_3600(3600);
+        SECONDS_60(60, "1min"),
+        SECONDS_300(300, "5min"),
+        SECONDS_900(900, "15min"),
+        SECONDS_1800(1800, "30min"),
+        SECONDS_3600(3600, "1hr");
 
         private final int seconds;
+        private final String description;
 
         Timeout(int seconds)
         {
             this.seconds = seconds;
+            this.description = description;
         }
 
         /**
@@ -653,6 +655,16 @@ public interface Guild extends ISnowflake
         {
             return seconds;
         }
+        
+         /**
+         * The description of this {@link Timeout} which is displayed in the client.
+         *
+         * @return String description of this Timeout
+         */
+         public String getDescription()
+         {
+            return description;
+         }
 
         /**
          * Retrieves the {@link net.dv8tion.jda.core.entities.Guild.Timeout Timeout} based on the amount of seconds requested.
@@ -814,15 +826,17 @@ public interface Guild extends ISnowflake
      */
     enum MFALevel
     {
-        NONE(0),
-        TWO_FACTOR_AUTH(1),
-        UNKNOWN(-1);
+        NONE(0, "None"),
+        TWO_FACTOR_AUTH(1, "2FA"),
+        UNKNOWN(-1, "Unknown");
 
         private final int key;
+        private final String description;
 
-        MFALevel(int key)
+        MFALevel(int key, String description);
         {
             this.key = key;
+            this.description = description;
         }
 
         /**
@@ -830,6 +844,21 @@ public interface Guild extends ISnowflake
          *
          * @return Integer id for this MFALevel.
          */
+        public int getKey()
+        {
+            return key;
+        }
+        
+        /**
+         * The description of this MFALevel which is displayed in the client.
+         *
+         * @return Integer id for this MFALevel.
+         */
+         public String getDescription()
+         {
+            return description;
+         }
+         
         public int getKey()
         {
             return key;
