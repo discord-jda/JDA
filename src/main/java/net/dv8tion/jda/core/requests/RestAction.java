@@ -110,7 +110,7 @@ import java.util.function.Consumer;
  *     action.{@link #queue(Consumer) queue(callback)};
  * </code></pre>
  *
- * <h2>Example Complete: (not recommended)</h2>
+ * <h2>Example Complete:</h2>
  * <pre><code>
  *     {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel} channel = event.getChannel();
  *     final long time = System.currentTimeMillis();
@@ -130,6 +130,9 @@ import java.util.function.Consumer;
  * <p><b>Developer Note:</b> It is generally a good practice to use asynchronous logic because blocking threads requires resources
  * which can be avoided by using callbacks over blocking operations:
  * <br>{@link #queue(Consumer)} {@literal >} {@link #complete()}
+ *
+ * <p>There is a dedicated <a href="https://github.com/DV8FromTheWorld/JDA/wiki/7)-Using-RestAction" target="_blank">wiki page</a>
+ * for RestActions that can be useful for learning.
  *
  * @param <T>
  *        The generic response type for this RestAction
