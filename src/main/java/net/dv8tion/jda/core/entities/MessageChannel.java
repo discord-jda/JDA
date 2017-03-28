@@ -24,6 +24,7 @@ import net.dv8tion.jda.core.entities.impl.MessageImpl;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.utils.IOUtil;
+import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.http.util.Args;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -33,14 +34,38 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Represents a Discord channel that can have {@link net.dv8tion.jda.core.entities.Message Messages} and files sent to it.
+ *
+ * <h1>Formattable</h1>
+ * This interface extends {@link java.util.Formattable Formattable} and can be used with a {@link java.util.Formatter Formatter}
+ * such as used by {@link String#format(String, Object...) String.format(String, Object...)}
+ * or {@link java.io.PrintStream#printf(String, Object...) PrintStream.printf(String, Object...)}.
+ *
+ * <p>This will use {@link #getName()} rather than {@link Object#toString()}!
+ * <br>Supported Features:
+ * <ul>
+ *     <li><b>Alternative</b>
+ *     <br>   - Prepends the name with {@code #}
+ *              (Example: {@code %#s} - results in <code>#{@link #getName()}</code>)</li>
+ *
+ *     <li><b>Width/Left-Justification</b>
+ *     <br>   - Ensures the size of a format
+ *              (Example: {@code %20s} - uses at minimum 20 chars;
+ *              {@code %-10s} - uses left-justified padding)</li>
+ *
+ *     <li><b>Precision</b>
+ *     <br>   - Cuts the content to the specified size
+ *              (Example: {@code %.20s})</li>
+ * </ul>
+ *
+ * <p>More information on formatting syntax can be found in the {@link java.util.Formatter format syntax documentation}!
+ * <br><b>{@link net.dv8tion.jda.core.entities.TextChannel TextChannel} is a special case which uses {@link IMentionable#getAsMention() IMentionable.getAsMention()}
+ * by default and uses the <code>#{@link #getName()}</code> format as <u>alternative</u></b>
  */
-public interface MessageChannel extends ISnowflake
+public interface MessageChannel extends ISnowflake, Formattable
 {
 
     /**
@@ -141,6 +166,48 @@ public interface MessageChannel extends ISnowflake
         Args.check(text.length() <= 2000, "Provided text for message must be less than 2000 characters in length");
 
         return sendMessage(new MessageBuilder().append(text).build());
+    }
+
+    /**
+     * Sends a formatted text message to this channel.
+     * <br>This will fail if this channel is an instance of {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and
+     * the currently logged in account does not have permissions to send a message to this channel.
+     * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
+     * use {@link net.dv8tion.jda.core.entities.TextChannel#canTalk() TextChannel.canTalk()}.
+     *
+     * <p>This method is a shortcut to {@link #sendMessage(Message)} by way of using a {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder}
+     * and using its {@link net.dv8tion.jda.core.MessageBuilder#appendFormat(String, Object...)} method.
+     * <br>For more information on how to format your input, refer to the docs of the method mentioned above.
+     *
+     * <p>For {@link net.dv8tion.jda.core.requests.ErrorResponse} information, refer to {@link #sendMessage(Message)}.
+     *
+     * @param  format
+     *         The string that should be formatted, if this is {@code null} or empty
+     *         the content of the Message would be empty and cause a builder exception.
+     * @param  args
+     *         The arguments for your format
+     *
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does
+     *         not have
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.client.exceptions.VerificationLevelException
+     *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel} and
+     *         {@link net.dv8tion.jda.core.entities.TextChannel#getGuild() TextChannel.getGuild()}{@link net.dv8tion.jda.core.entities.Guild#checkVerification() .checkVerification()}
+     *         returns false.
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided format text is {@code null}, empty or longer than 2000 characters
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
+     *         <br>The newly created Message after it has been sent to Discord.
+     */
+    default RestAction<Message> sendMessage(String format, Object... args)
+    {
+        Args.notEmpty(format, "Format");
+        return sendMessage(new MessageBuilder().appendFormat(format, args).build());
     }
 
     /**
@@ -1340,6 +1407,57 @@ public interface MessageChannel extends ISnowflake
 
     /**
      * Attempts to edit a message by its id in this MessageChannel.
+     * <br>Shortcut for {@link net.dv8tion.jda.core.MessageBuilder#appendFormat(String, Object...)}.
+     *
+     * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
+     *     <br>Attempted to edit a message that was not sent by the currently logged in account.
+     *         Discord does not allow editing of other users' Messages!</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the
+     *         {@link net.dv8tion.jda.core.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     *         was revoked in the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * @param  messageId
+     *         The id referencing the Message that should be edited
+     * @param  format
+     *         Format String used to generate new Content
+     * @param  args
+     *         The arguments which should be used to format the given format String
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If provided {@code messageId} is {@code null} or empty.</li>
+     *             <li>If provided {@code format} is {@code null} or blank.</li>
+     *         </ul>
+     * @throws IllegalStateException
+     *         If the resulting message is either empty or too long to be sent
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If this is a TextChannel and this account does not have
+     *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message}
+     *         <br>The modified Message
+     */
+    default RestAction<Message> editMessageById(String messageId, String format, Object... args)
+    {
+        Args.notBlank(format, "Format String");
+        return editMessageById(messageId, new MessageBuilder().appendFormat(format, args).build());
+    }
+
+    /**
+     * Attempts to edit a message by its id in this MessageChannel.
      *
      * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -1385,5 +1503,20 @@ public interface MessageChannel extends ISnowflake
     default RestAction<Message> editMessageById(String messageId, MessageEmbed newEmbed)
     {
         return editMessageById(messageId, new MessageBuilder().setEmbed(newEmbed).build());
+    }
+
+    @Override
+    default void formatTo(Formatter formatter, int flags, int width, int precision)
+    {
+        boolean leftJustified = (flags & FormattableFlags.LEFT_JUSTIFY) == FormattableFlags.LEFT_JUSTIFY;
+        boolean upper = (flags & FormattableFlags.UPPERCASE) == FormattableFlags.UPPERCASE;
+        boolean alt = (flags & FormattableFlags.ALTERNATE) == FormattableFlags.ALTERNATE;
+        String out;
+
+        out = upper ?  getName().toUpperCase(formatter.locale()) : getName();
+        if (alt)
+            out = "#" + out;
+
+        MiscUtil.appendTo(formatter, width, precision, leftJustified, out);
     }
 }

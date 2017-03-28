@@ -25,8 +25,11 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.utils.MiscUtil;
 import org.json.JSONObject;
 
+import java.util.FormattableFlags;
+import java.util.Formatter;
 import java.util.List;
 
 public class UserImpl implements User
@@ -229,6 +232,24 @@ public class UserImpl implements User
     {
         this.fake = fake;
         return this;
+    }
+
+    @Override
+    public void formatTo(Formatter formatter, int flags, int width, int precision)
+    {
+        boolean alt = (flags & FormattableFlags.ALTERNATE) == FormattableFlags.ALTERNATE;
+        boolean upper = (flags & FormattableFlags.UPPERCASE) == FormattableFlags.UPPERCASE;
+        boolean leftJustified = (flags & FormattableFlags.LEFT_JUSTIFY) == FormattableFlags.LEFT_JUSTIFY;
+
+        String out;
+        if (!alt)
+            out = getAsMention();
+        else if (upper)
+            out = String.format(formatter.locale(), "%S#%s", getName(), getDiscriminator());
+        else
+            out = String.format(formatter.locale(), "%s#%s", getName(), getDiscriminator());
+
+        MiscUtil.appendTo(formatter, width, precision, leftJustified, out);
     }
 
     public enum DefaultAvatar

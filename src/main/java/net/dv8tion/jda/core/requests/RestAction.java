@@ -27,7 +27,6 @@ import net.dv8tion.jda.core.utils.SimpleLog;
 import org.apache.http.util.Args;
 
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 /**
@@ -625,21 +624,5 @@ public abstract class RestAction<T>
 
         @Override
         protected void handleResponse(Response response, Request request) { }
-    }
-
-    protected static class RestActionThreadFactory implements ThreadFactory
-    {
-        private final AtomicInteger threadCount = new AtomicInteger(1);
-
-        public RestActionThreadFactory() { }
-
-        @Override
-        public Thread newThread(Runnable r)
-        {
-            final Thread thread = new Thread(r, "RestActionThread " + threadCount.getAndIncrement());
-            thread.setDaemon(true);
-
-            return thread;
-        }
     }
 }

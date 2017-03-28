@@ -30,13 +30,38 @@ import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.OffsetDateTime;
+import java.util.Formattable;
 import java.util.List;
 
 /**
  * Represents a Text message received from Discord.
  * <br>This represents messages received from {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannels}.
+ *
+ * <h1>Formattable</h1>
+ * This interface extends {@link java.util.Formattable Formattable} and can be used with a {@link java.util.Formatter Formatter}
+ * such as used by {@link String#format(String, Object...) String.format(String, Object...)}
+ * or {@link java.io.PrintStream#printf(String, Object...) PrintStream.printf(String, Object...)}.
+ *
+ * <p>This will use {@link #getContent()} rather than {@link Object#toString()}!
+ * <br>Supported Features:
+ * <ul>
+ *     <li><b>Alternative</b>
+ *     <br>   - Using {@link #getRawContent()}
+ *              (Example: {@code %#s} - uses {@link #getContent()})</li>
+ *
+ *     <li><b>Width/Left-Justification</b>
+ *     <br>   - Ensures the size of a format
+ *              (Example: {@code %20s} - uses at minimum 20 chars;
+ *              {@code %-10s} - uses left-justified padding)</li>
+ *
+ *     <li><b>Precision</b>
+ *     <br>   - Cuts the content to the specified size
+ *              (replacing last 3 chars with {@code ...}; Example: {@code %.20s})</li>
+ * </ul>
+ *
+ * <p>More information on formatting syntax can be found in the {@link java.util.Formatter format syntax documentation}!
  */
-public interface Message extends ISnowflake
+public interface Message extends ISnowflake, Formattable
 {
     /**
      * A immutable list of all mentioned users. if no user was mentioned, this list is empty.
@@ -337,8 +362,45 @@ public interface Message extends ISnowflake
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
      *     <br>The {@link net.dv8tion.jda.core.entities.Message Message} with the updated content
      */
-    RestAction<Message> editMessage(MessageEmbed newContent); 
-    
+    RestAction<Message> editMessage(MessageEmbed newContent);
+
+    /**
+     * Edits this Message's content to the provided {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed}.
+     * <br>Shortcut for {@link net.dv8tion.jda.core.MessageBuilder#appendFormat(String, Object...)}.
+     * <br><b>Messages can only be edited by the account that sent them!</b>.
+     *
+     * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The edit was attempted after the account lost access to the
+     *         {@link net.dv8tion.jda.core.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *         typically due to being kicked or removed.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The edit was attempted after the account lost {@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE} in
+     *         the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The edit was attempted after the Message had been deleted.</li>
+     * </ul>
+     *
+     * @param  format
+     *         Format String used to generate the Message's content via
+     *         {@link net.dv8tion.jda.core.MessageBuilder#appendFormat(String, Object...)} specification
+     * @param  args
+     *         The arguments to use in order to be converted in the format string
+     *
+     * @throws IllegalArgumentException
+     *         If the provided format String is {@code null} or blank, or if
+     *         the created message exceeds the 2000 character limit
+     * @throws IllegalStateException
+     *         If the message attempting to be edited was not created by the currently logged in account
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
+     *     <br>The {@link net.dv8tion.jda.core.entities.Message Message} with the updated content
+     */
+    RestAction<Message> editMessage(String format, Object... args);
+
     /**
      * Edits this Message's content to the provided {@link net.dv8tion.jda.core.entities.Message Message}.
      * <br><b>Messages can only be edited by the account that sent them!</b>.
