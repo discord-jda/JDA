@@ -858,11 +858,6 @@ public interface Guild extends ISnowflake
          {
             return description;
          }
-         
-        public int getKey()
-        {
-            return key;
-        }
 
         /**
          * Used to retrieve a {@link net.dv8tion.jda.core.entities.Guild.MFALevel MFALevel} based
