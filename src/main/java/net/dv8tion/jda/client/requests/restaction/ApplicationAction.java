@@ -63,7 +63,7 @@ public class ApplicationAction extends RestAction<Application>
     }
 
     @Override
-    protected void handleResponse(final Response response, final Request request)
+    protected void handleResponse(final Response response, final Request<Application> request)
     {
         if (response.isOk())
         {

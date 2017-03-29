@@ -52,7 +52,7 @@ public class JDABotImpl implements JDABot
         return new RestAction<ApplicationInfo>(getJDA(), route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<ApplicationInfo> request)
             {
                 if (!response.isOk())
                 {

@@ -58,7 +58,7 @@ public class AuthorizedApplicationImpl implements AuthorizedApplication
         return new RestAction<Void>(this.api, route, null)
         {
             @Override
-            protected void handleResponse(final Response response, final Request request)
+            protected void handleResponse(final Response response, final Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);

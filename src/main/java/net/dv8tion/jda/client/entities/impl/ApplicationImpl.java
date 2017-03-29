@@ -66,7 +66,7 @@ public class ApplicationImpl implements Application
         return new RestAction<Application.Bot>(this.api, Route.Applications.CREATE_BOT.compile(getId()), null)
         {
             @Override
-            protected void handleResponse(final Response response, final Request request)
+            protected void handleResponse(final Response response, final Request<Application.Bot> request)
             {
                 if (response.isOk())
                     request.onSuccess(ApplicationImpl.this.bot = new BotImpl(response.getObject()));
@@ -82,7 +82,7 @@ public class ApplicationImpl implements Application
         return new RestAction<Void>(this.api, Route.Applications.DELETE_APPLICATION.compile(getId()), null)
         {
             @Override
-            protected void handleResponse(final Response response, final Request request)
+            protected void handleResponse(final Response response, final Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
@@ -222,7 +222,7 @@ public class ApplicationImpl implements Application
         return new RestAction<Application>(this.api, route, null)
         {
             @Override
-            protected void handleResponse(final Response response, final Request request)
+            protected void handleResponse(final Response response, final Request<Application> request)
             {
                 if (response.isOk())
                     request.onSuccess(ApplicationImpl.this.updateFromJson(response.getObject()));
@@ -395,7 +395,7 @@ public class ApplicationImpl implements Application
             return new RestAction<Bot>(getJDA(), route, null)
             {
                 @Override
-                protected void handleResponse(final Response response, final Request request)
+                protected void handleResponse(final Response response, final Request<Bot> request)
                 {
                     if (response.isOk())
                         request.onSuccess(BotImpl.this.updateFromJson(response.getObject()));

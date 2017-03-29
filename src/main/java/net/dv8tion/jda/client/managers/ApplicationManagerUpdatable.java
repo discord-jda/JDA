@@ -352,7 +352,7 @@ public class ApplicationManagerUpdatable
         return new RestAction<Void>(this.getJDA(), route, body)
         {
             @Override
-            protected void handleResponse(final Response response, final Request request)
+            protected void handleResponse(final Response response, final Request<Void> request)
             {
                 if (response.isOk())
                 {

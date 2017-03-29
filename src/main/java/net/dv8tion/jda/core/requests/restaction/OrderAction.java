@@ -46,7 +46,7 @@ import java.util.List;
  *
  * @since 3.0
  */
-public abstract class OrderAction<T, M extends OrderAction> extends RestAction<Void>
+public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAction<Void>
 {
     protected final JDA api;
     protected final List<T> orderList;
