@@ -66,11 +66,15 @@ import java.util.function.Consumer;
  *     <br>Example: {@code queueAfter(1, TimeUnit.SECONDS);}
  *     <br>will call {@link #queue()} <b>1 second</b> later.</li>
  *
- *     <li>{@link #completeAfter(long, TimeUnit)}
+ *     <li>{@link #submitAfter(long, TimeUnit)}
  *     <br>This returns a {@link java.util.concurrent.ScheduledFuture ScheduledFuture} which
  *         can be joined into the current Thread using {@link java.util.concurrent.ScheduledFuture#get()}
- *     <br>The blocking call to {@code completeAfter(delay, unit).get()} will return
+ *     <br>The blocking call to {@code submitAfter(delay, unit).get()} will return
  *         the value processed by a call to {@link #complete()}</li>
+ *
+ *     <li>{@link #completeAfter(long, TimeUnit)}
+ *     <br>This operation simply sleeps for the given delay and will call {@link #complete()}
+ *         once finished sleeping.</li>
  * </ul>
  *
  * <p>All of those operations provide overloads for optional parameters such as a custom
@@ -276,7 +280,7 @@ public abstract class RestAction<T>
      *
      * <p><b>This might throw {@link java.lang.RuntimeException RuntimeExceptions}</b>
      *
-     * @return The never-null response value
+     * @return The response value
      */
     public T complete()
     {
@@ -305,7 +309,7 @@ public abstract class RestAction<T>
      *         If we were rate limited and the {@code shouldQueue} is false
      *         <br>Use {@link #complete()} to avoid this Exception.
      *
-     * @return The never-null response value
+     * @return The response value
      */
     public T complete(boolean shouldQueue) throws RateLimitedException
     {
@@ -340,7 +344,7 @@ public abstract class RestAction<T>
      * <p>The global JDA {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService}
      * is used for this operation.
      * <br>You can change the core pool size for this Executor through {@link net.dv8tion.jda.core.JDABuilder#setCorePoolSize(int) JDABuilder.setCorePoolSize(int)}
-     * or you can provide your own Executor using {@link #completeAfter(long, java.util.concurrent.TimeUnit, java.util.concurrent.ScheduledExecutorService)}!
+     * or you can provide your own Executor using {@link #submitAfter(long, java.util.concurrent.TimeUnit, java.util.concurrent.ScheduledExecutorService)}!
      *
      * @param  delay
      *         The delay after which this computation should be executed, negative to execute immediately
@@ -353,9 +357,9 @@ public abstract class RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture} representing the
      *         delayed operation
      */
-    public ScheduledFuture<T> completeAfter(long delay, TimeUnit unit)
+    public ScheduledFuture<T> submitAfter(long delay, TimeUnit unit)
     {
-        return completeAfter(delay, unit, api.pool);
+        return submitAfter(delay, unit, api.pool);
     }
 
     /**
@@ -382,11 +386,43 @@ public abstract class RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
      */
-    public ScheduledFuture<T> completeAfter(long delay, TimeUnit unit, ScheduledExecutorService executor)
+    public ScheduledFuture<T> submitAfter(long delay, TimeUnit unit, ScheduledExecutorService executor)
     {
         Args.notNull(executor, "Scheduler");
         Args.notNull(unit, "TimeUnit");
         return executor.schedule((Callable<T>) this::complete, delay, unit);
+    }
+
+    /**
+     * Blocks the current Thread for the specified delay and calls {@link #complete()}
+     * when delay has been reached.
+     * <br>If the specified delay is negative this action will execute immediately. (see: {@link TimeUnit#sleep(long)})
+     *
+     * @param  delay
+     *         The delay after which to execute a call to {@link #complete()}
+     * @param  unit
+     *         The {@link java.util.concurrent.TimeUnit TimeUnit} which should be used
+     *         (this will use {@link java.util.concurrent.TimeUnit#sleep(long) unit.sleep(delay)})
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the specified {@link java.util.concurrent.TimeUnit TimeUnit} is {@code null}
+     * @throws java.lang.RuntimeException
+     *         If the sleep operation is interrupted
+     *
+     * @return The response value
+     */
+    public T completeAfter(long delay, TimeUnit unit)
+    {
+        Args.notNull(unit, "TimeUnit");
+        try
+        {
+            unit.sleep(delay);
+            return complete();
+        }
+        catch (InterruptedException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
