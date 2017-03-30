@@ -81,7 +81,7 @@ public class ReactionPaginationAction extends PaginationAction<User, ReactionPag
     {
         String after = null;
         String limit = String.valueOf(getLimit());
-        if (recentSize() > 0)
+        if (!isEmpty())
             after = getLast().getId();
 
         String channel = reaction.getChannel().getId();

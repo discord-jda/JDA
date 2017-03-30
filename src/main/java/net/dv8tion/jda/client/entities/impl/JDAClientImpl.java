@@ -193,7 +193,7 @@ public class JDAClientImpl implements JDAClient
     {
         Args.notNull(guild, "Guild");
         if (!guild.isAvailable())
-            throw new GuildUnavailableException();
+            throw new GuildUnavailableException("Cannot retrieve recent mentions for this Guild due to it being temporarily unavailable!");
         return new MentionPaginationAction(guild);
     }
 

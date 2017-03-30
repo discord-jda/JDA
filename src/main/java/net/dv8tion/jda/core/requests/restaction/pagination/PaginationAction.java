@@ -87,18 +87,18 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>> exte
     /**
      * The current amount of cached entities for this PaginationAction
      *
-     * @return int size of cached entities
+     * @return int size of currently cached entities
      */
-    public int recentSize()
+    public int cacheSize()
     {
         return cached.size();
     }
 
     /**
      * Whether the cache of this PaginationAction is empty.
-     * <br>Logically equivalent to {@code recentSize() == 0}.
+     * <br>Logically equivalent to {@code cacheSize() == 0}.
      *
-     * @return True, if no entities have been retrieve yet.
+     * @return True, if no entities have been retrieved yet.
      */
     public boolean isEmpty()
     {
@@ -110,9 +110,12 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>> exte
      * <br>Every {@link net.dv8tion.jda.core.requests.RestAction RestAction} success
      * adds to this List. (Thread-Safe due to {@link java.util.concurrent.CopyOnWriteArrayList CopyOnWriteArrayList})
      *
+     * <p><b>This <u>does not</u> contain all entities for the paginated endpoint unless the pagination has reached an end!</b>
+     * <br>It only contains those entities which already have been retrieved.
+     *
      * @return Immutable {@link java.util.List List} containing all currently cached entities for this PaginationAction
      */
-    public List<T> getRecent()
+    public List<T> getCached()
     {
         return Collections.unmodifiableList(cached);
     }
