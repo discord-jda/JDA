@@ -32,8 +32,6 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -1019,15 +1017,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Args.notEmpty(unicode, "Provided Unicode");
         Args.containsNoBlanks(unicode, "Provided Unicode");
 
-        String encoded;
-        try
-        {
-            encoded = URLEncoder.encode(unicode, "UTF-8");
-        }
-        catch (UnsupportedEncodingException e)
-        {
-            throw new RuntimeException(e); //thanks JDK 1.4
-        }
+        String encoded = MiscUtil.encodeUTF8(unicode);
         Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, encoded);
         return new RestAction<Void>(getJDA(), route, null)
         {

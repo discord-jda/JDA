@@ -78,7 +78,7 @@ public abstract class RestAction<T>
     };
 
     protected final JDAImpl api;
-    protected final Route.CompiledRoute route;
+    protected Route.CompiledRoute route;
     protected Object data;
 
     /**
@@ -152,6 +152,7 @@ public abstract class RestAction<T>
     public void queue(Consumer<T> success, Consumer<Throwable> failure)
     {
         finalizeData();
+        finalizeRoute();
         if (success == null)
             success = DEFAULT_SUCCESS;
         if (failure == null)
@@ -188,6 +189,7 @@ public abstract class RestAction<T>
     public Future<T> submit(boolean shouldQueue)
     {
         finalizeData();
+        finalizeRoute();
         return new RequestFuture<T>(this, shouldQueue);
     }
 
@@ -252,6 +254,8 @@ public abstract class RestAction<T>
     }
 
     protected void finalizeData() { }
+
+    protected void finalizeRoute() { }
 
     protected abstract void handleResponse(Response response, Request request);
 

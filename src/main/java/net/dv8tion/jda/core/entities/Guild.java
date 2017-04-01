@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.core.entities;
 
+import net.dv8tion.jda.client.requests.restaction.pagination.MentionPaginationAction;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.managers.AudioManager;
@@ -465,6 +466,25 @@ public interface Guild extends ISnowflake
      * @return The controller for this Guild.
      */
     GuildController getController();
+
+    /**
+     * Retrieves the recent mentions for the currently logged in
+     * client account in this Guild.
+     *
+     * <p>The returned {@link net.dv8tion.jda.client.requests.restaction.pagination.MentionPaginationAction MentionPaginationAction}
+     * allows to filter by whether the messages mention everyone or a role.
+     *
+     * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
+     *         If the currently logged in account is not from {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}
+     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
+     *         If this Guild is not currently {@link #isAvailable() available}
+     *
+     * @return {@link net.dv8tion.jda.client.requests.restaction.pagination.MentionPaginationAction MentionPaginationAction}
+     *
+     * @see    net.dv8tion.jda.core.JDA#asClient()
+     * @see    net.dv8tion.jda.client.JDAClient#getRecentMentions(Guild)
+     */
+    MentionPaginationAction getRecentMentions();
 
     /**
      * Used to leave a Guild. If the currently logged in account is the owner of this guild ({@link net.dv8tion.jda.core.entities.Guild#getOwner()})

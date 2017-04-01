@@ -18,8 +18,10 @@ package net.dv8tion.jda.core.utils;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.UnsupportedEncodingException;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.net.URLEncoder;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
@@ -94,6 +96,30 @@ public class MiscUtil
     public static String getDateTimeString(OffsetDateTime time)
     {
         return time.format(dtFormatter);
+    }
+
+    /**
+     * URL-Encodes the given String to UTF-8 after
+     * form-data specifications (space {@literal ->} +)
+     *
+     * @param  chars
+     *         The characters to encode
+     *
+     * @throws java.lang.RuntimeException
+     *         If somehow the encoding fails
+     *
+     * @return The encoded String
+     */
+    public static String encodeUTF8(String chars)
+    {
+        try
+        {
+            return URLEncoder.encode(chars, "UTF-8");
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            throw new RuntimeException(e); // thanks JDK 1.4
+        }
     }
 
     /**
