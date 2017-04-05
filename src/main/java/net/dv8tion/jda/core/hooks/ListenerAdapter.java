@@ -94,6 +94,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onDisconnect(DisconnectEvent event) {}
     public void onShutdown(ShutdownEvent event) {}
     public void onStatusChange(StatusChangeEvent event) {}
+    public void onException(ExceptionEvent event) {}
 
     //User Events
     public void onUserNameUpdate(UserNameUpdateEvent event) {}
@@ -299,6 +300,8 @@ public abstract class ListenerAdapter implements EventListener
             onShutdown((ShutdownEvent) event);
         else if (event instanceof StatusChangeEvent)
             onStatusChange((StatusChangeEvent) event);
+        else if (event instanceof ExceptionEvent)
+            onException((ExceptionEvent) event);
 
         //Message Events
         //Guild (TextChannel) Message Events

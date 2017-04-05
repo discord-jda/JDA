@@ -687,20 +687,7 @@ public class JDAImpl implements JDA
         {
             final Thread thread = new Thread(r, "JDA-Thread " + getIdentifierString());
             thread.setDaemon(true);
-            thread.setUncaughtExceptionHandler(UncaughtExceptionHandler.INSTANCE);
             return thread;
-        }
-    }
-
-    private static class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
-    {
-        private static UncaughtExceptionHandler INSTANCE = new UncaughtExceptionHandler();
-
-        @Override
-        public void uncaughtException(Thread t, Throwable e)
-        {
-            LOG.fatal(String.format("Uncaught Exception in JDA Schedule Thread [%s]", t.getName()));
-            LOG.log(e);
         }
     }
 }

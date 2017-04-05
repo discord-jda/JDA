@@ -32,11 +32,6 @@ import net.dv8tion.jda.core.requests.ratelimit.BotRateLimiter;
 import net.dv8tion.jda.core.requests.ratelimit.ClientRateLimiter;
 import net.dv8tion.jda.core.utils.SimpleLog;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
-
 public class Requester
 {
     public static final SimpleLog LOG = SimpleLog.getLog("JDARequester");
@@ -45,9 +40,6 @@ public class Requester
 
     private final JDAImpl api;
     private final RateLimiter rateLimiter;
-
-    // use this for callback computation rather than global pool to avoid deadlocks
-    final ExecutorService pool = Executors.newCachedThreadPool(new ResponseHandlerThreadFactory());
 
     public Requester(JDA api)
     {
@@ -174,7 +166,6 @@ public class Requester
 
     public void shutdown()
     {
-        pool.shutdown();
         rateLimiter.shutdown();
     }
 
@@ -220,19 +211,5 @@ public class Requester
         request.header("user-agent", USER_AGENT);
         request.header("Accept-Encoding", "gzip");
         return baseRequest;
-    }
-
-    private static final class ResponseHandlerThreadFactory implements ThreadFactory
-    {
-
-        private final AtomicInteger count = new AtomicInteger(1);
-
-        @Override
-        public Thread newThread(Runnable r)
-        {
-            Thread t = new Thread(r, "ResponseHandlerThread #" + count.getAndIncrement());
-            t.setDaemon(true);
-            return t;
-        }
     }
 }

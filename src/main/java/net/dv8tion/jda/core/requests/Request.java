@@ -17,6 +17,7 @@
 package net.dv8tion.jda.core.requests;
 
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 
@@ -45,7 +46,7 @@ public class Request<T>
 
     public void onSuccess(T successObj)
     {
-        api.getRequester().pool.execute(() ->
+        api.pool.execute(() ->
         {
             try
             {
@@ -55,6 +56,8 @@ public class Request<T>
             {
                 RestAction.LOG.fatal("Encountered error while processing success consumer");
                 RestAction.LOG.log(t);
+                if (t instanceof Error)
+                    api.getEventManager().handle(new ExceptionEvent(api, t, true));
             }
         });
     }
@@ -74,16 +77,20 @@ public class Request<T>
 
     public void onFailure(Throwable failException)
     {
-        api.getRequester().pool.execute(() ->
+        api.pool.execute(() ->
         {
             try
             {
                 onFailure.accept(failException);
+                if (failException instanceof Error)
+                    api.getEventManager().handle(new ExceptionEvent(api, failException, false));
             }
             catch (Throwable t)
             {
                 RestAction.LOG.fatal("Encountered error while processing failure consumer");
                 RestAction.LOG.log(t);
+                if (t instanceof Error)
+                    api.getEventManager().handle(new ExceptionEvent(api, t, true));
             }
         });
     }

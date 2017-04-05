@@ -761,7 +761,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     @Override
     public void handleCallbackError(WebSocket websocket, Throwable cause)
     {
-//        LOG.log(cause);
+        api.getEventManager().handle(new ExceptionEvent(api, cause, false));
     }
 
     public void setChunkingAndSyncing(boolean active)
