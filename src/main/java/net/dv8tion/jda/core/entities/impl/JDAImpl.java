@@ -73,6 +73,7 @@ public class JDAImpl implements JDA
     protected final PresenceImpl presence;
     protected final JDAClient jdaClient;
     protected final JDABot jdaBot;
+    protected final int maxReconnectDelay;
 
     protected WebSocketClient client;
     protected Requester requester;
@@ -91,7 +92,7 @@ public class JDAImpl implements JDA
 
     public JDAImpl(AccountType accountType, HttpHost proxy, WebSocketFactory wsFactory,
                    boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled,
-                   int corePoolSize)
+                   int corePoolSize, int maxReconnectDelay)
     {
         this.presence = new PresenceImpl(this);
         this.accountType = accountType;
@@ -103,6 +104,7 @@ public class JDAImpl implements JDA
         this.useShutdownHook = useShutdownHook;
         this.bulkDeleteSplittingEnabled = bulkDeleteSplittingEnabled;
         this.pool = Executors.newScheduledThreadPool(corePoolSize, new JDAThreadFactory());
+        this.maxReconnectDelay = maxReconnectDelay;
 
         this.jdaClient = accountType == AccountType.CLIENT ? new JDAClientImpl(this) : null;
         this.jdaBot = accountType == AccountType.BOT ? new JDABotImpl(this) : null;
@@ -534,6 +536,12 @@ public class JDAImpl implements JDA
     public long getResponseTotal()
     {
         return responseTotal;
+    }
+
+    @Override
+    public int getMaxReconnectDelay()
+    {
+        return maxReconnectDelay;
     }
 
     @Override
