@@ -24,9 +24,9 @@ import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.requests.restaction.CompletedFuture;
 import net.dv8tion.jda.core.requests.restaction.RequestFuture;
 import net.dv8tion.jda.core.utils.SimpleLog;
+import org.apache.http.util.Args;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 import java.util.function.Consumer;
 
 /**
@@ -54,6 +54,88 @@ import java.util.function.Consumer;
  *
  * The most efficient way to use a RestAction is by using the asynchronous {@link #queue()} operations.
  * <br>These allow users to provide success and failure callbacks which will be called at a convenient time.
+ *
+ * <h2>Planning Execution</h2>
+ * To <u>schedule</u> a RestAction we provide both {@link #queue()} and {@link #complete()} versions that
+ * will be executed by a {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} after a
+ * specified delay:
+ * <ul>
+ *     <li>{@link #queueAfter(long, TimeUnit)}
+ *     <br>Schedules a call to {@link #queue()} with default callback {@link java.util.function.Consumer Consumers} to be executed after the specified {@code delay}.
+ *     <br>The {@link java.util.concurrent.TimeUnit TimeUnit} is used to convert the provided long into a delay time.
+ *     <br>Example: {@code queueAfter(1, TimeUnit.SECONDS);}
+ *     <br>will call {@link #queue()} <b>1 second</b> later.</li>
+ *
+ *     <li>{@link #submitAfter(long, TimeUnit)}
+ *     <br>This returns a {@link java.util.concurrent.ScheduledFuture ScheduledFuture} which
+ *         can be joined into the current Thread using {@link java.util.concurrent.ScheduledFuture#get()}
+ *     <br>The blocking call to {@code submitAfter(delay, unit).get()} will return
+ *         the value processed by a call to {@link #complete()}</li>
+ *
+ *     <li>{@link #completeAfter(long, TimeUnit)}
+ *     <br>This operation simply sleeps for the given delay and will call {@link #complete()}
+ *         once finished sleeping.</li>
+ * </ul>
+ *
+ * <p>All of those operations provide overloads for optional parameters such as a custom
+ * {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} instead of using the default
+ * global JDA executor. Specifically {@link #queueAfter(long, TimeUnit)} has overloads
+ * to provide a success and/or failure callback due to the returned {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
+ * not being able to provide the response values of the {@link #queue()} callbacks.
+ *
+ * <h1>Using RestActions</h1>
+ * The most common way to use a RestAction is not using the returned value.
+ * <br>For instance sending messages usually means you will not require to view the message once
+ * it was sent. Thus we can simply use the <b>asynchronous</b> {@link #queue()} operation which will
+ * be executed on a rate limit worker thread in the background, without blocking your current thread:
+ * <pre><code>
+ *      {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel} channel = event.getChannel();
+ *     {@literal RestAction<Message>} action = channel.sendMessage("Hello World");
+ *      action.{@link #queue() queue()}; // Execute the rest action asynchronously
+ * </code></pre>
+ *
+ * <p>Sometimes it is important to access the response value, possibly to modify it later.
+ * <br>Now we have two options to actually access the response value, either using an asynchronous
+ * callback {@link java.util.function.Consumer Consumer} or the (not recommended) {@link #complete()} which will block
+ * the current thread until the response has been processed and joins with the current thread.
+ *
+ * <h2>Example Queue: (recommended)</h2>
+ * <pre><code>
+ *     {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel} channel = event.getChannel();
+ *     final long time = System.currentTimeMillis();
+ *    {@literal RestAction<Message>} action = channel.sendMessage("Calculating Response Time...");
+ *     {@link java.util.function.Consumer Consumer}{@literal <Message>} callback = (message) {@literal ->  {
+ *        Message m = message; // ^This is a lambda parameter!^
+ *        m.editMessage("Response Time: " + (System.currentTimeMillis() - time) + "ms").queue();
+ *        // End with queue() to not block the callback thread!
+ *      }};
+ *     // You can also inline this with the queue parameter: action.queue(m {@literal ->} m.editMessage(...).queue());
+ *     action.{@link #queue(Consumer) queue(callback)};
+ * </code></pre>
+ *
+ * <h2>Example Complete:</h2>
+ * <pre><code>
+ *     {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel} channel = event.getChannel();
+ *     final long time = System.currentTimeMillis();
+ *    {@literal RestAction<Message>} action = channel.sendMessage("Calculating Response Time...");
+ *     Message message = action.{@link #complete() complete()};
+ *     message.editMessage("Response Time: " + (System.currentTimeMillis() - time) + "ms").queue();
+ *     // End with {@link #queue() queue()} to not block the callback thread!
+ * </code></pre>
+ *
+ * <h2>Example Planning:</h2>
+ * <pre><code>
+ *     {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel} channel = event.getChannel();
+ *    {@literal RestAction<Message>} action = channel.sendMessage("This message will destroy itself in 5 seconds!");
+ *     action.queue((message) {@literal ->} message.delete().{@link #queueAfter(long, TimeUnit) queueAfter(5, TimeUnit.SECONDS)});
+ * </code></pre>
+ *
+ * <p><b>Developer Note:</b> It is generally a good practice to use asynchronous logic because blocking threads requires resources
+ * which can be avoided by using callbacks over blocking operations:
+ * <br>{@link #queue(Consumer)} {@literal >} {@link #complete()}
+ *
+ * <p>There is a dedicated <a href="https://github.com/DV8FromTheWorld/JDA/wiki/7)-Using-RestAction" target="_blank">wiki page</a>
+ * for RestActions that can be useful for learning.
  *
  * @param <T>
  *        The generic response type for this RestAction
@@ -200,7 +282,7 @@ public abstract class RestAction<T>
      *
      * <p><b>This might throw {@link java.lang.RuntimeException RuntimeExceptions}</b>
      *
-     * @return The never-null response value
+     * @return The response value
      */
     public T complete()
     {
@@ -229,7 +311,7 @@ public abstract class RestAction<T>
      *         If we were rate limited and the {@code shouldQueue} is false
      *         <br>Use {@link #complete()} to avoid this Exception.
      *
-     * @return The never-null response value
+     * @return The response value
      */
     public T complete(boolean shouldQueue) throws RateLimitedException
     {
@@ -251,6 +333,290 @@ public abstract class RestAction<T>
             }
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Schedules a call to {@link #complete()} to be executed after the specified {@code delay}.
+     * <br>This is an <b>asynchronous</b> operation that will return a
+     * {@link java.util.concurrent.ScheduledFuture ScheduledFuture} representing the task.
+     *
+     * <p>The returned Future will provide the return type of a {@link #complete()} operation when
+     * received through the <b>blocking</b> call to {@link java.util.concurrent.Future#get()}!
+     *
+     * <p>The global JDA {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService}
+     * is used for this operation.
+     * <br>You can change the core pool size for this Executor through {@link net.dv8tion.jda.core.JDABuilder#setCorePoolSize(int) JDABuilder.setCorePoolSize(int)}
+     * or you can provide your own Executor using {@link #submitAfter(long, java.util.concurrent.TimeUnit, java.util.concurrent.ScheduledExecutorService)}!
+     *
+     * @param  delay
+     *         The delay after which this computation should be executed, negative to execute immediately
+     * @param  unit
+     *         The {@link java.util.concurrent.TimeUnit TimeUnit} to convert the specified {@code delay}
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided TimeUnit is {@code null}
+     *
+     * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture} representing the
+     *         delayed operation
+     */
+    public ScheduledFuture<T> submitAfter(long delay, TimeUnit unit)
+    {
+        return submitAfter(delay, unit, api.pool);
+    }
+
+    /**
+     * Schedules a call to {@link #complete()} to be executed after the specified {@code delay}.
+     * <br>This is an <b>asynchronous</b> operation that will return a
+     * {@link java.util.concurrent.ScheduledFuture ScheduledFuture} representing the task.
+     *
+     * <p>The returned Future will provide the return type of a {@link #complete()} operation when
+     * received through the <b>blocking</b> call to {@link java.util.concurrent.Future#get()}!
+     *
+     * <p>The specified {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} is used for this operation.
+     *
+     * @param  delay
+     *         The delay after which this computation should be executed, negative to execute immediately
+     * @param  unit
+     *         The {@link java.util.concurrent.TimeUnit TimeUnit} to convert the specified {@code delay}
+     * @param  executor
+     *         The Non-null {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} that should be used
+     *         to schedule this operation
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided TimeUnit or ScheduledExecutorService is {@code null}
+     *
+     * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
+     *         representing the delayed operation
+     */
+    public ScheduledFuture<T> submitAfter(long delay, TimeUnit unit, ScheduledExecutorService executor)
+    {
+        Args.notNull(executor, "Scheduler");
+        Args.notNull(unit, "TimeUnit");
+        return executor.schedule((Callable<T>) this::complete, delay, unit);
+    }
+
+    /**
+     * Blocks the current Thread for the specified delay and calls {@link #complete()}
+     * when delay has been reached.
+     * <br>If the specified delay is negative this action will execute immediately. (see: {@link TimeUnit#sleep(long)})
+     *
+     * @param  delay
+     *         The delay after which to execute a call to {@link #complete()}
+     * @param  unit
+     *         The {@link java.util.concurrent.TimeUnit TimeUnit} which should be used
+     *         (this will use {@link java.util.concurrent.TimeUnit#sleep(long) unit.sleep(delay)})
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the specified {@link java.util.concurrent.TimeUnit TimeUnit} is {@code null}
+     * @throws java.lang.RuntimeException
+     *         If the sleep operation is interrupted
+     *
+     * @return The response value
+     */
+    public T completeAfter(long delay, TimeUnit unit)
+    {
+        Args.notNull(unit, "TimeUnit");
+        try
+        {
+            unit.sleep(delay);
+            return complete();
+        }
+        catch (InterruptedException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Schedules a call to {@link #queue()} to be executed after the specified {@code delay}.
+     * <br>This is an <b>asynchronous</b> operation that will return a
+     * {@link java.util.concurrent.ScheduledFuture ScheduledFuture} representing the task.
+     *
+     * <p>This operation gives no access to the response value.
+     * <br>Use {@link #queueAfter(long, java.util.concurrent.TimeUnit, java.util.function.Consumer)} to access
+     * the success consumer for {@link #queue(java.util.function.Consumer)}!
+     *
+     * <p>The global JDA {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} is used for this operation.
+     * <br>You can change the core pool size for this Executor through {@link net.dv8tion.jda.core.JDABuilder#setCorePoolSize(int) JDABuilder.setCorePoolSize(int)}
+     * or provide your own Executor with {@link #queueAfter(long, java.util.concurrent.TimeUnit, java.util.concurrent.ScheduledExecutorService)}
+     *
+     * @param  delay
+     *         The delay after which this computation should be executed, negative to execute immediately
+     * @param  unit
+     *         The {@link java.util.concurrent.TimeUnit TimeUnit} to convert the specified {@code delay}
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided TimeUnit is {@code null}
+     *
+     * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
+     *         representing the delayed operation
+     */
+    public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit)
+    {
+        return queueAfter(delay, unit, api.pool);
+    }
+
+    /**
+     * Schedules a call to {@link #queue(java.util.function.Consumer)} to be executed after the specified {@code delay}.
+     * <br>This is an <b>asynchronous</b> operation that will return a
+     * {@link java.util.concurrent.ScheduledFuture ScheduledFuture} representing the task.
+     *
+     * <p>This operation gives no access to the failure callback.
+     * <br>Use {@link #queueAfter(long, java.util.concurrent.TimeUnit, java.util.function.Consumer, java.util.function.Consumer)} to access
+     * the failure consumer for {@link #queue(java.util.function.Consumer, java.util.function.Consumer)}!
+     *
+     * <p>The global JDA {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} is used for this operation.
+     * <br>You can change the core pool size for this Executor through {@link net.dv8tion.jda.core.JDABuilder#setCorePoolSize(int) JDABuilder.setCorePoolSize(int)}
+     * or provide your own Executor with {@link #queueAfter(long, java.util.concurrent.TimeUnit, java.util.function.Consumer, java.util.concurrent.ScheduledExecutorService)}
+     *
+     * @param  delay
+     *         The delay after which this computation should be executed, negative to execute immediately
+     * @param  unit
+     *         The {@link java.util.concurrent.TimeUnit TimeUnit} to convert the specified {@code delay}
+     * @param  success
+     *         The success {@link java.util.function.Consumer Consumer} that should be called
+     *         once the {@link #queue(java.util.function.Consumer)} operation completes successfully.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided TimeUnit is {@code null}
+     *
+     * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
+     *         representing the delayed operation
+     */
+    public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<T> success)
+    {
+        return queueAfter(delay, unit, success, api.pool);
+    }
+
+    /**
+     * Schedules a call to {@link #queue(java.util.function.Consumer, java.util.function.Consumer)}
+     * to be executed after the specified {@code delay}.
+     * <br>This is an <b>asynchronous</b> operation that will return a
+     * {@link java.util.concurrent.ScheduledFuture ScheduledFuture} representing the task.
+     *
+     * <p>The global JDA {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} is used for this operation.
+     * <br>You can change the core pool size for this Executor through {@link net.dv8tion.jda.core.JDABuilder#setCorePoolSize(int) JDABuilder.setCorePoolSize(int)}
+     * or provide your own Executor with
+     * {@link #queueAfter(long, java.util.concurrent.TimeUnit, java.util.function.Consumer, java.util.function.Consumer, java.util.concurrent.ScheduledExecutorService)}
+     *
+     * @param  delay
+     *         The delay after which this computation should be executed, negative to execute immediately
+     * @param  unit
+     *         The {@link java.util.concurrent.TimeUnit TimeUnit} to convert the specified {@code delay}
+     * @param  success
+     *         The success {@link java.util.function.Consumer Consumer} that should be called
+     *         once the {@link #queue(java.util.function.Consumer, java.util.function.Consumer)} operation completes successfully.
+     * @param  failure
+     *         The failure {@link java.util.function.Consumer Consumer} that should be called
+     *         in case of an error of the {@link #queue(java.util.function.Consumer, java.util.function.Consumer)} operation.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided TimeUnit is {@code null}
+     *
+     * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
+     *         representing the delayed operation
+     */
+    public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<T> success, Consumer<Throwable> failure)
+    {
+        return queueAfter(delay, unit, success, failure, api.pool);
+    }
+
+    /**
+     * Schedules a call to {@link #queue()} to be executed after the specified {@code delay}.
+     * <br>This is an <b>asynchronous</b> operation that will return a
+     * {@link java.util.concurrent.ScheduledFuture ScheduledFuture} representing the task.
+     *
+     * <p>This operation gives no access to the response value.
+     * <br>Use {@link #queueAfter(long, java.util.concurrent.TimeUnit, java.util.function.Consumer)} to access
+     * the success consumer for {@link #queue(java.util.function.Consumer)}!
+     *
+     * <p>The specified {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} is used for this operation.
+     *
+     * @param  delay
+     *         The delay after which this computation should be executed, negative to execute immediately
+     * @param  unit
+     *         The {@link java.util.concurrent.TimeUnit TimeUnit} to convert the specified {@code delay}
+     * @param  executor
+     *         The Non-null {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} that should be used
+     *         to schedule this operation
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided TimeUnit or ScheduledExecutorService is {@code null}
+     *
+     * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
+     *         representing the delayed operation
+     */
+    public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, ScheduledExecutorService executor)
+    {
+        return queueAfter(delay, unit, null, executor);
+    }
+
+    /**
+     * Schedules a call to {@link #queue(java.util.function.Consumer)} to be executed after the specified {@code delay}.
+     * <br>This is an <b>asynchronous</b> operation that will return a
+     * {@link java.util.concurrent.ScheduledFuture ScheduledFuture} representing the task.
+     *
+     * <p>This operation gives no access to the failure callback.
+     * <br>Use {@link #queueAfter(long, java.util.concurrent.TimeUnit, java.util.function.Consumer, java.util.function.Consumer)} to access
+     * the failure consumer for {@link #queue(java.util.function.Consumer, java.util.function.Consumer)}!
+     *
+     * <p>The specified {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} is used for this operation.
+     *
+     * @param  delay
+     *         The delay after which this computation should be executed, negative to execute immediately
+     * @param  unit
+     *         The {@link java.util.concurrent.TimeUnit TimeUnit} to convert the specified {@code delay}
+     * @param  success
+     *         The success {@link java.util.function.Consumer Consumer} that should be called
+     *         once the {@link #queue(java.util.function.Consumer)} operation completes successfully.
+     * @param  executor
+     *         The Non-null {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} that should be used
+     *         to schedule this operation
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided TimeUnit or ScheduledExecutorService is {@code null}
+     *
+     * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
+     *         representing the delayed operation
+     */
+    public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<T> success, ScheduledExecutorService executor)
+    {
+        return queueAfter(delay, unit, success, null, executor);
+    }
+
+    /**
+     * Schedules a call to {@link #queue(java.util.function.Consumer, java.util.function.Consumer)}
+     * to be executed after the specified {@code delay}.
+     * <br>This is an <b>asynchronous</b> operation that will return a
+     * {@link java.util.concurrent.ScheduledFuture ScheduledFuture} representing the task.
+     *
+     * <p>The specified {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} is used for this operation.
+     *
+     * @param  delay
+     *         The delay after which this computation should be executed, negative to execute immediately
+     * @param  unit
+     *         The {@link java.util.concurrent.TimeUnit TimeUnit} to convert the specified {@code delay}
+     * @param  success
+     *         The success {@link java.util.function.Consumer Consumer} that should be called
+     *         once the {@link #queue(java.util.function.Consumer, java.util.function.Consumer)} operation completes successfully.
+     * @param  failure
+     *         The failure {@link java.util.function.Consumer Consumer} that should be called
+     *         in case of an error of the {@link #queue(java.util.function.Consumer, java.util.function.Consumer)} operation.
+     * @param  executor
+     *         The Non-null {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} that should be used
+     *         to schedule this operation
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided TimeUnit or ScheduledExecutorService is {@code null}
+     *
+     * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
+     *         representing the delayed operation
+     */
+    public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<T> success, Consumer<Throwable> failure, ScheduledExecutorService executor)
+    {
+        Args.notNull(executor, "Scheduler");
+        Args.notNull(unit, "TimeUnit");
+        return executor.schedule(() -> queue(success, failure), delay, unit);
     }
 
     protected void finalizeData() { }

@@ -59,6 +59,7 @@ public class JDABuilder
     protected Game game = null;
     protected OnlineStatus status = OnlineStatus.ONLINE;
     protected int websocketTimeout = 0;
+    protected int corePoolSize = 2;
     protected boolean enableVoice = true;
     protected boolean enableShutdownHook = true;
     protected boolean enableBulkDeleteSplitting = true;
@@ -151,13 +152,33 @@ public class JDABuilder
      * @param  websocketTimeout
      *         Non-negative int representing Websocket timeout in milliseconds.
      *
-     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
      */
     public JDABuilder setWebSocketTimeout(int websocketTimeout)
     {
         Args.notNegative(websocketTimeout, "Provided WebSocket timeout cannot be negative!");
 
         this.websocketTimeout = websocketTimeout;
+        return this;
+    }
+
+    /**
+     * Sets the amount core pool size for the global JDA
+     * {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} which is used
+     * in various locations throughout the JDA instance created by this builder. (Default: 2)
+     *
+     * @param  size
+     *         The core pool size for the global JDA executor
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the specified core pool size is not positive
+     *
+     * @return the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public JDABuilder setCorePoolSize(int size)
+    {
+        Args.positive(size, "Core pool size");
+        this.corePoolSize = size;
         return this;
     }
 
@@ -435,7 +456,7 @@ public class JDABuilder
         }
 
         JDAImpl jda = new JDAImpl(accountType, proxy, wsFactory, autoReconnect, enableVoice, enableShutdownHook,
-                enableBulkDeleteSplitting);
+                enableBulkDeleteSplitting, corePoolSize);
 
         if (eventManager != null)
             jda.setEventManager(eventManager);

@@ -18,6 +18,8 @@ package net.dv8tion.jda.core.requests.ratelimit;
 
 import com.mashape.unirest.http.Headers;
 import com.mashape.unirest.http.HttpResponse;
+import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.requests.RateLimiter;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Requester;
@@ -339,6 +341,11 @@ public class BotRateLimiter extends RateLimiter
             {
                 Requester.LOG.fatal("Requester system encountered an internal error from beyond the synchronized execution blocks. NOT GOOD!");
                 Requester.LOG.log(err);
+                if (err instanceof Error)
+                {
+                    JDAImpl api = requester.getJDA();
+                    api.getEventManager().handle(new ExceptionEvent(api, err, true));
+                }
             }
         }
 

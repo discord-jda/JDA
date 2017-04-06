@@ -35,8 +35,8 @@ import net.dv8tion.jda.core.utils.SimpleLog;
 public class Requester
 {
     public static final SimpleLog LOG = SimpleLog.getLog("JDARequester");
-    public static String USER_AGENT = "JDA DiscordBot (" + JDAInfo.GITHUB + ", " + JDAInfo.VERSION + ")";
     public static final String DISCORD_API_PREFIX = "https://discordapp.com/api/";
+    public static String USER_AGENT = "JDA DiscordBot (" + JDAInfo.GITHUB + ", " + JDAInfo.VERSION + ")";
 
     private final JDAImpl api;
     private final RateLimiter rateLimiter;
