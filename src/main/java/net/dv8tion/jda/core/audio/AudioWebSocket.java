@@ -27,6 +27,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import org.json.JSONArray;
@@ -288,6 +289,7 @@ public class AudioWebSocket extends WebSocketAdapter
     public void handleCallbackError(WebSocket websocket, Throwable cause)
     {
         LOG.log(cause);
+        api.getEventManager().handle(new ExceptionEvent(api, cause, true));
     }
 
     public void close(ConnectionStatus closeStatus)

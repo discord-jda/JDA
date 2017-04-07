@@ -32,12 +32,36 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.*;
 
 /**
  * Represents a Discord channel that can have {@link net.dv8tion.jda.core.entities.Message Messages} and files sent to it.
+ *
+ * <h1>Formattable</h1>
+ * This interface extends {@link java.util.Formattable Formattable} and can be used with a {@link java.util.Formatter Formatter}
+ * such as used by {@link String#format(String, Object...) String.format(String, Object...)}
+ * or {@link java.io.PrintStream#printf(String, Object...) PrintStream.printf(String, Object...)}.
+ *
+ * <p>This will use {@link #getName()} rather than {@link Object#toString()}!
+ * <br>Supported Features:
+ * <ul>
+ *     <li><b>Alternative</b>
+ *     <br>   - Prepends the name with {@code #}
+ *              (Example: {@code %#s} - results in <code>#{@link #getName()}</code>)</li>
+ *
+ *     <li><b>Width/Left-Justification</b>
+ *     <br>   - Ensures the size of a format
+ *              (Example: {@code %20s} - uses at minimum 20 chars;
+ *              {@code %-10s} - uses left-justified padding)</li>
+ *
+ *     <li><b>Precision</b>
+ *     <br>   - Cuts the content to the specified size
+ *              (Example: {@code %.20s})</li>
+ * </ul>
+ *
+ * <p>More information on formatting syntax can be found in the {@link java.util.Formatter format syntax documentation}!
+ * <br><b>{@link net.dv8tion.jda.core.entities.TextChannel TextChannel} is a special case which uses {@link IMentionable#getAsMention() IMentionable.getAsMention()}
+ * by default and uses the <code>#{@link #getName()}</code> format as <u>alternative</u></b>
  */
 public interface MessageChannel extends ISnowflake, Formattable
 {
@@ -1122,15 +1146,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Args.notEmpty(unicode, "Provided Unicode");
         Args.containsNoBlanks(unicode, "Provided Unicode");
 
-        String encoded;
-        try
-        {
-            encoded = URLEncoder.encode(unicode, "UTF-8");
-        }
-        catch (UnsupportedEncodingException e)
-        {
-            throw new RuntimeException(e); //thanks JDK 1.4
-        }
+        String encoded = MiscUtil.encodeUTF8(unicode);
         Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, encoded);
         return new RestAction<Void>(getJDA(), route, null)
         {

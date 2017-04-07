@@ -18,7 +18,9 @@ package net.dv8tion.jda.client;
 
 import net.dv8tion.jda.client.entities.*;
 import net.dv8tion.jda.client.requests.restaction.ApplicationAction;
+import net.dv8tion.jda.client.requests.restaction.pagination.MentionPaginationAction;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.requests.RestAction;
@@ -51,6 +53,38 @@ public interface JDAClient
     Friend getFriend(Member member);
     Friend getFriendById(String id);
     Friend getFriendById(long id);
+
+    /**
+     * Retrieves the recent mentions for the currently logged in
+     * client account.
+     *
+     * <p>The returned {@link net.dv8tion.jda.client.requests.restaction.pagination.MentionPaginationAction MentionPaginationAction}
+     * allows to filter by whether the messages mention everyone or a role.
+     *
+     * @return {@link net.dv8tion.jda.client.requests.restaction.pagination.MentionPaginationAction MentionPaginationAction}
+     */
+    MentionPaginationAction getRecentMentions();
+
+    /**
+     * Retrieves the recent mentions for the currently logged in
+     * client account.
+     *
+     * <p>The returned {@link net.dv8tion.jda.client.requests.restaction.pagination.MentionPaginationAction MentionPaginationAction}
+     * allows to filter by whether the messages mention everyone or a role.
+     *
+     * <p><b>To target recent mentions from all over Discord use {@link #getRecentMentions()} instead!</b>
+     *
+     * @param  guild
+     *         The {@link net.dv8tion.jda.core.entities.Guild Guild} to narrow recent mentions to
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the specified Guild is {@code null}
+     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
+     *         If the specified Guild is not currently {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
+     *
+     * @return {@link net.dv8tion.jda.client.requests.restaction.pagination.MentionPaginationAction MentionPaginationAction}
+     */
+    MentionPaginationAction getRecentMentions(Guild guild);
 
     UserSettings getSettings();
 

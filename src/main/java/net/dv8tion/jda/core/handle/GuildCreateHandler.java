@@ -79,7 +79,7 @@ public class GuildCreateHandler extends SocketHandler
                     api.getEventManager().handle(
                             new UnavailableGuildJoinedEvent(
                                     api, responseNumber,
-                                    guild.getId()));
+                                    guild.getIdLong()));
                 }
             }
         });

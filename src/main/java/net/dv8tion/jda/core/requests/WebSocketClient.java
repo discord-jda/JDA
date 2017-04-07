@@ -436,7 +436,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             }
             catch (RuntimeException ex)
             {
-                reconnectTimeoutS = Math.min(reconnectTimeoutS << 1, 900);      //*2, cap at 15min max
+                reconnectTimeoutS = Math.min(reconnectTimeoutS << 1, api.getMaxReconnectDelay());
                 LOG.warn("Reconnect failed! Next attempt in " + reconnectTimeoutS + "s");
             }
         }
@@ -764,7 +764,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     @Override
     public void handleCallbackError(WebSocket websocket, Throwable cause)
     {
-//        LOG.log(cause);
+        api.getEventManager().handle(new ExceptionEvent(api, cause, false));
     }
 
     public void setChunkingAndSyncing(boolean active)

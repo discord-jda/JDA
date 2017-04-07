@@ -47,11 +47,16 @@ import org.json.JSONObject;
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 import java.util.stream.Collectors;
 
 public class JDAImpl implements JDA
 {
     public static final SimpleLog LOG = SimpleLog.getLog("JDA");
+
+    public final ScheduledExecutorService pool;
 
     protected final TLongObjectMap<User> users = MiscUtil.newLongMap();
     protected final TLongObjectMap<Guild> guilds = MiscUtil.newLongMap();
@@ -70,6 +75,7 @@ public class JDAImpl implements JDA
     protected final PresenceImpl presence;
     protected final JDAClient jdaClient;
     protected final JDABot jdaBot;
+    protected final int maxReconnectDelay;
 
     protected WebSocketClient client;
     protected Requester requester;
@@ -86,7 +92,9 @@ public class JDAImpl implements JDA
     protected long responseTotal;
     protected long ping = -1;
 
-    public JDAImpl(AccountType accountType, HttpHost proxy, WebSocketFactory wsFactory, boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled)
+    public JDAImpl(AccountType accountType, HttpHost proxy, WebSocketFactory wsFactory,
+                   boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled,
+                   int corePoolSize, int maxReconnectDelay)
     {
         this.presence = new PresenceImpl(this);
         this.accountType = accountType;
@@ -97,6 +105,8 @@ public class JDAImpl implements JDA
         this.audioEnabled = audioEnabled;
         this.useShutdownHook = useShutdownHook;
         this.bulkDeleteSplittingEnabled = bulkDeleteSplittingEnabled;
+        this.pool = Executors.newScheduledThreadPool(corePoolSize, new JDAThreadFactory());
+        this.maxReconnectDelay = maxReconnectDelay;
 
         this.jdaClient = accountType == AccountType.CLIENT ? new JDAClientImpl(this) : null;
         this.jdaBot = accountType == AccountType.BOT ? new JDABotImpl(this) : null;
@@ -602,6 +612,12 @@ public class JDAImpl implements JDA
     }
 
     @Override
+    public int getMaxReconnectDelay()
+    {
+        return maxReconnectDelay;
+    }
+
+    @Override
     public ShardInfo getShardInfo()
     {
         return shardInfo;
@@ -745,5 +761,14 @@ public class JDAImpl implements JDA
             return "JDA";
     }
 
-
+    private class JDAThreadFactory implements ThreadFactory
+    {
+        @Override
+        public Thread newThread(Runnable r)
+        {
+            final Thread thread = new Thread(r, "JDA-Thread " + getIdentifierString());
+            thread.setDaemon(true);
+            return thread;
+        }
+    }
 }

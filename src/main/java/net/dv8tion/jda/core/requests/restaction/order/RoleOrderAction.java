@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.requests.restaction;
+package net.dv8tion.jda.core.requests.restaction.order;
 
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
@@ -31,7 +31,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Implementation of {@link net.dv8tion.jda.core.requests.restaction.OrderAction OrderAction}
+ * Implementation of {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction OrderAction}
  * designed to modify the order of {@link net.dv8tion.jda.core.entities.Role Roles} of the
  * specified {@link net.dv8tion.jda.core.entities.Guild Guild}.
  * <br>To apply the changes you must finish the {@link net.dv8tion.jda.core.requests.RestAction RestAction}

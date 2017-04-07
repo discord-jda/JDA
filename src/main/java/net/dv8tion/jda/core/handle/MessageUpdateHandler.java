@@ -210,7 +210,7 @@ public class MessageUpdateHandler extends SocketHandler
         api.getEventManager().handle(
                 new MessageEmbedEvent(
                         api, responseNumber,
-                        messageIdString, channel, embeds));
+                        messageId, channel, embeds));
         return null;
     }
 

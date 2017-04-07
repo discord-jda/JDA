@@ -86,10 +86,6 @@ public class AudioManagerImpl implements AudioManager
         final Member self = guild.getSelfMember();
         if (!self.hasPermission(channel, Permission.VOICE_CONNECT))
             throw new PermissionException(Permission.VOICE_CONNECT);
-        final int userLimit = channel.getUserLimit(); // userLimit is 0 if no limit is set!
-        if (!self.hasPermission(channel, Permission.MANAGE_CHANNEL) && userLimit > 0 && userLimit <= channel.getMembers().size())
-            throw new PermissionException(Permission.MANAGE_CHANNEL,
-                    "Unable to connect to VoiceChannel due to userlimit! Requires permission MANAGE_CHANNEL to bypass");
 
         if (audioConnection == null)
         {
@@ -104,6 +100,11 @@ public class AudioManagerImpl implements AudioManager
             //If we are already connected to this VoiceChannel, then do nothing.
             if (channel.equals(audioConnection.getChannel()))
                 return;
+
+            final int userLimit = channel.getUserLimit(); // userLimit is 0 if no limit is set!
+            if (!self.hasPermission(channel, Permission.MANAGE_CHANNEL) && userLimit > 0 && userLimit <= channel.getMembers().size())
+                throw new PermissionException(Permission.MANAGE_CHANNEL,
+                        "Unable to connect to VoiceChannel due to userlimit! Requires permission MANAGE_CHANNEL to bypass");
 
             api.getClient().queueAudioConnect(channel);
             audioConnection.setChannel(channel);

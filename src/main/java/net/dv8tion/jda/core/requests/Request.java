@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.requests;
 
+import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 
@@ -23,6 +25,7 @@ import java.util.function.Consumer;
 
 public class Request<T>
 {
+    private final JDAImpl api;
     private final RestAction<T> restAction;
     private final Object data;
     private final Consumer<T> onSuccess;
@@ -38,19 +41,25 @@ public class Request<T>
         this.onSuccess = onSuccess;
         this.onFailure = onFailure;
         this.shouldQueue = shouldQueue;
+        this.api = (JDAImpl) restAction.getJDA();
     }
 
     public void onSuccess(T successObj)
     {
-        try
+        api.pool.execute(() ->
         {
-            onSuccess.accept(successObj);
-        }
-        catch (Throwable t)
-        {
-            RestAction.LOG.fatal("Encountered error while processing success consumer");
-            RestAction.LOG.log(t);
-        }
+            try
+            {
+                onSuccess.accept(successObj);
+            }
+            catch (Throwable t)
+            {
+                RestAction.LOG.fatal("Encountered error while processing success consumer");
+                RestAction.LOG.log(t);
+                if (t instanceof Error)
+                    api.getEventManager().handle(new ExceptionEvent(api, t, true));
+            }
+        });
     }
 
     public void onFailure(Response response)
@@ -68,15 +77,22 @@ public class Request<T>
 
     public void onFailure(Throwable failException)
     {
-        try
+        api.pool.execute(() ->
         {
-            onFailure.accept(failException);
-        }
-        catch (Throwable t)
-        {
-            RestAction.LOG.fatal("Encountered error while processing failure consumer");
-            RestAction.LOG.log(t);
-        }
+            try
+            {
+                onFailure.accept(failException);
+                if (failException instanceof Error)
+                    api.getEventManager().handle(new ExceptionEvent(api, failException, false));
+            }
+            catch (Throwable t)
+            {
+                RestAction.LOG.fatal("Encountered error while processing failure consumer");
+                RestAction.LOG.log(t);
+                if (t instanceof Error)
+                    api.getEventManager().handle(new ExceptionEvent(api, t, true));
+            }
+        });
     }
 
     public RestAction<T> getRestAction()

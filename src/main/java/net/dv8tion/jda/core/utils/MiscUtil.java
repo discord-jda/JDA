@@ -19,12 +19,12 @@ import gnu.trove.TCollections;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.core.entities.ISnowflake;
-import org.apache.http.util.Args;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.util.Args;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
@@ -101,6 +101,30 @@ public class MiscUtil
     public static <T> TLongObjectMap<T> newLongMap()
     {
         return TCollections.synchronizedMap(new TLongObjectHashMap<T>());
+    }
+
+    /**
+     * URL-Encodes the given String to UTF-8 after
+     * form-data specifications (space {@literal ->} +)
+     *
+     * @param  chars
+     *         The characters to encode
+     *
+     * @throws java.lang.RuntimeException
+     *         If somehow the encoding fails
+     *
+     * @return The encoded String
+     */
+    public static String encodeUTF8(String chars)
+    {
+        try
+        {
+            return URLEncoder.encode(chars, "UTF-8");
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            throw new RuntimeException(e); // thanks JDK 1.4
+        }
     }
 
     /**

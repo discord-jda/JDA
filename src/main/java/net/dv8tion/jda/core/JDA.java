@@ -622,6 +622,14 @@ public interface JDA
     long getResponseTotal();
 
     /**
+     * This value is the maximum amount of time, in seconds, that JDA will wait between reconnect attempts.
+     * <br>Can be set using {@link net.dv8tion.jda.core.JDABuilder#setMaxReconnectDelay(int) JDABuilder.setMaxReconnectDelay(int)}.
+     *
+     * @return The maximum amount of time JDA will wait between reconnect attempts in seconds.
+     */
+    int getMaxReconnectDelay();
+
+    /**
      * The proxy settings used by all JDA instances.
      *
      * @return The proxy settings used by all JDA instances. If JDA currently isn't using a proxy,

@@ -17,11 +17,13 @@
 package net.dv8tion.jda.core.entities.impl;
 
 import gnu.trove.map.TLongObjectMap;
+import net.dv8tion.jda.client.requests.restaction.pagination.MentionPaginationAction;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.GuildController;
@@ -455,6 +457,14 @@ public class GuildImpl implements Guild
             }
         }
         return ctrl;
+    }
+
+    @Override
+    public MentionPaginationAction getRecentMentions()
+    {
+        if (getJDA().getAccountType() != AccountType.CLIENT)
+            throw new AccountTypeException(AccountType.CLIENT);
+        return getJDA().asClient().getRecentMentions(this);
     }
 
     @Override

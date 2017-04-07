@@ -59,6 +59,8 @@ public class JDABuilder
     protected Game game = null;
     protected OnlineStatus status = OnlineStatus.ONLINE;
     protected int websocketTimeout = 0;
+    protected int maxReconnectDelay = 900;
+    protected int corePoolSize = 2;
     protected boolean enableVoice = true;
     protected boolean enableShutdownHook = true;
     protected boolean enableBulkDeleteSplitting = true;
@@ -151,13 +153,33 @@ public class JDABuilder
      * @param  websocketTimeout
      *         Non-negative int representing Websocket timeout in milliseconds.
      *
-     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
      */
     public JDABuilder setWebSocketTimeout(int websocketTimeout)
     {
         Args.notNegative(websocketTimeout, "Provided WebSocket timeout cannot be negative!");
 
         this.websocketTimeout = websocketTimeout;
+        return this;
+    }
+
+    /**
+     * Sets the amount core pool size for the global JDA
+     * {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} which is used
+     * in various locations throughout the JDA instance created by this builder. (Default: 2)
+     *
+     * @param  size
+     *         The core pool size for the global JDA executor
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the specified core pool size is not positive
+     *
+     * @return the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public JDABuilder setCorePoolSize(int size)
+    {
+        Args.positive(size, "Core pool size");
+        this.corePoolSize = size;
         return this;
     }
 
@@ -350,10 +372,28 @@ public class JDABuilder
      *
      * @see    net.dv8tion.jda.core.JDA#addEventListener(Object...) JDA.addEventListener(Object...)
      */
-    public JDABuilder addListener(Object... listeners)
+    public JDABuilder addEventListener(Object... listeners)
     {
         Collections.addAll(this.listeners, listeners);
         return this;
+    }
+
+    /**
+     * This method is deprecated!
+     *
+     * @deprecated Use {@link #addEventListener(Object...)} instead.
+     *
+     * @param   listeners
+     *          The listener(s) to add to the list.
+     *
+     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     *
+     * @see    net.dv8tion.jda.core.JDA#addEventListener(Object...) JDA.addEventListener(Object...)
+     */
+    @Deprecated
+    public JDABuilder addListener(Object... listeners)
+    {
+        return addEventListener(listeners);
     }
 
     /**
@@ -366,9 +406,47 @@ public class JDABuilder
      *
      * @see    net.dv8tion.jda.core.JDA#removeEventListener(Object...) JDA.removeEventListener(Object...)
      */
-    public JDABuilder removeListener(Object... listeners)
+    public JDABuilder removeEventListener(Object... listeners)
     {
         this.listeners.removeAll(Arrays.asList(listeners));
+        return this;
+    }
+
+    /**
+     * This method is deprecated!
+     *
+     * @deprecated Use {@link #removeEventListener(Object...)} instead!
+     *
+     * @param  listeners
+     *         The listener(s) to remove from the list.
+     *
+     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     *
+     * @see    net.dv8tion.jda.core.JDA#removeEventListener(Object...) JDA.removeEventListener(Object...)
+     */
+    @Deprecated
+    public JDABuilder removeListener(Object... listeners)
+    {
+        return removeEventListener(listeners);
+    }
+
+    /**
+     * Sets the maximum amount of time that JDA will back off to wait when attempting to reconnect the MainWebsocket.
+     * <br>Provided value must be 32 or greater.
+     *
+     * @param  maxReconnectDelay
+     *         The maximum amount of time that JDA will wait between reconnect attempts in seconds.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         Thrown if the provided {@code maxReconnectDelay} is less than 32.
+     *
+     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public JDABuilder setMaxReconnectDelay(int maxReconnectDelay)
+    {
+        Args.check(maxReconnectDelay >= 32, "Max reconnect delay must be 32 seconds or greater. You provided %d.", maxReconnectDelay);
+
+        this.maxReconnectDelay = maxReconnectDelay;
         return this;
     }
 
@@ -435,7 +513,7 @@ public class JDABuilder
         }
 
         JDAImpl jda = new JDAImpl(accountType, proxy, wsFactory, autoReconnect, enableVoice, enableShutdownHook,
-                enableBulkDeleteSplitting);
+                enableBulkDeleteSplitting, corePoolSize, maxReconnectDelay);
 
         if (eventManager != null)
             jda.setEventManager(eventManager);

@@ -71,15 +71,21 @@ public class Route
         // Client only
         public static final Route USER_SETTINGS =       new Route(GET, "users/@me/settings");
         public static final Route GET_CONNECTIONS =     new Route(GET, "users/@me/connections");
-        public static final Route GET_RECENT_MENTIONS = new Route(GET, "users/@me/mentions?limit={limit}&roles={}&everyone={}");
-        public static final Route FRIEND_SUGGESTIONS =  new Route(GET, "friend_suggestions");
+        public static final Route FRIEND_SUGGESTIONS =  new Route(GET, "friend-suggestions");
+
+        public static final Route GET_RECENT_MENTIONS        = new Route(GET, "users/@me/mentions?limit={limit}&roles={}&everyone={}");
+        public static final Route GET_RECENT_MENTIONS_BEFORE = new Route(GET, "users/@me/mentions?limit={limit}&roles={}&everyone={}&before={}");
+
+        public static final Route GET_RECENT_MENTIONS_GUILD        = new Route(GET, "users/@me/mentions?limit={limit}&roles={}&everyone={}&guild_id={guild_id}");
+        public static final Route GET_RECENT_MENTIONS_GUILD_BEFORE = new Route(GET, "users/@me/mentions?limit={limit}&roles={}&everyone={}&guild_id={guild_id}&before={}");
     }
 
     public static class Users
     {
-        public static final Route GET_USER = new Route(GET, "users/{user_id}");
-        public static final Route GET_NOTE = new Route(GET, "users/@me/notes/{user_id}");
-        public static final Route SET_NOTE = new Route(PUT, "users/@me/notes/{user_id}");
+        public static final Route GET_USER    = new Route(GET, "users/{user_id}");
+        public static final Route GET_PROFILE = new Route(GET, "users/{user_id}/profile");
+        public static final Route GET_NOTE    = new Route(GET, "users/@me/notes/{user_id}");
+        public static final Route SET_NOTE    = new Route(PUT, "users/@me/notes/{user_id}");
     }
 
     public static class Relationships
@@ -189,11 +195,12 @@ public class Route
         public static final Route ADD_PINNED_MESSAGE =    new Route(PUT,    "channels/{channel_id}/pins/{message_id}",     "channel_id");
         public static final Route REMOVE_PINNED_MESSAGE = new Route(DELETE, "channels/{channel_id}/pins/{message_id}",     "channel_id");
 
-        public static final Route ADD_REACTION =         new Route(PUT,    new RateLimit(1, 250),
-                                                                           "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}/@me",           "channel_id");
-        public static final Route REMOVE_REACTION =      new Route(DELETE, "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}/{user_id}",     "channel_id");
-        public static final Route REMOVE_ALL_REACTIONS = new Route(DELETE, "channels/{channel_id}/messages/{message_id}/reactions",                               "channel_id");
-        public static final Route GET_REACTION_USERS =   new Route(GET,    "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}?limit={limit}", "channel_id");
+        public static final Route ADD_REACTION =             new Route(PUT,    new RateLimit(1, 250),
+                                                                               "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}/@me",                         "channel_id");
+        public static final Route REMOVE_REACTION =          new Route(DELETE, "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}/{user_id}",                   "channel_id");
+        public static final Route REMOVE_ALL_REACTIONS =     new Route(DELETE, "channels/{channel_id}/messages/{message_id}/reactions",                                             "channel_id");
+        public static final Route GET_REACTION_USERS_LIMIT = new Route(GET,    "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}?limit={limit}",               "channel_id");
+        public static final Route GET_REACTION_USERS_AFTER = new Route(GET,    "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}?limit={limit}&after={after}", "channel_id");
 
         public static final Route GET_MESSAGE_HISTORY =        new Route(GET, "channels/{channel_id}/messages?limit={}",           "channel_id");
         public static final Route GET_MESSAGE_HISTORY_BEFORE = new Route(GET, "channels/{channel_id}/messages?limit={}&before={}", "channel_id");

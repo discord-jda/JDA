@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.requests.ratelimit;
-
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Route;
-
-import java.util.Queue;
-
-public interface IBucket
-{
-    Route.RateLimit getRatelimit();
-    String getRoute();
-    Queue<Request> getRequests();
-    
-    default boolean hasRatelimit()
-    {
-        return getRatelimit() != null;
-    }
-}
+/**
+ * {@link net.dv8tion.jda.core.requests.RestAction RestAction} extensions
+ * specifically designed to change the order of discord entities.
+ * <br>Such as:
+ * <ul>
+ *     <li>{@link net.dv8tion.jda.core.requests.restaction.order.ChannelOrderAction Channels}</li>
+ *     <li>{@link net.dv8tion.jda.core.requests.restaction.order.RoleOrderAction Roles}</li>
+ * </ul>
+ *
+ * <p>Abstract base implementation can be found at {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction OrderAction}
+ *
+ * @since 3.0
+ */
+package net.dv8tion.jda.core.requests.restaction.order;

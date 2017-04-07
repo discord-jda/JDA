@@ -14,21 +14,13 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.requests.ratelimit;
-
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Route;
-
-import java.util.Queue;
-
-public interface IBucket
-{
-    Route.RateLimit getRatelimit();
-    String getRoute();
-    Queue<Request> getRequests();
-    
-    default boolean hasRatelimit()
-    {
-        return getRatelimit() != null;
-    }
-}
+/**
+ * Extensions of {@link net.dv8tion.jda.core.requests.RestAction RestAction} that allow
+ * to access paginated discord endpoints like {@link net.dv8tion.jda.core.requests.Route.Messages#GET_REACTION_USERS_LIMIT Route.Messages.GET_REACTION_USERS_LIMIT}
+ * <br>The {@link net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction PaginationAction} is designed to work
+ * as an {@link java.lang.Iterable Iterable} of the specified endpoint. Each implementation specifies the endpoints it will
+ * use in the class-level javadoc
+ *
+ * @since 3.1
+ */
+package net.dv8tion.jda.core.requests.restaction.pagination;

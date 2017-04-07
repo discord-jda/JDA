@@ -111,7 +111,27 @@ public interface ApplicationInfo extends ISnowflake
      * 
      * @return The link used to invite the bot
      */
-    String getInviteUrl(String guildId, Collection<Permission> permissions);
+    default String getInviteUrl(String guildId, Collection<Permission> permissions)
+    {
+        return getInviteUrl(Long.parseLong(guildId), permissions);
+    }
+
+    /**
+     * Creates a OAuth invite-link used to invite the bot.
+     *
+     * <p>The link is provided in the following format:
+     * <br>{@code https://discordapp.com/oauth2/authorize?client_id=APPLICATION_ID&scope=bot&permissions=PERMISSIONS&guild_id=GUILD_ID}
+     * <br>Unnecessary query parameters are stripped.
+     *
+     * @param  guildId
+     *         The id of the pre-selected guild.
+     * @param  permissions
+     *         Possibly empty {@link java.util.Collection Collection} of {@link net.dv8tion.jda.core.Permission Permissions}
+     *         that should be requested via invite.
+     *
+     * @return The link used to invite the bot
+     */
+    String getInviteUrl(long guildId, Collection<Permission> permissions);
 
     /**
      * Creates a OAuth invite-link used to invite the bot.
@@ -128,7 +148,27 @@ public interface ApplicationInfo extends ISnowflake
      * 
      * @return The link used to invite the bot
      */
-    String getInviteUrl(String guildId, Permission... permissions);
+    default String getInviteUrl(String guildId, Permission... permissions)
+    {
+        return getInviteUrl(Long.parseLong(guildId), permissions);
+    }
+
+    /**
+     * Creates a OAuth invite-link used to invite the bot.
+     *
+     * <p>The link is provided in the following format:
+     * <br>{@code https://discordapp.com/oauth2/authorize?client_id=APPLICATION_ID&scope=bot&permissions=PERMISSIONS&guild_id=GUILD_ID}
+     * <br>Unnecessary query parameters are stripped.
+     *
+     * @param  guildId
+     *         The id of the pre-selected guild.
+     * @param  permissions
+     *         Possibly empty array of {@link net.dv8tion.jda.core.Permission Permissions}
+     *         that should be requested via invite.
+     *
+     * @return The link used to invite the bot
+     */
+    String getInviteUrl(long guildId, Permission... permissions);
 
     /**
      * The {@link net.dv8tion.jda.core.JDA JDA} instance of this ApplicationInfo
