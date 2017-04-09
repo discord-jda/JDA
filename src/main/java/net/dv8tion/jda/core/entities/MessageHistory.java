@@ -23,8 +23,8 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.commons.collections4.map.ListOrderedMap;
-import org.apache.http.util.Args;
 import org.json.JSONArray;
 
 import java.util.*;
@@ -287,9 +287,7 @@ public class MessageHistory
      */
     public Message getMessageById(String id)
     {
-        Args.notEmpty(id, "Provided message id");
-
-        return getMessageById(Long.parseLong(id));
+        return getMessageById(MiscUtil.parseSnowflake(id));
     }
 
     public Message getMessageById(long id)

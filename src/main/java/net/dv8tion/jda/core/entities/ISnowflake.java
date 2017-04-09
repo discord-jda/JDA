@@ -34,7 +34,7 @@ public interface ISnowflake
      */
     default String getId()
     {
-        return String.valueOf(getIdLong());
+        return Long.toUnsignedString(getIdLong());
     }
 
     /**

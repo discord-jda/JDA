@@ -43,7 +43,7 @@ public class MessageBulkDeleteHandler extends SocketHandler
             {
                 handler.handle(responseNumber, new JSONObject()
                     .put("d", new JSONObject()
-                        .put("channel_id", String.valueOf(channelId))
+                        .put("channel_id", Long.toUnsignedString(channelId))
                         .put("id", id)));
             });
         }

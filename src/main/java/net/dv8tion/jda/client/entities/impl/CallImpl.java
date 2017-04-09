@@ -79,7 +79,7 @@ public class CallImpl implements Call
     @Override
     public String getMessageId()
     {
-        return String.valueOf(messageId);
+        return Long.toUnsignedString(messageId);
     }
 
     @Override
