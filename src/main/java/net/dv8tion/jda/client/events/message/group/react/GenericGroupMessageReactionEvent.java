@@ -14,55 +14,35 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.events.message.react;
+package net.dv8tion.jda.client.events.message.group.react;
 
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.MessageReaction;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.GenericMessageEvent;
 
-public class GenericMessageReactionEvent extends GenericMessageEvent
+public class GenericGroupMessageReactionEvent extends GenericMessageEvent
 {
     protected User issuer;
     protected MessageReaction reaction;
 
-    public GenericMessageReactionEvent(JDA api, long responseNumber, User user, MessageReaction reaction)
+    public GenericGroupMessageReactionEvent(JDA api, long responseNumber, User user, MessageReaction reaction)
     {
         super(api, responseNumber, reaction.getMessageIdLong(), reaction.getChannel());
         this.issuer = user;
         this.reaction = reaction;
     }
 
-    public Guild getGuild()
+    @Override
+    public Group getChannel()
     {
-        TextChannel channel = getTextChannel();
-        return channel != null ? channel.getGuild() : null;
-    }
-
-    public TextChannel getTextChannel()
-    {
-        return getChannel() instanceof TextChannel ? (TextChannel) getChannel() : null;
-    }
-
-    public PrivateChannel getPrivateChannel()
-    {
-        return getChannel() instanceof PrivateChannel ? (PrivateChannel) getChannel() : null;
-    }
-
-    public Group getGroup()
-    {
-        return getChannel() instanceof Group ? (Group) getChannel() : null;
+        return (Group) channel;
     }
 
     public User getUser()
     {
         return issuer;
-    }
-
-    public Member getMember()
-    {
-        Guild guild = getGuild();
-        return guild != null ? guild.getMember(getUser()) : null;
     }
 
     public MessageReaction getReaction()

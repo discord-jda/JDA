@@ -22,14 +22,16 @@ import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.impl.EmoteImpl;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.events.emote.EmoteAddedEvent;
+import net.dv8tion.jda.core.events.emote.EmoteRemovedEvent;
+import net.dv8tion.jda.core.events.emote.update.EmoteUpdateNameEvent;
+import net.dv8tion.jda.core.events.emote.update.EmoteUpdateRolesEvent;
 import net.dv8tion.jda.core.requests.GuildLock;
+import org.apache.commons.collections4.CollectionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class GuildEmojisUpdateHandler extends SocketHandler
 {
@@ -52,18 +54,30 @@ public class GuildEmojisUpdateHandler extends SocketHandler
                     handle(responseNumber, allContent));
             return null;
         }
+
         JSONArray array = content.getJSONArray("emojis");
         TLongObjectMap<Emote> emoteMap = guild.getEmoteMap();
         List<Emote> oldEmotes = new ArrayList<>(emoteMap.valueCollection()); //snapshot of emote cache
+        List<Emote> newEmotes = new ArrayList<>();
         for (int i = 0; i < array.length(); i++)
         {
             JSONObject current = array.getJSONObject(i);
             final long emoteId = current.getLong("id");
             EmoteImpl emote = (EmoteImpl) emoteMap.get(emoteId);
+            EmoteImpl oldEmote = null;
+
             if (emote == null)
+            {
                 emote = new EmoteImpl(emoteId, guild);
+                newEmotes.add(emote);
+            }
             else
-                oldEmotes.remove(emote); // emote is in our cache which is why we don't want to remove it in cleanup later
+            {
+                // emote is in our cache which is why we don't want to remove it in cleanup later
+                oldEmotes.remove(emote);
+                oldEmote = emote.clone();
+            }
+
             emote.setName(current.getString("name"))
                  .setManaged(current.getBoolean("managed"));
             //update roles
@@ -76,15 +90,60 @@ public class GuildEmojisUpdateHandler extends SocketHandler
                 newRoles.add(role);
                 oldRoles.remove(role);
             }
+
             //cleanup old cached roles that were not found in the JSONArray
             for (Role r : oldRoles)
-                newRoles.remove(r); // newRoles directly writes to the set contained in the emote
+            {
+                // newRoles directly writes to the set contained in the emote
+                newRoles.remove(r);
+            }
 
-            emoteMap.put(emote.getIdLong(), emote); // finally, update the emote
+            // finally, update the emote
+            emoteMap.put(emote.getIdLong(), emote);
+            // check for updated fields and fire events
+            handleReplace(oldEmote, emote);
         }
         //cleanup old emotes that don't exist anymore
         for (Emote e : oldEmotes)
+        {
             emoteMap.remove(e.getIdLong());
+            api.getEventManager().handle(
+                new EmoteRemovedEvent(
+                    api, responseNumber,
+                    e));
+        }
+
+        for (Emote e : newEmotes)
+        {
+            api.getEventManager().handle(
+                new EmoteAddedEvent(
+                    api, responseNumber,
+                    e));
+        }
+
         return null;
     }
+
+    private void handleReplace(Emote oldEmote, Emote newEmote)
+    {
+        if (oldEmote == null || newEmote == null) return;
+
+        if (!Objects.equals(oldEmote.getName(), newEmote.getName()))
+        {
+            api.getEventManager().handle(
+                new EmoteUpdateNameEvent(
+                    api, responseNumber,
+                    newEmote, oldEmote.getName()));
+        }
+
+        if (!CollectionUtils.isEqualCollection(oldEmote.getRoles(), newEmote.getRoles()))
+        {
+            api.getEventManager().handle(
+                new EmoteUpdateRolesEvent(
+                    api, responseNumber,
+                    newEmote, oldEmote.getRoles()));
+        }
+
+    }
+
 }

@@ -13,30 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.core.events.message.priv;
 
+package net.dv8tion.jda.client.events.message.group.react;
+
+import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.events.message.GenericMessageEvent;
 
-/**
- * <b><u>GenericPrivateMessageEvent</u></b><br>
- * Fired whenever a {@link net.dv8tion.jda.core.entities.Message Message} event is fired from a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}.<br>
- * Every PrivateMessageEvent is an instance of this event and can be casted. (no exceptions)<br>
- * <br>
- * Use: Detect any PrivateMessageEvent. <i>(No real use for the JDA user)</i>
- */
-public abstract class GenericPrivateMessageEvent extends GenericMessageEvent
+public class GroupMessageReactionRemoveAllEvent extends GenericMessageEvent
 {
 
-    public GenericPrivateMessageEvent(JDA api, long responseNumber, long messageId, PrivateChannel channel)
+    public GroupMessageReactionRemoveAllEvent(JDA api, long responseNumber, long messageId, Group channel)
     {
         super(api, responseNumber, messageId, channel);
     }
 
     @Override
-    public PrivateChannel getChannel()
+    public Group getChannel()
     {
-        return (PrivateChannel) channel;
+        return (Group) channel;
     }
 }

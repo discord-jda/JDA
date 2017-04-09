@@ -153,8 +153,7 @@ public class MessageUpdateHandler extends SocketHandler
     private Long handleMessageEmbed(JSONObject content)
     {
         EntityBuilder builder = EntityBuilder.get(api);
-        final String messageIdString = content.getString("id");
-        final long messageId = Long.parseLong(messageIdString);
+        final long messageId = content.getLong("id");
         final long channelId = content.getLong("channel_id");
         LinkedList<MessageEmbed> embeds = new LinkedList<>();
         MessageChannel channel = api.getTextChannelMap().get(channelId);
@@ -190,21 +189,21 @@ public class MessageUpdateHandler extends SocketHandler
             api.getEventManager().handle(
                     new GuildMessageEmbedEvent(
                             api, responseNumber,
-                            messageIdString, tChannel, embeds));
+                            messageId, tChannel, embeds));
         }
         else if (channel instanceof PrivateChannel)
         {
             api.getEventManager().handle(
                     new PrivateMessageEmbedEvent(
                             api, responseNumber,
-                            messageIdString, (PrivateChannel) channel, embeds));
+                            messageId, (PrivateChannel) channel, embeds));
         }
         else
         {
             api.getEventManager().handle(
                     new GroupMessageEmbedEvent(
                             api, responseNumber,
-                            messageIdString, (Group) channel, embeds));
+                            messageId, (Group) channel, embeds));
         }
         //Combo event
         api.getEventManager().handle(

@@ -13,30 +13,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.core.events.message.priv;
+
+package net.dv8tion.jda.core.events.message.priv.react;
 
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.MessageReaction;
 import net.dv8tion.jda.core.entities.PrivateChannel;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.GenericMessageEvent;
 
-/**
- * <b><u>GenericPrivateMessageEvent</u></b><br>
- * Fired whenever a {@link net.dv8tion.jda.core.entities.Message Message} event is fired from a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}.<br>
- * Every PrivateMessageEvent is an instance of this event and can be casted. (no exceptions)<br>
- * <br>
- * Use: Detect any PrivateMessageEvent. <i>(No real use for the JDA user)</i>
- */
-public abstract class GenericPrivateMessageEvent extends GenericMessageEvent
+public class GenericPrivateMessageReactionEvent extends GenericMessageEvent
 {
+    protected User issuer;
+    protected MessageReaction reaction;
 
-    public GenericPrivateMessageEvent(JDA api, long responseNumber, long messageId, PrivateChannel channel)
+    public GenericPrivateMessageReactionEvent(JDA api, long responseNumber, User user, MessageReaction reaction)
     {
-        super(api, responseNumber, messageId, channel);
+        super(api, responseNumber, reaction.getMessageIdLong(), reaction.getChannel());
+        this.issuer = user;
+        this.reaction = reaction;
     }
 
     @Override
     public PrivateChannel getChannel()
     {
         return (PrivateChannel) channel;
+    }
+
+    public User getUser()
+    {
+        return issuer;
+    }
+
+    public MessageReaction getReaction()
+    {
+        return reaction;
+    }
+
+    public MessageReaction.ReactionEmote getReactionEmote()
+    {
+        return reaction.getEmote();
     }
 }

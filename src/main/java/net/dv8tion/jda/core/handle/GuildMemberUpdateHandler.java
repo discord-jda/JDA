@@ -137,7 +137,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
         LinkedList<Role> roles = new LinkedList<>();
         for(int i = 0; i < array.length(); i++)
         {
-            final long id = Long.parseLong(array.getString(i));
+            final long id = array.getLong(i);
             Role r = guild.getRolesMap().get(id);
             if (r != null)
             {

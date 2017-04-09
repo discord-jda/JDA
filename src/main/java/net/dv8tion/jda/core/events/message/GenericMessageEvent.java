@@ -16,8 +16,8 @@
 package net.dv8tion.jda.core.events.message;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.ChannelType;
+import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.Event;
 
 /**
@@ -29,21 +29,39 @@ import net.dv8tion.jda.core.events.Event;
  */
 public abstract class GenericMessageEvent extends Event
 {
-    protected final Message message;
+    protected final long messageId;
+    protected final MessageChannel channel;
 
-    public GenericMessageEvent(JDA api, long responseNumber, Message message)
+    public GenericMessageEvent(JDA api, long responseNumber, long messageId, MessageChannel channel)
     {
         super(api, responseNumber);
-        this.message = message;
+        this.messageId = messageId;
+        this.channel = channel;
     }
 
-    public Message getMessage()
+    public String getMessageId()
     {
-        return message;
+        return String.valueOf(messageId);
     }
 
-    public User getAuthor()
+    public long getMessageIdLong()
     {
-        return message == null ? null : getMessage().getAuthor();
+        return messageId;
     }
+
+    public MessageChannel getChannel()
+    {
+        return channel;
+    }
+
+    public boolean isFromType(ChannelType type)
+    {
+        return channel.getType() == type;
+    }
+
+    public ChannelType getChannelType()
+    {
+        return channel.getType();
+    }
+
 }

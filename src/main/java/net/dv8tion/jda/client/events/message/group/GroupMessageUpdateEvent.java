@@ -18,11 +18,25 @@ package net.dv8tion.jda.client.events.message.group;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.User;
 
 public class GroupMessageUpdateEvent extends GenericGroupMessageEvent
 {
+    private final Message message;
+
     public GroupMessageUpdateEvent(JDA api, long responseNumber, Message message)
     {
-        super(api, responseNumber, message, message.getGroup());
+        super(api, responseNumber, message.getIdLong(), message.getGroup());
+        this.message = message;
+    }
+
+    public Message getMessage()
+    {
+        return message;
+    }
+
+    public User getAuthor()
+    {
+        return message.getAuthor();
     }
 }

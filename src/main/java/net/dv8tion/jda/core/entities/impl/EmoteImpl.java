@@ -49,13 +49,13 @@ public class EmoteImpl implements Emote
     private final long id;
     private final Guild guild;
     private final JDA api;
+    private final HashSet<Role> roles;
 
     private volatile EmoteManager manager = null;
     private volatile EmoteManagerUpdatable managerUpdatable = null;
     private Object mngLock = new Object();
 
     private boolean managed = false;
-    private HashSet<Role> roles = null;
     private String name;
 
     public EmoteImpl(long id,  Guild guild)
@@ -71,6 +71,7 @@ public class EmoteImpl implements Emote
         this.id = id;
         this.api = api;
         this.guild = null;
+        this.roles = null;
     }
 
     @Override
@@ -219,5 +220,14 @@ public class EmoteImpl implements Emote
     public String toString()
     {
         return "E:" + getName() + '(' + getIdLong() + ')';
+    }
+
+    public EmoteImpl clone()
+    {
+        if (isFake()) return null;
+        EmoteImpl copy = new EmoteImpl(id, guild).setManaged(managed).setName(name);
+        copy.roles.addAll(roles);
+        return copy;
+
     }
 }
