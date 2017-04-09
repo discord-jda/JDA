@@ -261,7 +261,7 @@ public class JDAClientImpl implements JDAClient
         return new RestAction<List<Application>>(api, route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<List<Application>> request)
             {
                 if (response.isOk())
                 {
@@ -291,7 +291,7 @@ public class JDAClientImpl implements JDAClient
         return new RestAction<Application>(api, route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Application> request)
             {
                 if (response.isOk())
                     request.onSuccess(EntityBuilder.get(getJDA()).createApplication(response.getObject()));
@@ -308,7 +308,7 @@ public class JDAClientImpl implements JDAClient
         return new RestAction<List<AuthorizedApplication>>(api, route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<List<AuthorizedApplication>> request)
             {
                 if (response.isOk())
                 {
@@ -338,7 +338,7 @@ public class JDAClientImpl implements JDAClient
         return new RestAction<AuthorizedApplication>(api, route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<AuthorizedApplication> request)
             {
                 if (response.isOk())
                     request.onSuccess(EntityBuilder.get(getJDA()).createAuthorizedApplication(response.getObject()));

@@ -251,7 +251,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>> exte
     }
 
     protected abstract void finalizeRoute();
-    protected abstract void handleResponse(Response response, Request request);
+    protected abstract void handleResponse(Response response, Request<List<T>> request);
 
     /**
      * Iterator implementation for a {@link net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction PaginationAction}.

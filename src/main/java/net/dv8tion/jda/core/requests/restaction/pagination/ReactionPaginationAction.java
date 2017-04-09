@@ -94,7 +94,7 @@ public class ReactionPaginationAction extends PaginationAction<User, ReactionPag
     }
 
     @Override
-    protected void handleResponse(Response response, Request request)
+    protected void handleResponse(Response response, Request<List<User>> request)
     {
         if (!response.isOk())
         {
