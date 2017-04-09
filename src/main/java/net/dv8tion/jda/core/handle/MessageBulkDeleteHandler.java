@@ -32,19 +32,18 @@ public class MessageBulkDeleteHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
-        String channelId = content.getString("channel_id");
+        final long channelId = content.getLong("channel_id");
 
         if (api.isBulkDeleteSplittingEnabled())
         {
             SocketHandler handler = api.getClient().getHandler("MESSAGE_DELETE");
             content.getJSONArray("ids").forEach(id ->
             {
-
                 handler.handle(responseNumber, new JSONObject()
                     .put("d", new JSONObject()
-                        .put("channel_id", channelId)
+                        .put("channel_id", String.valueOf(channelId))
                         .put("id", id)));
             });
         }
@@ -53,17 +52,14 @@ public class MessageBulkDeleteHandler extends SocketHandler
             TextChannel channel = api.getTextChannelMap().get(channelId);
             if (channel == null)
             {
-                EventCache.get(api).cache(EventCache.Type.CHANNEL, channelId, () ->
-                {
-                    handle(responseNumber, allContent);
-                });
+                EventCache.get(api).cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
                 EventCache.LOG.debug("Received a Bulk Message Delete for a TextChannel that is not yet cached.");
                 return null;
             }
 
-            if (GuildLock.get(api).isLocked(channel.getGuild().getId()))
+            if (GuildLock.get(api).isLocked(channel.getGuild().getIdLong()))
             {
-                return channel.getGuild().getId();
+                return channel.getGuild().getIdLong();
             }
 
             LinkedList<String> msgIds = new LinkedList<>();

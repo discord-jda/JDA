@@ -19,7 +19,9 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.MessageImpl;
 import org.apache.http.util.Args;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -291,7 +293,7 @@ public class MessageBuilder implements Appendable
         if (message.length() > 2000)
             throw new IllegalStateException("Cannot build a Message with more than 2000 characters. Please limit your input.");
 
-        return new MessageImpl("", null, false).setContent(message).setTTS(isTTS)
+        return new MessageImpl(-1, null, false).setContent(message).setTTS(isTTS)
                 .setEmbeds(embed == null ? new LinkedList<>() : Collections.singletonList(embed));
     }
 
@@ -424,7 +426,7 @@ public class MessageBuilder implements Appendable
      */
     public MessageBuilder stripMentions(JDA jda, MentionType... types)
     {
-        return this.stripMentions(jda, (Guild) null, types);
+        return this.stripMentions(jda, null, types);
     }
 
     private MessageBuilder stripMentions(JDA jda, Guild guild, MentionType... types)
@@ -737,7 +739,7 @@ public class MessageBuilder implements Appendable
 
     protected Message build(int beginIndex, int endIndex)
     {
-        return new MessageImpl("", null, false).setContent(builder.substring(beginIndex, endIndex)).setTTS(isTTS);
+        return new MessageImpl(-1, null, false).setContent(builder.substring(beginIndex, endIndex)).setTTS(isTTS);
     }
 
     /**
@@ -845,7 +847,7 @@ public class MessageBuilder implements Appendable
         /**
          * <b>@Role</b> mentions
          */
-        ROLE;
+        ROLE
     }
 
     /**

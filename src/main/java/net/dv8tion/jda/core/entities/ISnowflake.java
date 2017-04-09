@@ -32,17 +32,28 @@ public interface ISnowflake
      *
      * @return Never-null String containing the Id.
      */
-    String getId();
+    default String getId()
+    {
+        return String.valueOf(getIdLong());
+    }
 
     /**
-     * The time this entity was created. Calculated through the Snowflake in {@link #getId}.
+     * The Snowflake id of this entity. This is unique to every entity and will never change.
+     *
+     * @return Long containing the Id.
+     */
+    long getIdLong();
+
+    /**
+     * The time this entity was created. Calculated through the Snowflake in {@link #getIdLong}.
      *
      * @return OffsetDateTime - Time this entity was created at.
      *
-     * @see    net.dv8tion.jda.core.utils.MiscUtil#getCreationTime(Object)
+     * @see    net.dv8tion.jda.core.utils.MiscUtil#getCreationTime(long)
      */
     default OffsetDateTime getCreationTime()
     {
-        return MiscUtil.getCreationTime(getId());
+        return MiscUtil.getCreationTime(getIdLong());
     }
+
 }

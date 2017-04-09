@@ -19,6 +19,8 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
@@ -32,7 +34,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -159,6 +161,34 @@ public class WidgetUtil
      */
     public static Widget getWidget(String guildId) throws RateLimitedException
     {
+        return getWidget(Long.parseLong(guildId));
+    }
+
+    /**
+     * Makes a GET request to get the information for a Guild's widget. This
+     * widget (if available) contains information about the guild, including the
+     * Guild's name, an invite code (if set), a list of voice channels, and a
+     * list of online members (plus the voice states of any members in voice
+     * channels).
+     *
+     * <p>This Widget can be obtained from any valid guild ID that has
+     * it enabled; no accounts need to be on the server to access this information.
+     *
+     * @param  guildId
+     *         The id of the Guild
+     *
+     * @throws net.dv8tion.jda.core.exceptions.RateLimitedException
+     *         If the request was rate limited, <b>respect the timeout</b>!
+     *
+     * @return {@code null} if the provided guild ID is not a valid Discord guild ID
+     *         <br>a Widget object with null fields and isAvailable() returning
+     *         false if the guild ID is valid but the guild in question does not
+     *         have the widget enabled
+     *         <br>a filled-in Widget object if the guild ID is valid and the guild
+     *         in question has the widget enabled.
+     */
+    public static Widget getWidget(long guildId) throws RateLimitedException
+    {
         Args.notNull(guildId, "GuildId");
         try
         {
@@ -219,23 +249,23 @@ public class WidgetUtil
     public static class Widget implements ISnowflake
     {
         private final boolean isAvailable;
-        private final String id;
+        private final long id;
         private final String name;
         private final String invite;
-        private final HashMap<String, VoiceChannel> channels;
-        private final HashMap<String, Member> members;
+        private final TLongObjectMap<VoiceChannel> channels;
+        private final TLongObjectMap<Member> members;
         
         /**
          * Constructs an unavailable Widget
          */
-        private Widget(String guildId)
+        private Widget(long guildId)
         {
             isAvailable = false;
             id = guildId;
             name = null;
             invite = null;
-            channels = null;
-            members = null;
+            channels = new TLongObjectHashMap<>();
+            members = new TLongObjectHashMap<>();
         }
         
         /**
@@ -251,17 +281,17 @@ public class WidgetUtil
                 inviteCode = inviteCode.substring(inviteCode.lastIndexOf("/") + 1);
             
             isAvailable = true;
-            id = json.getString("id");
+            id = json.getLong("id");
             name = json.getString("name");
             invite = inviteCode;
-            channels = new HashMap<>();
-            members = new HashMap<>();
+            channels = MiscUtil.newLongMap();
+            members = MiscUtil.newLongMap();
             
             JSONArray channelsJson = json.getJSONArray("channels");
             for (int i = 0; i < channelsJson.length(); i++)
             {
                 JSONObject channel = channelsJson.getJSONObject(i);
-                channels.put(channel.getString("id"), new VoiceChannel(channel, this));
+                channels.put(channel.getLong("id"), new VoiceChannel(channel, this));
             }
             
             JSONArray membersJson = json.getJSONArray("members");
@@ -271,7 +301,7 @@ public class WidgetUtil
                 Member member = new Member(memberJson, this);
                 if (!memberJson.isNull("channel_id")) // voice state
                 {
-                    VoiceChannel channel = channels.get(memberJson.getString("channel_id"));
+                    VoiceChannel channel = channels.get(memberJson.getLong("channel_id"));
                     member.setVoiceState(new VoiceState(channel, 
                             memberJson.getBoolean("mute"), 
                             memberJson.getBoolean("deaf"), 
@@ -282,7 +312,7 @@ public class WidgetUtil
                             this));
                     channel.addMember(member);
                 }
-                members.put(member.getId(), member);
+                members.put(member.getIdLong(), member);
             }
         }
         
@@ -296,42 +326,57 @@ public class WidgetUtil
         {
             return isAvailable;
         }
-        
+
         @Override
-        public String getId()
+        public long getIdLong()
         {
             return id;
         }
         
         /**
          * Gets the name of the guild
-         * 
+         *
+         * @throws IllegalStateException
+         *         If the widget is not {@link #isAvailable() available}
+         *
          * @return the name of the guild
          */
         public String getName()
         {
+            checkAvailable();
+
             return name;
         }
         
         /**
          * Gets an invite code for the guild, or null if no invite channel is
          * enabled in the widget
-         * 
+         *
+         * @throws IllegalStateException
+         *         If the widget is not {@link #isAvailable() available}
+         *
          * @return an invite code for the guild, if widget invites are enabled
          */
         public String getInviteCode()
         {
+            checkAvailable();
+
             return invite;
         }
         
         /**
          * Gets the list of voice channels in the guild
-         * 
+         *
+         * @throws IllegalStateException
+         *         If the widget is not {@link #isAvailable() available}
+         *
          * @return the list of voice channels in the guild
          */
         public List<VoiceChannel> getVoiceChannels()
         {
-            return new ArrayList<>(channels.values());
+            checkAvailable();
+
+            return Collections.unmodifiableList(new ArrayList<>(channels.valueCollection()));
         }
         
         /**
@@ -340,21 +385,49 @@ public class WidgetUtil
          * @param  id
          *         the ID of the voice channel
          *
+         * @throws IllegalStateException
+         *         If the widget is not {@link #isAvailable() available}
+         *
          * @return possibly-null VoiceChannel with the given ID. 
          */
         public VoiceChannel getVoiceChannelById(String id)
         {
+            checkAvailable();
+
+            return channels.get(Long.parseLong(id));
+        }
+
+        /**
+         * Gets a voice channel with the given ID, or {@code null} if the voice channel is not found
+         *
+         * @param  id
+         *         the ID of the voice channel
+         *
+         * @throws IllegalStateException
+         *         If the widget is not {@link #isAvailable() available}
+         *
+         * @return possibly-null VoiceChannel with the given ID.
+         */
+        public VoiceChannel getVoiceChannelById(long id)
+        {
+            checkAvailable();
+
             return channels.get(id);
         }
         
         /**
          * Gets a list of online members in the guild
-         * 
+         *
+         * @throws IllegalStateException
+         *         If the widget is not {@link #isAvailable() available}
+         *
          * @return the list of members
          */
         public List<Member> getMembers()
         {
-            return new ArrayList<>(members.values());
+            checkAvailable();
+
+            return Collections.unmodifiableList(new ArrayList<>(members.valueCollection()));
         }
         
         /**
@@ -363,16 +436,39 @@ public class WidgetUtil
          * @param  id
          *         the ID of the member
          *
+         * @throws IllegalStateException
+         *         If the widget is not {@link #isAvailable() available}
+         *
          * @return possibly-null Member with the given ID. 
          */
         public Member getMemberById(String id)
         {
+            checkAvailable();
+
+            return members.get(Long.parseLong(id));
+        }
+
+        /**
+         * Gets a member with the given ID, or {@code null} if the member is not found
+         *
+         * @param  id
+         *         the ID of the member
+         *
+         * @throws IllegalStateException
+         *         If the widget is not {@link #isAvailable() available}
+         *
+         * @return possibly-null Member with the given ID.
+         */
+        public Member getMemberById(long id)
+        {
+            checkAvailable();
+
             return members.get(id);
         }
 
         @Override
         public int hashCode() {
-            return id.hashCode();
+            return Long.hashCode(id);
         }
 
         @Override
@@ -380,13 +476,19 @@ public class WidgetUtil
             if (!(obj instanceof Widget))
                 return false;
             Widget oWidget = (Widget) obj;
-            return this == oWidget || this.id.equals(oWidget.getId());
+            return this == oWidget || this.id == oWidget.getIdLong();
         }
         
         @Override
         public String toString()
         {
-            return "W:" + (isAvailable() ? getName() : "") + '(' + getId() + ')';
+            return "W:" + (isAvailable() ? getName() : "") + '(' + id + ')';
+        }
+
+        private void checkAvailable()
+        {
+            if (!isAvailable)
+                throw new IllegalStateException("The widget for this Guild is unavailable!");
         }
         
         
@@ -394,7 +496,7 @@ public class WidgetUtil
         public static class Member implements ISnowflake, IMentionable
         {
             private final boolean bot;
-            private final String id;
+            private final long id;
             private final String username;
             private final String discriminator;
             private final String avatar;
@@ -408,7 +510,7 @@ public class WidgetUtil
             {
                 this.widget = widget;
                 this.bot = !json.isNull("bot") && json.getBoolean("bot");
-                this.id = json.getString("id");
+                this.id = json.getLong("id");
                 this.username = json.getString("username");
                 this.discriminator = json.getString("discriminator");
                 this.avatar = json.isNull("avatar") ? null : json.getString("avatar");
@@ -443,9 +545,9 @@ public class WidgetUtil
             {
                 return username;
             }
-            
+
             @Override
-            public String getId()
+            public long getIdLong()
             {
                 return id;
             }
@@ -487,7 +589,7 @@ public class WidgetUtil
              */
             public String getAvatarUrl()
             {
-                return getAvatarId() == null ? null : "https://cdn.discordapp.com/avatars/" + getId() + "/" + getAvatarId() 
+                return getAvatarId() == null ? null : "https://cdn.discordapp.com/avatars/" + getId() + "/" + getAvatarId()
                         + (getAvatarId().startsWith("a_") ? ".gif" : ".png");
             }
 
@@ -602,22 +704,22 @@ public class WidgetUtil
                 if (!(obj instanceof Member))
                     return false;
                 Member oMember = (Member) obj;
-                return this == oMember || (this.id.equals(oMember.getId()) && this.widget.getId().equals(oMember.getWidget().getId()));
+                return this == oMember || (this.id == oMember.getIdLong() && this.widget.getIdLong() == oMember.getWidget().getIdLong());
             }
             
             @Override
             public String toString()
             {
-                return "W.M:" + getName() + '(' + getId() + ')';
+                return "W.M:" + getName() + '(' + id + ')';
             }
             
         }
         
         
-        public static class VoiceChannel
+        public static class VoiceChannel implements ISnowflake
         {
             private final int position;
-            private final String id;
+            private final long id;
             private final String name;
             private final List<Member> members;
             private final Widget widget;
@@ -626,7 +728,7 @@ public class WidgetUtil
             {
                 this.widget = widget;
                 this.position = json.getInt("position");
-                this.id = json.getString("id");
+                this.id = json.getLong("id");
                 this.name = json.getString("name");
                 this.members = new ArrayList<>();
             }
@@ -645,13 +747,9 @@ public class WidgetUtil
             {
                 return position;
             }
-            
-            /**
-             * Gets the Discord ID of the channel
-             * 
-             * @return id of the channel
-             */
-            public String getId()
+
+            @Override
+            public long getIdLong()
             {
                 return id;
             }
@@ -688,7 +786,7 @@ public class WidgetUtil
 
             @Override
             public int hashCode() {
-                return id.hashCode();
+                return Long.hashCode(id);
             }
 
             @Override
@@ -696,13 +794,13 @@ public class WidgetUtil
                 if (!(obj instanceof VoiceChannel))
                     return false;
                 VoiceChannel oVChannel = (VoiceChannel) obj;
-                return this == oVChannel || this.id.equals(oVChannel.getId());
+                return this == oVChannel || this.id == oVChannel.getIdLong();
             }
             
             @Override
             public String toString()
             {
-                return "W.VC:" + getName() + '(' + getId() + ')';
+                return "W.VC:" + getName() + '(' + id + ')';
             }
         }
         

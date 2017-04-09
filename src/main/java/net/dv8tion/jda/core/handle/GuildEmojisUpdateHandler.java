@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.handle;
 
+import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.impl.EmoteImpl;
@@ -25,7 +26,10 @@ import net.dv8tion.jda.core.requests.GuildLock;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class GuildEmojisUpdateHandler extends SocketHandler
 {
@@ -35,28 +39,26 @@ public class GuildEmojisUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
-        String guild_id = content.getString("guild_id");
-        if (GuildLock.get(api).isLocked(guild_id))
-        {
-            return content.getString("guild_id");
-        }
+        final long guildId = content.getLong("guild_id");
+        if (GuildLock.get(api).isLocked(guildId))
+            return guildId;
 
-        GuildImpl guild = (GuildImpl) api.getGuildMap().get(guild_id);
+        GuildImpl guild = (GuildImpl) api.getGuildMap().get(guildId);
         if (guild == null)
         {
-            EventCache.get(api).cache(EventCache.Type.GUILD, guild_id, () ->
+            EventCache.get(api).cache(EventCache.Type.GUILD, guildId, () ->
                     handle(responseNumber, allContent));
             return null;
         }
         JSONArray array = content.getJSONArray("emojis");
-        Map<String, Emote> emoteMap = guild.getEmoteMap();
-        List<Emote> oldEmotes = new ArrayList<>(emoteMap.values()); //snapshot of emote cache
+        TLongObjectMap<Emote> emoteMap = guild.getEmoteMap();
+        List<Emote> oldEmotes = new ArrayList<>(emoteMap.valueCollection()); //snapshot of emote cache
         for (int i = 0; i < array.length(); i++)
         {
             JSONObject current = array.getJSONObject(i);
-            String emoteId = current.getString("id");
+            final long emoteId = current.getLong("id");
             EmoteImpl emote = (EmoteImpl) emoteMap.get(emoteId);
             if (emote == null)
                 emote = new EmoteImpl(emoteId, guild);
@@ -78,11 +80,11 @@ public class GuildEmojisUpdateHandler extends SocketHandler
             for (Role r : oldRoles)
                 newRoles.remove(r); // newRoles directly writes to the set contained in the emote
 
-            emoteMap.put(emote.getId(), emote); // finally, update the emote
+            emoteMap.put(emote.getIdLong(), emote); // finally, update the emote
         }
         //cleanup old emotes that don't exist anymore
         for (Emote e : oldEmotes)
-            emoteMap.remove(e.getId());
+            emoteMap.remove(e.getIdLong());
         return null;
     }
 }

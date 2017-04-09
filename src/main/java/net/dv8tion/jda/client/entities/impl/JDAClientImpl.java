@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.client.entities.impl;
 
+import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.client.JDAClient;
 import net.dv8tion.jda.client.entities.*;
 import net.dv8tion.jda.client.requests.restaction.ApplicationAction;
@@ -31,21 +32,21 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.http.util.Args;
 import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class JDAClientImpl implements JDAClient
 {
     protected final JDAImpl api;
-    protected final HashMap<String, Group> groups = new HashMap<>();
-    protected final HashMap<String, Relationship> relationships = new HashMap<>();
-    protected final HashMap<String, CallUser> callUsers = new HashMap<>();
+    protected final TLongObjectMap<Group> groups = MiscUtil.newLongMap();
+    protected final TLongObjectMap<Relationship> relationships = MiscUtil.newLongMap();
+    protected final TLongObjectMap<CallUser> callUsers = MiscUtil.newLongMap();
     protected UserSettingsImpl userSettings;
 
     public JDAClientImpl(JDAImpl api)
@@ -65,13 +66,13 @@ public class JDAClientImpl implements JDAClient
     {
         return Collections.unmodifiableList(
                 new ArrayList<>(
-                        groups.values()));
+                        groups.valueCollection()));
     }
 
     @Override
     public List<Group> getGroupsByName(String name, boolean ignoreCase)
     {
-        return Collections.unmodifiableList(groups.values().stream()
+        return Collections.unmodifiableList(groups.valueCollection().stream()
                 .filter(g -> g.getName() != null
                         && (ignoreCase
                             ? g.getName().equalsIgnoreCase(name)
@@ -82,6 +83,12 @@ public class JDAClientImpl implements JDAClient
     @Override
     public Group getGroupById(String id)
     {
+        return groups.get(Long.parseLong(id));
+    }
+
+    @Override
+    public Group getGroupById(long id)
+    {
         return groups.get(id);
     }
 
@@ -90,13 +97,13 @@ public class JDAClientImpl implements JDAClient
     {
         return Collections.unmodifiableList(
                 new ArrayList<>(
-                        relationships.values()));
+                        relationships.valueCollection()));
     }
 
     @Override
     public List<Relationship> getRelationships(RelationshipType type)
     {
-        return Collections.unmodifiableList(relationships.values().stream()
+        return Collections.unmodifiableList(relationships.valueCollection().stream()
                 .filter(r -> r.getType().equals(type))
                 .collect(Collectors.toList()));
     }
@@ -104,7 +111,7 @@ public class JDAClientImpl implements JDAClient
     @Override
     public List<Relationship> getRelationships(RelationshipType type, String name, boolean ignoreCase)
     {
-        return Collections.unmodifiableList(relationships.values().stream()
+        return Collections.unmodifiableList(relationships.valueCollection().stream()
                 .filter(r -> r.getType().equals(type))
                 .filter(r -> (ignoreCase
                         ? r.getUser().getName().equalsIgnoreCase(name)
@@ -115,7 +122,7 @@ public class JDAClientImpl implements JDAClient
     @Override
     public List<Relationship> getRelationshipsByName(String name, boolean ignoreCase)
     {
-        return Collections.unmodifiableList(relationships.values().stream()
+        return Collections.unmodifiableList(relationships.valueCollection().stream()
                 .filter(r -> (ignoreCase
                         ? r.getUser().getName().equalsIgnoreCase(name)
                         : r.getUser().getName().equals(name)))
@@ -125,7 +132,7 @@ public class JDAClientImpl implements JDAClient
     @Override
     public Relationship getRelationship(User user)
     {
-        return getRelationshipById(user.getId());
+        return getRelationshipById(user.getIdLong());
     }
 
     @Override
@@ -136,6 +143,12 @@ public class JDAClientImpl implements JDAClient
 
     @Override
     public Relationship getRelationshipById(String id)
+    {
+        return relationships.get(Long.parseLong(id));
+    }
+
+    @Override
+    public Relationship getRelationshipById(long id)
     {
         return relationships.get(id);
     }
@@ -149,6 +162,17 @@ public class JDAClientImpl implements JDAClient
         else
             return null;
     }
+
+    @Override
+    public Relationship getRelationshipById(long id, RelationshipType type)
+    {
+        Relationship relationship = getRelationshipById(id);
+        if (relationship != null && relationship.getType() == type)
+            return relationship;
+        else
+            return null;
+    }
+
 
     @Override
     @SuppressWarnings("unchecked")
@@ -167,7 +191,7 @@ public class JDAClientImpl implements JDAClient
     @Override
     public Friend getFriend(User user)
     {
-        return getFriendById(user.getId());
+        return getFriendById(user.getIdLong());
     }
 
     @Override
@@ -178,6 +202,12 @@ public class JDAClientImpl implements JDAClient
 
     @Override
     public Friend getFriendById(String id)
+    {
+        return (Friend) getRelationshipById(id, RelationshipType.FRIEND);
+    }
+
+    @Override
+    public Friend getFriendById(long id)
     {
         return (Friend) getRelationshipById(id, RelationshipType.FRIEND);
     }
@@ -203,17 +233,17 @@ public class JDAClientImpl implements JDAClient
         return userSettings;
     }
 
-    public HashMap<String, Group> getGroupMap()
+    public TLongObjectMap<Group> getGroupMap()
     {
         return groups;
     }
 
-    public HashMap<String, Relationship> getRelationshipMap()
+    public TLongObjectMap<Relationship> getRelationshipMap()
     {
         return relationships;
     }
 
-    public HashMap<String, CallUser> getCallUserMap()
+    public TLongObjectMap<CallUser> getCallUserMap()
     {
         return callUsers;
     }
@@ -231,7 +261,7 @@ public class JDAClientImpl implements JDAClient
         return new RestAction<List<Application>>(api, route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<List<Application>> request)
             {
                 if (response.isOk())
                 {
@@ -257,11 +287,11 @@ public class JDAClientImpl implements JDAClient
     {
         Args.notEmpty(id, "id");
 
-        Route.CompiledRoute route = Route.Applications.GET_APPLICATION.compile(id); 
+        Route.CompiledRoute route = Route.Applications.GET_APPLICATION.compile(id);
         return new RestAction<Application>(api, route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Application> request)
             {
                 if (response.isOk())
                     request.onSuccess(EntityBuilder.get(getJDA()).createApplication(response.getObject()));
@@ -278,7 +308,7 @@ public class JDAClientImpl implements JDAClient
         return new RestAction<List<AuthorizedApplication>>(api, route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<List<AuthorizedApplication>> request)
             {
                 if (response.isOk())
                 {
@@ -308,7 +338,7 @@ public class JDAClientImpl implements JDAClient
         return new RestAction<AuthorizedApplication>(api, route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<AuthorizedApplication> request)
             {
                 if (response.isOk())
                     request.onSuccess(EntityBuilder.get(getJDA()).createAuthorizedApplication(response.getObject()));

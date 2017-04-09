@@ -62,7 +62,7 @@ public class InviteAction extends RestAction<Invite>
     }
 
     @Override
-    protected void handleResponse(final Response response, final Request request)
+    protected void handleResponse(final Response response, final Request<Invite> request)
     {
         if (response.isOk())
             request.onSuccess(EntityBuilder.get(this.api).createInvite(response.getObject()));

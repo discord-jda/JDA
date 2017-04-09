@@ -39,24 +39,28 @@ public class MessageDeleteHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
-        String messageId = content.getString("id");
-        String channelId = content.getString("channel_id");
+        final String messageIdString = content.getString("id");
+        final long messageId = Long.parseLong(messageIdString);
+        final long channelId = content.getLong("channel_id");
 
         MessageChannel channel = api.getTextChannelById(channelId);
         if (channel == null)
+        {
             channel = api.getPrivateChannelById(channelId);
-        if (channel == null)
-            channel = api.getFakePrivateChannelMap().get(channelId);
-        if (channel == null && api.getAccountType() == AccountType.CLIENT)
-            channel = api.asClient().getGroupById(channelId);
+        }
         if (channel == null)
         {
-            EventCache.get(api).cache(EventCache.Type.CHANNEL, channelId, () ->
-            {
-                handle(responseNumber, allContent);
-            });
+            channel = api.getFakePrivateChannelMap().get(channelId);
+        }
+        if (channel == null && api.getAccountType() == AccountType.CLIENT)
+        {
+            channel = api.asClient().getGroupById(channelId);
+        }
+        if (channel == null)
+        {
+            EventCache.get(api).cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("Got message delete for a channel/group that is not yet cached. ChannelId: " + channelId);
             return null;
         }
@@ -64,36 +68,36 @@ public class MessageDeleteHandler extends SocketHandler
         if (channel instanceof TextChannel)
         {
             TextChannelImpl tChan = (TextChannelImpl) channel;
-            if (GuildLock.get(api).isLocked(tChan.getGuild().getId()))
+            if (GuildLock.get(api).isLocked(tChan.getGuild().getIdLong()))
             {
-                return tChan.getGuild().getId();
+                return tChan.getGuild().getIdLong();
             }
-            if (tChan.hasLatestMessage() && messageId.equals(tChan.getLatestMessageId()))
-                tChan.setLastMessageId(null); // Reset latest message id as it was deleted.
+            if (tChan.hasLatestMessage() && messageId == channel.getLatestMessageIdLong())
+                tChan.setLastMessageId(-1); // Reset latest message id as it was deleted.
             api.getEventManager().handle(
                     new GuildMessageDeleteEvent(
                             api, responseNumber,
-                            messageId, tChan));
+                            messageIdString, tChan));
         }
         else if (channel instanceof PrivateChannel)
         {
             PrivateChannelImpl pChan = (PrivateChannelImpl) channel;
-            if (channel.hasLatestMessage() && messageId.equals(channel.getLatestMessageId()))
-                pChan.setLastMessageId(null); // Reset latest message id as it was deleted.
+            if (channel.hasLatestMessage() && messageId == channel.getLatestMessageIdLong())
+                pChan.setLastMessageId(-1); // Reset latest message id as it was deleted.
             api.getEventManager().handle(
                     new PrivateMessageDeleteEvent(
                             api, responseNumber,
-                            messageId, pChan));
+                            messageIdString, pChan));
         }
         else
         {
             GroupImpl group = (GroupImpl) channel;
-            if (channel.hasLatestMessage() && messageId.equals(channel.getLatestMessageId()))
-                group.setLastMessageId(null); // Reset latest message id as it was deleted.
+            if (channel.hasLatestMessage() && messageId == channel.getLatestMessageIdLong())
+                group.setLastMessageId(-1); // Reset latest message id as it was deleted.
             api.getEventManager().handle(
                     new GroupMessageDeleteEvent(
                             api, responseNumber,
-                            messageId, group));
+                            messageIdString, group));
         }
 
         //Combo event

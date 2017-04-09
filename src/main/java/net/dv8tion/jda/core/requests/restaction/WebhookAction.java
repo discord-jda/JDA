@@ -90,7 +90,7 @@ public class WebhookAction extends RestAction<Webhook>
     }
 
     @Override
-    protected void handleResponse(Response response, Request request)
+    protected void handleResponse(Response response, Request<Webhook> request)
     {
         if (!response.isOk())
         {

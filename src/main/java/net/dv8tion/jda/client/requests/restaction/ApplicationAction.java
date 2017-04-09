@@ -20,8 +20,10 @@ import net.dv8tion.jda.client.entities.Application;
 import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.requests.*;
-
+import net.dv8tion.jda.core.requests.Request;
+import net.dv8tion.jda.core.requests.Response;
+import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.Route;
 import org.json.JSONObject;
 
 /**
@@ -61,7 +63,7 @@ public class ApplicationAction extends RestAction<Application>
     }
 
     @Override
-    protected void handleResponse(final Response response, final Request request)
+    protected void handleResponse(final Response response, final Request<Application> request)
     {
         if (response.isOk())
         {

@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
+import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.client.requests.restaction.pagination.MentionPaginationAction;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
@@ -47,15 +48,15 @@ import java.util.stream.Collectors;
 
 public class GuildImpl implements Guild
 {
-    private final String id;
+    private final long id;
     private final JDAImpl api;
-    private final HashMap<String, TextChannel> textChannels = new HashMap<>();
-    private final HashMap<String, VoiceChannel> voiceChannels = new HashMap<>();
-    private final HashMap<String, Member> members = new HashMap<>();
-    private final HashMap<String, Role> roles = new HashMap<>();
-    private final HashMap<String, Emote> emotes = new HashMap<>();
+    private final TLongObjectMap<TextChannel> textChannels = MiscUtil.newLongMap();
+    private final TLongObjectMap<VoiceChannel> voiceChannels = MiscUtil.newLongMap();
+    private final TLongObjectMap<Member> members = MiscUtil.newLongMap();
+    private final TLongObjectMap<Role> roles = MiscUtil.newLongMap();
+    private final TLongObjectMap<Emote> emotes = MiscUtil.newLongMap();
 
-    private final HashMap<String, JSONObject> cachedPresences = new HashMap<>();
+    private final TLongObjectMap<JSONObject> cachedPresences = MiscUtil.newLongMap();
 
     private volatile GuildManager manager;
     private volatile GuildManagerUpdatable managerUpdatable;
@@ -77,7 +78,7 @@ public class GuildImpl implements Guild
     private boolean available;
     private boolean canSendVerification = false;
 
-    public GuildImpl(JDAImpl api, String id)
+    public GuildImpl(JDAImpl api, long id)
     {
         this.id = id;
         this.api = api;
@@ -125,12 +126,12 @@ public class GuildImpl implements Guild
         if (!getSelfMember().hasPermission(Permission.MANAGE_WEBHOOKS))
             throw new PermissionException(Permission.MANAGE_WEBHOOKS);
 
-        Route.CompiledRoute route = Route.Guilds.GET_WEBHOOKS.compile(id);
+        Route.CompiledRoute route = Route.Guilds.GET_WEBHOOKS.compile(String.valueOf(id));
 
         return new RestAction<List<Webhook>>(api, route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<List<Webhook>> request)
             {
                 if (!response.isOk())
                 {
@@ -180,7 +181,7 @@ public class GuildImpl implements Guild
     @Override
     public boolean isMember(User user)
     {
-        return members.containsKey(user.getId());
+        return members.containsKey(user.getIdLong());
     }
 
     @Override
@@ -192,11 +193,17 @@ public class GuildImpl implements Guild
     @Override
     public Member getMember(User user)
     {
-        return getMemberById(user.getId());
+        return getMemberById(user.getIdLong());
     }
 
     @Override
     public Member getMemberById(String userId)
+    {
+        return members.get(Long.parseLong(userId));
+    }
+
+    @Override
+    public Member getMemberById(long userId)
     {
         return members.get(userId);
     }
@@ -204,14 +211,14 @@ public class GuildImpl implements Guild
     @Override
     public List<Member> getMembers()
     {
-        return Collections.unmodifiableList(new ArrayList<>(members.values()));
+        return Collections.unmodifiableList(new ArrayList<>(members.valueCollection()));
     }
 
     @Override
     public List<Member> getMembersByName(String name, boolean ignoreCase)
     {
         Args.notNull(name, "name");
-        return Collections.unmodifiableList(members.values().stream()
+        return Collections.unmodifiableList(members.valueCollection().stream()
                 .filter(m ->
                     ignoreCase
                     ? name.equalsIgnoreCase(m.getUser().getName())
@@ -223,7 +230,7 @@ public class GuildImpl implements Guild
     public List<Member> getMembersByNickname(String nickname, boolean ignoreCase)
     {
         Args.notNull(nickname, "nickname");
-        return Collections.unmodifiableList(members.values().stream()
+        return Collections.unmodifiableList(members.valueCollection().stream()
                 .filter(m ->
                     ignoreCase
                     ? nickname.equalsIgnoreCase(m.getNickname())
@@ -235,7 +242,7 @@ public class GuildImpl implements Guild
     public List<Member> getMembersByEffectiveName(String name, boolean ignoreCase)
     {
         Args.notNull(name, "name");
-        return Collections.unmodifiableList(members.values().stream()
+        return Collections.unmodifiableList(members.valueCollection().stream()
                 .filter(m ->
                     ignoreCase
                     ? name.equalsIgnoreCase(m.getEffectiveName())
@@ -261,13 +268,19 @@ public class GuildImpl implements Guild
                 throw new IllegalArgumentException("Role provided was from a different Guild! Role: " + r);
         }
 
-        return Collections.unmodifiableList(members.values().stream()
+        return Collections.unmodifiableList(members.valueCollection().stream()
                         .filter(m -> m.getRoles().containsAll(roles))
                         .collect(Collectors.toList()));
     }
 
     @Override
     public TextChannel getTextChannelById(String id)
+    {
+        return textChannels.get(Long.parseLong(id));
+    }
+
+    @Override
+    public TextChannel getTextChannelById(long id)
     {
         return textChannels.get(id);
     }
@@ -276,7 +289,7 @@ public class GuildImpl implements Guild
     public List<TextChannel> getTextChannelsByName(String name, boolean ignoreCase)
     {
         Args.notNull(name, "name");
-        return Collections.unmodifiableList(textChannels.values().stream()
+        return Collections.unmodifiableList(textChannels.valueCollection().stream()
                 .filter(tc ->
                     ignoreCase
                     ? name.equalsIgnoreCase(tc.getName())
@@ -287,13 +300,19 @@ public class GuildImpl implements Guild
     @Override
     public List<TextChannel> getTextChannels()
     {
-        ArrayList<TextChannel> channels = new ArrayList<>(textChannels.values());
-        Collections.sort(channels, (c1, c2) -> c2.compareTo(c1));
+        ArrayList<TextChannel> channels = new ArrayList<>(textChannels.valueCollection());
+        channels.sort(Comparator.reverseOrder());
         return Collections.unmodifiableList(channels);
     }
 
     @Override
     public VoiceChannel getVoiceChannelById(String id)
+    {
+        return voiceChannels.get(Long.parseLong(id));
+    }
+
+    @Override
+    public VoiceChannel getVoiceChannelById(long id)
     {
         return voiceChannels.get(id);
     }
@@ -302,7 +321,7 @@ public class GuildImpl implements Guild
     public List<VoiceChannel> getVoiceChannelsByName(String name, boolean ignoreCase)
     {
         Args.notNull(name, "name");
-        return Collections.unmodifiableList(voiceChannels.values().stream()
+        return Collections.unmodifiableList(voiceChannels.valueCollection().stream()
             .filter(vc ->
                     ignoreCase
                     ? name.equalsIgnoreCase(vc.getName())
@@ -313,13 +332,19 @@ public class GuildImpl implements Guild
     @Override
     public List<VoiceChannel> getVoiceChannels()
     {
-        List<VoiceChannel> channels = new ArrayList<>(voiceChannels.values());
-        Collections.sort(channels, (v1, v2) -> v2.compareTo(v1));
+        List<VoiceChannel> channels = new ArrayList<>(voiceChannels.valueCollection());
+        channels.sort(Comparator.reverseOrder());
         return Collections.unmodifiableList(channels);
     }
 
     @Override
     public Role getRoleById(String id)
+    {
+        return roles.get(Long.parseLong(id));
+    }
+
+    @Override
+    public Role getRoleById(long id)
     {
         return roles.get(id);
     }
@@ -327,8 +352,8 @@ public class GuildImpl implements Guild
     @Override
     public List<Role> getRoles()
     {
-        List<Role> list = new ArrayList<>(roles.values());
-        Collections.sort(list, (r1, r2) -> r2.compareTo(r1));
+        List<Role> list = new ArrayList<>(roles.valueCollection());
+        list.sort(Comparator.reverseOrder());
         return Collections.unmodifiableList(list);
     }
 
@@ -336,7 +361,7 @@ public class GuildImpl implements Guild
     public List<Role> getRolesByName(String name, boolean ignoreCase)
     {
         Args.notNull(name, "name");
-        return Collections.unmodifiableList(roles.values().stream()
+        return Collections.unmodifiableList(roles.valueCollection().stream()
                 .filter(r ->
                         ignoreCase
                         ? name.equalsIgnoreCase(r.getName())
@@ -347,20 +372,26 @@ public class GuildImpl implements Guild
     @Override
     public Emote getEmoteById(String id)
     {
+        return emotes.get(Long.parseLong(id));
+    }
+
+    @Override
+    public Emote getEmoteById(long id)
+    {
         return emotes.get(id);
     }
 
     @Override
     public List<Emote> getEmotes()
     {
-        return Collections.unmodifiableList(new LinkedList<>(emotes.values()));
+        return Collections.unmodifiableList(new LinkedList<>(emotes.valueCollection()));
     }
 
     @Override
     public List<Emote> getEmotesByName(String name, boolean ignoreCase)
     {
         Args.notNull(name, "name");
-        return Collections.unmodifiableList(emotes.values().parallelStream()
+        return Collections.unmodifiableList(emotes.valueCollection().parallelStream()
                 .filter(e ->
                         ignoreCase
                         ? StringUtils.equalsIgnoreCase(e.getName(), name)
@@ -442,11 +473,11 @@ public class GuildImpl implements Guild
         if (owner.equals(getSelfMember()))
             throw new IllegalStateException("Cannot leave a guild that you are the owner of! Transfer guild ownership first!");
 
-        Route.CompiledRoute route = Route.Self.LEAVE_GUILD.compile(id);
+        Route.CompiledRoute route = Route.Self.LEAVE_GUILD.compile(getId());
         return new RestAction<Void>(api, route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
@@ -478,11 +509,11 @@ public class GuildImpl implements Guild
             mfaBody = new JSONObject().put("code", mfaCode);
         }
 
-        Route.CompiledRoute route = Route.Guilds.DELETE_GUILD.compile(id);
+        Route.CompiledRoute route = Route.Guilds.DELETE_GUILD.compile(getId());
         return new RestAction<Void>(api, route, mfaBody)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
@@ -498,7 +529,7 @@ public class GuildImpl implements Guild
         if (!api.isAudioEnabled())
             throw new IllegalStateException("Audio is disabled. Cannot retrieve an AudioManager while audio is disabled.");
 
-        HashMap<String, AudioManager> audioManagers = ((JDAImpl) api).getAudioManagerMap();
+        TLongObjectMap<AudioManager> audioManagers = api.getAudioManagerMap();
         AudioManager mng = audioManagers.get(id);
         if (mng == null)
         {
@@ -525,7 +556,7 @@ public class GuildImpl implements Guild
     public List<GuildVoiceState> getVoiceStates()
     {
         return Collections.unmodifiableList(
-                members.values().stream().map(Member::getVoiceState).collect(Collectors.toList()));
+                members.valueCollection().stream().map(Member::getVoiceState).collect(Collectors.toList()));
     }
 
     @Override
@@ -578,7 +609,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public String getId()
+    public long getIdLong()
     {
         return id;
     }
@@ -666,32 +697,32 @@ public class GuildImpl implements Guild
 
     // -- Map getters --
 
-    public HashMap<String, TextChannel> getTextChannelsMap()
+    public TLongObjectMap<TextChannel> getTextChannelsMap()
     {
         return textChannels;
     }
 
-    public HashMap<String, VoiceChannel> getVoiceChannelMap()
+    public TLongObjectMap<VoiceChannel> getVoiceChannelMap()
     {
         return voiceChannels;
     }
 
-    public HashMap<String, Member> getMembersMap()
+    public TLongObjectMap<Member> getMembersMap()
     {
         return members;
     }
 
-    public HashMap<String, Role> getRolesMap()
+    public TLongObjectMap<Role> getRolesMap()
     {
         return roles;
     }
 
-    public HashMap<String, JSONObject> getCachedPresenceMap()
+    public TLongObjectMap<JSONObject> getCachedPresenceMap()
     {
         return cachedPresences;
     }
 
-    public HashMap<String, Emote> getEmoteMap()
+    public TLongObjectMap<Emote> getEmoteMap()
     {
         return emotes;
     }
@@ -702,22 +733,22 @@ public class GuildImpl implements Guild
     @Override
     public boolean equals(Object o)
     {
-        if (!(o instanceof Guild))
+        if (!(o instanceof GuildImpl))
             return false;
-        Guild oGuild = (Guild) o;
-        return this == oGuild || this.getId().equals(oGuild.getId());
+        GuildImpl oGuild = (GuildImpl) o;
+        return this == oGuild || this.id == oGuild.id;
     }
 
     @Override
     public int hashCode()
     {
-        return getId().hashCode();
+        return Long.hashCode(id);
     }
 
     @Override
     public String toString()
     {
-        return "G:" + getName() + '(' + getId() + ')';
+        return "G:" + getName() + '(' + id + ')';
     }
 
     @Override
@@ -731,7 +762,7 @@ public class GuildImpl implements Guild
         return new RestAction<List<Invite>>(api, route, null)
         {
             @Override
-            protected void handleResponse(final Response response, final Request request)
+            protected void handleResponse(final Response response, final Request<List<Invite>> request)
             {
                 if (response.isOk())
                 {

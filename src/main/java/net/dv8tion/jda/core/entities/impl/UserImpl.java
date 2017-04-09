@@ -34,17 +34,17 @@ import java.util.List;
 
 public class UserImpl implements User
 {
-    protected final String id;
+    protected final long id;
     protected final JDAImpl api;
 
+    protected short discriminator;
     protected String name;
-    protected String discriminator;
     protected String avatarId;
     protected PrivateChannel privateChannel;
     protected boolean bot;
     protected boolean fake = false;
 
-    public UserImpl(String id, JDAImpl api)
+    public UserImpl(long id, JDAImpl api)
     {
         this.id = id;
         this.api = api;
@@ -59,7 +59,7 @@ public class UserImpl implements User
     @Override
     public String getDiscriminator()
     {
-        return discriminator;
+        return String.valueOf(discriminator);
     }
 
     @Override
@@ -104,7 +104,7 @@ public class UserImpl implements User
     public RestAction<PrivateChannel> openPrivateChannel()
     {
         if (privateChannel != null)
-            return new RestAction.EmptyRestAction<PrivateChannel>(privateChannel);
+            return new RestAction.EmptyRestAction<>(privateChannel);
 
         if (fake)
             throw new IllegalStateException("Cannot open a PrivateChannel with a Fake user.");
@@ -114,7 +114,7 @@ public class UserImpl implements User
         return new RestAction<PrivateChannel>(api, route, body)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<PrivateChannel> request)
             {
                 if (response.isOk())
                 {
@@ -160,11 +160,11 @@ public class UserImpl implements User
     @Override
     public String getAsMention()
     {
-        return "<@" + getId() + '>';
+        return "<@" + id + '>';
     }
 
     @Override
-    public String getId()
+    public long getIdLong()
     {
         return id;
     }
@@ -178,22 +178,22 @@ public class UserImpl implements User
     @Override
     public boolean equals(Object o)
     {
-        if (!(o instanceof User))
+        if (!(o instanceof UserImpl))
             return false;
-        User oUser = (User) o;
-        return this == oUser || this.getId().equals(oUser.getId());
+        UserImpl oUser = (UserImpl) o;
+        return this == oUser || this.id == oUser.id;
     }
 
     @Override
     public int hashCode()
     {
-        return getId().hashCode();
+        return Long.hashCode(id);
     }
 
     @Override
     public String toString()
     {
-        return "U:" + getName() + '(' + getId() + ')';
+        return "U:" + getName() + '(' + id + ')';
     }
 
     // -- Setters --
@@ -206,7 +206,7 @@ public class UserImpl implements User
 
     public UserImpl setDiscriminator(String discriminator)
     {
-        this.discriminator = discriminator;
+        this.discriminator = Short.parseShort(discriminator);
         return this;
     }
 

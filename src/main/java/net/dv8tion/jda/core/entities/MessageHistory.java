@@ -39,7 +39,7 @@ public class MessageHistory
 {
     protected final MessageChannel channel;
 
-    protected ListOrderedMap<String, Message> history = new ListOrderedMap<>();
+    protected ListOrderedMap<Long, Message> history = new ListOrderedMap<>();
 
     /**
      * Creates a new MessageHistory object.
@@ -137,11 +137,11 @@ public class MessageHistory
         if (history.isEmpty())
             route = Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId(), Integer.toString(amount));
         else
-            route = Route.Messages.GET_MESSAGE_HISTORY_BEFORE.compile(channel.getId(), Integer.toString(amount), history.lastKey());
+            route = Route.Messages.GET_MESSAGE_HISTORY_BEFORE.compile(channel.getId(), Integer.toString(amount), String.valueOf(history.lastKey()));
         return new RestAction<List<Message>>(getJDA(), route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<List<Message>> request)
             {
                 if (!response.isOk())
                 {
@@ -156,7 +156,7 @@ public class MessageHistory
                 for (int i = 0; i < historyJson.length(); i++)
                     msgs.add(builder.createMessage(historyJson.getJSONObject(i)));
 
-                msgs.forEach(msg -> history.put(msg.getId(), msg));
+                msgs.forEach(msg -> history.put(msg.getIdLong(), msg));
                 request.onSuccess(msgs);
             }
         };
@@ -214,11 +214,11 @@ public class MessageHistory
         if (history.isEmpty())
             throw new IllegalStateException("No messages have been retrieved yet, so there is no message to act as a marker to retrieve more recent messages based on.");
 
-        Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY_AFTER.compile(channel.getId(), Integer.toString(amount), history.firstKey());
+        Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY_AFTER.compile(channel.getId(), Integer.toString(amount), String.valueOf(history.firstKey()));
         return new RestAction<List<Message>>(getJDA(), route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<List<Message>> request)
             {
                 if (!response.isOk())
                 {
@@ -236,7 +236,7 @@ public class MessageHistory
                 for (Iterator<Message> it = msgs.descendingIterator(); it.hasNext();)
                 {
                     Message m = it.next();
-                    history.put(0, m.getId(), m);
+                    history.put(0, m.getIdLong(), m);
                 }
 
                 request.onSuccess(msgs);
@@ -289,6 +289,11 @@ public class MessageHistory
     {
         Args.notEmpty(id, "Provided message id");
 
+        return getMessageById(Long.parseLong(id));
+    }
+
+    public Message getMessageById(long id)
+    {
         return history.get(id);
     }
 }

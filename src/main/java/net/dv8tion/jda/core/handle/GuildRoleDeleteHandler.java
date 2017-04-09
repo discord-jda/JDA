@@ -33,38 +33,31 @@ public class GuildRoleDeleteHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
-        String guildId = content.getString("guild_id");
+        final long guildId = content.getLong("guild_id");
         if (GuildLock.get(api).isLocked(guildId))
-        {
             return guildId;
-        }
 
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(guildId);
         if (guild == null)
         {
-            EventCache.get(api).cache(EventCache.Type.GUILD, guildId, () ->
-            {
-                handle(responseNumber, allContent);
-            });
+            EventCache.get(api).cache(EventCache.Type.GUILD, guildId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("GUILD_ROLE_DELETE was received for a Guild that is not yet cached: " + content);
             return null;
         }
 
-        Role removedRole = guild.getRolesMap().remove(content.getString("role_id"));
+        final long roleId = content.getLong("role_id");
+        Role removedRole = guild.getRolesMap().remove(roleId);
         if (removedRole == null)
         {
-            EventCache.get(api).cache(EventCache.Type.ROLE, content.getString("role_id"), () ->
-            {
-                handle(responseNumber, allContent);
-            });
+            EventCache.get(api).cache(EventCache.Type.ROLE, roleId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("GUILD_ROLE_DELETE was received for a Role that is not yet cached: " + content);
             return null;
         }
 
         //Now that the role is removed from the Guild, remove it from all users.
-        for (Member m : guild.getMembersMap().values())
+        for (Member m : guild.getMembersMap().valueCollection())
         {
             MemberImpl member = (MemberImpl) m;
             member.getRoleSet().remove(removedRole);

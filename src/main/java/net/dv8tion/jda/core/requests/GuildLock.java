@@ -15,12 +15,19 @@
  */
 package net.dv8tion.jda.core.requests;
 
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import org.json.JSONObject;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class GuildLock
 {
@@ -37,15 +44,15 @@ public class GuildLock
     }
 
     private final JDA api;
-    private final Map<String, List<JSONObject>> cache = new HashMap<>();
-    private final Set<String> cached = new HashSet<>();
+    private final TLongObjectMap<List<JSONObject>> cache = new TLongObjectHashMap<>();
+    private final TLongSet cached = new TLongHashSet();
 
-    public boolean isLocked(String guildId)
+    public boolean isLocked(long guildId)
     {
         return cached.contains(guildId);
     }
 
-    public void lock(String guildId)
+    public void lock(long guildId)
     {
         if (!isLocked(guildId))
         {
@@ -54,7 +61,7 @@ public class GuildLock
         }
     }
 
-    public void unlock(String guildId)
+    public void unlock(long guildId)
     {
         if (isLocked(guildId))
         {
@@ -69,7 +76,7 @@ public class GuildLock
         }
     }
 
-    public void queue(String guildId, JSONObject event)
+    public void queue(long guildId, JSONObject event)
     {
         if (isLocked(guildId))
         {

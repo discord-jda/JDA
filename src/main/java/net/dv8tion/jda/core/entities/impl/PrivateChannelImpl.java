@@ -28,14 +28,14 @@ import net.dv8tion.jda.core.requests.Route;
 
 public class PrivateChannelImpl implements PrivateChannel
 {
-    private final String id;
+    private final long id;
     private final User user;
 
-    private String lastMessageId;
+    private long lastMessageId;
     private Call currentCall = null;
     private boolean fake = false;
 
-    public PrivateChannelImpl(String id, User user)
+    public PrivateChannelImpl(long id, User user)
     {
         this.id = id;
         this.user = user;
@@ -48,10 +48,10 @@ public class PrivateChannelImpl implements PrivateChannel
     }
 
     @Override
-    public String getLatestMessageId()
+    public long getLatestMessageIdLong()
     {
-        String messageId = lastMessageId;
-        if (messageId == null)
+        final long messageId = lastMessageId;
+        if (messageId < 0)
             throw new IllegalStateException("No last message id found.");
         return messageId;
     }
@@ -59,7 +59,7 @@ public class PrivateChannelImpl implements PrivateChannel
     @Override
     public boolean hasLatestMessage()
     {
-        return lastMessageId != null;
+        return lastMessageId > 0;
     }
 
     @Override
@@ -83,11 +83,11 @@ public class PrivateChannelImpl implements PrivateChannel
     @Override
     public RestAction<Void> close()
     {
-        Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(id);
+        Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(getId());
         return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
@@ -98,7 +98,7 @@ public class PrivateChannelImpl implements PrivateChannel
     }
 
     @Override
-    public String getId()
+    public long getIdLong()
     {
         return id;
     }
@@ -133,10 +133,32 @@ public class PrivateChannelImpl implements PrivateChannel
         return this;
     }
 
-    public PrivateChannelImpl setLastMessageId(String id)
+    public PrivateChannelImpl setLastMessageId(long id)
     {
         this.lastMessageId = id;
         return this;
+    }
+
+    // -- Object --
+
+
+    @Override
+    public int hashCode()
+    {
+        return Long.hashCode(id);
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        return obj instanceof PrivateChannelImpl
+                && this.id == ((PrivateChannelImpl) obj).id;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "PC:" + getUser().getName() + '(' + id + ')';
     }
 
     private void checkNull(Object obj, String name)

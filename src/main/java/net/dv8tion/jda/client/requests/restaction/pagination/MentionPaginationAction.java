@@ -147,7 +147,7 @@ public class MentionPaginationAction extends PaginationAction<Message, MentionPa
     }
 
     @Override
-    protected void handleResponse(Response response, Request request)
+    protected void handleResponse(Response response, Request<List<Message>> request)
     {
         if(!response.isOk())
         {

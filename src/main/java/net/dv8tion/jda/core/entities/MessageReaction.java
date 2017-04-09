@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.entities;
 
+import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.exceptions.PermissionException;
@@ -41,7 +42,7 @@ public class MessageReaction
 
     private final MessageChannel channel;
     private final ReactionEmote emote;
-    private final String messageId;
+    private final long messageId;
     private final boolean self;
     private final int count;
 
@@ -59,7 +60,7 @@ public class MessageReaction
      * @param  count
      *         The amount of people that reacted with this Reaction
      */
-    public MessageReaction(MessageChannel channel, ReactionEmote emote, String messageId, boolean self, int count)
+    public MessageReaction(MessageChannel channel, ReactionEmote emote, long messageId, boolean self, int count)
     {
         this.channel = channel;
         this.emote = emote;
@@ -100,6 +101,77 @@ public class MessageReaction
     }
 
     /**
+     * The {@link net.dv8tion.jda.core.entities.ChannelType ChannelType}
+     * this Reaction was used in.
+     *
+     * @return The ChannelType
+     */
+    public ChannelType getChannelType()
+    {
+        return channel.getType();
+    }
+
+    /**
+     * Whether this Reaction was used in a {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}
+     * of the specified {@link net.dv8tion.jda.core.entities.ChannelType ChannelType}.
+     *
+     * @param  type
+     *         The ChannelType to compare
+     *
+     * @return True, if this Reaction was used in a MessageChannel from the specified ChannelType
+     */
+    public boolean isFromType(ChannelType type)
+    {
+        return getChannelType() == type;
+    }
+
+    /**
+     * The {@link net.dv8tion.jda.core.entities.Guild Guild} this Reaction was used in,
+     * this might return {@code null} when this Reaction was not used in a MessageChannel
+     * from the ChannelType {@link net.dv8tion.jda.core.entities.ChannelType#TEXT TEXT}!
+     *
+     * @return {@link net.dv8tion.jda.core.entities.Guild Guild} this Reaction was used in, or {@code null}
+     */
+    public Guild getGuild()
+    {
+        TextChannel channel = getTextChannel();
+        return channel != null ? channel.getGuild() : null;
+    }
+
+    /**
+     * The {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} this Reaction was used in
+     * or {@code null} if this is not from type {@link net.dv8tion.jda.core.entities.ChannelType#TEXT ChannelType.TEXT}!
+     *
+     * @return The {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} or {@code null}
+     */
+    public TextChannel getTextChannel()
+    {
+        return getChannel() instanceof TextChannel ? (TextChannel) getChannel() : null;
+    }
+
+    /**
+     * The {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} this Reaction was used in
+     * or {@code null} if this is not from type {@link net.dv8tion.jda.core.entities.ChannelType#PRIVATE ChannelType.PRIVATE}!
+     *
+     * @return The {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} or {@code null}
+     */
+    public PrivateChannel getPrivateChannel()
+    {
+        return getChannel() instanceof PrivateChannel ? (PrivateChannel) getChannel() : null;
+    }
+
+    /**
+     * The {@link net.dv8tion.jda.client.entities.Group Group} this Reaction was used in
+     * or {@code null} if this is not from type {@link net.dv8tion.jda.core.entities.ChannelType#GROUP ChannelType.GROUP}!
+     *
+     * @return The {@link net.dv8tion.jda.client.entities.Group Group} or {@code null}
+     */
+    public Group getGroup()
+    {
+        return getChannel() instanceof Group ? (Group) getChannel() : null;
+    }
+
+    /**
      * The {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}
      * this Reaction was used in.
      *
@@ -127,6 +199,16 @@ public class MessageReaction
      * @return The message id this reaction is attached to
      */
     public String getMessageId()
+    {
+        return String.valueOf(messageId);
+    }
+
+    /**
+     * The message id this reaction is attached to
+     *
+     * @return The message id this reaction is attached to
+     */
+    public long getMessageIdLong()
     {
         return messageId;
     }
@@ -265,11 +347,11 @@ public class MessageReaction
         String code = emote.isEmote()
                     ? emote.getName() + ":" + emote.getId()
                     : MiscUtil.encodeUTF8(emote.getName());
-        Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(channel.getId(), messageId, code, user.getId());
+        Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(channel.getId(), getMessageId(), code, user.getId());
         return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
@@ -285,7 +367,7 @@ public class MessageReaction
         return obj instanceof MessageReaction
                 && ((MessageReaction) obj).emote.equals(emote)
                 && (((MessageReaction) obj).self == self)
-                && ((MessageReaction) obj).messageId.equals(messageId);
+                && ((MessageReaction) obj).messageId == messageId;
     }
 
     @Override
@@ -303,10 +385,10 @@ public class MessageReaction
 
         private final JDA api;
         private final String name;
-        private final String id;
+        private final Long id;
         private Emote emote = null;
 
-        public ReactionEmote(String name, String id, JDA api)
+        public ReactionEmote(String name, Long id, JDA api)
         {
             this.name = name;
             this.id = id;
@@ -315,7 +397,7 @@ public class MessageReaction
 
         public ReactionEmote(Emote emote)
         {
-            this(emote.getName(), emote.getId(), emote.getJDA());
+            this(emote.getName(), emote.getIdLong(), emote.getJDA());
             this.emote = emote;
         }
 
@@ -333,6 +415,14 @@ public class MessageReaction
         @Override
         public String getId()
         {
+            return id != null ? String.valueOf(id) : null;
+        }
+
+        @Override
+        public long getIdLong()
+        {
+            if (id == null)
+                throw new IllegalStateException("No id available");
             return id;
         }
 
@@ -372,14 +462,14 @@ public class MessageReaction
         public boolean equals(Object obj)
         {
             return obj instanceof ReactionEmote
-                    && Objects.equals(((ReactionEmote) obj).getId(), id)
+                    && Objects.equals(((ReactionEmote) obj).id, id)
                     && ((ReactionEmote) obj).getName().equals(name);
         }
 
         @Override
         public String toString()
         {
-            return "RE:" + (isEmote() ? getEmote() : getName() + "(" + getId() + ")");
+            return "RE:" + (isEmote() ? getEmote() : getName() + "(" + id + ")");
         }
     }
 

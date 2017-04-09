@@ -40,15 +40,15 @@ public class MessageReactionHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
         JSONObject emoji = content.getJSONObject("emoji");
 
-        String userId = content.getString("user_id");
-        String messageId = content.getString("message_id");
-        String channelId = content.getString("channel_id");
+        final long userId    = content.getLong("user_id");
+        final long messageId = content.getLong("message_id");
+        final long channelId = content.getLong("channel_id");
 
-        String emojiId = emoji.isNull("id") ? null : emoji.getString("id");
+        final Long emojiId = emoji.isNull("id") ? null : emoji.getLong("id");
         String emojiName = emoji.isNull("name") ? null : emoji.getString("name");
 
         if (emojiId == null && emojiName == null)
@@ -62,27 +62,27 @@ public class MessageReactionHandler extends SocketHandler
             user = api.getFakeUserMap().get(userId);
         if (user == null)
         {
-            EventCache.get(api).cache(EventCache.Type.USER, userId, () ->
-            {
-                handle(responseNumber, allContent);
-            });
+            EventCache.get(api).cache(EventCache.Type.USER, userId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("Received a reaction for a user that JDA does not currently have cached");
             return null;
         }
 
         MessageChannel channel = api.getTextChannelById(channelId);
         if (channel == null)
+        {
             channel = api.getPrivateChannelById(channelId);
+        }
         if (channel == null && api.getAccountType() == AccountType.CLIENT)
+        {
             channel = api.asClient().getGroupById(channelId);
-        if (channel == null)
-            channel = api.getFakePrivateChannelMap().get(channelId);
+        }
         if (channel == null)
         {
-            EventCache.get(api).cache(EventCache.Type.CHANNEL, channelId, () ->
-            {
-                handle(responseNumber, allContent);
-            });
+            channel = api.getFakePrivateChannelMap().get(channelId);
+        }
+        if (channel == null)
+        {
+            EventCache.get(api).cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("Received a reaction for a channel that JDA does not currently have cached");
             return null;
         }

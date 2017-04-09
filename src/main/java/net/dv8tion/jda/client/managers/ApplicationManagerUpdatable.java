@@ -27,6 +27,7 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import org.apache.http.util.Args;
 import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -351,7 +352,7 @@ public class ApplicationManagerUpdatable
         return new RestAction<Void>(this.getJDA(), route, body)
         {
             @Override
-            protected void handleResponse(final Response response, final Request request)
+            protected void handleResponse(final Response response, final Request<Void> request)
             {
                 if (response.isOk())
                 {

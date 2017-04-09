@@ -42,9 +42,9 @@ public class RelationshipRemoveHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
-        String userId = content.getString("id");
+        final long userId = content.getLong("id");
         RelationshipType type = RelationshipType.fromKey(content.getInt("type"));
 
         //Technically this could be used to detect when another user has unblocked us,
@@ -57,10 +57,7 @@ public class RelationshipRemoveHandler extends SocketHandler
         Relationship relationship = api.asClient().getRelationshipById(userId, type);
         if (relationship == null)
         {
-            EventCache.get(api).cache(EventCache.Type.RELATIONSHIP, userId, () ->
-            {
-                handle(responseNumber, allContent);
-            });
+            EventCache.get(api).cache(EventCache.Type.RELATIONSHIP, userId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("Received a RELATIONSHIP_REMOVE for a relationship that was not yet cached! JSON: " + content);
             return null;
         }
@@ -69,7 +66,7 @@ public class RelationshipRemoveHandler extends SocketHandler
         if (relationship.getType() == RelationshipType.FRIEND)
         {
             //The user is not in a different guild that we share
-            if (!api.getGuildMap().values().stream().anyMatch(g -> ((GuildImpl) g).getMembersMap().containsKey(userId)))
+            if (api.getGuildMap().valueCollection().stream().noneMatch(g -> ((GuildImpl) g).getMembersMap().containsKey(userId)))
             {
                 UserImpl user = (UserImpl) api.getUserMap().remove(userId);
                 if (user.hasPrivateChannel())
@@ -77,8 +74,8 @@ public class RelationshipRemoveHandler extends SocketHandler
                     PrivateChannelImpl priv = (PrivateChannelImpl) user.getPrivateChannel();
                     user.setFake(true);
                     priv.setFake(true);
-                    api.getFakeUserMap().put(user.getId(), user);
-                    api.getFakePrivateChannelMap().put(priv.getId(), priv);
+                    api.getFakeUserMap().put(user.getIdLong(), user);
+                    api.getFakePrivateChannelMap().put(priv.getIdLong(), priv);
                 }
                 else
                 {
@@ -90,7 +87,7 @@ public class RelationshipRemoveHandler extends SocketHandler
                         if (grp.getNonFriendUsers().contains(user))
                         {
                             user.setFake(true);
-                            api.getFakeUserMap().put(user.getId(), user);
+                            api.getFakeUserMap().put(user.getIdLong(), user);
                             break;
                         }
                     }
@@ -105,7 +102,7 @@ public class RelationshipRemoveHandler extends SocketHandler
             User user = relationship.getUser();
             if (user.isFake()
                     && !user.hasPrivateChannel()
-                    && api.asClient().getGroups().stream().allMatch(g -> !g.getUsers().contains(user)))
+                    && api.asClient().getGroups().stream().noneMatch(g -> g.getUsers().contains(user)))
             {
                 api.getFakeUserMap().remove(userId);
             }

@@ -16,20 +16,22 @@
 
 package net.dv8tion.jda.core.handle;
 
+import gnu.trove.map.TLongIntMap;
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongIntHashMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
 public class GuildMembersChunkHandler extends SocketHandler
 {
-    HashMap<String, Integer> expectedGuildMembers = new HashMap<>();
-    HashMap<String, List<JSONArray>> memberChunksCache = new HashMap<>();
-
+    private final TLongIntMap expectedGuildMembers = new TLongIntHashMap();
+    private final TLongObjectMap<List<JSONArray>> memberChunksCache = new TLongObjectHashMap<>();
 
     public GuildMembersChunkHandler(JDAImpl api)
     {
@@ -37,11 +39,11 @@ public class GuildMembersChunkHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
-        String guildId = content.getString("guild_id");
+        final long guildId = content.getLong("guild_id");
         List<JSONArray> memberChunks = memberChunksCache.get(guildId);
-        Integer expectMemberCount = (Integer) expectedGuildMembers.get(guildId);
+        int expectMemberCount = expectedGuildMembers.get(guildId);
 
         JSONArray members = content.getJSONArray("members");
         JDAImpl.LOG.debug("GUILD_MEMBER_CHUNK for: " + guildId + " \tMembers: " + members.length());
@@ -63,24 +65,24 @@ public class GuildMembersChunkHandler extends SocketHandler
         return null;
     }
 
-    public void setExpectedGuildMembers(String guildId, int count)
+    public void setExpectedGuildMembers(long guildId, int count)
     {
-        if (expectedGuildMembers.get(guildId) != null)
+        if (expectedGuildMembers.containsKey(guildId))
             JDAImpl.LOG.warn("Set the count of expected users from GuildMembersChunk even though a value already exists! GuildId: " + guildId);
 
         expectedGuildMembers.put(guildId, count);
 
-        if (memberChunksCache.get(guildId) != null)
+        if (memberChunksCache.containsKey(guildId))
             JDAImpl.LOG.warn("Set the memberChunks for MemberChunking for a guild that was already setup for chunking! GuildId: " + guildId);
 
         memberChunksCache.put(guildId, new LinkedList<>());
     }
 
-    public void modifyExpectedGuildMember(String guildId, int changeAmount)
+    public void modifyExpectedGuildMember(long guildId, int changeAmount)
     {
         try
         {
-            Integer i = (Integer) expectedGuildMembers.get(guildId);
+            Integer i = expectedGuildMembers.get(guildId);
             i += changeAmount;
             expectedGuildMembers.put(guildId, i);
         }

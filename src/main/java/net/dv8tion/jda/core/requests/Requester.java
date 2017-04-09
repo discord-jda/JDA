@@ -63,7 +63,7 @@ public class Requester
         return api;
     }
 
-    public void request(Request apiRequest)
+    public <T> void request(Request<T> apiRequest)
     {
         if (rateLimiter.isShutdown)
             throw new IllegalStateException("The Requester has been shutdown! No new requests can be requested!");
@@ -89,7 +89,7 @@ public class Requester
      *         the request can be made again. This could either be for the Per-Route ratelimit or the Global ratelimit.
      *         <br>Check if globalCooldown is {@code null} to determine if it was Per-Route or Global.
      */
-    public Long execute(Request apiRequest)
+    public <T> Long execute(Request<T> apiRequest)
     {
         CompiledRoute route = apiRequest.getRoute();
         Long retryAfter = rateLimiter.getRateLimit(route);

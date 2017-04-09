@@ -220,6 +220,17 @@ public interface JDA
     User getUserById(String id);
 
     /**
+     * This returns the {@link net.dv8tion.jda.core.entities.User User} which has the same id as the one provided.
+     * <br>If there is no visible user with an id that matches the provided one, this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the requested {@link net.dv8tion.jda.core.entities.User User}.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.User User} with matching id.
+     */
+    User getUserById(long id);
+
+    /**
      * Gets all {@link net.dv8tion.jda.core.entities.Guild Guilds} that contain all given users as their members.
      *
      * @param  users
@@ -310,6 +321,17 @@ public interface JDA
     Guild getGuildById(String id);
 
     /**
+     * This returns the {@link net.dv8tion.jda.core.entities.Guild Guild} which has the same id as the one provided.
+     * <br>If there is no connected guild with an id that matches the provided one, then this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.core.entities.Guild Guild}.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.Guild Guild} with matching id.
+     */
+    Guild getGuildById(long id);
+
+    /**
      * An unmodifiable list of all {@link net.dv8tion.jda.core.entities.Guild Guilds} that have the same name as the one provided.
      * <br>If there are no {@link net.dv8tion.jda.core.entities.Guild Guilds} with the provided name, then this returns an empty list.
      *
@@ -322,6 +344,51 @@ public interface JDA
      *      the provided name.
      */
     List<Guild> getGuildsByName(String name, boolean ignoreCase);
+
+    /**
+     * All {@link net.dv8tion.jda.core.entities.Role Roles} this JDA instance can see.
+     * <br>This will iterate over each {@link net.dv8tion.jda.core.entities.Guild Guild} retrieved from
+     * {@link #getGuilds()} and collect its {@link net.dv8tion.jda.core.entities.Guild#getRoles() Guild.getRoles()}.
+     *
+     * @return Immutable List of all visible Roles
+     */
+    List<Role> getRoles();
+
+    /**
+     * Retrieves the {@link net.dv8tion.jda.core.entities.Role Role} associated to the provided id.
+     * <br>This iterates over all {@link net.dv8tion.jda.core.entities.Guild Guilds} and check whether
+     * a Role from that Guild is assigned to the specified ID and will return the first that can be found.
+     * @param  id
+     *         The id of the searched Role
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.Role Role} for the specified ID
+     */
+    Role getRoleById(String id);
+
+    /**
+     * Retrieves the {@link net.dv8tion.jda.core.entities.Role Role} associated to the provided id.
+     * <br>This iterates over all {@link net.dv8tion.jda.core.entities.Guild Guilds} and check whether
+     * a Role from that Guild is assigned to the specified ID and will return the first that can be found.
+     * @param  id
+     *         The id of the searched Role
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.Role Role} for the specified ID
+     */
+    Role getRoleById(long id);
+
+    /**
+     * Retrieves all {@link net.dv8tion.jda.core.entities.Role Roles} visible to this JDA instance.
+     * <br>This simply filters the Roles returned by {@link #getRoles()} with the provided name, either using
+     * {@link String#equals(Object)} or {@link String#equalsIgnoreCase(String)} on {@link net.dv8tion.jda.core.entities.Role#getName()}.
+     *
+     * @param  name
+     *         The name for the Roles
+     * @param  ignoreCase
+     *         Whether to use {@link String#equalsIgnoreCase(String)}
+     *
+     * @return Immutable List of all Roles matching the parameters provided.
+     */
+    List<Role> getRolesByName(String name, boolean ignoreCase);
 
     /**
      * An unmodifiable List of all {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} of all connected
@@ -354,6 +421,24 @@ public interface JDA
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} with matching id.
      */
     TextChannel getTextChannelById(String id);
+
+    /**
+     * This returns the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} which has the same id as the one provided.
+     * <br>If there is no known {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * <p><b>Note:</b> just because a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} is present does
+     * not mean that you will be able to send messages to it. Furthermore, if you log into this account on the discord
+     * client, it is you will not see the channel that this returns. This is because the discord client
+     * hides any {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} that you don't have the
+     * {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ} permission in.
+     *
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} with matching id.
+     */
+    TextChannel getTextChannelById(long id);
 
     /**
      * An unmodifiable list of all {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} that have the same name as the one provided.
@@ -395,6 +480,17 @@ public interface JDA
     VoiceChannel getVoiceChannelById(String id);
 
     /**
+     * This returns the {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} which has the same id as the one provided.
+     * <br>If there is no known {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * @param  id The id of the {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} with matching id.
+     */
+    VoiceChannel getVoiceChannelById(long id);
+
+    /**
      * An unmodifiable list of all {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels} that have the same name as the one provided.
      * <br>If there are no {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels} with the provided name, then this returns an empty list.
      *
@@ -428,6 +524,18 @@ public interface JDA
     PrivateChannel getPrivateChannelById(String id);
 
     /**
+     * This returns the {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} which has the same id as the one provided.
+     * <br>If there is no known {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} with an id that matches the
+     * provided one, then this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} with matching id.
+     */
+    PrivateChannel getPrivateChannelById(long id);
+
+    /**
      * A collection of all to us known emotes (managed/restricted included).
      *
      * <p><b>Hint</b>: To check whether you can use an {@link net.dv8tion.jda.core.entities.Emote Emote} in a specific
@@ -447,6 +555,16 @@ public interface JDA
      * @return An {@link net.dv8tion.jda.core.entities.Emote Emote} represented by this id or null if none is found in our cache.
      */
     Emote getEmoteById(String id);
+
+    /**
+     * Retrieves an emote matching the specified {@code id} if one is available in our cache.
+     *
+     * @param  id
+     *         The id of the requested {@link net.dv8tion.jda.core.entities.Emote}.
+     *
+     * @return An {@link net.dv8tion.jda.core.entities.Emote Emote} represented by this id or null if none is found in our cache.
+     */
+    Emote getEmoteById(long id);
 
     /**
      * An unmodifiable list of all {@link net.dv8tion.jda.core.entities.Emote Emotes} that have the same name as the one provided.

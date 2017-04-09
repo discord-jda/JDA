@@ -31,11 +31,11 @@ import java.util.List;
  */
 public class MessageEmbedEvent extends Event
 {
-    private final String messageId;
+    private final long messageId;
     private final MessageChannel channel;
     private final List<MessageEmbed> embeds;
 
-    public MessageEmbedEvent(JDA api, long responseNumber, String messageId, MessageChannel channel, List<MessageEmbed> embeds)
+    public MessageEmbedEvent(JDA api, long responseNumber, long messageId, MessageChannel channel, List<MessageEmbed> embeds)
     {
         super(api, responseNumber);
         this.messageId = messageId;
@@ -44,6 +44,11 @@ public class MessageEmbedEvent extends Event
     }
 
     public String getMessageId()
+    {
+        return String.valueOf(messageId);
+    }
+
+    public long getMessageIdLong()
     {
         return messageId;
     }

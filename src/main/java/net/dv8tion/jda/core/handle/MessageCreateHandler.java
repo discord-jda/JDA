@@ -30,11 +30,9 @@ import net.dv8tion.jda.core.requests.GuildLock;
 import net.dv8tion.jda.core.requests.WebSocketClient;
 import org.json.JSONObject;
 
-import java.util.regex.Pattern;
-
 public class MessageCreateHandler extends SocketHandler
 {
-    private static final Pattern invitePattern = Pattern.compile("\\bhttps://(?:www\\.)?discord(?:\\.gg|app\\.com/invite)/([a-zA-Z0-9-]+)\\b");
+    //private static final Pattern invitePattern = Pattern.compile("\\bhttps://(?:www\\.)?discord(?:\\.gg|app\\.com/invite)/([a-zA-Z0-9-]+)\\b");
 
     public MessageCreateHandler(JDAImpl api)
     {
@@ -42,7 +40,7 @@ public class MessageCreateHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
         MessageType type = MessageType.fromId(content.getInt("type"));
 
@@ -56,7 +54,7 @@ public class MessageCreateHandler extends SocketHandler
         return null;
     }
 
-    private String handleDefaultMessage(JSONObject content)
+    private Long handleDefaultMessage(JSONObject content)
     {
         Message message;
         try
@@ -69,19 +67,15 @@ public class MessageCreateHandler extends SocketHandler
             {
                 case EntityBuilder.MISSING_CHANNEL:
                 {
-                    EventCache.get(api).cache(EventCache.Type.CHANNEL, content.getString("channel_id"), () ->
-                    {
-                        handle(responseNumber, allContent);
-                    });
+                    final long channelId = content.getLong("channel_id");
+                    EventCache.get(api).cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
                     EventCache.LOG.debug("Received a message for a channel that JDA does not currently have cached");
                     return null;
                 }
                 case EntityBuilder.MISSING_USER:
                 {
-                    EventCache.get(api).cache(EventCache.Type.USER, content.getJSONObject("author").getString("id"), () ->
-                    {
-                        handle(responseNumber, allContent);
-                    });
+                    final long authorId = content.getJSONObject("author").getLong("id");
+                    EventCache.get(api).cache(EventCache.Type.USER, authorId, () -> handle(responseNumber, allContent));
                     EventCache.LOG.debug("Received a message for a user that JDA does not currently have cached");
                     return null;
                 }
@@ -95,11 +89,11 @@ public class MessageCreateHandler extends SocketHandler
             case TEXT:
             {
                 TextChannelImpl channel = (TextChannelImpl) message.getTextChannel();
-                if (GuildLock.get(api).isLocked(channel.getGuild().getId()))
+                if (GuildLock.get(api).isLocked(channel.getGuild().getIdLong()))
                 {
-                    return channel.getGuild().getId();
+                    return channel.getGuild().getIdLong();
                 }
-                channel.setLastMessageId(message.getId());
+                channel.setLastMessageId(message.getIdLong());
                 api.getEventManager().handle(
                         new GuildMessageReceivedEvent(
                                 api, responseNumber,
@@ -109,7 +103,7 @@ public class MessageCreateHandler extends SocketHandler
             case PRIVATE:
             {
                 PrivateChannelImpl channel = (PrivateChannelImpl) message.getPrivateChannel();
-                channel.setLastMessageId(message.getId());
+                channel.setLastMessageId(message.getIdLong());
                 api.getEventManager().handle(
                         new PrivateMessageReceivedEvent(
                                 api, responseNumber,
@@ -119,7 +113,7 @@ public class MessageCreateHandler extends SocketHandler
             case GROUP:
             {
                 GroupImpl channel = (GroupImpl) message.getGroup();
-                channel.setLastMessageId(message.getId());
+                channel.setLastMessageId(message.getIdLong());
                 api.getEventManager().handle(
                         new GroupMessageReceivedEvent(
                                 api, responseNumber,

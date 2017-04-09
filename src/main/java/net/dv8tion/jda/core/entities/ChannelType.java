@@ -23,7 +23,7 @@ public enum ChannelType
     /**
      * A {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}, Guild-Only.
      */
-    TEXT(0),
+    TEXT(0, true),
     /**
      * A {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}.
      */
@@ -31,7 +31,7 @@ public enum ChannelType
     /**
      * A {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}, Guild-Only.
      */
-    VOICE(2),
+    VOICE(2, true),
     /**
      * A {@link net.dv8tion.jda.client.entities.Group Group}. {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT} only.
      */
@@ -43,10 +43,17 @@ public enum ChannelType
     UNKNOWN(-1);
 
     protected final int id;
+    protected final boolean isGuild;
 
     ChannelType(int id)
     {
+        this(id, false);
+    }
+
+    ChannelType(int id, boolean isGuild)
+    {
         this.id = id;
+        this.isGuild = isGuild;
     }
 
     /**
@@ -57,6 +64,16 @@ public enum ChannelType
     public int getId()
     {
         return id;
+    }
+
+    /**
+     * Whether this ChannelType is present for a Guild {@link net.dv8tion.jda.core.entities.Channel Channel}
+     *
+     * @return Whether or not this a Guild Channel
+     */
+    public boolean isGuild()
+    {
+        return isGuild;
     }
 
     /**

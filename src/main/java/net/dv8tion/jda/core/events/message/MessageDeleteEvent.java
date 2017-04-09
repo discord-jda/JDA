@@ -28,10 +28,10 @@ import net.dv8tion.jda.core.events.Event;
  */
 public class MessageDeleteEvent extends Event
 {
-    private final String messageId;
+    private final long messageId;
     private final MessageChannel channel;
 
-    public MessageDeleteEvent(JDA api, long responseNumber, String messageId, MessageChannel channel)
+    public MessageDeleteEvent(JDA api, long responseNumber, long messageId, MessageChannel channel)
     {
         super(api, responseNumber);
         this.messageId = messageId;
@@ -39,6 +39,11 @@ public class MessageDeleteEvent extends Event
     }
 
     public String getMessageId()
+    {
+        return String.valueOf(messageId);
+    }
+
+    public long getMessageIdLong()
     {
         return messageId;
     }

@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.client.entities.impl;
 
-import java.util.*;
 import net.dv8tion.jda.client.entities.Application;
 import net.dv8tion.jda.client.managers.ApplicationManager;
 import net.dv8tion.jda.client.managers.ApplicationManagerUpdatable;
@@ -28,6 +27,8 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.*;
 
 public class ApplicationImpl implements Application
 {
@@ -42,7 +43,7 @@ public class ApplicationImpl implements Application
     private boolean doesBotRequireCodeGrant;
     private int flags;
     private String iconId;
-    private String id;
+    private long id;
     private boolean isBotPublic;
     private String name;
     private List<String> redirectUris;
@@ -62,10 +63,10 @@ public class ApplicationImpl implements Application
         if (this.hasBot())
             return new RestAction.EmptyRestAction<>(this.bot);
 
-        return new RestAction<Application.Bot>(this.api, Route.Applications.CREATE_BOT.compile(this.id), null)
+        return new RestAction<Application.Bot>(this.api, Route.Applications.CREATE_BOT.compile(getId()), null)
         {
             @Override
-            protected void handleResponse(final Response response, final Request request)
+            protected void handleResponse(final Response response, final Request<Application.Bot> request)
             {
                 if (response.isOk())
                     request.onSuccess(ApplicationImpl.this.bot = new BotImpl(response.getObject()));
@@ -78,10 +79,10 @@ public class ApplicationImpl implements Application
     @Override
     public RestAction<Void> delete()
     {
-        return new RestAction<Void>(this.api, Route.Applications.DELETE_APPLICATION.compile(this.id), null)
+        return new RestAction<Void>(this.api, Route.Applications.DELETE_APPLICATION.compile(getId()), null)
         {
             @Override
-            protected void handleResponse(final Response response, final Request request)
+            protected void handleResponse(final Response response, final Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
@@ -100,7 +101,7 @@ public class ApplicationImpl implements Application
     @Override
     public boolean equals(final Object obj)
     {
-        return obj instanceof ApplicationImpl && this.id.equals(((ApplicationImpl) obj).id);
+        return obj instanceof ApplicationImpl && this.id == ((ApplicationImpl) obj).id;
     }
 
     @Override
@@ -135,7 +136,7 @@ public class ApplicationImpl implements Application
     }
 
     @Override
-    public String getId()
+    public long getIdLong()
     {
         return this.id;
     }
@@ -217,11 +218,11 @@ public class ApplicationImpl implements Application
     @Override
     public RestAction<Application> resetSecret()
     {
-        Route.CompiledRoute route = Route.Applications.RESET_BOT_TOKEN.compile(this.id);
+        Route.CompiledRoute route = Route.Applications.RESET_BOT_TOKEN.compile(getId());
         return new RestAction<Application>(this.api, route, null)
         {
             @Override
-            protected void handleResponse(final Response response, final Request request)
+            protected void handleResponse(final Response response, final Request<Application> request)
             {
                 if (response.isOk())
                     request.onSuccess(ApplicationImpl.this.updateFromJson(response.getObject()));
@@ -258,7 +259,7 @@ public class ApplicationImpl implements Application
         this.description = object.getString("description");
         this.flags = object.getInt("flags");
         this.iconId = object.has("icon") ? object.getString("icon") : null;
-        this.id = object.getString("id");
+        this.id = object.getLong("id");
         this.name = object.getString("name");
 
         final JSONArray redirectUriArray = object.getJSONArray("redirect_uris");
@@ -279,9 +280,9 @@ public class ApplicationImpl implements Application
 
     public class BotImpl implements Application.Bot
     {
+        private long id;
         private String avatarId;
         private String discriminator;
-        private String id;
         private String name;
         private String token;
 
@@ -293,7 +294,7 @@ public class ApplicationImpl implements Application
         @Override
         public boolean equals(final Object obj)
         {
-            return obj instanceof BotImpl && this.id.equals(((BotImpl) obj).id);
+            return obj instanceof BotImpl && this.id == ((BotImpl) obj).id;
         }
 
         @Override
@@ -322,7 +323,7 @@ public class ApplicationImpl implements Application
         }
 
         @Override
-        public String getId()
+        public long getIdLong()
         {
             return this.id;
         }
@@ -384,17 +385,17 @@ public class ApplicationImpl implements Application
         @Override
         public int hashCode()
         {
-            return this.id.hashCode();
+            return Long.hashCode(this.id);
         }
 
         @Override
         public RestAction<Bot> resetToken()
         {
-            Route.CompiledRoute route = Route.Applications.RESET_BOT_TOKEN.compile(this.id);
+            Route.CompiledRoute route = Route.Applications.RESET_BOT_TOKEN.compile(getId());
             return new RestAction<Bot>(getJDA(), route, null)
             {
                 @Override
-                protected void handleResponse(final Response response, final Request request)
+                protected void handleResponse(final Response response, final Request<Bot> request)
                 {
                     if (response.isOk())
                         request.onSuccess(BotImpl.this.updateFromJson(response.getObject()));
@@ -415,7 +416,7 @@ public class ApplicationImpl implements Application
             this.name = object.getString("username");
             this.discriminator = object.getString("discriminator");
             this.token = object.getString("token");
-            this.id = object.getString("id");
+            this.id = object.getLong("id");
             this.avatarId = object.has("avatar") ? object.getString("avatar") : null;
 
             return this;

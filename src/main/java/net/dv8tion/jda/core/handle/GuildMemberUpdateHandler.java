@@ -41,18 +41,18 @@ public class GuildMemberUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
-        if (GuildLock.get(api).isLocked(content.getString("guild_id")))
-        {
-            return content.getString("guild_id");
-        }
+        final long id = content.getLong("guild_id");
+        if (GuildLock.get(api).isLocked(id))
+            return id;
 
         JSONObject userJson = content.getJSONObject("user");
-        GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("guild_id"));
+        final long userId = userJson.getLong("id");
+        GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
         if (guild == null)
         {
-            EventCache.get(api).cache(EventCache.Type.GUILD, userJson.getString("id"), () ->
+            EventCache.get(api).cache(EventCache.Type.GUILD, userId, () ->
             {
                 handle(responseNumber, allContent);
             });
@@ -60,10 +60,10 @@ public class GuildMemberUpdateHandler extends SocketHandler
             return null;
         }
 
-        MemberImpl member = (MemberImpl) guild.getMembersMap().get(userJson.getString("id"));
+        MemberImpl member = (MemberImpl) guild.getMembersMap().get(userId);
         if (member == null)
         {
-            EventCache.get(api).cache(EventCache.Type.USER, userJson.getString("id"), () ->
+            EventCache.get(api).cache(EventCache.Type.USER, userId, () ->
             {
                 handle(responseNumber, allContent);
             });
@@ -137,14 +137,15 @@ public class GuildMemberUpdateHandler extends SocketHandler
         LinkedList<Role> roles = new LinkedList<>();
         for(int i = 0; i < array.length(); i++)
         {
-            Role r = guild.getRolesMap().get(array.getString(i));
+            final long id = Long.parseLong(array.getString(i));
+            Role r = guild.getRolesMap().get(id);
             if (r != null)
             {
                 roles.add(r);
             }
             else
             {
-                EventCache.get(api).cache(EventCache.Type.ROLE, array.getString(i), () ->
+                EventCache.get(api).cache(EventCache.Type.ROLE, id, () ->
                 {
                     handle(responseNumber, allContent);
                 });

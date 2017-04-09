@@ -35,16 +35,18 @@ public class PresenceUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
         //Do a pre-check to see if this is for a Guild, and if it is, if the guild is currently locked.
-        if (content.has("guild_id") && GuildLock.get(api).isLocked(content.getString("guild_id")))
+        if (content.has("guild_id"))
         {
-            return content.getString("guild_id");
+            final long guildId = content.getLong("guild_id");
+            if (GuildLock.get(api).isLocked(guildId))
+                return guildId;
         }
 
         JSONObject jsonUser = content.getJSONObject("user");
-        String userId = jsonUser.getString("id");
+        final long userId = jsonUser.getLong("id");
         UserImpl user = (UserImpl) api.getUserMap().get(userId);
 
         //If we do know about the user, lets update the user's specific info.
@@ -112,7 +114,7 @@ public class PresenceUpdateHandler extends SocketHandler
             // If we aren't we'll be dealing with the Relation system.
             if (content.has("guild_id"))
             {
-                GuildImpl guild = (GuildImpl) api.getGuildById(content.getString("guild_id"));
+                GuildImpl guild = (GuildImpl) api.getGuildById(content.getLong("guild_id"));
                 MemberImpl member = (MemberImpl) guild.getMember(user);
 
                 //If the Member is null, then User isn't in the Guild.
@@ -177,7 +179,7 @@ public class PresenceUpdateHandler extends SocketHandler
             //If this was for a Guild, cache it in the Guild for later use in GUILD_MEMBER_ADD
             if (content.has("guild_id"))
             {
-                GuildImpl guild = (GuildImpl) api.getGuildById(content.getString("guild_id"));
+                GuildImpl guild = (GuildImpl) api.getGuildById(content.getLong("guild_id"));
                 guild.getCachedPresenceMap().put(userId, content);
             }
             else

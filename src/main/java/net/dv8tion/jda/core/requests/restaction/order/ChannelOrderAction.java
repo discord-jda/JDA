@@ -40,7 +40,7 @@ import java.util.Collection;
  *
  * @since 3.0
  */
-public class ChannelOrderAction<T extends Channel> extends OrderAction<T, ChannelOrderAction>
+public class ChannelOrderAction<T extends Channel> extends OrderAction<T, ChannelOrderAction<T>>
 {
     protected final Guild guild;
     protected final ChannelType type;

@@ -267,7 +267,7 @@ public class ChannelManagerUpdatable
         return new RestAction<Void>(channel.getJDA(), route, frame)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);

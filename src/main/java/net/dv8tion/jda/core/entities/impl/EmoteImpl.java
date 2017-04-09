@@ -46,7 +46,7 @@ import java.util.List;
 public class EmoteImpl implements Emote
 {
 
-    private final String id;
+    private final long id;
     private final Guild guild;
     private final JDA api;
 
@@ -58,7 +58,7 @@ public class EmoteImpl implements Emote
     private HashSet<Role> roles = null;
     private String name;
 
-    public EmoteImpl(String id,  Guild guild)
+    public EmoteImpl(long id,  Guild guild)
     {
         this.id = id;
         this.guild = guild;
@@ -66,7 +66,7 @@ public class EmoteImpl implements Emote
         this.roles = new HashSet<>();
     }
 
-    public EmoteImpl(String id,  JDA api)
+    public EmoteImpl(long id,  JDA api)
     {
         this.id = id;
         this.api = api;
@@ -106,7 +106,7 @@ public class EmoteImpl implements Emote
     }
 
     @Override
-    public String getId()
+    public long getIdLong()
     {
         return id;
     }
@@ -165,7 +165,7 @@ public class EmoteImpl implements Emote
         return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
@@ -201,23 +201,23 @@ public class EmoteImpl implements Emote
     @Override
     public boolean equals(Object obj)
     {
-        if (!(obj instanceof Emote))
+        if (!(obj instanceof EmoteImpl))
             return false;
 
-        Emote oEmote = (Emote) obj;
-        return getId().equals(oEmote.getId()) && getName().equals(oEmote.getName());
+        EmoteImpl oEmote = (EmoteImpl) obj;
+        return this.id == oEmote.id && getName().equals(oEmote.getName());
     }
 
 
     @Override
     public int hashCode()
     {
-        return getId().hashCode();
+        return Long.hashCode(id);
     }
 
     @Override
     public String toString()
     {
-        return "E:" + getName() + '(' + getId() + ')';
+        return "E:" + getName() + '(' + getIdLong() + ')';
     }
 }

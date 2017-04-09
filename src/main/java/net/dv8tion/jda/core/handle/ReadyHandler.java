@@ -47,7 +47,7 @@ public class ReadyHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
         EntityBuilder builder = EntityBuilder.get(api);
 

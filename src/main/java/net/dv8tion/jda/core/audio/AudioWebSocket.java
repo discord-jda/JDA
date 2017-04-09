@@ -231,20 +231,25 @@ public class AudioWebSocket extends WebSocketAdapter
                 JSONObject content = contentAll.getJSONObject("d");
                 boolean speaking = content.getBoolean("speaking");
                 int ssrc = content.getInt("ssrc");
-                String userId = content.getString("user_id");
+                final long userId = content.getLong("user_id");
 
-                User user = api.getUserById(userId);
-                if (user == null)
+                User user;
+                if (!api.getUserMap().containsKey(userId))
                 {
-                    LOG.warn("Got an Audio USER_SPEAKING_UPDATE for a non-existent User. JSON: " + contentAll);
-                    return;
+                    if (!api.getFakeUserMap().containsKey(userId))
+                    {
+                        LOG.warn("Got an Audio USER_SPEAKING_UPDATE for a non-existent User. JSON: " + contentAll);
+                        return;
+                    }
+                    user = api.getFakeUserMap().get(userId);
+                }
+                else
+                {
+                    user = api.getUserById(userId);
                 }
 
                 audioConnection.updateUserSSRC(ssrc, userId, speaking);
-                if (user != null)
-                {
-                    listener.onUserSpeaking(user, speaking);
-                }
+                listener.onUserSpeaking(user, speaking);
                 break;
             }
             default:
@@ -338,7 +343,7 @@ public class AudioWebSocket extends WebSocketAdapter
             Guild connGuild = api.getGuildById(guild.getId());
             if (connGuild != null)
             {
-                if (connGuild.getVoiceChannelById(audioConnection.getChannel().getId()) == null)
+                if (connGuild.getVoiceChannelById(audioConnection.getChannel().getIdLong()) == null)
                     closeStatus = ConnectionStatus.DISCONNECTED_CHANNEL_DELETED;
             }
         }
