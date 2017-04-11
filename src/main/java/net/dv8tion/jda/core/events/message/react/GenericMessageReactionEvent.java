@@ -41,17 +41,17 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
 
     public TextChannel getTextChannel()
     {
-        return getChannel() instanceof TextChannel ? (TextChannel) getChannel() : null;
+        return isFromType(ChannelType.TEXT) ? (TextChannel) getChannel() : null;
     }
 
     public PrivateChannel getPrivateChannel()
     {
-        return getChannel() instanceof PrivateChannel ? (PrivateChannel) getChannel() : null;
+        return isFromType(ChannelType.PRIVATE) ? (PrivateChannel) getChannel() : null;
     }
 
     public Group getGroup()
     {
-        return getChannel() instanceof Group ? (Group) getChannel() : null;
+        return isFromType(ChannelType.GROUP) ? (Group) getChannel() : null;
     }
 
     public User getUser()

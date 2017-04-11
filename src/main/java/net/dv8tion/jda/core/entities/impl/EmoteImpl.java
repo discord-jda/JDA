@@ -51,9 +51,9 @@ public class EmoteImpl implements Emote
     private final JDA api;
     private final HashSet<Role> roles;
 
+    private final Object mngLock = new Object();
     private volatile EmoteManager manager = null;
     private volatile EmoteManagerUpdatable managerUpdatable = null;
-    private Object mngLock = new Object();
 
     private boolean managed = false;
     private String name;
@@ -222,6 +222,7 @@ public class EmoteImpl implements Emote
         return "E:" + getName() + '(' + getIdLong() + ')';
     }
 
+    @Override
     public EmoteImpl clone()
     {
         if (isFake()) return null;

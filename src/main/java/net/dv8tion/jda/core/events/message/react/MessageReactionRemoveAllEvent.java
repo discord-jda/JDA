@@ -18,10 +18,7 @@ package net.dv8tion.jda.core.events.message.react;
 
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.PrivateChannel;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.GenericMessageEvent;
 
 public class MessageReactionRemoveAllEvent extends GenericMessageEvent
@@ -40,17 +37,17 @@ public class MessageReactionRemoveAllEvent extends GenericMessageEvent
 
     public TextChannel getTextChannel()
     {
-        return getChannel() instanceof TextChannel ? (TextChannel) getChannel() : null;
+        return isFromType(ChannelType.TEXT) ? (TextChannel) getChannel() : null;
     }
 
     public PrivateChannel getPrivateChannel()
     {
-        return getChannel() instanceof PrivateChannel ? (PrivateChannel) getChannel() : null;
+        return isFromType(ChannelType.PRIVATE) ? (PrivateChannel) getChannel() : null;
     }
 
     public Group getGroup()
     {
-        return getChannel() instanceof Group ? (Group) getChannel() : null;
+        return isFromType(ChannelType.GROUP) ? (Group) getChannel() : null;
     }
 
 }
