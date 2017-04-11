@@ -215,6 +215,9 @@ public interface JDA
      * @param  id
      *         The id of the requested {@link net.dv8tion.jda.core.entities.User User}.
      *
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.User User} with matching id.
      */
     User getUserById(String id);
@@ -316,6 +319,9 @@ public interface JDA
      * @param  id
      *         The id of the {@link net.dv8tion.jda.core.entities.Guild Guild}.
      *
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Guild Guild} with matching id.
      */
     Guild getGuildById(String id);
@@ -358,8 +364,12 @@ public interface JDA
      * Retrieves the {@link net.dv8tion.jda.core.entities.Role Role} associated to the provided id.
      * <br>This iterates over all {@link net.dv8tion.jda.core.entities.Guild Guilds} and check whether
      * a Role from that Guild is assigned to the specified ID and will return the first that can be found.
+     *
      * @param  id
      *         The id of the searched Role
+     *
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Role Role} for the specified ID
      */
@@ -418,6 +428,9 @@ public interface JDA
      * @param  id
      *         The id of the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
      *
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} with matching id.
      */
     TextChannel getTextChannelById(String id);
@@ -475,6 +488,9 @@ public interface JDA
      *
      * @param  id The id of the {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}.
      *
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} with matching id.
      */
     VoiceChannel getVoiceChannelById(String id);
@@ -519,6 +535,9 @@ public interface JDA
      * @param  id
      *         The id of the {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}.
      *
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} with matching id.
      */
     PrivateChannel getPrivateChannelById(String id);
@@ -551,6 +570,9 @@ public interface JDA
      *
      * @param  id
      *         The id of the requested {@link net.dv8tion.jda.core.entities.Emote}.
+     *
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      *
      * @return An {@link net.dv8tion.jda.core.entities.Emote Emote} represented by this id or null if none is found in our cache.
      */

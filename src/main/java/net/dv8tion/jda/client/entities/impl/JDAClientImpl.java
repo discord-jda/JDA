@@ -83,7 +83,7 @@ public class JDAClientImpl implements JDAClient
     @Override
     public Group getGroupById(String id)
     {
-        return groups.get(Long.parseLong(id));
+        return groups.get(MiscUtil.parseSnowflake(id));
     }
 
     @Override

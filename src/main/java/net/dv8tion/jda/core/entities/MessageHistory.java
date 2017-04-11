@@ -282,6 +282,8 @@ public class MessageHistory
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided {@code id} is null or empty.
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      *
      * @return Possibly-null Message with the same {@code id} as the one provided.
      */
