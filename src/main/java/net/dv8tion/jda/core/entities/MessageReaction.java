@@ -200,7 +200,7 @@ public class MessageReaction
      */
     public String getMessageId()
     {
-        return String.valueOf(messageId);
+        return Long.toUnsignedString(messageId);
     }
 
     /**

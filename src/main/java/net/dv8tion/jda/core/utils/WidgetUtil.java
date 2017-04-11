@@ -151,6 +151,8 @@ public class WidgetUtil
      *
      * @throws net.dv8tion.jda.core.exceptions.RateLimitedException
      *         If the request was rate limited, <b>respect the timeout</b>!
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code guildId} cannot be parsed by {@link Long#parseLong(String)}
      *
      * @return {@code null} if the provided guild ID is not a valid Discord guild ID
      *         <br>a Widget object with null fields and isAvailable() returning
@@ -161,7 +163,7 @@ public class WidgetUtil
      */
     public static Widget getWidget(String guildId) throws RateLimitedException
     {
-        return getWidget(Long.parseLong(guildId));
+        return getWidget(MiscUtil.parseSnowflake(guildId));
     }
 
     /**
@@ -387,6 +389,8 @@ public class WidgetUtil
          *
          * @throws IllegalStateException
          *         If the widget is not {@link #isAvailable() available}
+         * @throws NumberFormatException
+         *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
          *
          * @return possibly-null VoiceChannel with the given ID. 
          */
@@ -394,7 +398,7 @@ public class WidgetUtil
         {
             checkAvailable();
 
-            return channels.get(Long.parseLong(id));
+            return channels.get(MiscUtil.parseSnowflake(id));
         }
 
         /**
@@ -436,6 +440,8 @@ public class WidgetUtil
          * @param  id
          *         the ID of the member
          *
+         * @throws NumberFormatException
+         *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
          * @throws IllegalStateException
          *         If the widget is not {@link #isAvailable() available}
          *
@@ -445,7 +451,7 @@ public class WidgetUtil
         {
             checkAvailable();
 
-            return members.get(Long.parseLong(id));
+            return members.get(MiscUtil.parseSnowflake(id));
         }
 
         /**

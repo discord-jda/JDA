@@ -307,6 +307,12 @@ public class JDAImpl implements JDA
     }
 
     @Override
+    public List<String> getCloudflareRays()
+    {
+        return Collections.unmodifiableList(new LinkedList<>(client.getCfRays()));
+    }
+
+    @Override
     public List<User> getUsers()
     {
         return Collections.unmodifiableList(new ArrayList<>(users.valueCollection()));
@@ -315,7 +321,7 @@ public class JDAImpl implements JDA
     @Override
     public User getUserById(String id)
     {
-        return users.get(Long.parseLong(id));
+        return users.get(MiscUtil.parseSnowflake(id));
     }
 
     @Override
@@ -392,7 +398,7 @@ public class JDAImpl implements JDA
     @Override
     public Guild getGuildById(String id)
     {
-        return guilds.get(Long.parseLong(id));
+        return guilds.get(MiscUtil.parseSnowflake(id));
     }
 
     @Override
@@ -422,7 +428,7 @@ public class JDAImpl implements JDA
     @Override
     public Role getRoleById(String id)
     {
-        return getRoleById(Long.parseLong(id));
+        return getRoleById(MiscUtil.parseSnowflake(id));
     }
 
     @Override
@@ -454,7 +460,7 @@ public class JDAImpl implements JDA
     @Override
     public TextChannel getTextChannelById(String id)
     {
-        return textChannels.get(Long.parseLong(id));
+        return textChannels.get(MiscUtil.parseSnowflake(id));
     }
 
     @Override
@@ -482,7 +488,7 @@ public class JDAImpl implements JDA
     @Override
     public VoiceChannel getVoiceChannelById(String id)
     {
-        return voiceChannels.get(Long.parseLong(id));
+        return voiceChannels.get(MiscUtil.parseSnowflake(id));
     }
 
     @Override
@@ -510,7 +516,7 @@ public class JDAImpl implements JDA
     @Override
     public PrivateChannel getPrivateChannelById(String id)
     {
-        return privateChannels.get(Long.parseLong(id));
+        return privateChannels.get(MiscUtil.parseSnowflake(id));
     }
 
     @Override
@@ -538,7 +544,7 @@ public class JDAImpl implements JDA
     @Override
     public Emote getEmoteById(String id)
     {
-        return getEmoteById(Long.parseLong(id));
+        return getEmoteById(MiscUtil.parseSnowflake(id));
     }
 
     @Override

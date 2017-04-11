@@ -121,7 +121,7 @@ public class CallUpdateHandler extends SocketHandler
     {
         List<Long> longs = new ArrayList<>();
         for (int i = 0; i < array.length(); i++)
-            longs.add(Long.parseLong(array.getString(i)));
+            longs.add(array.getLong(i));
 
         return longs;
     }

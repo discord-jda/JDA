@@ -178,6 +178,9 @@ public interface Guild extends ISnowflake
      * @param  userId
      *         The Discord id of the User for which a Member object is requested.
      *
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Member Member} with the related {@code userId}.
      */
     Member getMemberById(String userId);
@@ -288,6 +291,9 @@ public interface Guild extends ISnowflake
      * @param  id
      *         The id of the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
      *
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} with matching id.
      */
     TextChannel getTextChannelById(String id);
@@ -338,6 +344,9 @@ public interface Guild extends ISnowflake
      * @param  id
      *         The id of the {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}.
      *
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} with matching id.
      */
     VoiceChannel getVoiceChannelById(String id);
@@ -387,6 +396,9 @@ public interface Guild extends ISnowflake
      * @param  id
      *         The id of the {@link net.dv8tion.jda.core.entities.Role Role}.
      *
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Role Role} with matching id.
      */
     Role getRoleById(String id);
@@ -434,6 +446,9 @@ public interface Guild extends ISnowflake
      *
      * @param  id
      *         the emote id
+     *
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      *
      * @return An Emote matching the specified Id.
      */

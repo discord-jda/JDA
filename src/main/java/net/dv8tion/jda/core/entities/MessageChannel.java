@@ -81,7 +81,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     default String getLatestMessageId()
     {
-        return String.valueOf(getLatestMessageIdLong());
+        return Long.toUnsignedString(getLatestMessageIdLong());
     }
 
     /**
@@ -700,8 +700,7 @@ public interface MessageChannel extends ISnowflake, Formattable
 
     default RestAction<Message> getMessageById(long messageId)
     {
-        Args.notNegative(messageId, "Message ID");
-        return getMessageById(String.valueOf(messageId));
+        return getMessageById(Long.toUnsignedString(messageId));
     }
 
     /**
@@ -799,8 +798,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     default RestAction<Void> deleteMessageById(long messageId)
     {
-        Args.positive(messageId, "Message ID");
-        return deleteMessageById(String.valueOf(messageId));
+        return deleteMessageById(Long.toUnsignedString(messageId));
     }
 
     /**
@@ -1031,8 +1029,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     default RestAction<MessageHistory> getHistoryAround(long messageId, int limit)
     {
-        Args.positive(messageId, "Message ID");
-        return getHistoryAround(String.valueOf(messageId), limit);
+        return getHistoryAround(Long.toUnsignedString(messageId), limit);
     }
 
     /**
@@ -1223,8 +1220,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     default RestAction<Void> addReactionById(long messageId, String unicode)
     {
-        Args.notNegative(messageId, "Message ID");
-        return addReactionById(String.valueOf(messageId), unicode);
+        return addReactionById(Long.toUnsignedString(messageId), unicode);
     }
 
     /**
@@ -1356,8 +1352,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     default RestAction<Void> addReactionById(long messageId, Emote emote)
     {
-        Args.positive(messageId, "Message ID");
-        return addReactionById(String.valueOf(messageId), emote);
+        return addReactionById(Long.toUnsignedString(messageId), emote);
     }
 
     /**
@@ -1456,8 +1451,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     default RestAction<Void> pinMessageById(long messageId)
     {
-        Args.positive(messageId, "Message ID");
-        return pinMessageById(String.valueOf(messageId));
+        return pinMessageById(Long.toUnsignedString(messageId));
     }
 
     /**
@@ -1556,8 +1550,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     default RestAction<Void> unpinMessageById(long messageId)
     {
-        Args.positive(messageId, "Message Id");
-        return unpinMessageById(String.valueOf(messageId));
+        return unpinMessageById(Long.toUnsignedString(messageId));
     }
 
     /**
@@ -1885,8 +1878,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     default RestAction<Message> editMessageById(long messageId, Message newContent)
     {
-        Args.positive(messageId, "Message ID");
-        return editMessageById(String.valueOf(messageId), newContent);
+        return editMessageById(Long.toUnsignedString(messageId), newContent);
     }
 
     /**
@@ -1984,8 +1976,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     default RestAction<Message> editMessageById(long messageId, MessageEmbed newEmbed)
     {
-        Args.positive(messageId, "Message ID");
-        return editMessageById(String.valueOf(messageId), newEmbed);
+        return editMessageById(Long.toUnsignedString(messageId), newEmbed);
     }
 
     @Override

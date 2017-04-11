@@ -37,7 +37,7 @@ public class UnavailableGuildJoinedEvent extends Event
 
     public String getGuildId()
     {
-        return String.valueOf(guildId);
+        return Long.toUnsignedString(guildId);
     }
 
     public long getGuildIdLong()
