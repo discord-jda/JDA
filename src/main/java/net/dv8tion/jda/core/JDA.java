@@ -157,6 +157,17 @@ public interface JDA
     long getPing();
 
     /**
+     * Contains all {@code cf-ray} headers that JDA received in this session.
+     * <br>These receive a new value whenever the WebSockedClient reconnects to the gateway.
+     *
+     * <p>This is useful to monitor cloudflare activity from the Discord Developer perspective.
+     * <br>Use this list to report connection issues.
+     *
+     * @return Immutable list of all cf-ray values for this session
+     */
+    List<String> getCloudflareRays();
+
+    /**
      * Changes the internal EventManager.
      *
      * <p>The default EventManager is {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventListener}.

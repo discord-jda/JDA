@@ -307,6 +307,12 @@ public class JDAImpl implements JDA
     }
 
     @Override
+    public List<String> getCloudflareRays()
+    {
+        return Collections.unmodifiableList(new LinkedList<>(client.getCfRays()));
+    }
+
+    @Override
     public List<User> getUsers()
     {
         return Collections.unmodifiableList(new ArrayList<>(users.valueCollection()));

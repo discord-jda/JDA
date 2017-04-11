@@ -59,6 +59,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected final JDA.ShardInfo shardInfo;
     protected final HttpHost proxy;
     protected final Map<String, SocketHandler> handlers = new HashMap<>();
+    protected final List<String> cfRays = new LinkedList<>();
 
     protected WebSocket socket;
     protected String gatewayUrl = null;
@@ -96,6 +97,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         setupHandlers();
         setupSendingThread();
         connect();
+    }
+
+    public List<String> getCfRays()
+    {
+        return cfRays;
     }
 
     public void setAutoReconnect(boolean reconnect)
@@ -350,6 +356,16 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         api.setStatus(JDA.Status.LOADING_SUBSYSTEMS);
         LOG.info("Connected to WebSocket");
+        if (headers.containsKey("cf-ray"))
+        {
+            List<String> values = headers.get("cf-ray");
+            if (!values.isEmpty())
+            {
+                String ray = values.get(0);
+                cfRays.add(ray);
+                LOG.debug("Received new CF-RAY: " + ray);
+            }
+        }
         connected = true;
         reconnectTimeoutS = 2;
         messagesSent = 0;
@@ -708,7 +724,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             {
                 //INIT types
                 case "READY":
-                    LOG.debug(String.format("%s -> %s", type, content.toString()));
+                    //LOG.debug(String.format("%s -> %s", type, content.toString())); already logged on trace level
                     sessionId = content.getString("session_id");
                     handlers.get("READY").handle(responseTotal, raw);
                     break;
