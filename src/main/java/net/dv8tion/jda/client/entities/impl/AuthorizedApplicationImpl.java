@@ -77,7 +77,7 @@ public class AuthorizedApplicationImpl implements AuthorizedApplication
     @Override
     public String getAuthId()
     {
-        return String.valueOf(this.authId);
+        return Long.toUnsignedString(this.authId);
     }
 
     @Override

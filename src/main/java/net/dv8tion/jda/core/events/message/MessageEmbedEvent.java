@@ -45,7 +45,7 @@ public class MessageEmbedEvent extends Event
 
     public String getMessageId()
     {
-        return String.valueOf(messageId);
+        return Long.toUnsignedString(messageId);
     }
 
     public long getMessageIdLong()

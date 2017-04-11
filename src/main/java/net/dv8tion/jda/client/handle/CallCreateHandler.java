@@ -73,7 +73,7 @@ public class CallCreateHandler extends SocketHandler
 
                 for (int i = 0; i < ringing.length(); i++)
                 {
-                    final long current = Long.parseLong(ringing.getString(i));
+                    final long current = ringing.getLong(i);
                     if (current == userId)
                     {
                         callUser.setRinging(true);

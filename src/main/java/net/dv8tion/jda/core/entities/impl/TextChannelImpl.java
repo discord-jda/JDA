@@ -96,7 +96,7 @@ public class TextChannelImpl implements TextChannel
         for (String id : messageIds)
         {
             Args.notEmpty(id, "Message id in messageIds");
-            Args.check(Long.parseLong(id) > twoWeeksAgo, "Message Id provided was older than 2 weeks. Id: " + id);
+            Args.check(MiscUtil.parseSnowflake(id) > twoWeeksAgo, "Message Id provided was older than 2 weeks. Id: " + id);
         }
 
         JSONObject body = new JSONObject().put("messages", messageIds);

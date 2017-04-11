@@ -121,6 +121,8 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *
      * @throws java.lang.IllegalArgumentException
      *         If the size of the list less than 2 or more than 100 messages.
+     * @throws java.lang.NumberFormatException
+     *         If any of the provided ids cannot be parsed by {@link Long#parseLong(String)}
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         If this account does not have MANAGE_MESSAGES
      *

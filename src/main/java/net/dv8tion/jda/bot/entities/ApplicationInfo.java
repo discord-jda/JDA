@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.utils.MiscUtil;
 
 import java.util.Collection;
 
@@ -108,12 +109,15 @@ public interface ApplicationInfo extends ISnowflake
      * @param  permissions
      *         Possibly empty {@link java.util.Collection Collection} of {@link net.dv8tion.jda.core.Permission Permissions}
      *         that should be requested via invite.
+     *
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      * 
      * @return The link used to invite the bot
      */
     default String getInviteUrl(String guildId, Collection<Permission> permissions)
     {
-        return getInviteUrl(Long.parseLong(guildId), permissions);
+        return getInviteUrl(MiscUtil.parseSnowflake(guildId), permissions);
     }
 
     /**
@@ -145,12 +149,15 @@ public interface ApplicationInfo extends ISnowflake
      * @param  permissions 
      *         Possibly empty array of {@link net.dv8tion.jda.core.Permission Permissions} 
      *         that should be requested via invite.
+     *
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      * 
      * @return The link used to invite the bot
      */
     default String getInviteUrl(String guildId, Permission... permissions)
     {
-        return getInviteUrl(Long.parseLong(guildId), permissions);
+        return getInviteUrl(MiscUtil.parseSnowflake(guildId), permissions);
     }
 
     /**

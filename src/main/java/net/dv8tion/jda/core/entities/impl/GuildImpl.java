@@ -126,7 +126,7 @@ public class GuildImpl implements Guild
         if (!getSelfMember().hasPermission(Permission.MANAGE_WEBHOOKS))
             throw new PermissionException(Permission.MANAGE_WEBHOOKS);
 
-        Route.CompiledRoute route = Route.Guilds.GET_WEBHOOKS.compile(String.valueOf(id));
+        Route.CompiledRoute route = Route.Guilds.GET_WEBHOOKS.compile(getId());
 
         return new RestAction<List<Webhook>>(api, route, null)
         {
@@ -199,7 +199,7 @@ public class GuildImpl implements Guild
     @Override
     public Member getMemberById(String userId)
     {
-        return members.get(Long.parseLong(userId));
+        return members.get(MiscUtil.parseSnowflake(userId));
     }
 
     @Override
@@ -276,7 +276,7 @@ public class GuildImpl implements Guild
     @Override
     public TextChannel getTextChannelById(String id)
     {
-        return textChannels.get(Long.parseLong(id));
+        return textChannels.get(MiscUtil.parseSnowflake(id));
     }
 
     @Override
@@ -308,7 +308,7 @@ public class GuildImpl implements Guild
     @Override
     public VoiceChannel getVoiceChannelById(String id)
     {
-        return voiceChannels.get(Long.parseLong(id));
+        return voiceChannels.get(MiscUtil.parseSnowflake(id));
     }
 
     @Override
@@ -340,7 +340,7 @@ public class GuildImpl implements Guild
     @Override
     public Role getRoleById(String id)
     {
-        return roles.get(Long.parseLong(id));
+        return roles.get(MiscUtil.parseSnowflake(id));
     }
 
     @Override
@@ -372,7 +372,7 @@ public class GuildImpl implements Guild
     @Override
     public Emote getEmoteById(String id)
     {
-        return emotes.get(Long.parseLong(id));
+        return emotes.get(MiscUtil.parseSnowflake(id));
     }
 
     @Override

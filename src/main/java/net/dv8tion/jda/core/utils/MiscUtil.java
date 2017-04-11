@@ -127,6 +127,20 @@ public class MiscUtil
         }
     }
 
+    public static long parseSnowflake(String input)
+    {
+        Args.notEmpty(input, "ID");
+        try
+        {
+            return Long.parseLong(input.trim());
+        }
+        catch (NumberFormatException ex)
+        {
+            throw new NumberFormatException(
+                String.format("The specified ID is not a valid snowflake (%s). Expecting a valid long value!", input));
+        }
+    }
+
     /**
      * Can be used to append a String to a formatter.
      *

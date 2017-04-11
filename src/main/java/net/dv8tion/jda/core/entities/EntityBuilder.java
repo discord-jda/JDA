@@ -508,7 +508,7 @@ public class EntityBuilder
         JSONArray rolesJson = memberJson.getJSONArray("roles");
         for (int k = 0; k < rolesJson.length(); k++)
         {
-            final long roleId = Long.parseLong(rolesJson.getString(k));
+            final long roleId = rolesJson.getLong(k);
             Role r = guild.getRolesMap().get(roleId);
             if (r == null)
             {
