@@ -59,7 +59,7 @@ public class UserImpl implements User
     @Override
     public String getDiscriminator()
     {
-        return String.valueOf(discriminator);
+        return String.format("%04d", discriminator);
     }
 
     @Override
