@@ -40,7 +40,7 @@ public class ReadyListener implements EventListener
         // Note: It is important to register your ReadyListener before building
         JDA jda = new JDABuilder(AccountType.BOT)
             .setToken("token")
-            .addListener(new ReadyListener())
+            .addEventListener(new ReadyListener())
             .buildBlocking();
     }
 
