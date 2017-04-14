@@ -29,7 +29,7 @@
  * to specify how the Requester should deal with rate limits.
  * It has extensions with additional functionalities in {@link net.dv8tion.jda.core.requests.restaction}.
  *
- * <p>In the case of a failed Request the RestAction will be provided with an {@link net.dv8tion.jda.core.exceptions.ErrorResponseException ErrorResponseException}
+ * <p>In the case of a failed Request the RestAction will be provided with an {@link net.dv8tion.jda.core.exceptions.FailureResponseException ErrorResponseException}
  * which contains a {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponse} representing the failure cause!
  *
  * <p><u><b>WebSocket API</b></u>

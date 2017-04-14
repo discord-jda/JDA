@@ -18,7 +18,7 @@ package net.dv8tion.jda.core.requests;
 
 import org.json.JSONObject;
 
-public enum ErrorResponse
+public enum ErrorResponse implements FailureResponse
 {
     UNKNOWN_ACCOUNT(    10001, "Unknown Account"),
     UNKNOWN_APPLICATION(10002, "Unknown Application"),
@@ -37,6 +37,7 @@ public enum ErrorResponse
     UNKNOWN_WEBHOOK(    10015, "Unknown Webhook"),
     BOTS_NOT_ALLOWED(   20001, "Bots cannot use this endpoint"),
     ONLY_BOTS_ALLOWED(  20002, "Only bots can use this endpoint"),
+    EXPLICIT_CONTENT(   20009, "Explicit content cannot be sent to the desired recipient(s)"),
     MAX_GUILDS(         30001, "Maximum number of Guilds reached (100)"),
     MAX_FRIENDS(        30002, "Maximum number of Friends reached (1000)"),
     MAX_MESSAGE_PINS(   30003, "Maximum number of pinned messages reached (50)"),
@@ -65,47 +66,55 @@ public enum ErrorResponse
     INVALID_PIN(        50019, "A message can only be pinned to the channel it was sent in"),
     INVALID_BULK_DELETE_MESSAGE_AGE(50034, "A Message provided to bulk_delete was older than 2 weeks"),
     MFA_NOT_ENABLED(    60003, "MFA auth required but not enabled"),
-    REACTION_BLOCKED(   90001, "Reaction Blocked"),
-
-    UNKNOWN_ERROR(         -1, "Discord returned an unknown error type"),
-    UNDEFINED_ERROR(       -2, "Discord returned an error with no defined error-code");
+    REACTION_BLOCKED(   90001, "Reaction Blocked");
 
 
     private final int code;
     private final String meaning;
+
     ErrorResponse(int code, String meaning)
     {
         this.code = code;
         this.meaning = meaning;
     }
 
+    @Override
     public int getCode()
     {
         return code;
     }
 
+    @Override
     public String getMeaning()
     {
         return meaning;
     }
 
-    public static ErrorResponse fromCode(int code)
+    public static FailureResponse fromCode(int code, String meaning)
     {
         for (ErrorResponse error : values())
         {
             if (code == error.getCode())
                 return error;
         }
-        return UNKNOWN_ERROR;
+        return new UnknownFailure(code, meaning);
     }
 
-    public static ErrorResponse fromJSON(JSONObject obj)
+    public static FailureResponse fromJSON(JSONObject obj)
     {
         if (obj == null || obj.isNull("code"))
-            return UNDEFINED_ERROR;
+        {
+            if (obj == null || obj.isNull("message"))
+                return new UnknownFailure(-2, "Unknown Failure");
+            else
+                return new UnknownFailure(-1, obj.getString("message"));
+        }
         else
         {
-            return ErrorResponse.fromCode(obj.getInt("code"));
+            if (obj.isNull("message"))
+                return fromCode(obj.getInt("code"), "Unknown Meaning");
+            else
+                return fromCode(obj.getInt("code"), obj.getString("message"));
         }
     }
 }

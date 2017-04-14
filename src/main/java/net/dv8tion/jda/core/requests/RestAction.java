@@ -18,7 +18,7 @@ package net.dv8tion.jda.core.requests;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.exceptions.ErrorResponseException;
+import net.dv8tion.jda.core.exceptions.FailureResponseException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.requests.restaction.CompletedFuture;
@@ -328,8 +328,8 @@ public abstract class RestAction<T>
                     throw (RateLimitedException) t;
                 else if (t instanceof  PermissionException)
                     throw (PermissionException) t;
-                else if (t instanceof ErrorResponseException)
-                    throw (ErrorResponseException) t;
+                else if (t instanceof FailureResponseException)
+                    throw (FailureResponseException) t;
             }
             throw new RuntimeException(e);
         }
