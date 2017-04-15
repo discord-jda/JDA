@@ -216,7 +216,8 @@ public class MessageImpl implements Message
     }
 
     @Override
-    public Member getMember() {
+    public Member getMember()
+    {
         return isFromType(ChannelType.TEXT) ? getGuild().getMember(getAuthor()) : null;
     }
 
