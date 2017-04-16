@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
-/**
- * Events indicating the {@link net.dv8tion.jda.core.entities.MessageReaction MessageReactions} of a {@link net.dv8tion.jda.core.entities.Message Message} changed.
- * <br>These events
- * cannot provide a Message instance due to missing cache but instead provide the Message ID as
- * long representation.
- */
-package net.dv8tion.jda.core.events.message.react;
+package net.dv8tion.jda.core.events.emote.update;
+
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.Emote;
+import net.dv8tion.jda.core.events.emote.GenericEmoteEvent;
+
+public class GenericEmoteUpdateEvent extends GenericEmoteEvent
+{
+    public GenericEmoteUpdateEvent(JDA api, long responseNumber, Emote emote)
+    {
+        super(api, responseNumber, emote);
+    }
+}

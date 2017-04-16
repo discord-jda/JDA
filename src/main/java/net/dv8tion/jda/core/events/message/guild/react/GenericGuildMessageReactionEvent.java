@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.events.message.react;
+package net.dv8tion.jda.core.events.message.guild.react;
 
-import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.GenericMessageEvent;
 
-public class GenericMessageReactionEvent extends GenericMessageEvent
+public class GenericGuildMessageReactionEvent extends GenericMessageEvent
 {
     protected User issuer;
     protected MessageReaction reaction;
 
-    public GenericMessageReactionEvent(JDA api, long responseNumber, User user, MessageReaction reaction)
+    public GenericGuildMessageReactionEvent(JDA api, long responseNumber, User user, MessageReaction reaction)
     {
         super(api, responseNumber, reaction.getMessageIdLong(), reaction.getChannel());
         this.issuer = user;
@@ -35,23 +34,13 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
 
     public Guild getGuild()
     {
-        TextChannel channel = getTextChannel();
-        return channel != null ? channel.getGuild() : null;
+        return getChannel().getGuild();
     }
 
-    public TextChannel getTextChannel()
+    @Override
+    public TextChannel getChannel()
     {
-        return isFromType(ChannelType.TEXT) ? (TextChannel) getChannel() : null;
-    }
-
-    public PrivateChannel getPrivateChannel()
-    {
-        return isFromType(ChannelType.PRIVATE) ? (PrivateChannel) getChannel() : null;
-    }
-
-    public Group getGroup()
-    {
-        return isFromType(ChannelType.GROUP) ? (Group) getChannel() : null;
+        return (TextChannel) channel;
     }
 
     public User getUser()
@@ -61,8 +50,7 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
 
     public Member getMember()
     {
-        Guild guild = getGuild();
-        return guild != null ? guild.getMember(getUser()) : null;
+        return getGuild().getMember(getUser());
     }
 
     public MessageReaction getReaction()

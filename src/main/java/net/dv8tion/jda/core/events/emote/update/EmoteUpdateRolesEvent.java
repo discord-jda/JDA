@@ -14,26 +14,34 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.client.events.message.group;
+package net.dv8tion.jda.core.events.emote.update;
 
-import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.MessageEmbed;
+import net.dv8tion.jda.core.entities.Emote;
+import net.dv8tion.jda.core.entities.Role;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
-public class GroupMessageEmbedEvent extends GenericGroupMessageEvent
+public class EmoteUpdateRolesEvent extends GenericEmoteUpdateEvent
 {
-    private final List<MessageEmbed> embeds;
+    protected final List<Role> oldRoles;
 
-    public GroupMessageEmbedEvent(JDA api, long responseNumber, long messageId, Group group, List<MessageEmbed> embeds)
+    public EmoteUpdateRolesEvent(JDA api, long responseNumber, Emote emote, Collection<Role> oldRoles)
     {
-        super(api, responseNumber, messageId, group);
-        this.embeds = embeds;
+        super(api, responseNumber, emote);
+        this.oldRoles = Collections.unmodifiableList(new LinkedList<>(oldRoles));
     }
 
-    public List<MessageEmbed> getMessageEmbeds()
+    public List<Role> getOldRoles()
     {
-        return embeds;
+        return oldRoles;
+    }
+
+    public List<Role> getNewRoles()
+    {
+        return emote.getRoles();
     }
 }

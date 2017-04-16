@@ -41,8 +41,7 @@ public class MessageDeleteHandler extends SocketHandler
     @Override
     protected Long handleInternally(JSONObject content)
     {
-        final String messageIdString = content.getString("id");
-        final long messageId = Long.parseLong(messageIdString);
+        final long messageId = content.getLong("id");
         final long channelId = content.getLong("channel_id");
 
         MessageChannel channel = api.getTextChannelById(channelId);
@@ -77,7 +76,7 @@ public class MessageDeleteHandler extends SocketHandler
             api.getEventManager().handle(
                     new GuildMessageDeleteEvent(
                             api, responseNumber,
-                            messageIdString, tChan));
+                            messageId, tChan));
         }
         else if (channel instanceof PrivateChannel)
         {
@@ -87,7 +86,7 @@ public class MessageDeleteHandler extends SocketHandler
             api.getEventManager().handle(
                     new PrivateMessageDeleteEvent(
                             api, responseNumber,
-                            messageIdString, pChan));
+                            messageId, pChan));
         }
         else
         {
@@ -97,7 +96,7 @@ public class MessageDeleteHandler extends SocketHandler
             api.getEventManager().handle(
                     new GroupMessageDeleteEvent(
                             api, responseNumber,
-                            messageIdString, group));
+                            messageId, group));
         }
 
         //Combo event

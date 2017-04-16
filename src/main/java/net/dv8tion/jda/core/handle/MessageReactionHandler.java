@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.handle;
 
+import net.dv8tion.jda.client.events.message.group.react.GroupMessageReactionAddEvent;
+import net.dv8tion.jda.client.events.message.group.react.GroupMessageReactionRemoveEvent;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.MessageChannel;
@@ -23,8 +25,13 @@ import net.dv8tion.jda.core.entities.MessageReaction;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.impl.EmoteImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionAddEvent;
+import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionRemoveEvent;
+import net.dv8tion.jda.core.events.message.priv.react.PrivateMessageReactionAddEvent;
+import net.dv8tion.jda.core.events.message.priv.react.PrivateMessageReactionRemoveEvent;
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent;
+import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.requests.WebSocketClient;
 import org.json.JSONObject;
 
@@ -112,19 +119,69 @@ public class MessageReactionHandler extends SocketHandler
         MessageReaction reaction = new MessageReaction(channel, rEmote, messageId, user.equals(api.getSelfUser()), -1);
 
         if (add)
-        {
-            api.getEventManager().handle(
-                    new MessageReactionAddEvent(
-                            api, responseNumber,
-                            user, reaction));
-        }
+            onAdd(reaction, user);
         else
+            onRemove(reaction, user);
+        return null;
+    }
+
+    private void onAdd(MessageReaction reaction, User user)
+    {
+        IEventManager manager = api.getEventManager();
+        switch (reaction.getChannelType())
         {
-            api.getEventManager().handle(
-                    new MessageReactionRemoveEvent(
+            case TEXT:
+                manager.handle(
+                    new GuildMessageReactionAddEvent(
+                            api, responseNumber,
+                            user, reaction));
+                break;
+            case GROUP:
+                manager.handle(
+                    new GroupMessageReactionAddEvent(
+                            api, responseNumber,
+                            user, reaction));
+                break;
+            case PRIVATE:
+                manager.handle(
+                    new PrivateMessageReactionAddEvent(
                             api, responseNumber,
                             user, reaction));
         }
-        return null;
+
+        manager.handle(
+            new MessageReactionAddEvent(
+                    api, responseNumber,
+                    user, reaction));
+    }
+
+    private void onRemove(MessageReaction reaction, User user)
+    {
+        IEventManager manager = api.getEventManager();
+        switch (reaction.getChannelType())
+        {
+            case TEXT:
+                manager.handle(
+                    new GuildMessageReactionRemoveEvent(
+                            api, responseNumber,
+                            user, reaction));
+                break;
+            case GROUP:
+                manager.handle(
+                    new GroupMessageReactionRemoveEvent(
+                            api, responseNumber,
+                            user, reaction));
+                break;
+            case PRIVATE:
+                manager.handle(
+                    new PrivateMessageReactionRemoveEvent(
+                            api, responseNumber,
+                            user, reaction));
+        }
+
+        manager.handle(
+            new MessageReactionRemoveEvent(
+                    api, responseNumber,
+                    user, reaction));
     }
 }

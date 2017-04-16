@@ -17,6 +17,7 @@ package net.dv8tion.jda.core.events.message.priv;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.User;
 
 /**
  * <b><u>PrivateMessageUpdateEvent</u></b><br>
@@ -26,8 +27,21 @@ import net.dv8tion.jda.core.entities.Message;
  */
 public class PrivateMessageUpdateEvent extends GenericPrivateMessageEvent
 {
+    private final Message message;
+
     public PrivateMessageUpdateEvent(JDA api, long responseNumber, Message message)
     {
-        super(api, responseNumber, message, message.getPrivateChannel());
+        super(api, responseNumber, message.getIdLong(), message.getPrivateChannel());
+        this.message = message;
+    }
+
+    public Message getMessage()
+    {
+        return message;
+    }
+
+    public User getAuthor()
+    {
+        return message.getAuthor();
     }
 }

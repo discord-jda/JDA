@@ -29,19 +29,12 @@ import java.util.List;
  */
 public class GuildMessageEmbedEvent extends GenericGuildMessageEvent
 {
-    private final String messageId;
     private final List<MessageEmbed> embeds;
 
-    public GuildMessageEmbedEvent(JDA api, long responseNumber, String messageId, TextChannel channel, List<MessageEmbed> embeds)
+    public GuildMessageEmbedEvent(JDA api, long responseNumber, long messageId, TextChannel channel, List<MessageEmbed> embeds)
     {
-        super(api, responseNumber, null, channel);
-        this.messageId = messageId;
+        super(api, responseNumber, messageId, channel);
         this.embeds = embeds;
-    }
-
-    public String getMessageId()
-    {
-        return messageId;
     }
 
     public List<MessageEmbed> getMessageEmbeds()

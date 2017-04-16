@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
-/**
- * Events indicating the {@link net.dv8tion.jda.core.entities.MessageReaction MessageReactions} of a {@link net.dv8tion.jda.core.entities.Message Message} changed.
- * <br>These events
- * cannot provide a Message instance due to missing cache but instead provide the Message ID as
- * long representation.
- */
-package net.dv8tion.jda.core.events.message.react;
+package net.dv8tion.jda.core.events.message.priv.react;
+
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.MessageReaction;
+import net.dv8tion.jda.core.entities.User;
+
+public class PrivateMessageReactionRemoveEvent extends GenericPrivateMessageReactionEvent
+{
+    public PrivateMessageReactionRemoveEvent(JDA api, long responseNumber, User user, MessageReaction reaction)
+    {
+        super(api, responseNumber, user, reaction);
+    }
+}

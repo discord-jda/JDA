@@ -16,10 +16,17 @@
 
 package net.dv8tion.jda.core.handle;
 
+import net.dv8tion.jda.client.entities.Group;
+import net.dv8tion.jda.client.events.message.group.react.GroupMessageReactionRemoveAllEvent;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.PrivateChannel;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionRemoveAllEvent;
+import net.dv8tion.jda.core.events.message.priv.react.PrivateMessageReactionRemoveAllEvent;
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveAllEvent;
+import net.dv8tion.jda.core.hooks.IEventManager;
 import org.json.JSONObject;
 
 public class MessageReactionBulkRemoveHandler extends SocketHandler
@@ -32,8 +39,7 @@ public class MessageReactionBulkRemoveHandler extends SocketHandler
     @Override
     protected Long handleInternally(JSONObject content)
     {
-        final String messageIdString = content.getString("message_id");
-        final long messageId = Long.parseLong(messageIdString);
+        final long messageId = content.getLong("message_id");
         final long channelId = content.getLong("channel_id");
         MessageChannel channel = api.getTextChannelById(channelId);
         if (channel == null)
@@ -54,10 +60,33 @@ public class MessageReactionBulkRemoveHandler extends SocketHandler
             EventCache.LOG.debug("Received a reaction for a channel that JDA does not currently have cached");
             return null;
         }
-        api.getEventManager().handle(
-                new MessageReactionRemoveAllEvent(
-                        api, responseNumber,
-                        messageIdString, channel));
+        IEventManager manager = api.getEventManager();
+
+        switch (channel.getType())
+        {
+            case TEXT:
+               manager.handle(
+                   new GuildMessageReactionRemoveAllEvent(
+                           api, responseNumber,
+                           messageId, (TextChannel) channel));
+               break;
+            case GROUP:
+                manager.handle(
+                    new GroupMessageReactionRemoveAllEvent(
+                            api, responseNumber,
+                            messageId, (Group) channel));
+                break;
+            case PRIVATE:
+                manager.handle(
+                    new PrivateMessageReactionRemoveAllEvent(
+                            api, responseNumber,
+                            messageId, (PrivateChannel) channel));
+        }
+
+        manager.handle(
+            new MessageReactionRemoveAllEvent(
+                    api, responseNumber,
+                    messageId, channel));
         return null;
     }
 }

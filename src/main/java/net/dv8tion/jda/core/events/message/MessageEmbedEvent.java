@@ -18,7 +18,6 @@ package net.dv8tion.jda.core.events.message;
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.events.Event;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,48 +28,19 @@ import java.util.List;
  * <br>
  * Use: Grab MessageEmbeds from any message. No matter if private or guild.
  */
-public class MessageEmbedEvent extends Event
+public class MessageEmbedEvent extends GenericMessageEvent
 {
-    private final long messageId;
-    private final MessageChannel channel;
     private final List<MessageEmbed> embeds;
 
     public MessageEmbedEvent(JDA api, long responseNumber, long messageId, MessageChannel channel, List<MessageEmbed> embeds)
     {
-        super(api, responseNumber);
-        this.messageId = messageId;
-        this.channel = channel;
+        super(api, responseNumber, messageId, channel);
         this.embeds = Collections.unmodifiableList(embeds);
-    }
-
-    public String getMessageId()
-    {
-        return Long.toUnsignedString(messageId);
-    }
-
-    public long getMessageIdLong()
-    {
-        return messageId;
     }
 
     public List<MessageEmbed> getMessageEmbeds()
     {
         return embeds;
-    }
-
-    public boolean isFromType(ChannelType type)
-    {
-        return channel.getType() == type;
-    }
-
-    public ChannelType getChannelType()
-    {
-        return channel.getType();
-    }
-
-    public MessageChannel getChannel()
-    {
-        return channel;
     }
 
     public PrivateChannel getPrivateChannel()

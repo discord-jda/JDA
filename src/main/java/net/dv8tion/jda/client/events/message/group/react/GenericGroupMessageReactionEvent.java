@@ -14,28 +14,44 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.client.events.message.group;
+package net.dv8tion.jda.client.events.message.group.react;
 
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.MessageReaction;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.GenericMessageEvent;
 
-public abstract class GenericGroupMessageEvent extends GenericMessageEvent
+public class GenericGroupMessageReactionEvent extends GenericMessageEvent
 {
-    public GenericGroupMessageEvent(JDA api, long responseNumber, long messageId, Group group)
-    {
-        super(api, responseNumber, messageId, group);
-    }
+    protected User issuer;
+    protected MessageReaction reaction;
 
-    @Deprecated
-    public Group getGroup()
+    public GenericGroupMessageReactionEvent(JDA api, long responseNumber, User user, MessageReaction reaction)
     {
-        return (Group) channel;
+        super(api, responseNumber, reaction.getMessageIdLong(), reaction.getChannel());
+        this.issuer = user;
+        this.reaction = reaction;
     }
 
     @Override
     public Group getChannel()
     {
         return (Group) channel;
+    }
+
+    public User getUser()
+    {
+        return issuer;
+    }
+
+    public MessageReaction getReaction()
+    {
+        return reaction;
+    }
+
+    public MessageReaction.ReactionEmote getReactionEmote()
+    {
+        return reaction.getEmote();
     }
 }

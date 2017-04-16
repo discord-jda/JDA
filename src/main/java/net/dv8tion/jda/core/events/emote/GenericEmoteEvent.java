@@ -13,23 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.core.events.message.guild;
+
+package net.dv8tion.jda.core.events.emote;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.Emote;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.events.Event;
 
-/**
- * <b><u>GuildMessageDeleteEvent</u></b><br>
- * Fired if a Guild Message was deleted.<br>
- * <br>
- * Use: Retrieve affected TextChannel and the id of the deleted Message.
- */
-public class GuildMessageDeleteEvent extends GenericGuildMessageEvent
+public class GenericEmoteEvent extends Event
 {
 
-    public GuildMessageDeleteEvent(JDA api, long responseNumber, long messageId, TextChannel channel)
+    protected final Emote emote;
+
+    public GenericEmoteEvent(JDA api, long responseNumber, Emote emote)
     {
-        super(api, responseNumber, messageId, channel);
+        super(api, responseNumber);
+        this.emote = emote;
     }
 
+    public Guild getGuild()
+    {
+        return emote.getGuild();
+    }
+
+    public Emote getEmote()
+    {
+        return emote;
+    }
+
+    public boolean isManaged()
+    {
+        return emote.isManaged();
+    }
 }

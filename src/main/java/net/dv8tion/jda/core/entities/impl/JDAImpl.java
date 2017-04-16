@@ -574,13 +574,13 @@ public class JDAImpl implements JDA
     public void shutdown(boolean free)
     {
         setStatus(Status.SHUTTING_DOWN);
-        getRequester().shutdown();
         audioManagers.valueCollection().forEach(AudioManager::closeAudioConnection);
         if (AudioWebSocket.KEEP_ALIVE_POOLS.containsKey(this))
             AudioWebSocket.KEEP_ALIVE_POOLS.get(this).shutdownNow();
         getClient().setAutoReconnect(false);
         getClient().close();
         getRequester().shutdown();
+        pool.shutdown();
 
         if (free)
         {

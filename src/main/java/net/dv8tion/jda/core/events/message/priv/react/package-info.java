@@ -20,4 +20,4 @@
  * cannot provide a Message instance due to missing cache but instead provide the Message ID as
  * long representation.
  */
-package net.dv8tion.jda.core.events.message.react;
+package net.dv8tion.jda.core.events.message.priv.react;
