@@ -16,33 +16,30 @@
 
 package net.dv8tion.jda.core.exceptions;
 
-import net.dv8tion.jda.core.requests.ErrorResponse;
+import net.dv8tion.jda.core.requests.FailureResponse;
 import net.dv8tion.jda.core.requests.Response;
 
 /**
  * Indicates an unhandled error that is returned by Discord API Request using {@link net.dv8tion.jda.core.requests.RestAction RestAction}
  * <br>It holds an {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponse}
  */
-public class ErrorResponseException extends RuntimeException
+public class FailureResponseException extends RuntimeException
 {
-    private final ErrorResponse errorResponse;
+    private final FailureResponse errorResponse;
     private final Response response;
 
     /**
      * Creates a new ErrorResponseException instance
      *
      * @param errorResponse
-     *        The {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponse} corresponding
+     *        The {@link net.dv8tion.jda.core.requests.FailureResponse FailureResponse} corresponding
      *        for the received error response from Discord
      * @param response
      *        The Discord Response causing the ErrorResponse
      */
-    public ErrorResponseException(ErrorResponse errorResponse, Response response)
+    public FailureResponseException(FailureResponse errorResponse, Response response)
     {
-        super(errorResponse.getMeaning()
-                + ((errorResponse == ErrorResponse.UNKNOWN_ERROR || errorResponse == ErrorResponse.UNDEFINED_ERROR)
-                    ? " : " + response.getString()
-                    : ""));
+        super(errorResponse.getMeaning());
         this.response = response;
         this.errorResponse = errorResponse;
     }
@@ -53,7 +50,7 @@ public class ErrorResponseException extends RuntimeException
      *
      * @return {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponse}
      */
-    public ErrorResponse getErrorResponse()
+    public FailureResponse getErrorResponse()
     {
         return errorResponse;
     }

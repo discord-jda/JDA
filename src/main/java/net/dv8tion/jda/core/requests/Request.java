@@ -18,7 +18,7 @@ package net.dv8tion.jda.core.requests;
 
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.ExceptionEvent;
-import net.dv8tion.jda.core.exceptions.ErrorResponseException;
+import net.dv8tion.jda.core.exceptions.FailureResponseException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 
 import java.util.function.Consumer;
@@ -70,7 +70,7 @@ public class Request<T>
         }
         else
         {
-            onFailure(new ErrorResponseException(
+            onFailure(new FailureResponseException(
                     ErrorResponse.fromJSON(response.getObject()), response));
         }
     }
