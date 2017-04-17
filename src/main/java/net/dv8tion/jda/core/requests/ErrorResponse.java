@@ -67,8 +67,7 @@ public enum ErrorResponse
     MFA_NOT_ENABLED(    60003, "MFA auth required but not enabled"),
     REACTION_BLOCKED(   90001, "Reaction Blocked"),
 
-    UNKNOWN_ERROR(         -1, "Discord returned an unknown error type"),
-    UNDEFINED_ERROR(       -2, "Discord returned an error with no defined error-code");
+    SERVER_ERROR(           0, "Discord encountered an internal server error! Not good!");
 
 
     private final int code;
@@ -96,13 +95,13 @@ public enum ErrorResponse
             if (code == error.getCode())
                 return error;
         }
-        return UNKNOWN_ERROR;
+        return SERVER_ERROR;
     }
 
     public static ErrorResponse fromJSON(JSONObject obj)
     {
         if (obj == null || obj.isNull("code"))
-            return UNDEFINED_ERROR;
+            return SERVER_ERROR;
         else
         {
             return ErrorResponse.fromCode(obj.getInt("code"));

@@ -18,6 +18,7 @@ package net.dv8tion.jda.core.exceptions;
 
 import net.dv8tion.jda.core.requests.ErrorResponse;
 import net.dv8tion.jda.core.requests.Response;
+import org.json.JSONObject;
 
 /**
  * Indicates an unhandled error that is returned by Discord API Request using {@link net.dv8tion.jda.core.requests.RestAction RestAction}
@@ -39,12 +40,50 @@ public class ErrorResponseException extends RuntimeException
      */
     public ErrorResponseException(ErrorResponse errorResponse, Response response)
     {
-        super(errorResponse.getMeaning()
-                + ((errorResponse == ErrorResponse.UNKNOWN_ERROR || errorResponse == ErrorResponse.UNDEFINED_ERROR)
-                    ? " : " + response.getString()
-                    : ""));
+        super(
+            errorResponse == ErrorResponse.SERVER_ERROR
+                ? getErrorMessage(response.getObject())
+                : errorResponse.getMeaning()
+        );
+
         this.response = response;
         this.errorResponse = errorResponse;
+    }
+
+    /**
+     * Whether this is an internal server error from discord (status 500)
+     *
+     * @return True, if this is an internal server error
+     *         {@link net.dv8tion.jda.core.requests.ErrorResponse#SERVER_ERROR ErrorResponse.SERVER_ERROR}
+     */
+    public boolean isServerError()
+    {
+        return errorResponse == ErrorResponse.SERVER_ERROR;
+    }
+
+    /**
+     * The meaning for this error.
+     * <br>It is possible that the value from this method is different for {@link #isServerError() server errors}
+     *
+     * @return Never-null meaning of this error.
+     */
+    public String getMeaning()
+    {
+        JSONObject obj = response.getObject();
+        return obj.isNull("message") ? errorResponse.getMeaning() : obj.getString("message");
+    }
+
+    /**
+     * The discord error code for this error response.
+     *
+     * @return The discord error code.
+     *
+     * @see <a href="https://discordapp.com/developers/docs/topics/response-codes#json-error-response" target="_blank">Discord Error Codes</a>
+     */
+    public int getErrorCode()
+    {
+        JSONObject obj = response.getObject();
+        return obj.isNull("code") ? errorResponse.getCode() : obj.getInt("code");
     }
 
     /**
@@ -66,5 +105,23 @@ public class ErrorResponseException extends RuntimeException
     public Response getResponse()
     {
         return response;
+    }
+
+    private static String getErrorMessage(JSONObject obj)
+    {
+        if (obj.isNull("code"))
+        {
+            if (obj.isNull("message"))
+                return obj.toString();
+            else
+                return "<unknown code>: " + obj.getString("message");
+        }
+        else
+        {
+            if (obj.isNull("message"))
+                return obj.getInt("code") + ": " + obj.toString();
+            else
+                return obj.getInt("code") + ": " + obj.getString("message");
+        }
     }
 }
