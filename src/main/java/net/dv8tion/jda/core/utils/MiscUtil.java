@@ -21,6 +21,7 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.core.entities.ISnowflake;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.util.Args;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -83,6 +84,21 @@ public class MiscUtil
     public static String getDateTimeString(OffsetDateTime time)
     {
         return time.format(dtFormatter);
+    }
+
+    /**
+     * Returns the shard id the given guild will be loaded on for the given amout of shards.
+     * 
+     * @param guildId
+     *             The guild id.
+     * @param shards
+     *             The amount of shards.
+     * 
+     * @return The shard id for the guild.
+     */
+    public static int getShardForGuild(String guildId, int shards)
+    {
+        return (int) ((Long.parseLong(guildId) >> 22) % shards);
     }
 
     /**

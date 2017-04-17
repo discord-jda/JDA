@@ -17,12 +17,15 @@ package net.dv8tion.jda.core;
 
 import com.neovisionaries.ws.client.ProxySettings;
 import com.neovisionaries.ws.client.WebSocketFactory;
-import net.dv8tion.jda.core.JDA.Status;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
+import net.dv8tion.jda.core.hooks.EventListener;
 import net.dv8tion.jda.core.hooks.IEventManager;
+import net.dv8tion.jda.core.hooks.SubscribeEvent;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import org.apache.http.HttpHost;
 import org.apache.http.util.Args;
@@ -137,7 +140,7 @@ public class JDABuilder
     {
         if (jdaCreated)
             throw new UnsupportedOperationException("You cannot change the proxy after a JDA object has been created. Proxy settings are global among all instances!");
-        this.proxy = proxy;
+        JDABuilder.proxy = proxy;
         return this;
     }
 
@@ -516,11 +519,41 @@ public class JDABuilder
      */
     public JDA buildBlocking() throws LoginException, IllegalArgumentException, InterruptedException, RateLimitedException
     {
+        ReadyListener listener = new ReadyListener();
+        this.listeners.add(listener);
         JDA jda = buildAsync();
-        while(jda.getStatus() != Status.CONNECTED)
+        synchronized (listener)
         {
-            Thread.sleep(50);
+            while (!listener.isReady())
+            {
+                listener.wait();
+            }
         }
         return jda;
+    }
+
+    private static class ReadyListener implements EventListener
+    {
+        private boolean ready = false;
+
+        public boolean isReady()
+        {
+            return ready;
+        }
+
+        @Override
+        @SubscribeEvent
+        public void onEvent(Event event)
+        {
+            if (event instanceof ReadyEvent)
+            {
+                event.getJDA().removeEventListener(this);
+                this.ready = true;
+                synchronized (this)
+                {
+                    this.notifyAll();
+                }
+            }
+        }
     }
 }
