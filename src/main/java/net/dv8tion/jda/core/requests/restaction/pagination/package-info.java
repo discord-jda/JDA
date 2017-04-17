@@ -21,6 +21,6 @@
  * as an {@link java.lang.Iterable Iterable} of the specified endpoint. Each implementation specifies the endpoints it will
  * use in the class-level javadoc
  *
- * @since 3.1
+ * @since 3.0
  */
 package net.dv8tion.jda.core.requests.restaction.pagination;
