@@ -24,6 +24,7 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.http.util.Args;
 
 public class ShardManager // TODO: think about what methods ShardManager should contain
@@ -91,6 +92,19 @@ public class ShardManager // TODO: think about what methods ShardManager should 
         this.shards.valueCollection().forEach(jda -> jda.addEventListener(listeners));
     }
 
+    private <T extends ISnowflake> T findSnowflakeInCombinedCollection(
+            final Function<? super JDAImpl, ? extends Collection<? extends T>> mapper, final long id)
+    {
+        return this.getCombinedStream(mapper).filter(g -> g.getIdLong() == id).findFirst().orElse(null);
+    }
+
+    private <T extends ISnowflake> T findSnowflakeInCombinedCollection(
+            final Function<? super JDAImpl, ? extends Collection<? extends T>> mapper, final String id)
+    {
+        final long idLong = MiscUtil.parseSnowflake(id);
+        return this.getCombinedStream(mapper).filter(g -> g.getIdLong() == idLong).findFirst().orElse(null);
+    }
+
     /**
      * Used to access Bot specific functions like OAuth information.
      *
@@ -116,7 +130,19 @@ public class ShardManager // TODO: think about what methods ShardManager should 
      */
     public double getAveragePing()
     {
-        return this.shards.valueCollection().stream().mapToLong(jda -> jda.getPing()).average().getAsDouble();
+        return this.shards.valueCollection().stream().mapToLong(jda -> jda.getPing()).filter(ping -> ping != -1)
+                .average().getAsDouble();
+    }
+
+    private <T> Stream<T> getCombinedStream(final Function<? super JDAImpl, ? extends Collection<? extends T>> mapper)
+    {
+        return this.shards.valueCollection().stream().flatMap(mapper.andThen(c -> c.stream()));
+    }
+
+    private <T> List<T> getDistinctUnmodifiableCombinedList(
+            final Function<? super JDAImpl, ? extends Collection<? extends T>> mapper)
+    {
+        return Collections.unmodifiableList(this.getCombinedStream(mapper).distinct().collect(Collectors.toList()));
     }
 
     /**
@@ -130,8 +156,7 @@ public class ShardManager // TODO: think about what methods ShardManager should 
      */
     public Guild getGuildById(final long id)
     {
-        return this.getStream(jda -> jda.getGuildMap().valueCollection().stream()).filter(g -> g.getIdLong() == id)
-                .findFirst().orElse(null);
+        return this.findSnowflakeInCombinedCollection(jda -> jda.getGuildMap().valueCollection(), id);
     }
 
     /**
@@ -145,7 +170,7 @@ public class ShardManager // TODO: think about what methods ShardManager should 
      */
     public Guild getGuildById(final String id)
     {
-        return this.getGuildById(Long.parseLong(id));
+        return this.findSnowflakeInCombinedCollection(jda -> jda.getGuildMap().valueCollection(), id);
     }
 
     /**
@@ -163,8 +188,7 @@ public class ShardManager // TODO: think about what methods ShardManager should 
      */
     public List<Guild> getGuilds()
     {
-        return Collections.unmodifiableList(this.getStream(jda -> jda.getGuildMap().valueCollection().stream())
-                .distinct().collect(Collectors.toList()));
+        return this.getDistinctUnmodifiableCombinedList(api -> api.getGuildMap().valueCollection());
     }
 
     public JDA getShard(final int shardId)
@@ -203,13 +227,12 @@ public class ShardManager // TODO: think about what methods ShardManager should 
      */
     public List<JDA.Status> getStatuses()
     {
-        return Collections.unmodifiableList(
-                this.shards.valueCollection().stream().map(jda -> jda.getStatus()).collect(Collectors.toList()));
+        return this.getUnmodifiableList(jda -> jda.getStatus());
     }
 
-    private <T> Stream<T> getStream(final Function<? super JDAImpl, ? extends Stream<? extends T>> mapper)
+    private <T> Stream<T> getStream(final Function<? super JDAImpl, ? extends T> mapper)
     {
-        return this.shards.valueCollection().stream().flatMap(mapper);
+        return this.shards.valueCollection().stream().map(mapper);
     }
 
     /**
@@ -230,8 +253,7 @@ public class ShardManager // TODO: think about what methods ShardManager should 
      */
     public TextChannel getTextChannelById(final long id)
     {
-        return this.getStream(jda -> jda.getTextChannelMap().valueCollection().stream())
-                .filter(g -> g.getIdLong() == id).findFirst().orElse(null);
+        return this.findSnowflakeInCombinedCollection(jda -> jda.getTextChannelMap().valueCollection(), id);
     }
 
     /**
@@ -252,7 +274,7 @@ public class ShardManager // TODO: think about what methods ShardManager should 
      */
     public TextChannel getTextChannelById(final String id)
     {
-        return this.getTextChannelById(Long.parseLong(id));
+        return this.findSnowflakeInCombinedCollection(jda -> jda.getTextChannelMap().valueCollection(), id);
     }
 
     /**
@@ -269,8 +291,12 @@ public class ShardManager // TODO: think about what methods ShardManager should 
      */
     public List<TextChannel> getTextChannels()
     {
-        return Collections.unmodifiableList(
-                this.getStream(jda -> jda.getTextChannelMap().valueCollection().stream()).collect(Collectors.toList()));
+        return this.getDistinctUnmodifiableCombinedList(api -> api.getTextChannelMap().valueCollection());
+    }
+
+    private <T> List<T> getUnmodifiableList(final Function<? super JDAImpl, ? extends T> mapper)
+    {
+        return Collections.unmodifiableList(this.getStream(mapper).collect(Collectors.toList()));
     }
 
     /**
@@ -284,8 +310,8 @@ public class ShardManager // TODO: think about what methods ShardManager should 
      */
     public User getUserById(final long id)
     {
-        return this.getStream(jda -> jda.getUserMap().valueCollection().stream()).filter(g -> g.getIdLong() == id)
-                .findFirst().orElse(null);
+        return this.findSnowflakeInCombinedCollection(jda -> jda.getUserMap().valueCollection(), id);
+
     }
 
     /**
@@ -299,7 +325,7 @@ public class ShardManager // TODO: think about what methods ShardManager should 
      */
     public User getUserById(final String id)
     {
-        return this.getUserById(Long.parseLong(id));
+        return this.findSnowflakeInCombinedCollection(jda -> jda.getUserMap().valueCollection(), id);
     }
 
     /**
@@ -315,8 +341,8 @@ public class ShardManager // TODO: think about what methods ShardManager should 
      */
     public List<User> getUsers() // TODO: think about how resource intensive this is on large bots (over 1-2M users)
     {
-        return Collections.unmodifiableList(this.getStream(jda -> jda.getUserMap().valueCollection().stream())
-                .distinct().collect(Collectors.toList()));
+        return this.getDistinctUnmodifiableCombinedList(api -> api.getUserMap().valueCollection());
+
     }
 
     /**
@@ -330,8 +356,7 @@ public class ShardManager // TODO: think about what methods ShardManager should 
      */
     public VoiceChannel getVoiceChannelById(final long id)
     {
-        return this.getStream(jda -> jda.getVoiceChannelMap().valueCollection().stream())
-                .filter(g -> g.getIdLong() == id).findFirst().orElse(null);
+        return this.findSnowflakeInCombinedCollection(jda -> jda.getVoiceChannelMap().valueCollection(), id);
     }
 
     /**
@@ -345,7 +370,7 @@ public class ShardManager // TODO: think about what methods ShardManager should 
      */
     public VoiceChannel getVoiceChannelById(final String id)
     {
-        return this.getVoiceChannelById(Long.parseLong(id));
+        return this.findSnowflakeInCombinedCollection(jda -> jda.getVoiceChannelMap().valueCollection(), id);
     }
 
     /**
@@ -356,8 +381,7 @@ public class ShardManager // TODO: think about what methods ShardManager should 
      */
     public List<VoiceChannel> getVoiceChannels()
     {
-        return Collections.unmodifiableList(this.getStream(jda -> jda.getVoiceChannelMap().valueCollection().stream())
-                .collect(Collectors.toList()));
+        return this.getDistinctUnmodifiableCombinedList(api -> api.getVoiceChannelMap().valueCollection());
     }
 
     void login() throws LoginException, IllegalArgumentException
@@ -413,21 +437,17 @@ public class ShardManager // TODO: think about what methods ShardManager should 
             }
             catch (LoginException | IllegalArgumentException e)
             {
-                // TODO: this should never happen unless the token changes inbetween
+                // TODO: this should never happen unless the token changes inbetween, still needs to be handled somehow
                 e.printStackTrace();
-            }
-            catch (final RateLimitedException e)
-            {
-                // do not remove 'shardId' from the queue and try the current one again after 5 seconds
             }
             catch (final Exception e)
             {
+                // do not remove 'shardId' from the queue and try again after 5 seconds
                 if (api != null)
                     api.shutdown(false);
-                throw e;
+                throw new RuntimeException(e);
             }
         }, 0, 5, TimeUnit.SECONDS);
-
     }
 
     /**
