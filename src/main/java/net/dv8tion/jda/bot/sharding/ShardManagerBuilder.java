@@ -44,10 +44,10 @@ import org.apache.http.util.Args;
  */
 public class ShardManagerBuilder
 {
-    final JDABuilder builder = new JDABuilder(AccountType.BOT);
     private int maxShardId = -1;
     private int minShardId = -1;
     private int shardsTotal;
+    final JDABuilder builder = new JDABuilder(AccountType.BOT);
 
     /**
      * TODO: completely change docs

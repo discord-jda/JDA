@@ -5,10 +5,7 @@ import gnu.trove.TCollections;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
@@ -92,19 +89,6 @@ public class ShardManager // TODO: think about what methods ShardManager should 
         this.shards.valueCollection().forEach(jda -> jda.addEventListener(listeners));
     }
 
-    private <T extends ISnowflake> T findSnowflakeInCombinedCollection(
-            final Function<? super JDAImpl, ? extends Collection<? extends T>> mapper, final long id)
-    {
-        return this.getCombinedStream(mapper).filter(g -> g.getIdLong() == id).findFirst().orElse(null);
-    }
-
-    private <T extends ISnowflake> T findSnowflakeInCombinedCollection(
-            final Function<? super JDAImpl, ? extends Collection<? extends T>> mapper, final String id)
-    {
-        final long idLong = MiscUtil.parseSnowflake(id);
-        return this.getCombinedStream(mapper).filter(g -> g.getIdLong() == idLong).findFirst().orElse(null);
-    }
-
     /**
      * Used to access Bot specific functions like OAuth information.
      *
@@ -132,17 +116,6 @@ public class ShardManager // TODO: think about what methods ShardManager should 
     {
         return this.shards.valueCollection().stream().mapToLong(jda -> jda.getPing()).filter(ping -> ping != -1)
                 .average().getAsDouble();
-    }
-
-    private <T> Stream<T> getCombinedStream(final Function<? super JDAImpl, ? extends Collection<? extends T>> mapper)
-    {
-        return this.shards.valueCollection().stream().flatMap(mapper.andThen(c -> c.stream()));
-    }
-
-    private <T> List<T> getDistinctUnmodifiableCombinedList(
-            final Function<? super JDAImpl, ? extends Collection<? extends T>> mapper)
-    {
-        return Collections.unmodifiableList(this.getCombinedStream(mapper).distinct().collect(Collectors.toList()));
     }
 
     /**
@@ -191,6 +164,38 @@ public class ShardManager // TODO: think about what methods ShardManager should 
         return this.getDistinctUnmodifiableCombinedList(api -> api.getGuildMap().valueCollection());
     }
 
+    /**
+     * Gets all {@link net.dv8tion.jda.core.entities.Guild Guilds} that contain all given users as their members.
+     *
+     * @param users
+     *        The users which all the returned {@link net.dv8tion.jda.core.entities.Guild Guilds} must contain.
+     *
+     * @return Unmodifiable list of all {@link net.dv8tion.jda.core.entities.Guild Guild} instances which have all {@link net.dv8tion.jda.core.entities.User Users} in them.
+     */
+    public List<Guild> getMutualGuilds(final Collection<User> users)
+    {
+        Args.notNull(users, "users");
+        for (final User u : users)
+            Args.notNull(u, "All users");
+
+        return Collections.unmodifiableList(this.getCombinedStream(jda -> jda.getGuildMap().valueCollection())
+                .filter(guild -> users.stream().allMatch(guild::isMember)).collect(Collectors.toList()));
+    }
+
+    /**
+     * Gets all {@link net.dv8tion.jda.core.entities.Guild Guilds} that contain all given users as their members.
+     *
+     * @param  users
+     *         The users which all the returned {@link net.dv8tion.jda.core.entities.Guild Guilds} must contain.
+     *
+     * @return Unmodifiable list of all {@link net.dv8tion.jda.core.entities.Guild Guild} instances which have all {@link net.dv8tion.jda.core.entities.User Users} in them.
+     */
+    public List<Guild> getMutualGuilds(final User... users)
+    {
+        Args.notNull(users, "users");
+        return this.getMutualGuilds(Arrays.asList(users));
+    }
+
     public JDA getShard(final int shardId)
     {
         Args.positive(shardId, "shardId");
@@ -228,11 +233,6 @@ public class ShardManager // TODO: think about what methods ShardManager should 
     public List<JDA.Status> getStatuses()
     {
         return this.getUnmodifiableList(jda -> jda.getStatus());
-    }
-
-    private <T> Stream<T> getStream(final Function<? super JDAImpl, ? extends T> mapper)
-    {
-        return this.shards.valueCollection().stream().map(mapper);
     }
 
     /**
@@ -292,11 +292,6 @@ public class ShardManager // TODO: think about what methods ShardManager should 
     public List<TextChannel> getTextChannels()
     {
         return this.getDistinctUnmodifiableCombinedList(api -> api.getTextChannelMap().valueCollection());
-    }
-
-    private <T> List<T> getUnmodifiableList(final Function<? super JDAImpl, ? extends T> mapper)
-    {
-        return Collections.unmodifiableList(this.getStream(mapper).collect(Collectors.toList()));
     }
 
     /**
@@ -384,72 +379,6 @@ public class ShardManager // TODO: think about what methods ShardManager should 
         return this.getDistinctUnmodifiableCombinedList(api -> api.getVoiceChannelMap().valueCollection());
     }
 
-    void login() throws LoginException, IllegalArgumentException
-    {
-        // building the first one in the currrent thread ensures that LoginException and IllegalArgumentException can be thrown on login
-        JDAImpl jda = null;
-        try
-        {
-            final int shardId = this.queue.peek();
-            this.builder.useSharding(shardId, this.shardsTotal);
-            this.shards.put(shardId, jda = (JDAImpl) this.builder.buildAsync());
-            this.queue.remove(shardId);
-        }
-        catch (final RateLimitedException e)
-        {
-            // do not remove 'shardId' from the queue and try the first one again after 5 seconds in the async thread
-        }
-        catch (final Exception e)
-        {
-            if (jda != null)
-                jda.shutdown(false);
-            throw e;
-        }
-
-        this.worker = this.executor.scheduleAtFixedRate(() ->
-        {
-            if (this.queue.isEmpty())
-                return;
-
-            JDAImpl api = null;
-            try
-            {
-                int shardId = -1;
-                do
-                {
-                    final int i = this.queue.peek();
-                    if (this.shards.containsKey(i))
-                        this.queue.poll();
-                    else
-                        shardId = i;
-                }
-                while (shardId == -1 && !this.queue.isEmpty());
-
-                if (shardId == -1)
-                {
-                    this.queue.poll();
-                    return;
-                }
-
-                this.builder.useSharding(shardId, this.shardsTotal);
-                this.shards.put(shardId, api = (JDAImpl) this.builder.buildAsync());
-                this.queue.remove(shardId);
-            }
-            catch (LoginException | IllegalArgumentException e)
-            {
-                // TODO: this should never happen unless the token changes inbetween, still needs to be handled somehow
-                e.printStackTrace();
-            }
-            catch (final Exception e)
-            {
-                // do not remove 'shardId' from the queue and try again after 5 seconds
-                if (api != null)
-                    api.shutdown(false);
-                throw new RuntimeException(e);
-            }
-        }, 0, 5, TimeUnit.SECONDS);
-    }
-
     /**
      * Removes all provided listeners from the event-listeners and no longer uses them to handle events.
      *
@@ -459,6 +388,19 @@ public class ShardManager // TODO: think about what methods ShardManager should 
     public void removeEventListener(final Object... listeners)
     {
         this.shards.valueCollection().forEach(jda -> jda.removeEventListener(listeners));
+    }
+
+    public void restart()
+    {
+        this.shards.forEachEntry((id, jda) ->
+        {
+            jda.shutdown(false);
+            return true;
+        });
+        this.shards.clear();
+
+        for (int i = this.minShardId; i <= this.maxShardId; i++)
+            this.queue.offer(i);
     }
 
     public void restart(final int shardId)
@@ -562,5 +504,105 @@ public class ShardManager // TODO: think about what methods ShardManager should 
             }
             catch (final IOException ignored)
             {}
+    }
+
+    private <T extends ISnowflake> T findSnowflakeInCombinedCollection(
+            final Function<? super JDAImpl, ? extends Collection<? extends T>> mapper, final long id)
+    {
+        return this.getCombinedStream(mapper).filter(g -> g.getIdLong() == id).findFirst().orElse(null);
+    }
+
+    private <T extends ISnowflake> T findSnowflakeInCombinedCollection(
+            final Function<? super JDAImpl, ? extends Collection<? extends T>> mapper, final String id)
+    {
+        final long idLong = MiscUtil.parseSnowflake(id);
+        return this.getCombinedStream(mapper).filter(g -> g.getIdLong() == idLong).findFirst().orElse(null);
+    }
+
+    private <T> Stream<T> getCombinedStream(final Function<? super JDAImpl, ? extends Collection<? extends T>> mapper)
+    {
+        return this.shards.valueCollection().stream().flatMap(mapper.andThen(c -> c.stream()));
+    }
+
+    private <T> List<T> getDistinctUnmodifiableCombinedList(
+            final Function<? super JDAImpl, ? extends Collection<? extends T>> mapper)
+    {
+        return Collections.unmodifiableList(this.getCombinedStream(mapper).distinct().collect(Collectors.toList()));
+    }
+
+    private <T> Stream<T> getStream(final Function<? super JDAImpl, ? extends T> mapper)
+    {
+        return this.shards.valueCollection().stream().map(mapper);
+    }
+
+    private <T> List<T> getUnmodifiableList(final Function<? super JDAImpl, ? extends T> mapper)
+    {
+        return Collections.unmodifiableList(this.getStream(mapper).collect(Collectors.toList()));
+    }
+
+    void login() throws LoginException, IllegalArgumentException
+    {
+        // building the first one in the currrent thread ensures that LoginException and IllegalArgumentException can be thrown on login
+        JDAImpl jda = null;
+        try
+        {
+            final int shardId = this.queue.peek();
+            this.builder.useSharding(shardId, this.shardsTotal);
+            this.shards.put(shardId, jda = (JDAImpl) this.builder.buildAsync());
+            this.queue.remove(shardId);
+        }
+        catch (final RateLimitedException e)
+        {
+            // do not remove 'shardId' from the queue and try the first one again after 5 seconds in the async thread
+        }
+        catch (final Exception e)
+        {
+            if (jda != null)
+                jda.shutdown(false);
+            throw e;
+        }
+
+        this.worker = this.executor.scheduleAtFixedRate(() ->
+        {
+            if (this.queue.isEmpty())
+                return;
+
+            JDAImpl api = null;
+            try
+            {
+                int shardId = -1;
+                do
+                {
+                    final int i = this.queue.peek();
+                    if (this.shards.containsKey(i))
+                        this.queue.poll();
+                    else
+                        shardId = i;
+                }
+                while (shardId == -1 && !this.queue.isEmpty());
+
+                if (shardId == -1)
+                {
+                    this.queue.poll();
+                    return;
+                }
+
+                this.builder.useSharding(shardId, this.shardsTotal);
+                this.shards.put(shardId, api = (JDAImpl) this.builder.buildAsync());
+                this.queue.remove(shardId);
+            }
+            catch (LoginException | IllegalArgumentException e)
+            {
+                // TODO: this should never happen unless the token changes inbetween, still needs to be handled somehow
+                e.printStackTrace();
+            }
+            catch (final Exception e)
+            {
+                // do not remove 'shardId' from the queue and try again after 5 seconds
+                if (api != null)
+                    api.shutdown(false);
+                throw new RuntimeException(e);
+            }
+        }, 0, 5, TimeUnit.SECONDS);
     }
 }
