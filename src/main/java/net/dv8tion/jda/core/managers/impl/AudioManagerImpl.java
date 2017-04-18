@@ -89,6 +89,10 @@ public class AudioManagerImpl implements AudioManager
 
         if (audioConnection == null)
         {
+            final int userLimit = channel.getUserLimit(); // userLimit is 0 if no limit is set!
+            if (!self.hasPermission(channel, Permission.VOICE_MOVE_OTHERS) && userLimit > 0 && userLimit <= channel.getMembers().size())
+                throw new PermissionException(Permission.VOICE_MOVE_OTHERS,
+                        "Unable to connect to VoiceChannel due to userlimit! Requires permission VOICE_MOVE_OTHERS to bypass");
             //Start establishing connection, joining provided channel
             queuedAudioConnection = channel;
             api.getClient().queueAudioConnect(channel);
