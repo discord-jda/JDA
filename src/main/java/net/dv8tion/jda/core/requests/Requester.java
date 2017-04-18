@@ -146,6 +146,7 @@ public class Requester
             }
 
             retryAfter = rateLimiter.handleResponse(route, response);
+            LOG.debug("Received response with following cf-rays: " + response.getHeaders().get("cf-ray"));
             if (retryAfter == null)
                 apiRequest.getRestAction().handleResponse(new Response(response.getStatus(), response.getBody(), -1), apiRequest);
 
