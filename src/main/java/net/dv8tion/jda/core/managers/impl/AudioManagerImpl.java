@@ -102,9 +102,9 @@ public class AudioManagerImpl implements AudioManager
                 return;
 
             final int userLimit = channel.getUserLimit(); // userLimit is 0 if no limit is set!
-            if (!self.hasPermission(channel, Permission.MANAGE_CHANNEL) && userLimit > 0 && userLimit <= channel.getMembers().size())
-                throw new PermissionException(Permission.MANAGE_CHANNEL,
-                        "Unable to connect to VoiceChannel due to userlimit! Requires permission MANAGE_CHANNEL to bypass");
+            if (!self.hasPermission(channel, Permission.VOICE_MOVE_OTHERS) && userLimit > 0 && userLimit <= channel.getMembers().size())
+                throw new PermissionException(Permission.VOICE_MOVE_OTHERS,
+                        "Unable to connect to VoiceChannel due to userlimit! Requires permission VOICE_MOVE_OTHERS to bypass");
 
             api.getClient().queueAudioConnect(channel);
             audioConnection.setChannel(channel);
