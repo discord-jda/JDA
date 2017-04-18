@@ -96,9 +96,24 @@ public class MiscUtil
      * 
      * @return The shard id for the guild.
      */
+    public static int getShardForGuild(long guildId, int shards)
+    {
+        return (int) ((guildId >> 22) % shards);
+    }
+
+    /**
+     * Returns the shard id the given guild will be loaded on for the given amout of shards.
+     * 
+     * @param guildId
+     *             The guild id.
+     * @param shards
+     *             The amount of shards.
+     * 
+     * @return The shard id for the guild.
+     */
     public static int getShardForGuild(String guildId, int shards)
     {
-        return (int) ((Long.parseLong(guildId) >> 22) % shards);
+        return getShardForGuild(parseSnowflake(guildId), shards);
     }
 
     /**
