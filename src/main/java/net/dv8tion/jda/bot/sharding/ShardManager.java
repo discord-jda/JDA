@@ -151,12 +151,6 @@ public class ShardManager // TODO: think about what methods ShardManager should 
      * <br>If this account is not connected to any {@link net.dv8tion.jda.core.entities.Guild Guilds}, this will return
      * an empty list.
      *
-     * <p>If the developer is sharding ({@link net.dv8tion.jda.core.JDABuilder#useSharding(int, int)},
-     * then this list will only contain the {@link net.dv8tion.jda.core.entities.Guild Guilds} that the shard is
-     * actually connected to. Discord determines which guilds a shard is connect to using the following format:
-     * <br>Guild connected if shardId == (guildId {@literal >>} 22) % totalShards;
-     * <br>Source for formula: <a href="https://discordapp.com/developers/docs/topics/gateway#sharding">Discord Documentation</a>
-     *
      * @return Possibly-empty list of all the {@link net.dv8tion.jda.core.entities.Guild Guilds} that this account is connected to.
      */
     public List<Guild> getGuilds()
@@ -196,11 +190,33 @@ public class ShardManager // TODO: think about what methods ShardManager should 
         return this.getMutualGuilds(Arrays.asList(users));
     }
 
+    /**
+     * Gets all {@link net.dv8tion.jda.core.entities.Guild Guilds} that contain all given users as their members.
+     *
+     * @param  users
+     *         The users which all the returned {@link net.dv8tion.jda.core.entities.Guild Guilds} must contain.
+     *
+     * @return Unmodifiable list of all {@link net.dv8tion.jda.core.entities.Guild Guild} instances which have all {@link net.dv8tion.jda.core.entities.User Users} in them.
+     */
+    public List<Guild> getMutualGuilds(final User user)
+    {
+        Args.notNull(user, "user");
+        return Collections.unmodifiableList(this.getCombinedStream(jda -> jda.getGuildMap().valueCollection())
+                .filter(guild -> guild.isMember(user)).collect(Collectors.toList()));
+    }
+
+    /**
+     * This returns the {@link net.dv8tion.jda.core.JDA JDA} instance which has the same id as the one provided.
+     * <br>If there is no shard with an id that matches the provided one, then this returns {@code null}.
+     * 
+     * @param  shardId
+     *         The id of the shard.
+     * 
+     * @return The {@link net.dv8tion.jda.core.JDA JDA} instance with the given shardId or
+     *         {@code null} if no shard has the given id  
+     */
     public JDA getShard(final int shardId)
     {
-        Args.positive(shardId, "shardId");
-        Args.check(shardId < this.shardsTotal, "shardId may not be higher than shardsTotal");
-
         return this.shards.get(shardId);
     }
 
@@ -213,22 +229,25 @@ public class ShardManager // TODO: think about what methods ShardManager should 
     }
 
     /**
-     * Gets the current {@link net.dv8tion.jda.core.JDA.Status Status} of the shard.
-     *
-     * @return Current shard status.
+     * This returns the {@link net.dv8tion.jda.core.JDA.Status JDA.Status} of the shard which has the same id as the one provided.
+     * <br>If there is no shard with an id that matches the provided one, then this returns {@code null}.
+     * 
+     * @param  shardId
+     *         The id of the shard.
+     * 
+     * @return The  {@link net.dv8tion.jda.core.JDA.Status JDA.Status} of the shard with the given shardId or
+     *         {@code null} if no shard has the given id  
      */
     public JDA.Status getStatus(final int shardId)
     {
-        Args.positive(shardId, "shardId");
-        Args.check(shardId < this.shardsTotal, "shardId may not be higher than shardsTotal");
-
-        return this.shards.get(shardId).getStatus();
+        JDA api = this.shards.get(shardId);
+        return api == null ? null : api.getStatus();
     }
 
     /**
      * Gets the current {@link net.dv8tion.jda.core.JDA.Status Status} of all shards.
      *
-     * @return Current shard statuses.
+     * @return All current shard statuses.
      */
     public List<JDA.Status> getStatuses()
     {
@@ -390,6 +409,9 @@ public class ShardManager // TODO: think about what methods ShardManager should 
         this.shards.valueCollection().forEach(jda -> jda.removeEventListener(listeners));
     }
 
+    /**
+     * Restarts all shards
+     */
     public void restart()
     {
         this.shards.forEachEntry((id, jda) ->
@@ -403,6 +425,12 @@ public class ShardManager // TODO: think about what methods ShardManager should 
             this.queue.offer(i);
     }
 
+    /**
+     * Restarts the shards with the given id.
+     * 
+     * @throws IllegalArgumentException
+     *         if shardId is lower than minShardId or higher than maxShardId
+     */
     public void restart(final int shardId)
     {
         Args.check(shardId >= this.minShardId, "shardId must not be less than minShardId");
@@ -416,7 +444,7 @@ public class ShardManager // TODO: think about what methods ShardManager should 
     }
 
     /**
-     * Sets the {@link net.dv8tion.jda.core.entities.Game Game} for all sessions.
+     * Sets the {@link net.dv8tion.jda.core.entities.Game Game} for all shards.
      * <br>A Game can be retrieved via {@link net.dv8tion.jda.core.entities.Game#of(String)}.
      * For streams you provide a valid streaming url as second parameter
      *
@@ -446,7 +474,7 @@ public class ShardManager // TODO: think about what methods ShardManager should 
     }
 
     /**
-     * Sets the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} for all sessions
+     * Sets the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} for all shards.
      *
      * @throws IllegalArgumentException
      *         if the provided OnlineStatus is {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}
