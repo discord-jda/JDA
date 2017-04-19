@@ -131,7 +131,7 @@ public interface Message extends ISnowflake, Formattable
     User getAuthor();
 
     /**
-     * Returns the author of this Message as a {@link net.dv8tion.jda.core.entities.Guild Guild} member.
+     * Returns the author of this Message as a {@link net.dv8tion.jda.core.entities.Member member}.
      * <br>This is just a shortcut to {@link #getGuild()}{@link net.dv8tion.jda.core.entities.Guild#getMember(User) .getMember(getAuthor())}.
      * <br><b>This is only valid if the Message was actually sent in a TextChannel.</b> This will return {@code null}
      * if it was not sent from a TextChannel.
