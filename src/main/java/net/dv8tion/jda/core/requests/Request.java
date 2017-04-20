@@ -70,7 +70,7 @@ public class Request<T>
         }
         else
         {
-            onFailure(new ErrorResponseException(
+            onFailure(ErrorResponseException.create(
                     ErrorResponse.fromJSON(response.getObject()), response));
         }
     }

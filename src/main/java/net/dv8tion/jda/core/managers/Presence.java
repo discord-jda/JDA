@@ -81,6 +81,10 @@ public interface Presence
      * <br>A Game can be retrieved via {@link net.dv8tion.jda.core.entities.Game#of(String)}.
      * For streams you provide a valid streaming url as second parameter
      *
+     * <p>Examples:
+     * <br>{@code presence.setGame(Game.of("Thrones"));}
+     * <br>{@code presence.setGame(Game.of("Thrones", "https://twitch.tv/EasterEggs"));}
+     *
      * @param  game
      *         A {@link net.dv8tion.jda.core.entities.Game Game} instance or null to reset
      *

@@ -28,6 +28,8 @@ public class ErrorResponseException extends RuntimeException
 {
     private final ErrorResponse errorResponse;
     private final Response response;
+    private final String meaning;
+    private final int code;
 
     /**
      * Creates a new ErrorResponseException instance
@@ -38,16 +40,14 @@ public class ErrorResponseException extends RuntimeException
      * @param response
      *        The Discord Response causing the ErrorResponse
      */
-    public ErrorResponseException(ErrorResponse errorResponse, Response response)
+    private ErrorResponseException(ErrorResponse errorResponse, Response response, int code, String meaning)
     {
-        super(
-            errorResponse == ErrorResponse.SERVER_ERROR
-                ? getErrorMessage(response.getObject())
-                : errorResponse.getMeaning()
-        );
+        super(code + ": " + meaning);
 
         this.response = response;
         this.errorResponse = errorResponse;
+        this.code = code;
+        this.meaning = meaning;
     }
 
     /**
@@ -69,8 +69,7 @@ public class ErrorResponseException extends RuntimeException
      */
     public String getMeaning()
     {
-        JSONObject obj = response.getObject();
-        return obj.isNull("message") ? errorResponse.getMeaning() : obj.getString("message");
+        return meaning;
     }
 
     /**
@@ -82,8 +81,7 @@ public class ErrorResponseException extends RuntimeException
      */
     public int getErrorCode()
     {
-        JSONObject obj = response.getObject();
-        return obj.isNull("code") ? errorResponse.getCode() : obj.getInt("code");
+        return code;
     }
 
     /**
@@ -107,21 +105,19 @@ public class ErrorResponseException extends RuntimeException
         return response;
     }
 
-    private static String getErrorMessage(JSONObject obj)
+    public static ErrorResponseException create(ErrorResponse errorResponse, Response response)
     {
-        if (obj.isNull("code"))
+        JSONObject obj = response.getObject();
+        String meaning = errorResponse.getMeaning();
+        int code = errorResponse.getCode();
+        if (obj != null)
         {
-            if (obj.isNull("message"))
-                return obj.toString();
-            else
-                return "<unknown code>: " + obj.getString("message");
+            if (!obj.isNull("code"))
+                code = obj.getInt("code");
+            if (!obj.isNull("message"))
+                meaning = obj.getString("message");
         }
-        else
-        {
-            if (obj.isNull("message"))
-                return obj.getInt("code") + ": " + obj.toString();
-            else
-                return obj.getInt("code") + ": " + obj.getString("message");
-        }
+
+        return new ErrorResponseException(errorResponse, response, code, meaning);
     }
 }
