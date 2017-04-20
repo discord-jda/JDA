@@ -104,4 +104,63 @@ public interface Presence
      */
     void setIdle(boolean idle);
 
+    /**
+     * Sets all presence fields of this session.
+     *
+     * @param  status
+     *         The {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} for this session
+     *         (See {@link #setStatus(OnlineStatus)})
+     * @param  game
+     *         The {@link net.dv8tion.jda.core.entities.Game Game} for this session
+     *         (See {@link #setGame(Game)} for more info)
+     * @param  idle
+     *         Whether to mark this session as idle (useful for client accounts {@link #setIdle(boolean)})
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the specified OnlineStatus is {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}
+     */
+    void setPresence(OnlineStatus status, Game game, boolean idle);
+
+    /**
+     * Sets two presence fields of this session.
+     * <br>The third field stays untouched.
+     *
+     * @param  status
+     *         The {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} for this session
+     *         (See {@link #setStatus(OnlineStatus)})
+     * @param  game
+     *         The {@link net.dv8tion.jda.core.entities.Game Game} for this session
+     *         (See {@link #setGame(Game)} for more info)
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the specified OnlineStatus is {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}
+     */
+    void setPresence(OnlineStatus status, Game game);
+
+    /**
+     * Sets two presence fields of this session.
+     * <br>The third field stays untouched.
+     *
+     * @param  status
+     *         The {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} for this session
+     *         (See {@link #setStatus(OnlineStatus)})
+     * @param  idle
+     *         Whether to mark this session as idle (useful for client accounts {@link #setIdle(boolean)})
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the specified OnlineStatus is {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}
+     */
+    void setPresence(OnlineStatus status, boolean idle);
+
+    /**
+     * Sets two presence fields of this session.
+     * <br>The third field stays untouched.
+     *
+     * @param  game
+     *         The {@link net.dv8tion.jda.core.entities.Game Game} for this session
+     *         (See {@link #setGame(Game)} for more info)
+     * @param  idle
+     *         Whether to mark this session as idle (useful for client accounts {@link #setIdle(boolean)})
+     */
+    void setPresence(Game game, boolean idle);
 }
