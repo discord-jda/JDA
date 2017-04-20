@@ -484,16 +484,6 @@ public class EmbedBuilder
     {
         if (name == null && value == null)
             return this;
-        else if (name == null || value == null)
-            throw new IllegalArgumentException("Both Name and Value must be set!");
-        else if (name.length() > MessageEmbed.TITLE_MAX_LENGTH)
-            throw new IllegalArgumentException("Name cannot be longer than " + MessageEmbed.TITLE_MAX_LENGTH + " characters.");
-        else if (value.length() > MessageEmbed.VALUE_MAX_LENGTH)
-            throw new IllegalArgumentException("Value cannot be longer than " + MessageEmbed.VALUE_MAX_LENGTH + " characters.");
-        if (name.isEmpty())
-            name = ZERO_WIDTH_SPACE;
-        if (value.isEmpty())
-            value = ZERO_WIDTH_SPACE;
         this.fields.add(new MessageEmbed.Field(name, value, inline));
         return this;
     }
@@ -527,6 +517,16 @@ public class EmbedBuilder
     {
         this.fields.clear();
         return this;
+    }
+    
+    /**
+     * Returns a modifiable list of MessageEmbed Fields that the builder contains.
+     * 
+     * @return a List of {@link net.dv8tion.jda.core.entities.MessageEmbed.Field Fields}
+     */
+    public List<MessageEmbed.Field> getFields()
+    {
+        return fields;
     }
 
     private void urlCheck(String url)
