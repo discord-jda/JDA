@@ -98,7 +98,7 @@ public class WebhookAction extends RestAction<Webhook>
             return;
         }
         JSONObject json = response.getObject();
-        Webhook webhook = EntityBuilder.get(api).createWebhook(json);
+        Webhook webhook = api.getEntityBuilder().createWebhook(json);
 
         request.onSuccess(webhook);
     }

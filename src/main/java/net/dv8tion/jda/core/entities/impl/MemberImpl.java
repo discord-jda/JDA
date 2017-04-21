@@ -29,7 +29,7 @@ import java.util.*;
 
 public class MemberImpl implements Member
 {
-    private final Guild guild;
+    private final GuildImpl guild;
     private final User user;
     private final HashSet<Role> roles = new HashSet<>();
     private final GuildVoiceState voiceState;
@@ -39,7 +39,7 @@ public class MemberImpl implements Member
     private Game game;
     private OnlineStatus onlineStatus = OnlineStatus.OFFLINE;
 
-    public MemberImpl(Guild guild, User user)
+    public MemberImpl(GuildImpl guild, User user)
     {
         this.guild = guild;
         this.user = user;

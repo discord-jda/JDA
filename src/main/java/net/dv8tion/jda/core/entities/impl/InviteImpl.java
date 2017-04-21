@@ -76,7 +76,7 @@ public class InviteImpl implements Invite
             {
                 if (response.isOk())
                 {
-                    final Invite invite = EntityBuilder.get(this.api).createInvite(response.getObject());
+                    final Invite invite = this.api.getEntityBuilder().createInvite(response.getObject());
                     request.onSuccess(invite);
                 }
                 else
@@ -99,7 +99,7 @@ public class InviteImpl implements Invite
             {
                 if (response.isOk())
                 {
-                    final Invite invite = EntityBuilder.get(this.api).createInvite(response.getObject());
+                    final Invite invite = this.api.getEntityBuilder().createInvite(response.getObject());
                     request.onSuccess(invite);
                 }
                 else
@@ -149,7 +149,7 @@ public class InviteImpl implements Invite
             {
                 if (response.isOk())
                 {
-                    final EntityBuilder entityBuilder = EntityBuilder.get(this.api);
+                    final EntityBuilder entityBuilder = this.api.getEntityBuilder();
                     final JSONArray array = response.getArray();
                     for (int i = 0; i < array.length(); i++)
                     {

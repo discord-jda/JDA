@@ -149,7 +149,7 @@ public class MessageHistory
                     return;
                 }
 
-                EntityBuilder builder = EntityBuilder.get(api);
+                EntityBuilder builder = api.getEntityBuilder();;
                 LinkedList<Message> msgs  = new LinkedList<>();
                 JSONArray historyJson = response.getArray();
 
@@ -226,7 +226,7 @@ public class MessageHistory
                     return;
                 }
 
-                EntityBuilder builder = EntityBuilder.get(api);
+                EntityBuilder builder = api.getEntityBuilder();;
                 LinkedList<Message> msgs  = new LinkedList<>();
                 JSONArray historyJson = response.getArray();
 

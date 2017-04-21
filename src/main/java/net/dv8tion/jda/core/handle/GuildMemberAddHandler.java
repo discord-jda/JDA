@@ -48,7 +48,7 @@ public class GuildMemberAddHandler extends SocketHandler
             return null;
         }
 
-        Member member = EntityBuilder.get(api).createMember(guild, content);
+        Member member = api.getEntityBuilder().createMember(guild, content);
         api.getEventManager().handle(
                 new GuildMemberJoinEvent(
                         api, responseNumber,

@@ -270,7 +270,7 @@ public class AccountManagerUpdatable
                 String newToken = response.getObject().getString("token");
                 newToken = newToken.replace("Bot ", "");
 
-                ((JDAImpl) getJDA()).setToken(newToken);
+                api.setToken(newToken);
                 request.onSuccess(null);
             }
         };

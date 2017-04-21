@@ -593,7 +593,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         api.getPrivateChannelMap().clear();
         api.getFakeUserMap().clear();
         api.getFakePrivateChannelMap().clear();
-        EntityBuilder.get(api).clearCache();
+        api.getEntityBuilder().clearCache();
         EventCache.get(api).clear();
         GuildLock.get(api).clear();
         this.<ReadyHandler>getHandler("READY").clearCache();

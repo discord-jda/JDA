@@ -257,7 +257,7 @@ public class ChannelUpdateHandler extends SocketHandler
 
                 if (permOverride == null)    //Created
                 {
-                    EntityBuilder.get(api).createPermissionOverride(override, channel);
+                    api.getEntityBuilder().createPermissionOverride(override, channel);
                     changedRoles.add(role);
                 }
                 else if (permOverride.getAllowedRaw() != allow || permOverride.getDeniedRaw() != deny) //Updated
@@ -290,7 +290,7 @@ public class ChannelUpdateHandler extends SocketHandler
 
                 if (permOverride == null)    //Created
                 {
-                    EntityBuilder.get(api).createPermissionOverride(override, channel);
+                    api.getEntityBuilder().createPermissionOverride(override, channel);
                     changedMembers.add(member);
                 }
                 else if (permOverride.getAllowedRaw() != allow || permOverride.getDeniedRaw() != deny)  //Updated

@@ -67,7 +67,7 @@ public class ApplicationAction extends RestAction<Application>
     {
         if (response.isOk())
         {
-            request.onSuccess(EntityBuilder.get(api).createApplication(response.getObject()));
+            request.onSuccess(api.getEntityBuilder().createApplication(response.getObject()));
         }
         else
             request.onFailure(response);

@@ -38,7 +38,7 @@ public class RelationshipAddHandler extends SocketHandler
     @Override
     protected Long handleInternally(JSONObject content)
     {
-        Relationship relationship = EntityBuilder.get(api).createRelationship(content);
+        Relationship relationship = api.getEntityBuilder().createRelationship(content);
         if (relationship == null)
         {
             WebSocketClient.LOG.warn("Received a RELATIONSHIP_ADD with an unknown type! JSON: " + content);

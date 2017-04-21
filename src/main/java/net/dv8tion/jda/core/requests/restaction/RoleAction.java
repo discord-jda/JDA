@@ -249,7 +249,7 @@ public class RoleAction extends RestAction<Role>
     protected void handleResponse(Response response, Request<Role> request)
     {
         if (response.isOk())
-            request.onSuccess(EntityBuilder.get(api).createRole(response.getObject(), guild.getIdLong()));
+            request.onSuccess(api.getEntityBuilder().createRole(response.getObject(), guild.getIdLong()));
         else
             request.onFailure(response);
     }

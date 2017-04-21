@@ -47,8 +47,8 @@ public class EmoteImpl implements Emote
 {
 
     private final long id;
-    private final Guild guild;
-    private final JDA api;
+    private final GuildImpl guild;
+    private final JDAImpl api;
     private final HashSet<Role> roles;
 
     private final Object mngLock = new Object();
@@ -58,7 +58,7 @@ public class EmoteImpl implements Emote
     private boolean managed = false;
     private String name;
 
-    public EmoteImpl(long id,  Guild guild)
+    public EmoteImpl(long id, GuildImpl guild)
     {
         this.id = id;
         this.guild = guild;
@@ -66,7 +66,7 @@ public class EmoteImpl implements Emote
         this.roles = new HashSet<>();
     }
 
-    public EmoteImpl(long id,  JDA api)
+    public EmoteImpl(long id, JDAImpl api)
     {
         this.id = id;
         this.api = api;

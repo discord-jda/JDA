@@ -60,7 +60,7 @@ public class JDABotImpl implements JDABot
                     return;
                 }
 
-                ApplicationInfo info = EntityBuilder.get(api).createApplicationInfo(response.getObject());
+                ApplicationInfo info = api.getEntityBuilder().createApplicationInfo(response.getObject());
                 JDABotImpl.this.clientId = info.getId();
                 request.onSuccess(info);
             }

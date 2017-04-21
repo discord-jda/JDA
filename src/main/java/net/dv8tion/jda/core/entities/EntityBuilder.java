@@ -25,8 +25,10 @@ import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.Region;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.MessageEmbed.*;
 import net.dv8tion.jda.core.entities.impl.*;
+import net.dv8tion.jda.core.entities.impl.InviteImpl.ChannelImpl;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.handle.GuildMembersChunkHandler;
 import net.dv8tion.jda.core.handle.ReadyHandler;
@@ -50,25 +52,13 @@ public class EntityBuilder
     public static final String MISSING_CHANNEL = "MISSING_CHANNEL";
     public static final String MISSING_USER = "MISSING_USER";
 
-    private static final HashMap<JDA, EntityBuilder> builders = new HashMap<>();
     private static final Pattern channelMentionPattern = Pattern.compile("<#(\\d+)>");
 
     protected final JDAImpl api;
     protected final TLongObjectMap<JSONObject> cachedGuildJsons = MiscUtil.newLongMap();
     protected final TLongObjectMap<Consumer<Guild>> cachedGuildCallbacks = MiscUtil.newLongMap();
 
-    public static EntityBuilder get(JDA api)
-    {
-        EntityBuilder builder = builders.get(api);
-        if (builder == null)
-        {
-            builder = new EntityBuilder(api);
-            builders.put(api, builder);
-        }
-        return builder;
-    }
-
-    private EntityBuilder(JDA api)
+    public EntityBuilder(JDA api)
     {
         this.api = (JDAImpl) api;
     }
@@ -343,7 +333,7 @@ public class EntityBuilder
         for (int i = 0; i < members.length(); i++)
         {
             JSONObject memberJson = members.getJSONObject(i);
-            Member member = createMember(guild, memberJson);
+            createMember(guild, memberJson);
         }
 
         for (int i = 0; i < presences.length(); i++)
@@ -364,7 +354,7 @@ public class EntityBuilder
         for (int i = 0; i < members.length(); i++)
         {
             JSONObject memberJson = members.getJSONObject(i);
-            Member member = createMember(guildObj, memberJson);
+            createMember(guildObj, memberJson);
         }
     }
 

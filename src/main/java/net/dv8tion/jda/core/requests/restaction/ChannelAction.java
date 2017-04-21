@@ -334,7 +334,7 @@ public class ChannelAction extends RestAction<Channel>
             return;
         }
 
-        EntityBuilder builder = EntityBuilder.get(api);
+        EntityBuilder builder = api.getEntityBuilder();;
         Channel channel = voice
                 ? builder.createVoiceChannel(response.getObject(), guild.getIdLong())
                 : builder.createTextChannel(response.getObject(),  guild.getIdLong());

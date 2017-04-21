@@ -53,7 +53,7 @@ public class ChannelCreateHandler extends SocketHandler
                 api.getEventManager().handle(
                         new TextChannelCreateEvent(
                                 api, responseNumber,
-                                EntityBuilder.get(api).createTextChannel(content, guildId)));
+                                api.getEntityBuilder().createTextChannel(content, guildId)));
                 break;
             }
             case VOICE:
@@ -61,7 +61,7 @@ public class ChannelCreateHandler extends SocketHandler
                 api.getEventManager().handle(
                         new VoiceChannelCreateEvent(
                                 api, responseNumber,
-                                EntityBuilder.get(api).createVoiceChannel(content, guildId)));
+                                api.getEntityBuilder().createVoiceChannel(content, guildId)));
                 break;
             }
             case PRIVATE:
@@ -69,7 +69,7 @@ public class ChannelCreateHandler extends SocketHandler
                 api.getEventManager().handle(
                         new PrivateChannelCreateEvent(
                                 api, responseNumber,
-                                EntityBuilder.get(api).createPrivateChannel(content)));
+                                api.getEntityBuilder().createPrivateChannel(content)));
                 break;
             }
             case GROUP:
@@ -77,7 +77,7 @@ public class ChannelCreateHandler extends SocketHandler
                 api.getEventManager().handle(
                         new GroupJoinEvent(
                                 api, responseNumber,
-                                EntityBuilder.get(api).createGroup(content)));
+                                api.getEntityBuilder().createGroup(content)));
                 break;
             }
             default:

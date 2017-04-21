@@ -65,7 +65,7 @@ public class InviteAction extends RestAction<Invite>
     protected void handleResponse(final Response response, final Request<Invite> request)
     {
         if (response.isOk())
-            request.onSuccess(EntityBuilder.get(this.api).createInvite(response.getObject()));
+            request.onSuccess(this.api.getEntityBuilder().createInvite(response.getObject()));
         else
             request.onFailure(response);
     }

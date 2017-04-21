@@ -92,6 +92,8 @@ public class JDAImpl implements JDA
     protected long responseTotal;
     protected long ping = -1;
 
+    private EntityBuilder entityBuilder = new EntityBuilder(this);
+
     public JDAImpl(AccountType accountType, HttpHost proxy, WebSocketFactory wsFactory,
                    boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled,
                    int corePoolSize, int maxReconnectDelay)
@@ -384,9 +386,14 @@ public class JDAImpl implements JDA
                     return;
                 }
                 JSONObject user = response.getObject();
-                request.onSuccess(EntityBuilder.get(api).createFakeUser(user, false));
+                request.onSuccess(getEntityBuilder().createFakeUser(user, false));
             }
         };
+    }
+
+    public EntityBuilder getEntityBuilder()
+    {
+        return entityBuilder;
     }
 
     @Override

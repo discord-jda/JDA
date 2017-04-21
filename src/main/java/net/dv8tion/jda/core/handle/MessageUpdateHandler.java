@@ -81,7 +81,7 @@ public class MessageUpdateHandler extends SocketHandler
         Message message;
         try
         {
-            message = EntityBuilder.get(api).createMessage(content);
+            message = api.getEntityBuilder().createMessage(content);
         }
         catch (IllegalArgumentException e)
         {
@@ -152,7 +152,7 @@ public class MessageUpdateHandler extends SocketHandler
 
     private Long handleMessageEmbed(JSONObject content)
     {
-        EntityBuilder builder = EntityBuilder.get(api);
+        EntityBuilder builder = api.getEntityBuilder();;
         final long messageId = content.getLong("id");
         final long channelId = content.getLong("channel_id");
         LinkedList<MessageEmbed> embeds = new LinkedList<>();

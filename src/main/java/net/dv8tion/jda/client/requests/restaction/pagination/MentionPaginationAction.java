@@ -155,7 +155,7 @@ public class MentionPaginationAction extends PaginationAction<Message, MentionPa
             return;
         }
 
-        EntityBuilder builder = EntityBuilder.get(api);
+        EntityBuilder builder = api.getEntityBuilder();;
         List<Message> mentions = new LinkedList<>();
         JSONArray arr = response.getArray();
         for (int i = 0; i < arr.length(); i++)

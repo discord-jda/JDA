@@ -48,7 +48,7 @@ public class ChannelRecipientAddHandler extends SocketHandler
             return null;
         }
 
-        User user = EntityBuilder.get(api).createFakeUser(userJson, true);
+        User user = api.getEntityBuilder().createFakeUser(userJson, true);
         group.getUserMap().put(user.getIdLong(), user);
 
         CallImpl call = (CallImpl) group.getCurrentCall();
