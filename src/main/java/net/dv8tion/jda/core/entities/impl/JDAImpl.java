@@ -76,6 +76,8 @@ public class JDAImpl implements JDA
     protected final JDAClient jdaClient;
     protected final JDABot jdaBot;
     protected final int maxReconnectDelay;
+    protected final Thread shutdownHook;
+    protected final EntityBuilder entityBuilder = new EntityBuilder(this);
 
     protected WebSocketClient client;
     protected Requester requester;
@@ -86,13 +88,10 @@ public class JDAImpl implements JDA
     protected ShardInfo shardInfo;
     protected String token = null;
     protected boolean audioEnabled;
-    protected boolean useShutdownHook;
     protected boolean bulkDeleteSplittingEnabled;
     protected boolean autoReconnect;
     protected long responseTotal;
     protected long ping = -1;
-
-    private EntityBuilder entityBuilder = new EntityBuilder(this);
 
     public JDAImpl(AccountType accountType, HttpHost proxy, WebSocketFactory wsFactory,
                    boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled,
@@ -105,7 +104,7 @@ public class JDAImpl implements JDA
         this.wsFactory = wsFactory;
         this.autoReconnect = autoReconnect;
         this.audioEnabled = audioEnabled;
-        this.useShutdownHook = useShutdownHook;
+        this.shutdownHook = useShutdownHook ? new Thread(() -> JDAImpl.this.shutdown(true), "JDA Shutdown Hook") : null;
         this.bulkDeleteSplittingEnabled = bulkDeleteSplittingEnabled;
         this.pool = Executors.newScheduledThreadPool(corePoolSize, new JDAThreadFactory());
         this.maxReconnectDelay = maxReconnectDelay;
@@ -127,16 +126,9 @@ public class JDAImpl implements JDA
 
         client = new WebSocketClient(this);
 
-        if (useShutdownHook)
+        if (shutdownHook != null)
         {
-            Runtime.getRuntime().addShutdownHook(new Thread("JDA Shutdown Hook")
-            {
-                @Override
-                public void run()
-                {
-                    JDAImpl.this.shutdown(true);
-                }
-            });
+            Runtime.getRuntime().addShutdownHook(shutdownHook);
         }
     }
 
@@ -588,6 +580,18 @@ public class JDAImpl implements JDA
         getClient().close();
         getRequester().shutdown();
         pool.shutdown();
+
+        if (shutdownHook != null)
+        {
+            try
+            {
+                Runtime.getRuntime().removeShutdownHook(shutdownHook);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
 
         if (free)
         {
