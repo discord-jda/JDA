@@ -57,7 +57,7 @@ public class RelationshipRemoveHandler extends SocketHandler
         Relationship relationship = api.asClient().getRelationshipById(userId, type);
         if (relationship == null)
         {
-            EventCache.get(api).cache(EventCache.Type.RELATIONSHIP, userId, () -> handle(responseNumber, allContent));
+            api.getEventCache().cache(EventCache.Type.RELATIONSHIP, userId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("Received a RELATIONSHIP_REMOVE for a relationship that was not yet cached! JSON: " + content);
             return null;
         }

@@ -45,7 +45,7 @@ public class GuildBanHandler extends SocketHandler
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
         if (guild == null)
         {
-            EventCache.get(api).cache(EventCache.Type.GUILD, id, () ->
+            api.getEventCache().cache(EventCache.Type.GUILD, id, () ->
             {
                 handle(responseNumber, allContent);
             });

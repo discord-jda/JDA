@@ -50,7 +50,7 @@ public class GuildEmojisUpdateHandler extends SocketHandler
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(guildId);
         if (guild == null)
         {
-            EventCache.get(api).cache(EventCache.Type.GUILD, guildId, () ->
+            api.getEventCache().cache(EventCache.Type.GUILD, guildId, () ->
                     handle(responseNumber, allContent));
             return null;
         }

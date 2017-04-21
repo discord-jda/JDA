@@ -43,7 +43,7 @@ public class GuildRoleCreateHandler extends SocketHandler
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(guildId);
         if (guild == null)
         {
-            EventCache.get(api).cache(EventCache.Type.GUILD, guildId, () ->
+            api.getEventCache().cache(EventCache.Type.GUILD, guildId, () ->
             {
                 handle(responseNumber, allContent);
             });
@@ -56,7 +56,7 @@ public class GuildRoleCreateHandler extends SocketHandler
                 new RoleCreateEvent(
                         api, responseNumber,
                         newRole));
-        EventCache.get(api).playbackCache(EventCache.Type.ROLE, newRole.getIdLong());
+        api.getEventCache().playbackCache(EventCache.Type.ROLE, newRole.getIdLong());
         return null;
     }
 }

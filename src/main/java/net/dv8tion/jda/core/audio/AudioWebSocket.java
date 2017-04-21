@@ -20,7 +20,6 @@ import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketAdapter;
 import com.neovisionaries.ws.client.WebSocketException;
 import com.neovisionaries.ws.client.WebSocketFrame;
-import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.entities.Guild;
@@ -37,7 +36,6 @@ import java.io.IOException;
 import java.net.*;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.RejectedExecutionException;
@@ -49,7 +47,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class AudioWebSocket extends WebSocketAdapter
 {
     public static final SimpleLog LOG = SimpleLog.getLog("JDAAudioSocket");
-    public static final HashMap<JDA, ScheduledThreadPoolExecutor> KEEP_ALIVE_POOLS = new HashMap<>();
     public static final int DISCORD_SECRET_KEY_LENGTH = 32;
 
     public static final int INITIAL_CONNECTION_RESPONSE = 2;
@@ -92,13 +89,7 @@ public class AudioWebSocket extends WebSocketAdapter
         this.token = token;
         this.shouldReconnect = shouldReconnect;
 
-        synchronized (KEEP_ALIVE_POOLS)
-        {
-            KEEP_ALIVE_POOLS.computeIfAbsent(api, jda ->
-                    new ScheduledThreadPoolExecutor(1, new KeepAliveThreadFactory(api)));
-        }
-
-        keepAlivePool = KEEP_ALIVE_POOLS.get(api);
+        keepAlivePool = api.getAudioKeepAlivePool();
 
         //Append the Secure Websocket scheme so that our websocket library knows how to connect
         if (!endpoint.startsWith("wss://"))
@@ -517,7 +508,7 @@ public class AudioWebSocket extends WebSocketAdapter
         this.shouldReconnect = shouldReconnect;
     }
 
-    private class KeepAliveThreadFactory implements ThreadFactory
+    public static class KeepAliveThreadFactory implements ThreadFactory
     {
         final String identifier;
         AtomicInteger threadCount = new AtomicInteger(1);

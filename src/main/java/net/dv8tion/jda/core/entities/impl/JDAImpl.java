@@ -32,6 +32,7 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.StatusChangeEvent;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
+import net.dv8tion.jda.core.handle.EventCache;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.hooks.InterfacedEventManager;
 import net.dv8tion.jda.core.managers.AudioManager;
@@ -49,6 +50,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.stream.Collectors;
 
@@ -78,12 +80,15 @@ public class JDAImpl implements JDA
     protected final int maxReconnectDelay;
     protected final Thread shutdownHook;
     protected final EntityBuilder entityBuilder = new EntityBuilder(this);
+    protected final EventCache eventCache = new EventCache();
     protected final GuildLock guildLock = new GuildLock(this);
+    protected final Object akapLock = new Object();
 
     protected WebSocketClient client;
     protected Requester requester;
     protected IEventManager eventManager = new InterfacedEventManager();
     protected IAudioSendFactory audioSendFactory = new DefaultSendFactory();
+    protected ScheduledThreadPoolExecutor audioKeepAlivePool;
     protected Status status = Status.INITIALIZING;
     protected SelfUser selfUser;
     protected ShardInfo shardInfo;
@@ -570,8 +575,8 @@ public class JDAImpl implements JDA
     {
         setStatus(Status.SHUTTING_DOWN);
         audioManagers.valueCollection().forEach(AudioManager::closeAudioConnection);
-        if (AudioWebSocket.KEEP_ALIVE_POOLS.containsKey(this))
-            AudioWebSocket.KEEP_ALIVE_POOLS.get(this).shutdownNow();
+        if (audioKeepAlivePool != null)
+            audioKeepAlivePool.shutdownNow();
         getClient().setAutoReconnect(false);
         getClient().close();
         getRequester().shutdown();
@@ -793,5 +798,25 @@ public class JDAImpl implements JDA
             thread.setDaemon(true);
             return thread;
         }
+    }
+
+    public ScheduledThreadPoolExecutor getAudioKeepAlivePool()
+    {
+        ScheduledThreadPoolExecutor akap = audioKeepAlivePool;
+        if (akap == null)
+        {
+            synchronized (akapLock)
+            {
+                akap = audioKeepAlivePool;
+                if (akap == null)
+                    akap = audioKeepAlivePool = new ScheduledThreadPoolExecutor(1, new AudioWebSocket.KeepAliveThreadFactory(this));
+            }
+        }
+        return akap;
+    }
+
+    public EventCache getEventCache()
+    {
+        return eventCache;
     }
 }

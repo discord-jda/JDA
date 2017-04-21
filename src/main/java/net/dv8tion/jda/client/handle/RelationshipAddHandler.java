@@ -74,8 +74,8 @@ public class RelationshipAddHandler extends SocketHandler
                 WebSocketClient.LOG.warn("Received a RELATIONSHIP_ADD with an unknown type! JSON: " + content);
                 return null;
         }
-        EventCache.get(api).playbackCache(EventCache.Type.RELATIONSHIP, relationship.getUser().getIdLong());
-        EventCache.get(api).playbackCache(EventCache.Type.USER, relationship.getUser().getIdLong());
+        api.getEventCache().playbackCache(EventCache.Type.RELATIONSHIP, relationship.getUser().getIdLong());
+        api.getEventCache().playbackCache(EventCache.Type.USER, relationship.getUser().getIdLong());
         return null;
     }
 }

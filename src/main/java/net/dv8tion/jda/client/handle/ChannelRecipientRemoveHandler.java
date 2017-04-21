@@ -41,7 +41,7 @@ public class ChannelRecipientRemoveHandler extends SocketHandler
         GroupImpl group = (GroupImpl) api.asClient().getGroupById(groupId);
         if (group == null)
         {
-            EventCache.get(api).cache(EventCache.Type.CHANNEL, groupId, () -> handle(responseNumber, allContent));
+            api.getEventCache().cache(EventCache.Type.CHANNEL, groupId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("Received a CHANNEL_RECIPIENT_REMOVE for a group that is not yet cached! JSON: " + content);
             return null;
         }
@@ -49,7 +49,7 @@ public class ChannelRecipientRemoveHandler extends SocketHandler
         User user = group.getUserMap().remove(userId);
         if (user == null)
         {
-            EventCache.get(api).cache(EventCache.Type.USER, userId, () -> handle(responseNumber, allContent));
+            api.getEventCache().cache(EventCache.Type.USER, userId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("Received a CHANNEL_RECIPIENT_REMOVE for a user that is not yet cached in the group! JSON: " + content);
             return null;
         }

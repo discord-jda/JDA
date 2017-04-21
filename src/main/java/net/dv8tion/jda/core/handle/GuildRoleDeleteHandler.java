@@ -42,7 +42,7 @@ public class GuildRoleDeleteHandler extends SocketHandler
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(guildId);
         if (guild == null)
         {
-            EventCache.get(api).cache(EventCache.Type.GUILD, guildId, () -> handle(responseNumber, allContent));
+            api.getEventCache().cache(EventCache.Type.GUILD, guildId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("GUILD_ROLE_DELETE was received for a Guild that is not yet cached: " + content);
             return null;
         }
@@ -51,7 +51,7 @@ public class GuildRoleDeleteHandler extends SocketHandler
         Role removedRole = guild.getRolesMap().remove(roleId);
         if (removedRole == null)
         {
-            EventCache.get(api).cache(EventCache.Type.ROLE, roleId, () -> handle(responseNumber, allContent));
+            api.getEventCache().cache(EventCache.Type.ROLE, roleId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("GUILD_ROLE_DELETE was received for a Role that is not yet cached: " + content);
             return null;
         }
