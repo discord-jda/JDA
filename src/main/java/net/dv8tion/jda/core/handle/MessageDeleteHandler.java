@@ -67,7 +67,7 @@ public class MessageDeleteHandler extends SocketHandler
         if (channel instanceof TextChannel)
         {
             TextChannelImpl tChan = (TextChannelImpl) channel;
-            if (GuildLock.get(api).isLocked(tChan.getGuild().getIdLong()))
+            if (api.getGuildLock().isLocked(tChan.getGuild().getIdLong()))
             {
                 return tChan.getGuild().getIdLong();
             }

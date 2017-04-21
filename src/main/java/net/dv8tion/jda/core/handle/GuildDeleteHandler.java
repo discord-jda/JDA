@@ -55,7 +55,7 @@ public class GuildDeleteHandler extends SocketHandler
         if ((guild == null || !guild.isAvailable()) && content.has("unavailable") && content.getBoolean("unavailable"))
             return null;
 
-        if (GuildLock.get(api).isLocked(id))
+        if (api.getGuildLock().isLocked(id))
             return id;
 
         AudioManagerImpl manager = (AudioManagerImpl) api.getAudioManagerMap().get(guild.getIdLong());

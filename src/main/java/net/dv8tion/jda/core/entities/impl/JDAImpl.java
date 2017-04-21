@@ -78,6 +78,7 @@ public class JDAImpl implements JDA
     protected final int maxReconnectDelay;
     protected final Thread shutdownHook;
     protected final EntityBuilder entityBuilder = new EntityBuilder(this);
+    protected final GuildLock guildLock = new GuildLock(this);
 
     protected WebSocketClient client;
     protected Requester requester;
@@ -383,11 +384,6 @@ public class JDAImpl implements JDA
         };
     }
 
-    public EntityBuilder getEntityBuilder()
-    {
-        return entityBuilder;
-    }
-
     @Override
     public List<Guild> getGuilds()
     {
@@ -682,6 +678,16 @@ public class JDAImpl implements JDA
     public List<Object> getRegisteredListeners()
     {
         return Collections.unmodifiableList(eventManager.getRegisteredListeners());
+    }
+
+    public EntityBuilder getEntityBuilder()
+    {
+        return entityBuilder;
+    }
+
+    public GuildLock getGuildLock()
+    {
+        return this.guildLock;
     }
 
     public IAudioSendFactory getAudioSendFactory()

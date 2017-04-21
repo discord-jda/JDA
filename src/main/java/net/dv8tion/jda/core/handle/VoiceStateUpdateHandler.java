@@ -50,7 +50,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final Long guildId = content.has("guild_id") ? content.getLong("guild_id") : null;
-        if (guildId != null && GuildLock.get(api).isLocked(guildId))
+        if (guildId != null && api.getGuildLock().isLocked(guildId))
             return guildId;
 
         if (guildId != null)

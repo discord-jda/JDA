@@ -39,7 +39,7 @@ public class GuildUpdateHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long id = content.getLong("id");
-        if (GuildLock.get(api).isLocked(id))
+        if (api.getGuildLock().isLocked(id))
             return id;
 
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);

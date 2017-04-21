@@ -101,7 +101,7 @@ public class EntityBuilder
             // be null.
             if (secondPassCallback != null)
                 secondPassCallback.accept(guildObj);
-            GuildLock.get(api).lock(id);
+            api.getGuildLock().lock(id);
             return;
         }
 
@@ -269,7 +269,7 @@ public class EntityBuilder
                 readyHandler.acknowledgeGuild(guildObj, true, true, api.getAccountType() == AccountType.CLIENT);
             }
 
-            GuildLock.get(api).lock(id);
+            api.getGuildLock().lock(id);
             return;
         }
 
@@ -284,7 +284,7 @@ public class EntityBuilder
         JSONArray voiceStates = guild.getJSONArray("voice_states");
         createGuildVoiceStatePass(guildObj, voiceStates);
 
-        GuildLock.get(api).unlock(guildObj.getIdLong());
+        api.getGuildLock().unlock(guildObj.getIdLong());
         if (secondPassCallback != null)
             secondPassCallback.accept(guildObj);
     }
@@ -323,7 +323,7 @@ public class EntityBuilder
         createGuildVoiceStatePass(guildObj, voiceStates);
 
         secondPassCallback.accept(guildObj);
-        GuildLock.get(api).unlock(guildId);
+        api.getGuildLock().unlock(guildId);
     }
 
     public void handleGuildSync(GuildImpl guild, JSONArray members, JSONArray presences)

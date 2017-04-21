@@ -38,7 +38,7 @@ public class GuildBanHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long id = content.getLong("guild_id");
-        if (GuildLock.get(api).isLocked(id))
+        if (api.getGuildLock().isLocked(id))
             return id;
 
         JSONObject userJson = content.getJSONObject("user");
