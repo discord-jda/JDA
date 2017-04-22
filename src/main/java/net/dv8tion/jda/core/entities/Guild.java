@@ -444,6 +444,8 @@ public interface Guild extends ISnowflake
      * <br>If there is no {@link net.dv8tion.jda.core.entities.Emote Emote} with an id that matches the provided
      * one, then this returns {@code null}.
      *
+     * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.core.entities.Emote Emote}!</b>
+     *
      * @param  id
      *         the emote id
      *
@@ -460,6 +462,8 @@ public interface Guild extends ISnowflake
      * <br>If there is no {@link net.dv8tion.jda.core.entities.Emote Emote} with an id that matches the provided
      * one, then this returns {@code null}.
      *
+     * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.core.entities.Emote Emote}!</b>
+     *
      * @param  id
      *         the emote id
      *
@@ -471,6 +475,8 @@ public interface Guild extends ISnowflake
      * Gets all custom {@link net.dv8tion.jda.core.entities.Emote Emotes} belonging to this {@link net.dv8tion.jda.core.entities.Guild Guild}.
      * <br>Emotes are not ordered in any specific way in the returned list.
      *
+     * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.core.entities.Emote Emote}!</b>
+     *
      * @return An immutable List of {@link net.dv8tion.jda.core.entities.Emote Emotes}.
      */
     List<Emote> getEmotes();
@@ -479,6 +485,8 @@ public interface Guild extends ISnowflake
      * Gets a list of all {@link net.dv8tion.jda.core.entities.Emote Emotes} in this Guild that have the same
      * name as the one provided.
      * <br>If there are no {@link net.dv8tion.jda.core.entities.Emote Emotes} with the provided name, then this returns an empty list.
+     *
+     * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.core.entities.Emote Emote}!</b>
      *
      * @param  name
      *         The name used to filter the returned {@link net.dv8tion.jda.core.entities.Emote Emotes}.

@@ -42,9 +42,9 @@ public class RoleImpl implements Role
     private final long id;
     private final Guild guild;
 
+    private final Object mngLock = new Object();
     private volatile RoleManager manager;
     private volatile RoleManagerUpdatable managerUpdatable;
-    private Object mngLock = new Object();
 
     private String name;
     private Color color;

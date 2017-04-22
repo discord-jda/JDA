@@ -60,7 +60,7 @@ dependencies {
     compile 'net.java.dev.jna:jna:4.4.0'
 
     //Web Connection Support
-    compile 'com.neovisionaries:nv-websocket-client:1.31'
+    compile 'com.neovisionaries:nv-websocket-client:2.0'
     compile ( 'com.mashape.unirest:unirest-java:1.4.9' ) {
         exclude group: 'junit', module: 'junit'
     }

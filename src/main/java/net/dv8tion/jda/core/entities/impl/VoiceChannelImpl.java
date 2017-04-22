@@ -48,9 +48,9 @@ public class VoiceChannelImpl implements VoiceChannel
     private final HashMap<Role, PermissionOverride> roleOverrides = new HashMap<>();
     private final TLongObjectMap<Member> connectedMembers = MiscUtil.newLongMap();
 
+    private final Object mngLock = new Object();
     private volatile ChannelManager manager;
     private volatile ChannelManagerUpdatable managerUpdatable;
-    private Object mngLock = new Object();
 
     private String name;
     private int rawPosition;

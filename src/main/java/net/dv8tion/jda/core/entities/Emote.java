@@ -25,7 +25,9 @@ import net.dv8tion.jda.core.utils.PermissionUtil;
 import java.util.List;
 
 /**
- * Represents a Custom Emote. (Emoji in official Discord API terminology)
+ * Represents a Custom Emote. (Custom Emoji in official Discord API terminology)
+ *
+ * <p><b>This does not represent unicode emojis like they are used in the official client! (:smiley: is not a custom emoji)</b>
  *
  * @since  2.2
  * @author Florian Spieß

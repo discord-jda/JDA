@@ -16,10 +16,7 @@
 
 package net.dv8tion.jda.core.audio;
 
-import com.neovisionaries.ws.client.WebSocket;
-import com.neovisionaries.ws.client.WebSocketAdapter;
-import com.neovisionaries.ws.client.WebSocketException;
-import com.neovisionaries.ws.client.WebSocketFrame;
+import com.neovisionaries.ws.client.*;
 import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.entities.Guild;
@@ -62,22 +59,22 @@ public class AudioWebSocket extends WebSocketAdapter
 
     private final JDAImpl api;
     private final Guild guild;
+    private final String endpoint;
+    private final String sessionId;
+    private final String token;
     private boolean connected = false;
     private boolean ready = false;
-    private Runnable keepAliveRunnable;
-    public WebSocket socket;
-    private String endpoint;
-    private String wssEndpoint;
     private boolean shutdown;
+    private Runnable keepAliveRunnable;
+    private String wssEndpoint;
     private boolean shouldReconnect;
 
     private int ssrc;
-    private String sessionId;
-    private String token;
     private byte[] secretKey;
-
     private DatagramSocket udpSocket;
     private InetSocketAddress address;
+
+    public WebSocket socket;
 
     public AudioWebSocket(ConnectionListener listener, String endpoint, JDAImpl api, Guild guild, String sessionId, String token, boolean shouldReconnect) throws WebSocketException, IOException
     {
@@ -281,6 +278,30 @@ public class AudioWebSocket extends WebSocketAdapter
     {
         LOG.log(cause);
         api.getEventManager().handle(new ExceptionEvent(api, cause, true));
+    }
+
+    @Override
+    public void onThreadCreated(WebSocket websocket, ThreadType threadType, Thread thread) throws Exception
+    {
+        String identifier = api.getIdentifierString();
+        String guildId = guild.getId();
+        switch (threadType)
+        {
+            case CONNECT_THREAD:
+                thread.setName(identifier + " AudioWS-ConnectThread (guildId: " + guildId + ')');
+                break;
+            case FINISH_THREAD:
+                thread.setName(identifier + " AudioWS-FinishThread (guildId: " + guildId + ')');
+                break;
+            case WRITING_THREAD:
+                thread.setName(identifier + " AudioWS-WriteThread (guildId: " + guildId + ')');
+                break;
+            case READING_THREAD:
+                thread.setName(identifier + " AudioWS-ReadThread (guildId: " + guildId + ')');
+                break;
+            default:
+                thread.setName(identifier + " AudioWS-" + threadType + " (guildId: " + guildId + ')');
+        }
     }
 
     public void close(ConnectionStatus closeStatus)

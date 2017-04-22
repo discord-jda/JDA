@@ -22,5 +22,8 @@ package net.dv8tion.jda.core;
  */
 public enum AccountType
 {
-    BOT, CLIENT;
+    /** An OAuth2 Bot which was created by an application */
+    BOT,
+    /** A User-Account which can be used via the official Discord Client */
+    CLIENT
 }

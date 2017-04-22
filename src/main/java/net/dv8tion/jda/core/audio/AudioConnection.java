@@ -56,6 +56,10 @@ public class AudioConnection
     public static final int OPUS_FRAME_TIME_AMOUNT = 20;//This is 20 milliseconds. We are only dealing with 20ms opus packets.
     public static final int OPUS_CHANNEL_COUNT = 2;     //We want to use stereo. If the audio given is mono, the encoder promotes it
                                                         // to Left and Right mono (stereo that is the same on both sides)
+    private final TIntLongMap ssrcMap = new TIntLongHashMap();
+    private final TIntObjectMap<Decoder> opusDecoders = new TIntObjectHashMap<>();
+    private final HashMap<User, Queue<Pair<Long, short[]>>> combinedQueue = new HashMap<>();
+
     private final String threadIdentifier;
     private final AudioWebSocket webSocket;
     private DatagramSocket udpSocket;
@@ -63,9 +67,6 @@ public class AudioConnection
     private volatile AudioSendHandler sendHandler = null;
     private volatile AudioReceiveHandler receiveHandler = null;
     private PointerByReference opusEncoder;
-    private volatile TIntLongMap ssrcMap = new TIntLongHashMap();
-    private volatile TIntObjectMap<Decoder> opusDecoders = new TIntObjectHashMap<>();
-    private volatile HashMap<User, Queue<Pair<Long, short[]>>> combinedQueue = new HashMap<>();
     private ScheduledExecutorService combinedAudioExecutor;
 
     private IAudioSendSystem sendSystem;

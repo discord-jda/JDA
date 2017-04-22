@@ -35,8 +35,8 @@ public class CallImpl implements Call
     private final CallableChannel callableChannel;
     private final long messageId;
 
-    private TLongObjectMap<CallUser> callUsers = MiscUtil.newLongMap();
-    private TLongObjectMap<CallUser> callUserHistory = MiscUtil.newLongMap();
+    private final TLongObjectMap<CallUser> callUsers = MiscUtil.newLongMap();
+    private final TLongObjectMap<CallUser> callUserHistory = MiscUtil.newLongMap();
 
     private Region region;
 

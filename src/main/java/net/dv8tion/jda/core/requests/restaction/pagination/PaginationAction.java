@@ -37,7 +37,7 @@ import java.util.stream.StreamSupport;
  * @param  <T>
  *         The type of entity to paginate
  *
- * @since  3.0
+ * @since  3.1
  * @author Florian Spieß
  */
 public abstract class PaginationAction<T, M extends PaginationAction<T, M>> extends RestAction<List<T>> implements Iterable<T>

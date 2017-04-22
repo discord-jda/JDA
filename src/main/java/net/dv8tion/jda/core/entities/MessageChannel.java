@@ -1304,6 +1304,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p><b>An Emote is not the same as an emoji!</b>
      * <br>Emotes are custom guild-specific images unlike global unicode emojis!
      *
+     * <p><b><u>Unicode emojis are not included as {@link net.dv8tion.jda.core.entities.Emote Emote}!</u></b>
+     *
      * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}

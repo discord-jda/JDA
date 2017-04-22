@@ -28,7 +28,7 @@ import net.dv8tion.jda.core.events.Event;
  */
 public class PrivateChannelCreateEvent extends Event
 {
-    private PrivateChannel channel;
+    private final PrivateChannel channel;
 
     public PrivateChannelCreateEvent(JDA api, long responseNumber, PrivateChannel channel)
     {

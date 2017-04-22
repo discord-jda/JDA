@@ -58,10 +58,10 @@ public class GuildImpl implements Guild
 
     private final TLongObjectMap<JSONObject> cachedPresences = MiscUtil.newLongMap();
 
+    private final Object mngLock = new Object();
     private volatile GuildManager manager;
     private volatile GuildManagerUpdatable managerUpdatable;
     private volatile GuildController controller;
-    private Object mngLock = new Object();
 
     private Member owner;
     private String name;

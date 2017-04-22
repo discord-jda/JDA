@@ -572,12 +572,16 @@ public interface JDA
      * context you can use {@link Emote#canInteract(net.dv8tion.jda.core.entities.Member)} or
      * {@link Emote#canInteract(net.dv8tion.jda.core.entities.User, net.dv8tion.jda.core.entities.MessageChannel)}
      *
+     * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.core.entities.Emote Emote}!</b>
+     *
      * @return An immutable list of Emotes (which may or may not be available to usage).
      */
     List<Emote> getEmotes();
 
     /**
      * Retrieves an emote matching the specified {@code id} if one is available in our cache.
+     *
+     * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.core.entities.Emote Emote}!</b>
      *
      * @param  id
      *         The id of the requested {@link net.dv8tion.jda.core.entities.Emote}.
@@ -592,6 +596,8 @@ public interface JDA
     /**
      * Retrieves an emote matching the specified {@code id} if one is available in our cache.
      *
+     * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.core.entities.Emote Emote}!</b>
+     *
      * @param  id
      *         The id of the requested {@link net.dv8tion.jda.core.entities.Emote}.
      *
@@ -602,6 +608,8 @@ public interface JDA
     /**
      * An unmodifiable list of all {@link net.dv8tion.jda.core.entities.Emote Emotes} that have the same name as the one provided.
      * <br>If there are no {@link net.dv8tion.jda.core.entities.Emote Emotes} with the provided name, then this returns an empty list.
+     *
+     * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.core.entities.Emote Emote}!</b>
      *
      * @param  name
      *         The name of the requested {@link net.dv8tion.jda.core.entities.Emote Emotes}.

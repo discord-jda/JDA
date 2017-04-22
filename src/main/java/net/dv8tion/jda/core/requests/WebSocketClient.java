@@ -783,6 +783,29 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         api.getEventManager().handle(new ExceptionEvent(api, cause, false));
     }
 
+    @Override
+    public void onThreadCreated(WebSocket websocket, ThreadType threadType, Thread thread) throws Exception
+    {
+        String identifier = api.getIdentifierString();
+        switch (threadType)
+        {
+            case CONNECT_THREAD:
+                thread.setName(identifier + " MainWS-ConnectThread");
+                break;
+            case FINISH_THREAD:
+                thread.setName(identifier + " MainWS-FinishThread");
+                break;
+            case READING_THREAD:
+                thread.setName(identifier + " MainWS-ReadThread");
+                break;
+            case WRITING_THREAD:
+                thread.setName(identifier + " MainWS-WriteThread");
+                break;
+            default:
+                thread.setName(identifier + " MainWS-" + threadType);
+        }
+    }
+
     public void setChunkingAndSyncing(boolean active)
     {
         chunkingAndSyncing = active;

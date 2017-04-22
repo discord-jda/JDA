@@ -37,7 +37,7 @@ public class GroupImpl implements Group
     private final long id;
     private final JDAImpl api;
 
-    private TLongObjectMap<User> userMap = MiscUtil.newLongMap();
+    private final TLongObjectMap<User> userMap = MiscUtil.newLongMap();
 
     private Call currentCall;
     private User owner;

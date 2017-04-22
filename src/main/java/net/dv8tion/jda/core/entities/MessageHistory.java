@@ -257,19 +257,6 @@ public class MessageHistory
     }
 
     /**
-     * Use {@link #getRetrievedHistory()} instead.
-     *
-     * @return List of already retrieved messages.
-     *
-     * @deprecated Use {@link #getRetrievedHistory()}
-     */
-    @Deprecated
-    public List<Message> getCachedHistory()
-    {
-        return getRetrievedHistory();
-    }
-
-    /**
      * Used to get a Message from the set of already retrieved message via it's message Id.
      * <br>If a Message with the provided id has not already been retrieved (thus, doesn't not exist in this MessageHistory
      * object), then this method returns null.

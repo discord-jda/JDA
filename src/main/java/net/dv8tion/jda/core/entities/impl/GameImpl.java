@@ -19,9 +19,9 @@ import net.dv8tion.jda.core.entities.Game;
 
 public class GameImpl implements Game
 {
-    private String name;
-    private String url;
-    private Game.GameType type;
+    private final String name;
+    private final String url;
+    private final Game.GameType type;
 
     public GameImpl(String name, String url, GameType type)
     {
