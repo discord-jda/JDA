@@ -294,6 +294,8 @@ public interface Message extends ISnowflake, Formattable
      * <b>This may or may not contain fake Emotes which means they can be displayed but not used by the logged in account.</b>
      * To check whether an Emote is fake you can test if {@link Emote#isFake()} returns true.
      *
+     * <p><b><u>Unicode emojis are not included as {@link net.dv8tion.jda.core.entities.Emote Emote}!</u></b>
+     *
      * @return An immutable list of the Emotes used in this message (example match {@literal <:jda:230988580904763393>})
      */
     List<Emote> getEmotes();
@@ -573,6 +575,8 @@ public interface Message extends ISnowflake, Formattable
      * showing how many users have reacted with same emoji/emote.
      *
      * <p><b>Neither success nor failure of this request will affect this Message's {@link #getReactions()} return as Message is immutable.</b>
+     *
+     * <p><b><u>Unicode emojis are not included as {@link net.dv8tion.jda.core.entities.Emote Emote}!</u></b>
      *
      * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>

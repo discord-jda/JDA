@@ -25,9 +25,9 @@ import net.dv8tion.jda.core.requests.RestAction;
 
 public class SelfUserImpl extends UserImpl implements SelfUser
 {
+    protected final Object mngLock = new Object();
     protected volatile AccountManager manager;
     protected volatile AccountManagerUpdatable managerUpdatable;
-    private Object mngLock = new Object();
 
     private boolean verified;
     private boolean mfaEnabled;

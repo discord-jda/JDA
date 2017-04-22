@@ -59,11 +59,11 @@ public class SimpleLog
         return LOGS.get(name.toLowerCase());
     }
 
+    private static final Map<Level, Set<File>> fileLogs = new HashMap<>();
     private static PrintStream origStd = null;
     private static PrintStream origErr = null;
     private static FileOutputStream stdOut = null;
     private static FileOutputStream errOut = null;
-    private static Map<Level, Set<File>> fileLogs = new HashMap<>();
 
     /**
      * Will duplicate the output-streams to the specified Files.
@@ -450,9 +450,9 @@ public class SimpleLog
         FATAL("Fatal", 5, true),
         OFF("NO-LOGGING", 6, true);
 
-        private String msg;
-        private int pri;
-        private boolean isError;
+        private final String msg;
+        private final int pri;
+        private final boolean isError;
 
         Level(String message, int priority, boolean isError) {
             this.msg = message;

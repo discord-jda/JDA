@@ -379,24 +379,6 @@ public class JDABuilder
     }
 
     /**
-     * This method is deprecated!
-     *
-     * @deprecated Use {@link #addEventListener(Object...)} instead.
-     *
-     * @param   listeners
-     *          The listener(s) to add to the list.
-     *
-     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
-     *
-     * @see    net.dv8tion.jda.core.JDA#addEventListener(Object...) JDA.addEventListener(Object...)
-     */
-    @Deprecated
-    public JDABuilder addListener(Object... listeners)
-    {
-        return addEventListener(listeners);
-    }
-
-    /**
      * Removes all provided listeners from the list of listeners.
      *
      * @param  listeners
@@ -410,24 +392,6 @@ public class JDABuilder
     {
         this.listeners.removeAll(Arrays.asList(listeners));
         return this;
-    }
-
-    /**
-     * This method is deprecated!
-     *
-     * @deprecated Use {@link #removeEventListener(Object...)} instead!
-     *
-     * @param  listeners
-     *         The listener(s) to remove from the list.
-     *
-     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
-     *
-     * @see    net.dv8tion.jda.core.JDA#removeEventListener(Object...) JDA.removeEventListener(Object...)
-     */
-    @Deprecated
-    public JDABuilder removeListener(Object... listeners)
-    {
-        return removeEventListener(listeners);
     }
 
     /**

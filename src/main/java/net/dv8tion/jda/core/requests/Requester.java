@@ -32,6 +32,9 @@ import net.dv8tion.jda.core.requests.ratelimit.BotRateLimiter;
 import net.dv8tion.jda.core.requests.ratelimit.ClientRateLimiter;
 import net.dv8tion.jda.core.utils.SimpleLog;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 public class Requester
 {
     public static final SimpleLog LOG = SimpleLog.getLog("JDARequester");
@@ -112,6 +115,7 @@ public class Requester
             request = createRequest(route, bodyData);
         }
 
+        Set<String> rays = new LinkedHashSet<>();
         try
         {
             HttpResponse<String> response;
@@ -122,6 +126,9 @@ public class Requester
                 if (apiRequest.isCanceled())
                     return null;
                 response = request.asString();
+                String cfRay = response.getHeaders().getFirst("CF-RAY");
+                if (cfRay != null)
+                    rays.add(cfRay);
 
                 if (response.getStatus() < 500)
                     break;
@@ -146,7 +153,8 @@ public class Requester
             }
 
             retryAfter = rateLimiter.handleResponse(route, response);
-            LOG.debug("Received response with following cf-rays: " + response.getHeaders().get("cf-ray"));
+            if (!rays.isEmpty())
+                LOG.debug("Received response with following cf-rays: " + rays);
             if (retryAfter == null)
                 apiRequest.getRestAction().handleResponse(new Response(response.getStatus(), response.getBody(), -1), apiRequest);
 

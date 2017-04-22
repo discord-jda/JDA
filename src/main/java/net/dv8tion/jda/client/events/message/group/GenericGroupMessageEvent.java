@@ -27,12 +27,6 @@ public abstract class GenericGroupMessageEvent extends GenericMessageEvent
         super(api, responseNumber, messageId, group);
     }
 
-    @Deprecated
-    public Group getGroup()
-    {
-        return (Group) channel;
-    }
-
     @Override
     public Group getChannel()
     {

@@ -34,9 +34,9 @@ public class ApplicationImpl implements Application
 {
 
     private final JDA api;
+    private final Object mngLock = new Object();
     private ApplicationManager manager;
     private ApplicationManagerUpdatable managerUpdatable;
-    private Object mngLock = new Object();
 
     private BotImpl bot;
     private String description;
