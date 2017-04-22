@@ -38,14 +38,14 @@ public class GuildBanHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long id = content.getLong("guild_id");
-        if (GuildLock.get(api).isLocked(id))
+        if (api.getGuildLock().isLocked(id))
             return id;
 
         JSONObject userJson = content.getJSONObject("user");
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
         if (guild == null)
         {
-            EventCache.get(api).cache(EventCache.Type.GUILD, id, () ->
+            api.getEventCache().cache(EventCache.Type.GUILD, id, () ->
             {
                 handle(responseNumber, allContent);
             });
@@ -53,7 +53,7 @@ public class GuildBanHandler extends SocketHandler
             return null;
         }
 
-        User user = EntityBuilder.get(api).createFakeUser(userJson, false);
+        User user = api.getEntityBuilder().createFakeUser(userJson, false);
 
         if (banned)
         {

@@ -37,7 +37,7 @@ public abstract class SocketHandler
         this.responseNumber = responseTotal;
         final Long guildId = handleInternally(o.getJSONObject("d"));
         if (guildId != null)
-            GuildLock.get(api).queue(guildId, o);
+            api.getGuildLock().queue(guildId, o);
     }
 
     /**

@@ -69,7 +69,7 @@ public class MessageReactionHandler extends SocketHandler
             user = api.getFakeUserMap().get(userId);
         if (user == null)
         {
-            EventCache.get(api).cache(EventCache.Type.USER, userId, () -> handle(responseNumber, allContent));
+            api.getEventCache().cache(EventCache.Type.USER, userId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("Received a reaction for a user that JDA does not currently have cached");
             return null;
         }
@@ -89,7 +89,7 @@ public class MessageReactionHandler extends SocketHandler
         }
         if (channel == null)
         {
-            EventCache.get(api).cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+            api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("Received a reaction for a channel that JDA does not currently have cached");
             return null;
         }

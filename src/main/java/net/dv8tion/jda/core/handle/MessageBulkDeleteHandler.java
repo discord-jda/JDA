@@ -52,12 +52,12 @@ public class MessageBulkDeleteHandler extends SocketHandler
             TextChannel channel = api.getTextChannelMap().get(channelId);
             if (channel == null)
             {
-                EventCache.get(api).cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+                api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
                 EventCache.LOG.debug("Received a Bulk Message Delete for a TextChannel that is not yet cached.");
                 return null;
             }
 
-            if (GuildLock.get(api).isLocked(channel.getGuild().getIdLong()))
+            if (api.getGuildLock().isLocked(channel.getGuild().getIdLong()))
             {
                 return channel.getGuild().getIdLong();
             }

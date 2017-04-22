@@ -41,7 +41,7 @@ public class VoiceServerUpdateHandler extends SocketHandler
         final long guildId = content.getLong("guild_id");
         api.getClient().getQueuedAudioConnectionMap().remove(guildId);
 
-        if (GuildLock.get(api).isLocked(guildId))
+        if (api.getGuildLock().isLocked(guildId))
             return guildId;
 
         if (content.isNull("endpoint"))

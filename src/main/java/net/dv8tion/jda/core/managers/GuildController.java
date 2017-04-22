@@ -20,9 +20,7 @@ import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.entities.impl.EmoteImpl;
-import net.dv8tion.jda.core.entities.impl.GuildImpl;
-import net.dv8tion.jda.core.entities.impl.MemberImpl;
+import net.dv8tion.jda.core.entities.impl.*;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
@@ -52,7 +50,7 @@ import java.util.stream.Stream;
  */
 public class GuildController
 {
-    protected final Guild guild;
+    protected final GuildImpl guild;
 
     /**
      * Creates a new GuildController instance
@@ -64,7 +62,7 @@ public class GuildController
      */
     public GuildController(Guild guild)
     {
-        this.guild = guild;
+        this.guild = (GuildImpl) guild;
     }
 
     /**
@@ -928,7 +926,7 @@ public class GuildController
                     return;
                 }
 
-                EntityBuilder builder = EntityBuilder.get(guild.getJDA());
+                EntityBuilder builder = guild.getJDA().getEntityBuilder();
                 List<User> bans = new LinkedList<>();
                 JSONArray bannedArr = response.getArray();
 

@@ -50,7 +50,7 @@ public class ChannelDeleteHandler extends SocketHandler
         if (type.isGuild())
         {
             guildId = content.getLong("guild_id");
-            if (GuildLock.get(api).isLocked(guildId))
+            if (api.getGuildLock().isLocked(guildId))
                 return guildId;
         }
 
@@ -64,7 +64,7 @@ public class ChannelDeleteHandler extends SocketHandler
                 TextChannel channel = api.getTextChannelMap().remove(channelId);
                 if (channel == null)
                 {
-                    EventCache.get(api).cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+                    api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
                     EventCache.LOG.debug("CHANNEL_DELETE attempted to delete a text channel that is not yet cached. JSON: " + content);
                     return null;
                 }
@@ -82,7 +82,7 @@ public class ChannelDeleteHandler extends SocketHandler
                 VoiceChannel channel = guild.getVoiceChannelMap().remove(channelId);
                 if (channel == null)
                 {
-                    EventCache.get(api).cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+                    api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
                     EventCache.LOG.debug("CHANNEL_DELETE attempted to delete a voice channel that is not yet cached. JSON: " + content);
                     return null;
                 }
@@ -109,7 +109,7 @@ public class ChannelDeleteHandler extends SocketHandler
                     channel = api.getFakePrivateChannelMap().remove(channelId);
                 if (channel == null)
                 {
-                    EventCache.get(api).cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+                    api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
                     EventCache.LOG.debug("CHANNEL_DELETE attempted to delete a private channel that is not yet cached. JSON: " + content);
                     return null;
                 }
@@ -132,7 +132,7 @@ public class ChannelDeleteHandler extends SocketHandler
                 GroupImpl group = (GroupImpl) ((JDAClientImpl) api.asClient()).getGroupMap().remove(groupId);
                 if (group == null)
                 {
-                    EventCache.get(api).cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+                    api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
                     EventCache.LOG.debug("CHANNEL_DELETE attempted to delete a group that is not yet cached. JSON: " + content);
                     return null;
                 }

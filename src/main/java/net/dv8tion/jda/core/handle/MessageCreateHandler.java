@@ -59,7 +59,7 @@ public class MessageCreateHandler extends SocketHandler
         Message message;
         try
         {
-            message = EntityBuilder.get(api).createMessage(content, true);
+            message = api.getEntityBuilder().createMessage(content, true);
         }
         catch (IllegalArgumentException e)
         {
@@ -68,14 +68,14 @@ public class MessageCreateHandler extends SocketHandler
                 case EntityBuilder.MISSING_CHANNEL:
                 {
                     final long channelId = content.getLong("channel_id");
-                    EventCache.get(api).cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+                    api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
                     EventCache.LOG.debug("Received a message for a channel that JDA does not currently have cached");
                     return null;
                 }
                 case EntityBuilder.MISSING_USER:
                 {
                     final long authorId = content.getJSONObject("author").getLong("id");
-                    EventCache.get(api).cache(EventCache.Type.USER, authorId, () -> handle(responseNumber, allContent));
+                    api.getEventCache().cache(EventCache.Type.USER, authorId, () -> handle(responseNumber, allContent));
                     EventCache.LOG.debug("Received a message for a user that JDA does not currently have cached");
                     return null;
                 }
@@ -89,7 +89,7 @@ public class MessageCreateHandler extends SocketHandler
             case TEXT:
             {
                 TextChannelImpl channel = (TextChannelImpl) message.getTextChannel();
-                if (GuildLock.get(api).isLocked(channel.getGuild().getIdLong()))
+                if (api.getGuildLock().isLocked(channel.getGuild().getIdLong()))
                 {
                     return channel.getGuild().getIdLong();
                 }

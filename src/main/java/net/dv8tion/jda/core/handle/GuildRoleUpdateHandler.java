@@ -36,14 +36,14 @@ public class GuildRoleUpdateHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long guildId = content.getLong("guild_id");
-        if (GuildLock.get(api).isLocked(guildId))
+        if (api.getGuildLock().isLocked(guildId))
             return guildId;
 
         JSONObject rolejson = content.getJSONObject("role");
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(guildId);
         if (guild == null)
         {
-            EventCache.get(api).cache(EventCache.Type.GUILD, guildId, () ->
+            api.getEventCache().cache(EventCache.Type.GUILD, guildId, () ->
                     handle(responseNumber, allContent));
             EventCache.LOG.debug("Received a Role Update for a Guild that is not yet cached: " + content);
             return null;
@@ -53,7 +53,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
         RoleImpl role = (RoleImpl) guild.getRolesMap().get(roleId);
         if (role == null)
         {
-            EventCache.get(api).cache(EventCache.Type.ROLE, roleId, () -> handle(responseNumber, allContent));
+            api.getEventCache().cache(EventCache.Type.ROLE, roleId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("Received a Role Update for Role that is not yet cached: " + content);
             return null;
         }

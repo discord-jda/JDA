@@ -35,7 +35,7 @@ public class GuildRoleCreateHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long guildId = content.getLong("guild_id");
-        if (GuildLock.get(api).isLocked(guildId))
+        if (api.getGuildLock().isLocked(guildId))
         {
             return guildId;
         }
@@ -43,7 +43,7 @@ public class GuildRoleCreateHandler extends SocketHandler
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(guildId);
         if (guild == null)
         {
-            EventCache.get(api).cache(EventCache.Type.GUILD, guildId, () ->
+            api.getEventCache().cache(EventCache.Type.GUILD, guildId, () ->
             {
                 handle(responseNumber, allContent);
             });
@@ -51,12 +51,12 @@ public class GuildRoleCreateHandler extends SocketHandler
             return null;
         }
 
-        Role newRole = EntityBuilder.get(api).createRole(content.getJSONObject("role"), guild.getIdLong());
+        Role newRole = api.getEntityBuilder().createRole(content.getJSONObject("role"), guild.getIdLong());
         api.getEventManager().handle(
                 new RoleCreateEvent(
                         api, responseNumber,
                         newRole));
-        EventCache.get(api).playbackCache(EventCache.Type.ROLE, newRole.getIdLong());
+        api.getEventCache().playbackCache(EventCache.Type.ROLE, newRole.getIdLong());
         return null;
     }
 }

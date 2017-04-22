@@ -16,12 +16,11 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
-import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 
 public class GuildVoiceStateImpl implements GuildVoiceState
 {
-    private final Guild guild;
+    private final GuildImpl guild;
     private final Member member;
 
     private VoiceChannel connectedChannel;
@@ -32,7 +31,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     private boolean guildDeafened = false;
     private boolean suppressed = false;
 
-    public GuildVoiceStateImpl(Guild guild, Member member)
+    public GuildVoiceStateImpl(GuildImpl guild, Member member)
     {
         this.guild = guild;
         this.member = member;
@@ -51,7 +50,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     }
 
     @Override
-    public JDA getJDA()
+    public JDAImpl getJDA()
     {
         return guild.getJDA();
     }

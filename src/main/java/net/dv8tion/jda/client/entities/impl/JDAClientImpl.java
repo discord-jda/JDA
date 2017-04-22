@@ -267,7 +267,7 @@ public class JDAClientImpl implements JDAClient
                 {
                     JSONArray array = response.getArray();
                     List<Application> applications = new ArrayList<>(array.length());
-                    EntityBuilder entityBuilder = EntityBuilder.get(getJDA());
+                    EntityBuilder entityBuilder = api.getEntityBuilder();
 
                     for (int i = 0; i < array.length(); i++)
                         applications.add(entityBuilder.createApplication(array.getJSONObject(i)));
@@ -294,7 +294,7 @@ public class JDAClientImpl implements JDAClient
             protected void handleResponse(Response response, Request<Application> request)
             {
                 if (response.isOk())
-                    request.onSuccess(EntityBuilder.get(getJDA()).createApplication(response.getObject()));
+                    request.onSuccess(api.getEntityBuilder().createApplication(response.getObject()));
                 else
                     request.onFailure(response);
             }
@@ -314,7 +314,7 @@ public class JDAClientImpl implements JDAClient
                 {
                     JSONArray array = response.getArray();
                     List<AuthorizedApplication> applications = new ArrayList<>(array.length());
-                    EntityBuilder entityBuilder = EntityBuilder.get(getJDA());
+                    EntityBuilder entityBuilder = api.getEntityBuilder();
 
                     for (int i = 0; i < array.length(); i++)
                         applications.add(entityBuilder.createAuthorizedApplication(array.getJSONObject(i)));
@@ -341,7 +341,7 @@ public class JDAClientImpl implements JDAClient
             protected void handleResponse(Response response, Request<AuthorizedApplication> request)
             {
                 if (response.isOk())
-                    request.onSuccess(EntityBuilder.get(getJDA()).createAuthorizedApplication(response.getObject()));
+                    request.onSuccess(api.getEntityBuilder().createAuthorizedApplication(response.getObject()));
                 else
                     request.onFailure(response);
             }

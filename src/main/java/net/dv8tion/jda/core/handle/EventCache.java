@@ -17,7 +17,6 @@ package net.dv8tion.jda.core.handle;
 
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
-import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.utils.SimpleLog;
 
 import java.util.HashMap;
@@ -28,13 +27,7 @@ import java.util.Map;
 public class EventCache
 {
     public static final SimpleLog LOG = SimpleLog.getLog("EventCache");
-    private static Map<JDA, EventCache> caches = new HashMap<>();
     private Map<Type, TLongObjectMap<List<Runnable>>> eventCache = new HashMap<>();
-
-    public static EventCache get(JDA jda)
-    {
-        return caches.computeIfAbsent(jda, k -> new EventCache());
-    }
 
     public void cache(Type type, long triggerId, Runnable handler)
     {

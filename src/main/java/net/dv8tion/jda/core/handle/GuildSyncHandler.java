@@ -42,7 +42,7 @@ public class GuildSyncHandler extends SocketHandler
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(guildId);
         JSONArray members = content.getJSONArray("members");
         JSONArray presences = content.getJSONArray("presences");
-        EntityBuilder.get(api).handleGuildSync(guild, members, presences);
+        api.getEntityBuilder().handleGuildSync(guild, members, presences);
 
         return null;
     }

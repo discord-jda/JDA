@@ -32,16 +32,6 @@ import java.util.Map;
 public class GuildLock
 {
     public static final SimpleLog LOG = SimpleLog.getLog("JDAGuildLock");
-    private static final Map<JDA, GuildLock> locks = new HashMap<>();
-
-    public static synchronized GuildLock get(JDA jda)
-    {
-        if (!locks.containsKey(jda))
-        {
-            locks.put(jda, new GuildLock(jda));
-        }
-        return locks.get(jda);
-    }
 
     private final JDA api;
     private final TLongObjectMap<List<JSONObject>> cache = new TLongObjectHashMap<>();
@@ -91,7 +81,7 @@ public class GuildLock
         cached.clear();
     }
 
-    private GuildLock(JDA api)
+    public GuildLock(JDA api)
     {
         this.api = api;
     }

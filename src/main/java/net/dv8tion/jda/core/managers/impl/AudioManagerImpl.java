@@ -27,6 +27,7 @@ import net.dv8tion.jda.core.audio.hooks.ListenerProxy;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
@@ -48,7 +49,7 @@ public class AudioManagerImpl implements AudioManager
     public final Object CONNECTION_LOCK = new Object();
 
     protected final JDAImpl api;
-    protected final Guild guild;
+    protected final GuildImpl guild;
     protected AudioConnection audioConnection = null;
     protected VoiceChannel queuedAudioConnection = null;
 
@@ -65,8 +66,8 @@ public class AudioManagerImpl implements AudioManager
 
     public AudioManagerImpl(Guild guild)
     {
-        this.guild = guild;
-        this.api = (JDAImpl) guild.getJDA();
+        this.guild = (GuildImpl) guild;
+        this.api = this.guild.getJDA();
         init(); //Just to make sure that the audio libs have been initialized.
     }
 

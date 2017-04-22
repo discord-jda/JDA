@@ -44,13 +44,13 @@ public class GuildEmojisUpdateHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long guildId = content.getLong("guild_id");
-        if (GuildLock.get(api).isLocked(guildId))
+        if (api.getGuildLock().isLocked(guildId))
             return guildId;
 
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(guildId);
         if (guild == null)
         {
-            EventCache.get(api).cache(EventCache.Type.GUILD, guildId, () ->
+            api.getEventCache().cache(EventCache.Type.GUILD, guildId, () ->
                     handle(responseNumber, allContent));
             return null;
         }

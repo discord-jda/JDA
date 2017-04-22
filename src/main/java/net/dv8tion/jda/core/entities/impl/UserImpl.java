@@ -17,7 +17,6 @@
 package net.dv8tion.jda.core.entities.impl;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.User;
@@ -118,7 +117,7 @@ public class UserImpl implements User
             {
                 if (response.isOk())
                 {
-                    PrivateChannel priv = EntityBuilder.get(api).createPrivateChannel(response.getObject());
+                    PrivateChannel priv = api.getEntityBuilder().createPrivateChannel(response.getObject());
                     UserImpl.this.privateChannel = priv;
                     request.onSuccess(priv);
                 }

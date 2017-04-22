@@ -20,6 +20,7 @@ import com.mashape.unirest.request.body.MultipartBody;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.MessageBuilder;
+import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.entities.impl.MessageImpl;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.requests.*;
@@ -349,7 +350,7 @@ public interface MessageChannel extends ISnowflake, Formattable
             {
                 if (response.isOk())
                 {
-                    Message m = EntityBuilder.get(getJDA()).createMessage(response.getObject(), MessageChannel.this, false);
+                    Message m = api.getEntityBuilder().createMessage(response.getObject(), MessageChannel.this, false);
                     request.onSuccess(m);
                 }
                 else
@@ -551,7 +552,7 @@ public interface MessageChannel extends ISnowflake, Formattable
             protected void handleResponse(Response response, Request<Message> request)
             {
                 if (response.isOk())
-                    request.onSuccess(EntityBuilder.get(api).createMessage(response.getObject(), MessageChannel.this, false));
+                    request.onSuccess(api.getEntityBuilder().createMessage(response.getObject(), MessageChannel.this, false));
                 else
                     request.onFailure(response);
             }
@@ -628,7 +629,7 @@ public interface MessageChannel extends ISnowflake, Formattable
             protected void handleResponse(Response response, Request<Message> request)
             {
                 if (response.isOk())
-                    request.onSuccess(EntityBuilder.get(api).createMessage(response.getObject(), MessageChannel.this, false));
+                    request.onSuccess(api.getEntityBuilder().createMessage(response.getObject(), MessageChannel.this, false));
                 else
                     request.onFailure(response);
             }
@@ -688,7 +689,7 @@ public interface MessageChannel extends ISnowflake, Formattable
             {
                 if (response.isOk())
                 {
-                    Message m = EntityBuilder.get(getJDA()).createMessage(response.getObject(), MessageChannel.this, false);
+                    Message m = api.getEntityBuilder().createMessage(response.getObject(), MessageChannel.this, false);
                     request.onSuccess(m);
                 }
                 else
@@ -956,7 +957,7 @@ public interface MessageChannel extends ISnowflake, Formattable
 
                 MessageHistory mHistory = new MessageHistory(MessageChannel.this);
 
-                EntityBuilder builder = EntityBuilder.get(api);
+                EntityBuilder builder = api.getEntityBuilder();;
                 LinkedList<Message> msgs  = new LinkedList<>();
                 JSONArray historyJson = response.getArray();
 
@@ -1587,7 +1588,7 @@ public interface MessageChannel extends ISnowflake, Formattable
                 if (response.isOk())
                 {
                     LinkedList<Message> pinnedMessages = new LinkedList<>();
-                    EntityBuilder builder = EntityBuilder.get(getJDA());
+                    EntityBuilder builder = api.getEntityBuilder();
                     JSONArray pins = response.getArray();
 
                     for (int i = 0; i < pins.length(); i++)
@@ -1720,7 +1721,7 @@ public interface MessageChannel extends ISnowflake, Formattable
             {
                 if (response.isOk())
                 {
-                    Message m = EntityBuilder.get(api).createMessage(response.getObject(), MessageChannel.this, false);
+                    Message m = api.getEntityBuilder().createMessage(response.getObject(), MessageChannel.this, false);
                     request.onSuccess(m);
                 }
                 else

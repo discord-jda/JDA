@@ -59,7 +59,7 @@ public class MessageDeleteHandler extends SocketHandler
         }
         if (channel == null)
         {
-            EventCache.get(api).cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+            api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("Got message delete for a channel/group that is not yet cached. ChannelId: " + channelId);
             return null;
         }
@@ -67,7 +67,7 @@ public class MessageDeleteHandler extends SocketHandler
         if (channel instanceof TextChannel)
         {
             TextChannelImpl tChan = (TextChannelImpl) channel;
-            if (GuildLock.get(api).isLocked(tChan.getGuild().getIdLong()))
+            if (api.getGuildLock().isLocked(tChan.getGuild().getIdLong()))
             {
                 return tChan.getGuild().getIdLong();
             }

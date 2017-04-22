@@ -50,25 +50,13 @@ public class EntityBuilder
     public static final String MISSING_CHANNEL = "MISSING_CHANNEL";
     public static final String MISSING_USER = "MISSING_USER";
 
-    private static final HashMap<JDA, EntityBuilder> builders = new HashMap<>();
     private static final Pattern channelMentionPattern = Pattern.compile("<#(\\d+)>");
 
     protected final JDAImpl api;
     protected final TLongObjectMap<JSONObject> cachedGuildJsons = MiscUtil.newLongMap();
     protected final TLongObjectMap<Consumer<Guild>> cachedGuildCallbacks = MiscUtil.newLongMap();
 
-    public static EntityBuilder get(JDA api)
-    {
-        EntityBuilder builder = builders.get(api);
-        if (builder == null)
-        {
-            builder = new EntityBuilder(api);
-            builders.put(api, builder);
-        }
-        return builder;
-    }
-
-    private EntityBuilder(JDA api)
+    public EntityBuilder(JDA api)
     {
         this.api = (JDAImpl) api;
     }
@@ -113,7 +101,7 @@ public class EntityBuilder
             // be null.
             if (secondPassCallback != null)
                 secondPassCallback.accept(guildObj);
-            GuildLock.get(api).lock(id);
+            api.getGuildLock().lock(id);
             return;
         }
 
@@ -281,7 +269,7 @@ public class EntityBuilder
                 readyHandler.acknowledgeGuild(guildObj, true, true, api.getAccountType() == AccountType.CLIENT);
             }
 
-            GuildLock.get(api).lock(id);
+            api.getGuildLock().lock(id);
             return;
         }
 
@@ -296,7 +284,7 @@ public class EntityBuilder
         JSONArray voiceStates = guild.getJSONArray("voice_states");
         createGuildVoiceStatePass(guildObj, voiceStates);
 
-        GuildLock.get(api).unlock(guildObj.getIdLong());
+        api.getGuildLock().unlock(guildObj.getIdLong());
         if (secondPassCallback != null)
             secondPassCallback.accept(guildObj);
     }
@@ -335,7 +323,7 @@ public class EntityBuilder
         createGuildVoiceStatePass(guildObj, voiceStates);
 
         secondPassCallback.accept(guildObj);
-        GuildLock.get(api).unlock(guildId);
+        api.getGuildLock().unlock(guildId);
     }
 
     public void handleGuildSync(GuildImpl guild, JSONArray members, JSONArray presences)
@@ -343,7 +331,7 @@ public class EntityBuilder
         for (int i = 0; i < members.length(); i++)
         {
             JSONObject memberJson = members.getJSONObject(i);
-            Member member = createMember(guild, memberJson);
+            createMember(guild, memberJson);
         }
 
         for (int i = 0; i < presences.length(); i++)
@@ -364,7 +352,7 @@ public class EntityBuilder
         for (int i = 0; i < members.length(); i++)
         {
             JSONObject memberJson = members.getJSONObject(i);
-            Member member = createMember(guildObj, memberJson);
+            createMember(guildObj, memberJson);
         }
     }
 

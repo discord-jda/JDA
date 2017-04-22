@@ -58,7 +58,7 @@ public class GuildMembersChunkHandler extends SocketHandler
         if (currentTotal >= expectMemberCount)
         {
             JDAImpl.LOG.debug("Finished chunking for: " + guildId);
-            EntityBuilder.get(api).createGuildSecondPass(guildId, memberChunks);
+            api.getEntityBuilder().createGuildSecondPass(guildId, memberChunks);
             memberChunksCache.remove(guildId);
             expectedGuildMembers.remove(guildId);
         }

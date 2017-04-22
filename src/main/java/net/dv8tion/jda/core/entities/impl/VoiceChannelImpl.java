@@ -347,7 +347,7 @@ public class VoiceChannelImpl implements VoiceChannel
             {
                 if (response.isOk())
                 {
-                    EntityBuilder entityBuilder = EntityBuilder.get(this.api);
+                    EntityBuilder entityBuilder = this.api.getEntityBuilder();
                     JSONArray array = response.getArray();
                     List<Invite> invites = new ArrayList<>(array.length());
                     for (int i = 0; i < array.length(); i++)
