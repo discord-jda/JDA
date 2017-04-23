@@ -127,6 +127,12 @@ public class RoleImpl implements Role
     }
 
     @Override
+    public boolean isPublicRole()
+    {
+        return this.equals(this.getGuild().getPublicRole());
+    }
+
+    @Override
     public boolean hasPermission(Permission... permissions)
     {
         long effectivePerms = rawPermissions | guild.getPublicRole().getPermissionsRaw();
