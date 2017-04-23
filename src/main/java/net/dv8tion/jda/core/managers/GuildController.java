@@ -138,8 +138,8 @@ public class GuildController
 
         if(member.equals(guild.getSelfMember()))
         {
-            if(!PermissionUtil.checkPermission(guild, member, Permission.NICKNAME_CHANGE)
-                    && !PermissionUtil.checkPermission(guild, member, Permission.NICKNAME_MANAGE))
+            if(!member.hasPermission(Permission.NICKNAME_CHANGE)
+                    && member.hasPermission(Permission.NICKNAME_MANAGE))
                 throw new PermissionException(Permission.NICKNAME_CHANGE, "You neither have NICKNAME_CHANGE nor NICKNAME_MANAGE permission!");
         }
         else
@@ -1900,19 +1900,19 @@ public class GuildController
 
     protected void checkPermission(Permission perm)
     {
-        if (!PermissionUtil.checkPermission(guild, guild.getSelfMember(), perm))
+        if (!guild.getSelfMember().hasPermission(perm))
             throw new PermissionException(perm);
     }
 
     protected void checkPosition(Member member)
     {
-        if(!PermissionUtil.canInteract(guild.getSelfMember(), member))
+        if(!guild.getSelfMember().canInteract(member))
             throw new PermissionException("Can't modify a member with higher or equal highest role than yourself!");
     }
 
     protected void checkPosition(Role role)
     {
-        if(!PermissionUtil.canInteract(guild.getSelfMember(), role))
+        if(!guild.getSelfMember().canInteract(role))
             throw new PermissionException("Can't modify a role with higher or equal highest role than yourself! Role: " + role.toString());
     }
 }

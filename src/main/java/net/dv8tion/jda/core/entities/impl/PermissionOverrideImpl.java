@@ -27,26 +27,26 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 
 public class PermissionOverrideImpl implements PermissionOverride
 {
+    private final long id;
+    private final Channel channel;
+
+    protected final Object mngLock = new Object();
     protected volatile PermOverrideManager manager;
     protected volatile PermOverrideManagerUpdatable managerUpdatable;
-    protected volatile Object mngLock = new Object();
 
-    private final Member member;
-    private final Role role;
-    private final Channel channel;
     private long allow;
     private long deny;
 
-    public PermissionOverrideImpl(Channel channel, Member member, Role role)
+    public PermissionOverrideImpl(Channel channel, long id)
     {
         this.channel = channel;
-        this.member = member;
-        this.role = role;
+        this.id = id;
     }
 
     @Override
@@ -94,13 +94,13 @@ public class PermissionOverrideImpl implements PermissionOverride
     @Override
     public Member getMember()
     {
-        return member;
+        return getGuild().getMemberById(id);
     }
 
     @Override
     public Role getRole()
     {
-        return role;
+        return getGuild().getRoleById(id);
     }
 
     @Override
@@ -165,7 +165,7 @@ public class PermissionOverrideImpl implements PermissionOverride
         if (!channel.getGuild().getSelfMember().hasPermission(channel, Permission.MANAGE_PERMISSIONS))
             throw new PermissionException(Permission.MANAGE_PERMISSIONS);
 
-        String targetId = isRoleOverride() ? role.getId() : member.getUser().getId();
+        String targetId = isRoleOverride() ? getRole().getId() : getMember().getUser().getId();
         Route.CompiledRoute route = Route.Channels.DELETE_PERM_OVERRIDE.compile(channel.getId(), targetId);
         return new RestAction<Void>(getJDA(), route, null)
         {
@@ -198,23 +198,31 @@ public class PermissionOverrideImpl implements PermissionOverride
         if (!(o instanceof PermissionOverride))
             return false;
         PermissionOverride oPerm = (PermissionOverride) o;
-        return this == oPerm || ((this.member == null ? oPerm.getMember() == null : this.member.equals(oPerm.getMember()))
-                && this.channel.equals(oPerm.getChannel()) && (this.role == null ? oPerm.getRole() == null : this.role.equals(oPerm.getRole())));
+        return this == oPerm || ((this.getMember() == null ? oPerm.getMember() == null : this.getMember().equals(oPerm.getMember()))
+                && this.channel.equals(oPerm.getChannel()) && (this.getRole() == null ? oPerm.getRole() == null : this.getRole().equals(oPerm.getRole())));
     }
 
     @Override
     public int hashCode()
     {
-        return member != null
-                ? (channel.getId() + member.getUser().getId()).hashCode()
-                : (channel.getId() + role.getId()).hashCode();
+        return (channel.getId() + getId()).hashCode();
     }
 
     @Override
     public String toString()
     {
-        ISnowflake snowflake = (member != null ? member.getUser() : role);
-        return "PermOver:(" + (member != null ? "M" : "R") + ")"
-                + "(" + channel.getId() + " | " + snowflake.getId() + ")";
+        return "PermOver:(" + (isMemberOverride() ? "M" : "R") + ")(" + channel.getId() + " | " + getId() + ")";
+    }
+
+    @Override
+    public long getIdLong()
+    {
+        return id;
+    }
+
+    @Override
+    public OffsetDateTime getCreationTime()
+    {
+        throw new UnsupportedOperationException("Unable to get creation time for a PermissionOverride!");
     }
 }

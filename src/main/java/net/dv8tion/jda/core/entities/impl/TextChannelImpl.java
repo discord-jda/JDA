@@ -17,18 +17,13 @@
 package net.dv8tion.jda.core.entities.impl;
 
 import net.dv8tion.jda.client.exceptions.VerificationLevelException;
-import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.PermissionException;
-import net.dv8tion.jda.core.managers.ChannelManager;
-import net.dv8tion.jda.core.managers.ChannelManagerUpdatable;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
-import net.dv8tion.jda.core.requests.restaction.InviteAction;
-import net.dv8tion.jda.core.requests.restaction.PermissionOverrideAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.http.util.Args;
 import org.json.JSONArray;
@@ -37,42 +32,26 @@ import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.time.OffsetDateTime;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.stream.Collectors;
 
-public class TextChannelImpl implements TextChannel
+public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implements TextChannel
 {
-    private final long id;
-    private final GuildImpl guild;
-    private final Map<Member, PermissionOverride> memberOverrides = new ConcurrentHashMap<>();
-    private final Map<Role, PermissionOverride> roleOverrides = new ConcurrentHashMap<>();
-
-    private volatile ChannelManager manager;
-    private volatile ChannelManagerUpdatable managerUpdatable;
-    private final Object mngLock = new Object();
-
-    private String name;
     private String topic;
     private long lastMessageId;
-    private int rawPosition;
 
-    public TextChannelImpl(long id, Guild guild)
+    public TextChannelImpl(long id, GuildImpl guild)
     {
-        this.id = id;
-        this.guild = (GuildImpl) guild;
+        super(id, guild);
     }
 
     @Override
     public String getAsMention()
     {
         return "<#" + id + '>';
-    }
-
-    @Override
-    public long getIdLong()
-    {
-        return id;
     }
 
     @Override
@@ -205,12 +184,6 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
-    public String getName()
-    {
-        return name;
-    }
-
-    @Override
     public ChannelType getType()
     {
         return ChannelType.TEXT;
@@ -220,12 +193,6 @@ public class TextChannelImpl implements TextChannel
     public String getTopic()
     {
         return topic;
-    }
-
-    @Override
-    public Guild getGuild()
-    {
-        return guild;
     }
 
     @Override
@@ -250,18 +217,6 @@ public class TextChannelImpl implements TextChannel
         throw new RuntimeException("Somehow when determining position we never found the TextChannel in the Guild's channels? wtf?");
     }
 
-    @Override
-    public int getPositionRaw()
-    {
-        return rawPosition;
-    }
-
-    @Override
-    public JDA getJDA()
-    {
-        return guild.getJDA();
-    }
-    
     @Override
     public RestAction<Message> sendMessage(Message msg)
     {
@@ -381,90 +336,6 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
-    public PermissionOverride getPermissionOverride(Member member)
-    {
-        return memberOverrides.get(member);
-    }
-
-    @Override
-    public PermissionOverride getPermissionOverride(Role role)
-    {
-        return roleOverrides.get(role);
-    }
-
-    @Override
-    public List<PermissionOverride> getPermissionOverrides()
-    {
-        List<PermissionOverride> overrides = new ArrayList<>(memberOverrides.size() + roleOverrides.size());
-        overrides.addAll(memberOverrides.values());
-        overrides.addAll(roleOverrides.values());
-        return Collections.unmodifiableList(overrides);
-    }
-
-    @Override
-    public List<PermissionOverride> getMemberPermissionOverrides()
-    {
-        return Collections.unmodifiableList(new ArrayList<>(memberOverrides.values()));
-    }
-
-    @Override
-    public List<PermissionOverride> getRolePermissionOverrides()
-    {
-        return Collections.unmodifiableList(new ArrayList<>(roleOverrides.values()));
-    }
-
-    @Override
-    public ChannelManager getManager()
-    {
-        ChannelManager mng = manager;
-        if (mng == null)
-        {
-            synchronized (mngLock)
-            {
-                mng = manager;
-                if (mng == null)
-                    mng = manager = new ChannelManager(this);
-            }
-        }
-        return mng;
-    }
-
-    @Override
-    public ChannelManagerUpdatable getManagerUpdatable()
-    {
-        ChannelManagerUpdatable mng = managerUpdatable;
-        if (mng == null)
-        {
-            synchronized (mngLock)
-            {
-                mng = managerUpdatable;
-                if (mng == null)
-                    mng = managerUpdatable = new ChannelManagerUpdatable(this);
-            }
-        }
-        return mng;
-    }
-
-    @Override
-    public RestAction<Void> delete()
-    {
-        checkPermission(Permission.MANAGE_CHANNEL);
-
-        Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(getId());
-        return new RestAction<Void>(getJDA(), route, null)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
-    }
-
-    @Override
     public RestAction<Message> editMessageById(String id, Message newContent)
     {
         Args.notNull(newContent, "Message");
@@ -480,46 +351,12 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
-    public PermissionOverrideAction createPermissionOverride(Member member)
-    {
-        checkPermission(Permission.MANAGE_PERMISSIONS);
-        Args.notNull(member, "member");
-        if (!guild.equals(member.getGuild()))
-            throw new IllegalArgumentException("Provided member is not from the same guild as this channel!");
-        if (getMemberOverrideMap().containsKey(member))
-            throw new IllegalStateException("Provided member already has a PermissionOverride in this channel!");
-
-        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(getId(), member.getUser().getId());
-        return new PermissionOverrideAction(getJDA(), route, this, member);
-    }
-
-    @Override
-    public PermissionOverrideAction createPermissionOverride(Role role)
-    {
-        checkPermission(Permission.MANAGE_PERMISSIONS);
-        Args.notNull(role, "role");
-        if (!guild.equals(role.getGuild()))
-            throw new IllegalArgumentException("Provided role is not from the same guild as this channel!");
-        if (getRoleOverrideMap().containsKey(role))
-            throw new IllegalStateException("Provided role already has a PermissionOverride in this channel!");
-
-        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(getId(), role.getId());
-        return new PermissionOverrideAction(getJDA(), route, this, role);
-    }
-
-    @Override
     public boolean equals(Object o)
     {
         if (!(o instanceof TextChannelImpl))
             return false;
         TextChannelImpl oTChannel = (TextChannelImpl) o;
         return this == oTChannel || this.id == oTChannel.id;
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return Long.hashCode(id);
     }
 
     @Override
@@ -551,21 +388,9 @@ public class TextChannelImpl implements TextChannel
 
     // -- Setters --
 
-    public TextChannelImpl setName(String name)
-    {
-        this.name = name;
-        return this;
-    }
-
     public TextChannelImpl setTopic(String topic)
     {
         this.topic = topic;
-        return this;
-    }
-
-    public TextChannelImpl setRawPosition(int rawPosition)
-    {
-        this.rawPosition = rawPosition;
         return this;
     }
 
@@ -575,76 +400,11 @@ public class TextChannelImpl implements TextChannel
         return this;
     }
 
-    // -- Map Getters --
-
-    public Map<Member, PermissionOverride> getMemberOverrideMap()
-    {
-        return memberOverrides;
-    }
-
-    public Map<Role, PermissionOverride> getRoleOverrideMap()
-    {
-        return roleOverrides;
-    }
-
     // -- internal --
 
     private void checkVerification()
     {
         if (!guild.checkVerification())
             throw new VerificationLevelException(guild.getVerificationLevel());
-    }
-
-    private void checkPermission(Permission permission) {checkPermission(permission, null);}
-    private void checkPermission(Permission permission, String message)
-    {
-        if (!guild.getSelfMember().hasPermission(this, permission))
-        {
-            if (message != null)
-                throw new PermissionException(permission, message);
-            else
-                throw new PermissionException(permission);
-        }
-    }
-
-    @Override
-    public RestAction<List<Invite>> getInvites()
-    {
-        if (!this.guild.getSelfMember().hasPermission(this, Permission.MANAGE_CHANNEL))
-            throw new PermissionException(Permission.MANAGE_CHANNEL);
-
-        final Route.CompiledRoute route = Route.Invites.GET_CHANNEL_INVITES.compile(getId());
-
-        return new RestAction<List<Invite>>(getJDA(), route, null)
-        {
-            @Override
-            protected void handleResponse(final Response response, final Request<List<Invite>> request)
-            {
-                if (response.isOk())
-                {
-                    EntityBuilder entityBuilder = this.api.getEntityBuilder();
-                    JSONArray array = response.getArray();
-                    List<Invite> invites = new ArrayList<>(array.length());
-                    for (int i = 0; i < array.length(); i++)
-                    {
-                        invites.add(entityBuilder.createInvite(array.getJSONObject(i)));
-                    }
-                    request.onSuccess(invites);
-                }
-                else
-                {
-                    request.onFailure(response);
-                }
-            }
-        };
-    }
-
-    @Override
-    public InviteAction createInvite()
-    {
-        if (!this.guild.getSelfMember().hasPermission(this, Permission.CREATE_INSTANT_INVITE))
-            throw new PermissionException(Permission.CREATE_INSTANT_INVITE);
-
-        return new InviteAction(this.getJDA(), this.getId());
     }
 }

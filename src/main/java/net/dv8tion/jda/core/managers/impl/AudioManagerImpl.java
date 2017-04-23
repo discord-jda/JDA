@@ -33,10 +33,12 @@ import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.utils.NativeUtil;
+import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.apache.http.util.Args;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.List;
 
 public class AudioManagerImpl implements AudioManager
 {
@@ -85,7 +87,7 @@ public class AudioManagerImpl implements AudioManager
             throw new GuildUnavailableException("Cannot open an Audio Connection with an unavailable guild. " +
                     "Please wait until this Guild is available to open a connection.");
         final Member self = guild.getSelfMember();
-        if (!self.hasPermission(channel, Permission.VOICE_CONNECT))
+        if (!self.hasPermission(channel, Permission.VOICE_CONNECT) && !self.hasPermission(channel, Permission.VOICE_MOVE_OTHERS))
             throw new PermissionException(Permission.VOICE_CONNECT);
 
         if (audioConnection == null)
@@ -103,9 +105,15 @@ public class AudioManagerImpl implements AudioManager
                 return;
 
             final int userLimit = channel.getUserLimit(); // userLimit is 0 if no limit is set!
-            if (!self.hasPermission(channel, Permission.MANAGE_CHANNEL) && userLimit > 0 && userLimit <= channel.getMembers().size())
-                throw new PermissionException(Permission.MANAGE_CHANNEL,
-                        "Unable to connect to VoiceChannel due to userlimit! Requires permission MANAGE_CHANNEL to bypass");
+            final long perms = PermissionUtil.getImplicitPermission(channel, self);
+            final List<Permission> permissions = Permission.getPermissions(perms);
+            if (!self.isOwner() && !self.hasPermission(Permission.ADMINISTRATOR))
+            {
+                if (userLimit > 0 && userLimit <= channel.getMembers().size()
+                    && !permissions.contains(Permission.VOICE_MOVE_OTHERS))
+                    throw new PermissionException(Permission.VOICE_MOVE_OTHERS,
+                            "Unable to connect to VoiceChannel due to userlimit! Requires permission VOICE_MOVE_OTHERS to bypass");
+            }
 
             api.getClient().queueAudioConnect(channel);
             audioConnection.setChannel(channel);

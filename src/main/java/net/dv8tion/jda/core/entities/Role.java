@@ -78,14 +78,6 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
     boolean isMentionable();
 
     /**
-     * The {@code long} representation of the literal permissions that this {@link net.dv8tion.jda.core.entities.Role Role} has.
-     * <br><b>NOTE:</b> these do not necessarily represent the permissions this role will have in a {@link net.dv8tion.jda.core.entities.Channel Channel}.
-     *
-     * @return Never-negative long containing offset permissions of this role.
-     */
-    long getPermissionsRaw();
-
-    /**
      * The color this {@link net.dv8tion.jda.core.entities.Role Role} is displayed in.
      *
      * @return Color value of Role-color

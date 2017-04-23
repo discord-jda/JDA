@@ -64,7 +64,7 @@ public interface AudioManager
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         <ul>
      *             <li>If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#VOICE_CONNECT VOICE_CONNECT}</li>
-     *             <li>If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
+     *             <li>If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#VOICE_MOVE_OTHERS VOICE_MOVE_OTHERS}
      *                 and the {@link net.dv8tion.jda.core.entities.VoiceChannel#getUserLimit() user limit} has been exceeded!</li>
      *         </ul>
      */

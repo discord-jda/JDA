@@ -17,9 +17,11 @@ package net.dv8tion.jda.core;
 
 import org.apache.http.util.Args;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Represents the bit offsets used by Discord for Permissions.
@@ -34,6 +36,7 @@ public enum Permission
     MANAGE_SERVER(5, true, false, "Manage Server"),
     MESSAGE_ADD_REACTION(6, true, true, "Add Reactions"),
 
+    // Text Permissions
     MESSAGE_READ(10, true, true, "Read Messages"),
     MESSAGE_WRITE(11, true, true, "Send Messages"),
     MESSAGE_TTS(12, true, true, "Send TTS Messages"),
@@ -44,6 +47,7 @@ public enum Permission
     MESSAGE_MENTION_EVERYONE(17, true, true, "Mention Everyone"),
     MESSAGE_EXT_EMOJI(18, true, true, "Use External Emojis"),
 
+    // Voice Permissions
     VOICE_CONNECT(20, true, true, "Connect"),
     VOICE_SPEAK(21, true, true, "Speak"),
     VOICE_MUTE_OTHERS(22, true, true, "Mute Members"),
@@ -65,6 +69,30 @@ public enum Permission
      * Represents a raw set of all permissions
      */
     public static final long ALL_PERMISSIONS = Permission.getRaw(Permission.values());
+
+    /**
+     * All permissions that apply to a channel
+     */
+    public static final long ALL_CHANNEL_PERMISSIONS = Permission.getRaw(Arrays.stream(values())
+            .filter(Permission::isChannel).collect(Collectors.toList()));
+
+    /**
+     * All Guild specific permissions which are only available to roles
+     */
+    public static final long ALL_GUILD_PERMISSIONS = Permission.getRaw(Arrays.stream(values())
+            .filter(Permission::isGuild).collect(Collectors.toList()));
+
+    /**
+     * All text channel specific permissions which are only available in text channel overrides
+     */
+    public static final long ALL_TEXT_PERMISSIONS = Permission.getRaw(Arrays.stream(values())
+            .filter(Permission::isText).collect(Collectors.toList()));
+
+    /**
+     * All voice channel specific permissions which are only available in voice channel overrides
+     */
+    public static final long ALL_VOICE_PERMISSIONS = Permission.getRaw(Arrays.stream(values())
+            .filter(Permission::isVoice).collect(Collectors.toList()));
 
     private final int offset;
     private final boolean isGuild, isChannel;
@@ -131,6 +159,26 @@ public enum Permission
     public boolean isChannel()
     {
         return isChannel;
+    }
+
+    /**
+     * Whether this permission is specifically for {@link net.dv8tion.jda.core.entities.TextChannel TextChannels}
+     *
+     * @return True, if and only if this permission can be applied to only text channels
+     */
+    public boolean isText()
+    {
+        return offset > 9 && offset < 20;
+    }
+
+    /**
+     * Whether this permission is specifically for {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels}
+     *
+     * @return True, if and only if this permission can be applied to only voice channels
+     */
+    public boolean isVoice()
+    {
+        return offset > 19 && offset < 26;
     }
 
     /**

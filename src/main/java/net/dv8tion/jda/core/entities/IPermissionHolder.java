@@ -42,6 +42,15 @@ public interface IPermissionHolder {
      */
     List<Permission> getPermissions();
 
+
+    /**
+     * The {@code long} representation of the literal permissions that this Permission Holder has.
+     * <br><b>NOTE:</b> these do not necessarily represent the permissions this Permission Holder will have in a {@link net.dv8tion.jda.core.entities.Channel Channel}.
+     *
+     * @return (Unsigned) long containing offset permissions of this role.
+     */
+    long getPermissionsRaw();
+
     /**
      * Checks whether or not this PermissionHolder has the given {@link net.dv8tion.jda.core.Permission Permissions} in the Guild.
      *

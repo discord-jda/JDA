@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.core.handle;
 
+import gnu.trove.TDecorators;
+import gnu.trove.list.TLongList;
+import gnu.trove.list.linked.TLongLinkedList;
 import net.dv8tion.jda.client.entities.impl.GroupImpl;
 import net.dv8tion.jda.client.events.group.update.GroupUpdateIconEvent;
 import net.dv8tion.jda.client.events.group.update.GroupUpdateNameEvent;
@@ -34,7 +37,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class ChannelUpdateHandler extends SocketHandler
 {
@@ -115,15 +117,28 @@ public class ChannelUpdateHandler extends SocketHandler
                 //Get the current overrides. (we copy them to a new list because the Set returned is backed by the Map, meaning our removes would remove from the Map. Not good.
                 //Loop through all of the json defined overrides. If we find a match, remove the User or Role from our lists.
                 //Any entries remaining in these lists after this for loop is over will be removed from the Channel's overrides.
-                List<Role> collect = channel.getRoleOverrideMap().keySet().stream().filter(role -> !containedRoles.contains(role)).collect(Collectors.toList());
-                collect.forEach(role -> {
-                    changedRoles.add(role);
-                    channel.getRoleOverrideMap().remove(role);
-                });
-                List<Member> collect1 = channel.getMemberOverrideMap().keySet().stream().filter(user -> !containedMembers.contains(user)).collect(Collectors.toList());
-                collect1.forEach(member -> {
-                    changedMembers.add(member);
-                    channel.getMemberOverrideMap().remove(member);
+                TLongList toRemove = new TLongLinkedList();
+                TDecorators.wrap(channel.getOverrideMap().keySet()).stream()
+                        .map(id -> channel.getGuild().getRoleById(id))
+                        .filter(Objects::nonNull)
+                        .filter(role -> !containedRoles.contains(role))
+                        .forEach(role -> {
+                            changedRoles.add(role);
+                            toRemove.add(role.getIdLong());
+                        });
+
+                TDecorators.wrap(channel.getOverrideMap().keySet()).stream()
+                        .map(id -> channel.getGuild().getMemberById(id))
+                        .filter(Objects::nonNull)
+                        .filter(user -> !containedMembers.contains(user))
+                        .forEach(member -> {
+                            changedMembers.add(member);
+                            toRemove.add(member.getUser().getIdLong());
+                        });
+
+                toRemove.forEach((id) -> {
+                    channel.getOverrideMap().remove(id);
+                    return true;
                 });
 
                 //If this update modified permissions in any way.
@@ -198,15 +213,28 @@ public class ChannelUpdateHandler extends SocketHandler
                 //Get the current overrides. (we copy them to a new list because the Set returned is backed by the Map, meaning our removes would remove from the Map. Not good.
                 //Loop through all of the json defined overrides. If we find a match, remove the User or Role from our lists.
                 //Any entries remaining in these lists after this for loop is over will be removed from the Channel's overrides.
-                List<Role> collect = channel.getRoleOverrideMap().keySet().stream().filter(role -> !containedRoles.contains(role)).collect(Collectors.toList());
-                collect.forEach(role -> {
+                TLongList toRemove = new TLongLinkedList();
+                TDecorators.wrap(channel.getOverrideMap().keySet()).stream()
+                    .map(id -> channel.getGuild().getRoleById(id))
+                    .filter(Objects::nonNull)
+                    .filter(role -> !containedRoles.contains(role))
+                .forEach(role -> {
                     changedRoles.add(role);
-                    channel.getRoleOverrideMap().remove(role);
+                    toRemove.add(role.getIdLong());
                 });
-                List<Member> collect1 = channel.getMemberOverrideMap().keySet().stream().filter(user -> !containedMembers.contains(user)).collect(Collectors.toList());
-                collect1.forEach(member -> {
+
+                TDecorators.wrap(channel.getOverrideMap().keySet()).stream()
+                    .map(id -> channel.getGuild().getMemberById(id))
+                    .filter(Objects::nonNull)
+                    .filter(user -> !containedMembers.contains(user))
+                .forEach(member -> {
                     changedMembers.add(member);
-                    channel.getMemberOverrideMap().remove(member);
+                   toRemove.add(member.getUser().getIdLong());
+                });
+
+                toRemove.forEach((id) -> {
+                    channel.getOverrideMap().remove(id);
+                    return true;
                 });
 
                 //If this update modified permissions in any way.
@@ -249,11 +277,7 @@ public class ChannelUpdateHandler extends SocketHandler
                     return;
                 }
 
-                PermissionOverride permOverride;
-                if (channel instanceof TextChannel)
-                    permOverride = ((TextChannelImpl) channel).getRoleOverrideMap().get(role);
-                else
-                    permOverride = ((VoiceChannelImpl) channel).getRoleOverrideMap().get(role);
+                PermissionOverride permOverride = channel.getPermissionOverride(role);
 
                 if (permOverride == null)    //Created
                 {
@@ -282,11 +306,7 @@ public class ChannelUpdateHandler extends SocketHandler
                     return;
                 }
 
-                PermissionOverride permOverride;
-                if (channel instanceof TextChannel)
-                    permOverride = ((TextChannelImpl) channel).getMemberOverrideMap().get(member);
-                else
-                    permOverride = ((VoiceChannelImpl) channel).getMemberOverrideMap().get(member);
+                PermissionOverride permOverride = channel.getPermissionOverride(member);
 
                 if (permOverride == null)    //Created
                 {
