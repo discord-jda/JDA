@@ -281,15 +281,14 @@ public interface JDA
 
     /**
      * Attempts to retrieve a {@link net.dv8tion.jda.core.entities.User User} object based on the provided id.
-     * <br>This first calls {@link #getUserById(String)}, and if the return is {@code null} then a request
+     * <br>This first calls {@link #getUserById(long)}, and if the return is {@code null} then a request
      * is made to the Discord servers.
      *
      * <p>The returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} can encounter the following Discord errors:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_USER ErrorResponse.UNKNOWN_USER}
      *     <br>Occurs when the provided id does not refer to a {@link net.dv8tion.jda.core.entities.User User}
-     *     known by Discord. Typically occurs when developers provide an incomplete id (cut short), or something that
-     *     is not an id at all! (like a user name or something similar).</li>
+     *     known by Discord. Typically occurs when developers provide an incomplete id (cut short).</li>
      * </ul>
      *
      * @param  id
@@ -313,15 +312,14 @@ public interface JDA
 
     /**
      * Attempts to retrieve a {@link net.dv8tion.jda.core.entities.User User} object based on the provided id.
-     * <br>This first calls {@link #getUserById(String)}, and if the return is {@code null} then a request
+     * <br>This first calls {@link #getUserById(long)}, and if the return is {@code null} then a request
      * is made to the Discord servers.
      *
      * <p>The returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} can encounter the following Discord errors:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_USER ErrorResponse.UNKNOWN_USER}
      *     <br>Occurs when the provided id does not refer to a {@link net.dv8tion.jda.core.entities.User User}
-     *     known by Discord. Typically occurs when developers provide an incomplete id (cut short), or something that
-     *     is not an id at all! (like a user name or something similar).</li>
+     *     known by Discord. Typically occurs when developers provide an incomplete id (cut short).</li>
      * </ul>
      *
      * @param  id
