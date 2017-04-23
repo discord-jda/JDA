@@ -93,6 +93,17 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
     Color getColor();
 
     /**
+     * Whether this role is the @everyone role for its {@link net.dv8tion.jda.core.entities.Guild Guild},
+     * which is assigned to everyone who joins the {@link net.dv8tion.jda.core.entities.Guild Guild}.
+     *
+     * @return True, if and only if this {@link net.dv8tion.jda.core.entities.Role Role} is the public role
+     * for the {@link net.dv8tion.jda.core.entities.Guild Guild} provided by {@link #getGuild()}.
+     *
+     * @see net.dv8tion.jda.core.entities.Guild#getPublicRole()
+     */
+    boolean isPublicRole();
+
+    /**
      * Whether this Role can interact with the specified Role.
      * (move/manage/etc.)
      *
