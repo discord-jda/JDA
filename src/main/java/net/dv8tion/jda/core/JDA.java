@@ -297,6 +297,9 @@ public interface JDA
      *
      * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
      *         This endpoint is {@link AccountType#BOT} only.
+     *
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If the provided id String is null.</li>
@@ -307,6 +310,30 @@ public interface JDA
      *         <br>On request, gets the User with id matching provided id from Discord.
      */
     RestAction<User> retrieveUserById(String id);
+
+    /**
+     * Attempts to retrieve a {@link net.dv8tion.jda.core.entities.User User} object based on the provided id.
+     * <br>This first calls {@link #getUserById(String)}, and if the return is {@code null} then a request
+     * is made to the Discord servers.
+     *
+     * <p>The returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} can encounter the following Discord errors:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_USER ErrorResponse.UNKNOWN_USER}
+     *     <br>Occurs when the provided id does not refer to a {@link net.dv8tion.jda.core.entities.User User}
+     *     known by Discord. Typically occurs when developers provide an incomplete id (cut short), or something that
+     *     is not an id at all! (like a user name or something similar).</li>
+     * </ul>
+     *
+     * @param  id
+     *         The id of the requested {@link net.dv8tion.jda.core.entities.User User}.
+     *
+     * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
+     *         This endpoint is {@link AccountType#BOT} only.
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.User User}
+     *         <br>On request, gets the User with id matching provided id from Discord.
+     */
+    RestAction<User> retrieveUserById(long id);
 
     /**
      * An unmodifiable List of all {@link net.dv8tion.jda.core.entities.Guild Guilds} that the logged account is connected to.

@@ -363,16 +363,21 @@ public class JDAImpl implements JDA
     @Override
     public RestAction<User> retrieveUserById(String id)
     {
+        return retrieveUserById(MiscUtil.parseSnowflake(id));
+    }
+
+    @Override
+    public RestAction<User> retrieveUserById(long id)
+    {
         if (accountType != AccountType.BOT)
             throw new AccountTypeException(AccountType.BOT);
-        Args.notEmpty(id, "User id");
 
         // check cache
         User user = this.getUserById(id);
         if (user != null)
             return new RestAction.EmptyRestAction<>(user);
 
-        Route.CompiledRoute route = Route.Users.GET_USER.compile(id);
+        Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
         return new RestAction<User>(this, route, null)
         {
             @Override
