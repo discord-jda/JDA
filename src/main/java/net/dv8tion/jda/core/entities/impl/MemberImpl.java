@@ -23,9 +23,7 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.apache.http.util.Args;
 
-import java.awt.Color;
 import java.time.OffsetDateTime;
-import java.util.*;
 
 public class MemberImpl implements Member
 {
@@ -244,6 +242,6 @@ public class MemberImpl implements Member
     @Override
     public String getAsMention()
     {
-        return user.getAsMention();
+        return nickname == null ? user.getAsMention() : "<@!" + user.getId() + ">";
     }
 }
