@@ -244,6 +244,6 @@ public class MemberImpl implements Member
     @Override
     public String getAsMention()
     {
-        return user.getAsMention();
+        return nickname == null ? user.getAsMention() : "<@!" + user.getIdLong() + '>';
     }
 }
