@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,17 +9,19 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 package net.dv8tion.jda.core.handle;
 
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Game;
-import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.impl.*;
-import net.dv8tion.jda.core.events.user.*;
+import net.dv8tion.jda.core.events.user.UserAvatarUpdateEvent;
+import net.dv8tion.jda.core.events.user.UserGameUpdateEvent;
+import net.dv8tion.jda.core.events.user.UserNameUpdateEvent;
+import net.dv8tion.jda.core.events.user.UserOnlineStatusUpdateEvent;
 import net.dv8tion.jda.core.requests.GuildLock;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
@@ -33,16 +35,18 @@ public class PresenceUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
         //Do a pre-check to see if this is for a Guild, and if it is, if the guild is currently locked.
-        if (content.has("guild_id") && GuildLock.get(api).isLocked(content.getString("guild_id")))
+        if (content.has("guild_id"))
         {
-            return content.getString("guild_id");
+            final long guildId = content.getLong("guild_id");
+            if (api.getGuildLock().isLocked(guildId))
+                return guildId;
         }
 
         JSONObject jsonUser = content.getJSONObject("user");
-        String userId = jsonUser.getString("id");
+        final long userId = jsonUser.getLong("id");
         UserImpl user = (UserImpl) api.getUserMap().get(userId);
 
         //If we do know about the user, lets update the user's specific info.
@@ -110,7 +114,7 @@ public class PresenceUpdateHandler extends SocketHandler
             // If we aren't we'll be dealing with the Relation system.
             if (content.has("guild_id"))
             {
-                GuildImpl guild = (GuildImpl) api.getGuildById(content.getString("guild_id"));
+                GuildImpl guild = (GuildImpl) api.getGuildById(content.getLong("guild_id"));
                 MemberImpl member = (MemberImpl) guild.getMember(user);
 
                 //If the Member is null, then User isn't in the Guild.
@@ -175,7 +179,7 @@ public class PresenceUpdateHandler extends SocketHandler
             //If this was for a Guild, cache it in the Guild for later use in GUILD_MEMBER_ADD
             if (content.has("guild_id"))
             {
-                GuildImpl guild = (GuildImpl) api.getGuildById(content.getString("guild_id"));
+                GuildImpl guild = (GuildImpl) api.getGuildById(content.getLong("guild_id"));
                 guild.getCachedPresenceMap().put(userId, content);
             }
             else

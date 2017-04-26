@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class CallUpdateHandler extends SocketHandler
 {
@@ -42,9 +41,9 @@ public class CallUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
-        String channelId = content.getString("channel_id");
+        final long channelId = content.getLong("channel_id");
         JSONArray ringing = content.getJSONArray("ringing");
         Region region = Region.fromKey(content.getString("region"));
 
@@ -53,7 +52,7 @@ public class CallUpdateHandler extends SocketHandler
             channel = api.getPrivateChannelMap().get(channelId);
         if (channel == null)
         {
-            EventCache.get(api).cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+            api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("Received a CALL_UPDATE for a Group/PrivateChannel that has not yet been cached. JSON: " + content);
             return null;
         }
@@ -61,7 +60,7 @@ public class CallUpdateHandler extends SocketHandler
         CallImpl call = (CallImpl) channel.getCurrentCall();
         if (call == null)
         {
-            EventCache.get(api).cache(EventCache.Type.CALL, channelId, () -> handle(responseNumber, allContent));
+            api.getEventCache().cache(EventCache.Type.CALL, channelId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("Received a CALL_UPDATE for a Call that has not yet been cached. JSON: " + content);
             return null;
         }
@@ -79,13 +78,13 @@ public class CallUpdateHandler extends SocketHandler
         //Deal with CallUser ringing status changes
         if (ringing.length() > 0)
         {
-            List<String> givenRingingIds = toStringList(ringing);
+            List<Long> givenRingingIds = toLongList(ringing);
             List<CallUser> stoppedRingingUsers = new ArrayList<>();
             List<CallUser> startedRingingUsers = new ArrayList<>();
 
             for (CallUser cUser : call.getRingingUsers())
             {
-                String userId = cUser.getUser().getId();
+                final long userId = cUser.getUser().getIdLong();
 
                 //If the ringing user is no longer ringing, change the ringing status
                 if (!givenRingingIds.contains(userId))
@@ -94,11 +93,13 @@ public class CallUpdateHandler extends SocketHandler
                     stoppedRingingUsers.add(cUser);
                 }
                 else
+                {
                     givenRingingIds.remove(userId);
+                }
             }
 
             //Any Ids that are users that have started ringing, so we need to set their ringing status as such
-            for (String userId : givenRingingIds)
+            for (long userId : givenRingingIds)
             {
                 CallUserImpl cUser = (CallUserImpl) call.getCallUserMap().get(userId);
                 cUser.setRinging(true);
@@ -116,12 +117,12 @@ public class CallUpdateHandler extends SocketHandler
         return null;
     }
 
-    private List<String> toStringList(JSONArray array)
+    private List<Long> toLongList(JSONArray array)
     {
-        List<String> strings = new ArrayList<>();
+        List<Long> longs = new ArrayList<>();
         for (int i = 0; i < array.length(); i++)
-            strings.add(array.getString(i));
+            longs.add(array.getLong(i));
 
-        return strings;
+        return longs;
     }
 }

@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,13 +9,14 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 
 package net.dv8tion.jda.core.entities.impl;
 
+import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
@@ -26,9 +27,11 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.restaction.InviteAction;
+import net.dv8tion.jda.core.requests.restaction.PermissionOverrideAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.http.util.Args;
-import org.json.JSONObject;
+import org.json.JSONArray;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -38,23 +41,23 @@ import java.util.List;
 
 public class VoiceChannelImpl implements VoiceChannel
 {
-    private final String id;
+    private final long id;
     private final GuildImpl guild;
 
     private final HashMap<Member, PermissionOverride> memberOverrides = new HashMap<>();
     private final HashMap<Role, PermissionOverride> roleOverrides = new HashMap<>();
-    private final HashMap<String, Member> connectedMembers = new HashMap<>();
+    private final TLongObjectMap<Member> connectedMembers = MiscUtil.newLongMap();
 
+    private final Object mngLock = new Object();
     private volatile ChannelManager manager;
     private volatile ChannelManagerUpdatable managerUpdatable;
-    private Object mngLock = new Object();
 
     private String name;
     private int rawPosition;
     private int userLimit;
     private int bitrate;
 
-    public VoiceChannelImpl(String id, Guild guild)
+    public VoiceChannelImpl(long id, Guild guild)
     {
         this.id = id;
         this.guild = (GuildImpl) guild;
@@ -87,7 +90,7 @@ public class VoiceChannelImpl implements VoiceChannel
     @Override
     public List<Member> getMembers()
     {
-        return Collections.unmodifiableList(new ArrayList<>(connectedMembers.values()));
+        return Collections.unmodifiableList(new ArrayList<>(connectedMembers.valueCollection()));
     }
 
     @Override
@@ -184,11 +187,11 @@ public class VoiceChannelImpl implements VoiceChannel
     {
         checkPermission(Permission.MANAGE_CHANNEL);
 
-        Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(id);
+        Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(getId());
         return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
@@ -199,7 +202,7 @@ public class VoiceChannelImpl implements VoiceChannel
     }
 
     @Override
-    public RestAction<PermissionOverride> createPermissionOverride(Member member)
+    public PermissionOverrideAction createPermissionOverride(Member member)
     {
         checkPermission(Permission.MANAGE_PERMISSIONS);
         Args.notNull(member, "member");
@@ -208,34 +211,12 @@ public class VoiceChannelImpl implements VoiceChannel
         if (getMemberOverrideMap().containsKey(member))
             throw new IllegalStateException("Provided member already has a PermissionOverride in this channel!");
 
-        final PermissionOverride override = new PermissionOverrideImpl(this, member, null);
-
-        JSONObject body = new JSONObject()
-                .put("id", member.getUser().getId())
-                .put("type", "member")
-                .put("allow", 0)
-                .put("deny", 0);
-
-        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(id, member.getUser().getId());
-        return new RestAction<PermissionOverride>(getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                if (!response.isOk())
-                {
-                    request.onFailure(response);
-                    return;
-                }
-
-                getMemberOverrideMap().put(member, override);
-                request.onSuccess(override);
-            }
-        };
+        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(getId(), member.getUser().getId());
+        return new PermissionOverrideAction(getJDA(), route, this, member);
     }
 
     @Override
-    public RestAction<PermissionOverride> createPermissionOverride(Role role)
+    public PermissionOverrideAction createPermissionOverride(Role role)
     {
         checkPermission(Permission.MANAGE_PERMISSIONS);
         Args.notNull(role, "role");
@@ -244,34 +225,12 @@ public class VoiceChannelImpl implements VoiceChannel
         if (getRoleOverrideMap().containsKey(role))
             throw new IllegalStateException("Provided role already has a PermissionOverride in this channel!");
 
-        final PermissionOverride override = new PermissionOverrideImpl(this, null, role);
-
-        JSONObject body = new JSONObject()
-                .put("id", role.getId())
-                .put("type", "role")
-                .put("allow", 0)
-                .put("deny", 0);
-
-        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(id, role.getId());
-        return new RestAction<PermissionOverride>(getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                if (!response.isOk())
-                {
-                    request.onFailure(response);
-                    return;
-                };
-
-                getRoleOverrideMap().put(role, override);
-                request.onSuccess(override);
-            }
-        };
+        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(getId(), role.getId());
+        return new PermissionOverrideAction(getJDA(), route, this, role);
     }
 
     @Override
-    public String getId()
+    public long getIdLong()
     {
         return id;
     }
@@ -282,19 +241,19 @@ public class VoiceChannelImpl implements VoiceChannel
         if (!(o instanceof VoiceChannel))
             return false;
         VoiceChannel oVChannel = (VoiceChannel) o;
-        return this == oVChannel || this.getId().equals(oVChannel.getId());
+        return this == oVChannel || this.id == oVChannel.getIdLong();
     }
 
     @Override
     public int hashCode()
     {
-        return getId().hashCode();
+        return Long.hashCode(id);
     }
 
     @Override
     public String toString()
     {
-        return "VC:" + getName() + '(' + getId() + ')';
+        return "VC:" + getName() + '(' + id + ')';
     }
 
     @Override
@@ -356,7 +315,7 @@ public class VoiceChannelImpl implements VoiceChannel
         return roleOverrides;
     }
 
-    public HashMap<String, Member> getConnectedMembersMap()
+    public TLongObjectMap<Member> getConnectedMembersMap()
     {
         return connectedMembers;
     }
@@ -371,5 +330,46 @@ public class VoiceChannelImpl implements VoiceChannel
             else
                 throw new PermissionException(permission);
         }
+    }
+
+    @Override
+    public RestAction<List<Invite>> getInvites()
+    {
+        if (!this.guild.getSelfMember().hasPermission(this, Permission.MANAGE_CHANNEL))
+            throw new PermissionException(Permission.MANAGE_CHANNEL);
+
+        final Route.CompiledRoute route = Route.Invites.GET_CHANNEL_INVITES.compile(getId());
+
+        return new RestAction<List<Invite>>(getJDA(), route, null)
+        {
+            @Override
+            protected void handleResponse(final Response response, final Request<List<Invite>> request)
+            {
+                if (response.isOk())
+                {
+                    EntityBuilder entityBuilder = this.api.getEntityBuilder();
+                    JSONArray array = response.getArray();
+                    List<Invite> invites = new ArrayList<>(array.length());
+                    for (int i = 0; i < array.length(); i++)
+                    {
+                        invites.add(entityBuilder.createInvite(array.getJSONObject(i)));
+                    }
+                    request.onSuccess(invites);
+                }
+                else
+                {
+                    request.onFailure(response);
+                }
+            }
+        };
+    }
+
+    @Override
+    public InviteAction createInvite()
+    {
+        if (!this.guild.getSelfMember().hasPermission(this, Permission.CREATE_INSTANT_INVITE))
+            throw new PermissionException(Permission.CREATE_INSTANT_INVITE);
+
+        return new InviteAction(this.getJDA(), this.getId());
     }
 }

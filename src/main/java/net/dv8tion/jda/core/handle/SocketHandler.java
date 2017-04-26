@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,9 +9,9 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 package net.dv8tion.jda.core.handle;
 
@@ -35,11 +35,9 @@ public abstract class SocketHandler
     {
         this.allContent = o;
         this.responseNumber = responseTotal;
-        String guildId = handleInternally(o.getJSONObject("d"));
+        final Long guildId = handleInternally(o.getJSONObject("d"));
         if (guildId != null)
-        {
-            GuildLock.get(api).queue(guildId, o);
-        }
+            api.getGuildLock().queue(guildId, o);
     }
 
     /**
@@ -49,5 +47,5 @@ public abstract class SocketHandler
      * @return
      *      Guild-id if that guild has a lock, or null if successful
      */
-    protected abstract String handleInternally(JSONObject content);
+    protected abstract Long handleInternally(JSONObject content);
 }

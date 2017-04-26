@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,18 +35,17 @@ public class GuildBanHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
-        if (GuildLock.get(api).isLocked(content.getString("guild_id")))
-        {
-            return content.getString("guild_id");
-        }
+        final long id = content.getLong("guild_id");
+        if (api.getGuildLock().isLocked(id))
+            return id;
 
         JSONObject userJson = content.getJSONObject("user");
-        GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("guild_id"));
+        GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
         if (guild == null)
         {
-            EventCache.get(api).cache(EventCache.Type.GUILD, content.getString("guild_id"), () ->
+            api.getEventCache().cache(EventCache.Type.GUILD, id, () ->
             {
                 handle(responseNumber, allContent);
             });
@@ -54,7 +53,7 @@ public class GuildBanHandler extends SocketHandler
             return null;
         }
 
-        User user = EntityBuilder.get(api).createFakeUser(userJson, false);
+        User user = api.getEntityBuilder().createFakeUser(userJson, false);
 
         if (banned)
         {

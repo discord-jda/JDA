@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,9 +9,9 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 
 package net.dv8tion.jda.core.handle;
@@ -47,9 +47,9 @@ public class ReadyHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
-        EntityBuilder builder = EntityBuilder.get(api);
+        EntityBuilder builder = api.getEntityBuilder();;
 
         //Core
         JSONArray guilds = content.getJSONArray("guilds");
@@ -112,7 +112,7 @@ public class ReadyHandler extends SocketHandler
     public void guildLoadComplete(JSONObject content)
     {
         api.getClient().setChunkingAndSyncing(false);
-        EntityBuilder builder = EntityBuilder.get(api);
+        EntityBuilder builder = api.getEntityBuilder();;
         JSONArray privateChannels = content.getJSONArray("private_channels");
 
         if (api.getAccountType() == AccountType.CLIENT)
@@ -137,7 +137,7 @@ public class ReadyHandler extends SocketHandler
                 String userId = presence.getJSONObject("user").getString("id");
                 FriendImpl friend = (FriendImpl) api.asClient().getFriendById(userId);
                 if (friend == null)
-                    WebSocketClient.LOG.warn("Received a presence in the Presences array in READY that did not corrospond to a cached Friend! JSON: " + presence);
+                    WebSocketClient.LOG.warn("Received a presence in the Presences array in READY that did not correspond to a cached Friend! JSON: " + presence);
                 else
                     builder.createPresence(friend, presence);
             }

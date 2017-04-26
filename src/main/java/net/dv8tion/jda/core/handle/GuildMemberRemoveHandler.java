@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,9 +9,9 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 package net.dv8tion.jda.core.handle;
 
@@ -22,9 +22,8 @@ import net.dv8tion.jda.core.entities.impl.*;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.core.requests.GuildLock;
+import net.dv8tion.jda.core.requests.WebSocketClient;
 import org.json.JSONObject;
-
-//import net.dv8tion.jda.core.events.voice.VoiceLeaveEvent;
 
 public class GuildMemberRemoveHandler extends SocketHandler
 {
@@ -35,22 +34,27 @@ public class GuildMemberRemoveHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
-        if (GuildLock.get(api).isLocked(content.getString("guild_id")))
-        {
-            return content.getString("guild_id");
-        }
+        final long id = content.getLong("guild_id");
+        if (api.getGuildLock().isLocked(id))
+            return id;
 
-        GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("guild_id"));
+        GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
         if(guild == null)
         {
             //We probably just left the guild and this event is trying to remove us from the guild, therefore ignore
             return null;
         }
 
-        String userId = content.getJSONObject("user").getString("id");
+        final long userId = content.getJSONObject("user").getLong("id");
         MemberImpl member = (MemberImpl) guild.getMembersMap().remove(userId);
+
+        if (member == null)
+        {
+            WebSocketClient.LOG.debug("Received GUILD_MEMBER_REMOVE for a Member that does not exist in the specified Guild.");
+            return null;
+        }
 
         if (member.getVoiceState().inVoiceChannel())//If this user was in a VoiceChannel, fire VoiceLeaveEvent.
         {
@@ -58,7 +62,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
             GuildVoiceStateImpl vState = (GuildVoiceStateImpl) member.getVoiceState();
             VoiceChannel channel = vState.getChannel();
             vState.setConnectedChannel(null);
-            ((VoiceChannelImpl) channel).getConnectedMembersMap().remove(member);
+            ((VoiceChannelImpl) channel).getConnectedMembersMap().remove(member.getUser().getIdLong());
             api.getEventManager().handle(
                     new GuildVoiceLeaveEvent(
                             api, responseNumber,
@@ -67,7 +71,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
 
         //The user is not in a different guild that we share
         // The user also is not a friend of this account in the case that the logged in account is a client account.
-        if (!api.getGuildMap().values().stream().anyMatch(g -> ((GuildImpl) g).getMembersMap().containsKey(userId))
+        if (api.getGuildMap().valueCollection().stream().noneMatch(g -> ((GuildImpl) g).getMembersMap().containsKey(userId))
                 && !(api.getAccountType() == AccountType.CLIENT && api.asClient().getFriendById(userId) != null))
         {
             UserImpl user = (UserImpl) api.getUserMap().remove(userId);
@@ -76,8 +80,8 @@ public class GuildMemberRemoveHandler extends SocketHandler
                 PrivateChannelImpl priv = (PrivateChannelImpl) user.getPrivateChannel();
                 user.setFake(true);
                 priv.setFake(true);
-                api.getFakeUserMap().put(user.getId(), user);
-                api.getFakePrivateChannelMap().put(priv.getId(), priv);
+                api.getFakeUserMap().put(user.getIdLong(), user);
+                api.getFakePrivateChannelMap().put(priv.getIdLong(), priv);
             }
             else if (api.getAccountType() == AccountType.CLIENT)
             {
@@ -89,7 +93,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
                     if (grp.getNonFriendUsers().contains(user))
                     {
                         user.setFake(true);
-                        api.getFakeUserMap().put(user.getId(), user);
+                        api.getFakeUserMap().put(user.getIdLong(), user);
                         break; //Breaks from groups loop
                     }
                 }

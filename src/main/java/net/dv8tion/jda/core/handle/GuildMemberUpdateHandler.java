@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 package net.dv8tion.jda.core.handle;
 
 import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.entities.impl.MemberImpl;
@@ -28,7 +27,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 public class GuildMemberUpdateHandler extends SocketHandler
 {
@@ -39,18 +41,18 @@ public class GuildMemberUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
-        if (GuildLock.get(api).isLocked(content.getString("guild_id")))
-        {
-            return content.getString("guild_id");
-        }
+        final long id = content.getLong("guild_id");
+        if (api.getGuildLock().isLocked(id))
+            return id;
 
         JSONObject userJson = content.getJSONObject("user");
-        GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("guild_id"));
+        final long userId = userJson.getLong("id");
+        GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
         if (guild == null)
         {
-            EventCache.get(api).cache(EventCache.Type.GUILD, userJson.getString("id"), () ->
+            api.getEventCache().cache(EventCache.Type.GUILD, userId, () ->
             {
                 handle(responseNumber, allContent);
             });
@@ -58,10 +60,10 @@ public class GuildMemberUpdateHandler extends SocketHandler
             return null;
         }
 
-        MemberImpl member = (MemberImpl) guild.getMembersMap().get(userJson.getString("id"));
+        MemberImpl member = (MemberImpl) guild.getMembersMap().get(userId);
         if (member == null)
         {
-            EventCache.get(api).cache(EventCache.Type.USER, userJson.getString("id"), () ->
+            api.getEventCache().cache(EventCache.Type.USER, userId, () ->
             {
                 handle(responseNumber, allContent);
             });
@@ -135,14 +137,15 @@ public class GuildMemberUpdateHandler extends SocketHandler
         LinkedList<Role> roles = new LinkedList<>();
         for(int i = 0; i < array.length(); i++)
         {
-            Role r = guild.getRolesMap().get(array.getString(i));
+            final long id = array.getLong(i);
+            Role r = guild.getRolesMap().get(id);
             if (r != null)
             {
                 roles.add(r);
             }
             else
             {
-                EventCache.get(api).cache(EventCache.Type.ROLE, array.getString(i), () ->
+                api.getEventCache().cache(EventCache.Type.ROLE, id, () ->
                 {
                     handle(responseNumber, allContent);
                 });

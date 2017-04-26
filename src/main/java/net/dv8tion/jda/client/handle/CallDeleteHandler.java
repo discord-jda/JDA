@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,15 +36,15 @@ public class CallDeleteHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
-        String channelId = content.getString("channel_id");
+        final long channelId = content.getLong("channel_id");
         CallableChannel channel = api.asClient().getGroupById(channelId);
         if (channel == null)
             channel = api.getPrivateChannelMap().get(channelId);
         if (channel == null)
         {
-            EventCache.get(api).cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+            api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("Received CALL_DELETE for a Group/PrivateChannel that is not yet cached. JSON: " + content);
             return null;
         }
@@ -52,7 +52,7 @@ public class CallDeleteHandler extends SocketHandler
         CallImpl call = (CallImpl) channel.getCurrentCall();
         if (call == null)
         {
-            EventCache.get(api).cache(EventCache.Type.CALL, channelId, () -> handle(responseNumber, allContent));
+            api.getEventCache().cache(EventCache.Type.CALL, channelId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("Received a CALL_DELETE for a Call that is not yet cached. JSON: " + content);
             return null;
         }
@@ -61,17 +61,18 @@ public class CallDeleteHandler extends SocketHandler
         {
             GroupImpl group = (GroupImpl) channel;
             group.setCurrentCall(null);
-            call.getCallUserMap().forEach((userId, cUser) ->
+            call.getCallUserMap().forEachKey(userId ->
             {
                 ((JDAClientImpl) api.asClient()).getCallUserMap().remove(userId);
+                return true;
             });
         }
         else
         {
             PrivateChannelImpl priv = (PrivateChannelImpl) channel;
             priv.setCurrentCall(null);
-            ((JDAClientImpl) api.asClient()).getCallUserMap().remove(priv.getUser().getId());
-            ((JDAClientImpl) api.asClient()).getCallUserMap().remove(api.getSelfUser().getId());
+            ((JDAClientImpl) api.asClient()).getCallUserMap().remove(priv.getUser().getIdLong());
+            ((JDAClientImpl) api.asClient()).getCallUserMap().remove(api.getSelfUser().getIdLong());
         }
 
         api.getEventManager().handle(

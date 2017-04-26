@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.guild.update.*;
 import net.dv8tion.jda.core.requests.GuildLock;
-import net.dv8tion.jda.core.requests.WebSocketClient;
 import org.json.JSONObject;
 
 import java.util.Objects;
@@ -37,15 +36,14 @@ public class GuildUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
-        if (GuildLock.get(api).isLocked(content.getString("id")))
-        {
-            return content.getString("id");
-        }
+        final long id = content.getLong("id");
+        if (api.getGuildLock().isLocked(id))
+            return id;
 
-        GuildImpl guild = (GuildImpl) api.getGuildMap().get(content.getString("id"));
-        Member owner = guild.getMembersMap().get(content.getString("owner_id"));
+        GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
+        Member owner = guild.getMembersMap().get(content.getLong("owner_id"));
         String name = content.getString("name");
         String iconId = !content.isNull("icon") ? content.getString("icon") : null;
         String splashId = !content.isNull("splash") ? content.getString("splash") : null;
@@ -55,7 +53,7 @@ public class GuildUpdateHandler extends SocketHandler
         Guild.MFALevel mfaLevel = Guild.MFALevel.fromKey(content.getInt("mfa_level"));
         Guild.Timeout afkTimeout = Guild.Timeout.fromKey(content.getInt("afk_timeout"));
         VoiceChannel afkChannel = !content.isNull("afk_channel_id")
-                ? guild.getVoiceChannelMap().get(content.getString("afk_channel_id"))
+                ? guild.getVoiceChannelMap().get(content.getLong("afk_channel_id"))
                 : null;
 
         if (!Objects.equals(owner, guild.getOwner()))

@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,9 +9,9 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 
 package net.dv8tion.jda.core.requests;
@@ -30,18 +30,16 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.Route.CompiledRoute;
 import net.dv8tion.jda.core.requests.ratelimit.BotRateLimiter;
 import net.dv8tion.jda.core.requests.ratelimit.ClientRateLimiter;
-import net.dv8tion.jda.core.requests.ratelimit.IBucket;
 import net.dv8tion.jda.core.utils.SimpleLog;
 
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 public class Requester
 {
     public static final SimpleLog LOG = SimpleLog.getLog("JDARequester");
-    public static String USER_AGENT = "JDA DiscordBot (" + JDAInfo.GITHUB + ", " + JDAInfo.VERSION + ")";
     public static final String DISCORD_API_PREFIX = "https://discordapp.com/api/";
+    public static String USER_AGENT = "JDA DiscordBot (" + JDAInfo.GITHUB + ", " + JDAInfo.VERSION + ")";
 
     private final JDAImpl api;
     private final RateLimiter rateLimiter;
@@ -68,7 +66,7 @@ public class Requester
         return api;
     }
 
-    public void request(Request apiRequest)
+    public <T> void request(Request<T> apiRequest)
     {
         if (rateLimiter.isShutdown)
             throw new IllegalStateException("The Requester has been shutdown! No new requests can be requested!");
@@ -85,14 +83,16 @@ public class Requester
     }
 
     /**
-     * Used to execute an Request. Processes request related to provided bucket.
+     * Used to execute a Request. Processes request related to provided bucket.
      *
-     * @param apiRequest The API request that needs to be sent
-     * @return Returns non-null if the request was ratelimited. Returns a Long containing retry_after milliseconds until
-     * the request can be made again. This could either be for the Per-Route ratelimit or the Global ratelimit.
-     * Check if globalCooldown is null to determine if it was Per-Route or Global.
+     * @param  apiRequest
+     *         The API request that needs to be sent
+     *
+     * @return Non-null if the request was ratelimited. Returns a Long containing retry_after milliseconds until
+     *         the request can be made again. This could either be for the Per-Route ratelimit or the Global ratelimit.
+     *         <br>Check if globalCooldown is {@code null} to determine if it was Per-Route or Global.
      */
-    public Long execute(Request apiRequest)
+    public <T> Long execute(Request<T> apiRequest)
     {
         CompiledRoute route = apiRequest.getRoute();
         Long retryAfter = rateLimiter.getRateLimit(route);
@@ -115,33 +115,46 @@ public class Requester
             request = createRequest(route, bodyData);
         }
 
+        Set<String> rays = new LinkedHashSet<>();
         try
         {
-            HttpResponse<String> response = request.asString();
-            int attempt = 1;
-            while (attempt < 4 && response.getStatus() != 429 && response.getBody() != null && response.getBody().startsWith("<"))
+            HttpResponse<String> response;
+            int attempt = 0;
+            do
             {
-                LOG.debug(String.format("Requesting %s -> %s returned HTML... retrying (attempt %d)",
+                //If the request has been canceled via the Future, don't execute.
+                if (apiRequest.isCanceled())
+                    return null;
+                response = request.asString();
+                String cfRay = response.getHeaders().getFirst("CF-RAY");
+                if (cfRay != null)
+                    rays.add(cfRay);
+
+                if (response.getStatus() < 500)
+                    break;
+
+                attempt++;
+                LOG.debug(String.format("Requesting %s -> %s returned status %d... retrying (attempt %d)",
                         request.getHttpRequest().getHttpMethod().name(),
                         request.getHttpRequest().getUrl(),
-                        attempt));
+                        response.getStatus(), attempt));
                 try
                 {
                     Thread.sleep(50 * attempt);
                 }
-                catch (InterruptedException ignored)
-                {
-                }
-                response = request.asString();
-                attempt++;
+                catch (InterruptedException ignored) {}
             }
-            if (response.getBody() != null && response.getBody().startsWith("<"))
+            while (attempt < 3 && response.getStatus() >= 500);
+
+            if (response.getStatus() >= 500)
             {
-                //Epic failure due to cloudfare. Attempted 4 times.
+                //Epic failure from other end. Attempted 4 times.
                 return null;
             }
 
             retryAfter = rateLimiter.handleResponse(route, response);
+            if (!rays.isEmpty())
+                LOG.debug("Received response with following cf-rays: " + rays);
             if (retryAfter == null)
                 apiRequest.getRestAction().handleResponse(new Response(response.getStatus(), response.getBody(), -1), apiRequest);
 
@@ -163,11 +176,6 @@ public class Requester
     public void shutdown()
     {
         rateLimiter.shutdown();
-    }
-
-    public List<IBucket> shutdownNow()
-    {
-        return rateLimiter.shutdownNow();
     }
 
     private BaseRequest createRequest(Route.CompiledRoute route, String body)

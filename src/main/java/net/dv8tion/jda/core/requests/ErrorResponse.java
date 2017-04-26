@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,9 +9,9 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 
 package net.dv8tion.jda.core.requests;
@@ -34,6 +34,7 @@ public enum ErrorResponse
     UNKNOWN_TOKEN(      10012, "Unknown Token"),
     UNKNOWN_USER(       10013, "Unknown User"),
     UNKNOWN_EMOJI(      10014, "Unknown Emoji"),
+    UNKNOWN_WEBHOOK(    10015, "Unknown Webhook"),
     BOTS_NOT_ALLOWED(   20001, "Bots cannot use this endpoint"),
     ONLY_BOTS_ALLOWED(  20002, "Only bots can use this endpoint"),
     MAX_GUILDS(         30001, "Maximum number of Guilds reached (100)"),
@@ -62,11 +63,11 @@ public enum ErrorResponse
     INVALID_MFA_LEVEL(  50017, "Provided MFA level was invalid."),
     INVALID_PASSWORD(   50018, "Provided password was invalid"),
     INVALID_PIN(        50019, "A message can only be pinned to the channel it was sent in"),
+    INVALID_BULK_DELETE_MESSAGE_AGE(50034, "A Message provided to bulk_delete was older than 2 weeks"),
     MFA_NOT_ENABLED(    60003, "MFA auth required but not enabled"),
     REACTION_BLOCKED(   90001, "Reaction Blocked"),
 
-    UNKNOWN_ERROR(         -1, "Discord returned an unknown error type"),
-    UNDEFINED_ERROR(       -2, "Discord returned an error with no defined error-code");
+    SERVER_ERROR(           0, "Discord encountered an internal server error! Not good!");
 
 
     private final int code;
@@ -94,13 +95,13 @@ public enum ErrorResponse
             if (code == error.getCode())
                 return error;
         }
-        return UNKNOWN_ERROR;
+        return SERVER_ERROR;
     }
 
     public static ErrorResponse fromJSON(JSONObject obj)
     {
         if (obj == null || obj.isNull("code"))
-            return UNDEFINED_ERROR;
+            return SERVER_ERROR;
         else
         {
             return ErrorResponse.fromCode(obj.getInt("code"));

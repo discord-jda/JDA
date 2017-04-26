@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,33 +16,42 @@
 
 package net.dv8tion.jda.core.events.message.react;
 
+import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.MessageReaction;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.events.message.GenericMessageEvent;
 
-public class GenericMessageReactionEvent extends Event
+public class GenericMessageReactionEvent extends GenericMessageEvent
 {
-
     protected User issuer;
     protected MessageReaction reaction;
 
     public GenericMessageReactionEvent(JDA api, long responseNumber, User user, MessageReaction reaction)
     {
-        super(api, responseNumber);
+        super(api, responseNumber, reaction.getMessageIdLong(), reaction.getChannel());
         this.issuer = user;
         this.reaction = reaction;
     }
 
-    public String getMessageId()
+    public Guild getGuild()
     {
-        return reaction.getMessageId();
+        TextChannel channel = getTextChannel();
+        return channel != null ? channel.getGuild() : null;
     }
 
-    public MessageChannel getChannel()
+    public TextChannel getTextChannel()
     {
-        return reaction.getChannel();
+        return isFromType(ChannelType.TEXT) ? (TextChannel) getChannel() : null;
+    }
+
+    public PrivateChannel getPrivateChannel()
+    {
+        return isFromType(ChannelType.PRIVATE) ? (PrivateChannel) getChannel() : null;
+    }
+
+    public Group getGroup()
+    {
+        return isFromType(ChannelType.GROUP) ? (Group) getChannel() : null;
     }
 
     public User getUser()
@@ -50,8 +59,19 @@ public class GenericMessageReactionEvent extends Event
         return issuer;
     }
 
+    public Member getMember()
+    {
+        Guild guild = getGuild();
+        return guild != null ? guild.getMember(getUser()) : null;
+    }
+
     public MessageReaction getReaction()
     {
         return reaction;
+    }
+
+    public MessageReaction.ReactionEmote getReactionEmote()
+    {
+        return reaction.getEmote();
     }
 }

@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,9 +9,9 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 
 package net.dv8tion.jda.core.entities.impl;
@@ -23,14 +23,13 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.apache.http.util.Args;
 
-import java.awt.*;
+import java.awt.Color;
 import java.time.OffsetDateTime;
 import java.util.*;
-import java.util.List;
 
 public class MemberImpl implements Member
 {
-    private final Guild guild;
+    private final GuildImpl guild;
     private final User user;
     private final HashSet<Role> roles = new HashSet<>();
     private final GuildVoiceState voiceState;
@@ -40,7 +39,7 @@ public class MemberImpl implements Member
     private Game game;
     private OnlineStatus onlineStatus = OnlineStatus.OFFLINE;
 
-    public MemberImpl(Guild guild, User user)
+    public MemberImpl(GuildImpl guild, User user)
     {
         this.guild = guild;
         this.user = user;
@@ -105,7 +104,7 @@ public class MemberImpl implements Member
     public List<Role> getRoles()
     {
         List<Role> roleList = new ArrayList<>(roles);
-        roleList.sort((r1, r2) -> r2.compareTo(r1));
+        roleList.sort(Comparator.reverseOrder());
 
         return Collections.unmodifiableList(roleList);
     }
@@ -245,6 +244,6 @@ public class MemberImpl implements Member
     @Override
     public String getAsMention()
     {
-        return user.getAsMention();
+        return nickname == null ? user.getAsMention() : "<@!" + user.getIdLong() + '>';
     }
 }

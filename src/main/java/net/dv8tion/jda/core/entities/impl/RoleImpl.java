@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,9 +9,9 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 
 package net.dv8tion.jda.core.entities.impl;
@@ -31,7 +31,7 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.apache.http.util.Args;
 
-import java.awt.*;
+import java.awt.Color;
 import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,12 +39,12 @@ import java.util.List;
 
 public class RoleImpl implements Role
 {
-    private final String id;
+    private final long id;
     private final Guild guild;
 
+    private final Object mngLock = new Object();
     private volatile RoleManager manager;
     private volatile RoleManagerUpdatable managerUpdatable;
-    private Object mngLock = new Object();
 
     private String name;
     private Color color;
@@ -54,7 +54,7 @@ public class RoleImpl implements Role
     private long rawPermissions;
     private int rawPosition;
 
-    public RoleImpl(String id, Guild guild)
+    public RoleImpl(long id, Guild guild)
     {
         this.id = id;
         this.guild = guild;
@@ -124,6 +124,12 @@ public class RoleImpl implements Role
     public Color getColor()
     {
         return color;
+    }
+
+    @Override
+    public boolean isPublicRole()
+    {
+        return this.equals(this.getGuild().getPublicRole());
     }
 
     @Override
@@ -213,18 +219,18 @@ public class RoleImpl implements Role
     @Override
     public RestAction<Void> delete()
     {
-        if (!PermissionUtil.checkPermission(getGuild(), getGuild().getSelfMember(), Permission.MANAGE_PERMISSIONS))
-            throw new PermissionException(Permission.MANAGE_PERMISSIONS);
+        if (!PermissionUtil.checkPermission(getGuild(), getGuild().getSelfMember(), Permission.MANAGE_ROLES))
+            throw new PermissionException(Permission.MANAGE_ROLES);
         if(!PermissionUtil.canInteract(getGuild().getSelfMember(), this))
             throw new PermissionException("Can't delete role >= highest self-role");
         if (managed)
             throw new UnsupportedOperationException("Cannot delete a Role that is managed. ");
 
-        Route.CompiledRoute route = Route.Roles.DELETE_ROLE.compile(guild.getId(), id);
+        Route.CompiledRoute route = Route.Roles.DELETE_ROLE.compile(guild.getId(), getId());
         return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
@@ -247,7 +253,7 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public String getId()
+    public long getIdLong()
     {
         return id;
     }
@@ -258,19 +264,19 @@ public class RoleImpl implements Role
         if (!(o instanceof Role))
             return false;
         Role oRole = (Role) o;
-        return this == oRole || this.getId().equals(oRole.getId());
+        return this == oRole || this.getIdLong() == oRole.getIdLong();
     }
 
     @Override
     public int hashCode()
     {
-        return getId().hashCode();
+        return Long.hashCode(id);
     }
 
     @Override
     public String toString()
     {
-        return "R:" + getName() + '(' + getId() + ')';
+        return "R:" + getName() + '(' + id + ')';
     }
 
     @Override
@@ -279,7 +285,7 @@ public class RoleImpl implements Role
         if (this == r)
             return 0;
 
-        if (this.getGuild() != r.getGuild())
+        if (!this.getGuild().equals(r.getGuild()))
             throw new IllegalArgumentException("Cannot compare roles that aren't from the same guild!");
 
         if (this.getPositionRaw() != r.getPositionRaw())

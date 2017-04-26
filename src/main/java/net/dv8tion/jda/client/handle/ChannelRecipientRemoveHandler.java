@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,18 +33,15 @@ public class ChannelRecipientRemoveHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
-        String groupId = content.getString("channel_id");
-        String userId = content.getJSONObject("user").getString("id");
+        final long groupId = content.getLong("channel_id");
+        final long userId = content.getJSONObject("user").getLong("id");
 
         GroupImpl group = (GroupImpl) api.asClient().getGroupById(groupId);
         if (group == null)
         {
-            EventCache.get(api).cache(EventCache.Type.CHANNEL, groupId, () ->
-            {
-                handle(responseNumber, allContent);
-            });
+            api.getEventCache().cache(EventCache.Type.CHANNEL, groupId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("Received a CHANNEL_RECIPIENT_REMOVE for a group that is not yet cached! JSON: " + content);
             return null;
         }
@@ -52,10 +49,7 @@ public class ChannelRecipientRemoveHandler extends SocketHandler
         User user = group.getUserMap().remove(userId);
         if (user == null)
         {
-            EventCache.get(api).cache(EventCache.Type.USER, userId, () ->
-            {
-                handle(responseNumber, allContent);
-            });
+            api.getEventCache().cache(EventCache.Type.USER, userId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("Received a CHANNEL_RECIPIENT_REMOVE for a user that is not yet cached in the group! JSON: " + content);
             return null;
         }
@@ -72,7 +66,7 @@ public class ChannelRecipientRemoveHandler extends SocketHandler
         if (user.isFake()
                 && !user.hasPrivateChannel()
                 && api.asClient().getRelationshipById(userId) == null
-                && api.asClient().getGroups().stream().allMatch(g -> !g.getUsers().contains(user)))
+                && api.asClient().getGroups().stream().noneMatch(g -> g.getUsers().contains(user)))
         {
             api.getFakeUserMap().remove(userId);
         }

@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,9 +9,9 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 package net.dv8tion.jda.core.events.message.priv;
 
@@ -29,19 +29,12 @@ import java.util.List;
  */
 public class PrivateMessageEmbedEvent extends GenericPrivateMessageEvent
 {
-    private final String messageId;
     private final List<MessageEmbed> embeds;
 
-    public PrivateMessageEmbedEvent(JDA api, long responseNumber, String messageId, PrivateChannel channel, List<MessageEmbed> embeds)
+    public PrivateMessageEmbedEvent(JDA api, long responseNumber, long messageId, PrivateChannel channel, List<MessageEmbed> embeds)
     {
-        super(api, responseNumber, null, channel);
-        this.messageId = messageId;
+        super(api, responseNumber, messageId, channel);
         this.embeds = embeds;
-    }
-
-    public String getMessageId()
-    {
-        return messageId;
     }
 
     public List<MessageEmbed> getMessageEmbeds()

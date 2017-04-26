@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -140,7 +140,7 @@ public class UserSettingsImpl implements UserSettings
     @Override
     public int hashCode()
     {
-        return getJDA().getSelfUser().getId().hashCode();
+        return Long.hashCode(getJDA().getSelfUser().getIdLong());
     }
 
     @Override

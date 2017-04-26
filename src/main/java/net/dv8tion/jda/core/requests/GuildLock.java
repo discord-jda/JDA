@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,43 +9,40 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 package net.dv8tion.jda.core.requests;
 
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import org.json.JSONObject;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class GuildLock
 {
-    public static SimpleLog LOG = SimpleLog.getLog("JDAGuildLock");
-    private static Map<JDA, GuildLock> locks = new HashMap<>();
-
-    public static synchronized GuildLock get(JDA jda)
-    {
-        if (!locks.containsKey(jda))
-        {
-            locks.put(jda, new GuildLock(jda));
-        }
-        return locks.get(jda);
-    }
+    public static final SimpleLog LOG = SimpleLog.getLog("JDAGuildLock");
 
     private final JDA api;
-    private final Map<String, List<JSONObject>> cache = new HashMap<>();
-    private final Set<String> cached = new HashSet<>();
+    private final TLongObjectMap<List<JSONObject>> cache = new TLongObjectHashMap<>();
+    private final TLongSet cached = new TLongHashSet();
 
-    public boolean isLocked(String guildId)
+    public boolean isLocked(long guildId)
     {
         return cached.contains(guildId);
     }
 
-    public void lock(String guildId)
+    public void lock(long guildId)
     {
         if (!isLocked(guildId))
         {
@@ -54,7 +51,7 @@ public class GuildLock
         }
     }
 
-    public void unlock(String guildId)
+    public void unlock(long guildId)
     {
         if (isLocked(guildId))
         {
@@ -69,7 +66,7 @@ public class GuildLock
         }
     }
 
-    public void queue(String guildId, JSONObject event)
+    public void queue(long guildId, JSONObject event)
     {
         if (isLocked(guildId))
         {
@@ -84,7 +81,7 @@ public class GuildLock
         cached.clear();
     }
 
-    private GuildLock(JDA api)
+    public GuildLock(JDA api)
     {
         this.api = api;
     }

@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,15 @@ import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.managers.Presence;
+import org.apache.http.util.Args;
 import org.json.JSONObject;
 
 /**
  * The Presence associated with the provided JDA instance
+ * <br><b>Note that this does not automatically handle the 5/60 second rate limit!</b>
+ *
+ * @since  3.0
+ * @author Florian Spieß
  */
 public class PresenceImpl implements Presence
 {
@@ -38,7 +43,7 @@ public class PresenceImpl implements Presence
      * Creates a new Presence representation for the provided JDAImpl instance
      *
      * @param jda
-     *      The not-null JDAImpl instance to use
+     *        The not-null JDAImpl instance to use
      */
     public PresenceImpl(JDAImpl jda)
     {
@@ -80,39 +85,102 @@ public class PresenceImpl implements Presence
     @Override
     public void setStatus(OnlineStatus status)
     {
-        if (status == OnlineStatus.UNKNOWN)
-            throw new IllegalArgumentException("Cannot set the presence status to an unknown OnlineStatus!");
-        if (status == OnlineStatus.OFFLINE || status == null)
-            status = OnlineStatus.INVISIBLE;
-        JSONObject object = getFullPresence();
-        object.put("status", status.getKey());
-        update(object);
-        this.status = status;
+        setPresence(status, game, idle);
     }
 
     @Override
     public void setGame(Game game)
     {
-        JSONObject gameObj = getGameJson(game);
-        if (gameObj == null)
-        {
-            update(getFullPresence().put("game", JSONObject.NULL));
-            this.game = null;
-            return;
-        }
-        JSONObject object = getFullPresence();
-        object.put("game", gameObj);
-        update(object);
-        this.game = game;
+        setPresence(status, game, idle);
     }
 
     @Override
     public void setIdle(boolean idle)
     {
-        JSONObject object = getFullPresence();
+        setPresence(status, game, idle);
+    }
+
+    @Override
+    public void setPresence(OnlineStatus status, Game game, boolean idle)
+    {
+        JSONObject gameObj = getGameJson(game);
+
+        Args.check(status != OnlineStatus.UNKNOWN,
+                "Cannot set the presence status to an unknown OnlineStatus!");
+        if (status == OnlineStatus.OFFLINE || status == null)
+            status = OnlineStatus.INVISIBLE;
+
+        JSONObject object = new JSONObject();
+
+        if (gameObj == null)
+            object.put("game", JSONObject.NULL);
+        else
+            object.put("game", gameObj);
         object.put("afk", idle);
+        object.put("status", status.getKey());
+        object.put("since", System.currentTimeMillis());
         update(object);
         this.idle = idle;
+        this.status = status;
+        this.game = gameObj == null ? null : game;
+    }
+
+    @Override
+    public void setPresence(OnlineStatus status, Game game)
+    {
+        JSONObject gameObj = getGameJson(game);
+
+        Args.check(status != OnlineStatus.UNKNOWN,
+                "Cannot set the presence status to an unknown OnlineStatus!");
+        if (status == OnlineStatus.OFFLINE || status == null)
+            status = OnlineStatus.INVISIBLE;
+
+        JSONObject object = new JSONObject();
+
+        if (gameObj == null)
+            object.put("game", JSONObject.NULL);
+        else
+            object.put("game", gameObj);
+        object.put("status", status.getKey());
+        object.put("since", System.currentTimeMillis());
+        update(object);
+        this.status = status;
+        this.game = gameObj == null ? null : game;
+    }
+
+    @Override
+    public void setPresence(OnlineStatus status, boolean idle)
+    {
+        Args.check(status != OnlineStatus.UNKNOWN,
+                "Cannot set the presence status to an unknown OnlineStatus!");
+        if (status == OnlineStatus.OFFLINE || status == null)
+            status = OnlineStatus.INVISIBLE;
+
+        JSONObject object = new JSONObject();
+
+        object.put("afk", idle);
+        object.put("status", status.getKey());
+        object.put("since", System.currentTimeMillis());
+        update(object);
+        this.idle = idle;
+        this.status = status;
+    }
+
+    @Override
+    public void setPresence(Game game, boolean idle)
+    {
+        JSONObject gameObj = getGameJson(game);
+        JSONObject object = new JSONObject();
+
+        if (gameObj == null)
+            object.put("game", JSONObject.NULL);
+        else
+            object.put("game", gameObj);
+        object.put("afk", idle);
+        object.put("since", System.currentTimeMillis());
+        update(object);
+        this.idle = idle;
+        this.game = gameObj == null ? null : game;
     }
 
 

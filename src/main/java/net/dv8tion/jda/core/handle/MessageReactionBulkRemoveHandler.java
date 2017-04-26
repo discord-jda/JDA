@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,17 @@
 
 package net.dv8tion.jda.core.handle;
 
+import net.dv8tion.jda.client.entities.Group;
+import net.dv8tion.jda.client.events.message.group.react.GroupMessageReactionRemoveAllEvent;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.PrivateChannel;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionRemoveAllEvent;
+import net.dv8tion.jda.core.events.message.priv.react.PrivateMessageReactionRemoveAllEvent;
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveAllEvent;
+import net.dv8tion.jda.core.hooks.IEventManager;
 import org.json.JSONObject;
 
 public class MessageReactionBulkRemoveHandler extends SocketHandler
@@ -30,30 +37,56 @@ public class MessageReactionBulkRemoveHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
-        String messageId = content.getString("message_id");
-        String channelId = content.getString("channel_id");
+        final long messageId = content.getLong("message_id");
+        final long channelId = content.getLong("channel_id");
         MessageChannel channel = api.getTextChannelById(channelId);
         if (channel == null)
+        {
             channel = api.getPrivateChannelById(channelId);
+        }
         if (channel == null && api.getAccountType() == AccountType.CLIENT)
+        {
             channel = api.asClient().getGroupById(channelId);
-        if (channel == null)
-            channel = api.getFakePrivateChannelMap().get(channelId);
+        }
         if (channel == null)
         {
-            EventCache.get(api).cache(EventCache.Type.CHANNEL, channelId, () ->
-            {
-                handle(responseNumber, allContent);
-            });
+            channel = api.getFakePrivateChannelMap().get(channelId);
+        }
+        if (channel == null)
+        {
+            api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("Received a reaction for a channel that JDA does not currently have cached");
             return null;
         }
-        api.getEventManager().handle(
-                new MessageReactionRemoveAllEvent(
-                        api, responseNumber,
-                        messageId, channel));
+        IEventManager manager = api.getEventManager();
+
+        switch (channel.getType())
+        {
+            case TEXT:
+               manager.handle(
+                   new GuildMessageReactionRemoveAllEvent(
+                           api, responseNumber,
+                           messageId, (TextChannel) channel));
+               break;
+            case GROUP:
+                manager.handle(
+                    new GroupMessageReactionRemoveAllEvent(
+                            api, responseNumber,
+                            messageId, (Group) channel));
+                break;
+            case PRIVATE:
+                manager.handle(
+                    new PrivateMessageReactionRemoveAllEvent(
+                            api, responseNumber,
+                            messageId, (PrivateChannel) channel));
+        }
+
+        manager.handle(
+            new MessageReactionRemoveAllEvent(
+                    api, responseNumber,
+                    messageId, channel));
         return null;
     }
 }

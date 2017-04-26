@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,10 +32,10 @@ public class GuildRoleCreateHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
-        String guildId = content.getString("guild_id");
-        if (GuildLock.get(api).isLocked(guildId))
+        final long guildId = content.getLong("guild_id");
+        if (api.getGuildLock().isLocked(guildId))
         {
             return guildId;
         }
@@ -43,7 +43,7 @@ public class GuildRoleCreateHandler extends SocketHandler
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(guildId);
         if (guild == null)
         {
-            EventCache.get(api).cache(EventCache.Type.GUILD, guildId, () ->
+            api.getEventCache().cache(EventCache.Type.GUILD, guildId, () ->
             {
                 handle(responseNumber, allContent);
             });
@@ -51,12 +51,12 @@ public class GuildRoleCreateHandler extends SocketHandler
             return null;
         }
 
-        Role newRole = EntityBuilder.get(api).createRole(content.getJSONObject("role"), guild.getId());
+        Role newRole = api.getEntityBuilder().createRole(content.getJSONObject("role"), guild.getIdLong());
         api.getEventManager().handle(
                 new RoleCreateEvent(
                         api, responseNumber,
                         newRole));
-        EventCache.get(api).playbackCache(EventCache.Type.ROLE, newRole.getId());
+        api.getEventCache().playbackCache(EventCache.Type.ROLE, newRole.getIdLong());
         return null;
     }
 }

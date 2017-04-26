@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ public class MessageListenerExample extends ListenerAdapter
         {
             JDA jda = new JDABuilder(AccountType.BOT)
                     .setToken("Your-Token-Goes-Here")           //The token of the account that is logging in.
-                    .addListener(new MessageListenerExample())  //An instance of a class that will handle events.
+                    .addEventListener(new MessageListenerExample())  //An instance of a class that will handle events.
                     .buildBlocking();  //There are 2 ways to login, blocking vs async. Blocking guarantees that JDA will be completely loaded.
         }
         catch (LoginException e)
@@ -91,7 +91,7 @@ public class MessageListenerExample extends ListenerAdapter
         long responseNumber = event.getResponseNumber();//The amount of discord events that JDA has received since the last reconnect.
 
         //Event specific information
-        User author = event.getAuthor();                  //The user that sent the message
+        User author = event.getAuthor();                //The user that sent the message
         Message message = event.getMessage();           //The message that was received.
         MessageChannel channel = event.getChannel();    //This is the MessageChannel that the message was sent to.
                                                         //  This could be a TextChannel, PrivateChannel, or Group!
@@ -99,7 +99,7 @@ public class MessageListenerExample extends ListenerAdapter
         String msg = message.getContent();              //This returns a human readable version of the Message. Similar to
                                                         // what you would see in the client.
 
-        boolean bot = author.isBot();                     //This boolean is useful to determine if the User that
+        boolean bot = author.isBot();                    //This boolean is useful to determine if the User that
                                                         // sent the Message is a BOT or not!
 
         if (event.isFromType(ChannelType.TEXT))         //If this message was sent to a Guild TextChannel
@@ -112,8 +112,15 @@ public class MessageListenerExample extends ListenerAdapter
             TextChannel textChannel = event.getTextChannel(); //The TextChannel that this message was sent to.
             Member member = event.getMember();          //This Member that sent the message. Contains Guild specific information about the User!
 
-            String name = member.getEffectiveName();    //This will either use the Member's nickname if they have one,
-                                                        // otherwise it will default to their username. (User#getName())
+            String name;
+            if (message.isWebhookMessage())
+            {
+                name = author.getName();                //If this is a Webhook message, then there is no Member associated
+            }                                           // with the User, thus we default to the author for name.
+            else
+            {
+                name = member.getEffectiveName();       //This will either use the Member's nickname if they have one,
+            }                                           // otherwise it will default to their username. (User#getName())
 
             System.out.printf("(%s)[%s]<%s>: %s\n", guild.getName(), textChannel.getName(), name, msg);
         }
@@ -163,7 +170,7 @@ public class MessageListenerExample extends ListenerAdapter
             {                                                               // what they are or how they work, try google!
                 if (roll < 3)
                 {
-                    channel.sendMessage("The role for messageId: " + sentMessage.getId() + " wasn't very good... Must be bad luck!\n").queue();
+                    channel.sendMessage("The roll for messageId: " + sentMessage.getId() + " wasn't very good... Must be bad luck!\n").queue();
                 }
             });
         }
@@ -244,24 +251,36 @@ public class MessageListenerExample extends ListenerAdapter
         }
         else if (msg.equals("!block"))
         {
-            //This is an example of how to use the block() method on RestAction. The block method acts similarly to how
+            //This is an example of how to use the complete() method on RestAction. The complete method acts similarly to how
             // JDABuilder's buildBlocking works, it waits until the request has been sent before continuing execution.
-            //Most developers probably wont need this and can just use queue. If you use block, JDA will still handle ratelimit
-            // control, however it won't queue the Request to be sent after the ratelimit retry after time is past. It
+            //Most developers probably wont need this and can just use queue. If you use complete, JDA will still handle ratelimit
+            // control, however if shouldQueue is false it won't queue the Request to be sent after the ratelimit retry after time is past. It
             // will instead fire a RateLimitException!
-            //One of the major advantages of block() is that it returns the object that queue's success consumer would have,
+            //One of the major advantages of complete() is that it returns the object that queue's success consumer would have,
             // but it does it in the same execution context as when the request was made. This may be important for most developers,
-            // but, honestly, queue is most likely what developers will want to use.
+            // but, honestly, queue is most likely what developers will want to use as it is faster.
 
             try
             {
-                //Note the fact that block returns the Message object!
-                Message sentMessage = channel.sendMessage("I blocked and will return the message!").block();
+                //Note the fact that complete returns the Message object!
+                //The complete() overload queues the Message for execution and will return when the message was sent
+                //It does handle rate limits automatically
+                Message sentMessage = channel.sendMessage("I blocked and will return the message!").complete();
+                //This should only be used if you are expecting to handle rate limits yourself
+                //The completion will not succeed if a rate limit is breached and throw a RateLimitException
+                Message sentRatelimitMessage = channel.sendMessage("I expect rate limitation and know how to handle it!").complete(false);
+
                 System.out.println("Sent a message using blocking! Luckly I didn't get Ratelimited... MessageId: " + sentMessage.getId());
             }
             catch (RateLimitedException e)
             {
-                System.out.println("Whoops! Got ratelimited when attempting to use a .block() on a RestAction! RetryAfter: " + e.getRetryAfter());
+                System.out.println("Whoops! Got ratelimited when attempting to use a .complete() on a RestAction! RetryAfter: " + e.getRetryAfter());
+            }
+            //Note that RateLimitException is the only checked-exception thrown by .complete()
+            catch (RuntimeException e)
+            {
+                System.out.println("Unfortunately something went wrong when we tried to send the Message and .complete() threw an Exception.");
+                e.printStackTrace();
             }
         }
     }

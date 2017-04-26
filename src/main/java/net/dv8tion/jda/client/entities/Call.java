@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package net.dv8tion.jda.client.entities;
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.AudioChannel;
 import net.dv8tion.jda.core.entities.PrivateChannel;
-import net.dv8tion.jda.core.entities.User;
 
 import java.util.List;
 
@@ -31,6 +30,7 @@ public interface Call extends AudioChannel
     Group getGroup();
     PrivateChannel getPrivateChannel();
     String getMessageId();
+    long getMessageIdLong();
 
     List<CallUser> getRingingUsers();
     List<CallUser> getConnectedUsers();

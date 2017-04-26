@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,30 +16,31 @@
 
 package net.dv8tion.jda.client.entities.impl;
 
+import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.client.entities.Call;
 import net.dv8tion.jda.client.entities.CallUser;
 import net.dv8tion.jda.client.entities.CallableChannel;
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.Region;
-import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.PrivateChannel;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.utils.MiscUtil;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class CallImpl implements Call
 {
     private final CallableChannel callableChannel;
-    private final String messageId;
+    private final long messageId;
 
-    private HashMap<String, CallUser> callUsers = new HashMap<>();
-    private HashMap<String, CallUser> callUserHistory = new HashMap<>();
+    private final TLongObjectMap<CallUser> callUsers = MiscUtil.newLongMap();
+    private final TLongObjectMap<CallUser> callUserHistory = MiscUtil.newLongMap();
 
     private Region region;
 
-    public CallImpl(CallableChannel callableChannel, String messageId)
+    public CallImpl(CallableChannel callableChannel, long messageId)
     {
         this.callableChannel = callableChannel;
         this.messageId = messageId;
@@ -78,21 +79,27 @@ public class CallImpl implements Call
     @Override
     public String getMessageId()
     {
+        return Long.toUnsignedString(messageId);
+    }
+
+    @Override
+    public long getMessageIdLong()
+    {
         return messageId;
     }
 
     @Override
     public List<CallUser> getRingingUsers()
     {
-        return Collections.unmodifiableList(callUsers.values().stream()
-                .filter(cu -> cu.isRinging())
+        return Collections.unmodifiableList(callUsers.valueCollection().stream()
+                .filter(CallUser::isRinging)
                 .collect(Collectors.toList()));
     }
 
     @Override
     public List<CallUser> getConnectedUsers()
     {
-        return Collections.unmodifiableList(callUsers.values().stream()
+        return Collections.unmodifiableList(callUsers.valueCollection().stream()
                 .filter(cu -> cu.getVoiceState().isInCall())
                 .collect(Collectors.toList()));
     }
@@ -101,26 +108,26 @@ public class CallImpl implements Call
     public List<CallUser> getCallUserHistory()
     {
         return Collections.unmodifiableList(
-                new ArrayList<>(callUserHistory.values()));
+                new ArrayList<>(callUserHistory.valueCollection()));
     }
 
     @Override
     public List<CallUser> getAllCallUsers()
     {
         return Collections.unmodifiableList(
-                new ArrayList<>(callUsers.values()));
+                new ArrayList<>(callUsers.valueCollection()));
     }
 
     @Override
-    public String getId()
+    public long getIdLong()
     {
-        return callableChannel.getId();
+        return callableChannel.getIdLong();
     }
 
     @Override
     public String toString()
     {
-        return "Call(" + getId() + ")";
+        return "Call(" + getIdLong() + ")";
     }
 
     @Override
@@ -130,7 +137,7 @@ public class CallImpl implements Call
             return false;
 
         Call oCall = (Call) o;
-        return getId().equals(oCall.getId()) && Objects.equals(messageId, oCall.getMessageId());
+        return getIdLong() == oCall.getIdLong() && messageId == oCall.getMessageIdLong();
     }
 
     @Override
@@ -145,12 +152,12 @@ public class CallImpl implements Call
         return this;
     }
 
-    public HashMap<String, CallUser> getCallUserMap()
+    public TLongObjectMap<CallUser> getCallUserMap()
     {
         return callUsers;
     }
 
-    public HashMap<String, CallUser> getCallUserHistoryMap()
+    public TLongObjectMap<CallUser> getCallUserHistoryMap()
     {
         return callUserHistory;
     }

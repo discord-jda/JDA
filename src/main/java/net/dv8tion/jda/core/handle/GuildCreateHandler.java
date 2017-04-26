@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,9 +9,9 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 package net.dv8tion.jda.core.handle;
 
@@ -32,11 +32,11 @@ public class GuildCreateHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
-        Guild g = api.getGuildById(content.getString("id"));
+        Guild g = api.getGuildById(content.getLong("id"));
         Boolean wasAvail = (g == null || g.getName() == null) ? null : g.isAvailable();
-        EntityBuilder.get(api).createGuildFirstPass(content, guild ->
+        api.getEntityBuilder().createGuildFirstPass(content, guild ->
         {
             if (guild.isAvailable())
             {
@@ -52,7 +52,7 @@ public class GuildCreateHandler extends SocketHandler
                                 new GuildJoinEvent(
                                         api, responseNumber,
                                         guild));
-                        EventCache.get(api).playbackCache(EventCache.Type.GUILD, guild.getId());
+                        api.getEventCache().playbackCache(EventCache.Type.GUILD, guild.getIdLong());
                     }
                     else if (!wasAvail)                     //was previously unavailable
                     {
@@ -79,7 +79,7 @@ public class GuildCreateHandler extends SocketHandler
                     api.getEventManager().handle(
                             new UnavailableGuildJoinedEvent(
                                     api, responseNumber,
-                                    guild.getId()));
+                                    guild.getIdLong()));
                 }
             }
         });

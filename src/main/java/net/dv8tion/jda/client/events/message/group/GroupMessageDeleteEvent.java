@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,20 +18,13 @@ package net.dv8tion.jda.client.events.message.group;
 
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Message;
 
 public class GroupMessageDeleteEvent extends GenericGroupMessageEvent
 {
-    protected final String messageId;
 
-    public GroupMessageDeleteEvent(JDA api, long responseNumber, String messageId, Group group)
+    public GroupMessageDeleteEvent(JDA api, long responseNumber, long messageId, Group group)
     {
-        super(api, responseNumber, null, group);
-        this.messageId = messageId;
+        super(api, responseNumber, messageId, group);
     }
 
-    public String getMessageId()
-    {
-        return messageId;
-    }
 }

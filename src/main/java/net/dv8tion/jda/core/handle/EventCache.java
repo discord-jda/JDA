@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,44 +9,30 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 package net.dv8tion.jda.core.handle;
 
-import net.dv8tion.jda.core.JDA;
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.core.utils.SimpleLog;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class EventCache
 {
     public static final SimpleLog LOG = SimpleLog.getLog("EventCache");
-    private static HashMap<JDA, EventCache> caches = new HashMap<>();
-    private HashMap<Type, HashMap<String, List<Runnable>>> eventCache = new HashMap<>();
+    private final Map<Type, TLongObjectMap<List<Runnable>>> eventCache = new HashMap<>();
 
-    public static EventCache get(JDA jda)
+    public void cache(Type type, long triggerId, Runnable handler)
     {
-        EventCache cache = caches.get(jda);
-        if (cache == null)
-        {
-            cache = new EventCache();
-            caches.put(jda, cache);
-        }
-        return cache;
-    }
-
-    public void cache(Type type, String triggerId, Runnable handler)
-    {
-        HashMap<String, List<Runnable>> triggerCache = eventCache.get(type);
-        if (triggerCache == null)
-        {
-            triggerCache = new HashMap<>();
-            eventCache.put(type, triggerCache);
-        }
+        TLongObjectMap<List<Runnable>> triggerCache =
+                eventCache.computeIfAbsent(type, k -> new TLongObjectHashMap<>());
 
         List<Runnable> items = triggerCache.get(triggerId);
         if (items == null)
@@ -58,7 +44,7 @@ public class EventCache
         items.add(handler);
     }
 
-    public void playbackCache(Type type, String triggerId)
+    public void playbackCache(Type type, long triggerId)
     {
         List<Runnable> items;
         try
@@ -85,15 +71,10 @@ public class EventCache
 
     public int size()
     {
-        int count = 0;
-        for (HashMap<String, List<Runnable>> typeMap : eventCache.values())
-        {
-            for (List<Runnable> eventList : typeMap.values())
-            {
-                count += eventList.size();
-            }
-        }
-        return count;
+        return (int) eventCache.values().stream()
+                .mapToLong(typeMap ->
+                    typeMap.valueCollection().stream().mapToLong(List::size).sum())
+                .sum();
     }
 
     public void clear()

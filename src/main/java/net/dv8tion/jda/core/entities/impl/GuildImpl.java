@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,17 +9,21 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 
 package net.dv8tion.jda.core.entities.impl;
 
+import gnu.trove.map.TLongObjectMap;
+import net.dv8tion.jda.client.requests.restaction.pagination.MentionPaginationAction;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.GuildController;
@@ -32,6 +36,9 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.util.Args;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
@@ -41,20 +48,20 @@ import java.util.stream.Collectors;
 
 public class GuildImpl implements Guild
 {
-    private final String id;
+    private final long id;
     private final JDAImpl api;
-    private final HashMap<String, TextChannel> textChannels = new HashMap<>();
-    private final HashMap<String, VoiceChannel> voiceChannels = new HashMap<>();
-    private final HashMap<String, Member> members = new HashMap<>();
-    private final HashMap<String, Role> roles = new HashMap<>();
-    private final HashMap<String, Emote> emotes = new HashMap<>();
+    private final TLongObjectMap<TextChannel> textChannels = MiscUtil.newLongMap();
+    private final TLongObjectMap<VoiceChannel> voiceChannels = MiscUtil.newLongMap();
+    private final TLongObjectMap<Member> members = MiscUtil.newLongMap();
+    private final TLongObjectMap<Role> roles = MiscUtil.newLongMap();
+    private final TLongObjectMap<Emote> emotes = MiscUtil.newLongMap();
 
-    private final HashMap<String, JSONObject> cachedPresences = new HashMap<>();
+    private final TLongObjectMap<JSONObject> cachedPresences = MiscUtil.newLongMap();
 
+    private final Object mngLock = new Object();
     private volatile GuildManager manager;
     private volatile GuildManagerUpdatable managerUpdatable;
     private volatile GuildController controller;
-    private Object mngLock = new Object();
 
     private Member owner;
     private String name;
@@ -71,7 +78,7 @@ public class GuildImpl implements Guild
     private boolean available;
     private boolean canSendVerification = false;
 
-    public GuildImpl(JDAImpl api, String id)
+    public GuildImpl(JDAImpl api, long id)
     {
         this.id = id;
         this.api = api;
@@ -114,6 +121,46 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    public RestAction<List<Webhook>> getWebhooks()
+    {
+        if (!getSelfMember().hasPermission(Permission.MANAGE_WEBHOOKS))
+            throw new PermissionException(Permission.MANAGE_WEBHOOKS);
+
+        Route.CompiledRoute route = Route.Guilds.GET_WEBHOOKS.compile(getId());
+
+        return new RestAction<List<Webhook>>(api, route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request<List<Webhook>> request)
+            {
+                if (!response.isOk())
+                {
+                    request.onFailure(response);
+                    return;
+                }
+
+                List<Webhook> webhooks = new LinkedList<>();
+                JSONArray array = response.getArray();
+                EntityBuilder builder = api.getEntityBuilder();
+
+                for (Object object : array)
+                {
+                    try
+                    {
+                        webhooks.add(builder.createWebhook((JSONObject) object));
+                    }
+                    catch (JSONException | NullPointerException e)
+                    {
+                        JDAImpl.LOG.log(e);
+                    }
+                }
+
+                request.onSuccess(webhooks);
+            }
+        };
+    }
+
+    @Override
     public Member getOwner()
     {
         return owner;
@@ -134,7 +181,7 @@ public class GuildImpl implements Guild
     @Override
     public boolean isMember(User user)
     {
-        return members.containsKey(user.getId());
+        return members.containsKey(user.getIdLong());
     }
 
     @Override
@@ -146,11 +193,17 @@ public class GuildImpl implements Guild
     @Override
     public Member getMember(User user)
     {
-        return getMemberById(user.getId());
+        return getMemberById(user.getIdLong());
     }
 
     @Override
     public Member getMemberById(String userId)
+    {
+        return members.get(MiscUtil.parseSnowflake(userId));
+    }
+
+    @Override
+    public Member getMemberById(long userId)
     {
         return members.get(userId);
     }
@@ -158,13 +211,14 @@ public class GuildImpl implements Guild
     @Override
     public List<Member> getMembers()
     {
-        return Collections.unmodifiableList(new ArrayList<>(members.values()));
+        return Collections.unmodifiableList(new ArrayList<>(members.valueCollection()));
     }
 
     @Override
     public List<Member> getMembersByName(String name, boolean ignoreCase)
     {
-        return Collections.unmodifiableList(members.values().stream()
+        Args.notNull(name, "name");
+        return Collections.unmodifiableList(members.valueCollection().stream()
                 .filter(m ->
                     ignoreCase
                     ? name.equalsIgnoreCase(m.getUser().getName())
@@ -175,7 +229,8 @@ public class GuildImpl implements Guild
     @Override
     public List<Member> getMembersByNickname(String nickname, boolean ignoreCase)
     {
-        return Collections.unmodifiableList(members.values().stream()
+        Args.notNull(nickname, "nickname");
+        return Collections.unmodifiableList(members.valueCollection().stream()
                 .filter(m ->
                     ignoreCase
                     ? nickname.equalsIgnoreCase(m.getNickname())
@@ -186,7 +241,8 @@ public class GuildImpl implements Guild
     @Override
     public List<Member> getMembersByEffectiveName(String name, boolean ignoreCase)
     {
-        return Collections.unmodifiableList(members.values().stream()
+        Args.notNull(name, "name");
+        return Collections.unmodifiableList(members.valueCollection().stream()
                 .filter(m ->
                     ignoreCase
                     ? name.equalsIgnoreCase(m.getEffectiveName())
@@ -197,13 +253,22 @@ public class GuildImpl implements Guild
     @Override
     public List<Member> getMembersWithRoles(Role... roles)
     {
+        Args.notNull(roles, "roles");
         return getMembersWithRoles(Arrays.asList(roles));
     }
 
     @Override
     public List<Member> getMembersWithRoles(Collection<Role> roles)
     {
-        return Collections.unmodifiableList(members.values().stream()
+        Args.notNull(roles, "roles");
+        for (Role r : roles)
+        {
+            Args.notNull(r, "Role provided in collection");
+            if (!r.getGuild().equals(this))
+                throw new IllegalArgumentException("Role provided was from a different Guild! Role: " + r);
+        }
+
+        return Collections.unmodifiableList(members.valueCollection().stream()
                         .filter(m -> m.getRoles().containsAll(roles))
                         .collect(Collectors.toList()));
     }
@@ -211,13 +276,20 @@ public class GuildImpl implements Guild
     @Override
     public TextChannel getTextChannelById(String id)
     {
+        return textChannels.get(MiscUtil.parseSnowflake(id));
+    }
+
+    @Override
+    public TextChannel getTextChannelById(long id)
+    {
         return textChannels.get(id);
     }
 
     @Override
     public List<TextChannel> getTextChannelsByName(String name, boolean ignoreCase)
     {
-        return Collections.unmodifiableList(textChannels.values().stream()
+        Args.notNull(name, "name");
+        return Collections.unmodifiableList(textChannels.valueCollection().stream()
                 .filter(tc ->
                     ignoreCase
                     ? name.equalsIgnoreCase(tc.getName())
@@ -228,13 +300,19 @@ public class GuildImpl implements Guild
     @Override
     public List<TextChannel> getTextChannels()
     {
-        ArrayList<TextChannel> channels = new ArrayList<>(textChannels.values());
-        Collections.sort(channels, (c1, c2) -> c2.compareTo(c1));
+        ArrayList<TextChannel> channels = new ArrayList<>(textChannels.valueCollection());
+        channels.sort(Comparator.reverseOrder());
         return Collections.unmodifiableList(channels);
     }
 
     @Override
     public VoiceChannel getVoiceChannelById(String id)
+    {
+        return voiceChannels.get(MiscUtil.parseSnowflake(id));
+    }
+
+    @Override
+    public VoiceChannel getVoiceChannelById(long id)
     {
         return voiceChannels.get(id);
     }
@@ -242,7 +320,8 @@ public class GuildImpl implements Guild
     @Override
     public List<VoiceChannel> getVoiceChannelsByName(String name, boolean ignoreCase)
     {
-        return Collections.unmodifiableList(voiceChannels.values().stream()
+        Args.notNull(name, "name");
+        return Collections.unmodifiableList(voiceChannels.valueCollection().stream()
             .filter(vc ->
                     ignoreCase
                     ? name.equalsIgnoreCase(vc.getName())
@@ -253,13 +332,19 @@ public class GuildImpl implements Guild
     @Override
     public List<VoiceChannel> getVoiceChannels()
     {
-        List<VoiceChannel> channels = new ArrayList<>(voiceChannels.values());
-        Collections.sort(channels, (v1, v2) -> v2.compareTo(v1));
+        List<VoiceChannel> channels = new ArrayList<>(voiceChannels.valueCollection());
+        channels.sort(Comparator.reverseOrder());
         return Collections.unmodifiableList(channels);
     }
 
     @Override
     public Role getRoleById(String id)
+    {
+        return roles.get(MiscUtil.parseSnowflake(id));
+    }
+
+    @Override
+    public Role getRoleById(long id)
     {
         return roles.get(id);
     }
@@ -267,15 +352,16 @@ public class GuildImpl implements Guild
     @Override
     public List<Role> getRoles()
     {
-        List<Role> list = new ArrayList<>(roles.values());
-        Collections.sort(list, (r1, r2) -> r2.compareTo(r1));
+        List<Role> list = new ArrayList<>(roles.valueCollection());
+        list.sort(Comparator.reverseOrder());
         return Collections.unmodifiableList(list);
     }
 
     @Override
     public List<Role> getRolesByName(String name, boolean ignoreCase)
     {
-        return Collections.unmodifiableList(roles.values().stream()
+        Args.notNull(name, "name");
+        return Collections.unmodifiableList(roles.valueCollection().stream()
                 .filter(r ->
                         ignoreCase
                         ? name.equalsIgnoreCase(r.getName())
@@ -286,19 +372,26 @@ public class GuildImpl implements Guild
     @Override
     public Emote getEmoteById(String id)
     {
+        return emotes.get(MiscUtil.parseSnowflake(id));
+    }
+
+    @Override
+    public Emote getEmoteById(long id)
+    {
         return emotes.get(id);
     }
 
     @Override
     public List<Emote> getEmotes()
     {
-        return Collections.unmodifiableList(new LinkedList<>(emotes.values()));
+        return Collections.unmodifiableList(new LinkedList<>(emotes.valueCollection()));
     }
 
     @Override
     public List<Emote> getEmotesByName(String name, boolean ignoreCase)
     {
-        return Collections.unmodifiableList(emotes.values().parallelStream()
+        Args.notNull(name, "name");
+        return Collections.unmodifiableList(emotes.valueCollection().parallelStream()
                 .filter(e ->
                         ignoreCase
                         ? StringUtils.equalsIgnoreCase(e.getName(), name)
@@ -367,16 +460,24 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    public MentionPaginationAction getRecentMentions()
+    {
+        if (getJDA().getAccountType() != AccountType.CLIENT)
+            throw new AccountTypeException(AccountType.CLIENT);
+        return getJDA().asClient().getRecentMentions(this);
+    }
+
+    @Override
     public RestAction<Void> leave()
     {
         if (owner.equals(getSelfMember()))
             throw new IllegalStateException("Cannot leave a guild that you are the owner of! Transfer guild ownership first!");
 
-        Route.CompiledRoute route = Route.Self.LEAVE_GUILD.compile(id);
+        Route.CompiledRoute route = Route.Self.LEAVE_GUILD.compile(getId());
         return new RestAction<Void>(api, route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
@@ -389,14 +490,30 @@ public class GuildImpl implements Guild
     @Override
     public RestAction<Void> delete()
     {
+        if (api.getSelfUser().isMfaEnabled())
+            throw new IllegalStateException("Cannot delete a guild without providing MFA code. Use Guild#delete(String)");
+
+        return delete(null);
+    }
+
+    @Override
+    public RestAction<Void> delete(String mfaCode)
+    {
         if (!owner.equals(getSelfMember()))
             throw new PermissionException("Cannot delete a guild that you do not own!");
 
-        Route.CompiledRoute route = Route.Guilds.DELETE_GUILD.compile(id);
-        return new RestAction<Void>(api, route, null)
+        JSONObject mfaBody = null;
+        if (api.getSelfUser().isMfaEnabled())
+        {
+            Args.notEmpty(mfaCode, "Provided MultiFactor Auth code");
+            mfaBody = new JSONObject().put("code", mfaCode);
+        }
+
+        Route.CompiledRoute route = Route.Guilds.DELETE_GUILD.compile(getId());
+        return new RestAction<Void>(api, route, mfaBody)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
@@ -412,7 +529,7 @@ public class GuildImpl implements Guild
         if (!api.isAudioEnabled())
             throw new IllegalStateException("Audio is disabled. Cannot retrieve an AudioManager while audio is disabled.");
 
-        HashMap<String, AudioManager> audioManagers = ((JDAImpl) api).getAudioManagerMap();
+        TLongObjectMap<AudioManager> audioManagers = api.getAudioManagerMap();
         AudioManager mng = audioManagers.get(id);
         if (mng == null)
         {
@@ -430,16 +547,16 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public JDA getJDA()
+    public JDAImpl getJDA()
     {
         return api;
     }
 
     @Override
-    public List<VoiceState> getVoiceStates()
+    public List<GuildVoiceState> getVoiceStates()
     {
         return Collections.unmodifiableList(
-                members.values().stream().<VoiceState>map(Member::getVoiceState).collect(Collectors.toList()));
+                members.valueCollection().stream().map(Member::getVoiceState).collect(Collectors.toList()));
     }
 
     @Override
@@ -492,7 +609,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public String getId()
+    public long getIdLong()
     {
         return id;
     }
@@ -580,32 +697,32 @@ public class GuildImpl implements Guild
 
     // -- Map getters --
 
-    public HashMap<String, TextChannel> getTextChannelsMap()
+    public TLongObjectMap<TextChannel> getTextChannelsMap()
     {
         return textChannels;
     }
 
-    public HashMap<String, VoiceChannel> getVoiceChannelMap()
+    public TLongObjectMap<VoiceChannel> getVoiceChannelMap()
     {
         return voiceChannels;
     }
 
-    public HashMap<String, Member> getMembersMap()
+    public TLongObjectMap<Member> getMembersMap()
     {
         return members;
     }
 
-    public HashMap<String, Role> getRolesMap()
+    public TLongObjectMap<Role> getRolesMap()
     {
         return roles;
     }
 
-    public HashMap<String, JSONObject> getCachedPresenceMap()
+    public TLongObjectMap<JSONObject> getCachedPresenceMap()
     {
         return cachedPresences;
     }
 
-    public HashMap<String, Emote> getEmoteMap()
+    public TLongObjectMap<Emote> getEmoteMap()
     {
         return emotes;
     }
@@ -616,21 +733,54 @@ public class GuildImpl implements Guild
     @Override
     public boolean equals(Object o)
     {
-        if (!(o instanceof Guild))
+        if (!(o instanceof GuildImpl))
             return false;
-        Guild oGuild = (Guild) o;
-        return this == oGuild || this.getId().equals(oGuild.getId());
+        GuildImpl oGuild = (GuildImpl) o;
+        return this == oGuild || this.id == oGuild.id;
     }
 
     @Override
     public int hashCode()
     {
-        return getId().hashCode();
+        return Long.hashCode(id);
     }
 
     @Override
     public String toString()
     {
-        return "G:" + getName() + '(' + getId() + ')';
+        return "G:" + getName() + '(' + id + ')';
     }
+
+    @Override
+    public RestAction<List<Invite>> getInvites()
+    {
+        if (!this.getSelfMember().hasPermission(Permission.MANAGE_SERVER))
+            throw new PermissionException(Permission.MANAGE_SERVER);
+
+        final Route.CompiledRoute route = Route.Invites.GET_GUILD_INVITES.compile(getId());
+
+        return new RestAction<List<Invite>>(api, route, null)
+        {
+            @Override
+            protected void handleResponse(final Response response, final Request<List<Invite>> request)
+            {
+                if (response.isOk())
+                {
+                    EntityBuilder entityBuilder = this.api.getEntityBuilder();
+                    JSONArray array = response.getArray();
+                    List<Invite> invites = new ArrayList<>(array.length());
+                    for (int i = 0; i < array.length(); i++)
+                    {
+                        invites.add(entityBuilder.createInvite(array.getJSONObject(i)));
+                    }
+                    request.onSuccess(invites);
+                }
+                else
+                {
+                    request.onFailure(response);
+                }
+            }
+        };
+    }
+
 }

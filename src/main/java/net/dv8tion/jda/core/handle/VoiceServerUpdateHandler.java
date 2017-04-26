@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,15 +36,13 @@ public class VoiceServerUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
-        String guildId = content.getString("guild_id");
+        final long guildId = content.getLong("guild_id");
         api.getClient().getQueuedAudioConnectionMap().remove(guildId);
 
-        if (GuildLock.get(api).isLocked(guildId))
-        {
+        if (api.getGuildLock().isLocked(guildId))
             return guildId;
-        }
 
         if (content.isNull("endpoint"))
         {
@@ -56,7 +54,7 @@ public class VoiceServerUpdateHandler extends SocketHandler
 
         String endpoint = content.getString("endpoint");
         String token = content.getString("token");
-        Guild guild = api.getGuildMap().get(content.getString("guild_id"));
+        Guild guild = api.getGuildMap().get(guildId);
         if (guild == null)
             throw new IllegalArgumentException("Attempted to start audio connection with Guild that doesn't exist! JSON: " + content);
         String sessionId = guild.getSelfMember().getVoiceState().getSessionId();
@@ -67,23 +65,26 @@ public class VoiceServerUpdateHandler extends SocketHandler
         endpoint = endpoint.replace(":80", "");
 
         AudioManagerImpl audioManager = (AudioManagerImpl) guild.getAudioManager();
-        if (audioManager.isConnected())
-            audioManager.prepareForRegionChange();
-        if (!audioManager.isAttemptingToConnect())
+        synchronized (audioManager.CONNECTION_LOCK) //Synchronized to prevent attempts to close while setting up initial objects.
         {
-            WebSocketClient.LOG.debug("Received a VOICE_SERVER_UPDATE but JDA is not currently connected nor attempted to connect " +
-                    "to a VoiceChannel. Assuming that this is caused by another client running on this account. Ignoring the event.");
+            if (audioManager.isConnected())
+                audioManager.prepareForRegionChange();
+            if (!audioManager.isAttemptingToConnect())
+            {
+                WebSocketClient.LOG.debug("Received a VOICE_SERVER_UPDATE but JDA is not currently connected nor attempted to connect " +
+                        "to a VoiceChannel. Assuming that this is caused by another client running on this account. Ignoring the event.");
+                return null;
+            }
+
+            try
+            {
+                AudioWebSocket socket = new AudioWebSocket(audioManager.getListenerProxy(), endpoint, api, guild, sessionId, token, audioManager.isAutoReconnect());
+                AudioConnection connection = new AudioConnection(socket, audioManager.getQueuedAudioConnection());
+                audioManager.setAudioConnection(connection);
+            }
+            catch (WebSocketException | IOException ignored) {} // handled in AudioWebSocket
+
             return null;
         }
-
-        try
-        {
-            AudioWebSocket socket = new AudioWebSocket(audioManager.getListenerProxy(), endpoint, api, guild, sessionId, token, audioManager.isAutoReconnect());
-            AudioConnection connection = new AudioConnection(socket, audioManager.getQueuedAudioConnection());
-            audioManager.setAudioConnection(connection);
-        }
-        catch (WebSocketException | IOException ignored) {} // handled in AudioWebSocket
-
-        return null;
     }
 }

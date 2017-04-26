@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,31 +16,38 @@
 
 package net.dv8tion.jda.core.events.message.react;
 
+import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.events.message.GenericMessageEvent;
 
-public class MessageReactionRemoveAllEvent extends Event
+public class MessageReactionRemoveAllEvent extends GenericMessageEvent
 {
 
-    protected String messageId;
-    protected MessageChannel channel;
-
-    public MessageReactionRemoveAllEvent(JDA api, long responseNumber, String messageId, MessageChannel channel)
+    public MessageReactionRemoveAllEvent(JDA api, long responseNumber, long messageId, MessageChannel channel)
     {
-        super(api, responseNumber);
-        this.messageId = messageId;
-        this.channel = channel;
+        super(api, responseNumber, messageId, channel);
     }
 
-    public String getMessageId()
+    public Guild getGuild()
     {
-        return messageId;
+        TextChannel channel = getTextChannel();
+        return channel != null ? channel.getGuild() : null;
     }
 
-    public MessageChannel getChannel()
+    public TextChannel getTextChannel()
     {
-        return channel;
+        return isFromType(ChannelType.TEXT) ? (TextChannel) getChannel() : null;
+    }
+
+    public PrivateChannel getPrivateChannel()
+    {
+        return isFromType(ChannelType.PRIVATE) ? (PrivateChannel) getChannel() : null;
+    }
+
+    public Group getGroup()
+    {
+        return isFromType(ChannelType.GROUP) ? (Group) getChannel() : null;
     }
 
 }

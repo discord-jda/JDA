@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,26 +9,27 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 package net.dv8tion.jda.core.events;
 
 import com.neovisionaries.ws.client.WebSocketFrame;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.requests.CloseCode;
 
 import java.time.OffsetDateTime;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
- * <b><u>DisconnectEvent</u></b><br>
- * Fired if our connection to the WebSocket was disrupted.<br>
- * <br>
- * Use: Reconnect manually or stop background threads that need fired events to function properly.
+ * Indicates that JDA has been disconnected from the remote server.
+ * <br>When this event is fired JDA will try to reconnect if possible
+ * unless {@link net.dv8tion.jda.core.JDABuilder#setAutoReconnect(boolean) JDABuilder.setAutoReconnect(Boolean)}
+ * has been provided {@code false}!
+ *
+ * <p>When reconnecting was successful either a {@link net.dv8tion.jda.core.events.ReconnectedEvent ReconnectEvent}
+ * or a {@link net.dv8tion.jda.core.events.ResumedEvent ResumedEvent} is fired
  */
 public class DisconnectEvent extends Event
 {
@@ -45,6 +46,34 @@ public class DisconnectEvent extends Event
         this.clientCloseFrame = clientCloseFrame;
         this.closedByServer = closedByServer;
         this.disconnectTime = disconnectTime;
+    }
+
+    /**
+     * Possibly-null {@link net.dv8tion.jda.core.requests.CloseCode CloseCode}
+     * representing the meaning for this DisconnectEvent
+     *
+     * <p><b>This is {@code null} if this disconnect did either not happen because the Service closed the session
+     * (see {@link #isClosedByServer()}) or if there is no mapped CloseCode enum constant for the service close code!</b>
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.core.requests.CloseCode CloseCode}
+     */
+    public CloseCode getCloseCode()
+    {
+        return serverCloseFrame != null ? CloseCode.from(serverCloseFrame.getCloseCode()) : null;
+    }
+
+    /**
+     * Contains all {@code cf-ray} headers that JDA received in this session.
+     * <br>These receive a new value whenever the WebSockedClient reconnects to the gateway.
+     *
+     * <p>This is useful to monitor cloudflare activity from the Discord Developer perspective.
+     * <br>Use this list to report connection issues.
+     *
+     * @return Immutable list of all cf-ray values for this session
+     */
+    public List<String> getCloudflareRays()
+    {
+        return api.getCloudflareRays();
     }
 
     public WebSocketFrame getServiceCloseFrame()

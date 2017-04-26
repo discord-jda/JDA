@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,9 +9,9 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 package net.dv8tion.jda.core.entities.impl;
 
@@ -21,15 +21,13 @@ import net.dv8tion.jda.core.entities.SelfUser;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.managers.AccountManager;
 import net.dv8tion.jda.core.managers.AccountManagerUpdatable;
-import net.dv8tion.jda.core.managers.RoleManager;
-import net.dv8tion.jda.core.managers.RoleManagerUpdatable;
 import net.dv8tion.jda.core.requests.RestAction;
 
 public class SelfUserImpl extends UserImpl implements SelfUser
 {
+    protected final Object mngLock = new Object();
     protected volatile AccountManager manager;
     protected volatile AccountManagerUpdatable managerUpdatable;
-    private Object mngLock = new Object();
 
     private boolean verified;
     private boolean mfaEnabled;
@@ -37,7 +35,7 @@ public class SelfUserImpl extends UserImpl implements SelfUser
     //Client only
     private String email;
 
-    public SelfUserImpl(String id, JDAImpl api)
+    public SelfUserImpl(long id, JDAImpl api)
     {
         super(id, api);
     }

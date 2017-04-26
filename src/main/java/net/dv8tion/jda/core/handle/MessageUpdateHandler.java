@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ public class MessageUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
         if (content.has("author"))
         {
@@ -76,12 +76,12 @@ public class MessageUpdateHandler extends SocketHandler
             return handleMessageEmbed(content);
     }
 
-    private String handleDefaultMessage(JSONObject content)
+    private Long handleDefaultMessage(JSONObject content)
     {
         Message message;
         try
         {
-            message = EntityBuilder.get(api).createMessage(content);
+            message = api.getEntityBuilder().createMessage(content);
         }
         catch (IllegalArgumentException e)
         {
@@ -89,19 +89,15 @@ public class MessageUpdateHandler extends SocketHandler
             {
                 case EntityBuilder.MISSING_CHANNEL:
                 {
-                    EventCache.get(api).cache(EventCache.Type.CHANNEL, content.getString("channel_id"), () ->
-                    {
-                        handle(responseNumber, allContent);
-                    });
+                    final long channelId = content.getLong("channel_id");
+                    api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
                     EventCache.LOG.debug("Received a message update for a channel that JDA does not currently have cached");
                     return null;
                 }
                 case EntityBuilder.MISSING_USER:
                 {
-                    EventCache.get(api).cache(EventCache.Type.USER, content.getJSONObject("author").getString("id"), () ->
-                    {
-                        handle(responseNumber, allContent);
-                    });
+                    final long authorId = content.getJSONObject("author").getLong("id");
+                    api.getEventCache().cache(EventCache.Type.USER, authorId, () -> handle(responseNumber, allContent));
                     EventCache.LOG.debug("Received a message update for a user that JDA does not currently have cached");
                     return null;
                 }
@@ -115,9 +111,9 @@ public class MessageUpdateHandler extends SocketHandler
             case TEXT:
             {
                 TextChannel channel = message.getTextChannel();
-                if (GuildLock.get(api).isLocked(channel.getGuild().getId()))
+                if (api.getGuildLock().isLocked(channel.getGuild().getIdLong()))
                 {
-                    return channel.getGuild().getId();
+                    return channel.getGuild().getIdLong();
                 }
                 api.getEventManager().handle(
                         new GuildMessageUpdateEvent(
@@ -154,11 +150,11 @@ public class MessageUpdateHandler extends SocketHandler
         return null;
     }
 
-    private String handleMessageEmbed(JSONObject content)
+    private Long handleMessageEmbed(JSONObject content)
     {
-        EntityBuilder builder = EntityBuilder.get(api);
-        String messageId = content.getString("id");
-        String channelId = content.getString("channel_id");
+        EntityBuilder builder = api.getEntityBuilder();;
+        final long messageId = content.getLong("id");
+        final long channelId = content.getLong("channel_id");
         LinkedList<MessageEmbed> embeds = new LinkedList<>();
         MessageChannel channel = api.getTextChannelMap().get(channelId);
         if (channel == null)
@@ -169,7 +165,7 @@ public class MessageUpdateHandler extends SocketHandler
             channel = api.asClient().getGroupById(channelId);
         if (channel == null)
         {
-            EventCache.get(api).cache(EventCache.Type.CHANNEL, channelId, () ->
+            api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () ->
             {
                 handle(responseNumber, allContent);
             });
@@ -186,9 +182,9 @@ public class MessageUpdateHandler extends SocketHandler
         if (channel instanceof TextChannel)
         {
             TextChannel tChannel = (TextChannel) channel;
-            if (GuildLock.get(api).isLocked(tChannel.getGuild().getId()))
+            if (api.getGuildLock().isLocked(tChannel.getGuild().getIdLong()))
             {
-                return tChannel.getGuild().getId();
+                return tChannel.getGuild().getIdLong();
             }
             api.getEventManager().handle(
                     new GuildMessageEmbedEvent(

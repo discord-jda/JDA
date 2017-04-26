@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,9 +9,9 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 
 package net.dv8tion.jda.core.handle;
@@ -44,7 +44,7 @@ public class ChannelUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
         ChannelType type = ChannelType.fromId(content.getInt("type"));
         if (type == ChannelType.GROUP)
@@ -58,6 +58,7 @@ public class ChannelUpdateHandler extends SocketHandler
         List<Role> containedRoles = new ArrayList<>();
         List<Member> containedMembers = new ArrayList<>();
 
+        final long channelId = content.getLong("id");
         String name = content.getString("name");
         int position = content.getInt("position");
         JSONArray permOverwrites = content.getJSONArray("permission_overwrites");
@@ -66,14 +67,11 @@ public class ChannelUpdateHandler extends SocketHandler
             case TEXT:
             {
                 String topic = content.isNull("topic") ? null : content.getString("topic");
-                TextChannelImpl channel = (TextChannelImpl) api.getTextChannelMap().get(content.getString("id"));
+                TextChannelImpl channel = (TextChannelImpl) api.getTextChannelMap().get(channelId);
                 if (channel == null)
                 {
-                    EventCache.get(api).cache(EventCache.Type.CHANNEL, content.getString("id"), () ->
-                    {
-                        handle(responseNumber, allContent);
-                    });
-                    EventCache.LOG.debug("CHANNEL_UPDATE attemped to update a TextChannel that does not exist. JSON: " + content);
+                    api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a TextChannel that does not exist. JSON: " + content);
                     return null;
                 }
 
@@ -142,16 +140,13 @@ public class ChannelUpdateHandler extends SocketHandler
             }
             case VOICE:
             {
-                VoiceChannelImpl channel = (VoiceChannelImpl) api.getVoiceChannelMap().get(content.getString("id"));
+                VoiceChannelImpl channel = (VoiceChannelImpl) api.getVoiceChannelMap().get(channelId);
                 int userLimit = content.getInt("user_limit");
                 int bitrate = content.getInt("bitrate");
                 if (channel == null)
                 {
-                    EventCache.get(api).cache(EventCache.Type.CHANNEL, content.getString("id"), () ->
-                    {
-                        handle(responseNumber, allContent);
-                    });
-                    EventCache.LOG.debug("CHANNEL_UPDATE attemped to update a VoiceChannel that does not exist. JSON: " + content);
+                    api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a VoiceChannel that does not exist. JSON: " + content);
                     return null;
                 }
                 //If any properties changed, update the values and fire the proper events.
@@ -235,7 +230,7 @@ public class ChannelUpdateHandler extends SocketHandler
     private void handlePermissionOverride(JSONObject override, Channel channel, JSONObject content,
                                           List<Role> changedRoles, List<Role> containedRoles,List<Member> changedMembers, List<Member> containedMembers)
     {
-        String id = override.getString("id");
+        final long id = content.getLong("id");
         int allow = override.getInt("allow");
         int deny = override.getInt("deny");
 
@@ -246,7 +241,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 Role role = ((GuildImpl) channel.getGuild()).getRolesMap().get(id);
                 if (role == null)
                 {
-                    EventCache.get(api).cache(EventCache.Type.ROLE, id, () ->
+                    api.getEventCache().cache(EventCache.Type.ROLE, id, () ->
                     {
                         handlePermissionOverride(override, channel, content, changedRoles, containedRoles, changedMembers, containedMembers);
                     });
@@ -262,7 +257,7 @@ public class ChannelUpdateHandler extends SocketHandler
 
                 if (permOverride == null)    //Created
                 {
-                    permOverride = EntityBuilder.get(api).createPermissionOverride(override, channel);
+                    api.getEntityBuilder().createPermissionOverride(override, channel);
                     changedRoles.add(role);
                 }
                 else if (permOverride.getAllowedRaw() != allow || permOverride.getDeniedRaw() != deny) //Updated
@@ -276,10 +271,10 @@ public class ChannelUpdateHandler extends SocketHandler
             }
             case "member":
             {
-                Member member = channel.getGuild().getMemberById(override.getString("id"));
+                Member member = channel.getGuild().getMemberById(override.getLong("id"));
                 if (member == null)
                 {
-                    EventCache.get(api).cache(EventCache.Type.USER, id, () ->
+                    api.getEventCache().cache(EventCache.Type.USER, id, () ->
                     {
                         handlePermissionOverride(override, channel, content, changedRoles, containedRoles, changedMembers, containedMembers);
                     });
@@ -295,7 +290,7 @@ public class ChannelUpdateHandler extends SocketHandler
 
                 if (permOverride == null)    //Created
                 {
-                    permOverride = EntityBuilder.get(api).createPermissionOverride(override, channel);
+                    api.getEntityBuilder().createPermissionOverride(override, channel);
                     changedMembers.add(member);
                 }
                 else if (permOverride.getAllowedRaw() != allow || permOverride.getDeniedRaw() != deny)  //Updated
@@ -314,19 +309,16 @@ public class ChannelUpdateHandler extends SocketHandler
 
     private void handleGroup(JSONObject content)
     {
-        String groupId = content.getString("id");
+        final long groupId = content.getLong("id");
+        final long ownerId = content.getLong("owner_id");
         String name = !content.isNull("name") ? content.getString("name") : null;
         String iconId = !content.isNull("icon") ? content.getString("icon") : null;
-        String ownerId = content.getString("owner_id");
 
         GroupImpl group = (GroupImpl) api.asClient().getGroupById(groupId);
         if (group == null)
         {
-            EventCache.get(api).cache(EventCache.Type.CHANNEL, groupId, () ->
-            {
-                handle(responseNumber, allContent);
-            });
-            EventCache.LOG.debug("Recieved CHANNEL_UPDATE for a group that was not yet cached. JSON: " + content);
+            api.getEventCache().cache(EventCache.Type.CHANNEL, groupId, () -> handle(responseNumber, allContent));
+            EventCache.LOG.debug("Received CHANNEL_UPDATE for a group that was not yet cached. JSON: " + content);
             return;
         }
 

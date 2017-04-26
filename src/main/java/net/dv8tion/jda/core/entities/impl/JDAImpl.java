@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,14 +9,16 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 
 package net.dv8tion.jda.core.entities.impl;
 
 import com.mashape.unirest.http.Unirest;
+import com.neovisionaries.ws.client.WebSocketFactory;
+import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.bot.JDABot;
 import net.dv8tion.jda.bot.entities.impl.JDABotImpl;
 import net.dv8tion.jda.client.JDAClient;
@@ -27,15 +29,17 @@ import net.dv8tion.jda.core.audio.AudioWebSocket;
 import net.dv8tion.jda.core.audio.factory.DefaultSendFactory;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.events.StatusChangeEvent;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
+import net.dv8tion.jda.core.handle.EventCache;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.hooks.InterfacedEventManager;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.*;
-import net.dv8tion.jda.core.requests.ratelimit.IBucket;
+import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import org.apache.http.HttpHost;
 import org.apache.http.util.Args;
@@ -43,63 +47,76 @@ import org.json.JSONObject;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadFactory;
 import java.util.stream.Collectors;
 
 public class JDAImpl implements JDA
 {
     public static final SimpleLog LOG = SimpleLog.getLog("JDA");
 
-    protected final HashMap<String, User> users = new HashMap<>(200);
-    protected final HashMap<String, Guild> guilds = new HashMap<>(10);
-    protected final HashMap<String, TextChannel> textChannels = new HashMap<>();
-    protected final HashMap<String, VoiceChannel> voiceChannels = new HashMap<>();
-    protected final HashMap<String, PrivateChannel> privateChannels = new HashMap<>();
+    public final ScheduledExecutorService pool;
 
-    protected final HashMap<String, User> fakeUsers = new HashMap<>();
-    protected final HashMap<String, PrivateChannel> fakePrivateChannels = new HashMap<>();
+    protected final TLongObjectMap<User> users = MiscUtil.newLongMap();
+    protected final TLongObjectMap<Guild> guilds = MiscUtil.newLongMap();
+    protected final TLongObjectMap<TextChannel> textChannels = MiscUtil.newLongMap();
+    protected final TLongObjectMap<VoiceChannel> voiceChannels = MiscUtil.newLongMap();
+    protected final TLongObjectMap<PrivateChannel> privateChannels = MiscUtil.newLongMap();
 
-    protected final HashMap<String, AudioManager> audioManagers = new HashMap<>();
+    protected final TLongObjectMap<User> fakeUsers = MiscUtil.newLongMap();
+    protected final TLongObjectMap<PrivateChannel> fakePrivateChannels = MiscUtil.newLongMap();
 
+    protected final TLongObjectMap<AudioManager> audioManagers = MiscUtil.newLongMap();
+
+    protected final HttpHost proxy;
+    protected final WebSocketFactory wsFactory;
     protected final AccountType accountType;
     protected final PresenceImpl presence;
     protected final JDAClient jdaClient;
     protected final JDABot jdaBot;
+    protected final int maxReconnectDelay;
+    protected final Thread shutdownHook;
+    protected final EntityBuilder entityBuilder = new EntityBuilder(this);
+    protected final EventCache eventCache = new EventCache();
+    protected final GuildLock guildLock = new GuildLock(this);
+    protected final Object akapLock = new Object();
 
-    protected HttpHost proxy;
     protected WebSocketClient client;
     protected Requester requester;
     protected IEventManager eventManager = new InterfacedEventManager();
     protected IAudioSendFactory audioSendFactory = new DefaultSendFactory();
+    protected ScheduledThreadPoolExecutor audioKeepAlivePool;
     protected Status status = Status.INITIALIZING;
     protected SelfUser selfUser;
     protected ShardInfo shardInfo;
     protected String token = null;
     protected boolean audioEnabled;
-    protected boolean useShutdownHook;
     protected boolean bulkDeleteSplittingEnabled;
     protected boolean autoReconnect;
     protected long responseTotal;
+    protected long ping = -1;
 
-    public JDAImpl(AccountType accountType, HttpHost proxy, boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled)
+    public JDAImpl(AccountType accountType, HttpHost proxy, WebSocketFactory wsFactory,
+                   boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled,
+                   int corePoolSize, int maxReconnectDelay)
     {
         this.presence = new PresenceImpl(this);
         this.accountType = accountType;
         this.requester = new Requester(this);
         this.proxy = proxy;
+        this.wsFactory = wsFactory;
         this.autoReconnect = autoReconnect;
         this.audioEnabled = audioEnabled;
-        this.useShutdownHook = useShutdownHook;
+        this.shutdownHook = useShutdownHook ? new Thread(() -> JDAImpl.this.shutdown(true), "JDA Shutdown Hook") : null;
         this.bulkDeleteSplittingEnabled = bulkDeleteSplittingEnabled;
+        this.pool = Executors.newScheduledThreadPool(corePoolSize, new JDAThreadFactory());
+        this.maxReconnectDelay = maxReconnectDelay;
 
         this.jdaClient = accountType == AccountType.CLIENT ? new JDAClientImpl(this) : null;
         this.jdaBot = accountType == AccountType.BOT ? new JDABotImpl(this) : null;
-
-        if (audioEnabled)
-            ;   //TODO: setup audio system
     }
 
     public void login(String token, ShardInfo shardInfo) throws LoginException, RateLimitedException
@@ -115,16 +132,9 @@ public class JDAImpl implements JDA
 
         client = new WebSocketClient(this);
 
-        if (useShutdownHook)
+        if (shutdownHook != null)
         {
-            Runtime.getRuntime().addShutdownHook(new Thread("JDA Shutdown Hook")
-            {
-                @Override
-                public void run()
-                {
-                    JDAImpl.this.shutdownNow(true);
-                }
-            });
+            Runtime.getRuntime().addShutdownHook(shutdownHook);
         }
     }
 
@@ -135,8 +145,7 @@ public class JDAImpl implements JDA
             Status oldStatus = this.status;
             this.status = status;
 
-            //TODO: Fire status change event.
-//            eventManager.handle(new StatusChangeEvent(this, status, oldStatus));
+            eventManager.handle(new StatusChangeEvent(this, status, oldStatus));
         }
     }
 
@@ -153,7 +162,7 @@ public class JDAImpl implements JDA
         RestAction<JSONObject> login = new RestAction<JSONObject>(this, Route.Self.GET_SELF.compile(), null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<JSONObject> request)
             {
                 if (response.isOk())
                     request.onSuccess(response.getObject());
@@ -167,10 +176,10 @@ public class JDAImpl implements JDA
             }
         };
 
-        JSONObject userResponse = null;
+        JSONObject userResponse;
         try
         {
-            userResponse = login.block();
+            userResponse = login.complete(false);
         }
         catch (RuntimeException e)
         {
@@ -210,7 +219,7 @@ public class JDAImpl implements JDA
             try
             {
                 //Now that we have reversed the AccountTypes, attempt to get User info again.
-                userResponse = login.block();
+                userResponse = login.complete(false);
             }
             catch (RuntimeException e)
             {
@@ -292,21 +301,59 @@ public class JDAImpl implements JDA
     }
 
     @Override
+    public long getPing()
+    {
+        return ping;
+    }
+
+    @Override
+    public List<String> getCloudflareRays()
+    {
+        return Collections.unmodifiableList(new LinkedList<>(client.getCfRays()));
+    }
+
+    @Override
     public List<User> getUsers()
     {
-        return Collections.unmodifiableList(new ArrayList<>(users.values()));
+        return Collections.unmodifiableList(new ArrayList<>(users.valueCollection()));
     }
 
     @Override
     public User getUserById(String id)
     {
+        return users.get(MiscUtil.parseSnowflake(id));
+    }
+
+    @Override
+    public User getUserById(long id)
+    {
         return users.get(id);
+    }
+
+    @Override
+    public List<Guild> getMutualGuilds(User... users)
+    {
+        Args.notNull(users, "users");
+        return getMutualGuilds(Arrays.asList(users));
+    }
+
+    @Override
+    public List<Guild> getMutualGuilds(Collection<User> users)
+    {
+        Args.notNull(users, "users");
+        for(User u : users)
+        {
+            Args.notNull(u, "All users");
+        }
+        return Collections.unmodifiableList(getGuilds().stream()
+                .filter(guild -> users.stream().allMatch(guild::isMember))
+                .collect(Collectors.toList()));
     }
 
     @Override
     public List<User> getUsersByName(String name, boolean ignoreCase)
     {
-        return users.values().stream().filter(u ->
+        return users.valueCollection().stream().filter(u ->
             ignoreCase
             ? name.equalsIgnoreCase(u.getName())
             : name.equals(u.getName()))
@@ -316,19 +363,25 @@ public class JDAImpl implements JDA
     @Override
     public RestAction<User> retrieveUserById(String id)
     {
+        return retrieveUserById(MiscUtil.parseSnowflake(id));
+    }
+
+    @Override
+    public RestAction<User> retrieveUserById(long id)
+    {
         if (accountType != AccountType.BOT)
             throw new AccountTypeException(AccountType.BOT);
-        Args.notNull(id, "User id");
+
         // check cache
         User user = this.getUserById(id);
         if (user != null)
             return new RestAction.EmptyRestAction<>(user);
 
-        Route.CompiledRoute route = Route.Users.GET_USER.compile(id);
+        Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
         return new RestAction<User>(this, route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<User> request)
             {
                 if (!response.isOk())
                 {
@@ -336,7 +389,7 @@ public class JDAImpl implements JDA
                     return;
                 }
                 JSONObject user = response.getObject();
-                request.onSuccess(EntityBuilder.get(api).createFakeUser(user, false));
+                request.onSuccess(getEntityBuilder().createFakeUser(user, false));
             }
         };
     }
@@ -344,11 +397,17 @@ public class JDAImpl implements JDA
     @Override
     public List<Guild> getGuilds()
     {
-        return Collections.unmodifiableList(new ArrayList<>(guilds.values()));
+        return Collections.unmodifiableList(new ArrayList<>(guilds.valueCollection()));
     }
 
     @Override
     public Guild getGuildById(String id)
+    {
+        return guilds.get(MiscUtil.parseSnowflake(id));
+    }
+
+    @Override
+    public Guild getGuildById(long id)
     {
         return guilds.get(id);
     }
@@ -356,7 +415,7 @@ public class JDAImpl implements JDA
     @Override
     public List<Guild> getGuildsByName(String name, boolean ignoreCase)
     {
-        return guilds.values().stream().filter(g ->
+        return guilds.valueCollection().stream().filter(g ->
                 ignoreCase
                         ? name.equalsIgnoreCase(g.getName())
                         : name.equals(g.getName()))
@@ -364,13 +423,53 @@ public class JDAImpl implements JDA
     }
 
     @Override
+    public List<Role> getRoles()
+    {
+        return guilds.valueCollection().stream()
+                .flatMap(guild -> guild.getRoles().stream())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Role getRoleById(String id)
+    {
+        return getRoleById(MiscUtil.parseSnowflake(id));
+    }
+
+    @Override
+    public Role getRoleById(long id)
+    {
+        for (Guild guild : guilds.valueCollection())
+        {
+            Role r = guild.getRoleById(id);
+            if (r != null)
+                return r;
+        }
+        return null;
+    }
+
+    @Override
+    public List<Role> getRolesByName(String name, boolean ignoreCase)
+    {
+        return guilds.valueCollection().stream()
+                .flatMap(guild -> guild.getRolesByName(name, ignoreCase).stream())
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<TextChannel> getTextChannels()
     {
-        return Collections.unmodifiableList(new ArrayList<>(textChannels.values()));
+        return Collections.unmodifiableList(new ArrayList<>(textChannels.valueCollection()));
     }
 
     @Override
     public TextChannel getTextChannelById(String id)
+    {
+        return textChannels.get(MiscUtil.parseSnowflake(id));
+    }
+
+    @Override
+    public TextChannel getTextChannelById(long id)
     {
         return textChannels.get(id);
     }
@@ -378,7 +477,7 @@ public class JDAImpl implements JDA
     @Override
     public List<TextChannel> getTextChannelsByName(String name, boolean ignoreCase)
     {
-        return textChannels.values().stream().filter(tc ->
+        return textChannels.valueCollection().stream().filter(tc ->
                 ignoreCase
                         ? name.equalsIgnoreCase(tc.getName())
                         : name.equals(tc.getName()))
@@ -388,11 +487,17 @@ public class JDAImpl implements JDA
     @Override
     public List<VoiceChannel> getVoiceChannels()
     {
-        return Collections.unmodifiableList(new ArrayList<>(voiceChannels.values()));
+        return Collections.unmodifiableList(new ArrayList<>(voiceChannels.valueCollection()));
     }
 
     @Override
     public VoiceChannel getVoiceChannelById(String id)
+    {
+        return voiceChannels.get(MiscUtil.parseSnowflake(id));
+    }
+
+    @Override
+    public VoiceChannel getVoiceChannelById(long id)
     {
         return voiceChannels.get(id);
     }
@@ -400,7 +505,7 @@ public class JDAImpl implements JDA
     @Override
     public List<VoiceChannel> getVoiceChannelByName(String name, boolean ignoreCase)
     {
-        return voiceChannels.values().stream().filter(vc ->
+        return voiceChannels.valueCollection().stream().filter(vc ->
                 ignoreCase
                         ? name.equalsIgnoreCase(vc.getName())
                         : name.equals(vc.getName()))
@@ -410,11 +515,17 @@ public class JDAImpl implements JDA
     @Override
     public List<PrivateChannel> getPrivateChannels()
     {
-        return Collections.unmodifiableList(new ArrayList<>(privateChannels.values()));
+        return Collections.unmodifiableList(new ArrayList<>(privateChannels.valueCollection()));
     }
 
     @Override
     public PrivateChannel getPrivateChannelById(String id)
+    {
+        return privateChannels.get(MiscUtil.parseSnowflake(id));
+    }
+
+    @Override
+    public PrivateChannel getPrivateChannelById(long id)
     {
         return privateChannels.get(id);
     }
@@ -422,21 +533,27 @@ public class JDAImpl implements JDA
     @Override
     public List<Emote> getEmotes()
     {
-        List<Emote> emotes = new ArrayList<>();
-        getGuilds().parallelStream().forEach(g -> emotes.addAll(g.getEmotes()));
-        return Collections.unmodifiableList(emotes);
+        return guilds.valueCollection().stream()
+                .flatMap(guild -> guild.getEmotes().stream())
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<Emote> getEmotesByName(String name, boolean ignoreCase)
     {
-        List<Emote> emotes = new ArrayList<>();
-        getGuilds().parallelStream().forEach(g -> emotes.addAll(g.getEmotesByName(name, ignoreCase)));
-        return Collections.unmodifiableList(emotes);
+        return guilds.valueCollection().stream()
+                .flatMap(guild -> guild.getEmotesByName(name, ignoreCase).stream())
+                .collect(Collectors.toList());
     }
 
     @Override
     public Emote getEmoteById(String id)
+    {
+        return getEmoteById(MiscUtil.parseSnowflake(id));
+    }
+
+    @Override
+    public Emote getEmoteById(long id)
     {
         for (Guild guild : getGuilds())
         {
@@ -458,17 +575,29 @@ public class JDAImpl implements JDA
         shutdown(true);
     }
 
-    //TODO: offer a timeout version.
     @Override
     public void shutdown(boolean free)
     {
         setStatus(Status.SHUTTING_DOWN);
+        audioManagers.valueCollection().forEach(AudioManager::closeAudioConnection);
+        if (audioKeepAlivePool != null)
+            audioKeepAlivePool.shutdownNow();
+        getClient().setAutoReconnect(false);
+        getClient().close();
         getRequester().shutdown();
-        audioManagers.forEach((guildId, mng) -> mng.closeAudioConnection());
-        if (AudioWebSocket.KEEP_ALIVE_POOLS.containsKey(this))
-            AudioWebSocket.KEEP_ALIVE_POOLS.get(this).shutdownNow();
-        getClient().setAutoReconnect(false);
-        getClient().close();
+        pool.shutdown();
+
+        if (shutdownHook != null)
+        {
+            try
+            {
+                Runtime.getRuntime().removeShutdownHook(shutdownHook);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
 
         if (free)
         {
@@ -479,29 +608,6 @@ public class JDAImpl implements JDA
             catch (IOException ignored) {}
         }
         setStatus(Status.SHUTDOWN);
-    }
-
-    @Override
-    public List<IBucket> shutdownNow(boolean free)
-    {
-        setStatus(Status.SHUTTING_DOWN);
-        List<IBucket> buckets = getRequester().shutdownNow();
-        audioManagers.forEach((guildId, mng) -> mng.closeAudioConnection());
-        if (AudioWebSocket.KEEP_ALIVE_POOLS.containsKey(this))
-            AudioWebSocket.KEEP_ALIVE_POOLS.get(this).shutdownNow();
-        getClient().setAutoReconnect(false);
-        getClient().close();
-
-        if (free)
-        {
-            try
-            {
-                Unirest.shutdown();
-            }
-            catch (IOException ignored) {}
-        }
-        setStatus(Status.SHUTDOWN);
-        return buckets;
     }
 
     @Override
@@ -526,6 +632,12 @@ public class JDAImpl implements JDA
     public long getResponseTotal()
     {
         return responseTotal;
+    }
+
+    @Override
+    public int getMaxReconnectDelay()
+    {
+        return maxReconnectDelay;
     }
 
     @Override
@@ -578,6 +690,16 @@ public class JDAImpl implements JDA
         return Collections.unmodifiableList(eventManager.getRegisteredListeners());
     }
 
+    public EntityBuilder getEntityBuilder()
+    {
+        return entityBuilder;
+    }
+
+    public GuildLock getGuildLock()
+    {
+        return this.guildLock;
+    }
+
     public IAudioSendFactory getAudioSendFactory()
     {
         return audioSendFactory;
@@ -587,6 +709,11 @@ public class JDAImpl implements JDA
     {
         Args.notNull(factory, "Provided IAudioSendFactory");
         this.audioSendFactory = factory;
+    }
+
+    public void setPing(long ping)
+    {
+        this.ping = ping;
     }
 
     public Requester getRequester()
@@ -599,47 +726,52 @@ public class JDAImpl implements JDA
         return eventManager;
     }
 
+    public WebSocketFactory getWebSocketFactory()
+    {
+        return wsFactory;
+    }
+
     public WebSocketClient getClient()
     {
         return client;
     }
 
-    public HashMap<String, User> getUserMap()
+    public TLongObjectMap<User> getUserMap()
     {
         return users;
     }
 
-    public HashMap<String, Guild> getGuildMap()
+    public TLongObjectMap<Guild> getGuildMap()
     {
         return guilds;
     }
 
-    public HashMap<String, TextChannel> getTextChannelMap()
+    public TLongObjectMap<TextChannel> getTextChannelMap()
     {
         return textChannels;
     }
 
-    public HashMap<String, VoiceChannel> getVoiceChannelMap()
+    public TLongObjectMap<VoiceChannel> getVoiceChannelMap()
     {
         return voiceChannels;
     }
 
-    public HashMap<String, PrivateChannel> getPrivateChannelMap()
+    public TLongObjectMap<PrivateChannel> getPrivateChannelMap()
     {
         return privateChannels;
     }
 
-    public HashMap<String, User> getFakeUserMap()
+    public TLongObjectMap<User> getFakeUserMap()
     {
         return fakeUsers;
     }
 
-    public HashMap<String, PrivateChannel> getFakePrivateChannelMap()
+    public TLongObjectMap<PrivateChannel> getFakePrivateChannelMap()
     {
         return fakePrivateChannels;
     }
 
-    public HashMap<String, AudioManager> getAudioManagerMap()
+    public TLongObjectMap<AudioManager> getAudioManagerMap()
     {
         return audioManagers;
     }
@@ -662,4 +794,34 @@ public class JDAImpl implements JDA
             return "JDA";
     }
 
+    private class JDAThreadFactory implements ThreadFactory
+    {
+        @Override
+        public Thread newThread(Runnable r)
+        {
+            final Thread thread = new Thread(r, "JDA-Thread " + getIdentifierString());
+            thread.setDaemon(true);
+            return thread;
+        }
+    }
+
+    public ScheduledThreadPoolExecutor getAudioKeepAlivePool()
+    {
+        ScheduledThreadPoolExecutor akap = audioKeepAlivePool;
+        if (akap == null)
+        {
+            synchronized (akapLock)
+            {
+                akap = audioKeepAlivePool;
+                if (akap == null)
+                    akap = audioKeepAlivePool = new ScheduledThreadPoolExecutor(1, new AudioWebSocket.KeepAliveThreadFactory(this));
+            }
+        }
+        return akap;
+    }
+
+    public EventCache getEventCache()
+    {
+        return eventCache;
+    }
 }

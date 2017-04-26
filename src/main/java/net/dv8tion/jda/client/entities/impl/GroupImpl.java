@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,48 +16,54 @@
 
 package net.dv8tion.jda.client.entities.impl;
 
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.request.body.MultipartBody;
+import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.client.entities.Call;
 import net.dv8tion.jda.client.entities.Friend;
 import net.dv8tion.jda.client.entities.Group;
+import net.dv8tion.jda.client.entities.Relationship;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.MessageHistory;
 import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.entities.EntityBuilder;
-import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.entities.impl.MessageImpl;
-import net.dv8tion.jda.core.requests.*;
-import net.dv8tion.jda.core.utils.IOUtil;
-import org.apache.http.util.Args;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.utils.MiscUtil;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-import net.dv8tion.jda.core.entities.MessageEmbed;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class GroupImpl implements Group
 {
-    private final String id;
+    private final long id;
     private final JDAImpl api;
 
-    private HashMap<String, User> userMap = new HashMap<>();
+    private final TLongObjectMap<User> userMap = MiscUtil.newLongMap();
 
     private Call currentCall;
     private User owner;
     private String name;
     private String iconId;
+    private long lastMessageId;
 
-    public GroupImpl(String id, JDAImpl api)
+    public GroupImpl(long id, JDAImpl api)
     {
         this.id = id;
         this.api = api;
+    }
+
+    @Override
+    public long getLatestMessageIdLong()
+    {
+        final long messageId = lastMessageId;
+        if (messageId < 0)
+            throw new IllegalStateException("No last message id found.");
+        return messageId;
+    }
+
+    @Override
+    public boolean hasLatestMessage()
+    {
+        return lastMessageId > 0;
     }
 
     @Override
@@ -95,18 +101,21 @@ public class GroupImpl implements Group
     {
         return Collections.unmodifiableList(
                 new ArrayList<>(
-                        userMap.values()));
+                        userMap.valueCollection()));
     }
 
     @Override
     public List<User> getNonFriendUsers()
     {
         List<User> nonFriends = new ArrayList<>();
-        userMap.forEach((userId, user) ->
+        TLongObjectMap<Relationship> map = ((JDAClientImpl) api.asClient()).getRelationshipMap();
+        userMap.forEachEntry((userId, user) ->
         {
-            Friend friend = api.asClient().getFriendById(userId);
+            Relationship relationship = map.get(userId);
+            Friend friend = relationship instanceof Friend ? (Friend) relationship : null;
             if (friend == null)
                 nonFriends.add(user);
+            return true;
         });
         return Collections.unmodifiableList(nonFriends);
     }
@@ -115,12 +124,15 @@ public class GroupImpl implements Group
     public List<Friend> getFriends()
     {
         List<Friend> friends = new ArrayList<>();
-        for (String userId : userMap.keySet())
+        TLongObjectMap<Relationship> map = ((JDAClientImpl) api.asClient()).getRelationshipMap();
+        userMap.forEachKey(userId ->
         {
-            Friend friend = api.asClient().getFriendById(userId);
+            Relationship relationship = map.get(userId);
+            Friend friend = relationship instanceof Friend ? (Friend) relationship : null;
             if (friend != null)
                 friends.add(friend);
-        }
+            return true;
+        });
         return Collections.unmodifiableList(friends);
     }
 
@@ -143,307 +155,34 @@ public class GroupImpl implements Group
     }
 
     @Override
-    public String getId()
-    {
-        return id;
-    }
-
-    @Override
     public JDA getJDA()
     {
         return api;
     }
 
     @Override
-    public RestAction<Message> sendMessage(String text)
-    {
-        return sendMessage(new MessageBuilder().appendString(text).build());
-    }
-    
-    @Override
-    public RestAction<Message> sendMessage(MessageEmbed embed)
-    {
-        return sendMessage(new MessageBuilder().setEmbed(embed).build());
-    }
-
-    @Override
-    public RestAction<Message> sendMessage(Message msg)
-    {
-        Args.notNull(msg, "Message");
-        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
-        JSONObject json = ((MessageImpl) msg).toJSONObject();
-        return new RestAction<Message>(getJDA(), route, json)
-        {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                if (response.isOk())
-                {
-                    Message m = EntityBuilder.get(getJDA()).createMessage(response.getObject());
-                    request.onSuccess(m);
-                }
-                else
-                {
-                    request.onFailure(response);
-                }
-            }
-        };
-    }
-
-    @Override
-    public RestAction<Message> sendFile(File file, Message message) throws IOException
-    {
-        checkNull(file, "file");
-
-        return sendFile(file, file.getName(), message);
-    }
-
-    @Override
-    public RestAction<Message> sendFile(File file, String fileName, Message message) throws IOException
-    {
-        checkNull(file, "file");
-
-        if(file == null || !file.exists() || !file.canRead())
-            throw new IllegalArgumentException("Provided file is either null, doesn't exist or is not readable!");
-        if (file.length() > 8<<20)   //8MB
-            throw new IllegalArgumentException("File is to big! Max file-size is 8MB");
-
-        return sendFile(IOUtil.readFully(file), fileName, message);
-    }
-
-    @Override
-    public RestAction<Message> sendFile(InputStream data, String fileName, Message message)
-    {
-        checkNull(data, "data InputStream");
-        checkNull(fileName, "fileName");
-
-        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(id);
-        MultipartBody body = Unirest.post(Requester.DISCORD_API_PREFIX + route.getCompiledRoute())
-                .fields(null); //We use this to change from an HttpRequest to a MultipartBody
-
-        body.field("file", data, fileName);
-
-        if (message != null)
-        {
-            body.field("content", message.getRawContent());
-            body.field("tts", message.isTTS());
-        }
-
-        return new RestAction<Message>(getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                if (response.isOk())
-                    request.onSuccess(EntityBuilder.get(api).createMessage(response.getObject()));
-                else
-                    request.onFailure(response);
-            }
-        };
-    }
-
-    @Override
-    public RestAction<Message> sendFile(byte[] data, String fileName, Message message)
-    {
-        checkNull(fileName, "fileName");
-
-        if (data.length > 8<<20)   //8MB
-            throw new IllegalArgumentException("Provided data is too large! Max file-size is 8MB");
-
-        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(id);
-        MultipartBody body = Unirest.post(Requester.DISCORD_API_PREFIX + route.getCompiledRoute())
-                .fields(null); //We use this to change from an HttpRequest to a MultipartBody
-
-        body.field("file", data, fileName);
-
-        if (message != null)
-        {
-            body.field("content", message.getRawContent());
-            body.field("tts", message.isTTS());
-        }
-
-        return new RestAction<Message>(getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                if (response.isOk())
-                    request.onSuccess(EntityBuilder.get(api).createMessage(response.getObject()));
-                else
-                    request.onFailure(response);
-            }
-        };
-    }
-
-    @Override
-    public RestAction<Message> getMessageById(String messageId)
-    {
-        checkNull(messageId, "messageId");
-
-        Route.CompiledRoute route = Route.Messages.GET_MESSAGE.compile(getId(), messageId);
-        return new RestAction<Message>(getJDA(), route, null)
-        {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                if (response.isOk())
-                {
-                    Message m = EntityBuilder.get(getJDA()).createMessage(response.getObject());
-                    request.onSuccess(m);
-                }
-                else
-                {
-                    request.onFailure(response);
-                }
-            }
-        };
-    }
-
-    @Override
-    public RestAction<Void> deleteMessageById(String messageId)
-    {
-        checkNull(messageId, "messageId");
-
-        Route.CompiledRoute route = Route.Messages.DELETE_MESSAGE.compile(getId(), messageId);
-        return new RestAction<Void>(getJDA(), route, null) {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                //TODO: check if the fail is due to a permission error
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
-    }
-
-    @Override
-    public MessageHistory getHistory()
-    {
-        return new MessageHistory(this);
-    }
-
-    @Override
-    public RestAction<MessageHistory> getHistoryAround(Message markerMessage, int limit)
-    {
-        return MessageHistory.getHistoryAround(this, markerMessage, limit);
-    }
-
-    @Override
-    public RestAction<MessageHistory> getHistoryAround(String markedMessageId, int limit)
-    {
-        return MessageHistory.getHistoryAround(this, markedMessageId, limit);
-    }
-
-    @Override
-    public RestAction<Void> sendTyping()
-    {
-        Route.CompiledRoute route = Route.Channels.SEND_TYPING.compile(id);
-        return new RestAction<Void>(getJDA(), route, null)
-        {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
-    }
-
-    @Override
-    public RestAction<Void> pinMessageById(String messageId)
-    {
-        checkNull(messageId, "messageId");
-
-        Route.CompiledRoute route = Route.Messages.ADD_PINNED_MESSAGE.compile(getId(), messageId);
-        return new RestAction<Void>(getJDA(), route, null)
-        {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
-    }
-
-    @Override
-    public RestAction<Void> unpinMessageById(String messageId)
-    {
-        checkNull(messageId, "messageId");
-
-        Route.CompiledRoute route = Route.Messages.REMOVE_PINNED_MESSAGE.compile(getId(), messageId);
-        return new RestAction<Void>(getJDA(), route, null)
-        {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
-    }
-
-    @Override
-    public RestAction<List<Message>> getPinnedMessages()
-    {
-        Route.CompiledRoute route = Route.Messages.GET_PINNED_MESSAGES.compile(getId());
-        return new RestAction<List<Message>>(getJDA(), route, null)
-        {
-            @Override
-            protected void handleResponse(Response response, Request request)
-            {
-                if (response.isOk())
-                {
-                    LinkedList<Message> pinnedMessages = new LinkedList<>();
-                    EntityBuilder builder = EntityBuilder.get(getJDA());
-                    JSONArray pins = response.getArray();
-
-                    for (int i = 0; i < pins.length(); i++)
-                    {
-                        pinnedMessages.add(builder.createMessage(pins.getJSONObject(i)));
-                    }
-
-                    request.onSuccess(Collections.unmodifiableList(pinnedMessages));
-                }
-                else
-                {
-                    request.onFailure(response);
-                }
-            }
-        };
-    }
-
-    @Override
     public String toString()
     {
-        return String.format("G:%s(%s)", getName(), getId());
+        return String.format("G:%s(%d)", getName(), id);
     }
 
     @Override
     public boolean equals(Object o)
     {
-        if (!(o instanceof Group))
+        if (!(o instanceof GroupImpl))
             return false;
 
-        Group oGroup = (Group) o;
-        return id.equals(oGroup.getId());
+        GroupImpl oGroup = (GroupImpl) o;
+        return id == oGroup.id;
     }
 
     @Override
     public int hashCode()
     {
-        return id.hashCode();
+        return Long.hashCode(id);
     }
 
-    public HashMap<String, User> getUserMap()
+    public TLongObjectMap<User> getUserMap()
     {
         return userMap;
     }
@@ -472,9 +211,21 @@ public class GroupImpl implements Group
         return this;
     }
 
+    public GroupImpl setLastMessageId(long lastMessageId)
+    {
+        this.lastMessageId = lastMessageId;
+        return this;
+    }
+
     private void checkNull(Object obj, String name)
     {
         if (obj == null)
             throw new NullPointerException("Provided " + name + " was null!");
+    }
+
+    @Override
+    public long getIdLong()
+    {
+        return id;
     }
 }

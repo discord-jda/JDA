@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,22 +37,28 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Represents a Custom Emote. (Emoji in official Discord API terminology)
+ *
+ * @since  2.2
+ * @author Florian Spieß
+ */
 public class EmoteImpl implements Emote
 {
 
-    private final String id;
-    private final Guild guild;
-    private final JDA api;
+    private final long id;
+    private final GuildImpl guild;
+    private final JDAImpl api;
+    private final HashSet<Role> roles;
 
+    private final Object mngLock = new Object();
     private volatile EmoteManager manager = null;
     private volatile EmoteManagerUpdatable managerUpdatable = null;
-    private Object mngLock = new Object();
 
     private boolean managed = false;
-    private HashSet<Role> roles = null;
     private String name;
 
-    public EmoteImpl(String id,  Guild guild)
+    public EmoteImpl(long id, GuildImpl guild)
     {
         this.id = id;
         this.guild = guild;
@@ -60,11 +66,12 @@ public class EmoteImpl implements Emote
         this.roles = new HashSet<>();
     }
 
-    public EmoteImpl(String id,  JDA api)
+    public EmoteImpl(long id, JDAImpl api)
     {
         this.id = id;
         this.api = api;
         this.guild = null;
+        this.roles = null;
     }
 
     @Override
@@ -100,7 +107,7 @@ public class EmoteImpl implements Emote
     }
 
     @Override
-    public String getId()
+    public long getIdLong()
     {
         return id;
     }
@@ -151,13 +158,15 @@ public class EmoteImpl implements Emote
         if (isFake())
             throw new IllegalStateException("The emote you are trying to delete is not an actual emote we have access to (it is fake)!");
         if (managed)
-            throw new IllegalStateException("You cannot delete a managed emote!");
+            throw new UnsupportedOperationException("You cannot delete a managed emote!");
         if (!PermissionUtil.checkPermission(guild, guild.getSelfMember(), Permission.MANAGE_EMOTES))
             throw new PermissionException(Permission.MANAGE_EMOTES);
-        return new RestAction<Void>(getJDA(), Route.Emotes.DELETE_EMOTE.compile(getGuild().getId(), getId()), null)
+
+        Route.CompiledRoute route = Route.Emotes.DELETE_EMOTE.compile(getGuild().getId(), getId());
+        return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
@@ -193,23 +202,33 @@ public class EmoteImpl implements Emote
     @Override
     public boolean equals(Object obj)
     {
-        if (!(obj instanceof Emote))
+        if (!(obj instanceof EmoteImpl))
             return false;
 
-        Emote oEmote = (Emote) obj;
-        return getId().equals(oEmote.getId()) && getName().equals(oEmote.getName());
+        EmoteImpl oEmote = (EmoteImpl) obj;
+        return this.id == oEmote.id && getName().equals(oEmote.getName());
     }
 
 
     @Override
     public int hashCode()
     {
-        return getId().hashCode();
+        return Long.hashCode(id);
     }
 
     @Override
     public String toString()
     {
-        return "E:" + getName() + '(' + getId() + ')';
+        return "E:" + getName() + '(' + getIdLong() + ')';
+    }
+
+    @Override
+    public EmoteImpl clone()
+    {
+        if (isFake()) return null;
+        EmoteImpl copy = new EmoteImpl(id, guild).setManaged(managed).setName(name);
+        copy.roles.addAll(roles);
+        return copy;
+
     }
 }

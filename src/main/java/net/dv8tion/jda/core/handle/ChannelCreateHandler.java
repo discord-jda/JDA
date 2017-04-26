@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,9 +9,9 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 
 package net.dv8tion.jda.core.handle;
@@ -34,13 +34,16 @@ public class ChannelCreateHandler extends SocketHandler
     }
 
     @Override
-    protected String handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject content)
     {
         ChannelType type = ChannelType.fromId(content.getInt("type"));
 
-        if ((type == ChannelType.TEXT || type == ChannelType.VOICE ) && GuildLock.get(api).isLocked(content.getString("guild_id")))
+        long guildId = 0;
+        if (type.isGuild())
         {
-            return content.getString("guild_id");
+            guildId = content.getLong("guild_id");
+            if (api.getGuildLock().isLocked(guildId))
+                return guildId;
         }
 
         switch (type)
@@ -50,7 +53,7 @@ public class ChannelCreateHandler extends SocketHandler
                 api.getEventManager().handle(
                         new TextChannelCreateEvent(
                                 api, responseNumber,
-                                EntityBuilder.get(api).createTextChannel(content, content.getString("guild_id"))));
+                                api.getEntityBuilder().createTextChannel(content, guildId)));
                 break;
             }
             case VOICE:
@@ -58,7 +61,7 @@ public class ChannelCreateHandler extends SocketHandler
                 api.getEventManager().handle(
                         new VoiceChannelCreateEvent(
                                 api, responseNumber,
-                                EntityBuilder.get(api).createVoiceChannel(content, content.getString("guild_id"))));
+                                api.getEntityBuilder().createVoiceChannel(content, guildId)));
                 break;
             }
             case PRIVATE:
@@ -66,7 +69,7 @@ public class ChannelCreateHandler extends SocketHandler
                 api.getEventManager().handle(
                         new PrivateChannelCreateEvent(
                                 api, responseNumber,
-                                EntityBuilder.get(api).createPrivateChannel(content)));
+                                api.getEntityBuilder().createPrivateChannel(content)));
                 break;
             }
             case GROUP:
@@ -74,13 +77,13 @@ public class ChannelCreateHandler extends SocketHandler
                 api.getEventManager().handle(
                         new GroupJoinEvent(
                                 api, responseNumber,
-                                EntityBuilder.get(api).createGroup(content)));
+                                api.getEntityBuilder().createGroup(content)));
                 break;
             }
             default:
                 throw new IllegalArgumentException("Discord provided an CREATE_CHANNEL event with an unknown channel type! JSON: " + content);
         }
-        EventCache.get(api).playbackCache(EventCache.Type.CHANNEL, content.getString("id"));
+        api.getEventCache().playbackCache(EventCache.Type.CHANNEL, content.getLong("id"));
         return null;
     }
 }

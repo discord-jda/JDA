@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,15 +9,15 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 package net.dv8tion.jda.core.utils;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import javax.swing.*;
+import javax.swing.JOptionPane;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -59,11 +59,11 @@ public class SimpleLog
         return LOGS.get(name.toLowerCase());
     }
 
+    private static final Map<Level, Set<File>> fileLogs = new HashMap<>();
     private static PrintStream origStd = null;
     private static PrintStream origErr = null;
     private static FileOutputStream stdOut = null;
     private static FileOutputStream errOut = null;
-    private static Map<Level, Set<File>> fileLogs = new HashMap<>();
 
     /**
      * Will duplicate the output-streams to the specified Files.
@@ -450,9 +450,9 @@ public class SimpleLog
         FATAL("Fatal", 5, true),
         OFF("NO-LOGGING", 6, true);
 
-        private String msg;
-        private int pri;
-        private boolean isError;
+        private final String msg;
+        private final int pri;
+        private final boolean isError;
 
         Level(String message, int priority, boolean isError) {
             this.msg = message;

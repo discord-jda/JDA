@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,9 +9,9 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 
 package net.dv8tion.jda.core.entities.impl;
@@ -26,10 +26,11 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
-import net.dv8tion.jda.core.utils.PermissionUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.util.Args;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -40,7 +41,7 @@ public class MessageImpl implements Message
     private static final Pattern EMOTE_PATTERN = Pattern.compile("<:([^:]+):([0-9]+)>");
 
     private final JDAImpl api;
-    private final String id;
+    private final long id;
     private final MessageType type;
     private final MessageChannel channel;
     private final boolean fromWebhook;
@@ -61,12 +62,12 @@ public class MessageImpl implements Message
     private List<Emote> emotes = null;
     private List<MessageReaction> reactions = new LinkedList<>();
 
-    public MessageImpl(String id, MessageChannel channel, boolean fromWebhook)
+    public MessageImpl(long id, MessageChannel channel, boolean fromWebhook)
     {
         this(id, channel, fromWebhook, MessageType.DEFAULT);
     }
 
-    public MessageImpl(String id, MessageChannel channel, boolean fromWebhook, MessageType type)
+    public MessageImpl(long id, MessageChannel channel, boolean fromWebhook, MessageType type)
     {
         this.id = id;
         this.channel = channel;
@@ -90,13 +91,13 @@ public class MessageImpl implements Message
     @Override
     public RestAction<Void> pin()
     {
-        return channel.pinMessageById(getId());
+        return channel.pinMessageById(getIdLong());
     }
 
     @Override
     public RestAction<Void> unpin()
     {
-        return channel.unpinMessageById(getId());
+        return channel.unpinMessageById(getIdLong());
     }
 
     @Override
@@ -111,8 +112,7 @@ public class MessageImpl implements Message
         if (reaction == null)
         {
             checkFake(emote, "Emote");
-            checkPermission(Permission.MESSAGE_ADD_REACTION);
-            if (!PermissionUtil.canInteract(api.getSelfUser(), emote, channel))
+            if (!emote.canInteract(api.getSelfUser(), channel))
                 throw new IllegalArgumentException("Cannot react with the provided emote because it is not available in the current channel.");
         }
         else if (reaction.isSelf())
@@ -120,7 +120,7 @@ public class MessageImpl implements Message
             return new RestAction.EmptyRestAction<>(null);
         }
 
-        return channel.addReactionById(id, emote);
+        return channel.addReactionById(getIdLong(), emote);
     }
 
     @Override
@@ -132,12 +132,10 @@ public class MessageImpl implements Message
                 .filter(r -> r.getEmote().getName().equals(unicode))
                 .findFirst().orElse(null);
 
-        if (reaction == null)
-            checkPermission(Permission.MESSAGE_ADD_REACTION);
-        else if (reaction.isSelf())
+        if (reaction != null && reaction.isSelf())
             return new RestAction.EmptyRestAction<>(null);
 
-        return channel.addReactionById(id, unicode);
+        return channel.addReactionById(getIdLong(), unicode);
     }
 
     @Override
@@ -147,7 +145,7 @@ public class MessageImpl implements Message
         return new RestAction<Void>(getJDA(), Route.Messages.REMOVE_ALL_REACTIONS.compile(getChannel().getId(), getId()), null)
         {
             @Override
-            protected void handleResponse(Response response, Request request)
+            protected void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
@@ -164,7 +162,7 @@ public class MessageImpl implements Message
     }
 
     @Override
-    public String getId()
+    public long getIdLong()
     {
         return id;
     }
@@ -215,6 +213,12 @@ public class MessageImpl implements Message
     public User getAuthor()
     {
         return author;
+    }
+
+    @Override
+    public Member getMember()
+    {
+        return isFromType(ChannelType.TEXT) ? getGuild().getMember(getAuthor()) : null;
     }
 
     @Override
@@ -407,9 +411,10 @@ public class MessageImpl implements Message
             Matcher matcher = EMOTE_PATTERN.matcher(getRawContent());
             while (matcher.find())
             {
-                String emoteId   = matcher.group(2);
+                final String emoteIdString = matcher.group(2);
+                final long emoteId = Long.parseLong(emoteIdString);
                 String emoteName = matcher.group(1);
-                Emote emote = api.getEmoteById(emoteId);
+                Emote emote = api.getEmoteById(emoteIdString);
                 if (emote == null)
                     emote = new EmoteImpl(emoteId, api).setName(emoteName);
                 emotes.add(emote);
@@ -440,30 +445,43 @@ public class MessageImpl implements Message
     @Override
     public RestAction<Message> editMessage(String newContent)
     {
-        return editMessage(new MessageBuilder().appendString(newContent).build());
+        return editMessage(new MessageBuilder().append(newContent).build());
+    }
+
+    @Override
+    public RestAction<Message> editMessage(MessageEmbed newContent)
+    {
+        return editMessage(new MessageBuilder().setEmbed(newContent).build());
+    }
+
+    @Override
+    public RestAction<Message> editMessage(String format, Object... args)
+    {
+        Args.notBlank(format, "Format String");
+        return editMessage(new MessageBuilder().appendFormat(format, args).build());
     }
 
     @Override
     public RestAction<Message> editMessage(Message newContent)
     {
         if (!api.getSelfUser().equals(getAuthor()))
-            throw new UnsupportedOperationException("Attempted to update message that was not sent by this account. You cannot modify other User's messages!");
+            throw new IllegalStateException("Attempted to update message that was not sent by this account. You cannot modify other User's messages!");
 
-        return getChannel().editMessageById(getId(), newContent);
+        return getChannel().editMessageById(getIdLong(), newContent);
     }
 
     @Override
-    public RestAction<Void> deleteMessage()
+    public RestAction<Void> delete()
     {
         if (!getJDA().getSelfUser().equals(getAuthor()))
         {
             if (isFromType(ChannelType.PRIVATE) || isFromType(ChannelType.GROUP))
-                throw new PermissionException("Cannot delete another User's messages in a Group or PrivateChannel.");
+                throw new IllegalStateException("Cannot delete another User's messages in a Group or PrivateChannel.");
             else if (!getGuild().getSelfMember()
                     .hasPermission((TextChannel) getChannel(), Permission.MESSAGE_MANAGE))
                 throw new PermissionException(Permission.MESSAGE_MANAGE);
         }
-        return channel.deleteMessageById(getId());
+        return channel.deleteMessageById(getIdLong());
     }
 
     public MessageImpl setPinned(boolean pinned)
@@ -547,27 +565,22 @@ public class MessageImpl implements Message
     @Override
     public boolean equals(Object o)
     {
-        if (!(o instanceof Message))
+        if (!(o instanceof MessageImpl))
             return false;
-        Message oMsg = (Message) o;
-        return this == oMsg || this.getId().equals(oMsg.getId());
+        MessageImpl oMsg = (MessageImpl) o;
+        return this == oMsg || this.id == oMsg.id;
     }
 
     @Override
     public int hashCode()
     {
-        return getId().hashCode();
+        return Long.hashCode(id);
     }
 
     @Override
     public String toString()
     {
-        String content = getContent();
-        if (content.length() > 20)
-        {
-            content = content.substring(0, 17) + "...";
-        }
-        return "M:" + author.getName() + ':' + content + '(' + getId() + ')';
+        return String.format("M:%#s:%.20s(%s)", author, this, getId());
     }
 
     public JSONObject toJSONObject()
@@ -594,6 +607,38 @@ public class MessageImpl implements Message
     {
         if (o.isFake())
             throw new IllegalArgumentException("We are unable to use a fake " + name + " in this situation!");
+    }
+
+    @Override
+    public void formatTo(Formatter formatter, int flags, int width, int precision)
+    {
+        boolean upper = (flags & FormattableFlags.UPPERCASE) == FormattableFlags.UPPERCASE;
+        boolean leftJustified = (flags & FormattableFlags.LEFT_JUSTIFY) == FormattableFlags.LEFT_JUSTIFY;
+        boolean alt = (flags & FormattableFlags.ALTERNATE) == FormattableFlags.ALTERNATE;
+
+        String out = alt ? getRawContent() : getContent();
+
+        if (upper)
+            out = out.toUpperCase(formatter.locale());
+
+        try
+        {
+            Appendable appendable = formatter.out();
+            if (precision > -1 && out.length() > precision)
+            {
+                appendable.append(StringUtils.truncate(out, precision - 3)).append("...");
+                return;
+            }
+
+            if (leftJustified)
+                appendable.append(StringUtils.rightPad(out, width));
+            else
+                appendable.append(StringUtils.leftPad(out, width));
+        }
+        catch (IOException e)
+        {
+            throw new AssertionError(e);
+        }
     }
 
     private static class FormatToken {

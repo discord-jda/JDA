@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,9 @@ import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.audio.hooks.ListenerProxy;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
@@ -44,8 +46,10 @@ public class AudioManagerImpl implements AudioManager
 
     protected static boolean initialized = false;
 
+    public final Object CONNECTION_LOCK = new Object();
+
     protected final JDAImpl api;
-    protected final Guild guild;
+    protected final GuildImpl guild;
     protected AudioConnection audioConnection = null;
     protected VoiceChannel queuedAudioConnection = null;
 
@@ -62,8 +66,8 @@ public class AudioManagerImpl implements AudioManager
 
     public AudioManagerImpl(Guild guild)
     {
-        this.guild = guild;
-        this.api = (JDAImpl) guild.getJDA();
+        this.guild = (GuildImpl) guild;
+        this.api = this.guild.getJDA();
         init(); //Just to make sure that the audio libs have been initialized.
     }
 
@@ -80,7 +84,8 @@ public class AudioManagerImpl implements AudioManager
         if (!guild.isAvailable())
             throw new GuildUnavailableException("Cannot open an Audio Connection with an unavailable guild. " +
                     "Please wait until this Guild is available to open a connection.");
-        if (!guild.getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT))
+        final Member self = guild.getSelfMember();
+        if (!self.hasPermission(channel, Permission.VOICE_CONNECT))
             throw new PermissionException(Permission.VOICE_CONNECT);
 
         if (audioConnection == null)
@@ -97,6 +102,11 @@ public class AudioManagerImpl implements AudioManager
             if (channel.equals(audioConnection.getChannel()))
                 return;
 
+            final int userLimit = channel.getUserLimit(); // userLimit is 0 if no limit is set!
+            if (!self.hasPermission(channel, Permission.MANAGE_CHANNEL) && userLimit > 0 && userLimit <= channel.getMembers().size())
+                throw new PermissionException(Permission.MANAGE_CHANNEL,
+                        "Unable to connect to VoiceChannel due to userlimit! Requires permission MANAGE_CHANNEL to bypass");
+
             api.getClient().queueAudioConnect(channel);
             audioConnection.setChannel(channel);
         }
@@ -110,12 +120,15 @@ public class AudioManagerImpl implements AudioManager
 
     public void closeAudioConnection(ConnectionStatus reason)
     {
-        api.getClient().getQueuedAudioConnectionMap().remove(guild.getId());
-        this.queuedAudioConnection = null;
-        if (audioConnection == null)
-            return;
-        this.audioConnection.close(reason);
-        this.audioConnection = null;
+        synchronized (CONNECTION_LOCK)
+        {
+            api.getClient().getQueuedAudioConnectionMap().remove(guild.getIdLong());
+            this.queuedAudioConnection = null;
+            if (audioConnection == null)
+                return;
+            this.audioConnection.close(reason);
+            this.audioConnection = null;
+        }
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,8 +86,19 @@ public class Decoder
         return audio;
     }
 
-    protected void close()
+    protected synchronized void close()
     {
-        Opus.INSTANCE.opus_decoder_destroy(opusDecoder);
+        if (opusDecoder != null)
+        {
+            Opus.INSTANCE.opus_decoder_destroy(opusDecoder);
+            opusDecoder = null;
+        }
+    }
+
+    @Override
+    protected void finalize() throws Throwable
+    {
+        super.finalize();
+        close();
     }
 }

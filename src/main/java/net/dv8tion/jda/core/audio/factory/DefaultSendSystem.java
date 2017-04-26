@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2016 Austin Keener & Michael Ritter
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package net.dv8tion.jda.core.audio.factory;
 
 import net.dv8tion.jda.core.audio.AudioConnection;
 import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -27,6 +26,10 @@ import java.net.SocketException;
 
 import static net.dv8tion.jda.core.audio.AudioConnection.OPUS_FRAME_TIME_AMOUNT;
 
+/**
+ * The default implementation of the {@link net.dv8tion.jda.core.audio.factory.IAudioSendSystem IAudioSendSystem}.
+ * <br>This implementation uses a Java thread, named based on: {@link IPacketProvider#getIdentifier()} + " Sending Thread".
+ */
 public class DefaultSendSystem implements IAudioSendSystem
 {
     private final IPacketProvider packetProvider;
