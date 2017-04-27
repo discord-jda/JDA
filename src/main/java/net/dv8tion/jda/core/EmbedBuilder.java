@@ -173,6 +173,26 @@ public class EmbedBuilder
     }
 
     /**
+     * The text of the embed title, set using {@link EmbedBuilder#setTitle(String, String)}.
+     *
+     * @return Possibly-null String containing the title of the embedded resource.
+     */
+    public String getTitle()
+    {
+        return title;
+    }
+
+    /**
+     * The URL of the embed title, set using {@link EmbedBuilder#setTitle(String, String)}.
+     *
+     * @return URL of the title of the embed or {@code null} if it is not set.
+     */
+    public String getUrl()
+    {
+        return url;
+    }
+
+    /**
      * The {@link java.lang.StringBuilder StringBuilder} used to
      * build the description for the embed.
      * <br>Note: To reset the description use {@link #setDescription(CharSequence) setDescription(null)}
@@ -238,6 +258,18 @@ public class EmbedBuilder
     }
 
     /**
+     * The description of the embed, can be set using {@link EmbedBuilder#setDescription(CharSequence)}
+     * or appended using {@link EmbedBuilder#appendDescription(CharSequence)}.
+     *
+     * @return Possibly-null String containing a description of the embed.
+     */
+    public String getDescription()
+    {
+        return description.toString();
+    }
+
+
+    /**
      * Sets the Timestamp of the embed.
      *
      * <p><b><a href="http://i.imgur.com/YP4NiER.png">Example</a></b>
@@ -292,6 +324,16 @@ public class EmbedBuilder
         }
         return this; 
     }
+
+    /**
+     * The timestamp of the embed, set using {@link EmbedBuilder#setTimestamp(TemporalAccessor)}.
+     *
+     * @return Possibly-null OffsetDateTime object representing the timestamp.
+     */
+    public OffsetDateTime getTimestamp()
+    {
+        return timestamp;
+    }
     
     /**
      * Sets the Color of the embed.
@@ -302,6 +344,16 @@ public class EmbedBuilder
     {
         this.color = color;
         return this;
+    }
+
+    /**
+     * The color of the EmbedBuilder, set using {@link EmbedBuilder#setColor(Color)}.
+     *
+     * @return Possibly-null Color of the embed.
+     */
+    public Color getColor()
+    {
+        return color;
     }
     
     /**
