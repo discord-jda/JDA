@@ -298,7 +298,7 @@ public class GuildController
             throw new IllegalArgumentException("Days amount must be at minimum 1 day.");
 
         Route.CompiledRoute route = Route.Guilds.PRUNE_MEMBERS.compile(guild.getId(), Integer.toString(days));
-        return new RestAction<Integer>(guild.getJDA(), route, null)
+        return new RestAction<Integer>(guild.getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Integer> request)
@@ -347,7 +347,7 @@ public class GuildController
             throw new IllegalArgumentException("Days amount must be at minimum 1 day.");
 
         Route.CompiledRoute route = Route.Guilds.PRUNABLE_COUNT.compile(guild.getId(), Integer.toString(days));
-        return new RestAction<Integer>(guild.getJDA(), route, null)
+        return new RestAction<Integer>(guild.getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Integer> request)
@@ -405,7 +405,7 @@ public class GuildController
         checkPosition(member);
 
         Route.CompiledRoute route = Route.Guilds.KICK_MEMBER.compile(guild.getId(), member.getUser().getId());
-        return new RestAction<Void>(guild.getJDA(), route, null)
+        return new RestAction<Void>(guild.getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -580,7 +580,7 @@ public class GuildController
         else
             route = Route.Guilds.BAN.compile(guild.getId(), user.getId());
 
-        return new RestAction<Void>(guild.getJDA(), route, null)
+        return new RestAction<Void>(guild.getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -652,7 +652,7 @@ public class GuildController
         else
             route = Route.Guilds.BAN.compile(guild.getId(), userId);
 
-        return new RestAction<Void>(guild.getJDA(), route, null)
+        return new RestAction<Void>(guild.getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -737,7 +737,7 @@ public class GuildController
         checkPermission(Permission.BAN_MEMBERS);
 
         Route.CompiledRoute route = Route.Guilds.UNBAN.compile(guild.getId(), userId);
-        return new RestAction<Void>(guild.getJDA(), route, null)
+        return new RestAction<Void>(guild.getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -915,7 +915,7 @@ public class GuildController
         checkPermission(Permission.BAN_MEMBERS);
 
         Route.CompiledRoute route = Route.Guilds.GET_BANS.compile(guild.getId());
-        return new RestAction<List<User>>(guild.getJDA(), route, null)
+        return new RestAction<List<User>>(guild.getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<List<User>> request)

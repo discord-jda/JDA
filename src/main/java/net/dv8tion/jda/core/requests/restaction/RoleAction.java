@@ -59,7 +59,7 @@ public class RoleAction extends RestAction<Role>
      */
     public RoleAction(Route.CompiledRoute route, Guild guild)
     {
-        super(guild.getJDA(), route, null);
+        super(guild.getJDA(), route);
         this.guild = guild;
     }
 
@@ -240,7 +240,7 @@ public class RoleAction extends RestAction<Role>
         if (mentionable != null)
             object.put("mentionable", mentionable.booleanValue());
 
-        super.data = object;
+        setData(object);
         super.finalizeData();
     }
 

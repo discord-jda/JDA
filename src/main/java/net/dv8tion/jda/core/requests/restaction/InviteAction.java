@@ -41,7 +41,7 @@ public class InviteAction extends RestAction<Invite>
 
     public InviteAction(final JDA api, final String channelId)
     {
-        super(api, Route.Invites.CREATE_INVITE.compile(channelId), null);
+        super(api, Route.Invites.CREATE_INVITE.compile(channelId));
     }
 
     @Override
@@ -58,7 +58,7 @@ public class InviteAction extends RestAction<Invite>
         if (this.unique != null)
             object.put("unique", (boolean) this.unique);
 
-        this.data = object;
+        setData(object);
     }
 
     @Override

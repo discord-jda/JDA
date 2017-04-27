@@ -39,7 +39,7 @@ public class WebhookAction extends RestAction<Webhook>
 
     public WebhookAction(JDA api, Route.CompiledRoute route, String name)
     {
-        super(api, route, null);
+        super(api, route);
         this.name = name;
     }
 
@@ -82,11 +82,11 @@ public class WebhookAction extends RestAction<Webhook>
     @Override
     public void finalizeData()
     {
-        JSONObject data = new JSONObject();
-        data.put("name",   name);
-        data.put("avatar", avatar != null ? avatar.getEncoding() : JSONObject.NULL);
+        JSONObject object = new JSONObject();
+        object.put("name",   name);
+        object.put("avatar", avatar != null ? avatar.getEncoding() : JSONObject.NULL);
 
-        super.data = data;
+        setData(object);
     }
 
     @Override

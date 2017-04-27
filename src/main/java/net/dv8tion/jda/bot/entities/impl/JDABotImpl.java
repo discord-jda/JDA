@@ -49,7 +49,7 @@ public class JDABotImpl implements JDABot
     public RestAction<ApplicationInfo> getApplicationInfo()
     {
         Route.CompiledRoute route = Route.Applications.GET_BOT_APPLICATION.compile();
-        return new RestAction<ApplicationInfo>(getJDA(), route, null)
+        return new RestAction<ApplicationInfo>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<ApplicationInfo> request)

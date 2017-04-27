@@ -16,9 +16,11 @@
 
 package net.dv8tion.jda.core.requests;
 
+import java.io.BufferedReader;
+import java.io.Reader;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
 public class Response
 {
@@ -26,20 +28,60 @@ public class Response
     public final Exception exception;
     public final int code;
     public final long retryAfter;
-    public final String responseText;
+    
+    private Object object = null;
 
-    protected Response(int code, String response, long retryAfter)
+    protected Response(long retryAfter)
     {
-        this.code = code;
-        this.responseText = response;
+        this(429, null, retryAfter);
+    }
+
+    protected Response(okhttp3.Response response, long retryAfter)
+    {
+        this(response.code(), response, retryAfter);
+    }
+
+    protected Response(int code, okhttp3.Response response, long retryAfter)
+    {
+        this.code = response.code();
         this.exception = null;
         this.retryAfter = retryAfter;
+
+        try (Reader reader = response.body().charStream().markSupported() 
+                ? response.body().charStream()
+                : new BufferedReader(response.body().charStream()))
+        {
+            char begin;
+            int mark = 1;
+            do
+            {
+                reader.mark(mark++);
+                begin = (char) reader.read();
+            }
+            while (Character.isWhitespace(begin));
+
+            reader.reset();
+
+            if (begin == '{')
+            {
+                object = new JSONObject(new JSONTokener(reader));
+            }
+            else if (begin == '[')
+            {
+                object = new JSONArray(new JSONTokener(reader));
+            }
+        }
+        catch (Exception e)
+        {
+            // TODO rethrow?
+            e.printStackTrace();
+        }
     }
 
     protected Response(Exception exception)
     {
         this.code = ERROR_CODE;
-        this.responseText = null;
+        this.object = null;
         this.exception = exception;
         this.retryAfter = -1;
     }
@@ -61,36 +103,11 @@ public class Response
 
     public JSONObject getObject()
     {
-        try
-        {
-            return responseText == null ? null : new JSONObject(responseText);
-        }
-        catch (JSONException ex)
-        {
-            return null;
-        }
+      return (JSONObject) object;
     }
 
     public JSONArray getArray()
     {
-        try
-        {
-            return responseText == null ? null : new JSONArray(responseText);
-        }
-        catch (JSONException ex)
-        {
-            return null;
-        }
-    }
-
-    public String getString()
-    {
-        return responseText;
-    }
-
-    public String toString()
-    {
-        return exception == null ? "HTTPResponse[" + code + ": " + responseText + ']'
-                : "HTTPException[" + exception.getMessage() + ']';
+        return (JSONArray) object;
     }
 }

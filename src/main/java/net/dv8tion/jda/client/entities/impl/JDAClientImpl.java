@@ -258,7 +258,7 @@ public class JDAClientImpl implements JDAClient
     public RestAction<List<Application>> getApplications()
     {
         Route.CompiledRoute route = Route.Applications.GET_APPLICATIONS.compile();
-        return new RestAction<List<Application>>(api, route, null)
+        return new RestAction<List<Application>>(api, route)
         {
             @Override
             protected void handleResponse(Response response, Request<List<Application>> request)
@@ -288,7 +288,7 @@ public class JDAClientImpl implements JDAClient
         Args.notEmpty(id, "id");
 
         Route.CompiledRoute route = Route.Applications.GET_APPLICATION.compile(id);
-        return new RestAction<Application>(api, route, null)
+        return new RestAction<Application>(api, route)
         {
             @Override
             protected void handleResponse(Response response, Request<Application> request)
@@ -305,7 +305,7 @@ public class JDAClientImpl implements JDAClient
     public RestAction<List<AuthorizedApplication>> getAuthorizedApplications()
     {
         Route.CompiledRoute route = Route.Applications.GET_AUTHORIZED_APPLICATIONS.compile();
-        return new RestAction<List<AuthorizedApplication>>(api, route, null)
+        return new RestAction<List<AuthorizedApplication>>(api, route)
         {
             @Override
             protected void handleResponse(Response response, Request<List<AuthorizedApplication>> request)
@@ -335,7 +335,7 @@ public class JDAClientImpl implements JDAClient
         Args.notEmpty(id, "id");
 
         Route.CompiledRoute route = Route.Applications.GET_AUTHORIZED_APPLICATION.compile(id);
-        return new RestAction<AuthorizedApplication>(api, route, null)
+        return new RestAction<AuthorizedApplication>(api, route)
         {
             @Override
             protected void handleResponse(Response response, Request<AuthorizedApplication> request)

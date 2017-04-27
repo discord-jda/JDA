@@ -103,7 +103,7 @@ public class ChannelOrderAction<T extends Channel> extends OrderAction<T, Channe
                     .put("position", i));
         }
 
-        this.data = array;
+        setData(array);
     }
 
     @Override

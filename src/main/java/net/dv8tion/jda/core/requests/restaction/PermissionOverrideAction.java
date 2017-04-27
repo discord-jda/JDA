@@ -65,7 +65,7 @@ public class PermissionOverrideAction extends RestAction<PermissionOverride>
      */
     public PermissionOverrideAction(JDA api, Route.CompiledRoute route, Channel channel, Member member)
     {
-        super(api, route, null);
+        super(api, route);
         this.channel = channel;
         this.member = member;
         this.role = null;
@@ -85,7 +85,7 @@ public class PermissionOverrideAction extends RestAction<PermissionOverride>
      */
     public PermissionOverrideAction(JDA api, Route.CompiledRoute route, Channel channel, Role role)
     {
-        super(api, route, null);
+        super(api, route);
         this.channel = channel;
         this.member = null;
         this.role = role;
@@ -402,7 +402,7 @@ public class PermissionOverrideAction extends RestAction<PermissionOverride>
         object.put("allow", allow);
         object.put("deny", deny);
 
-        super.data = object;
+        setData(object);
         super.finalizeData();
     }
 

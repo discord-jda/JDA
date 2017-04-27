@@ -69,7 +69,7 @@ public class ChannelAction extends RestAction<Channel>
      */
     public ChannelAction(Route.CompiledRoute route, String name, Guild guild, boolean voice)
     {
-        super(guild.getJDA(), route, null);
+        super(guild.getJDA(), route);
         this.guild = guild;
         this.voice = voice;
         this.name = name;
@@ -309,16 +309,16 @@ public class ChannelAction extends RestAction<Channel>
     @Override
     protected void finalizeData()
     {
-        JSONObject data = new JSONObject();
-        data.put("name", name);
-        data.put("type", voice ? 2 : 0);
-        data.put("permission_overwrites", new JSONArray(overrides));
+        JSONObject object = new JSONObject();
+        object.put("name", name);
+        object.put("type", voice ? 2 : 0);
+        object.put("permission_overwrites", new JSONArray(overrides));
         if (voice)
         {
             if (bitrate != null)
-                data.put("bitrate", bitrate.intValue());
+                object.put("bitrate", bitrate.intValue());
             if (userlimit != null)
-                data.put("user_limit", userlimit.intValue());
+                object.put("user_limit", userlimit.intValue());
         }
         else
         {
@@ -326,7 +326,7 @@ public class ChannelAction extends RestAction<Channel>
                 data.put("topic", topic);
         }
 
-        this.data = data;
+        setData(object);
         super.finalizeData();
     }
 

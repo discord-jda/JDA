@@ -129,7 +129,7 @@ public class RoleOrderAction extends OrderAction<Role, RoleOrderAction>
                     .put("position", i + 1)); //plus 1 because position 0 is the @everyone position.
         }
 
-        this.data = array;
+        setData(array);
     }
 
     @Override

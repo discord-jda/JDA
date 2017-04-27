@@ -229,7 +229,7 @@ public class RoleImpl implements Role
             throw new UnsupportedOperationException("Cannot delete a Role that is managed. ");
 
         Route.CompiledRoute route = Route.Roles.DELETE_ROLE.compile(guild.getId(), getId());
-        return new RestAction<Void>(getJDA(), route, null)
+        return new RestAction<Void>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)

@@ -17,12 +17,12 @@
 package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.utils.IOUtil;
-import org.apache.commons.codec.binary.StringUtils;
 import org.apache.http.util.Args;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Base64;
 
 /**
@@ -114,7 +114,13 @@ public class Icon
     {
         Args.notNull(data, "Provided byte[]");
 
-        String encoding = StringUtils.newStringUtf8(Base64.getEncoder().encode(data));
-        return new Icon(encoding);
+        try
+        {
+            return new Icon(new String(Base64.getEncoder().encode(data), "UTF-8"));
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            throw new RuntimeException(e); // thanks JDK 1.4
+        }
     }
 }

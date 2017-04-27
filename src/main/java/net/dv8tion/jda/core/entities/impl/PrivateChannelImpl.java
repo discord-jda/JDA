@@ -84,7 +84,7 @@ public class PrivateChannelImpl implements PrivateChannel
     public RestAction<Void> close()
     {
         Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(getId());
-        return new RestAction<Void>(getJDA(), route, null)
+        return new RestAction<Void>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)

@@ -15,8 +15,6 @@
  */
 package net.dv8tion.jda.core.entities;
 
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.request.body.MultipartBody;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.MessageBuilder;
@@ -26,10 +24,13 @@ import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.requests.restaction.pagination.MessagePaginationAction;
 import net.dv8tion.jda.core.utils.IOUtil;
 import net.dv8tion.jda.core.utils.MiscUtil;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import okio.ByteString;
 import org.apache.http.util.Args;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -527,10 +528,16 @@ public interface MessageChannel extends ISnowflake, Formattable
         Args.notNull(fileName, "fileName");
 
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
-        MultipartBody body = Unirest.post(Requester.DISCORD_API_PREFIX + route.getCompiledRoute())
-                .fields(null); //We use this to change from an HttpRequest to a MultipartBody
-
-        body.field("file", data, fileName);
+        MultipartBody.Builder builder = new okhttp3.MultipartBody.Builder()
+                .setType(MultipartBody.FORM);
+        try
+        {
+            builder.addFormDataPart("file", fileName, RequestBody.create(MediaType.parse("application/octet-stream"), ByteString.read(data, Integer.MAX_VALUE)));
+        }
+        catch (IOException e)
+        {
+            return new RestAction.FailedRestAction<Message>(new RuntimeException(e));
+        }
 
         if (message != null)
         {
@@ -543,10 +550,10 @@ public interface MessageChannel extends ISnowflake, Formattable
                         type == AccountType.BOT ? MessageEmbed.EMBED_MAX_LENGTH_BOT : MessageEmbed.EMBED_MAX_LENGTH_CLIENT, type);
             }
 
-            body.field("payload_json", ((MessageImpl) message).toJSONObject().toString());
+            builder.addFormDataPart("payload_json", ((MessageImpl) message).toJSONObject().toString());
         }
 
-        return new RestAction<Message>(getJDA(), route, body)
+        return new RestAction<Message>(getJDA(), route, builder.build())
         {
             @Override
             protected void handleResponse(Response response, Request<Message> request)
@@ -604,10 +611,9 @@ public interface MessageChannel extends ISnowflake, Formattable
             "Provided data is too large! Max file-size is 8MB");
 
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
-        MultipartBody body = Unirest.post(Requester.DISCORD_API_PREFIX + route.getCompiledRoute())
-                .fields(null); //We use this to change from an HttpRequest to a MultipartBody
-
-        body.field("file", data, fileName);
+        MultipartBody.Builder builder = new okhttp3.MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("file", fileName, RequestBody.create(MediaType.parse("application/octet-stream"), data));
 
         if (message != null)
         {
@@ -620,10 +626,10 @@ public interface MessageChannel extends ISnowflake, Formattable
                         type == AccountType.BOT ? MessageEmbed.EMBED_MAX_LENGTH_BOT : MessageEmbed.EMBED_MAX_LENGTH_CLIENT, type);
             }
 
-            body.field("payload_json", ((MessageImpl) message).toJSONObject().toString());
+            builder.addFormDataPart("payload_json", ((MessageImpl) message).toJSONObject().toString());
         }
 
-        return new RestAction<Message>(getJDA(), route, body)
+        return new RestAction<Message>(getJDA(), route, builder.build())
         {
             @Override
             protected void handleResponse(Response response, Request<Message> request)
@@ -682,7 +688,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Args.notEmpty(messageId, "Provided messageId");
 
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE.compile(getId(), messageId);
-        return new RestAction<Message>(getJDA(), route, null)
+        return new RestAction<Message>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Message> request)
@@ -784,7 +790,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Args.notEmpty(messageId, "messageId");
 
         Route.CompiledRoute route = Route.Messages.DELETE_MESSAGE.compile(getId(), messageId);
-        return new RestAction<Void>(getJDA(), route, null) {
+        return new RestAction<Void>(getJDA(), route) {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
             {
@@ -1028,7 +1034,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Args.check(limit >= 1 && limit <= 100, "Provided limit was out of bounds. Minimum: 1, Max: 100. Provided: %d", limit);
 
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY_AROUND.compile(this.getId(), Integer.toString(limit), messageId);
-        return new RestAction<MessageHistory>(getJDA(), route, null)
+        return new RestAction<MessageHistory>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<MessageHistory> request)
@@ -1149,7 +1155,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     default RestAction<Void> sendTyping()
     {
         Route.CompiledRoute route = Route.Channels.SEND_TYPING.compile(getId());
-        return new RestAction<Void>(getJDA(), route, null)
+        return new RestAction<Void>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -1230,7 +1236,7 @@ public interface MessageChannel extends ISnowflake, Formattable
 
         String encoded = MiscUtil.encodeUTF8(unicode);
         Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, encoded);
-        return new RestAction<Void>(getJDA(), route, null)
+        return new RestAction<Void>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -1368,7 +1374,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Args.notNull(emote, "Emote");
 
         Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, String.format("%s:%s", emote.getName(), emote.getId()));
-        return new RestAction<Void>(getJDA(), route, null)
+        return new RestAction<Void>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -1485,7 +1491,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Args.notEmpty(messageId, "messageId");
 
         Route.CompiledRoute route = Route.Messages.ADD_PINNED_MESSAGE.compile(getId(), messageId);
-        return new RestAction<Void>(getJDA(), route, null)
+        return new RestAction<Void>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -1584,7 +1590,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Args.notEmpty(messageId, "messageId");
 
         Route.CompiledRoute route = Route.Messages.REMOVE_PINNED_MESSAGE.compile(getId(), messageId);
-        return new RestAction<Void>(getJDA(), route, null)
+        return new RestAction<Void>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -1666,7 +1672,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     default RestAction<List<Message>> getPinnedMessages()
     {
         Route.CompiledRoute route = Route.Messages.GET_PINNED_MESSAGES.compile(getId());
-        return new RestAction<List<Message>>(getJDA(), route, null)
+        return new RestAction<List<Message>>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<List<Message>> request)

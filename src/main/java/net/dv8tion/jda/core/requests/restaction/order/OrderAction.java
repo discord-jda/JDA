@@ -82,7 +82,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      */
     public OrderAction(JDA api, boolean ascendingOrder, Route.CompiledRoute route)
     {
-        super(api, route, null);
+        super(api, route);
         this.api = api;
         this.orderList = new ArrayList<>();
         this.ascendingOrder = ascendingOrder;

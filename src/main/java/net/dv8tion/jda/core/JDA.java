@@ -22,8 +22,6 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.requests.RestAction;
-import org.apache.http.HttpHost;
-
 import java.util.Collection;
 import java.util.List;
 
@@ -694,14 +692,6 @@ public interface JDA
      * @return The maximum amount of time JDA will wait between reconnect attempts in seconds.
      */
     int getMaxReconnectDelay();
-
-    /**
-     * The proxy settings used by all JDA instances.
-     *
-     * @return The proxy settings used by all JDA instances. If JDA currently isn't using a proxy,
-     *         {@link java.net.Proxy#NO_PROXY Proxy.NO_PROXY} is returned.
-     */
-    HttpHost getGlobalProxy();
 
     /**
      * Sets whether or not JDA should try to automatically reconnect if a connection-error is encountered.

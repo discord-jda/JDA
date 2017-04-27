@@ -99,7 +99,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         checkPermission(Permission.MANAGE_WEBHOOKS);
 
         Route.CompiledRoute route = Route.Channels.GET_WEBHOOKS.compile(getId());
-        return new RestAction<List<Webhook>>(getJDA(), route, null)
+        return new RestAction<List<Webhook>>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<List<Webhook>> request)
@@ -140,7 +140,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
             throw new PermissionException(Permission.MANAGE_WEBHOOKS);
 
         Route.CompiledRoute route = Route.Webhooks.DELETE_WEBHOOK.compile(id);
-        return new RestAction<Void>(getJDA(), route, null)
+        return new RestAction<Void>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)

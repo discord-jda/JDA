@@ -24,8 +24,10 @@ import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.requests.restaction.CompletedFuture;
 import net.dv8tion.jda.core.requests.restaction.RequestFuture;
 import net.dv8tion.jda.core.utils.SimpleLog;
+import okhttp3.RequestBody;
 import org.apache.http.util.Args;
-
+import org.json.JSONArray;
+import org.json.JSONObject;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
 
@@ -161,7 +163,7 @@ public abstract class RestAction<T>
 
     protected final JDAImpl api;
     protected Route.CompiledRoute route;
-    protected Object data;
+    protected RequestBody data;
 
     /**
      * Creates a new RestAction instance
@@ -174,11 +176,43 @@ public abstract class RestAction<T>
      * @param  data
      *         The data that should be sent to the specified route. (can be null)
      */
-    public RestAction(JDA api, Route.CompiledRoute route, Object data)
+    public RestAction(JDA api, Route.CompiledRoute route, RequestBody data)
     {
         this.api = (JDAImpl) api;
         this.route = route;
-        this.data = data != null ? data : "";
+        this.data = data;
+    }
+
+    /**
+     * Creates a new RestAction instance
+     *
+     * @param  api
+     *         The current JDA instance
+     * @param  route
+     *         The {@link net.dv8tion.jda.core.requests.Route.CompiledRoute Route.CompiledRoute}
+     *         to be used for rate limit handling
+     * @param  data
+     *         The data that should be sent to the specified route. (can be null)
+     */
+    public RestAction(JDA api, Route.CompiledRoute route)
+    {
+        this(api, route, (RequestBody) null);
+    }
+
+    /**
+     * Creates a new RestAction instance
+     *
+     * @param  api
+     *         The current JDA instance
+     * @param  route
+     *         The {@link net.dv8tion.jda.core.requests.Route.CompiledRoute Route.CompiledRoute}
+     *         to be used for rate limit handling
+     * @param  data
+     *         The data that should be sent to the specified route. (can be null)
+     */
+    public RestAction(JDA api, Route.CompiledRoute route, JSONObject data)
+    {
+        this(api, route, data == null ? null : RequestBody.create(Requester.JSON, data.toString()));
     }
 
     /**
@@ -619,6 +653,17 @@ public abstract class RestAction<T>
         return executor.schedule(() -> queue(success, failure), delay, unit);
     }
 
+    protected void setData(JSONObject object)
+    {
+        this.data = object == null ? null : RequestBody.create(Requester.JSON, object.toString());
+    }
+
+    protected void setData(JSONArray array)
+    {
+        this.data = array == null ? null : RequestBody.create(Requester.JSON, array.toString());
+        
+    }
+
     protected void finalizeData() { }
 
     protected void finalizeRoute() { }
@@ -639,7 +684,7 @@ public abstract class RestAction<T>
 
         public EmptyRestAction(T returnObj)
         {
-            super(null, null, null);
+            super(null, null);
             this.returnObj = returnObj;
         }
 
@@ -660,6 +705,46 @@ public abstract class RestAction<T>
         public T complete(boolean shouldQueue)
         {
             return returnObj;
+        }
+
+        @Override
+        protected void handleResponse(Response response, Request<T> request) { }
+    }
+    /**
+     * Specialized form of {@link net.dv8tion.jda.core.requests.RestAction} that is used to provide information that
+     * has already been retrieved or generated so that another request does not need to be made to Discord.
+     * <br>Basically: Allows you to provide a value directly to the success returns.
+     *
+     * @param <T>
+     *        The generic response type for this RestAction
+     */
+    public static class FailedRestAction<T> extends RestAction<T>
+    {
+        private final RuntimeException exception;
+
+        public FailedRestAction(RuntimeException exception)
+        {
+            super(null, null);
+            this.exception = exception;
+        }
+
+        @Override
+        public void queue(Consumer<T> success, Consumer<Throwable> failure)
+        {
+            if (failure != null)
+                failure.accept(exception);
+        }
+
+        @Override
+        public Future<T> submit(boolean shouldQueue)
+        {
+            throw exception;
+        }
+
+        @Override
+        public T complete(boolean shouldQueue)
+        {
+            throw exception;
         }
 
         @Override

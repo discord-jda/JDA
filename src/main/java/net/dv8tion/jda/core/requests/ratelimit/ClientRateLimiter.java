@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.core.requests.ratelimit;
 
-import com.mashape.unirest.http.HttpResponse;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.requests.RateLimiter;
@@ -25,8 +24,11 @@ import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.Route.CompiledRoute;
 import net.dv8tion.jda.core.requests.Route.RateLimit;
+import okhttp3.Response;
 import org.json.JSONObject;
-
+import org.json.JSONTokener;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -65,26 +67,34 @@ public class ClientRateLimiter extends RateLimiter
     }
 
     @Override
-    protected Long handleResponse(Route.CompiledRoute route, HttpResponse<String> response)
+    protected Long handleResponse(Route.CompiledRoute route, Response response)
     {
         Bucket bucket = getBucket(route);
         synchronized (bucket)
         {
             long now = System.currentTimeMillis();
-            int code = response.getStatus();
+            int code = response.code();
             if (code == 429)
             {
-                JSONObject limitObj = new JSONObject(response.getBody());
-                long retryAfter = limitObj.getLong("retry_after");
-                if (limitObj.has("global") && limitObj.getBoolean("global"))    //Global ratelimit
-                {
-                    globalCooldown = now + retryAfter;
+
+                try (Reader reader = response.body().charStream()) {
+                    JSONObject limitObj = new JSONObject(new JSONTokener(reader));
+                    long retryAfter = limitObj.getLong("retry_after");
+                    if (limitObj.has("global") && limitObj.getBoolean("global"))    //Global ratelimit
+                    {
+                        globalCooldown = now + retryAfter;
+                    }
+                    else
+                    {
+                        bucket.retryAfter = now + retryAfter;
+                    }
+                    return retryAfter;                    
                 }
-                else
+                catch (IOException ignored)
                 {
-                    bucket.retryAfter = now + retryAfter;
+                    // will never happen as OkHttp discards the internally
+                    return 0L;
                 }
-                return retryAfter;
             }
             else
             {

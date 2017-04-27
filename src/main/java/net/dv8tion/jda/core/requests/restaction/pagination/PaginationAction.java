@@ -65,7 +65,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>> exte
      */
     public PaginationAction(JDA api, int minLimit, int maxLimit, int initialLimit)
     {
-        super(api, null, null);
+        super(api, null);
         this.maxLimit = maxLimit;
         this.minLimit = minLimit;
         this.limit = new AtomicInteger(initialLimit);
@@ -81,7 +81,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>> exte
      */
     public PaginationAction(JDA api)
     {
-        super(api, null, null);
+        super(api, null);
         this.maxLimit = 0;
         this.minLimit = 0;
         this.limit = new AtomicInteger(0);

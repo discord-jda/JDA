@@ -69,7 +69,7 @@ public class InviteImpl implements Invite
 
         final Route.CompiledRoute route = Route.Invites.GET_INVITE.compile(code);
 
-        return new RestAction<Invite>(api, route, null)
+        return new RestAction<Invite>(api, route)
         {
             @Override
             protected void handleResponse(final Response response, final Request<Invite> request)
@@ -92,7 +92,7 @@ public class InviteImpl implements Invite
     {
         final Route.CompiledRoute route = Route.Invites.DELETE_INVITE.compile(this.code);
 
-        return new RestAction<Invite>(this.api, route, null)
+        return new RestAction<Invite>(this.api, route)
         {
             @Override
             protected void handleResponse(final Response response, final Request<Invite> request)
@@ -142,7 +142,7 @@ public class InviteImpl implements Invite
             throw new PermissionException("You don't have the permission to view the full invite info");
         }
 
-        return new RestAction<Invite>(this.api, route, null)
+        return new RestAction<Invite>(this.api, route)
         {
             @Override
             protected void handleResponse(final Response response, final Request<Invite> request)
