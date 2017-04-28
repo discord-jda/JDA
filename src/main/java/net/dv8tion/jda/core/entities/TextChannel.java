@@ -42,9 +42,11 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
     String getTopic();
     
     /**
-     * Shows if the Text Channel is a NSFW-marked channel
-     * @return true if the channel is a NSFW channel
-     */
+    * Whether or not this channel is considered as "NSFW" (Not-Safe-For-Work)
+    * <br>This will check whether the name of this TextChannel begins with {@code nsfw-} or is equal to {@code nsfw}!
+    * 
+    * @return True, If this TextChannel is considered NSFW by the official Discord Client
+    */
     boolean isNSFW();
 
     /**
