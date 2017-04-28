@@ -33,6 +33,7 @@ public enum Permission
     MANAGE_CHANNEL(4, true, true, "Manage Channels"),
     MANAGE_SERVER(5, true, false, "Manage Server"),
     MESSAGE_ADD_REACTION(6, true, true, "Add Reactions"),
+    VIEW_AUDIT_LOGS(7, true, false, "View Audit Logs"),
 
     MESSAGE_READ(10, true, true, "Read Messages"),
     MESSAGE_WRITE(11, true, true, "Send Messages"),
