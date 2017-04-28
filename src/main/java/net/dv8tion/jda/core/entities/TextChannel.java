@@ -40,6 +40,12 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * @return Possibly-null String containing the topic of this TextChannel.
      */
     String getTopic();
+    
+    /**
+     * Shows if the Text Channel is a NSFW-marked channel
+     * @return true if the channel is a NSFW channel
+     */
+    boolean isNSFW();
 
     /**
      * Bulk deletes a list of messages.
