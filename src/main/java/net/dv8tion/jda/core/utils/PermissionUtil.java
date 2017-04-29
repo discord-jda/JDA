@@ -187,7 +187,7 @@ public class PermissionUtil
     @Deprecated
     public static PermissionOverride getFullPermOverride()
     {
-        PermissionOverrideImpl override = new PermissionOverrideImpl(null, 0);
+        PermissionOverrideImpl override = new PermissionOverrideImpl(null, 0, null);
         long allow = 0, deny = 0;
         for (Permission permission : Permission.values())
         {
@@ -234,14 +234,8 @@ public class PermissionUtil
         Args.notNull(permissions, "Permissions");
 
         long effectivePerms = getEffectivePermission(member);
-        if (isApplied(effectivePerms, Permission.ADMINISTRATOR)) return true;
-        for (Permission p : permissions)
-        {
-            if (!isApplied(effectivePerms, p))
-                return false;
-        }
-
-        return true;
+        return isApplied(effectivePerms, Permission.ADMINISTRATOR.getRawValue())
+                || isApplied(effectivePerms, Permission.getRaw(permissions));
     }
 
     /**
@@ -284,14 +278,8 @@ public class PermissionUtil
 //            return true; // can be removed as getEffectivePermissions calculates these cases in
 
         long effectivePerms = getEffectivePermission(channel, member);
-        if (isApplied(effectivePerms, Permission.ADMINISTRATOR)) return true;
-        for (Permission perm : permissions)
-        {
-            if (!isApplied(effectivePerms, perm))
-                return false;
-        }
-
-        return true;
+        return isApplied(effectivePerms, Permission.ADMINISTRATOR.getRawValue())
+                || isApplied(effectivePerms, Permission.getRaw(permissions));
     }
 
     /**
@@ -328,11 +316,11 @@ public class PermissionUtil
         if (member.isOwner())
             return Permission.ALL_PERMISSIONS;
         //Default to binary OR of all global permissions in this guild
-        long permission = member.getGuild().getPublicRole().getPermissionsRaw();
+        long permission = Permission.getRaw(member.getGuild().getPublicRole().getPermissions());
         for (Role role : member.getRoles())
         {
-            permission |= role.getPermissionsRaw();
-            if (isApplied(permission, Permission.ADMINISTRATOR))
+            permission |= Permission.getRaw(role.getPermissions());
+            if (isApplied(permission, Permission.ADMINISTRATOR.getRawValue()))
                 return Permission.ALL_PERMISSIONS;
         }
 
@@ -381,7 +369,7 @@ public class PermissionUtil
         if (override != null)
         {
             permission = apply(permission, override.getAllowedRaw(), override.getDeniedRaw());
-            if (isApplied(permission, Permission.ADMINISTRATOR))
+            if (isApplied(permission, Permission.ADMINISTRATOR.getRawValue()))
                 // If the public role is marked as administrator we can return full permissions here
                 return Permission.ALL_PERMISSIONS;
         }
@@ -423,11 +411,11 @@ public class PermissionUtil
         if (memberOverride != null)
             permission = apply(permission, memberOverride.getAllowedRaw(), memberOverride.getDeniedRaw());
 
-        if (isApplied(permission, Permission.ADMINISTRATOR))
+        if (isApplied(permission, Permission.ADMINISTRATOR.getRawValue()))
             // If the public role is marked as administrator we can return full permissions here
             return Permission.ALL_PERMISSIONS;
 
-        if (isApplied(permission, Permission.MANAGE_PERMISSIONS) || isApplied(permission, Permission.MANAGE_CHANNEL))
+        if (isApplied(permission, Permission.MANAGE_PERMISSIONS.getRawValue()) || isApplied(permission, Permission.MANAGE_CHANNEL.getRawValue()))
             // In text channels MANAGE_CHANNEL and MANAGE_PERMISSIONS grant full text/voice permissions
             permission |= Permission.ALL_TEXT_PERMISSIONS | Permission.ALL_VOICE_PERMISSIONS;
 
@@ -461,7 +449,7 @@ public class PermissionUtil
         if (!guild.equals(role.getGuild()))
             throw new IllegalArgumentException("Provided channel and role are not of the same guild!");
 
-        long permissions = guild.getPublicRole().getPermissionsRaw() | role.getPermissionsRaw();
+        long permissions = Permission.getRaw(guild.getPublicRole().getPermissions()) | Permission.getRaw(role.getPermissions());
 
         PermissionOverride publicOverride = channel.getPermissionOverride(guild.getPublicRole());
         PermissionOverride roleOverride = channel.getPermissionOverride(role);
@@ -505,10 +493,10 @@ public class PermissionUtil
         Args.notNull(member, "Member");
         Guild guild = member.getGuild();
 
-        long permission = guild.getPublicRole().getPermissionsRaw();
+        long permission = Permission.getRaw(guild.getPublicRole().getPermissions());
 
         for (Role role : member.getRoles())
-            permission |= role.getPermissionsRaw();
+            permission |= Permission.getRaw(role.getPermissions());
 
         return permission;
     }
@@ -624,9 +612,9 @@ public class PermissionUtil
     /*
      * Check whether the specified permission is applied in the bits
      */
-    private static boolean isApplied(long permissions, Permission permission)
+    private static boolean isApplied(long permissions, long perms)
     {
-        return (permissions & permission.getRawValue()) > 0;
+        return (permissions & perms) == perms;
     }
 
     private static long apply(long permission, long allow, long deny)

@@ -196,6 +196,11 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     }
 
     @Override
+    public boolean isNSFW() {
+        return name.equals("nsfw") || name.startsWith("nsfw-");
+    }
+
+    @Override
     public List<Member> getMembers()
     {
         return Collections.unmodifiableList(guild.getMembersMap().valueCollection().stream()

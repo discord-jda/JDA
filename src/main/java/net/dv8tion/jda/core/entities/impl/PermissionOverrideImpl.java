@@ -27,7 +27,6 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 
-import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -35,6 +34,7 @@ public class PermissionOverrideImpl implements PermissionOverride
 {
     private final long id;
     private final Channel channel;
+    private final IPermissionHolder permissionHolder;
 
     protected final Object mngLock = new Object();
     protected volatile PermOverrideManager manager;
@@ -43,10 +43,11 @@ public class PermissionOverrideImpl implements PermissionOverride
     private long allow;
     private long deny;
 
-    public PermissionOverrideImpl(Channel channel, long id)
+    public PermissionOverrideImpl(Channel channel, long id, IPermissionHolder permissionHolder)
     {
         this.channel = channel;
         this.id = id;
+        this.permissionHolder = permissionHolder;
     }
 
     @Override
@@ -94,13 +95,13 @@ public class PermissionOverrideImpl implements PermissionOverride
     @Override
     public Member getMember()
     {
-        return getGuild().getMemberById(id);
+        return isMemberOverride() ? (Member) permissionHolder : null;
     }
 
     @Override
     public Role getRole()
     {
-        return getGuild().getRoleById(id);
+        return isRoleOverride() ? (Role) permissionHolder : null;
     }
 
     @Override
@@ -118,13 +119,13 @@ public class PermissionOverrideImpl implements PermissionOverride
     @Override
     public boolean isMemberOverride()
     {
-        return getMember() != null;
+        return permissionHolder instanceof Member;
     }
 
     @Override
     public boolean isRoleOverride()
     {
-        return getRole() != null;
+        return permissionHolder instanceof Role;
     }
 
     @Override
@@ -195,34 +196,23 @@ public class PermissionOverrideImpl implements PermissionOverride
     @Override
     public boolean equals(Object o)
     {
-        if (!(o instanceof PermissionOverride))
+        if (!(o instanceof PermissionOverrideImpl))
             return false;
-        PermissionOverride oPerm = (PermissionOverride) o;
-        return this == oPerm || ((this.getMember() == null ? oPerm.getMember() == null : this.getMember().equals(oPerm.getMember()))
-                && this.channel.equals(oPerm.getChannel()) && (this.getRole() == null ? oPerm.getRole() == null : this.getRole().equals(oPerm.getRole())));
+        PermissionOverrideImpl oPerm = (PermissionOverrideImpl) o;
+        return this == oPerm
+                || ((this.permissionHolder.equals(oPerm.permissionHolder)) && this.channel.equals(oPerm.channel));
     }
 
     @Override
     public int hashCode()
     {
-        return (channel.getId() + getId()).hashCode();
+        return toString().hashCode();
     }
 
     @Override
     public String toString()
     {
-        return "PermOver:(" + (isMemberOverride() ? "M" : "R") + ")(" + channel.getId() + " | " + getId() + ")";
+        return "PermOver:(" + (isMemberOverride() ? "M" : "R") + ")(" + channel.getId() + " | " + id + ")";
     }
 
-    @Override
-    public long getIdLong()
-    {
-        return id;
-    }
-
-    @Override
-    public OffsetDateTime getCreationTime()
-    {
-        throw new UnsupportedOperationException("Unable to get creation time for a PermissionOverride!");
-    }
 }

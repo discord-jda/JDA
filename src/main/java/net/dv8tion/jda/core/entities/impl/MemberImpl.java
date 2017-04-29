@@ -129,12 +129,6 @@ public class MemberImpl implements Member
     }
 
     @Override
-    public long getPermissionsRaw()
-    {
-        return Permission.getRaw(getPermissions());
-    }
-
-    @Override
     public List<Permission> getPermissions(Channel channel)
     {
         if (!guild.equals(channel.getGuild()))
@@ -250,6 +244,6 @@ public class MemberImpl implements Member
     @Override
     public String getAsMention()
     {
-        return user.getAsMention();
+        return nickname == null ? user.getAsMention() : "<@!" + user.getIdLong() + '>';
     }
 }

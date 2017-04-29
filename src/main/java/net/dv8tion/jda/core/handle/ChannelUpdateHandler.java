@@ -55,10 +55,8 @@ public class ChannelUpdateHandler extends SocketHandler
             return null;
         }
 
-        List<Role> changedRoles = new ArrayList<>();
-        List<Member> changedMembers = new ArrayList<>();
-        List<Role> containedRoles = new ArrayList<>();
-        List<Member> containedMembers = new ArrayList<>();
+        List<IPermissionHolder> changed = new ArrayList<>();
+        List<IPermissionHolder> contained = new ArrayList<>();
 
         final long channelId = content.getLong("id");
         String name = content.getString("name");
@@ -110,7 +108,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 //If a PermissionOverride was created or updated it stores it in the proper Map to be reported by the Event.
                 for (int i = 0; i < permOverwrites.length(); i++)
                 {
-                    handlePermissionOverride(permOverwrites.getJSONObject(i), channel, content, changedRoles, containedRoles, changedMembers, containedMembers);
+                    handlePermissionOverride(permOverwrites.getJSONObject(i), channel, content, changed, contained);
                 }
 
                 //Check if any overrides were deleted because of this event.
@@ -119,21 +117,12 @@ public class ChannelUpdateHandler extends SocketHandler
                 //Any entries remaining in these lists after this for loop is over will be removed from the Channel's overrides.
                 TLongList toRemove = new TLongLinkedList();
                 TDecorators.wrap(channel.getOverrideMap().keySet()).stream()
-                        .map(id -> channel.getGuild().getRoleById(id))
+                        .map(id -> mapPermissionHolder(id, channel.getGuild()))
                         .filter(Objects::nonNull)
-                        .filter(role -> !containedRoles.contains(role))
-                        .forEach(role -> {
-                            changedRoles.add(role);
-                            toRemove.add(role.getIdLong());
-                        });
-
-                TDecorators.wrap(channel.getOverrideMap().keySet()).stream()
-                        .map(id -> channel.getGuild().getMemberById(id))
-                        .filter(Objects::nonNull)
-                        .filter(user -> !containedMembers.contains(user))
-                        .forEach(member -> {
-                            changedMembers.add(member);
-                            toRemove.add(member.getUser().getIdLong());
+                        .filter(permHolder -> !contained.contains(permHolder))
+                        .forEach(permHolder -> {
+                            changed.add(permHolder);
+                            toRemove.add(getIdLong(permHolder));
                         });
 
                 toRemove.forEach((id) -> {
@@ -142,14 +131,12 @@ public class ChannelUpdateHandler extends SocketHandler
                 });
 
                 //If this update modified permissions in any way.
-                if (!changedRoles.isEmpty()
-                        || !changedMembers.isEmpty())
+                if (!changed.isEmpty())
                 {
                     api.getEventManager().handle(
                             new TextChannelUpdatePermissionsEvent(
                                     api, responseNumber,
-                                    channel,
-                                    changedRoles, changedMembers));
+                                    channel, changed));
                 }
                 break;  //Finish the TextChannelUpdate case
             }
@@ -206,7 +193,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 //If a PermissionOverride was created or updated it stores it in the proper Map to be reported by the Event.
                 for (int i = 0; i < permOverwrites.length(); i++)
                 {
-                    handlePermissionOverride(permOverwrites.getJSONObject(i), channel, content, changedRoles, containedRoles, changedMembers, containedMembers);
+                    handlePermissionOverride(permOverwrites.getJSONObject(i), channel, content, changed, contained);
                 }
 
                 //Check if any overrides were deleted because of this event.
@@ -215,22 +202,14 @@ public class ChannelUpdateHandler extends SocketHandler
                 //Any entries remaining in these lists after this for loop is over will be removed from the Channel's overrides.
                 TLongList toRemove = new TLongLinkedList();
                 TDecorators.wrap(channel.getOverrideMap().keySet()).stream()
-                    .map(id -> channel.getGuild().getRoleById(id))
+                    .map(id -> mapPermissionHolder(id, channel.getGuild()))
                     .filter(Objects::nonNull)
-                    .filter(role -> !containedRoles.contains(role))
-                .forEach(role -> {
-                    changedRoles.add(role);
-                    toRemove.add(role.getIdLong());
-                });
+                    .filter(permHolder -> !contained.contains(permHolder))
+                    .forEach(permHolder -> {
+                        changed.add(permHolder);
+                        toRemove.add(getIdLong(permHolder));
+                    });
 
-                TDecorators.wrap(channel.getOverrideMap().keySet()).stream()
-                    .map(id -> channel.getGuild().getMemberById(id))
-                    .filter(Objects::nonNull)
-                    .filter(user -> !containedMembers.contains(user))
-                .forEach(member -> {
-                    changedMembers.add(member);
-                   toRemove.add(member.getUser().getIdLong());
-                });
 
                 toRemove.forEach((id) -> {
                     channel.getOverrideMap().remove(id);
@@ -238,14 +217,12 @@ public class ChannelUpdateHandler extends SocketHandler
                 });
 
                 //If this update modified permissions in any way.
-                if (!changedRoles.isEmpty()
-                        || !changedMembers.isEmpty())
+                if (!changed.isEmpty())
                 {
                     api.getEventManager().handle(
                             new VoiceChannelUpdatePermissionsEvent(
                                     api, responseNumber,
-                                    channel,
-                                    changedRoles, changedMembers));
+                                    channel, changed));
                 }
                 break;  //Finish the TextChannelUpdate case
             }
@@ -255,76 +232,74 @@ public class ChannelUpdateHandler extends SocketHandler
         return null;
     }
 
-    private void handlePermissionOverride(JSONObject override, Channel channel, JSONObject content,
-                                          List<Role> changedRoles, List<Role> containedRoles,List<Member> changedMembers, List<Member> containedMembers)
+    private long getIdLong(IPermissionHolder permHolder)
+    {
+        if (permHolder instanceof Member)
+            return ((Member) permHolder).getUser().getIdLong();
+        else
+            return ((Role) permHolder).getIdLong();
+    }
+
+    private IPermissionHolder mapPermissionHolder(long id, Guild guild)
+    {
+        final Role holder = guild.getRoleById(id);
+        return holder == null ? guild.getMemberById(id) : holder;
+    }
+
+    private void handlePermissionOverride(JSONObject override, AbstractChannelImpl<?> channel, JSONObject content,
+                                          List<IPermissionHolder> changedPermHolders, List<IPermissionHolder> containedPermHolders)
     {
         final long id = content.getLong("id");
         int allow = override.getInt("allow");
         int deny = override.getInt("deny");
+        final IPermissionHolder permHolder;
 
         switch (override.getString("type"))
         {
             case "role":
             {
-                Role role = ((GuildImpl) channel.getGuild()).getRolesMap().get(id);
-                if (role == null)
+                permHolder = channel.getGuild().getRoleById(id);
+
+                if (permHolder == null)
                 {
                     api.getEventCache().cache(EventCache.Type.ROLE, id, () ->
-                    {
-                        handlePermissionOverride(override, channel, content, changedRoles, containedRoles, changedMembers, containedMembers);
-                    });
+                            handlePermissionOverride(override, channel, content, changedPermHolders, containedPermHolders));
                     EventCache.LOG.debug("CHANNEL_UPDATE attempted to create or update a PermissionOverride for a Role that doesn't exist! JSON: " + content);
                     return;
                 }
-
-                PermissionOverride permOverride = channel.getPermissionOverride(role);
-
-                if (permOverride == null)    //Created
-                {
-                    api.getEntityBuilder().createPermissionOverride(override, channel);
-                    changedRoles.add(role);
-                }
-                else if (permOverride.getAllowedRaw() != allow || permOverride.getDeniedRaw() != deny) //Updated
-                {
-                    ((PermissionOverrideImpl) permOverride).setAllow(allow);
-                    ((PermissionOverrideImpl) permOverride).setDeny(deny);
-                    changedRoles.add(role);
-                }
-                containedRoles.add(role);
                 break;
             }
             case "member":
             {
-                Member member = channel.getGuild().getMemberById(override.getLong("id"));
-                if (member == null)
+                permHolder = channel.getGuild().getMemberById(id);
+                if (permHolder == null)
                 {
                     api.getEventCache().cache(EventCache.Type.USER, id, () ->
-                    {
-                        handlePermissionOverride(override, channel, content, changedRoles, containedRoles, changedMembers, containedMembers);
-                    });
+                            handlePermissionOverride(override, channel, content, changedPermHolders, containedPermHolders));
                     EventCache.LOG.debug("CHANNEL_UPDATE attempted to create or update a PermissionOverride for User that doesn't exist in this Guild! JSON: " + content);
                     return;
                 }
-
-                PermissionOverride permOverride = channel.getPermissionOverride(member);
-
-                if (permOverride == null)    //Created
-                {
-                    api.getEntityBuilder().createPermissionOverride(override, channel);
-                    changedMembers.add(member);
-                }
-                else if (permOverride.getAllowedRaw() != allow || permOverride.getDeniedRaw() != deny)  //Updated
-                {
-                    ((PermissionOverrideImpl) permOverride).setAllow(allow);
-                    ((PermissionOverrideImpl) permOverride).setDeny(deny);
-                    changedMembers.add(member);
-                }
-                containedMembers.add(member);
                 break;
             }
             default:
                 throw new IllegalArgumentException("CHANNEL_UPDATE provided an unrecognized PermissionOverride type. JSON: " + content);
         }
+
+
+        PermissionOverrideImpl permOverride = (PermissionOverrideImpl) channel.getOverrideMap().get(id);
+
+        if (permOverride == null)    //Created
+        {
+            api.getEntityBuilder().createPermissionOverride(override, channel);
+            changedPermHolders.add(permHolder);
+        }
+        else if (permOverride.getAllowedRaw() != allow || permOverride.getDeniedRaw() != deny) //Updated
+        {
+            permOverride.setAllow(allow);
+            permOverride.setDeny(deny);
+            changedPermHolders.add(permHolder);
+        }
+        changedPermHolders.add(permHolder);
     }
 
     private void handleGroup(JSONObject content)

@@ -78,11 +78,30 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
     boolean isMentionable();
 
     /**
+     * The {@code long} representation of the literal permissions that this {@link net.dv8tion.jda.core.entities.Role Role} has.
+     * <br><b>NOTE:</b> these do not necessarily represent the permissions this role will have in a {@link net.dv8tion.jda.core.entities.Channel Channel}.
+     *
+     * @return Never-negative long containing offset permissions of this role.
+     */
+    long getPermissionsRaw();
+
+    /**
      * The color this {@link net.dv8tion.jda.core.entities.Role Role} is displayed in.
      *
      * @return Color value of Role-color
      */
     Color getColor();
+
+    /**
+     * Whether this role is the @everyone role for its {@link net.dv8tion.jda.core.entities.Guild Guild},
+     * which is assigned to everyone who joins the {@link net.dv8tion.jda.core.entities.Guild Guild}.
+     *
+     * @return True, if and only if this {@link net.dv8tion.jda.core.entities.Role Role} is the public role
+     * for the {@link net.dv8tion.jda.core.entities.Guild Guild} provided by {@link #getGuild()}.
+     *
+     * @see net.dv8tion.jda.core.entities.Guild#getPublicRole()
+     */
+    boolean isPublicRole();
 
     /**
      * Whether this Role can interact with the specified Role.
