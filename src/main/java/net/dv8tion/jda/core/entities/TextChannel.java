@@ -40,6 +40,14 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * @return Possibly-null String containing the topic of this TextChannel.
      */
     String getTopic();
+    
+    /**
+    * Whether or not this channel is considered as "NSFW" (Not-Safe-For-Work)
+    * <br>This will check whether the name of this TextChannel begins with {@code nsfw-} or is equal to {@code nsfw}!
+    * 
+    * @return True, If this TextChannel is considered NSFW by the official Discord Client
+    */
+    boolean isNSFW();
 
     /**
      * Bulk deletes a list of messages.

@@ -223,6 +223,11 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
+    public boolean isNSFW() {
+        return name.equals("nsfw") || name.startsWith("nsfw-");
+    }
+
+    @Override
     public Guild getGuild()
     {
         return guild;
