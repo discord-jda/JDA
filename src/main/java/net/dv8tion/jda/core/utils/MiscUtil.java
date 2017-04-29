@@ -132,9 +132,9 @@ public class MiscUtil
         Args.notEmpty(input, "ID");
         try
         {
-            if (input.startsWith("-")) // if negative -> parse unsigned
+            if (!input.startsWith("-")) // if not negative -> parse unsigned
                 return Long.parseUnsignedLong(input);
-            else // if not negative -> parse normal
+            else // if negative -> parse normal
                 return Long.parseLong(input);
         }
         catch (NumberFormatException ex)
