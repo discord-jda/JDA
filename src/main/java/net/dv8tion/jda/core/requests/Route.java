@@ -65,6 +65,9 @@ public class Route
         public static final Route LEAVE_GUILD =            new Route(DELETE, "users/@me/guilds/{guild_id}");
         public static final Route GET_PRIVATE_CHANNELS =   new Route(GET,    "users/@me/channels");
         public static final Route CREATE_PRIVATE_CHANNEL = new Route(POST,   "users/@me/channels");
+        
+        public static final Route CREATE_PRIVATE_CHANNEL_V6 = new Route(POST, "https://ptb.discordapp.com/api/v6/users/@me/channels");
+                   //see net.dv8tion.jda.core.requests.Requester.createRequest for an explanation   ^
 
         public static final Route GATEWAY_BOT =            new Route(GET, "gateway/bot");
 

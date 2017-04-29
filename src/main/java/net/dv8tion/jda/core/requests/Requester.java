@@ -180,7 +180,10 @@ public class Requester
 
     private BaseRequest createRequest(Route.CompiledRoute route, String body)
     {
-        String url = DISCORD_API_PREFIX + route.getCompiledRoute();
+    	String url = route.getCompiledRoute();
+    	if(!url.startsWith("https://")){                      // Some Group DMs Operations don't work properly using the default API prefix
+    		url = DISCORD_API_PREFIX.concat(url);             // so I did this to solve the problem of messing with things I shouldn't
+    	}                                                     //               yee
         BaseRequest request = null;
         switch (route.getMethod())
         {
