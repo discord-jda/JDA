@@ -33,6 +33,12 @@ import org.apache.http.util.Args;
 
 /**
  * Used to create new {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} instances.
+ * 
+ * <p>A single ShardManagerBuilder can be reused multiple times. Each call to {@link #buildAsync()} or {@link #buildBlocking()}
+ * creates a new {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} instance using the same information.
+ * 
+ * @since  3.1
+ * @author Aljoscha Grebe
  */
 public class ShardManagerBuilder
 {
@@ -43,12 +49,13 @@ public class ShardManagerBuilder
 
     /**
      * Creates a completely empty ShardManagerBuilder.
-     * <br>If you use this, you need to set the token using
+     * <br>You need to set the token using
      * {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder#setToken(String) setToken(String)}
      * before calling {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder#buildAsync() buildAsync()}
      * or {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder#buildBlocking() buildBlocking()}
      *
-     * @param  shardsTotal TODO
+     * @param  shardsTotal
+     *         The total number of shards
      */
     public ShardManagerBuilder(final int shardsTotal)
     {
@@ -101,7 +108,7 @@ public class ShardManagerBuilder
      */
     public ShardManager buildAsync() throws LoginException, IllegalArgumentException, RateLimitedException
     {
-        final ShardManager manager = new ShardManager(this.builder, this.shardsTotal, this.minShardId, this.maxShardId);
+        final ShardManager manager = new ShardManager(this.builder.clone(), this.shardsTotal, this.minShardId, this.maxShardId);
 
         manager.login();
 
@@ -271,7 +278,7 @@ public class ShardManagerBuilder
      * <br>This value can be changed at any time in the {@link net.dv8tion.jda.core.managers.Presence Presence} from a JDA instance.
      *
      * <p><b>Hint:</b> You can create a {@link net.dv8tion.jda.core.entities.Game Game} object using
-     * {@link net.dv8tion.jda.core.entities.Game#of(String) Game.of(String)} or 
+     * {@link net.dv8tion.jda.core.entities.Game#of(String) Game.of(String)} or
      * {@link net.dv8tion.jda.core.entities.Game#of(String, String) Game.of(String, String)}.
      *
      * @param  game
@@ -289,7 +296,7 @@ public class ShardManagerBuilder
 
     /**
      * Sets whether or not we should mark our sessions as afk
-     * <br>This value can be changed at any time using 
+     * <br>This value can be changed at any time using
      * {@link net.dv8tion.jda.bot.sharding.ShardManager#setIdle(boolean) ShardManager#setIdle(boolean)}.
      *
      * @param  idle
@@ -336,7 +343,7 @@ public class ShardManagerBuilder
      *         If this method is called after proxy settings have already been set or after at least 1 JDA object has been created.
      *
      * @return The {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder ShardManagerBuilder} instance. Useful for chaining.
-     * 
+     *
      * @see net.dv8tion.jda.core.JDABuilder#setProxy(HttpHost)
      */
     public ShardManagerBuilder setProxy(final HttpHost proxy)
@@ -347,23 +354,28 @@ public class ShardManagerBuilder
 
     /**
      * Sets the range of shards the {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} should contain.
-     * This is usefull if you want to split your shards between multiple JVMs or servers. 
+     * This is usefull if you want to split your shards between multiple JVMs or servers.
+     *
+     * @param  minShardId
+     *         The lowest shard id the ShardManager should contain
      * 
-     * @param  lowerBound TODO 
-     * @param  upperBound TODO
-     * 
-     * @throws IllegalArgumentException TODO
-     * 
+     * @param  maxShardId
+     *         The highest shard id the ShardManager should contain
+     *
+     * @throws IllegalArgumentException
+     *         If either minShardId is negative, maxShardId is lower than shardsTotal or
+     *         minShardId is lower than or equal to maxShardId
+     *
      * @return The {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder ShardManagerBuilder} instance. Useful for chaining.
      */
-    public ShardManagerBuilder setShardRange(final int lowerBound, final int upperBound)
+    public ShardManagerBuilder setShardRange(final int minShardId, final int maxShardId)
     {
-        Args.notNegative(lowerBound, "minShardId");
-        Args.check(upperBound < this.shardsTotal, "maxShardId must be lower than shardsTotal");
-        Args.check(lowerBound <= upperBound, "minShardId must be lower than or equal to maxShardId");
+        Args.notNegative(minShardId, "minShardId");
+        Args.check(maxShardId < this.shardsTotal, "maxShardId must be lower than shardsTotal");
+        Args.check(minShardId <= maxShardId, "minShardId must be lower than or equal to maxShardId");
 
-        this.minShardId = lowerBound;
-        this.maxShardId = upperBound;
+        this.minShardId = minShardId;
+        this.maxShardId = maxShardId;
         return this;
     }
 

@@ -1,3 +1,18 @@
+/*
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package net.dv8tion.jda.bot.sharding;
 
 import com.mashape.unirest.http.Unirest;
@@ -24,7 +39,14 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.http.util.Args;
 
-public class ShardManager // TODO: think about what methods ShardManager should contain
+/**
+ * This class acts as a manager for multiple shards.
+ * It contains several methods to make your life with sharding easier.
+ *
+ * @since  3.1
+ * @author Aljoscha Grebe
+ */
+public class ShardManager
 {
     private final JDABuilder builder;
     private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor(r ->
@@ -208,12 +230,12 @@ public class ShardManager // TODO: think about what methods ShardManager should 
     /**
      * This returns the {@link net.dv8tion.jda.core.JDA JDA} instance which has the same id as the one provided.
      * <br>If there is no shard with an id that matches the provided one, then this returns {@code null}.
-     * 
+     *
      * @param  shardId
      *         The id of the shard.
-     * 
+     *
      * @return The {@link net.dv8tion.jda.core.JDA JDA} instance with the given shardId or
-     *         {@code null} if no shard has the given id  
+     *         {@code null} if no shard has the given id
      */
     public JDA getShard(final int shardId)
     {
@@ -231,16 +253,16 @@ public class ShardManager // TODO: think about what methods ShardManager should 
     /**
      * This returns the {@link net.dv8tion.jda.core.JDA.Status JDA.Status} of the shard which has the same id as the one provided.
      * <br>If there is no shard with an id that matches the provided one, then this returns {@code null}.
-     * 
+     *
      * @param  shardId
      *         The id of the shard.
-     * 
+     *
      * @return The  {@link net.dv8tion.jda.core.JDA.Status JDA.Status} of the shard with the given shardId or
-     *         {@code null} if no shard has the given id  
+     *         {@code null} if no shard has the given id
      */
     public JDA.Status getStatus(final int shardId)
     {
-        JDA api = this.shards.get(shardId);
+        final JDA api = this.shards.get(shardId);
         return api == null ? null : api.getStatus();
     }
 
@@ -353,7 +375,7 @@ public class ShardManager // TODO: think about what methods ShardManager should 
      *
      * @return List of all {@link net.dv8tion.jda.core.entities.User Users} that are visible to JDA.
      */
-    public List<User> getUsers() // TODO: think about how resource intensive this is on large bots (over 1-2M users)
+    public List<User> getUsers()
     {
         return this.getDistinctUnmodifiableCombinedList(api -> api.getUserMap().valueCollection());
 
@@ -427,7 +449,7 @@ public class ShardManager // TODO: think about what methods ShardManager should 
 
     /**
      * Restarts the shards with the given id.
-     * 
+     *
      * @throws IllegalArgumentException
      *         if shardId is lower than minShardId or higher than maxShardId
      */
@@ -521,10 +543,10 @@ public class ShardManager // TODO: think about what methods ShardManager should 
         this.executor.shutdownNow();
 
         if (this.shards != null)
-            for (final JDA jda : this.shards.valueCollection()) // TODO: decide weather this should be done in parallel
+            for (final JDA jda : this.shards.valueCollection())
                 jda.shutdown(false);
 
-        // shutdown Unirest after all JDA instances (if requested) so they can still make rest calls
+        // shutdown Unirest after all JDA instances (if requested) so they can still make rest calls while shutting down
         if (free)
             try
             {

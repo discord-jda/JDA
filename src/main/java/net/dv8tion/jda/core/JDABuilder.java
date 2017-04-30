@@ -47,7 +47,7 @@ import java.util.List;
  * creates a new {@link net.dv8tion.jda.core.JDA} instance using the same information.
  * This means that you can have listeners easily registered to multiple {@link net.dv8tion.jda.core.JDA} instances.
  */
-public class JDABuilder
+public class JDABuilder implements Cloneable
 {
     protected static boolean jdaCreated = false;
     protected static HttpHost proxy = null;
@@ -86,6 +86,26 @@ public class JDABuilder
             throw new NullPointerException("Provided AccountType was null!");
         this.accountType = accountType;
         listeners = new LinkedList<>();
+    }
+
+    private JDABuilder(JDABuilder builder)
+    {
+        listeners = new LinkedList<>(builder.listeners);
+        builder.accountType = accountType;
+        builder.token = token;
+        builder.eventManager = eventManager;
+        builder.audioSendFactory = audioSendFactory;
+        builder.shardInfo = shardInfo;
+        builder.game = game;
+        builder.status = status;
+        builder.websocketTimeout = websocketTimeout;
+        builder.maxReconnectDelay = maxReconnectDelay;
+        builder.corePoolSize = corePoolSize;
+        builder.enableVoice = enableVoice;
+        builder.enableShutdownHook = enableShutdownHook;
+        builder.enableBulkDeleteSplitting = enableBulkDeleteSplitting;
+        builder.autoReconnect = autoReconnect;
+        builder.idle = idle;
     }
 
     /**
@@ -360,7 +380,7 @@ public class JDABuilder
     }
 
     /**
-     * Adds all provided listeners to the list of listeners that will be used to populate the {@link net.dv8tion.jda.core.JDA} object.
+     * Adds all provided listeners to the list of listeners that will be used to populate the {@link net.dv8tion.jda.core.JDA JDA} object.
      * <br>This uses the {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventListener} by default.
      * <br>To switch to the {@link net.dv8tion.jda.core.hooks.AnnotatedEventManager AnnotatedEventManager},
      * use {@link #setEventManager(net.dv8tion.jda.core.hooks.IEventManager) setEventManager(new AnnotatedEventManager())}.
@@ -530,6 +550,15 @@ public class JDABuilder
             }
         }
         return jda;
+    }
+
+    /**
+     * Returns a new {@link JDABuilder} which is equal to this one.
+     */
+    @Override
+    public JDABuilder clone()
+    {
+        return new JDABuilder(this);
     }
 
     private static class ReadyListener implements EventListener
