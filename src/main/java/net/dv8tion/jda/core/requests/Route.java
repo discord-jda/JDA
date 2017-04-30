@@ -59,15 +59,17 @@ public class Route
     
     public static class Self
     {
-        public static final Route GET_SELF =               new Route(GET,    "users/@me");
-        public static final Route MODIFY_SELF =            new Route(PATCH,  "users/@me");
-        public static final Route GET_GUILDS  =            new Route(GET,    "users/@me/guilds");
-        public static final Route LEAVE_GUILD =            new Route(DELETE, "users/@me/guilds/{guild_id}");
-        public static final Route GET_PRIVATE_CHANNELS =   new Route(GET,    "users/@me/channels");
-        public static final Route CREATE_PRIVATE_CHANNEL = new Route(POST,   "users/@me/channels");
+        public static final Route GET_SELF =                  new Route(GET,    "users/@me");
+        public static final Route MODIFY_SELF =               new Route(PATCH,  "users/@me");
+        public static final Route GET_GUILDS  =               new Route(GET,    "users/@me/guilds");
+        public static final Route LEAVE_GUILD =               new Route(DELETE, "users/@me/guilds/{guild_id}");
+        public static final Route GET_PRIVATE_CHANNELS =      new Route(GET,    "users/@me/channels");
+        public static final Route CREATE_PRIVATE_CHANNEL =    new Route(POST,   "users/@me/channels");
         
-        public static final Route CREATE_PRIVATE_CHANNEL_V6 = new Route(POST, "https://ptb.discordapp.com/api/v6/users/@me/channels");
-                   //see net.dv8tion.jda.core.requests.Requester.createRequest for an explanation   ^
+        public static final Route CREATE_PRIVATE_CHANNEL_V6 = new Route(POST,   "https://discordapp.com/api/v6/users/@me/channels");
+           // see net.dv8tion.jda.core.requests.Requester.createRequest for an explanation   ^
+           // (This actually is necessary, when I try this endpoint without 'v6' in the URL, discord creates a DM despite the recipients field containing multiple users)
+           // (I know this makes things inconsistent, but creation of Group DMs is impossible otherwise. Try it, I'm serious. It was the only solution for hours, I'm not just taking the quick way out with this here)
 
         public static final Route GATEWAY_BOT =            new Route(GET, "gateway/bot");
 

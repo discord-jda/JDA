@@ -38,6 +38,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -349,21 +350,24 @@ public class JDAClientImpl implements JDAClient
         };
     }
 
-	@Override
-	public RestAction<Group> createGroupDM(ArrayList<User> users)
-	{
-		if(users.size() < 2)
-			throw new IllegalArgumentException("Users array must contain at least two users!");
-		if(users.size() > 9)
-			throw new IllegalArgumentException("Group DM cannot contain more than 10 members! (You are the tenth member, max array size is 9)");
-		
-		JSONArray array = new JSONArray();
-		
-		for(User user : users){
-			array.put(user.getId());
-		}
-		
-		Route.CompiledRoute route = Route.Self.CREATE_PRIVATE_CHANNEL_V6.compile();
+    @Override
+    public RestAction<Group> createGroupDM(Collection<User> users)
+    {
+    	Args.notNull(users, "user collection");
+    	
+        if(users.size() < 2)
+            throw new IllegalArgumentException("Users array must contain at least two users!");
+        if(users.size() > 9)
+            throw new IllegalArgumentException("Group DM cannot contain more than 10 members! (You are the tenth member, max array size is 9)");
+        
+        JSONArray array = new JSONArray();
+        
+        for(User user : users)
+        {
+            array.put(user.getId());
+        }
+        
+        Route.CompiledRoute route = Route.Self.CREATE_PRIVATE_CHANNEL_V6.compile();
         return new RestAction<Group>(api, route, new JSONObject().put("recipients", array))
         {
             @Override
@@ -375,5 +379,5 @@ public class JDAClientImpl implements JDAClient
                     request.onFailure(response);
             }
         };
-	}
+    }
 }

@@ -30,38 +30,38 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 
 public class GroupManagerUpdatable {
-	
-	protected final GroupImpl group;
-	protected GroupField<String> name;
-	protected GroupField<Icon> icon;
+    
+    protected final GroupImpl group;
+    protected GroupField<String> name;
+    protected GroupField<Icon> icon;
 
-	public GroupManagerUpdatable(GroupImpl group)
-	{
-		this.group = group;
-		setupFields();
-	}
-	
-	/**
+    public GroupManagerUpdatable(GroupImpl group)
+    {
+        this.group = group;
+        setupFields();
+    }
+    
+    /**
      * The {@link net.dv8tion.jda.core.JDA JDA} instance of this Manager
      *
      * @return the corresponding JDA instance
      */
-	public JDA getJDA() //why...?
-	{
-		return this.group.getJDA();
-	}
-	
-	/**
+    public JDA getJDA()
+    {
+        return this.group.getJDA();
+    }
+    
+    /**
      * The {@link net.dv8tion.jda.client.entities.Group Group} that will
      * be modified by this Manager instance
      *
      * @return The {@link net.dv8tion.jda.client.entities.Application Application}
      */
-	public Group getGroup()
-	{
-		return this.group;
-	}
-	
+    public Group getGroup()
+    {
+        return this.group;
+    }
+    
     /**
      * A {@link net.dv8tion.jda.client.managers.fields.GroupField GroupField}
      * for the <b><u>name</u></b> of the selected {@link net.dv8tion.jda.client.entities.Group Group}.
@@ -71,12 +71,12 @@ public class GroupManagerUpdatable {
      *
      *  @return {@link net.dv8tion.jda.client.managers.fields.GroupField GroupField} - Type: {@code String}
      */
-	public final GroupField<String> getNameField()
-	{
-		return this.name;
-	}
-	
-	 /**
+    public final GroupField<String> getNameField()
+    {
+        return this.name;
+    }
+    
+     /**
      * A {@link net.dv8tion.jda.client.managers.fields.GroupField GroupField}
      * for the <b><u>icon</u></b> of the selected {@link net.dv8tion.jda.client.entities.Group Group}.
      *
@@ -85,22 +85,22 @@ public class GroupManagerUpdatable {
      *
      *  @return {@link net.dv8tion.jda.client.managers.fields.GroupField GroupField} - Type: {@link net.dv8tion.jda.core.entities.Icon Icon}
      */
-	public final GroupField<Icon> getIconField()
-	{
-		return this.icon;
-	}
-	
-	 /**
+    public final GroupField<Icon> getIconField()
+    {
+        return this.icon;
+    }
+    
+     /**
      * Resets all {@link net.dv8tion.jda.client.managers.fields.GroupField Fields}
      * for this manager instance by calling {@link net.dv8tion.jda.core.managers.fields.Field#reset() Field.reset()} sequentially
      * <br>This is automatically called by {@link #update()}
      */
-	public void reset()
+    public void reset()
     {
         name.reset();
         icon.reset();
     }
-	
+    
     /**
      * Creates a new {@link net.dv8tion.jda.core.requests.RestAction RestAction} instance
      * that will apply <b>all</b> changes that have been made to this manager instance.
@@ -112,17 +112,22 @@ public class GroupManagerUpdatable {
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
      *         <br>Applies all changes that have been made in a single api-call.
      */
-	public RestAction<Void> update()
+    public RestAction<Void> update()
     {
-		if (!needsUpdate())
+        if (!needsUpdate())
             return new RestAction.EmptyRestAction<>(null);
-		
-		JSONObject body = new JSONObject();
+        
+        JSONObject body = new JSONObject();
 
         if (name.shouldUpdate())
             body.put("name", name.getValue());
         if (icon.shouldUpdate())
-        	if (icon.getValue() == null) body.put("icon", "null"); else body.put("icon", icon.getValue().getEncoding());
+        {
+            if (icon.getValue() == null)
+            	body.put("icon", "null"); 
+            else
+            	body.put("icon", icon.getValue().getEncoding());
+        }
 
         reset(); //reset because we built the JSONObject needed to update ya flumpta
         
@@ -139,41 +144,42 @@ public class GroupManagerUpdatable {
             }
         };
     }
-	
-	protected boolean needsUpdate()
+    
+    protected boolean needsUpdate()
     {
         return name.shouldUpdate()
                 || icon.shouldUpdate();
     }
-	
-	protected void setupFields(){
-		name = new GroupField<String>(this, group::getName)
-		{
-			@Override public void checkValue(String value)
-			{
-				Args.notNull(value, "channel name");
-				if (value.length() < 1 || value.length() > 32)
+    
+    protected void setupFields(){
+        name = new GroupField<String>(this, group::getName)
+        {
+            @Override
+            public void checkValue(String value)
+            {
+                Args.notNull(value, "channel name");
+                if (value.length() < 1 || value.length() > 32)
                     throw new IllegalArgumentException("Group DM name must be between 1 and 100 characters in length!");
-			}
-		};
-		
-		icon = new GroupField<Icon>(this, null)
-		{
-			@Override
-	         public void checkValue(Icon value) { }
+            }
+        };
+        
+        icon = new GroupField<Icon>(this, null)
+        {
+             @Override
+             public void checkValue(Icon value) { }
 
-	         @Override
-	         public Icon getOriginalValue()
-	         {
-	             throw new UnsupportedOperationException("You'll have to look into this yourself");
-	         }
+             @Override
+             public Icon getOriginalValue()
+             {
+                 throw new UnsupportedOperationException("You'll have to look into this yourself");
+             }
 
-	         @Override
-	         public boolean shouldUpdate()
-	         {
-	             return isSet();
-	         }
-		};
-		
-	}
+             @Override
+             public boolean shouldUpdate()
+             {
+                 return isSet();
+             }
+        };
+        
+    }
 }

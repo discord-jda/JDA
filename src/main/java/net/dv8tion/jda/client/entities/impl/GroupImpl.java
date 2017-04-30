@@ -22,6 +22,7 @@ import net.dv8tion.jda.client.entities.Friend;
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.client.entities.Relationship;
 import net.dv8tion.jda.client.managers.GroupManager;
+import net.dv8tion.jda.client.managers.GroupManagerUpdatable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.User;
@@ -45,7 +46,9 @@ public class GroupImpl implements Group
     private String name;
     private String iconId;
     private long lastMessageId;
-	private GroupManager manager;
+    
+	private volatile GroupManager manager;
+	private volatile GroupManagerUpdatable managerUpdatable;
 	
 	private final Object mngLock = new Object();
 
@@ -234,7 +237,7 @@ public class GroupImpl implements Group
     }
 
 	@Override
-	public GroupManager getGroupManager() {
+	public GroupManager getManager() {
         GroupManager mng = manager;
         if (mng == null)
         {
@@ -243,6 +246,22 @@ public class GroupImpl implements Group
                 mng = manager;
                 if (mng == null)
                     mng = manager = new GroupManager(this);
+            }
+        }
+        return mng;
+	}
+	
+	@Override
+	public GroupManagerUpdatable getManagerUpdatable()
+	{
+        GroupManagerUpdatable mng = managerUpdatable;
+        if (mng == null)
+        {
+            synchronized (mngLock)
+            {
+                mng = managerUpdatable;
+                if (mng == null)
+                    mng = managerUpdatable = new GroupManagerUpdatable(this);
             }
         }
         return mng;

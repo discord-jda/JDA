@@ -17,6 +17,7 @@
 package net.dv8tion.jda.client.entities;
 
 import net.dv8tion.jda.client.managers.GroupManager;
+import net.dv8tion.jda.client.managers.GroupManagerUpdatable;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.requests.RestAction;
@@ -41,7 +42,8 @@ public interface Group extends MessageChannel, CallableChannel
     List<User> getNonFriendUsers();
     List<Friend> getFriends();
     
-    GroupManager getGroupManager();
+    GroupManager getManager();
+	GroupManagerUpdatable getManagerUpdatable();
 
     RestAction leaveGroup();
     
