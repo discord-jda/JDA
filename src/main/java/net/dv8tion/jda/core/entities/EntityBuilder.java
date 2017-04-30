@@ -30,7 +30,6 @@ import net.dv8tion.jda.core.entities.impl.*;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.handle.GuildMembersChunkHandler;
 import net.dv8tion.jda.core.handle.ReadyHandler;
-import net.dv8tion.jda.core.requests.GuildLock;
 import net.dv8tion.jda.core.requests.WebSocketClient;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.json.JSONArray;
@@ -1226,5 +1225,67 @@ public class EntityBuilder
         final String name = application.getString("name");
 
         return new AuthorizedApplicationImpl(api, authId, description, iconId, id, name, scopes);
+    }
+
+    public AuditLogEntry createAuditLogEntry(GuildImpl guild, JSONObject entryJson, JSONObject userJson)
+    {
+        final long targetId = entryJson.isNull("target_id") ? 0 : entryJson.getLong("target_id");
+        final long id = entryJson.getLong("id");
+        final int typeKey = entryJson.getInt("action_type");
+        final JSONArray changes = entryJson.isNull("changes") ? null : entryJson.getJSONArray("changes");
+
+        final UserImpl user = (UserImpl) createFakeUser(userJson, false);
+        final List<AuditLogChange<?>> changesList;
+        final AuditLogEntry.ActionType type = AuditLogEntry.ActionType.from(typeKey);
+
+        if (changes != null)
+        {
+            changesList = new ArrayList<>(changes.length());
+            for (int i = 0; i < changes.length(); i++)
+            {
+                final JSONObject object = changes.getJSONObject(i);
+                AuditLogChange<?> change = createAuditLogChange(object);
+                changesList.add(change);
+            }
+        }
+        else
+        {
+            changesList = Collections.emptyList();
+        }
+
+        return new AuditLogEntry(type, id, targetId, guild, user, changesList);
+    }
+
+    public AuditLogChange<?> createAuditLogChange(JSONObject change)
+    {
+        final String key = change.getString("key");
+        Object oldValue = change.isNull("old_value") ? null : change.get("old_value");
+        Object newValue = change.isNull("new_value") ? null : change.get("new_value");
+
+        if (oldValue instanceof JSONArray || newValue instanceof JSONArray)
+        {
+            final List<Object> oldList = oldValue != null ? ((JSONArray) oldValue).toList() : null;
+            final List<Object> newList = newValue != null ? ((JSONArray) newValue).toList() : null;
+            return new AuditLogChange<>(oldList, newList, key);
+        }
+        else if (oldValue instanceof JSONObject || newValue instanceof JSONObject)
+        {
+            final Map<String, Object> oldMap = oldValue != null ? ((JSONObject) oldValue).toMap() : null;
+            final Map<String, Object> newMap = newValue != null ? ((JSONObject) newValue).toMap() : null;
+            return new AuditLogChange<>(oldMap, newMap, key);
+        }
+        // java types
+        else if (oldValue instanceof Number || newValue instanceof Number)
+        {
+            Long oldLong = oldValue != null ? ((Number) oldValue).longValue() : null;
+            Long newLong = newValue != null ? ((Number) newValue).longValue() : null;
+            return new AuditLogChange<>(oldLong, newLong, key);
+        }
+        else if (oldValue instanceof String || newValue instanceof String)
+        {
+            return new AuditLogChange<>((String) oldValue, (String) newValue, key);
+        }
+
+        return new AuditLogChange<>(oldValue, newValue, key);
     }
 }

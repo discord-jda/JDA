@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.managers.GuildController;
 import net.dv8tion.jda.core.managers.GuildManager;
 import net.dv8tion.jda.core.managers.GuildManagerUpdatable;
 import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAction;
 
 import java.util.Collection;
 import java.util.List;
@@ -575,6 +576,8 @@ public interface Guild extends ISnowflake
      * @see    net.dv8tion.jda.client.JDAClient#getRecentMentions(Guild)
      */
     MentionPaginationAction getRecentMentions();
+
+    AuditLogPaginationAction getAuditLogs();
 
     /**
      * Used to leave a Guild. If the currently logged in account is the owner of this guild ({@link net.dv8tion.jda.core.entities.Guild#getOwner()})

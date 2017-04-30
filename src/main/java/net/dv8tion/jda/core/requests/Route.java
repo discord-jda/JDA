@@ -124,6 +124,9 @@ public class Route
         public static final Route MODIFY_INTEGRATION = new Route(PATCH,  "guilds/{guild_id}/integrations/{integration_id}",      "guild_id");
         public static final Route SYNC_INTEGRATION =   new Route(POST,   "guilds/{guild_id}/integrations/{integration_id}/sync", "guild_id");
 
+        public static final Route GET_AUDIT_LOGS =        new Route(GET, "guilds/{guild_id}/audit-logs?limit={}",           "guild_id");
+        public static final Route GET_AUDIT_LOGS_BEFORE = new Route(GET, "guilds/{guild_id}/audit-logs?limit={}&before={}", "guild_id");
+
         //Client Only
         public static final Route CREATE_GUILD = new Route(POST, "guilds");
         public static final Route DELETE_GUILD = new Route(POST, "guilds/{guild_id}/delete");
