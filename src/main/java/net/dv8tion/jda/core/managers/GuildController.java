@@ -33,6 +33,7 @@ import net.dv8tion.jda.core.requests.restaction.RoleAction;
 import net.dv8tion.jda.core.requests.restaction.WebhookAction;
 import net.dv8tion.jda.core.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.core.requests.restaction.order.RoleOrderAction;
+import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.apache.http.util.Args;
 import org.json.JSONArray;
@@ -509,13 +510,13 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
      */
-    public RestAction<Void> ban(Member member, int delDays)
+    public RestAction<Void> ban(Member member, int delDays, String reason)
     {
         checkAvailable();
         Args.notNull(member, "member");
         //Don't check if the provided member is from this guild. It doesn't matter if they are or aren't.
 
-        return ban(member.getUser(), delDays);
+        return ban(member.getUser(), delDays, reason);
     }
 
     /**
@@ -562,11 +563,16 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
      */
-    public RestAction<Void> ban(User user, int delDays)
+    public RestAction<Void> ban(User user, int delDays, String reason)
     {
         checkAvailable();
-        Args.notNull(user, "user");
+        Args.notNull(user, "User");
         checkPermission(Permission.BAN_MEMBERS);
+        if (reason != null)
+        {
+            Args.notBlank(reason, "Reason");
+            reason = MiscUtil.encodeUTF8(reason);
+        }
 
         if (guild.isMember(user)) // If user is in guild. Check if we are able to ban.
             checkPosition(guild.getMember(user));
@@ -574,11 +580,22 @@ public class GuildController
         if (delDays < 0)
             throw new IllegalArgumentException("Provided delDays cannot be less that 0. How can you delete messages that are -1 days old?");
 
+        String userId = user.getId();
         Route.CompiledRoute route;
         if (delDays > 0)
-            route = Route.Guilds.BAN_WITH_DELETE.compile(guild.getId(), user.getId(), Integer.toString(delDays));
+        {
+            if (reason == null)
+                route = Route.Guilds.BAN_WITH_DELETE.compile(guild.getId(), userId, Integer.toString(delDays));
+            else
+                route = Route.Guilds.BAN_WITH_DELETE_REASON.compile(guild.getId(), userId, Integer.toString(delDays), reason);
+        }
         else
-            route = Route.Guilds.BAN.compile(guild.getId(), user.getId());
+        {
+            if (reason == null)
+                route = Route.Guilds.BAN.compile(guild.getId(), userId);
+            else
+                route = Route.Guilds.BAN_REASON.compile(guild.getId(), userId, reason);
+        }
 
         return new RestAction<Void>(guild.getJDA(), route, null)
         {
@@ -634,23 +651,38 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
      */
-    public RestAction<Void> ban(String userId, int delDays)
+    public RestAction<Void> ban(String userId, int delDays, String reason)
     {
         checkAvailable();
-        Args.notBlank(userId, "userId");
+        Args.notBlank(userId, "UserId");
         checkPermission(Permission.BAN_MEMBERS);
 
         User user = guild.getJDA().getUserById(userId);
         if (user != null) // If we have the user cached then we should use the additional information available to use during the ban process.
         {
-            return ban(user, delDays);
+            return ban(user, delDays, reason);
+        }
+        if (reason != null) // encode here because otherwise it would encode twice for ban(user, delDays, reason)
+        {
+            Args.notBlank(reason, "Reason");
+            reason = MiscUtil.encodeUTF8(reason);
         }
 
         Route.CompiledRoute route;
         if (delDays > 0)
-            route = Route.Guilds.BAN_WITH_DELETE.compile(guild.getId(), userId, Integer.toString(delDays));
+        {
+            if (reason == null)
+                route = Route.Guilds.BAN_WITH_DELETE.compile(guild.getId(), userId, Integer.toString(delDays));
+            else
+                route = Route.Guilds.BAN_WITH_DELETE_REASON.compile(guild.getId(), userId, Integer.toString(delDays), reason);
+        }
         else
-            route = Route.Guilds.BAN.compile(guild.getId(), userId);
+        {
+            if (reason == null)
+                route = Route.Guilds.BAN.compile(guild.getId(), userId);
+            else
+                route = Route.Guilds.BAN_REASON.compile(guild.getId(), userId, reason);
+        }
 
         return new RestAction<Void>(guild.getJDA(), route, null)
         {
@@ -665,6 +697,22 @@ public class GuildController
                     request.onFailure(response);
             }
         };
+    }
+
+    // todo docs
+    public RestAction<Void> ban(Member member, int delDays)
+    {
+        return ban(member, delDays, null);
+    }
+
+    public RestAction<Void> ban(User user, int delDays)
+    {
+        return ban(user, delDays, null);
+    }
+
+    public RestAction<Void> ban(String userId, int delDays)
+    {
+        return ban(userId, delDays, null);
     }
 
     /**

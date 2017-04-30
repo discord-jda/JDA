@@ -105,8 +105,6 @@ public class Route
         public static final Route MODIFY_CHANNELS =    new Route(PATCH,  "guilds/{guild_id}/channels",          "guild_id");
         public static final Route MODIFY_ROLES =       new Route(PATCH,  "guilds/{guild_id}/roles",             "guild_id");
         public static final Route GET_BANS =           new Route(GET,    "guilds/{guild_id}/bans",              "guild_id");
-        public static final Route BAN =                new Route(PUT,    "guilds/{guild_id}/bans/{user_id}",    "guild_id");
-        public static final Route BAN_WITH_DELETE =    new Route(PUT,    "guilds/{guild_id}/bans/{user_id}?delete-message-days={}",    "guild_id");
         public static final Route UNBAN =              new Route(DELETE, "guilds/{guild_id}/bans/{user_id}",    "guild_id");
         public static final Route KICK_MEMBER =        new Route(DELETE, "guilds/{guild_id}/members/{user_id}", "guild_id");
         public static final Route MODIFY_MEMBER =      new Route(PATCH,  "guilds/{guild_id}/members/{user_id}", "guild_id");
@@ -126,6 +124,11 @@ public class Route
 
         public static final Route GET_AUDIT_LOGS =        new Route(GET, "guilds/{guild_id}/audit-logs?limit={}",           "guild_id");
         public static final Route GET_AUDIT_LOGS_BEFORE = new Route(GET, "guilds/{guild_id}/audit-logs?limit={}&before={}", "guild_id");
+
+        public static final Route BAN =                    new Route(PUT, "guilds/{guild_id}/bans/{user_id}",           "guild_id");
+        public static final Route BAN_REASON =             new Route(PUT, "guilds/{guild_id}/bans/{user_id}?reason={}", "guild_id");
+        public static final Route BAN_WITH_DELETE =        new Route(PUT, "guilds/{guild_id}/bans/{user_id}?delete-message-days={}",           "guild_id");
+        public static final Route BAN_WITH_DELETE_REASON = new Route(PUT, "guilds/{guild_id}/bans/{user_id}?delete-message-days={}&reason={}", "guild_id");
 
         //Client Only
         public static final Route CREATE_GUILD = new Route(POST, "guilds");
