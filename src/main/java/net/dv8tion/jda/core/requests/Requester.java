@@ -33,7 +33,7 @@ import java.util.Set;
 public class Requester
 {
     public static final SimpleLog LOG = SimpleLog.getLog("JDARequester");
-    public static final String DISCORD_API_PREFIX = "https://discordapp.com/api/";
+    public static final String DISCORD_API_PREFIX = "https://discordapp.com/api/v6/";
     public static String USER_AGENT = "JDA DiscordBot (" + JDAInfo.GITHUB + ", " + JDAInfo.VERSION + ")";
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
