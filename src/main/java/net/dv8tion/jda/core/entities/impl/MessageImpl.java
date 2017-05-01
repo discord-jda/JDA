@@ -141,10 +141,9 @@ public class MessageImpl implements Message
     @Override
     public RestAction<Void> clearReactions()
     {
-        if (!isFromType(ChannelType.TEXT)) {
+        if (!isFromType(ChannelType.TEXT))
             throw new IllegalStateException("Cannot clear reactions from a message in a Group or PrivateChannel.");
-        }
-        return ((TextChannel) channel).clearReactionsById(getId());
+        return getTextChannel().clearReactionsById(getId());
     }
 
     @Override
