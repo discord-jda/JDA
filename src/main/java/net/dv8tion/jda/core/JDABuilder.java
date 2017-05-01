@@ -47,7 +47,7 @@ public class JDABuilder
 {
     protected final List<Object> listeners;
 
-    protected OkHttpClient.Builder httpClientBuilder= null;
+    protected OkHttpClient.Builder httpClientBuilder = null;
     protected WebSocketFactory wsFactory = null;
     protected AccountType accountType;
     protected String token = null;

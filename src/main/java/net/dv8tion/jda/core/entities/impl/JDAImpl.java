@@ -101,17 +101,18 @@ public class JDAImpl implements JDA
     public JDAImpl(AccountType accountType, OkHttpClient.Builder httpClientBuilder, WebSocketFactory wsFactory, boolean autoReconnect, boolean audioEnabled,
             boolean useShutdownHook, boolean bulkDeleteSplittingEnabled, int corePoolSize, int maxReconnectDelay)
     {
-        this.presence = new PresenceImpl(this);
         this.accountType = accountType;
-        this.requester = new Requester(this);
-        this.httpClientBuilder = httpClientBuilder;
-        this.wsFactory = wsFactory;
+        this.httpClientBuilder = httpClientBuilder == null ? new OkHttpClient.Builder() : httpClientBuilder;
+        this.wsFactory = wsFactory == null ? new WebSocketFactory() : wsFactory;
         this.autoReconnect = autoReconnect;
         this.audioEnabled = audioEnabled;
         this.shutdownHook = useShutdownHook ? new Thread(() -> JDAImpl.this.shutdown(true), "JDA Shutdown Hook") : null;
         this.bulkDeleteSplittingEnabled = bulkDeleteSplittingEnabled;
         this.pool = Executors.newScheduledThreadPool(corePoolSize, new JDAThreadFactory());
         this.maxReconnectDelay = maxReconnectDelay;
+
+        this.presence = new PresenceImpl(this);
+        this.requester = new Requester(this);
 
         this.jdaClient = accountType == AccountType.CLIENT ? new JDAClientImpl(this) : null;
         this.jdaBot = accountType == AccountType.BOT ? new JDABotImpl(this) : null;
