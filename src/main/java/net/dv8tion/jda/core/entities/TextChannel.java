@@ -221,7 +221,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
-    RestAction<Void> clearReactionsByMessageId(String messageId);
+    RestAction<Void> clearReactionsById(String messageId);
 
     /**
      * Attempts to remove all reactions from a message with the specified {@code messageId} in this TextChannel
@@ -253,8 +253,8 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
-    default RestAction<Void> clearReactionsByMessageId(long messageId) {
-        return clearReactionsByMessageId(Long.toUnsignedString(messageId));
+    default RestAction<Void> clearReactionsById(long messageId) {
+        return clearReactionsById(Long.toUnsignedString(messageId));
     }
 
     /**
