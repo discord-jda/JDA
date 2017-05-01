@@ -689,7 +689,9 @@ public interface Message extends ISnowflake, Formattable
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      *         and the currently logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in the channel.
-     *
+     * @throws java.lang.IllegalStateException
+     *         If this message was <b>not</b> sent in a
+     *         {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
     RestAction<Void> clearReactions();
