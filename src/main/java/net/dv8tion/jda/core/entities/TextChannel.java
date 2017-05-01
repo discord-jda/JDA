@@ -217,7 +217,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in this channel.
      * @throws java.lang.IllegalArgumentException
-     *         If the provided unicode emoji is null or empty.
+     *         If the provided {@code id} is {@code null} or empty.
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
@@ -225,9 +225,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
 
     /**
      * Attempts to remove all reactions from a message with the specified {@code messageId} in this TextChannel
-     *
      * <br>This is useful for moderator commands that wish to remove all reactions at once from a specific message.
-     *
      *
      * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -248,8 +246,6 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in this channel.
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided unicode emoji is null or empty.
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */

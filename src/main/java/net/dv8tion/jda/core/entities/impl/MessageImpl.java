@@ -142,7 +142,8 @@ public class MessageImpl implements Message
     public RestAction<Void> clearReactions()
     {
         checkPermission(Permission.MESSAGE_MANAGE);
-        return new RestAction<Void>(getJDA(), Route.Messages.REMOVE_ALL_REACTIONS.compile(getChannel().getId(), getId()), null)
+        Route.CompiledRoute route = Route.Messages.REMOVE_ALL_REACTIONS.compile(getChannel().getId(), getId());
+        return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
