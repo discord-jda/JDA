@@ -15,7 +15,6 @@
  */
 package net.dv8tion.jda.core.utils;
 
-import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.AbstractChannelImpl;
@@ -360,64 +359,17 @@ public class PermissionUtil
 
         final AbstractChannelImpl<?> abstractChannel = (AbstractChannelImpl<?>) channel;
         final Guild guild = member.getGuild();
-        long permission = getEffectivePermission(member);
-
-        //override with channel-specific overrides of @everyone
-        TLongObjectMap<PermissionOverride> overrides = abstractChannel.getOverrideMap();
-        PermissionOverride override = overrides.get(guild.getPublicRole().getIdLong());
-
-        if (override != null)
-        {
-            permission = apply(permission, override.getAllowedRaw(), override.getDeniedRaw());
-            if (isApplied(permission, Permission.ADMINISTRATOR.getRawValue()))
-                // If the public role is marked as administrator we can return full permissions here
-                return Permission.ALL_PERMISSIONS;
-        }
-
-        //handle role-overrides of this member in this channel (grant > deny)
-        long allow = -1;
-        long deny = -1;
-        for (Role role : member.getRoles())
-        {
-            PermissionOverride po = overrides.get(role.getIdLong());
-            if (po != null)
-            // If an override exists for this role
-            {
-                if (allow == -1 || deny == -1)
-                // If this is the first role we've encountered.
-                {
-                    // First role, take values from this role as the base for permission
-                    allow = po.getAllowedRaw();
-                    deny = po.getDeniedRaw();
-                }
-                else
-                {
-                    allow |= po.getAllowedRaw();
-                    // Give all the stuff allowed by this Role's allow
-
-                    deny = (po.getDeniedRaw() | deny) & (~allow);
-                    // Deny everything that this role denies.
-                    // This also rewrites the previous role's denies if this role allowed those permissions.
-                }
-            }
-        }
-
-        if (allow != -1 && deny != -1)
-            //If we found at least 1 role with overrides.
-            permission = apply(permission, allow, deny);
-
-        //handle member-specific overrides
-        PermissionOverride memberOverride = overrides.get(member.getUser().getIdLong());
-        if (memberOverride != null)
-            permission = apply(permission, memberOverride.getAllowedRaw(), memberOverride.getDeniedRaw());
+        long permission = getEffectivePermission(member) | getImplicitPermission(channel, member);
 
         if (isApplied(permission, Permission.ADMINISTRATOR.getRawValue()))
             // If the public role is marked as administrator we can return full permissions here
             return Permission.ALL_PERMISSIONS;
 
-        if (isApplied(permission, Permission.MANAGE_PERMISSIONS.getRawValue()) || isApplied(permission, Permission.MANAGE_CHANNEL.getRawValue()))
+        final boolean isPerms = isApplied(permission, Permission.MANAGE_PERMISSIONS.getRawValue());
+        final boolean isChan = isApplied(permission, Permission.MANAGE_CHANNEL.getRawValue());
+        if (isPerms || isChan)
             // In text channels MANAGE_CHANNEL and MANAGE_PERMISSIONS grant full text/voice permissions
-            permission |= Permission.ALL_TEXT_PERMISSIONS | Permission.ALL_VOICE_PERMISSIONS;
+            return permission | Permission.ALL_TEXT_PERMISSIONS | Permission.ALL_VOICE_PERMISSIONS;
 
         return permission;
     }
@@ -449,7 +401,7 @@ public class PermissionUtil
         if (!guild.equals(role.getGuild()))
             throw new IllegalArgumentException("Provided channel and role are not of the same guild!");
 
-        long permissions = Permission.getRaw(guild.getPublicRole().getPermissions()) | Permission.getRaw(role.getPermissions());
+        long permissions = role.getPermissionsRaw() | guild.getPublicRole().getPermissionsRaw();
 
         PermissionOverride publicOverride = channel.getPermissionOverride(guild.getPublicRole());
         PermissionOverride roleOverride = channel.getPermissionOverride(role);
@@ -491,12 +443,12 @@ public class PermissionUtil
     public static long getImplicitPermission(Member member)
     {
         Args.notNull(member, "Member");
-        Guild guild = member.getGuild();
 
-        long permission = Permission.getRaw(guild.getPublicRole().getPermissions());
+        final Guild guild = member.getGuild();
+        long permission = guild.getPublicRole().getPermissionsRaw();
 
         for (Role role : member.getRoles())
-            permission |= Permission.getRaw(role.getPermissions());
+            permission |= role.getPermissionsRaw();
 
         return permission;
     }
@@ -530,13 +482,15 @@ public class PermissionUtil
     {
         Args.notNull(channel, "Channel");
         Args.notNull(member, "Member");
-        checkGuild(channel.getGuild(), member.getGuild(), "Member");
 
-        long permission = 0;
+        final Guild guild = member.getGuild();
+        checkGuild(channel.getGuild(), guild, "Member");
+
+        long permission = guild.getPublicRole().getPermissionsRaw();
         long allow = -1;
         long deny = -1;
 
-        PermissionOverride override = channel.getPermissionOverride(member.getGuild().getPublicRole());
+        PermissionOverride override = channel.getPermissionOverride(guild.getPublicRole());
         if (override != null)
             permission = apply(permission, override.getAllowedRaw(), override.getDeniedRaw());
 
@@ -593,13 +547,15 @@ public class PermissionUtil
     {
         Args.notNull(channel, "Channel");
         Args.notNull(role, "Role");
-        checkGuild(channel.getGuild(), role.getGuild(), "Role");
 
-        long permission = 0;
-        PermissionOverride override = channel.getPermissionOverride(role.getGuild().getPublicRole());
+        final Guild guild = role.getGuild();
+        checkGuild(channel.getGuild(), guild, "Role");
+
+        long permission = role.getPermissionsRaw() & guild.getPublicRole().getPermissionsRaw();
+        PermissionOverride override = channel.getPermissionOverride(guild.getPublicRole());
         if (override != null)
             permission = apply(permission, override.getAllowedRaw(), override.getDeniedRaw());
-        if (role.equals(role.getGuild().getPublicRole()))
+        if (role.equals(guild.getPublicRole()))
             return permission;
 
         override = channel.getPermissionOverride(role);
