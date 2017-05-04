@@ -76,13 +76,10 @@ public class VoiceServerUpdateHandler extends SocketHandler
                 return null;
             }
 
-            try
-            {
-                AudioWebSocket socket = new AudioWebSocket(audioManager.getListenerProxy(), endpoint, api, guild, sessionId, token, audioManager.isAutoReconnect());
-                AudioConnection connection = new AudioConnection(socket, audioManager.getQueuedAudioConnection());
-                audioManager.setAudioConnection(connection);
-            }
-            catch (WebSocketException | IOException ignored) {} // handled in AudioWebSocket
+            AudioWebSocket socket = new AudioWebSocket(audioManager.getListenerProxy(), endpoint, api, guild, sessionId, token, audioManager.isAutoReconnect());
+            AudioConnection connection = new AudioConnection(socket, audioManager.getQueuedAudioConnection());
+            audioManager.setAudioConnection(connection);
+            socket.startConnection();
 
             return null;
         }
