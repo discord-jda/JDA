@@ -94,7 +94,7 @@ Latest Version:
 Be sure to replace the **VERSION** key below with the latest version shown above!
 
 Maven
-```
+```xml
 <dependency>
     <groupId>net.dv8tion</groupId>
     <artifactId>JDA</artifactId>
@@ -109,7 +109,7 @@ Maven
 ```
 
 Gradle
-```
+```gradle
 dependencies {
     compile 'net.dv8tion:JDA:VERSION'
 }

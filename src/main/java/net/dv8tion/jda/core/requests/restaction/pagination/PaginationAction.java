@@ -152,7 +152,17 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>> exte
 
     /**
      * Sets the limit that should be used in the next RestAction completion
-     * call or by the next iterator retrieve call.
+     * call.
+     *
+     * <p>The specified limit may not be below the {@link #getMinLimit() Minimum Limit} nor above
+     * the {@link #getMaxLimit() Maximum Limit}. Unless these limits are specifically omitted. (See documentation of methods)
+     *
+     * <p><b>This limit represents how many entities will be retrieved per request and
+     * <u>NOT</u> the maximum amount of entities that should be retrieved for iteration/sequencing.</b>
+     * <br>{@code action.limit(50).complete()}
+     * <br>is not the same as
+     * <br>{@code action.stream().limit(50).collect(collector)}
+     *
      *
      * @param  limit
      *         The limit to use

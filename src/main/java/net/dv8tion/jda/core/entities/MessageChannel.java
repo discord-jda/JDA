@@ -20,10 +20,10 @@ import com.mashape.unirest.request.body.MultipartBody;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.entities.impl.MessageImpl;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.requests.*;
+import net.dv8tion.jda.core.requests.restaction.pagination.MessagePaginationAction;
 import net.dv8tion.jda.core.utils.IOUtil;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.http.util.Args;
@@ -811,6 +811,11 @@ public interface MessageChannel extends ISnowflake, Formattable
     default MessageHistory getHistory()
     {
         return new MessageHistory(this);
+    }
+
+    default MessagePaginationAction getIterableHistory()
+    {
+        return new MessagePaginationAction(this);
     }
 
     /**
