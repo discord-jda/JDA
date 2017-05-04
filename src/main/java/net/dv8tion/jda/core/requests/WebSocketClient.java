@@ -218,6 +218,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 {
                     try
                     {
+                        //Make sure that we don't send any packets while attempting to connect.
+                        if (!connected || initiating)
+                        {
+                            Thread.sleep(1000);
+                            continue;
+                        }
+
                         attemptedToSend = false;
                         needRatelimit = false;
 
