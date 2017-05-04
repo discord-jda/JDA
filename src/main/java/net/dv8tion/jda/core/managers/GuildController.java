@@ -397,7 +397,7 @@ public class GuildController
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
      *         Kicks the provided Member from the current Guild
      */
-    public RestAction<Void> kick(Member member)
+    public RestAction<Void> kick(Member member, String reason)
     {
         checkAvailable();
         Args.notNull(member, "member");
@@ -405,7 +405,17 @@ public class GuildController
         checkPermission(Permission.KICK_MEMBERS);
         checkPosition(member);
 
-        Route.CompiledRoute route = Route.Guilds.KICK_MEMBER.compile(guild.getId(), member.getUser().getId());
+        Route.CompiledRoute route;
+        if (reason == null)
+        {
+            route = Route.Guilds.KICK_MEMBER.compile(guild.getId(), member.getUser().getId());
+        }
+        else
+        {
+            Args.notBlank(reason, "Reason");
+            reason = MiscUtil.encodeUTF8(reason);
+            route = Route.Guilds.KICK_MEMBER_REASON.compile(guild.getId(), member.getUser().getId(), reason);
+        }
         return new RestAction<Void>(guild.getJDA(), route, null)
         {
             @Override
@@ -454,7 +464,7 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
      */
-    public RestAction<Void> kick(String userId)
+    public RestAction<Void> kick(String userId, String reason)
     {
         Args.notBlank(userId, "userId");
 
@@ -462,7 +472,18 @@ public class GuildController
         if (member == null)
             throw new IllegalArgumentException("The provided userId does not correspond to a member in this guild! Provided userId: " + userId);
 
-        return kick(member);
+        return kick(member, reason);
+    }
+    
+    //todo docs
+    public RestAction<Void> kick(Member member)
+    {
+        return kick(member, null);
+    }
+    
+    public RestAction<Void> kick(String userId)
+    {
+        return kick(userId, null);
     }
 
     /**

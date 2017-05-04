@@ -107,6 +107,7 @@ public class Route
         public static final Route GET_BANS =           new Route(GET,    "guilds/{guild_id}/bans",              "guild_id");
         public static final Route UNBAN =              new Route(DELETE, "guilds/{guild_id}/bans/{user_id}",    "guild_id");
         public static final Route KICK_MEMBER =        new Route(DELETE, "guilds/{guild_id}/members/{user_id}", "guild_id");
+        public static final Route KICK_MEMBER_REASON = new Route(DELETE, "guilds/{guild_id}/members/{user_id}?reason={}", "guild_id");
         public static final Route MODIFY_MEMBER =      new Route(PATCH,  "guilds/{guild_id}/members/{user_id}", "guild_id");
         public static final Route MODIFY_SELF_NICK =   new Route(PATCH,  "guilds/{guild_id}/members/@me/nick",  "guild_id");
         public static final Route PRUNABLE_COUNT =     new Route(GET,    "guilds/{guild_id}/prune?days={}",     "guild_id");
