@@ -45,11 +45,22 @@ public class MessagePaginationAction extends PaginationAction<Message, MessagePa
         this.channel = channel;
     }
 
+    /**
+     * The {@link net.dv8tion.jda.core.entities.ChannelType ChannelType} of
+     * the targeted {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.
+     *
+     * @return {@link net.dv8tion.jda.core.entities.ChannelType ChannelType}
+     */
     public ChannelType getType()
     {
         return getChannel().getType();
     }
 
+    /**
+     * The targeted {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}
+     *
+     * @return The MessageChannel instance
+     */
     public MessageChannel getChannel()
     {
         return channel;

@@ -307,6 +307,19 @@ public class MessageHistory
         return getMessageById(MiscUtil.parseSnowflake(id));
     }
 
+    /**
+     * Used to get a Message from the set of already retrieved message via it's message Id.
+     * <br>If a Message with the provided id has not already been retrieved (thus, doesn't not exist in this MessageHistory
+     * object), then this method returns null.
+     * <p>
+     * <b>Note:</b> This methods is not the same as {@link MessageChannel#getMessageById(long)}, which itself queries
+     * Discord. This method is for getting a message that has already been retrieved by this MessageHistory object.
+     *
+     * @param  id
+     *         The id of the requested Message.
+     *
+     * @return Possibly-null Message with the same {@code id} as the one provided.
+     */
     public Message getMessageById(long id)
     {
         return history.get(id);
