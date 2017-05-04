@@ -37,7 +37,9 @@ import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.SimpleLog;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpHost;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -323,16 +325,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         try
         {
-            if (gatewayUrl == null)
-            {
-                gatewayUrl = getGateway();
-                if (gatewayUrl == null)
-                {
-                    throw new RuntimeException("Could not fetch WS-Gateway!");
-                }
-            }
             socket = api.getWebSocketFactory()
-                    .createSocket(gatewayUrl)
+                    .createSocket(api.getGateway())
                     .addHeader("Accept-Encoding", "gzip")
                     .addListener(this);
             socket.connect();
@@ -341,37 +335,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             //Completely fail here. We couldn't make the connection.
             throw new RuntimeException(e);
-        }
-    }
-
-    protected String getGateway()
-    {
-        try
-        {
-            RestAction<String> gateway = new RestAction<String>(api, Route.Misc.GATEWAY.compile(),null)
-            {
-                @Override
-                protected void handleResponse(Response response, Request<String> request)
-                {
-                    try
-                    {
-                        if (response.isOk())
-                            request.onSuccess(response.getObject().getString("url"));
-                        else
-                            request.onFailure(new Exception("Failed to get gateway url"));
-                    }
-                    catch (Exception e)
-                    {
-                        request.onFailure(e);
-                    }
-                }
-            };
-
-            return gateway.complete(false) + "?encoding=json&v=" + DISCORD_GATEWAY_VERSION;
-        }
-        catch (Exception ex)
-        {
-            return null;
         }
     }
 

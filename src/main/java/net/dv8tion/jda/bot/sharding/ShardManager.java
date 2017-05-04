@@ -16,6 +16,8 @@
 package net.dv8tion.jda.bot.sharding;
 
 import com.mashape.unirest.http.Unirest;
+import com.neovisionaries.ws.client.ProxySettings;
+import com.neovisionaries.ws.client.WebSocketFactory;
 import gnu.trove.TCollections;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
@@ -28,13 +30,15 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.security.auth.login.LoginException;
 import net.dv8tion.jda.bot.entities.ApplicationInfo;
+import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.OnlineStatus;
+import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.IEventManager;
+import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.http.util.Args;
@@ -48,7 +52,6 @@ import org.apache.http.util.Args;
  */
 public class ShardManager
 {
-    private final JDABuilder builder;
     private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor(r ->
     {
         final Thread t = new Thread(r, "ShardManager");
@@ -56,43 +59,78 @@ public class ShardManager
         t.setPriority(Thread.NORM_PRIORITY + 1);
         return t;
     });
-    private final int maxShardId;
-    private final int minShardId;
-    private final int numShards;
+
+    protected int maxShardId;
+    protected int minShardId;
+    protected int shardsTotal;
+    protected final List<Object> listeners;
+    protected final String token;
+    protected final IEventManager eventManager;
+    protected final IAudioSendFactory audioSendFactory;
+    protected final Game game;
+    protected final OnlineStatus status;
+    protected final int websocketTimeout;
+    protected final int maxReconnectDelay;
+    protected final int corePoolSize;
+    protected final boolean enableVoice;
+    protected final boolean enableShutdownHook;
+    protected final boolean enableBulkDeleteSplitting;
+    protected final boolean autoReconnect;
+    protected final boolean idle;
+
     private final Queue<Integer> queue = new ConcurrentLinkedQueue<>();
-    private final TIntObjectMap<JDAImpl> shards;
-    private final int shardsTotal;
+    private TIntObjectMap<JDAImpl> shards = new TIntObjectHashMap<>();
     private TIntObjectMap<JDAImpl> shardsUnmodifiable;
     private final AtomicBoolean shutdown = new AtomicBoolean(false);
     private ScheduledFuture<?> worker;
 
-    ShardManager(final JDABuilder builder, final int shardsTotal, final int lowerBound, final int upperBound)
+    private int numShards;
+
+    public ShardManager(final int shardsTotal, int minShardId, int maxShardId, List<Object> listeners, String token,
+            IEventManager eventManager, IAudioSendFactory audioSendFactory, Game game, OnlineStatus status,
+            int websocketTimeout, int maxReconnectDelay, int corePoolSize, boolean enableVoice,
+            boolean enableShutdownHook, boolean enableBulkDeleteSplitting, boolean autoReconnect, boolean idle)
     {
-        Args.notNull(builder, "builder");
-        Args.positive(shardsTotal, "shardsTotal");
-        Args.check(!(lowerBound == -1 ^ upperBound == -1),
-                "Huh, how could this happen? only one of lowerBound or upperBound is -1");
-
-        this.builder = builder;
-
-        if (lowerBound == -1 && upperBound == -1)
-        {
-            this.minShardId = 0;
-            this.maxShardId = shardsTotal - 1;
-        }
-        else
-        {
-            this.minShardId = lowerBound;
-            this.maxShardId = upperBound;
-        }
-
         this.shardsTotal = shardsTotal;
-        this.numShards = upperBound - lowerBound + 1;
+        this.listeners = listeners;
+        this.token = token;
+        this.eventManager = eventManager;
+        this.audioSendFactory = audioSendFactory;
+        this.game = game;
+        this.status = status;
+        this.websocketTimeout = websocketTimeout;
+        this.maxReconnectDelay = maxReconnectDelay;
+        this.corePoolSize = corePoolSize;
+        this.enableVoice = enableVoice;
+        this.enableShutdownHook = enableShutdownHook;
+        this.enableBulkDeleteSplitting = enableBulkDeleteSplitting;
+        this.autoReconnect = autoReconnect;
+        this.idle = idle;
 
-        this.shards = new TIntObjectHashMap<>(this.numShards);
+        if (shardsTotal != -1)
+        {
+            Args.check(!(minShardId == -1 ^ maxShardId == -1), "Huh, how could this happen? only one of lowerBound or upperBound is -1");
 
-        for (int i = this.minShardId; i <= this.maxShardId; i++)
-            this.queue.offer(i);
+            if (minShardId == -1 && maxShardId == -1)
+            {
+                this.minShardId = 0;
+                this.maxShardId = shardsTotal - 1;
+            }
+            else
+            {
+                this.minShardId = minShardId;
+                this.maxShardId = maxShardId;
+            }
+
+            this.numShards = this.maxShardId - this.minShardId + 1;
+
+            this.shards = new TIntObjectHashMap<>(this.numShards);
+
+            for (int i = this.minShardId; i <= this.maxShardId; i++){
+                System.out.println(i);
+                this.queue.offer(i);
+            }
+        }
     }
 
     /**
@@ -596,10 +634,29 @@ public class ShardManager
         JDAImpl jda = null;
         try
         {
-            final int shardId = this.queue.peek();
-            this.builder.useSharding(shardId, this.shardsTotal);
-            this.shards.put(shardId, jda = (JDAImpl) this.builder.buildAsync());
-            this.queue.remove(shardId);
+            if (queue.isEmpty())
+            {
+                jda = buildInstance(0);
+
+                this.minShardId = 0;
+                this.maxShardId = shardsTotal - 1;
+
+                this.numShards = minShardId - maxShardId + 1;
+
+                this.shards = new TIntObjectHashMap<>(this.numShards);
+
+                for (int i = this.minShardId + 1; i <= this.maxShardId; i++)
+                    this.queue.offer(i);
+
+                this.shards.put(0, jda);
+            }
+            else
+            {
+                final int shardId = this.queue.peek();
+                
+                this.shards.put(shardId, jda = buildInstance(shardId));
+                this.queue.remove(shardId);
+            }
         }
         catch (final RateLimitedException e)
         {
@@ -637,8 +694,7 @@ public class ShardManager
                     return;
                 }
 
-                this.builder.useSharding(shardId, this.shardsTotal);
-                this.shards.put(shardId, api = (JDAImpl) this.builder.buildAsync());
+                this.shards.put(shardId, api = buildInstance(shardId));
                 this.queue.remove(shardId);
             }
             catch (LoginException | IllegalArgumentException e)
@@ -654,5 +710,44 @@ public class ShardManager
                 throw new RuntimeException(e);
             }
         }, 0, 5, TimeUnit.SECONDS);
+    }
+
+    private JDAImpl buildInstance(int shardId) throws LoginException, RateLimitedException
+    {
+        WebSocketFactory wsFactory = new WebSocketFactory();
+        wsFactory.setConnectionTimeout(websocketTimeout);
+        if (ShardManagerBuilder.proxy != null)
+        {
+            ProxySettings settings = wsFactory.getProxySettings();
+            settings.setHost(ShardManagerBuilder.proxy.getHostName());
+            settings.setPort(ShardManagerBuilder.proxy.getPort());
+        }
+
+        JDAImpl jda = new JDAImpl(AccountType.BOT, ShardManagerBuilder.proxy, wsFactory, autoReconnect, enableVoice, enableShutdownHook,
+                enableBulkDeleteSplitting, corePoolSize, maxReconnectDelay);
+
+        if (eventManager != null)
+            jda.setEventManager(eventManager);
+
+        if (audioSendFactory != null)
+            jda.setAudioSendFactory(audioSendFactory);
+
+        listeners.forEach(jda::addEventListener);
+        jda.setStatus(JDA.Status.INITIALIZED);  //This is already set by JDA internally, but this is to make sure the listeners catch it.
+
+        // Set the presence information before connecting to have the correct information ready when sending IDENTIFY
+        ((PresenceImpl) jda.getPresence())
+                .setCacheGame(game)
+                .setCacheIdle(idle)
+                .setCacheStatus(status);
+
+        JDAImpl.ShardInfoImpl shardInfo = new JDAImpl.ShardInfoImpl(shardId, shardsTotal);
+
+        int shardTotal = jda.login(token, shardInfo);
+        if (this.shardsTotal == -1)
+        {
+            this.shardsTotal = shardTotal;
+        }
+        return jda;
     }
 }

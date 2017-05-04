@@ -15,6 +15,9 @@
  */
 package net.dv8tion.jda.bot.sharding;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.security.auth.login.LoginException;
 import net.dv8tion.jda.core.AccountType;
@@ -42,25 +45,40 @@ import org.apache.http.util.Args;
  */
 public class ShardManagerBuilder
 {
+
+    protected static boolean jdaCreated = false; // FIXME: this ugly thing will be fixed with experimental/okhttp 
+    protected static HttpHost proxy = null;
+
     private int maxShardId = -1;
     private int minShardId = -1;
-    private int shardsTotal;
-    final JDABuilder builder = new JDABuilder(AccountType.BOT);
+    private int shardsTotal = -1;
 
+    protected final List<Object> listeners = new ArrayList<>();
+
+    protected String token = null;
+    protected IEventManager eventManager = null;
+    protected IAudioSendFactory audioSendFactory = null;
+    protected Game game = null;
+    protected OnlineStatus status = OnlineStatus.ONLINE;
+    protected int websocketTimeout = 0;
+    protected int maxReconnectDelay = 900;
+    protected int corePoolSize = 2;
+    protected boolean enableVoice = true;
+    protected boolean enableShutdownHook = true;
+    protected boolean enableBulkDeleteSplitting = true;
+    protected boolean autoReconnect = true;
+    protected boolean idle = false;
+
+    final JDABuilder builder = new JDABuilder(AccountType.BOT);
+    
     /**
      * Creates a completely empty ShardManagerBuilder.
      * <br>You need to set the token using
      * {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder#setToken(String) setToken(String)}
      * before calling {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder#buildAsync() buildAsync()}
-     * or {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder#buildBlocking() buildBlocking()}
-     *
-     * @param  shardsTotal
-     *         The total number of shards
+     * or {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder#buildBlocking() buildBlocking()}.
      */
-    public ShardManagerBuilder(final int shardsTotal)
-    {
-        this.setShardTotal(shardsTotal);
-    }
+    public ShardManagerBuilder() {}
 
     /**
      * Adds all provided listeners to the list of listeners that will be used to populate the {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} object.
@@ -80,7 +98,7 @@ public class ShardManagerBuilder
      */
     public ShardManagerBuilder addEventListener(final Object... listeners)
     {
-        this.builder.addEventListener(listeners);
+        Collections.addAll(this.listeners, listeners);
         return this;
     }
 
@@ -108,8 +126,9 @@ public class ShardManagerBuilder
      */
     public ShardManager buildAsync() throws LoginException, IllegalArgumentException, RateLimitedException
     {
-        final ShardManager manager = new ShardManager(this.builder.clone(), this.shardsTotal, this.minShardId, this.maxShardId);
+        jdaCreated = true;
 
+        final ShardManager manager = new ShardManager(shardsTotal, minShardId, maxShardId, listeners, token, eventManager, audioSendFactory, game, status, websocketTimeout, maxReconnectDelay, corePoolSize, enableVoice, enableShutdownHook, enableBulkDeleteSplitting, autoReconnect, idle);
         manager.login();
 
         return manager;
@@ -158,7 +177,8 @@ public class ShardManagerBuilder
      */
     public ShardManagerBuilder removeEventListener(final Object... listeners)
     {
-        this.builder.removeEventListener(listeners);
+        for (Object listener : listeners)
+            this.listeners.remove(listener);
         return this;
     }
 
@@ -175,7 +195,7 @@ public class ShardManagerBuilder
      */
     public ShardManagerBuilder setAudioEnabled(final boolean enabled)
     {
-        this.builder.setAudioEnabled(enabled);
+        this.enableVoice = enabled;
         return this;
     }
 
@@ -192,7 +212,7 @@ public class ShardManagerBuilder
      */
     public ShardManagerBuilder setAudioSendFactory(final IAudioSendFactory factory)
     {
-        this.builder.setAudioSendFactory(factory);
+        this.audioSendFactory = factory;
         return this;
     }
 
@@ -209,7 +229,7 @@ public class ShardManagerBuilder
      */
     public ShardManagerBuilder setAutoReconnect(final boolean autoReconnect)
     {
-        this.builder.setAutoReconnect(autoReconnect);
+        this.autoReconnect = autoReconnect;
         return this;
     }
 
@@ -227,7 +247,7 @@ public class ShardManagerBuilder
      */
     public ShardManagerBuilder setBulkDeleteSplittingEnabled(final boolean enabled)
     {
-        this.builder.setBulkDeleteSplittingEnabled(enabled);
+        this.enableBulkDeleteSplitting = enabled;
         return this;
     }
 
@@ -245,7 +265,7 @@ public class ShardManagerBuilder
      */
     public ShardManagerBuilder setEnableShutdownHook(final boolean enable)
     {
-        this.builder.setEnableShutdownHook(enable);
+        this.enableShutdownHook = enable;
         return this;
     }
 
@@ -269,7 +289,7 @@ public class ShardManagerBuilder
      */
     public ShardManagerBuilder setEventManager(final IEventManager manager)
     {
-        this.builder.setEventManager(manager);
+        this.eventManager = manager;
         return this;
     }
 
@@ -290,7 +310,7 @@ public class ShardManagerBuilder
      */
     public ShardManagerBuilder setGame(final Game game)
     {
-        this.builder.setGame(game);
+        this.game = game;
         return this;
     }
 
@@ -308,7 +328,7 @@ public class ShardManagerBuilder
      */
     public ShardManagerBuilder setIdle(final boolean idle)
     {
-        this.builder.setIdle(idle);
+        this.idle = idle;
         return this;
     }
 
@@ -326,7 +346,9 @@ public class ShardManagerBuilder
      */
     public ShardManagerBuilder setMaxReconnectDelay(final int maxReconnectDelay)
     {
-        this.builder.setMaxReconnectDelay(maxReconnectDelay);
+        Args.check(maxReconnectDelay >= 32, "Max reconnect delay must be 32 seconds or greater. You provided %d.", maxReconnectDelay);
+
+        this.maxReconnectDelay = maxReconnectDelay;
         return this;
     }
 
@@ -348,14 +370,18 @@ public class ShardManagerBuilder
      */
     public ShardManagerBuilder setProxy(final HttpHost proxy)
     {
-        this.builder.setProxy(proxy);
+        if (jdaCreated)
+            throw new UnsupportedOperationException("You cannot change the proxy after a JDA object has been created. Proxy settings are global among all instances!");
+        ShardManagerBuilder.proxy = proxy;
         return this;
     }
 
     /**
      * Sets the range of shards the {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} should contain.
      * This is usefull if you want to split your shards between multiple JVMs or servers.
-     *
+     * 
+     * <p><b>This does not have any effect if the total shard count is set to {@code -1} (get recommended shards from discord).</b>
+     * 
      * @param  minShardId
      *         The lowest shard id the ShardManager should contain
      * 
@@ -380,15 +406,12 @@ public class ShardManagerBuilder
     }
 
     /**
-     * This will enable sharding mode for JDA.
-     * <br>In sharding mode, guilds are split up and assigned one of multiple shards (clients).
-     * <br>The shardId that receives all stuff related to given bot is calculated as follows: shardId == (guildId {@literal >>} 22) % shardTotal;
-     * <br><b>PMs are only sent to shard 0.</b>
-     *
-     * <p>Please note, that a shard will not even know about guilds not assigned to.
-     *
+     * This will set the total amount of shards the {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} should use. 
+     * 
+     * <p> Of this is set to {@code -1}
+     * 
      * @param  shardTotal
-     *         The number of overall shards.
+     *         The number of overall shards or {@code -1} if JDA should use the recommended amount from discord.
      *
      * @return The {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder ShardManagerBuilder} instance. Useful for chaining.
      *
@@ -396,8 +419,9 @@ public class ShardManagerBuilder
      */
     public ShardManagerBuilder setShardTotal(final int shardsTotal)
     {
-        Args.positive(shardsTotal, "shardsTotal");
+        Args.check(shardsTotal == -1 || shardsTotal > 0, "shardsTotal must either be -1 or more than 0");
         this.shardsTotal = shardsTotal;
+
         if (this.minShardId == -1 && this.maxShardId == -1)
             this.setShardRange(0, shardsTotal - 1);
 
@@ -423,7 +447,9 @@ public class ShardManagerBuilder
      */
     public ShardManagerBuilder setStatus(final OnlineStatus status)
     {
-        this.builder.setStatus(status);
+        Args.check(status != null, "OnlineStatus cannot be null!");
+        Args.check(status != OnlineStatus.UNKNOWN, "OnlineStatus cannot be unknown!");
+        this.status = status;
         return this;
     }
 
@@ -444,11 +470,14 @@ public class ShardManagerBuilder
      * @param  token
      *         The token of the account that you would like to login with.
      *
+     * @throws java.lang.IllegalArgumentException
+     *         If the token is either null or empty 
+     *
      * @return The {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder ShardManagerBuilder} instance. Useful for chaining.
      */
     public ShardManagerBuilder setToken(final String token)
     {
-        this.builder.setToken(token);
+        this.token = Args.notBlank(token, "token");
         return this;
     }
 
@@ -468,7 +497,7 @@ public class ShardManagerBuilder
      */
     public ShardManagerBuilder setWebSocketTimeout(final int websocketTimeout)
     {
-        this.builder.setWebSocketTimeout(websocketTimeout);
+        this.websocketTimeout = Args.notNegative(websocketTimeout, "Provided WebSocket timeout cannot be negative!");;
         return this;
     }
 

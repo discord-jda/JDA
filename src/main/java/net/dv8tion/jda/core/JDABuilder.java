@@ -47,18 +47,18 @@ import java.util.List;
  * creates a new {@link net.dv8tion.jda.core.JDA} instance using the same information.
  * This means that you can have listeners easily registered to multiple {@link net.dv8tion.jda.core.JDA} instances.
  */
-public class JDABuilder implements Cloneable
+public class JDABuilder
 {
     protected static boolean jdaCreated = false;
     protected static HttpHost proxy = null;
 
-    protected final List<Object> listeners;
+    protected final List<Object> listeners = new LinkedList<>();
 
     protected AccountType accountType;
     protected String token = null;
     protected IEventManager eventManager = null;
     protected IAudioSendFactory audioSendFactory = null;
-    protected JDA.ShardInfo shardInfo = null;
+    protected JDAImpl.ShardInfoImpl shardInfo = null;
     protected Game game = null;
     protected OnlineStatus status = OnlineStatus.ONLINE;
     protected int websocketTimeout = 0;
@@ -85,27 +85,6 @@ public class JDABuilder implements Cloneable
         if (accountType == null)
             throw new NullPointerException("Provided AccountType was null!");
         this.accountType = accountType;
-        listeners = new LinkedList<>();
-    }
-
-    private JDABuilder(JDABuilder builder)
-    {
-        listeners = new LinkedList<>(builder.listeners);
-        builder.accountType = accountType;
-        builder.token = token;
-        builder.eventManager = eventManager;
-        builder.audioSendFactory = audioSendFactory;
-        builder.shardInfo = shardInfo;
-        builder.game = game;
-        builder.status = status;
-        builder.websocketTimeout = websocketTimeout;
-        builder.maxReconnectDelay = maxReconnectDelay;
-        builder.corePoolSize = corePoolSize;
-        builder.enableVoice = enableVoice;
-        builder.enableShutdownHook = enableShutdownHook;
-        builder.enableBulkDeleteSplitting = enableBulkDeleteSplitting;
-        builder.autoReconnect = autoReconnect;
-        builder.idle = idle;
     }
 
     /**
@@ -460,7 +439,7 @@ public class JDABuilder implements Cloneable
         {
             throw new RuntimeException("This configuration of shardId and shardTotal is not allowed! 0 <= shardId < shardTotal with shardTotal > 1");
         }
-        shardInfo = new JDA.ShardInfo(shardId, shardTotal);
+        shardInfo = new JDAImpl.ShardInfoImpl(shardId, shardTotal);
         return this;
     }
 
@@ -550,15 +529,6 @@ public class JDABuilder implements Cloneable
             }
         }
         return jda;
-    }
-
-    /**
-     * Returns a new {@link JDABuilder} which is equal to this one.
-     */
-    @Override
-    public JDABuilder clone()
-    {
-        return new JDABuilder(this);
     }
 
     private static class ReadyListener implements EventListener

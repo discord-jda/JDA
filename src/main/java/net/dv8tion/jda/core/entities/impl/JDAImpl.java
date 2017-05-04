@@ -40,8 +40,11 @@ import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.*;
+import net.dv8tion.jda.core.requests.Route.CompiledRoute;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.SimpleLog;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpHost;
 import org.apache.http.util.Args;
 import org.json.JSONObject;
@@ -100,6 +103,8 @@ public class JDAImpl implements JDA
     protected long responseTotal;
     protected long ping = -1;
 
+    protected String gatewayUrl;
+
     public JDAImpl(AccountType accountType, HttpHost proxy, WebSocketFactory wsFactory,
                    boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled,
                    int corePoolSize, int maxReconnectDelay)
@@ -120,22 +125,88 @@ public class JDAImpl implements JDA
         this.jdaBot = accountType == AccountType.BOT ? new JDABotImpl(this) : null;
     }
 
-    public void login(String token, ShardInfo shardInfo) throws LoginException, RateLimitedException
+    public int login(String token, ShardInfoImpl shardInfo) throws LoginException, RateLimitedException
     {
+        this.shardInfo = shardInfo;
+
         setStatus(Status.LOGGING_IN);
         if (token == null || token.isEmpty())
             throw new LoginException("Provided token was null or empty!");
 
         setToken(token);
         verifyToken();
-        this.shardInfo = shardInfo;
         LOG.info("Login Successful!");
+
+        Pair<String, Integer> gateway = getGatewayAndRecommendedShardCount();
+
+        if (gateway == null) 
+        { 
+            throw new RuntimeException("Could not fetch WS-Gateway!"); 
+        }
+
+        this.gatewayUrl = gateway.getKey();
+
+        if (shardInfo != null && shardInfo.getShardTotal() == -1)
+        {
+            shardInfo.setShardTotal(gateway.getValue());
+        }
 
         client = new WebSocketClient(this);
 
         if (shutdownHook != null)
         {
             Runtime.getRuntime().addShutdownHook(shutdownHook);
+        }
+
+        return shardInfo == null ? -1 : shardInfo.getShardTotal();
+    }
+
+    protected Pair<String, Integer> getGatewayAndRecommendedShardCount()
+    {
+        final CompiledRoute route;
+        if (accountType == AccountType.BOT)
+            route = Route.Misc.GATEWAY_BOT.compile();
+        else
+            route = Route.Misc.GATEWAY.compile();
+
+        try
+        {
+            RestAction<Pair<String, Integer>> gateway = new RestAction<Pair<String, Integer>>(this, route, null)
+            {
+                @Override
+                protected void handleResponse(Response response, Request<Pair<String, Integer>> request)
+                {
+                    try
+                    {
+                        if (response.isOk())
+                        {
+                            JSONObject object = response.getObject();
+
+                            Pair<String, Integer> pair;
+                            if (accountType == AccountType.BOT)
+                                pair = ImmutablePair.of(object.getString("url") + "?encoding=json&v=" + WebSocketClient.DISCORD_GATEWAY_VERSION, object.getInt("shards"));
+                            else
+                                pair = ImmutablePair.of(object.getString("url") + "?encoding=json&v=" + WebSocketClient.DISCORD_GATEWAY_VERSION, null);
+
+                            request.onSuccess(pair);
+                        }
+                        else
+                        {
+                            request.onFailure(new Exception("Failed to get gateway url"));
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        request.onFailure(e);
+                    }
+                }
+            };
+
+            return gateway.complete(false);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
         }
     }
 
@@ -792,6 +863,11 @@ public class JDAImpl implements JDA
             return "JDA";
     }
 
+    public EventCache getEventCache()
+    {
+        return eventCache;
+    }
+
     private class JDAThreadFactory implements ThreadFactory
     {
         @Override
@@ -818,8 +894,60 @@ public class JDAImpl implements JDA
         return akap;
     }
 
-    public EventCache getEventCache()
+    public String getGateway()
     {
-        return eventCache;
+        return gatewayUrl;
+    }
+
+    public static class ShardInfoImpl implements ShardInfo {
+        int shardId;
+        int shardTotal;
+
+        public ShardInfoImpl(int shardId, int shardTotal)
+        {
+            this.shardId = shardId;
+            this.shardTotal = shardTotal;
+        }
+
+        public int getShardId()
+        {
+            return shardId;
+        }
+
+        public int getShardTotal()
+        {
+            return shardTotal;
+        }
+
+        public String getShardString()
+        {
+            return "[" + shardId + " / " + shardTotal + "]";
+        }
+
+        public void setShardTotal(int shardTotal)
+        {
+            this.shardTotal = shardTotal;
+        }
+
+        public void setShardId(int shardId)
+        {
+            this.shardId = shardId;
+        }
+
+        @Override
+        public String toString()
+        {
+            return "Shard " + getShardString();
+        }
+
+        @Override
+        public boolean equals(Object o)
+        {
+            if (!(o instanceof ShardInfo))
+                return false;
+
+            ShardInfo oInfo = (ShardInfo) o;
+            return shardId == oInfo.getShardId() && shardTotal == oInfo.getShardTotal();
+        }
     }
 }
