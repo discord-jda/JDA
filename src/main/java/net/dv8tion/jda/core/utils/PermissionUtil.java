@@ -315,10 +315,10 @@ public class PermissionUtil
         if (member.isOwner())
             return Permission.ALL_PERMISSIONS;
         //Default to binary OR of all global permissions in this guild
-        long permission = Permission.getRaw(member.getGuild().getPublicRole().getPermissions());
+        long permission = member.getGuild().getPublicRole().getPermissionsRaw();
         for (Role role : member.getRoles())
         {
-            permission |= Permission.getRaw(role.getPermissions());
+            permission |= role.getPermissionsRaw();
             if (isApplied(permission, Permission.ADMINISTRATOR.getRawValue()))
                 return Permission.ALL_PERMISSIONS;
         }
@@ -349,6 +349,7 @@ public class PermissionUtil
     {
         Args.notNull(channel, "Channel");
         Args.notNull(member, "Member");
+        final long admin = Permission.ADMINISTRATOR.getRawValue();
 
         if (!channel.getGuild().equals(member.getGuild()))
             throw new IllegalArgumentException("Provided channel and provided member are not of the same guild!");
@@ -361,17 +362,24 @@ public class PermissionUtil
         final Guild guild = member.getGuild();
         long permission = getEffectivePermission(member) | getImplicitPermission(channel, member);
 
-        if (isApplied(permission, Permission.ADMINISTRATOR.getRawValue()))
+        final long implicitAllow = getImplicitAllow(channel, member);
+        final long implicitDeny = getImplicitDeny(channel, member);
+        permission = apply(permission, implicitAllow, implicitDeny);
+
+        if (isApplied(permission, admin))
             // If the public role is marked as administrator we can return full permissions here
             return Permission.ALL_PERMISSIONS;
+        else if (!isApplied(permission, Permission.MESSAGE_READ.getRawValue()))
+            // When the permission to read messages is not applied it is not granted
+            return permission & ~Permission.ALL_TEXT_PERMISSIONS;
 
         final boolean isPerms = isApplied(permission, Permission.MANAGE_PERMISSIONS.getRawValue());
         final boolean isChan = isApplied(permission, Permission.MANAGE_CHANNEL.getRawValue());
         if (isPerms || isChan)
             // In text channels MANAGE_CHANNEL and MANAGE_PERMISSIONS grant full text/voice permissions
-            return permission | Permission.ALL_TEXT_PERMISSIONS | Permission.ALL_VOICE_PERMISSIONS;
+            permission |= Permission.ALL_TEXT_PERMISSIONS | Permission.ALL_VOICE_PERMISSIONS;
 
-        return permission;
+        return permission & ~implicitDeny | implicitAllow;
     }
 
     /**
@@ -487,37 +495,11 @@ public class PermissionUtil
         checkGuild(channel.getGuild(), guild, "Member");
 
         long permission = guild.getPublicRole().getPermissionsRaw();
-        long allow = -1;
-        long deny = -1;
 
-        PermissionOverride override = channel.getPermissionOverride(guild.getPublicRole());
-        if (override != null)
-            permission = apply(permission, override.getAllowedRaw(), override.getDeniedRaw());
+        long allow = getImplicitAllow(channel, member);
+        long deny = getImplicitDeny(channel, member);
 
-        for (Role role : member.getRoles())
-        {
-            override = channel.getPermissionOverride(role);
-            if (override == null) continue;
-            if (allow < 0 || deny < 0)
-            {
-                allow = override.getAllowedRaw();
-                deny = override.getDeniedRaw();
-            }
-            else
-            {
-                allow |= override.getAllowedRaw();
-                deny = (override.getDeniedRaw() | deny) & (~allow);
-            }
-        }
-
-        if (allow >= 0 && deny >= 0)
-            permission = apply(permission, allow, deny);
-
-        override = channel.getPermissionOverride(member);
-        if (override != null)
-            permission = apply(permission, override.getAllowedRaw(), override.getDeniedRaw());
-
-        return permission;
+        return apply(permission, allow, deny);
     }
 
     /**
@@ -565,6 +547,44 @@ public class PermissionUtil
             : apply(permission, override.getAllowedRaw(), override.getDeniedRaw());
     }
 
+    private static long getImplicitDeny(Channel channel, Member member)
+    {
+        PermissionOverride override = channel.getPermissionOverride(member.getGuild().getPublicRole());
+        long deny = 0;
+        if (override != null)
+            deny = override.getDeniedRaw();
+        for (Role role : member.getRoles())
+        {
+            override = channel.getPermissionOverride(role);
+            if (override != null)
+                deny = override.getDeniedRaw();
+        }
+        override = channel.getPermissionOverride(member);
+        if (override != null)
+            deny |= override.getDeniedRaw();
+
+        return deny;
+    }
+
+    private static long getImplicitAllow(Channel channel, Member member)
+    {
+        PermissionOverride override = channel.getPermissionOverride(member.getGuild().getPublicRole());
+        long allow = 0;
+        if (override != null)
+            allow = override.getAllowedRaw();
+        for (Role role : member.getRoles())
+        {
+            override = channel.getPermissionOverride(role);
+            if (override != null)
+                allow = override.getAllowedRaw();
+        }
+        override = channel.getPermissionOverride(member);
+        if (override != null)
+            allow |= override.getAllowedRaw();
+
+        return allow;
+    }
+
     /*
      * Check whether the specified permission is applied in the bits
      */
@@ -575,9 +595,9 @@ public class PermissionUtil
 
     private static long apply(long permission, long allow, long deny)
     {
-        deny &= ~allow;
-        permission |= allow;  //Allow all the things that the cascade of roles allowed
         permission &= ~deny;  //Deny everything that the cascade of roles denied.
+        permission |= allow;  //Allow all the things that the cascade of roles allowed
+                              // The allowed bits override the denied ones!
         return permission;
     }
 

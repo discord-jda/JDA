@@ -19,6 +19,7 @@ package net.dv8tion.jda.core.handle;
 import gnu.trove.TDecorators;
 import gnu.trove.list.TLongList;
 import gnu.trove.list.linked.TLongLinkedList;
+import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.client.entities.impl.GroupImpl;
 import net.dv8tion.jda.client.events.group.update.GroupUpdateIconEvent;
 import net.dv8tion.jda.client.events.group.update.GroupUpdateNameEvent;
@@ -115,8 +116,10 @@ public class ChannelUpdateHandler extends SocketHandler
                 //Get the current overrides. (we copy them to a new list because the Set returned is backed by the Map, meaning our removes would remove from the Map. Not good.
                 //Loop through all of the json defined overrides. If we find a match, remove the User or Role from our lists.
                 //Any entries remaining in these lists after this for loop is over will be removed from the Channel's overrides.
-                TLongList toRemove = new TLongLinkedList();
-                TDecorators.wrap(channel.getOverrideMap().keySet()).stream()
+                final TLongList toRemove = new TLongLinkedList();
+                final TLongObjectMap<PermissionOverride> overridesMap = channel.getOverrideMap();
+
+                TDecorators.wrap(overridesMap.keySet()).stream()
                         .map(id -> mapPermissionHolder(id, channel.getGuild()))
                         .filter(Objects::nonNull)
                         .filter(permHolder -> !contained.contains(permHolder))
@@ -126,7 +129,7 @@ public class ChannelUpdateHandler extends SocketHandler
                         });
 
                 toRemove.forEach((id) -> {
-                    channel.getOverrideMap().remove(id);
+                    overridesMap.remove(id);
                     return true;
                 });
 
@@ -249,9 +252,9 @@ public class ChannelUpdateHandler extends SocketHandler
     private void handlePermissionOverride(JSONObject override, AbstractChannelImpl<?> channel, JSONObject content,
                                           List<IPermissionHolder> changedPermHolders, List<IPermissionHolder> containedPermHolders)
     {
-        final long id = content.getLong("id");
-        int allow = override.getInt("allow");
-        int deny = override.getInt("deny");
+        final long id = override.getLong("id");
+        final long allow = override.getLong("allow");
+        final long deny = override.getLong("deny");
         final IPermissionHolder permHolder;
 
         switch (override.getString("type"))
@@ -299,7 +302,7 @@ public class ChannelUpdateHandler extends SocketHandler
             permOverride.setDeny(deny);
             changedPermHolders.add(permHolder);
         }
-        changedPermHolders.add(permHolder);
+        containedPermHolders.add(permHolder);
     }
 
     private void handleGroup(JSONObject content)
