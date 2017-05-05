@@ -230,7 +230,7 @@ public class ChannelUpdateHandler extends SocketHandler
     private void handlePermissionOverride(JSONObject override, Channel channel, JSONObject content,
                                           List<Role> changedRoles, List<Role> containedRoles,List<Member> changedMembers, List<Member> containedMembers)
     {
-        final long id = content.getLong("id");
+        final long id = override.getLong("id");
         int allow = override.getInt("allow");
         int deny = override.getInt("deny");
 
@@ -245,7 +245,7 @@ public class ChannelUpdateHandler extends SocketHandler
                     {
                         handlePermissionOverride(override, channel, content, changedRoles, containedRoles, changedMembers, containedMembers);
                     });
-                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to create or update a PermissionOverride for a Role that doesn't exist! JSON: " + content);
+                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to create or update a PermissionOverride for a Role that doesn't exist! RoleId: " + id + " JSON: " + content);
                     return;
                 }
 
@@ -271,14 +271,14 @@ public class ChannelUpdateHandler extends SocketHandler
             }
             case "member":
             {
-                Member member = channel.getGuild().getMemberById(override.getLong("id"));
+                Member member = channel.getGuild().getMemberById(id);
                 if (member == null)
                 {
                     api.getEventCache().cache(EventCache.Type.USER, id, () ->
                     {
                         handlePermissionOverride(override, channel, content, changedRoles, containedRoles, changedMembers, containedMembers);
                     });
-                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to create or update a PermissionOverride for User that doesn't exist in this Guild! JSON: " + content);
+                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to create or update a PermissionOverride for Member that doesn't exist in this Guild! MemberId: " + id + " JSON: " + content);
                     return;
                 }
 
