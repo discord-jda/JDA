@@ -223,6 +223,11 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
+    public boolean isNSFW() {
+        return name.equals("nsfw") || name.startsWith("nsfw-");
+    }
+
+    @Override
     public Guild getGuild()
     {
         return guild;
@@ -378,6 +383,26 @@ public class TextChannelImpl implements TextChannel
 
         //Call MessageChannel's default method
         return TextChannel.super.addReactionById(messageId, emote);
+    }
+
+    @Override
+    public RestAction<Void> clearReactionsById(String messageId)
+    {
+        Args.notEmpty(messageId, "Message ID");
+
+        checkPermission(Permission.MESSAGE_MANAGE);
+        Route.CompiledRoute route = Route.Messages.REMOVE_ALL_REACTIONS.compile(getId(), messageId);
+        return new RestAction<Void>(getJDA(), route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request<Void> request)
+            {
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
     }
 
     @Override

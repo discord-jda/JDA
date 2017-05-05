@@ -112,10 +112,20 @@ public class ErrorResponseException extends RuntimeException
         int code = errorResponse.getCode();
         if (obj != null)
         {
-            if (!obj.isNull("code"))
-                code = obj.getInt("code");
-            if (!obj.isNull("message"))
-                meaning = obj.getString("message");
+            if (!obj.isNull("code") || !obj.isNull("message"))
+            {
+                if (!obj.isNull("code"))
+                    code = obj.getInt("code");
+                if (!obj.isNull("message"))
+                    meaning = obj.getString("message");
+            }
+            else
+            {
+                // This means that neither code or message is provided
+                //In that case we simply put the raw response in place!
+                code = response.code;
+                meaning = response.responseText;
+            }
         }
 
         return new ErrorResponseException(errorResponse, response, code, meaning);

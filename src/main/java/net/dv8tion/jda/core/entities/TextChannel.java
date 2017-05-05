@@ -40,6 +40,14 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * @return Possibly-null String containing the topic of this TextChannel.
      */
     String getTopic();
+    
+    /**
+    * Whether or not this channel is considered as "NSFW" (Not-Safe-For-Work)
+    * <br>This will check whether the name of this TextChannel begins with {@code nsfw-} or is equal to {@code nsfw}!
+    * 
+    * @return True, If this TextChannel is considered NSFW by the official Discord Client
+    */
+    boolean isNSFW();
 
     /**
      * Bulk deletes a list of messages.
@@ -182,6 +190,66 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: Void
      */
     RestAction<Void> deleteWebhookById(String id);
+
+    /**
+     * Attempts to remove all reactions from a message with the specified {@code messageId} in this TextChannel
+     * <br>This is useful for moderator commands that wish to remove all reactions at once from a specific message.
+     *
+     * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The clear-reactions request was attempted after the account lost access to the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
+     *         due to {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ} being revoked, or the
+     *         account lost access to the {@link net.dv8tion.jda.core.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *         typically due to being kicked or removed.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The clear-reactions request was attempted after the account lost {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
+     *         in the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} when adding the reaction.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *         The clear-reactions request was attempted after the Message had been deleted.</li>
+     * </ul>
+     *
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If the currently logged in account does not have
+     *         {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in this channel.
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided {@code id} is {@code null} or empty.
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
+     */
+    RestAction<Void> clearReactionsById(String messageId);
+
+    /**
+     * Attempts to remove all reactions from a message with the specified {@code messageId} in this TextChannel
+     * <br>This is useful for moderator commands that wish to remove all reactions at once from a specific message.
+     *
+     * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The clear-reactions request was attempted after the account lost access to the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
+     *         due to {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ} being revoked, or the
+     *         account lost access to the {@link net.dv8tion.jda.core.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *         typically due to being kicked or removed.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The clear-reactions request was attempted after the account lost {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
+     *         in the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} when adding the reaction.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *         The clear-reactions request was attempted after the Message had been deleted.</li>
+     * </ul>
+     *
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If the currently logged in account does not have
+     *         {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in this channel.
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
+     */
+    default RestAction<Void> clearReactionsById(long messageId) {
+        return clearReactionsById(Long.toUnsignedString(messageId));
+    }
 
     /**
      * Whether we can send messages in this channel.
