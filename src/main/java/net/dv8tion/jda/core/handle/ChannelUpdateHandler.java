@@ -267,7 +267,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 {
                     api.getEventCache().cache(EventCache.Type.ROLE, id, () ->
                             handlePermissionOverride(override, channel, content, changedPermHolders, containedPermHolders));
-                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to create or update a PermissionOverride for a Role that doesn't exist! JSON: " + content);
+                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to create or update a PermissionOverride for a Role that doesn't exist! RoleId: " + id + " JSON: " + content);
                     return;
                 }
                 break;
@@ -279,7 +279,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 {
                     api.getEventCache().cache(EventCache.Type.USER, id, () ->
                             handlePermissionOverride(override, channel, content, changedPermHolders, containedPermHolders));
-                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to create or update a PermissionOverride for User that doesn't exist in this Guild! JSON: " + content);
+                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to create or update a PermissionOverride for Member that doesn't exist in this Guild! MemberId: " + id + " JSON: " + content);
                     return;
                 }
                 break;
