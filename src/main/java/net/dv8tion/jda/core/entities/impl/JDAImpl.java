@@ -563,13 +563,13 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public void shutdown()
+    public void shutdown(boolean free)
     {
-        shutdown(true);
+        shutdown();
     }
 
     @Override
-    public void shutdown(boolean free)
+    public void shutdown()
     {
         setStatus(Status.SHUTTING_DOWN);
         audioManagers.valueCollection().forEach(AudioManager::closeAudioConnection);
