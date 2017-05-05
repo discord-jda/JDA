@@ -25,6 +25,7 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.Route.CompiledRoute;
+import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import org.apache.http.util.Args;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -88,11 +89,11 @@ public class InviteImpl implements Invite
     }
 
     @Override
-    public RestAction<Invite> delete()
+    public AuditableRestAction<Invite> delete()
     {
         final Route.CompiledRoute route = Route.Invites.DELETE_INVITE.compile(this.code);
 
-        return new RestAction<Invite>(this.api, route, null)
+        return new AuditableRestAction<Invite>(this.api, route, null)
         {
             @Override
             protected void handleResponse(final Response response, final Request<Invite> request)

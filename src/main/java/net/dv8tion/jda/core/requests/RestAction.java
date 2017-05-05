@@ -24,6 +24,7 @@ import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.requests.restaction.CompletedFuture;
 import net.dv8tion.jda.core.requests.restaction.RequestFuture;
 import net.dv8tion.jda.core.utils.SimpleLog;
+import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.http.util.Args;
 
 import java.util.concurrent.*;
@@ -239,7 +240,7 @@ public abstract class RestAction<T>
             success = DEFAULT_SUCCESS;
         if (failure == null)
             failure = DEFAULT_FAILURE;
-        api.getRequester().request(new Request<T>(this, success, failure, true));
+        api.getRequester().request(new Request<>(this, success, failure, true, finalizeHeaders()));
     }
 
     /**
@@ -272,7 +273,7 @@ public abstract class RestAction<T>
     {
         finalizeData();
         finalizeRoute();
-        return new RequestFuture<T>(this, shouldQueue);
+        return new RequestFuture<>(this, shouldQueue, finalizeHeaders());
     }
 
     /**
@@ -622,6 +623,11 @@ public abstract class RestAction<T>
     protected void finalizeData() { }
 
     protected void finalizeRoute() { }
+
+    protected CaseInsensitiveMap<String, String> finalizeHeaders()
+    {
+        return null;
+    }
 
     protected abstract void handleResponse(Response response, Request<T> request);
 

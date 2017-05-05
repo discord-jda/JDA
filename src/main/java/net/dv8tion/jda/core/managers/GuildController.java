@@ -20,7 +20,9 @@ import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.entities.impl.*;
+import net.dv8tion.jda.core.entities.impl.EmoteImpl;
+import net.dv8tion.jda.core.entities.impl.GuildImpl;
+import net.dv8tion.jda.core.entities.impl.MemberImpl;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
@@ -28,12 +30,12 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.ChannelAction;
 import net.dv8tion.jda.core.requests.restaction.RoleAction;
 import net.dv8tion.jda.core.requests.restaction.WebhookAction;
 import net.dv8tion.jda.core.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.core.requests.restaction.order.RoleOrderAction;
-import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.apache.http.util.Args;
 import org.json.JSONArray;
@@ -131,7 +133,7 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
      */
-    public RestAction<Void> setNickname(Member member, String nickname)
+    public AuditableRestAction<Void> setNickname(Member member, String nickname)
     {
         checkAvailable();
         Args.notNull(member, "member");
@@ -150,7 +152,7 @@ public class GuildController
         }
 
         if (Objects.equals(nickname, member.getNickname()))
-            return new RestAction.EmptyRestAction<Void>(null);
+            return new AuditableRestAction.EmptyRestAction<>(getJDA(), null);
 
         if (nickname == null)
             nickname = "";
@@ -163,7 +165,7 @@ public class GuildController
         else
             route = Route.Guilds.MODIFY_MEMBER.compile(guild.getId(), member.getUser().getId());
 
-        return new RestAction<Void>(guild.getJDA(), route, body)
+        return new AuditableRestAction<Void>(guild.getJDA(), route, body)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -397,7 +399,7 @@ public class GuildController
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
      *         Kicks the provided Member from the current Guild
      */
-    public RestAction<Void> kick(Member member, String reason)
+    public AuditableRestAction<Void> kick(Member member)
     {
         checkAvailable();
         Args.notNull(member, "member");
@@ -405,18 +407,8 @@ public class GuildController
         checkPermission(Permission.KICK_MEMBERS);
         checkPosition(member);
 
-        Route.CompiledRoute route;
-        if (reason == null)
-        {
-            route = Route.Guilds.KICK_MEMBER.compile(guild.getId(), member.getUser().getId());
-        }
-        else
-        {
-            Args.notBlank(reason, "Reason");
-            reason = MiscUtil.encodeUTF8(reason);
-            route = Route.Guilds.KICK_MEMBER_REASON.compile(guild.getId(), member.getUser().getId(), reason);
-        }
-        return new RestAction<Void>(guild.getJDA(), route, null)
+        Route.CompiledRoute route = Route.Guilds.KICK_MEMBER.compile(guild.getId(), member.getUser().getId());
+        return new AuditableRestAction<Void>(guild.getJDA(), route, null)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -464,7 +456,7 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
      */
-    public RestAction<Void> kick(String userId, String reason)
+    public AuditableRestAction<Void> kick(String userId)
     {
         Args.notBlank(userId, "userId");
 
@@ -472,18 +464,7 @@ public class GuildController
         if (member == null)
             throw new IllegalArgumentException("The provided userId does not correspond to a member in this guild! Provided userId: " + userId);
 
-        return kick(member, reason);
-    }
-    
-    //todo docs
-    public RestAction<Void> kick(Member member)
-    {
-        return kick(member, null);
-    }
-    
-    public RestAction<Void> kick(String userId)
-    {
-        return kick(userId, null);
+        return kick(member);
     }
 
     /**
@@ -531,13 +512,13 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
      */
-    public RestAction<Void> ban(Member member, int delDays, String reason)
+    public AuditableRestAction<Void> ban(Member member, int delDays)
     {
         checkAvailable();
         Args.notNull(member, "member");
         //Don't check if the provided member is from this guild. It doesn't matter if they are or aren't.
 
-        return ban(member.getUser(), delDays, reason);
+        return ban(member.getUser(), delDays);
     }
 
     /**
@@ -584,16 +565,11 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
      */
-    public RestAction<Void> ban(User user, int delDays, String reason)
+    public AuditableRestAction<Void> ban(User user, int delDays)
     {
         checkAvailable();
         Args.notNull(user, "User");
         checkPermission(Permission.BAN_MEMBERS);
-        if (reason != null)
-        {
-            Args.notBlank(reason, "Reason");
-            reason = MiscUtil.encodeUTF8(reason);
-        }
 
         if (guild.isMember(user)) // If user is in guild. Check if we are able to ban.
             checkPosition(guild.getMember(user));
@@ -604,21 +580,11 @@ public class GuildController
         String userId = user.getId();
         Route.CompiledRoute route;
         if (delDays > 0)
-        {
-            if (reason == null)
-                route = Route.Guilds.BAN_WITH_DELETE.compile(guild.getId(), userId, Integer.toString(delDays));
-            else
-                route = Route.Guilds.BAN_WITH_DELETE_REASON.compile(guild.getId(), userId, Integer.toString(delDays), reason);
-        }
+            route = Route.Guilds.BAN_WITH_DELETE.compile(guild.getId(), userId, Integer.toString(delDays));
         else
-        {
-            if (reason == null)
-                route = Route.Guilds.BAN.compile(guild.getId(), userId);
-            else
-                route = Route.Guilds.BAN_REASON.compile(guild.getId(), userId, reason);
-        }
+            route = Route.Guilds.BAN.compile(guild.getId(), userId);
 
-        return new RestAction<Void>(guild.getJDA(), route, null)
+        return new AuditableRestAction<Void>(guild.getJDA(), route, null)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -672,7 +638,7 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
      */
-    public RestAction<Void> ban(String userId, int delDays, String reason)
+    public AuditableRestAction<Void> ban(String userId, int delDays)
     {
         checkAvailable();
         Args.notBlank(userId, "UserId");
@@ -681,31 +647,16 @@ public class GuildController
         User user = guild.getJDA().getUserById(userId);
         if (user != null) // If we have the user cached then we should use the additional information available to use during the ban process.
         {
-            return ban(user, delDays, reason);
-        }
-        if (reason != null) // encode here because otherwise it would encode twice for ban(user, delDays, reason)
-        {
-            Args.notBlank(reason, "Reason");
-            reason = MiscUtil.encodeUTF8(reason);
+            return ban(user, delDays);
         }
 
         Route.CompiledRoute route;
         if (delDays > 0)
-        {
-            if (reason == null)
-                route = Route.Guilds.BAN_WITH_DELETE.compile(guild.getId(), userId, Integer.toString(delDays));
-            else
-                route = Route.Guilds.BAN_WITH_DELETE_REASON.compile(guild.getId(), userId, Integer.toString(delDays), reason);
-        }
+            route = Route.Guilds.BAN_WITH_DELETE.compile(guild.getId(), userId, Integer.toString(delDays));
         else
-        {
-            if (reason == null)
-                route = Route.Guilds.BAN.compile(guild.getId(), userId);
-            else
-                route = Route.Guilds.BAN_REASON.compile(guild.getId(), userId, reason);
-        }
+            route = Route.Guilds.BAN.compile(guild.getId(), userId);
 
-        return new RestAction<Void>(guild.getJDA(), route, null)
+        return new AuditableRestAction<Void>(guild.getJDA(), route, null)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -718,22 +669,6 @@ public class GuildController
                     request.onFailure(response);
             }
         };
-    }
-
-    // todo docs
-    public RestAction<Void> ban(Member member, int delDays)
-    {
-        return ban(member, delDays, null);
-    }
-
-    public RestAction<Void> ban(User user, int delDays)
-    {
-        return ban(user, delDays, null);
-    }
-
-    public RestAction<Void> ban(String userId, int delDays)
-    {
-        return ban(userId, delDays, null);
     }
 
     /**
@@ -764,7 +699,7 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
      */
-    public RestAction<Void> unban(User user)
+    public AuditableRestAction<Void> unban(User user)
     {
         Args.notNull(user, "user");
 
@@ -799,14 +734,14 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
      */
-    public RestAction<Void> unban(String userId)
+    public AuditableRestAction<Void> unban(String userId)
     {
         checkAvailable();
         Args.notBlank(userId, "userId");
         checkPermission(Permission.BAN_MEMBERS);
 
         Route.CompiledRoute route = Route.Guilds.UNBAN.compile(guild.getId(), userId);
-        return new RestAction<Void>(guild.getJDA(), route, null)
+        return new AuditableRestAction<Void>(guild.getJDA(), route, null)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -1050,7 +985,7 @@ public class GuildController
      * @see    #addRolesToMember(Member, Collection)
      * @see    #modifyMemberRoles(Member, Role...)
      */
-    public RestAction<Void> addRolesToMember(Member member, Role... roles)
+    public AuditableRestAction<Void> addRolesToMember(Member member, Role... roles)
     {
         return modifyMemberRoles(member, Arrays.asList(roles), Collections.emptyList());
     }
@@ -1096,7 +1031,7 @@ public class GuildController
      * @see    #addRolesToMember(Member, Role...)
      * @see    #modifyMemberRoles(Member, Collection)
      */
-    public RestAction<Void> addRolesToMember(Member member, Collection<Role> roles)
+    public AuditableRestAction<Void> addRolesToMember(Member member, Collection<Role> roles)
     {
         return modifyMemberRoles(member, roles, Collections.emptyList());
     }
@@ -1142,7 +1077,7 @@ public class GuildController
      * @see    #addRolesToMember(Member, Collection)
      * @see    #modifyMemberRoles(Member, Role...)
      */
-    public RestAction<Void> removeRolesFromMember(Member member, Role... roles)
+    public AuditableRestAction<Void> removeRolesFromMember(Member member, Role... roles)
     {
         return modifyMemberRoles(member, Collections.emptyList(), Arrays.asList(roles));
     }
@@ -1188,7 +1123,7 @@ public class GuildController
      * @see    #addRolesToMember(Member, Role...)
      * @see    #modifyMemberRoles(Member, Collection)
      */
-    public RestAction<Void> removeRolesFromMember(Member member, Collection<Role> roles)
+    public AuditableRestAction<Void> removeRolesFromMember(Member member, Collection<Role> roles)
     {
         return modifyMemberRoles(member, Collections.emptyList(), roles);
     }
@@ -1237,7 +1172,7 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
      */
-    public RestAction<Void> modifyMemberRoles(Member member, Collection<Role> rolesToAdd, Collection<Role> rolesToRemove)
+    public AuditableRestAction<Void> modifyMemberRoles(Member member, Collection<Role> rolesToAdd, Collection<Role> rolesToRemove)
     {
         checkAvailable();
         Args.notNull(member, "member");
@@ -1273,7 +1208,7 @@ public class GuildController
                 .put("roles", currentRoles.stream().map(Role::getId).collect(Collectors.toList()));
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(guild.getId(), member.getUser().getId());
 
-        return new RestAction<Void>(guild.getJDA(), route, body)
+        return new AuditableRestAction<Void>(guild.getJDA(), route, body)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -1327,7 +1262,7 @@ public class GuildController
      *
      * @see    #modifyMemberRoles(Member, Collection)
      */
-    public RestAction<Void> modifyMemberRoles(Member member, Role... roles)
+    public AuditableRestAction<Void> modifyMemberRoles(Member member, Role... roles)
     {
         return modifyMemberRoles(member, Arrays.asList(roles));
     }
@@ -1373,7 +1308,7 @@ public class GuildController
      *
      * @see    #modifyMemberRoles(Member, Collection)
      */
-    public RestAction<Void> modifyMemberRoles(Member member, Collection<Role> roles)
+    public AuditableRestAction<Void> modifyMemberRoles(Member member, Collection<Role> roles)
     {
         checkAvailable();
         Args.notNull(member, "member");
@@ -1407,7 +1342,7 @@ public class GuildController
                 .put("roles", roles.stream().map(Role::getId).collect(Collectors.toList()));
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(guild.getId(), member.getUser().getId());
 
-        return new RestAction<Void>(guild.getJDA(), route, body)
+        return new AuditableRestAction<Void>(guild.getJDA(), route, body)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -1802,7 +1737,7 @@ public class GuildController
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Emote Emote}
      *         <br>The newly created Emote
      */
-    public RestAction<Emote> createEmote(String name, Icon icon, Role... roles)
+    public AuditableRestAction<Emote> createEmote(String name, Icon icon, Role... roles)
     {
         checkAvailable();
         checkPermission(Permission.MANAGE_EMOTES);
@@ -1819,7 +1754,7 @@ public class GuildController
             body.put("roles", Stream.of(roles).filter(r -> r != null).map(ISnowflake::getId).collect(Collectors.toSet()));
 
         Route.CompiledRoute route = Route.Emotes.CREATE_EMOTE.compile(guild.getId());
-        return new RestAction<Emote>(getJDA(), route, body)
+        return new AuditableRestAction<Emote>(getJDA(), route, body)
         {
             @Override
             protected void handleResponse(Response response, Request<Emote> request)

@@ -20,7 +20,6 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import org.apache.http.util.Args;
 import org.json.JSONArray;
@@ -39,7 +38,7 @@ import java.util.Set;
  * @since  3.0
  * @author Florian Spieß
  */
-public class ChannelAction extends RestAction<Channel>
+public class ChannelAction extends AuditableRestAction<Channel>
 {
     public static final int ROLE_TYPE = 0;
     public static final int MEMBER_TYPE = 1;

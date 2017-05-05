@@ -27,7 +27,6 @@ import net.dv8tion.jda.core.entities.impl.TextChannelImpl;
 import net.dv8tion.jda.core.entities.impl.VoiceChannelImpl;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import org.apache.http.util.Args;
 import org.json.JSONObject;
@@ -45,7 +44,7 @@ import java.util.List;
  * @since  3.0
  * @author Florian Spieß
  */
-public class PermissionOverrideAction extends RestAction<PermissionOverride>
+public class PermissionOverrideAction extends AuditableRestAction<PermissionOverride>
 {
 
     private long allow = 0;

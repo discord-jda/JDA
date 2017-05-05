@@ -19,6 +19,7 @@ package net.dv8tion.jda.core.entities;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.impl.InviteImpl;
 import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
 import java.time.OffsetDateTime;
 
@@ -65,7 +66,7 @@ public interface Invite
     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Invite Invite}
     *         <br>The deleted Invite object
     */
-    RestAction<Invite> delete();
+   AuditableRestAction<Invite> delete();
 
     /**
      * Tries to retrieve a new expanded {@link net.dv8tion.jda.core.entities.Invite Invite} with more info.

@@ -39,7 +39,7 @@ import java.util.Collection;
  * @since  3.0
  * @author Florian Spieß
  */
-public class RoleAction extends RestAction<Role>
+public class RoleAction extends AuditableRestAction<Role>
 {
 
     protected final Guild guild;

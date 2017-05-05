@@ -17,12 +17,10 @@
 package net.dv8tion.jda.core.requests.restaction;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.entities.Webhook;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import org.apache.http.util.Args;
 import org.json.JSONObject;
@@ -31,7 +29,7 @@ import org.json.JSONObject;
  * {@link net.dv8tion.jda.core.entities.Webhook Webhook} Builder system created as an extension of {@link net.dv8tion.jda.core.requests.RestAction}
  * <br>Provides an easy way to gather and deliver information to Discord to create {@link net.dv8tion.jda.core.entities.Webhook Webhooks}.
  */
-public class WebhookAction extends RestAction<Webhook>
+public class WebhookAction extends AuditableRestAction<Webhook>
 {
 
     protected String name;
