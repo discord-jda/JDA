@@ -105,33 +105,7 @@ public class ChannelUpdateHandler extends SocketHandler
                                     channel, oldPosition));
                 }
 
-                //Determines if a new PermissionOverride was created or updated.
-                //If a PermissionOverride was created or updated it stores it in the proper Map to be reported by the Event.
-                for (int i = 0; i < permOverwrites.length(); i++)
-                {
-                    handlePermissionOverride(permOverwrites.getJSONObject(i), channel, content, changed, contained);
-                }
-
-                //Check if any overrides were deleted because of this event.
-                //Get the current overrides. (we copy them to a new list because the Set returned is backed by the Map, meaning our removes would remove from the Map. Not good.
-                //Loop through all of the json defined overrides. If we find a match, remove the User or Role from our lists.
-                //Any entries remaining in these lists after this for loop is over will be removed from the Channel's overrides.
-                final TLongList toRemove = new TLongLinkedList();
-                final TLongObjectMap<PermissionOverride> overridesMap = channel.getOverrideMap();
-
-                TDecorators.wrap(overridesMap.keySet()).stream()
-                        .map(id -> mapPermissionHolder(id, channel.getGuild()))
-                        .filter(Objects::nonNull)
-                        .filter(permHolder -> !contained.contains(permHolder))
-                        .forEach(permHolder -> {
-                            changed.add(permHolder);
-                            toRemove.add(getIdLong(permHolder));
-                        });
-
-                toRemove.forEach((id) -> {
-                    overridesMap.remove(id);
-                    return true;
-                });
+                applyPermissions(channel, content, permOverwrites, contained, changed);
 
                 //If this update modified permissions in any way.
                 if (!changed.isEmpty())
@@ -192,32 +166,7 @@ public class ChannelUpdateHandler extends SocketHandler
                                     channel, oldBitrate));
                 }
 
-                //Determines if a new PermissionOverride was created or updated.
-                //If a PermissionOverride was created or updated it stores it in the proper Map to be reported by the Event.
-                for (int i = 0; i < permOverwrites.length(); i++)
-                {
-                    handlePermissionOverride(permOverwrites.getJSONObject(i), channel, content, changed, contained);
-                }
-
-                //Check if any overrides were deleted because of this event.
-                //Get the current overrides. (we copy them to a new list because the Set returned is backed by the Map, meaning our removes would remove from the Map. Not good.
-                //Loop through all of the json defined overrides. If we find a match, remove the User or Role from our lists.
-                //Any entries remaining in these lists after this for loop is over will be removed from the Channel's overrides.
-                TLongList toRemove = new TLongLinkedList();
-                TDecorators.wrap(channel.getOverrideMap().keySet()).stream()
-                    .map(id -> mapPermissionHolder(id, channel.getGuild()))
-                    .filter(Objects::nonNull)
-                    .filter(permHolder -> !contained.contains(permHolder))
-                    .forEach(permHolder -> {
-                        changed.add(permHolder);
-                        toRemove.add(getIdLong(permHolder));
-                    });
-
-
-                toRemove.forEach((id) -> {
-                    channel.getOverrideMap().remove(id);
-                    return true;
-                });
+                applyPermissions(channel, content, permOverwrites, contained, changed);
 
                 //If this update modified permissions in any way.
                 if (!changed.isEmpty())
@@ -241,6 +190,39 @@ public class ChannelUpdateHandler extends SocketHandler
             return ((Member) permHolder).getUser().getIdLong();
         else
             return ((Role) permHolder).getIdLong();
+    }
+
+    private void applyPermissions(AbstractChannelImpl<?> channel, JSONObject content,
+                      JSONArray permOverwrites, List<IPermissionHolder> contained, List<IPermissionHolder> changed)
+    {
+
+        //Determines if a new PermissionOverride was created or updated.
+        //If a PermissionOverride was created or updated it stores it in the proper Map to be reported by the Event.
+        for (int i = 0; i < permOverwrites.length(); i++)
+        {
+            handlePermissionOverride(permOverwrites.getJSONObject(i), channel, content, changed, contained);
+        }
+
+        //Check if any overrides were deleted because of this event.
+        //Get the current overrides. (we copy them to a new list because the Set returned is backed by the Map, meaning our removes would remove from the Map. Not good.
+        //Loop through all of the json defined overrides. If we find a match, remove the User or Role from our lists.
+        //Any entries remaining in these lists after this for loop is over will be removed from the Channel's overrides.
+        final TLongList toRemove = new TLongLinkedList();
+        final TLongObjectMap<PermissionOverride> overridesMap = channel.getOverrideMap();
+
+        TDecorators.wrap(overridesMap.keySet()).stream()
+                .map(id -> mapPermissionHolder(id, channel.getGuild()))
+                .filter(Objects::nonNull)
+                .filter(permHolder -> !contained.contains(permHolder))
+                .forEach(permHolder -> {
+                    changed.add(permHolder);
+                    toRemove.add(getIdLong(permHolder));
+                });
+
+        toRemove.forEach((id) -> {
+            overridesMap.remove(id);
+            return true;
+        });
     }
 
     private IPermissionHolder mapPermissionHolder(long id, Guild guild)

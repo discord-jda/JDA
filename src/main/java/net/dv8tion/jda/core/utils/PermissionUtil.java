@@ -24,6 +24,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.http.util.Args;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class PermissionUtil
 {
@@ -362,9 +363,11 @@ public class PermissionUtil
         final Guild guild = member.getGuild();
         long permission = getEffectivePermission(member) | getImplicitPermission(channel, member);
 
-        final long implicitAllow = getImplicitAllow(channel, member);
-        final long implicitDeny = getImplicitDeny(channel, member);
-        permission = apply(permission, implicitAllow, implicitDeny);
+        AtomicLong allow = new AtomicLong(0);
+        AtomicLong deny = new AtomicLong(0);
+
+        getImplicitOverrides(channel, member, allow, deny); // populates allow/deny
+        permission = apply(permission, allow.get(), deny.get());
 
         if (isApplied(permission, admin))
             // If the public role is marked as administrator we can return full permissions here
@@ -379,7 +382,7 @@ public class PermissionUtil
             // In text channels MANAGE_CHANNEL and MANAGE_PERMISSIONS grant full text/voice permissions
             permission |= Permission.ALL_TEXT_PERMISSIONS | Permission.ALL_VOICE_PERMISSIONS;
 
-        return permission & ~implicitDeny | implicitAllow;
+        return permission & ~deny.get() | allow.get();
     }
 
     /**
@@ -496,10 +499,14 @@ public class PermissionUtil
 
         long permission = guild.getPublicRole().getPermissionsRaw();
 
-        long allow = getImplicitAllow(channel, member);
-        long deny = getImplicitDeny(channel, member);
 
-        return apply(permission, allow, deny);
+        AtomicLong allow = new AtomicLong(0);
+        AtomicLong deny = new AtomicLong(0);
+
+        // populates allow/deny
+        getImplicitOverrides(channel, member, allow, deny);
+
+        return apply(permission, allow.get(), deny.get());
     }
 
     /**
@@ -547,42 +554,36 @@ public class PermissionUtil
             : apply(permission, override.getAllowedRaw(), override.getDeniedRaw());
     }
 
-    private static long getImplicitDeny(Channel channel, Member member)
+    private static void getImplicitOverrides(Channel channel, Member member, AtomicLong allow, AtomicLong deny)
     {
         PermissionOverride override = channel.getPermissionOverride(member.getGuild().getPublicRole());
-        long deny = 0;
         if (override != null)
-            deny = override.getDeniedRaw();
+        {
+            deny.set(override.getDeniedRaw());
+            allow.set(override.getAllowedRaw());
+        }
+
         for (Role role : member.getRoles())
         {
             override = channel.getPermissionOverride(role);
             if (override != null)
-                deny = override.getDeniedRaw();
+            {
+                deny.accumulateAndGet(override.getDeniedRaw(), PermissionUtil::accumulate);
+                allow.accumulateAndGet(override.getAllowedRaw(), PermissionUtil::accumulate);
+            }
         }
+
         override = channel.getPermissionOverride(member);
         if (override != null)
-            deny |= override.getDeniedRaw();
-
-        return deny;
+        {
+            deny.accumulateAndGet(override.getDeniedRaw(), PermissionUtil::accumulate);
+            allow.accumulateAndGet(override.getAllowedRaw(), PermissionUtil::accumulate);
+        }
     }
 
-    private static long getImplicitAllow(Channel channel, Member member)
+    private static long accumulate(long o1, long o2)
     {
-        PermissionOverride override = channel.getPermissionOverride(member.getGuild().getPublicRole());
-        long allow = 0;
-        if (override != null)
-            allow = override.getAllowedRaw();
-        for (Role role : member.getRoles())
-        {
-            override = channel.getPermissionOverride(role);
-            if (override != null)
-                allow = override.getAllowedRaw();
-        }
-        override = channel.getPermissionOverride(member);
-        if (override != null)
-            allow |= override.getAllowedRaw();
-
-        return allow;
+        return o1 | o2;
     }
 
     /*
