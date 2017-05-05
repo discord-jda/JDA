@@ -593,10 +593,7 @@ public class JDAImpl implements JDA
             {
                 Runtime.getRuntime().removeShutdownHook(shutdownHook);
             }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
+            catch (Exception ignored) { }
         }
 
         if (free)
