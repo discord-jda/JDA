@@ -23,6 +23,7 @@ import org.apache.http.util.Args;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class AuditLogEntry implements ISnowflake
@@ -34,16 +35,19 @@ public class AuditLogEntry implements ISnowflake
     protected final UserImpl user;
 
     protected final List<AuditLogChange<?>> changes;
+    protected final Map<String, Object> options;
     protected final ActionType type;
 
-    public AuditLogEntry(ActionType type, long id, long targetId, GuildImpl guild, UserImpl user, List<AuditLogChange<?>> changes)
+    public AuditLogEntry(ActionType type, long id, long targetId, GuildImpl guild, UserImpl user,
+                         List<AuditLogChange<?>> changes, Map<String, Object> options)
     {
         this.type = type;
         this.id = id;
         this.targetId = targetId;
         this.guild = guild;
         this.user = user;
-        this.changes = Collections.unmodifiableList(changes);
+        this.changes = changes != null ? Collections.unmodifiableList(changes) : Collections.emptyList();
+        this.options = options != null ? Collections.unmodifiableMap(options) : Collections.emptyMap();
     }
 
     @Override
@@ -88,6 +92,17 @@ public class AuditLogEntry implements ISnowflake
         return Collections.unmodifiableList(changes.stream()
             .filter(change -> change.getKey().equals(key))
             .collect(Collectors.toList()));
+    }
+
+    public Map<String, Object> getOptions()
+    {
+        return options;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T getOptionByName(String name)
+    {
+        return (T) options.get(name);
     }
 
     public ActionType getType()
@@ -159,6 +174,9 @@ public class AuditLogEntry implements ISnowflake
         EMOTE_UPDATE(61, TargetType.EMOTE),
         EMOTE_DELETE(62, TargetType.EMOTE),
 
+        MESSAGE_CREATE(70, TargetType.UNKNOWN),
+        MESSAGE_UPDATE(71, TargetType.UNKNOWN),
+        MESSAGE_DELETE(72, TargetType.MEMBER),
 
         UNKNOWN(-1, TargetType.UNKNOWN);
 

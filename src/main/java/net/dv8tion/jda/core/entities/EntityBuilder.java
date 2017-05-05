@@ -1233,6 +1233,7 @@ public class EntityBuilder
         final long id = entryJson.getLong("id");
         final int typeKey = entryJson.getInt("action_type");
         final JSONArray changes = entryJson.isNull("changes") ? null : entryJson.getJSONArray("changes");
+        final JSONObject options = entryJson.isNull("options") ? null : entryJson.getJSONObject("options");
 
         final UserImpl user = (UserImpl) createFakeUser(userJson, false);
         final List<AuditLogChange<?>> changesList;
@@ -1253,7 +1254,7 @@ public class EntityBuilder
             changesList = Collections.emptyList();
         }
 
-        return new AuditLogEntry(type, id, targetId, guild, user, changesList);
+        return new AuditLogEntry(type, id, targetId, guild, user, changesList, options == null ? null : options.toMap());
     }
 
     public AuditLogChange<?> createAuditLogChange(JSONObject change)
