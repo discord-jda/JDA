@@ -70,7 +70,7 @@ public class ShardManagerBuilder
     protected boolean idle = false;
 
     final JDABuilder builder = new JDABuilder(AccountType.BOT);
-    
+
     /**
      * Creates a completely empty ShardManagerBuilder.
      * <br>You need to set the token using
