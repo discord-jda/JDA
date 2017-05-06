@@ -20,10 +20,10 @@ import com.mashape.unirest.request.body.MultipartBody;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.entities.impl.MessageImpl;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.requests.*;
+import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.IOUtil;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.http.util.Args;
@@ -742,12 +742,12 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
      */
-    default RestAction<Void> deleteMessageById(String messageId)
+    default AuditableRestAction<Void> deleteMessageById(String messageId)
     {
         Args.notEmpty(messageId, "messageId");
 
         Route.CompiledRoute route = Route.Messages.DELETE_MESSAGE.compile(getId(), messageId);
-        return new RestAction<Void>(getJDA(), route, null) {
+        return new AuditableRestAction<Void>(getJDA(), route, null) {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
             {
@@ -797,7 +797,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
      */
-    default RestAction<Void> deleteMessageById(long messageId)
+    default AuditableRestAction<Void> deleteMessageById(long messageId)
     {
         return deleteMessageById(Long.toUnsignedString(messageId));
     }

@@ -22,10 +22,8 @@ import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.PermissionException;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.util.Args;
 import org.json.JSONObject;
@@ -462,7 +460,7 @@ public class MessageImpl implements Message
     }
 
     @Override
-    public RestAction<Void> delete()
+    public AuditableRestAction<Void> delete()
     {
         if (!getJDA().getSelfUser().equals(getAuthor()))
         {
