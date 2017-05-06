@@ -48,6 +48,9 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>> exte
     protected final int minLimit;
     protected final AtomicInteger limit;
 
+    protected volatile T last = null;
+    protected volatile boolean useCache = true;
+
     /**
      * Creates a new PaginationAction instance
      *
@@ -130,9 +133,10 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>> exte
      */
     public T getLast()
     {
-        if (cached.isEmpty())
+        T last = this.last;
+        if (last == null)
             throw new NoSuchElementException("No entities have been retrieved yet.");
-        return cached.get(cached.size() - 1);
+        return last;
     }
 
     /**
@@ -179,6 +183,42 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>> exte
 
         this.limit.set(limit);
         return (M) this;
+    }
+
+    /**
+     * Whether already retrieved entities should be stored
+     * within the internal cache. All cached entities will be
+     * available from {@link #getCached()}.
+     * <b>Default: true</b>
+     * <br>This being disabled allows unused entities to be removed from
+     * the memory heap by the garbage collector. If this is enabled this will not
+     * take place until all references to this PaginationAction have been cleared.
+     *
+     * @param  enableCache
+     *         Whether to enable entity cache
+     *
+     * @return The current PaginationAction implementation instance
+     */
+    public M cache(boolean enableCache)
+    {
+        this.useCache = enableCache;
+        return (M) this;
+    }
+
+    /**
+     * Whether retrieved entities are stored within an
+     * internal cache. If this is {@code false} entities
+     * retrieved by the iterator or a call to a {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * terminal operation will not be retrievable from {@link #getCached()}.
+     * <br>This being disabled allows unused entities to be removed from
+     * the memory heap by the garbage collector. If this is enabled this will not
+     * take place until all references to this PaginationAction have been cleared.
+     *
+     * @return True, If entities will be cached.
+     */
+    public boolean isCacheEnabled()
+    {
+        return useCache;
     }
 
     /**
@@ -274,12 +314,12 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>> exte
      */
     public class PaginationIterator implements Iterator<T>
     {
-        protected int current = 0;
+        protected Queue<T> items = new LinkedList<>();
 
         @Override
         public boolean hasNext()
         {
-            if (current < 0)
+            if (items == null)
                 return false;
 
             if (hitEnd())
@@ -287,15 +327,15 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>> exte
                 synchronized (limit)
                 {
                     final int tmp = limit.getAndSet(maxLimit);
-                    complete();
+                    items.addAll(complete());
                     limit.set(tmp);
                 }
 
                 if (!hitEnd())
                     return true;
 
-                // -1 indicates that the real end has been reached
-                current = -1;
+                // null indicates that the real end has been reached
+                items = null;
                 return false;
             }
 
@@ -307,12 +347,12 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>> exte
         {
             if (!hasNext())
                 throw new NoSuchElementException("Reached End of pagination task!");
-            return cached.get(current++);
+            return items.poll();
         }
 
         protected boolean hitEnd()
         {
-            return current < 0 || current >= cached.size();
+            return items.isEmpty();
         }
 
     }

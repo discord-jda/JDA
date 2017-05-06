@@ -70,11 +70,12 @@ public class MessagePaginationAction extends PaginationAction<Message, MessagePa
     protected void finalizeRoute()
     {
         final String limit = String.valueOf(this.getLimit());
+        final Message last = this.last;
 
-        if (isEmpty())
+        if (last == null)
             route = Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId(), limit);
         else
-            route = Route.Messages.GET_MESSAGE_HISTORY_BEFORE.compile(channel.getId(), limit, getLast().getId());
+            route = Route.Messages.GET_MESSAGE_HISTORY_BEFORE.compile(channel.getId(), limit, last.getId());
     }
 
     @Override
@@ -93,7 +94,9 @@ public class MessagePaginationAction extends PaginationAction<Message, MessagePa
         {
             Message msg = builder.createMessage(array.getJSONObject(i), channel, false);
             messages.add(msg);
-            cached.add(msg);
+            if (useCache)
+                cached.add(msg);
+            last = msg;
         }
 
         request.onSuccess(messages);

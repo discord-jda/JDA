@@ -81,8 +81,9 @@ public class ReactionPaginationAction extends PaginationAction<User, ReactionPag
     {
         String after = null;
         String limit = String.valueOf(getLimit());
-        if (!isEmpty())
-            after = getLast().getId();
+        User last = this.last;
+        if (last != null)
+            after = last.getId();
 
         String channel = reaction.getChannel().getId();
         String message = reaction.getMessageId();
@@ -108,8 +109,10 @@ public class ReactionPaginationAction extends PaginationAction<User, ReactionPag
         for (int i = 0; i < array.length(); i++)
         {
             final User user = builder.createFakeUser(array.getJSONObject(i), false);
-            cached.add(user);
             users.add(user);
+            if (useCache)
+                cached.add(user);
+            last = user;
         }
 
         request.onSuccess(users);

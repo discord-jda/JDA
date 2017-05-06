@@ -134,9 +134,10 @@ public class MentionPaginationAction extends PaginationAction<Message, MentionPa
     @Override
     protected void finalizeRoute()
     {
+        Message last = this.last;
         String limit, before, everyone, role;
         limit = String.valueOf(super.getLimit());
-        before = cached.isEmpty() ? null : getLast().getId();
+        before = last != null ? last.getId() : null;
         everyone = String.valueOf(isEveryone);
         role = String.valueOf(isRole);
 
@@ -161,8 +162,10 @@ public class MentionPaginationAction extends PaginationAction<Message, MentionPa
         for (int i = 0; i < arr.length(); i++)
         {
             final Message msg = builder.createMessage(arr.getJSONObject(i), false);
-            cached.add(msg);
             mentions.add(msg);
+            if (useCache)
+                cached.add(msg);
+            last = msg;
         }
 
         request.onSuccess(mentions);
