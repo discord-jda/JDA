@@ -314,32 +314,29 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>> exte
      */
     public class PaginationIterator implements Iterator<T>
     {
-        protected Queue<T> items = new LinkedList<>();
+        protected Queue<T> items = new LinkedList<>(cached);
 
         @Override
         public boolean hasNext()
         {
             if (items == null)
                 return false;
+            if (!hitEnd())
+                return true;
 
-            if (hitEnd())
+            synchronized (limit)
             {
-                synchronized (limit)
-                {
-                    final int tmp = limit.getAndSet(maxLimit);
-                    items.addAll(complete());
-                    limit.set(tmp);
-                }
-
-                if (!hitEnd())
-                    return true;
-
-                // null indicates that the real end has been reached
-                items = null;
-                return false;
+                final int tmp = limit.getAndSet(maxLimit);
+                items.addAll(complete());
+                limit.set(tmp);
             }
 
-            return true;
+            if (!hitEnd())
+                return true;
+
+            // null indicates that the real end has been reached
+            items = null;
+            return false;
         }
 
         @Override
