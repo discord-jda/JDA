@@ -19,12 +19,9 @@ package net.dv8tion.jda.core.entities;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.UserImpl;
-import org.apache.http.util.Args;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class AuditLogEntry implements ISnowflake
 {
@@ -34,20 +31,24 @@ public class AuditLogEntry implements ISnowflake
     protected final GuildImpl guild;
     protected final UserImpl user;
 
-    protected final List<AuditLogChange<?>> changes;
+    protected final Map<String, AuditLogChange<?>> changes;
     protected final Map<String, Object> options;
     protected final ActionType type;
 
     public AuditLogEntry(ActionType type, long id, long targetId, GuildImpl guild, UserImpl user,
-                         List<AuditLogChange<?>> changes, Map<String, Object> options)
+                         Map<String, AuditLogChange<?>> changes, Map<String, Object> options)
     {
         this.type = type;
         this.id = id;
         this.targetId = targetId;
         this.guild = guild;
         this.user = user;
-        this.changes = changes != null ? Collections.unmodifiableList(changes) : Collections.emptyList();
-        this.options = options != null ? Collections.unmodifiableMap(options) : Collections.emptyMap();
+        this.changes = changes != null && !changes.isEmpty()
+                ? Collections.unmodifiableMap(changes)
+                : Collections.emptyMap();
+        this.options = options != null && !options.isEmpty()
+                ? Collections.unmodifiableMap(options)
+                : Collections.emptyMap();
     }
 
     @Override
@@ -81,17 +82,25 @@ public class AuditLogEntry implements ISnowflake
         return guild.getJDA();
     }
 
-    public List<AuditLogChange<?>> getChanges()
+    public Map<String, AuditLogChange<?>> getChanges()
     {
         return changes;
     }
 
-    public List<AuditLogChange<?>> getChangesByKey(final String key)
+    @SuppressWarnings("unchecked")
+    public <T> AuditLogChange<? extends T> getChangeByKey(final String key)
     {
-        Args.notNull(key, "Key");
-        return Collections.unmodifiableList(changes.stream()
-            .filter(change -> change.getKey().equals(key))
-            .collect(Collectors.toList()));
+//        Args.notNull(key, "Key");
+        AuditLogChange<?> change = changes.get(key);
+        try
+        {
+            return (AuditLogChange<T>) change;
+        }
+        catch (ClassCastException ex)
+        {
+            throw new IllegalArgumentException(
+                String.format("Change for key [%s] is not from expected generic type. %s", key, change), ex);
+        }
     }
 
     public Map<String, Object> getOptions()

@@ -32,6 +32,7 @@ import net.dv8tion.jda.core.handle.GuildMembersChunkHandler;
 import net.dv8tion.jda.core.handle.ReadyHandler;
 import net.dv8tion.jda.core.requests.WebSocketClient;
 import net.dv8tion.jda.core.utils.MiscUtil;
+import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,8 +42,10 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class EntityBuilder
 {
@@ -1254,7 +1257,12 @@ public class EntityBuilder
             changesList = Collections.emptyList();
         }
 
-        return new AuditLogEntry(type, id, targetId, guild, user, changesList, options == null ? null : options.toMap());
+        CaseInsensitiveMap<String, AuditLogChange<?>> changeMap = new CaseInsensitiveMap<>(changeToMap(changesList));
+        CaseInsensitiveMap<String, Object> optionMap = options != null
+            ? new CaseInsensitiveMap<>(options.toMap())
+            : null;
+
+        return new AuditLogEntry(type, id, targetId, guild, user, changeMap, optionMap);
     }
 
     public AuditLogChange<?> createAuditLogChange(JSONObject change)
@@ -1288,5 +1296,10 @@ public class EntityBuilder
         }
 
         return new AuditLogChange<>(oldValue, newValue, key);
+    }
+
+    private Map<String, AuditLogChange<?>> changeToMap(List<AuditLogChange<?>> changesList)
+    {
+        return changesList.stream().collect(Collectors.toMap(AuditLogChange::getKey, UnaryOperator.identity()));
     }
 }
