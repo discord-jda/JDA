@@ -387,6 +387,26 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
+    public RestAction<Void> clearReactionsById(String messageId)
+    {
+        Args.notEmpty(messageId, "Message ID");
+
+        checkPermission(Permission.MESSAGE_MANAGE);
+        Route.CompiledRoute route = Route.Messages.REMOVE_ALL_REACTIONS.compile(getId(), messageId);
+        return new RestAction<Void>(getJDA(), route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request<Void> request)
+            {
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
+    }
+
+    @Override
     public PermissionOverride getPermissionOverride(Member member)
     {
         return memberOverrides.get(member);

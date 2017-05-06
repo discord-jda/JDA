@@ -141,18 +141,9 @@ public class MessageImpl implements Message
     @Override
     public RestAction<Void> clearReactions()
     {
-        checkPermission(Permission.MESSAGE_MANAGE);
-        return new RestAction<Void>(getJDA(), Route.Messages.REMOVE_ALL_REACTIONS.compile(getChannel().getId(), getId()), null)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        if (!isFromType(ChannelType.TEXT))
+            throw new IllegalStateException("Cannot clear reactions from a message in a Group or PrivateChannel.");
+        return getTextChannel().clearReactionsById(getId());
     }
 
     @Override

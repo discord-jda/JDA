@@ -319,6 +319,11 @@ public class ChannelAction extends AuditableRestAction<Channel>
             if (userlimit != null)
                 data.put("user_limit", userlimit.intValue());
         }
+        else
+        {
+            if (topic != null && !topic.isEmpty())
+                data.put("topic", topic);
+        }
 
         this.data = data;
         super.finalizeData();
