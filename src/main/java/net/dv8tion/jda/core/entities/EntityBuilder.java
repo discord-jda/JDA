@@ -1237,6 +1237,7 @@ public class EntityBuilder
         final int typeKey = entryJson.getInt("action_type");
         final JSONArray changes = entryJson.isNull("changes") ? null : entryJson.getJSONArray("changes");
         final JSONObject options = entryJson.isNull("options") ? null : entryJson.getJSONObject("options");
+        final String reason = entryJson.isNull("reason") ? null : entryJson.getString("reason");
 
         final UserImpl user = (UserImpl) createFakeUser(userJson, false);
         final List<AuditLogChange<?>> changesList;
@@ -1262,7 +1263,7 @@ public class EntityBuilder
             ? new CaseInsensitiveMap<>(options.toMap())
             : null;
 
-        return new AuditLogEntry(type, id, targetId, guild, user, changeMap, optionMap);
+        return new AuditLogEntry(type, id, targetId, guild, user, reason, changeMap, optionMap);
     }
 
     public AuditLogChange<?> createAuditLogChange(JSONObject change)

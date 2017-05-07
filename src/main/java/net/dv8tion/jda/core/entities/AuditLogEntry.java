@@ -30,12 +30,13 @@ public class AuditLogEntry implements ISnowflake
     protected final long targetId;
     protected final GuildImpl guild;
     protected final UserImpl user;
+    protected final String reason;
 
     protected final Map<String, AuditLogChange<?>> changes;
     protected final Map<String, Object> options;
     protected final ActionType type;
 
-    public AuditLogEntry(ActionType type, long id, long targetId, GuildImpl guild, UserImpl user,
+    public AuditLogEntry(ActionType type, long id, long targetId, GuildImpl guild, UserImpl user, String reason,
                          Map<String, AuditLogChange<?>> changes, Map<String, Object> options)
     {
         this.type = type;
@@ -43,6 +44,7 @@ public class AuditLogEntry implements ISnowflake
         this.targetId = targetId;
         this.guild = guild;
         this.user = user;
+        this.reason = reason;
         this.changes = changes != null && !changes.isEmpty()
                 ? Collections.unmodifiableMap(changes)
                 : Collections.emptyMap();
@@ -75,6 +77,11 @@ public class AuditLogEntry implements ISnowflake
     public User getUser()
     {
         return user;
+    }
+
+    public String getReason()
+    {
+        return reason;
     }
 
     public JDA getJDA()
