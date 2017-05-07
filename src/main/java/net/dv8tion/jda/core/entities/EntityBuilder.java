@@ -21,10 +21,7 @@ import net.dv8tion.jda.bot.entities.ApplicationInfo;
 import net.dv8tion.jda.bot.entities.impl.ApplicationInfoImpl;
 import net.dv8tion.jda.client.entities.*;
 import net.dv8tion.jda.client.entities.impl.*;
-import net.dv8tion.jda.core.AccountType;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.OnlineStatus;
-import net.dv8tion.jda.core.Region;
+import net.dv8tion.jda.core.*;
 import net.dv8tion.jda.core.entities.MessageEmbed.*;
 import net.dv8tion.jda.core.entities.impl.*;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
@@ -1240,8 +1237,8 @@ public class EntityBuilder
         final String reason = entryJson.isNull("reason") ? null : entryJson.getString("reason");
 
         final UserImpl user = (UserImpl) createFakeUser(userJson, false);
-        final List<AuditLogChange<?>> changesList;
-        final AuditLogEntry.ActionType type = AuditLogEntry.ActionType.from(typeKey);
+        final List<AuditLogChange> changesList;
+        final ActionType type = ActionType.from(typeKey);
 
         if (changes != null)
         {
@@ -1249,7 +1246,7 @@ public class EntityBuilder
             for (int i = 0; i < changes.length(); i++)
             {
                 final JSONObject object = changes.getJSONObject(i);
-                AuditLogChange<?> change = createAuditLogChange(object);
+                AuditLogChange change = createAuditLogChange(object);
                 changesList.add(change);
             }
         }
@@ -1258,7 +1255,7 @@ public class EntityBuilder
             changesList = Collections.emptyList();
         }
 
-        CaseInsensitiveMap<String, AuditLogChange<?>> changeMap = new CaseInsensitiveMap<>(changeToMap(changesList));
+        CaseInsensitiveMap<String, AuditLogChange> changeMap = new CaseInsensitiveMap<>(changeToMap(changesList));
         CaseInsensitiveMap<String, Object> optionMap = options != null
             ? new CaseInsensitiveMap<>(options.toMap())
             : null;
@@ -1266,40 +1263,28 @@ public class EntityBuilder
         return new AuditLogEntry(type, id, targetId, guild, user, reason, changeMap, optionMap);
     }
 
-    public AuditLogChange<?> createAuditLogChange(JSONObject change)
+    public AuditLogChange createAuditLogChange(JSONObject change)
     {
         final String key = change.getString("key");
         Object oldValue = change.isNull("old_value") ? null : change.get("old_value");
         Object newValue = change.isNull("new_value") ? null : change.get("new_value");
 
+        // Don't confront users with JSON
         if (oldValue instanceof JSONArray || newValue instanceof JSONArray)
         {
-            final List<Object> oldList = oldValue != null ? ((JSONArray) oldValue).toList() : null;
-            final List<Object> newList = newValue != null ? ((JSONArray) newValue).toList() : null;
-            return new AuditLogChange<>(oldList, newList, key);
+            oldValue = oldValue instanceof JSONArray ? ((JSONArray) oldValue).toList() : oldValue;
+            newValue = newValue instanceof JSONArray ? ((JSONArray) newValue).toList() : newValue;
         }
         else if (oldValue instanceof JSONObject || newValue instanceof JSONObject)
         {
-            final Map<String, Object> oldMap = oldValue != null ? ((JSONObject) oldValue).toMap() : null;
-            final Map<String, Object> newMap = newValue != null ? ((JSONObject) newValue).toMap() : null;
-            return new AuditLogChange<>(oldMap, newMap, key);
-        }
-        // java types
-        else if (oldValue instanceof Number || newValue instanceof Number)
-        {
-            Long oldLong = oldValue != null ? ((Number) oldValue).longValue() : null;
-            Long newLong = newValue != null ? ((Number) newValue).longValue() : null;
-            return new AuditLogChange<>(oldLong, newLong, key);
-        }
-        else if (oldValue instanceof String || newValue instanceof String)
-        {
-            return new AuditLogChange<>((String) oldValue, (String) newValue, key);
+            oldValue = oldValue instanceof JSONObject ? ((JSONObject) oldValue).toMap() : oldValue;
+            newValue = newValue instanceof JSONObject ? ((JSONObject) newValue).toMap() : newValue;
         }
 
-        return new AuditLogChange<>(oldValue, newValue, key);
+        return new AuditLogChange(oldValue, newValue, key);
     }
 
-    private Map<String, AuditLogChange<?>> changeToMap(List<AuditLogChange<?>> changesList)
+    private Map<String, AuditLogChange> changeToMap(List<AuditLogChange> changesList)
     {
         return changesList.stream().collect(Collectors.toMap(AuditLogChange::getKey, UnaryOperator.identity()));
     }

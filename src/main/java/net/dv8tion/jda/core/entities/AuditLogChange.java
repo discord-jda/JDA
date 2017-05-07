@@ -18,28 +18,29 @@ package net.dv8tion.jda.core.entities;
 
 import java.util.Objects;
 
-public class AuditLogChange<T>
+public class AuditLogChange
 {
-
-    protected final T oldValue;
-    protected final T newValue;
+    protected final Object oldValue;
+    protected final Object newValue;
     protected final String key;
 
-    public AuditLogChange(T oldValue, T newValue, String key)
+    public AuditLogChange(Object oldValue, Object newValue, String key)
     {
         this.oldValue = oldValue;
         this.newValue = newValue;
         this.key = key;
     }
 
-    public T getOldValue()
+    @SuppressWarnings("unchecked")
+    public <T> T getOldValue()
     {
-        return oldValue;
+        return (T) oldValue;
     }
 
-    public T getNewValue()
+    @SuppressWarnings("unchecked")
+    public <T> T getNewValue()
     {
-        return newValue;
+        return (T) newValue;
     }
 
     public String getKey()
@@ -50,9 +51,9 @@ public class AuditLogChange<T>
     @Override
     public boolean equals(Object obj)
     {
-        if (!(obj instanceof AuditLogChange<?>))
+        if (!(obj instanceof AuditLogChange))
             return false;
-        AuditLogChange<?> other = (AuditLogChange<?>) obj;
+        AuditLogChange other = (AuditLogChange) obj;
         return other.key.equals(key)
                 && Objects.equals(other.oldValue, oldValue)
                 && Objects.equals(other.newValue, newValue);

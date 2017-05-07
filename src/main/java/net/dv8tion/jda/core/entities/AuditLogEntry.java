@@ -16,7 +16,9 @@
 
 package net.dv8tion.jda.core.entities;
 
+import net.dv8tion.jda.core.ActionType;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.TargetType;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.UserImpl;
 
@@ -32,12 +34,12 @@ public class AuditLogEntry implements ISnowflake
     protected final UserImpl user;
     protected final String reason;
 
-    protected final Map<String, AuditLogChange<?>> changes;
+    protected final Map<String, AuditLogChange> changes;
     protected final Map<String, Object> options;
     protected final ActionType type;
 
     public AuditLogEntry(ActionType type, long id, long targetId, GuildImpl guild, UserImpl user, String reason,
-                         Map<String, AuditLogChange<?>> changes, Map<String, Object> options)
+                         Map<String, AuditLogChange> changes, Map<String, Object> options)
     {
         this.type = type;
         this.id = id;
@@ -89,25 +91,14 @@ public class AuditLogEntry implements ISnowflake
         return guild.getJDA();
     }
 
-    public Map<String, AuditLogChange<?>> getChanges()
+    public Map<String, AuditLogChange> getChanges()
     {
         return changes;
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> AuditLogChange<? extends T> getChangeByKey(final String key)
+    public AuditLogChange getChangeByKey(final String key)
     {
-//        Args.notNull(key, "Key");
-        AuditLogChange<?> change = changes.get(key);
-        try
-        {
-            return (AuditLogChange<T>) change;
-        }
-        catch (ClassCastException ex)
-        {
-            throw new IllegalArgumentException(
-                String.format("Change for key [%s] is not from expected generic type. %s", key, change), ex);
-        }
+        return changes.get(key);
     }
 
     public Map<String, Object> getOptions()
@@ -152,90 +143,8 @@ public class AuditLogEntry implements ISnowflake
         return "ALE:" + type + "(ID:" + id + " / TID:" + targetId + " / " + guild + ')';
     }
 
-    // todo move?
-    public enum ActionType
-    {
-        // TODO check if valid list
-        GUILD_UPDATE(1, TargetType.GUILD),
 
-        CHANNEL_CREATE(10, TargetType.CHANNEL),
-        CHANNEL_UPDATE(11, TargetType.CHANNEL),
-        CHANNEL_DELETE(12, TargetType.CHANNEL),
 
-        CHANNEL_OVERRIDE_CREATE(13, TargetType.CHANNEL),
-        CHANNEL_OVERRIDE_UPDATE(14, TargetType.CHANNEL),
-        CHANNEL_OVERRIDE_DELETE(15, TargetType.CHANNEL),
 
-        KICK( 20, TargetType.MEMBER),
-        PRUNE(21, TargetType.MEMBER),
-        BAN(  22, TargetType.MEMBER),
-        UNBAN(23, TargetType.MEMBER),
-
-        MEMBER_UPDATE(     24, TargetType.MEMBER),
-        MEMBER_ROLE_UPDATE(25, TargetType.MEMBER),
-
-        ROLE_CREATE(30, TargetType.ROLE),
-        ROLE_UPDATE(31, TargetType.ROLE),
-        ROLE_DELETE(32, TargetType.ROLE),
-
-        INVITE_CREATE(40, TargetType.INVITE),
-        INVITE_UPDATE(41, TargetType.INVITE),
-        INVITE_DELETE(42, TargetType.INVITE),
-
-        WEBHOOK_CREATE(50, TargetType.WEBHOOK),
-        WEBHOOK_UPDATE(51, TargetType.WEBHOOK),
-        WEBHOOK_REMOVE(52, TargetType.WEBHOOK),
-
-        EMOTE_CREATE(60, TargetType.EMOTE),
-        EMOTE_UPDATE(61, TargetType.EMOTE),
-        EMOTE_DELETE(62, TargetType.EMOTE),
-
-        MESSAGE_CREATE(70, TargetType.UNKNOWN),
-        MESSAGE_UPDATE(71, TargetType.UNKNOWN),
-        MESSAGE_DELETE(72, TargetType.MEMBER),
-
-        UNKNOWN(-1, TargetType.UNKNOWN);
-
-        private final int key;
-        private final TargetType target;
-
-        ActionType(int key, TargetType target)
-        {
-            this.key = key;
-            this.target = target;
-        }
-
-        public int getKey()
-        {
-            return key;
-        }
-
-        public TargetType getTargetType()
-        {
-            return target;
-        }
-
-        public static ActionType from(int key)
-        {
-            for (ActionType type : values())
-            {
-                if (type.key == key)
-                    return type;
-            }
-            return UNKNOWN;
-        }
-    }
-
-    public enum TargetType
-    {
-        GUILD,
-        CHANNEL,
-        ROLE,
-        MEMBER,
-        INVITE,
-        WEBHOOK,
-        EMOTE,
-        UNKNOWN
-    }
 
 }
