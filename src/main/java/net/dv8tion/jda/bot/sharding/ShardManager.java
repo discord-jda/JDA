@@ -15,123 +15,17 @@
  */
 package net.dv8tion.jda.bot.sharding;
 
-import com.mashape.unirest.http.Unirest;
-import com.neovisionaries.ws.client.ProxySettings;
-import com.neovisionaries.ws.client.WebSocketFactory;
-import gnu.trove.TCollections;
-import gnu.trove.map.TIntObjectMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.security.auth.login.LoginException;
+import java.util.Collection;
+import java.util.List;
 import net.dv8tion.jda.bot.entities.ApplicationInfo;
-import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
-import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.IEventManager;
-import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.utils.MiscUtil;
-import org.apache.http.util.Args;
 
-/**
- * This class acts as a manager for multiple shards.
- * It contains several methods to make your life with sharding easier.
- *
- * @since  3.1
- * @author Aljoscha Grebe
- */
-public class ShardManager
+public interface ShardManager
 {
-    protected final IAudioSendFactory audioSendFactory;
-
-    protected final boolean autoReconnect;
-    protected final int corePoolSize;
-    protected final boolean enableBulkDeleteSplitting;
-    protected final boolean enableVoice;
-    protected final IEventManager eventManager;
-    protected final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor(r ->
-    {
-        final Thread t = new Thread(r, "ShardManager");
-        t.setDaemon(true);
-        t.setPriority(Thread.NORM_PRIORITY + 1);
-        return t;
-    });
-    protected final Game game;
-    protected final boolean idle;
-    protected final List<Object> listeners;
-    protected final int maxReconnectDelay;
-    protected int maxShardId;
-    protected int minShardId;
-    protected final Queue<Integer> queue = new ConcurrentLinkedQueue<>();
-    protected int shardCount;
-    protected TIntObjectMap<JDAImpl> shards = new TIntObjectHashMap<>();
-    protected int shardsTotal;
-    protected TIntObjectMap<JDAImpl> shardsUnmodifiable;
-
-    protected final AtomicBoolean shutdown = new AtomicBoolean(false);
-    protected final Thread shutdownHook;
-    protected final OnlineStatus status;
-    protected final String token;
-    protected final int websocketTimeout;
-
-    protected ScheduledFuture<?> worker;
-
-    public ShardManager(final int shardsTotal, int minShardId, int maxShardId, List<Object> listeners, String token,
-            IEventManager eventManager, IAudioSendFactory audioSendFactory, Game game, OnlineStatus status,
-            int websocketTimeout, int maxReconnectDelay, int corePoolSize, boolean enableVoice,
-            boolean enableShutdownHook, boolean enableBulkDeleteSplitting, boolean autoReconnect, boolean idle)
-    {
-        this.shardsTotal = shardsTotal;
-        this.listeners = listeners;
-        this.token = token;
-        this.eventManager = eventManager;
-        this.audioSendFactory = audioSendFactory;
-        this.game = game;
-        this.status = status;
-        this.websocketTimeout = websocketTimeout;
-        this.maxReconnectDelay = maxReconnectDelay;
-        this.corePoolSize = corePoolSize;
-        this.enableVoice = enableVoice;
-        this.shutdownHook = enableShutdownHook ? new Thread(() -> ShardManager.this.shutdown(true), "JDA Shutdown Hook") : null;;
-        this.enableBulkDeleteSplitting = enableBulkDeleteSplitting;
-        this.autoReconnect = autoReconnect;
-        this.idle = idle;
-
-        if (shardsTotal != -1)
-        {
-            Args.check(!(minShardId == -1 ^ maxShardId == -1), "Huh, how could this happen? only one of lowerBound or upperBound is -1");
-
-            if (minShardId == -1 && maxShardId == -1)
-            {
-                this.minShardId = 0;
-                this.maxShardId = shardsTotal - 1;
-            }
-            else
-            {
-                this.minShardId = minShardId;
-                this.maxShardId = maxShardId;
-            }
-
-            this.shardCount = this.maxShardId - this.minShardId + 1;
-
-            this.shards = new TIntObjectHashMap<>(this.shardCount);
-
-            for (int i = this.minShardId; i <= this.maxShardId; i++){
-                System.out.println(i);
-                this.queue.offer(i);
-            }
-        }
-    }
 
     /**
      * Adds all provided listeners to the event-listeners that will be used to handle events.
@@ -144,10 +38,7 @@ public class ShardManager
      * @param  listeners
      *         The listener(s) which will react to events.
      */
-    public void addEventListener(final Object... listeners)
-    {
-        this.shards.valueCollection().forEach(jda -> jda.addEventListener(listeners));
-    }
+    void addEventListener(Object... listeners);
 
     /**
      * Used to access Bot specific functions like OAuth information.
@@ -157,11 +48,7 @@ public class ShardManager
      *
      * @return The {@link net.dv8tion.jda.bot.JDABot} registry for this instance of JDA.
      */
-    public RestAction<ApplicationInfo> getApplicationInfo()
-    {
-        return this.shards.valueCollection().stream().findAny()
-                .orElseThrow(() -> new IllegalStateException("no active shards")).asBot().getApplicationInfo();
-    }
+    RestAction<ApplicationInfo> getApplicationInfo();
 
     /**
      * The average time in milliseconds between all shards that discord took to respond to our last heartbeat.
@@ -172,11 +59,7 @@ public class ShardManager
      *
      * @return time in milliseconds between heartbeat and the heartbeat ack response
      */
-    public double getAveragePing()
-    {
-        return this.shards.valueCollection().stream().mapToLong(jda -> jda.getPing()).filter(ping -> ping != -1)
-                .average().getAsDouble();
-    }
+    double getAveragePing();
 
     /**
      * This returns the {@link net.dv8tion.jda.core.entities.Guild Guild} which has the same id as the one provided.
@@ -187,10 +70,7 @@ public class ShardManager
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Guild Guild} with matching id.
      */
-    public Guild getGuildById(final long id)
-    {
-        return this.findSnowflakeInCombinedCollection(jda -> jda.getGuildMap().valueCollection(), id);
-    }
+    Guild getGuildById(long id);
 
     /**
      * This returns the {@link net.dv8tion.jda.core.entities.Guild Guild} which has the same id as the one provided.
@@ -201,10 +81,7 @@ public class ShardManager
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Guild Guild} with matching id.
      */
-    public Guild getGuildById(final String id)
-    {
-        return this.findSnowflakeInCombinedCollection(jda -> jda.getGuildMap().valueCollection(), id);
-    }
+    Guild getGuildById(String id);
 
     /**
      * An unmodifiable List of all {@link net.dv8tion.jda.core.entities.Guild Guilds} that the logged account is connected to.
@@ -213,10 +90,7 @@ public class ShardManager
      *
      * @return Possibly-empty list of all the {@link net.dv8tion.jda.core.entities.Guild Guilds} that this account is connected to.
      */
-    public List<Guild> getGuilds()
-    {
-        return this.getDistinctUnmodifiableCombinedList(api -> api.getGuildMap().valueCollection());
-    }
+    List<Guild> getGuilds();
 
     /**
      * Gets all {@link net.dv8tion.jda.core.entities.Guild Guilds} that contain all given users as their members.
@@ -226,15 +100,7 @@ public class ShardManager
      *
      * @return Unmodifiable list of all {@link net.dv8tion.jda.core.entities.Guild Guild} instances which have all {@link net.dv8tion.jda.core.entities.User Users} in them.
      */
-    public List<Guild> getMutualGuilds(final Collection<User> users)
-    {
-        Args.notNull(users, "users");
-        for (final User u : users)
-            Args.notNull(u, "All users");
-
-        return Collections.unmodifiableList(this.getCombinedStream(jda -> jda.getGuildMap().valueCollection())
-                .filter(guild -> users.stream().allMatch(guild::isMember)).collect(Collectors.toList()));
-    }
+    List<Guild> getMutualGuilds(Collection<User> users);
 
     /**
      * Gets all {@link net.dv8tion.jda.core.entities.Guild Guilds} that contain all given users as their members.
@@ -244,11 +110,7 @@ public class ShardManager
      *
      * @return Unmodifiable list of all {@link net.dv8tion.jda.core.entities.Guild Guild} instances which have all {@link net.dv8tion.jda.core.entities.User Users} in them.
      */
-    public List<Guild> getMutualGuilds(final User... users)
-    {
-        Args.notNull(users, "users");
-        return this.getMutualGuilds(Arrays.asList(users));
-    }
+    List<Guild> getMutualGuilds(User... users);
 
     /**
      * Gets all {@link net.dv8tion.jda.core.entities.Guild Guilds} that contain all given users as their members.
@@ -258,12 +120,7 @@ public class ShardManager
      *
      * @return Unmodifiable list of all {@link net.dv8tion.jda.core.entities.Guild Guild} instances which have all {@link net.dv8tion.jda.core.entities.User Users} in them.
      */
-    public List<Guild> getMutualGuilds(final User user)
-    {
-        Args.notNull(user, "user");
-        return Collections.unmodifiableList(this.getCombinedStream(jda -> jda.getGuildMap().valueCollection())
-                .filter(guild -> guild.isMember(user)).collect(Collectors.toList()));
-    }
+    List<Guild> getMutualGuilds(User user);
 
     /**
      * This returns the {@link net.dv8tion.jda.core.JDA JDA} instance which has the same id as the one provided.
@@ -275,38 +132,24 @@ public class ShardManager
      * @return The {@link net.dv8tion.jda.core.JDA JDA} instance with the given shardId or
      *         {@code null} if no shard has the given id
      */
-    public JDA getShard(final int shardId)
-    {
-        return this.shards.get(shardId);
-    }
+    JDA getShard(int shardId);
 
-    public Collection<? extends JDA> getShards()
-    {
-        if (this.shardsUnmodifiable == null)
-            this.shardsUnmodifiable = TCollections.unmodifiableMap(this.shards);
-
-        return this.shardsUnmodifiable.valueCollection();
-    }
+    Collection<? extends JDA> getShards();
 
     /**
-     * Returns the amount of shards managed by this {@link ShardManager}.
-     * 
-     * @return The managed amount of shards. 
+     * Returns the amount of shards managed by this {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager}.
+     * This includes shards currently queued for a restart.
+     *
+     * @return The managed amount of shards.
      */
-    public int getShardsCount()
-    {
-        return this.shardCount;
-    }
+    int getShardsCount();
 
     /**
      * Returns the total shard count.
-     * 
-     * @return The total amount of shards. 
+     *
+     * @return The total amount of shards.
      */
-    public int getShardsTotal()
-    {
-        return this.shardsTotal;
-    }
+    int getShardsTotal();
 
     /**
      * This returns the {@link net.dv8tion.jda.core.JDA.Status JDA.Status} of the shard which has the same id as the one provided.
@@ -318,21 +161,14 @@ public class ShardManager
      * @return The  {@link net.dv8tion.jda.core.JDA.Status JDA.Status} of the shard with the given shardId or
      *         {@code null} if no shard has the given id
      */
-    public JDA.Status getStatus(final int shardId)
-    {
-        final JDA api = this.shards.get(shardId);
-        return api == null ? null : api.getStatus();
-    }
+    JDA.Status getStatus(int shardId);
 
     /**
      * Gets the current {@link net.dv8tion.jda.core.JDA.Status Status} of all shards.
      *
      * @return All current shard statuses.
      */
-    public List<JDA.Status> getStatuses()
-    {
-        return this.getUnmodifiableList(jda -> jda.getStatus());
-    }
+    List<JDA.Status> getStatuses();
 
     /**
      * This returns the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} which has the same id as the one provided.
@@ -350,10 +186,7 @@ public class ShardManager
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} with matching id.
      */
-    public TextChannel getTextChannelById(final long id)
-    {
-        return this.findSnowflakeInCombinedCollection(jda -> jda.getTextChannelMap().valueCollection(), id);
-    }
+    TextChannel getTextChannelById(long id);
 
     /**
      * This returns the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} which has the same id as the one provided.
@@ -371,10 +204,7 @@ public class ShardManager
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} with matching id.
      */
-    public TextChannel getTextChannelById(final String id)
-    {
-        return this.findSnowflakeInCombinedCollection(jda -> jda.getTextChannelMap().valueCollection(), id);
-    }
+    TextChannel getTextChannelById(String id);
 
     /**
      * An unmodifiable List of all {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} of all connected
@@ -388,10 +218,7 @@ public class ShardManager
      *
      * @return Possibly-empty list of all known {@link net.dv8tion.jda.core.entities.TextChannel TextChannels}.
      */
-    public List<TextChannel> getTextChannels()
-    {
-        return this.getDistinctUnmodifiableCombinedList(api -> api.getTextChannelMap().valueCollection());
-    }
+    List<TextChannel> getTextChannels();
 
     /**
      * This returns the {@link net.dv8tion.jda.core.entities.User User} which has the same id as the one provided.
@@ -402,11 +229,7 @@ public class ShardManager
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.User User} with matching id.
      */
-    public User getUserById(final long id)
-    {
-        return this.findSnowflakeInCombinedCollection(jda -> jda.getUserMap().valueCollection(), id);
-
-    }
+    User getUserById(long id);
 
     /**
      * This returns the {@link net.dv8tion.jda.core.entities.User User} which has the same id as the one provided.
@@ -417,10 +240,7 @@ public class ShardManager
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.User User} with matching id.
      */
-    public User getUserById(final String id)
-    {
-        return this.findSnowflakeInCombinedCollection(jda -> jda.getUserMap().valueCollection(), id);
-    }
+    User getUserById(String id);
 
     /**
      * An unmodifiable list of all {@link net.dv8tion.jda.core.entities.User Users} that share a
@@ -433,11 +253,7 @@ public class ShardManager
      *
      * @return List of all {@link net.dv8tion.jda.core.entities.User Users} that are visible to JDA.
      */
-    public List<User> getUsers()
-    {
-        return this.getDistinctUnmodifiableCombinedList(api -> api.getUserMap().valueCollection());
-
-    }
+    List<User> getUsers();
 
     /**
      * This returns the {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} which has the same id as the one provided.
@@ -448,10 +264,7 @@ public class ShardManager
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} with matching id.
      */
-    public VoiceChannel getVoiceChannelById(final long id)
-    {
-        return this.findSnowflakeInCombinedCollection(jda -> jda.getVoiceChannelMap().valueCollection(), id);
-    }
+    VoiceChannel getVoiceChannelById(long id);
 
     /**
      * This returns the {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} which has the same id as the one provided.
@@ -462,10 +275,7 @@ public class ShardManager
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} with matching id.
      */
-    public VoiceChannel getVoiceChannelById(final String id)
-    {
-        return this.findSnowflakeInCombinedCollection(jda -> jda.getVoiceChannelMap().valueCollection(), id);
-    }
+    VoiceChannel getVoiceChannelById(String id);
 
     /**
      * An unmodifiable list of all {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels} of all connected
@@ -473,10 +283,7 @@ public class ShardManager
      *
      * @return Possible-empty list of all known {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels}.
      */
-    public List<VoiceChannel> getVoiceChannels()
-    {
-        return this.getDistinctUnmodifiableCombinedList(api -> api.getVoiceChannelMap().valueCollection());
-    }
+    List<VoiceChannel> getVoiceChannels();
 
     /**
      * Removes all provided listeners from the event-listeners and no longer uses them to handle events.
@@ -484,26 +291,12 @@ public class ShardManager
      * @param  listeners
      *         The listener(s) to be removed.
      */
-    public void removeEventListener(final Object... listeners)
-    {
-        this.shards.valueCollection().forEach(jda -> jda.removeEventListener(listeners));
-    }
+    void removeEventListener(Object... listeners);
 
     /**
      * Restarts all shards
      */
-    public void restart()
-    {
-        this.shards.forEachEntry((id, jda) ->
-        {
-            jda.shutdown(false);
-            return true;
-        });
-        this.shards.clear();
-
-        for (int i = this.minShardId; i <= this.maxShardId; i++)
-            this.queue.offer(i);
-    }
+    void restart();
 
     /**
      * Restarts the shards with the given id.
@@ -511,17 +304,7 @@ public class ShardManager
      * @throws IllegalArgumentException
      *         if shardId is lower than minShardId or higher than maxShardId
      */
-    public void restart(final int shardId)
-    {
-        Args.check(shardId >= this.minShardId, "shardId must not be less than minShardId");
-        Args.check(shardId <= this.maxShardId, "shardId must not be greater than maxShardId");
-
-        final JDAImpl old = this.shards.remove(shardId);
-        if (old != null)
-            old.shutdown(false);
-
-        this.queue.offer(shardId);
-    }
+    void restart(int shardId);
 
     /**
      * Sets the {@link net.dv8tion.jda.core.entities.Game Game} for all shards.
@@ -534,10 +317,7 @@ public class ShardManager
      * @see    net.dv8tion.jda.core.entities.Game#of(String)
      * @see    net.dv8tion.jda.core.entities.Game#of(String, String)
      */
-    public void setGame(final Game game)
-    {
-        this.shards.valueCollection().forEach(jda -> jda.getPresence().setGame(game));
-    }
+    void setGame(Game game);
 
     /**
      * Sets whether all sessions should be marked as afk or not
@@ -548,10 +328,19 @@ public class ShardManager
      * @param idle
      *        boolean
      */
-    public void setIdle(final boolean idle)
-    {
-        this.shards.valueCollection().forEach(jda -> jda.getPresence().setIdle(idle));
-    }
+    void setIdle(boolean idle);
+
+    /**
+     * Sets the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} for the given shards.
+     *
+     * @throws IllegalArgumentException
+     *         if the provided OnlineStatus is {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}
+     *
+     * @param  status
+     *         the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus}
+     *         to be used (OFFLINE/null {@literal ->} INVISIBLE)
+     */
+    void setStatus(int shardId, OnlineStatus status);
 
     /**
      * Sets the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} for all shards.
@@ -563,21 +352,15 @@ public class ShardManager
      *         the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus}
      *         to be used (OFFLINE/null {@literal ->} INVISIBLE)
      */
-    public void setStatus(final OnlineStatus status)
-    {
-        this.shards.valueCollection().forEach(jda -> jda.getPresence().setStatus(status));
-    }
+    void setStatus(OnlineStatus status);
 
     /**
      * Shuts down all JDA shards, closing all their connections.
-     * After this command is issued the ShardManager instance can not be used anymore.
+     * After this command is issShardManageragerImpl instance can not be used anymore.
      *
      * <p>This is the same as calling {@link #shutdown(boolean) shutdown(true)}.
      */
-    public void shutdown()
-    {
-        this.shutdown(true);
-    }
+    void shutdown();
 
     /**
      * Shuts down all JDA shards, closing all their connections.
@@ -590,198 +373,10 @@ public class ShardManager
      *
      * @param  free If true, shuts down JDA's rest system permanently for all current and future instances.
      */
-    public void shutdown(final boolean free)
-    {
-        if (this.shutdown.getAndSet(true))
-            return; // shutdown has already been requested
+    void shutdown(boolean free);
 
-        if (this.worker != null && !this.worker.isDone())
-            this.worker.cancel(true);
+    void shutdown(int shardId); // TODO: docs shutdown(int shardId)
 
-        if (shutdownHook != null)
-        {
-            try
-            {
-                Runtime.getRuntime().removeShutdownHook(shutdownHook);
-            }
-            catch (Exception ignored) {}
-        }
+    void start(int shardId); // TODO: docs start(int shardId)
 
-        this.executor.shutdownNow();
-
-        if (this.shards != null)
-            for (final JDA jda : this.shards.valueCollection())
-                jda.shutdown(false);
-
-        // shutdown Unirest after all JDA instances (if requested) so they can still make rest calls while shutting down
-        if (free)
-            try
-            {
-                Unirest.shutdown();
-            }
-            catch (final IOException ignored)
-            {}
-    }
-
-    private JDAImpl buildInstance(int shardId) throws LoginException, RateLimitedException
-    {
-        WebSocketFactory wsFactory = new WebSocketFactory();
-        wsFactory.setConnectionTimeout(websocketTimeout);
-        if (ShardManagerBuilder.proxy != null)
-        {
-            ProxySettings settings = wsFactory.getProxySettings();
-            settings.setHost(ShardManagerBuilder.proxy.getHostName());
-            settings.setPort(ShardManagerBuilder.proxy.getPort());
-        }
-
-        JDAImpl jda = new JDAImpl(AccountType.BOT, ShardManagerBuilder.proxy, wsFactory, autoReconnect, enableVoice, false,
-                enableBulkDeleteSplitting, corePoolSize, maxReconnectDelay);
-
-        if (eventManager != null)
-            jda.setEventManager(eventManager);
-
-        if (audioSendFactory != null)
-            jda.setAudioSendFactory(audioSendFactory);
-
-        listeners.forEach(jda::addEventListener);
-        jda.setStatus(JDA.Status.INITIALIZED);  //This is already set by JDA internally, but this is to make sure the listeners catch it.
-
-        // Set the presence information before connecting to have the correct information ready when sending IDENTIFY
-        ((PresenceImpl) jda.getPresence())
-                .setCacheGame(game)
-                .setCacheIdle(idle)
-                .setCacheStatus(status);
-
-        JDAImpl.ShardInfoImpl shardInfo = new JDAImpl.ShardInfoImpl(shardId, shardsTotal);
-
-        int shardTotal = jda.login(token, shardInfo);
-        if (this.shardsTotal == -1)
-        {
-            this.shardsTotal = shardTotal;
-        }
-        return jda;
-    }
-
-    private <T extends ISnowflake> T findSnowflakeInCombinedCollection(
-            final Function<? super JDAImpl, ? extends Collection<? extends T>> mapper, final long id)
-    {
-        return this.getCombinedStream(mapper).filter(g -> g.getIdLong() == id).findFirst().orElse(null);
-    }
-
-    private <T extends ISnowflake> T findSnowflakeInCombinedCollection(
-            final Function<? super JDAImpl, ? extends Collection<? extends T>> mapper, final String id)
-    {
-        final long idLong = MiscUtil.parseSnowflake(id);
-        return this.getCombinedStream(mapper).filter(g -> g.getIdLong() == idLong).findFirst().orElse(null);
-    }
-
-    private <T> Stream<T> getCombinedStream(final Function<? super JDAImpl, ? extends Collection<? extends T>> mapper)
-    {
-        return this.shards.valueCollection().stream().flatMap(mapper.andThen(c -> c.stream()));
-    }
-
-    private <T> List<T> getDistinctUnmodifiableCombinedList(
-            final Function<? super JDAImpl, ? extends Collection<? extends T>> mapper)
-    {
-        return Collections.unmodifiableList(this.getCombinedStream(mapper).distinct().collect(Collectors.toList()));
-    }
-
-    private <T> Stream<T> getStream(final Function<? super JDAImpl, ? extends T> mapper)
-    {
-        return this.shards.valueCollection().stream().map(mapper);
-    }
-
-    private <T> List<T> getUnmodifiableList(final Function<? super JDAImpl, ? extends T> mapper)
-    {
-        return Collections.unmodifiableList(this.getStream(mapper).collect(Collectors.toList()));
-    }
-
-    void login() throws LoginException, IllegalArgumentException
-    {
-        // building the first one in the currrent thread ensures that LoginException and IllegalArgumentException can be thrown on login
-        JDAImpl jda = null;
-        try
-        {
-            if (queue.isEmpty())
-            {
-                jda = buildInstance(0);
-
-                this.minShardId = 0;
-                this.maxShardId = shardsTotal - 1;
-
-                this.shardCount = minShardId - maxShardId + 1;
-
-                this.shards = new TIntObjectHashMap<>(this.shardCount);
-
-                for (int i = this.minShardId + 1; i <= this.maxShardId; i++)
-                    this.queue.offer(i);
-
-                this.shards.put(0, jda);
-            }
-            else
-            {
-                final int shardId = this.queue.peek();
-
-                this.shards.put(shardId, jda = buildInstance(shardId));
-                this.queue.remove(shardId);
-            }
-        }
-        catch (final RateLimitedException e)
-        {
-            // do not remove 'shardId' from the queue and try the first one again after 5 seconds in the async thread
-        }
-        catch (final Exception e)
-        {
-            if (jda != null)
-                jda.shutdown(false);
-            throw e;
-        }
-
-        this.worker = this.executor.scheduleAtFixedRate(() ->
-        {
-            if (this.queue.isEmpty())
-                return;
-
-            JDAImpl api = null;
-            try
-            {
-                int shardId = -1;
-                do
-                {
-                    final int i = this.queue.peek();
-                    if (this.shards.containsKey(i))
-                        this.queue.poll();
-                    else
-                        shardId = i;
-                }
-                while (shardId == -1 && !this.queue.isEmpty());
-
-                if (shardId == -1)
-                {
-                    this.queue.poll();
-                    return;
-                }
-
-                this.shards.put(shardId, api = buildInstance(shardId));
-                this.queue.remove(shardId);
-            }
-            catch (LoginException | IllegalArgumentException e)
-            {
-                // TODO: this should never happen unless the token changes inbetween, still needs to be handled somehow
-                e.printStackTrace();
-            }
-            catch (final Exception e)
-            {
-                // do not remove 'shardId' from the queue and try again after 5 seconds
-                if (api != null)
-                    api.shutdown(false);
-                throw new RuntimeException(e);
-            }
-        }, 0, 5, TimeUnit.SECONDS);
-
-        if (shutdownHook != null)
-        {
-            Runtime.getRuntime().addShutdownHook(shutdownHook);
-        }
-    }
 }
