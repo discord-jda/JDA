@@ -52,7 +52,7 @@ import java.util.stream.Stream;
  *
  * @since 3.0
  */
-public class GuildController
+public class GuildController // TODO: docs auditable rest action
 {
     protected final GuildImpl guild;
 

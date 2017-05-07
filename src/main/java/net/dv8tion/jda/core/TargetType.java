@@ -15,7 +15,7 @@
  */
 
 package net.dv8tion.jda.core;
-
+// TODO: docs
 public enum TargetType
 {
     GUILD,

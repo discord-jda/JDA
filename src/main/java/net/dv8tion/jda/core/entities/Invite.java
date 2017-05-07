@@ -66,7 +66,7 @@ public interface Invite
     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Invite Invite}
     *         <br>The deleted Invite object
     */
-   AuditableRestAction<Invite> delete();
+   AuditableRestAction<Invite> delete(); // TODO: docs auditable rest action
 
     /**
      * Tries to retrieve a new expanded {@link net.dv8tion.jda.core.entities.Invite Invite} with more info.

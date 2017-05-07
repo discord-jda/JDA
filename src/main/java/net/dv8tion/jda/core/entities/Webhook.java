@@ -123,7 +123,7 @@ public interface Webhook extends ISnowflake
      * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: Void
      *         <br>The rest action to delete this Webhook.
      */
-    AuditableRestAction<Void> delete();
+    AuditableRestAction<Void> delete(); // TODO: docs auditable rest action
 
     /**
      * The {@link net.dv8tion.jda.core.managers.WebhookManager Manager}

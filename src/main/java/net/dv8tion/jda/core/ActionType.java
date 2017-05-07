@@ -15,7 +15,7 @@
  */
 
 package net.dv8tion.jda.core;
-
+// TODO: docs
 public enum ActionType
 {
     GUILD_UPDATE(1, TargetType.GUILD),

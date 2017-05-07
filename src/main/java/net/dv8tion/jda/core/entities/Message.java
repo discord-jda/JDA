@@ -483,7 +483,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
-    AuditableRestAction<Void> delete();
+    AuditableRestAction<Void> delete(); // TODO: docs auditable rest action
 
     /**
      * Returns the {@link net.dv8tion.jda.core.JDA JDA} instance related to this Message.

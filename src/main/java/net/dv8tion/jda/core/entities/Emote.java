@@ -105,7 +105,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
      *         The RestAction to delete this Emote.
      */
-    AuditableRestAction<Void> delete();
+    AuditableRestAction<Void> delete(); // TODO: docs auditable rest action
 
     /**
      * The {@link net.dv8tion.jda.client.managers.EmoteManager Manager} for this emote, used to modify

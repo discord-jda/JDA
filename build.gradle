@@ -192,7 +192,7 @@ String getProjectProperty(String propertyName)
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '3.4.1'
+    gradleVersion = '3.5'
 }
 
 

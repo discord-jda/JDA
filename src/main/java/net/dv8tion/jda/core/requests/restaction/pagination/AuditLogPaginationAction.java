@@ -31,6 +31,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO: docs
 public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, AuditLogPaginationAction>
 {
     protected final Guild guild;
@@ -52,10 +53,10 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
         final String limit = String.valueOf(this.limit.get());
         final String id = guild.getId();
 
-        if (isEmpty())
+        if (isEmpty()) // TODO: this.last
             super.route = Route.Guilds.GET_AUDIT_LOGS.compile(id, limit);
         else
-            super.route = Route.Guilds.GET_AUDIT_LOGS_BEFORE.compile(id, limit, getLast().getId());
+            super.route = Route.Guilds.GET_AUDIT_LOGS_BEFORE.compile(id, limit, getLast().getId()); // TODO: volatile last
     }
 
     @Override
@@ -85,8 +86,8 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
             JSONObject entry = entries.getJSONObject(i);
             JSONObject user  = userMap.get(entry.getLong("user_id"));
             AuditLogEntry result = builder.createAuditLogEntry((GuildImpl) guild, entry, user);
-            cached.add(result);
             list.add(result);
+            cached.add(result); // TODO: useCache / this.last
         }
 
         request.onSuccess(list);
