@@ -79,8 +79,8 @@ public class JDAImpl implements JDA
     protected final WebSocketFactory wsFactory;
     protected final AccountType accountType;
     protected final PresenceImpl presence;
-    protected final JDAClient jdaClient;
-    protected final JDABot jdaBot;
+    protected final JDAClientImpl jdaClient;
+    protected final JDABotImpl jdaBot;
     protected final int maxReconnectDelay;
     protected final Thread shutdownHook;
     protected final EntityBuilder entityBuilder = new EntityBuilder(this);
@@ -680,7 +680,7 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public JDAClient asClient()
+    public JDAClientImpl asClient()
     {
         if (getAccountType() != AccountType.CLIENT)
             throw new AccountTypeException(AccountType.CLIENT);
@@ -689,7 +689,7 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public JDABot asBot()
+    public JDABotImpl asBot()
     {
         if (getAccountType() != AccountType.BOT)
             throw new AccountTypeException(AccountType.BOT);

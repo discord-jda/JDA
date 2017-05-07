@@ -490,6 +490,8 @@ public class ShardManagerImpl implements ShardManager
         final JDAImpl jda = new JDAImpl(AccountType.BOT, ShardManagerBuilder.proxy, wsFactory, this.autoReconnect,
                 this.enableVoice, false, this.enableBulkDeleteSplitting, this.corePoolSize, this.maxReconnectDelay);
 
+        jda.asBot().setShardManager(this);
+
         if (this.eventManager != null)
             jda.setEventManager(this.eventManager);
 

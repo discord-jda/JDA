@@ -18,6 +18,7 @@ package net.dv8tion.jda.bot.entities.impl;
 
 import net.dv8tion.jda.bot.JDABot;
 import net.dv8tion.jda.bot.entities.ApplicationInfo;
+import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.EntityBuilder;
@@ -33,6 +34,7 @@ public class JDABotImpl implements JDABot
 {
     protected final JDAImpl api;
     protected String clientId = null;
+    protected ShardManager shardManager = null;
 
     public JDABotImpl(JDAImpl api)
     {
@@ -92,5 +94,16 @@ public class JDABotImpl implements JDABot
         StringBuilder builder = new StringBuilder("https://discordapp.com/oauth2/authorize?scope=bot&client_id=");
         builder.append(clientId);
         return builder;
+    }
+
+    public void setShardManager(ShardManager shardManager)
+    {
+        this.shardManager = shardManager;
+    }
+
+    @Override
+    public ShardManager getShardManager()
+    {
+        return shardManager;
     }
 }
