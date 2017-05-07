@@ -90,6 +90,91 @@ public class GuildController
     }
 
     /**
+     * Used to move a {@link net.dv8tion.jda.core.entities.Member Member} from one {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
+     * to another {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}.
+     * <br>As a note, you cannot move a Member that isn't already in a VoiceChannel. Also they must be in a VoiceChannel
+     * in the same Guild as the one that you are moving them to.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The target Member cannot be moved due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>We were removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
+     *     <br>The specified Member was removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The specified channel was deleted before finishing the task</li>
+     * </ul>
+     *
+     * @param  member
+     *         The {@link net.dv8tion.jda.core.entities.Member Member} that you are moving.
+     * @param  voiceChannel
+     *         The destination {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} to which the member is being
+     *         moved to.
+     *
+     * @throws IllegalStateException
+     *         If the Member isn't currently in a VoiceChannel in this Guild.
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If any of the provided arguments is {@code null}</li>
+     *             <li>If the provided Member isn't part of this {@link net.dv8tion.jda.core.entities.Guild Guild}</li>
+     *             <li>If the provided VoiceChannel isn't part of this {@link net.dv8tion.jda.core.entities.Guild Guild}</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         <ul>
+     *             <li>If this account doesn't have {@link net.dv8tion.jda.core.Permission#VOICE_MOVE_OTHERS}
+     *                 in the VoiceChannel that the Member is currently in.</li>
+     *             <li>If this account <b>AND</b> the Member being moved don't have
+     *                 {@link net.dv8tion.jda.core.Permission#VOICE_CONNECT} for the destination VoiceChannel.</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
+     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     */
+    public RestAction<Void> moveVoiceMember(Member member, VoiceChannel voiceChannel)
+    {
+        checkAvailable();
+        Args.notNull(member, "member");
+        Args.notNull(member, "voiceChannel");
+        checkGuild(member.getGuild(), "member");
+        checkGuild(voiceChannel.getGuild(), "voiceChannel");
+
+        GuildVoiceState vState = member.getVoiceState();
+        if (!vState.inVoiceChannel())
+            throw new IllegalStateException("You cannot move a Member who isn't in a VoiceChannel!");
+
+        if (!PermissionUtil.checkPermission(vState.getChannel(), guild.getSelfMember(), Permission.VOICE_MOVE_OTHERS))
+            throw new PermissionException(Permission.VOICE_MOVE_OTHERS, "This account does not have Permission to MOVE_OTHERS out of the channel that the Member is currently in.");
+
+        if (!PermissionUtil.checkPermission(voiceChannel, guild.getSelfMember(), Permission.VOICE_CONNECT)
+                && !PermissionUtil.checkPermission(voiceChannel, member, Permission.VOICE_CONNECT))
+            throw new PermissionException(Permission.VOICE_CONNECT,
+                    "Neither this account nor the Member that is attempting to be moved have the VOICE_CONNECT permission " +
+                            "for the destination VoiceChannel, so the move cannot be done.");
+
+        JSONObject body = new JSONObject().put("channel_id", voiceChannel.getId());
+        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(guild.getId(), member.getUser().getId());
+
+        return new RestAction<Void>(guild.getJDA(), route, body)
+        {
+            @Override
+            protected void handleResponse(Response response, Request<Void> request)
+            {
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
+    }
+
+    /**
      * Changes a Member's nickname in this guild.
      * The nickname is visible to all members of this guild.
      *
@@ -180,94 +265,9 @@ public class GuildController
     }
 
     /**
-     * Used to move a {@link net.dv8tion.jda.core.entities.Member Member} from one {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
-     * to another {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}.
-     * <br>As a note, you cannot move a Member that isn't already in a VoiceChannel. Also they must be in a VoiceChannel
-     * in the same Guild as the one that you are moving them to.
-     *
-     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The target Member cannot be moved due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>We were removed from the Guild before finishing the task</li>
-     *
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
-     *     <br>The specified Member was removed from the Guild before finishing the task</li>
-     *
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
-     *     <br>The specified channel was deleted before finishing the task</li>
-     * </ul>
-     *
-     * @param  member
-     *         The {@link net.dv8tion.jda.core.entities.Member Member} that you are moving.
-     * @param  voiceChannel
-     *         The destination {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} to which the member is being
-     *         moved to.
-     *
-     * @throws IllegalStateException
-     *         If the Member isn't currently in a VoiceChannel in this Guild.
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If any of the provided arguments is {@code null}</li>
-     *             <li>If the provided Member isn't part of this {@link net.dv8tion.jda.core.entities.Guild Guild}</li>
-     *             <li>If the provided VoiceChannel isn't part of this {@link net.dv8tion.jda.core.entities.Guild Guild}</li>
-     *         </ul>
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *         <ul>
-     *             <li>If this account doesn't have {@link net.dv8tion.jda.core.Permission#VOICE_MOVE_OTHERS}
-     *                 in the VoiceChannel that the Member is currently in.</li>
-     *             <li>If this account <b>AND</b> the Member being moved don't have
-     *                 {@link net.dv8tion.jda.core.Permission#VOICE_CONNECT} for the destination VoiceChannel.</li>
-     *         </ul>
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
-     *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
-     */
-    public RestAction<Void> moveVoiceMember(Member member, VoiceChannel voiceChannel)
-    {
-        checkAvailable();
-        Args.notNull(member, "member");
-        Args.notNull(member, "voiceChannel");
-        checkGuild(member.getGuild(), "member");
-        checkGuild(voiceChannel.getGuild(), "voiceChannel");
-
-        GuildVoiceState vState = member.getVoiceState();
-        if (!vState.inVoiceChannel())
-            throw new IllegalStateException("You cannot move a Member who isn't in a VoiceChannel!");
-
-        if (!PermissionUtil.checkPermission(vState.getChannel(), guild.getSelfMember(), Permission.VOICE_MOVE_OTHERS))
-            throw new PermissionException(Permission.VOICE_MOVE_OTHERS, "This account does not have Permission to MOVE_OTHERS out of the channel that the Member is currently in.");
-
-        if (!PermissionUtil.checkPermission(voiceChannel, guild.getSelfMember(), Permission.VOICE_CONNECT)
-                && !PermissionUtil.checkPermission(voiceChannel, member, Permission.VOICE_CONNECT))
-            throw new PermissionException(Permission.VOICE_CONNECT,
-                    "Neither this account nor the Member that is attempting to be moved have the VOICE_CONNECT permission " +
-                            "for the destination VoiceChannel, so the move cannot be done.");
-
-        JSONObject body = new JSONObject().put("channel_id", voiceChannel.getId());
-        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(guild.getId(), member.getUser().getId());
-
-        return new RestAction<Void>(guild.getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
-    }
-
-    /**
      * This method will prune (kick) all members who were offline for at least <i>days</i> days.
      * <br>The RestAction returned from this method will return the amount of Members that were pruned.
-     * <br>You can use {@link #getPrunableMemberCount(int)} to determine how many Members would be pruned if you were to
+     * <br>You can use {@link Guild#getPrunableMemberCount(int)} to determine how many Members would be pruned if you were to
      * call this method.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
@@ -341,7 +341,11 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Integer
      *         <br>The amount of Members that would be affected.
+     *
+     * @deprecated
+     *         Use {@link net.dv8tion.jda.core.entities.Guild#getPrunableMemberCount(int) Guild.getPrunableMemberCount(int)} instead
      */
+    @Deprecated
     public RestAction<Integer> getPrunableMemberCount(int days)
     {
         checkAvailable();
@@ -1189,7 +1193,11 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@literal List<}{@link net.dv8tion.jda.core.entities.User User}{@literal >}
      *         <br>An unmodifiable list of all users currently banned from this Guild
+     *
+     * @deprecated
+     *         Use {@link net.dv8tion.jda.core.entities.Guild#getBans() Guild.getBans()} instead
      */
+    @Deprecated
     public RestAction<List<User>> getBans()
     {
         checkAvailable();

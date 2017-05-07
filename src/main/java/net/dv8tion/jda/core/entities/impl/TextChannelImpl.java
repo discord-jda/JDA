@@ -318,7 +318,7 @@ public class TextChannelImpl implements TextChannel
     }
 
     @Override
-    public RestAction<Void> deleteMessageById(String messageId)
+    public AuditableRestAction<Void> deleteMessageById(String messageId)
     {
         Args.notEmpty(messageId, "messageId");
         checkPermission(Permission.MESSAGE_READ);
