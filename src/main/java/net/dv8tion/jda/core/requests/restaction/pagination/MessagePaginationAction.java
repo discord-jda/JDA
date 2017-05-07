@@ -27,6 +27,24 @@ import org.json.JSONArray;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * {@link net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction PaginationAction}
+ * that paginates the endpoints:
+ * <ul>
+ *     <li>{@link net.dv8tion.jda.core.requests.Route.Messages#GET_MESSAGE_HISTORY Route.Messages.GET_MESSAGE_HISTORY}</li>
+ *     <li>{@link net.dv8tion.jda.core.requests.Route.Messages#GET_MESSAGE_HISTORY_BEFORE Route.Messages.GET_MESSAGE_HISTORY_BEFORE}</li>
+ * </ul>
+ *
+ * <p><b>Must provide not-null {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel} to compile a valid
+ * pagination route.</b>
+ *
+ * <h2>Limits:</h2>
+ * Minimum - 1
+ * <br>Maximum - 100
+ *
+ * @since  3.1
+ * @author Florian Spieß
+ */
 public class MessagePaginationAction extends PaginationAction<Message, MessagePaginationAction>
 {
     private final MessageChannel channel;
