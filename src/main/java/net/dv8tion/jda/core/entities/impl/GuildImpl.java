@@ -533,8 +533,15 @@ public class GuildImpl implements Guild
         if (mng == null)
         {
             // No previous manager found -> create one
-            mng = new AudioManagerImpl(this);
-            managerMap.put(id, mng);
+            synchronized (managerMap)
+            {
+                mng = managerMap.get(id);
+                if (mng == null)
+                {
+                    mng = new AudioManagerImpl(this);
+                    managerMap.put(id, mng);
+                }
+            }
         }
         // set guild again to make sure the manager references this instance! Avoiding invalid member cache
         mng.setGuild(this);
