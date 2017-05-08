@@ -49,7 +49,7 @@ public class AudioManagerImpl implements AudioManager
     public final Object CONNECTION_LOCK = new Object();
 
     protected final JDAImpl api;
-    protected final GuildImpl guild;
+    protected GuildImpl guild;
     protected AudioConnection audioConnection = null;
     protected VoiceChannel queuedAudioConnection = null;
 
@@ -64,11 +64,16 @@ public class AudioManagerImpl implements AudioManager
 
     protected long timeout = DEFAULT_CONNECTION_TIMEOUT;
 
-    public AudioManagerImpl(Guild guild)
+    public AudioManagerImpl(GuildImpl guild)
     {
-        this.guild = (GuildImpl) guild;
+        this.guild = guild;
         this.api = this.guild.getJDA();
         init(); //Just to make sure that the audio libs have been initialized.
+    }
+
+    public void setGuild(GuildImpl guild)
+    {
+        this.guild = guild;
     }
 
     @Override

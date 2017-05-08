@@ -19,7 +19,6 @@ package net.dv8tion.jda.core.entities.impl;
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.client.requests.restaction.pagination.MentionPaginationAction;
 import net.dv8tion.jda.core.AccountType;
-import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.*;
@@ -529,20 +528,23 @@ public class GuildImpl implements Guild
         if (!api.isAudioEnabled())
             throw new IllegalStateException("Audio is disabled. Cannot retrieve an AudioManager while audio is disabled.");
 
-        TLongObjectMap<AudioManager> audioManagers = api.getAudioManagerMap();
-        AudioManager mng = audioManagers.get(id);
+        final TLongObjectMap<AudioManagerImpl> managerMap = api.getAudioManagerMap();
+        AudioManagerImpl mng = managerMap.get(id);
         if (mng == null)
         {
-            synchronized (audioManagers)
+            // No previous manager found -> create one
+            synchronized (managerMap)
             {
-                mng = audioManagers.get(id);
+                mng = managerMap.get(id);
                 if (mng == null)
                 {
                     mng = new AudioManagerImpl(this);
-                    audioManagers.put(id, mng);
+                    managerMap.put(id, mng);
                 }
             }
         }
+        // set guild again to make sure the manager references this instance! Avoiding invalid member cache
+        mng.setGuild(this);
         return mng;
     }
 
