@@ -32,6 +32,13 @@ public interface Channel extends ISnowflake
 {
 
     /**
+     * The {@link net.dv8tion.jda.core.entities.ChannelType ChannelType} for this Channel
+     *
+     * @return The channel type
+     */
+    ChannelType getType();
+
+    /**
      * The human readable name of the  Channel.
      * <br>If no name has been set, this returns null.
      *
@@ -185,7 +192,7 @@ public interface Channel extends ISnowflake
      *         if the currently logged in account doesn't have {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
      *         for the channel.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: Void
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     AuditableRestAction<Void> delete();
 

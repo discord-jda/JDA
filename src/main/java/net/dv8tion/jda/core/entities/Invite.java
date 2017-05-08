@@ -63,10 +63,9 @@ public interface Invite
     * @throws net.dv8tion.jda.core.exceptions.PermissionException
     *         if the account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER MANAGE_SERVER} in the invite's channel
     *
-    * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Invite Invite}
-    *         <br>The deleted Invite object
+    * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
     */
-   AuditableRestAction<Invite> delete(); // TODO: docs auditable rest action
+   AuditableRestAction<Void> delete();
 
     /**
      * Tries to retrieve a new expanded {@link net.dv8tion.jda.core.entities.Invite Invite} with more info.

@@ -31,7 +31,24 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO: docs
+/**
+ * {@link net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction PaginationAction}
+ * that paginates the endpoints:
+ * <ul>
+ *     <li>{@link net.dv8tion.jda.core.requests.Route.Guilds#GET_AUDIT_LOGS Route.Guilds.GET_AUDIT_LOGS}</li>
+ *     <li>{@link net.dv8tion.jda.core.requests.Route.Guilds#GET_AUDIT_LOGS_BEFORE Route.Guilds.GET_AUDIT_LOGS_BEFORE}</li>
+ * </ul>
+ *
+ * <p><b>Must provide not-null {@link net.dv8tion.jda.core.entities.Guild Guild} to compile a valid guild audit logs
+ * pagination route</b>
+ *
+ * <h2>Limits</h2>
+ * Minimum - 1
+ * <br>Maximum - 100
+ *
+ * @since  3.1
+ * @author Florian Spieß
+ */
 public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, AuditLogPaginationAction>
 {
     protected final Guild guild;
@@ -42,6 +59,12 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
         this.guild = guild;
     }
 
+    /**
+     * The current target {@link net.dv8tion.jda.core.entities.Guild Guild} for
+     * this AuditLogPaginationAction.
+     *
+     * @return The never-null target Guild
+     */
     public Guild getGuild()
     {
         return guild;
@@ -52,11 +75,12 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
     {
         final String limit = String.valueOf(this.limit.get());
         final String id = guild.getId();
+        final AuditLogEntry last = this.last;
 
-        if (isEmpty()) // TODO: this.last
+        if (last == null)
             super.route = Route.Guilds.GET_AUDIT_LOGS.compile(id, limit);
         else
-            super.route = Route.Guilds.GET_AUDIT_LOGS_BEFORE.compile(id, limit, getLast().getId()); // TODO: volatile last
+            super.route = Route.Guilds.GET_AUDIT_LOGS_BEFORE.compile(id, limit, last.getId());
     }
 
     @Override
@@ -87,7 +111,9 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
             JSONObject user  = userMap.get(entry.getLong("user_id"));
             AuditLogEntry result = builder.createAuditLogEntry((GuildImpl) guild, entry, user);
             list.add(result);
-            cached.add(result); // TODO: useCache / this.last
+            if (this.useCache)
+                this.cached.add(result);
+            this.last = result;
         }
 
         request.onSuccess(list);

@@ -52,7 +52,7 @@ import java.util.stream.Stream;
  *
  * @since 3.0
  */
-public class GuildController // TODO: docs auditable rest action
+public class GuildController
 {
     protected final GuildImpl guild;
 
@@ -217,7 +217,7 @@ public class GuildController // TODO: docs auditable rest action
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     public AuditableRestAction<Void> setNickname(Member member, String nickname)
     {
@@ -227,8 +227,8 @@ public class GuildController // TODO: docs auditable rest action
 
         if(member.equals(guild.getSelfMember()))
         {
-            if(!PermissionUtil.checkPermission(guild, member, Permission.NICKNAME_CHANGE)
-                    && !PermissionUtil.checkPermission(guild, member, Permission.NICKNAME_MANAGE))
+            if(!member.hasPermission(Permission.NICKNAME_CHANGE)
+                    && !member.hasPermission(Permission.NICKNAME_MANAGE))
                 throw new PermissionException(Permission.NICKNAME_CHANGE, "You neither have NICKNAME_CHANGE nor NICKNAME_MANAGE permission!");
         }
         else
@@ -290,7 +290,7 @@ public class GuildController // TODO: docs auditable rest action
      * @throws IllegalArgumentException
      *         If the provided days are less than {@code 1}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Integer
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction} - Type: Integer
      *         <br>The amount of Members that were pruned from the Guild.
      */
     public AuditableRestAction<Integer> prune(int days)
@@ -404,7 +404,7 @@ public class GuildController // TODO: docs auditable rest action
      *             <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         Kicks the provided Member from the current Guild
      */
     public AuditableRestAction<Void> kick(Member member, String reason)
@@ -471,7 +471,7 @@ public class GuildController // TODO: docs auditable rest action
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     public AuditableRestAction<Void> kick(String userId, String reason)
     {
@@ -517,7 +517,7 @@ public class GuildController // TODO: docs auditable rest action
      *             <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         Kicks the provided Member from the current Guild
      */
     public AuditableRestAction<Void> kick(Member member)
@@ -558,7 +558,7 @@ public class GuildController // TODO: docs auditable rest action
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     public AuditableRestAction<Void> kick(String userId)
     {
@@ -610,7 +610,7 @@ public class GuildController // TODO: docs auditable rest action
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     public AuditableRestAction<Void> ban(Member member, int delDays, String reason)
     {
@@ -665,7 +665,7 @@ public class GuildController // TODO: docs auditable rest action
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     public AuditableRestAction<Void> ban(User user, int delDays, String reason)
     {
@@ -755,7 +755,7 @@ public class GuildController // TODO: docs auditable rest action
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     public AuditableRestAction<Void> ban(String userId, int delDays, String reason)
     {
@@ -849,7 +849,7 @@ public class GuildController // TODO: docs auditable rest action
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     public AuditableRestAction<Void> ban(Member member, int delDays)
     {
@@ -899,7 +899,7 @@ public class GuildController // TODO: docs auditable rest action
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     public AuditableRestAction<Void> ban(User user, int delDays)
     {
@@ -945,7 +945,7 @@ public class GuildController // TODO: docs auditable rest action
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     public AuditableRestAction<Void> ban(String userId, int delDays)
     {
@@ -978,7 +978,7 @@ public class GuildController // TODO: docs auditable rest action
      * @throws IllegalArgumentException
      *         If the provided user is null
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     public AuditableRestAction<Void> unban(User user)
     {
@@ -1013,7 +1013,7 @@ public class GuildController // TODO: docs auditable rest action
      * @throws IllegalArgumentException
      *         If the provided id is null or blank
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     public AuditableRestAction<Void> unban(String userId)
     {
@@ -1041,8 +1041,8 @@ public class GuildController // TODO: docs auditable rest action
      * Sets the Guild Deafened state state of the {@link net.dv8tion.jda.core.entities.Member Member} based on the provided
      * boolean.
      *
-     * <p><b>Note:</b> The Member's {@link net.dv8tion.jda.core.entities.GuildVoiceState#isGuildDeafened()} value won't change
-     * until JDA receives the {@link net.dv8tion.jda.core.events.guild.voice.GuildVoiceGuildDeafenEvent} event related to this change.
+     * <p><b>Note:</b> The Member's {@link net.dv8tion.jda.core.entities.GuildVoiceState#isGuildDeafened() GuildVoiceState.isGuildDeafened()} value won't change
+     * until JDA receives the {@link net.dv8tion.jda.core.events.guild.voice.GuildVoiceGuildDeafenEvent GuildVoiceGuildDeafenEvent} event related to this change.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
@@ -1072,7 +1072,7 @@ public class GuildController // TODO: docs auditable rest action
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     public AuditableRestAction<Void> setDeafen(Member member, boolean deafen)
     {
@@ -1108,8 +1108,8 @@ public class GuildController // TODO: docs auditable rest action
      * Sets the Guild Muted state state of the {@link net.dv8tion.jda.core.entities.Member Member} based on the provided
      * boolean.
      *
-     * <p><b>Note:</b> The Member's {@link net.dv8tion.jda.core.entities.GuildVoiceState#isGuildMuted()} value won't change
-     * until JDA receives the {@link net.dv8tion.jda.core.events.guild.voice.GuildVoiceGuildMuteEvent} event related to this change.
+     * <p><b>Note:</b> The Member's {@link net.dv8tion.jda.core.entities.GuildVoiceState#isGuildMuted() GuildVoiceState.isGuildMuted()} value won't change
+     * until JDA receives the {@link net.dv8tion.jda.core.events.guild.voice.GuildVoiceGuildMuteEvent GuildVoiceGuildMuteEvent} event related to this change.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
@@ -1139,7 +1139,7 @@ public class GuildController // TODO: docs auditable rest action
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     public AuditableRestAction<Void> setMute(Member member, boolean mute)
     {
@@ -1233,6 +1233,13 @@ public class GuildController // TODO: docs auditable rest action
      * Adds all provided {@link net.dv8tion.jda.core.entities.Role Roles}
      * to the specified {@link net.dv8tion.jda.core.entities.Member Member}
      *
+     * <h1>Warning</h1>
+     * <b>This may <u>not</u> be used together with any other role add/remove/modify methods for the same Member
+     * within one event listener cycle! The changes made by this require cache updates which are triggered by
+     * lifecycle events which are received later. This may only be called again once the specific Member has been updated
+     * by a {@link net.dv8tion.jda.core.events.guild.member.GuildMemberRoleAddEvent GuildMemberRoleAddEvent}.
+     * <br>To add <u>and</u> remove Roles from a Member you should use {@link #modifyMemberRoles(Member, Collection, Collection)}</b>
+     *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
      * <ul>
@@ -1265,7 +1272,7 @@ public class GuildController // TODO: docs auditable rest action
      *             <br>Managed Roles can only be applied by the applications that manage them (e.g. Twitch Subscriber Roles)</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *
      * @see    #addRolesToMember(Member, Collection)
      * @see    #modifyMemberRoles(Member, Role...)
@@ -1279,6 +1286,13 @@ public class GuildController // TODO: docs auditable rest action
      * Adds all provided {@link net.dv8tion.jda.core.entities.Role Roles}
      * to the specified {@link net.dv8tion.jda.core.entities.Member Member}
      *
+     * <h1>Warning</h1>
+     * <b>This may <u>not</u> be used together with any other role add/remove/modify methods for the same Member
+     * within one event listener cycle! The changes made by this require cache updates which are triggered by
+     * lifecycle events which are received later. This may only be called again once the specific Member has been updated
+     * by a {@link net.dv8tion.jda.core.events.guild.member.GuildMemberRoleAddEvent GuildMemberRoleAddEvent}.
+     * <br>To add <u>and</u> remove Roles from a Member you should use {@link #modifyMemberRoles(Member, Collection, Collection)}</b>
+     *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
      * <ul>
@@ -1311,7 +1325,7 @@ public class GuildController // TODO: docs auditable rest action
      *             <br>Managed Roles can only be applied by the applications that manage them (e.g. Twitch Subscriber Roles)</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *
      * @see    #addRolesToMember(Member, Role...)
      * @see    #modifyMemberRoles(Member, Collection)
@@ -1325,6 +1339,13 @@ public class GuildController // TODO: docs auditable rest action
      * Removes all provided {@link net.dv8tion.jda.core.entities.Role Roles}
      * from the specified {@link net.dv8tion.jda.core.entities.Member Member}
      *
+     * <h1>Warning</h1>
+     * <b>This may <u>not</u> be used together with any other role add/remove/modify methods for the same Member
+     * within one event listener cycle! The changes made by this require cache updates which are triggered by
+     * lifecycle events which are received later. This may only be called again once the specific Member has been updated
+     * by a {@link net.dv8tion.jda.core.events.guild.member.GuildMemberRoleRemoveEvent GuildMemberRoleRemoveEvent}.
+     * <br>To add <u>and</u> remove Roles from a Member you should use {@link #modifyMemberRoles(Member, Collection, Collection)}</b>
+     *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
      * <ul>
@@ -1357,7 +1378,7 @@ public class GuildController // TODO: docs auditable rest action
      *             <br>Managed Roles can only be applied by the applications that manage them (e.g. Twitch Subscriber Roles)</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *
      * @see    #addRolesToMember(Member, Collection)
      * @see    #modifyMemberRoles(Member, Role...)
@@ -1371,6 +1392,13 @@ public class GuildController // TODO: docs auditable rest action
      * Removes all provided {@link net.dv8tion.jda.core.entities.Role Roles}
      * from the specified {@link net.dv8tion.jda.core.entities.Member Member}
      *
+     * <h1>Warning</h1>
+     * <b>This may <u>not</u> be used together with any other role add/remove/modify methods for the same Member
+     * within one event listener cycle! The changes made by this require cache updates which are triggered by
+     * lifecycle events which are received later. This may only be called again once the specific Member has been updated
+     * by a {@link net.dv8tion.jda.core.events.guild.member.GuildMemberRoleRemoveEvent GuildMemberRoleRemoveEvent}.
+     * <br>To add <u>and</u> remove Roles from a Member you should use {@link #modifyMemberRoles(Member, Collection, Collection)}</b>
+     *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
      * <ul>
@@ -1403,7 +1431,7 @@ public class GuildController // TODO: docs auditable rest action
      *             <br>Managed Roles can only be applied by the applications that manage them (e.g. Twitch Subscriber Roles)</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *
      * @see    #addRolesToMember(Member, Role...)
      * @see    #modifyMemberRoles(Member, Collection)
@@ -1421,6 +1449,12 @@ public class GuildController // TODO: docs auditable rest action
      *
      * <p>None of the provided collections may be null
      * <br>To only add or remove roles use either {@link #removeRolesFromMember(Member, Collection)} or {@link #addRolesToMember(Member, Collection)}
+     *
+     * <h1>Warning</h1>
+     * <b>This may <u>not</u> be used together with any other role add/remove/modify methods for the same Member
+     * within one event listener cycle! The changes made by this require cache updates which are triggered by
+     * lifecycle events which are received later. This may only be called again once the specific Member has been updated
+     * by a {@link net.dv8tion.jda.core.events.guild.member.GenericGuildMemberEvent GenericGuildMemberEvent} targeting the same Member.</b>
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
@@ -1455,7 +1489,7 @@ public class GuildController // TODO: docs auditable rest action
      *             <li>If any of the specified Roles is managed or is the {@code Public Role} of the Guild</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     public AuditableRestAction<Void> modifyMemberRoles(Member member, Collection<Role> rolesToAdd, Collection<Role> rolesToRemove)
     {
@@ -1510,6 +1544,12 @@ public class GuildController // TODO: docs auditable rest action
      * Modifies the complete {@link net.dv8tion.jda.core.entities.Role Role} set of the specified {@link net.dv8tion.jda.core.entities.Member Member}
      * <br>The provided roles will replace all current Roles of the specified Member.
      *
+     * <h1>Warning</h1>
+     * <b>This may <u>not</u> be used together with any other role add/remove/modify methods for the same Member
+     * within one event listener cycle! The changes made by this require cache updates which are triggered by
+     * lifecycle events which are received later. This may only be called again once the specific Member has been updated
+     * by a {@link net.dv8tion.jda.core.events.guild.member.GenericGuildMemberEvent GenericGuildMemberEvent} targeting the same Member.</b>
+     *
      * <p><b>The new roles <u>must not</u> contain the Public Role of the Guild</b>
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
@@ -1543,7 +1583,7 @@ public class GuildController // TODO: docs auditable rest action
      *             <li>If any of the specified {@link net.dv8tion.jda.core.entities.Role Roles} is the {@code Public Role} of this Guild</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *
      * @see    #modifyMemberRoles(Member, Collection)
      */
@@ -1556,7 +1596,13 @@ public class GuildController // TODO: docs auditable rest action
      * Modifies the complete {@link net.dv8tion.jda.core.entities.Role Role} set of the specified {@link net.dv8tion.jda.core.entities.Member Member}
      * <br>The provided roles will replace all current Roles of the specified Member.
      *
-     * <p><b>The new roles <u>must not</u> contain the Public Role of the Guild</b>
+     * <p><u>The new roles <b>must not</b> contain the Public Role of the Guild</u>
+     *
+     * <h1>Warning</h1>
+     * <b>This may <u>not</u> be used together with any other role add/remove/modify methods for the same Member
+     * within one event listener cycle! The changes made by this require cache updates which are triggered by
+     * lifecycle events which are received later. This may only be called again once the specific Member has been updated
+     * by a {@link net.dv8tion.jda.core.events.guild.member.GenericGuildMemberEvent GenericGuildMemberEvent} targeting the same Member.</b>
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
@@ -1589,7 +1635,7 @@ public class GuildController // TODO: docs auditable rest action
      *             <li>If any of the specified {@link net.dv8tion.jda.core.entities.Role Roles} is the {@code Public Role} of this Guild</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *
      * @see    #modifyMemberRoles(Member, Collection)
      */
@@ -1671,7 +1717,7 @@ public class GuildController // TODO: docs auditable rest action
      *             <li>If the specified Member is a bot account ({@link net.dv8tion.jda.core.AccountType#BOT AccountType.BOT})</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     public AuditableRestAction<Void> transferOwnership(Member newOwner)
     {
@@ -1706,8 +1752,6 @@ public class GuildController // TODO: docs auditable rest action
      * Creates a new {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} in this Guild.
      * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission
      *
-     * <p><b>The new roles <u>must not</u> contain the Public Role of the Guild</b>
-     *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
      * <ul>
@@ -1728,7 +1772,7 @@ public class GuildController // TODO: docs auditable rest action
      * @throws IllegalArgumentException
      *         If the provided name is {@code null} or less than 2 characters or greater than 100 characters in length
      *
-     * @return A specific {@link net.dv8tion.jda.core.requests.restaction.ChannelAction ChannelAction} - Type: {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
+     * @return A specific {@link net.dv8tion.jda.core.requests.restaction.ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new TextChannel before creating it
      */
     public ChannelAction createTextChannel(String name)
@@ -1771,7 +1815,7 @@ public class GuildController // TODO: docs auditable rest action
      * @throws IllegalArgumentException
      *         If the provided name is {@code null} or less than 2 characters or greater than 100 characters in length
      *
-     * @return A specific {@link net.dv8tion.jda.core.requests.restaction.ChannelAction ChannelAction} - Type: {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
+     * @return A specific {@link net.dv8tion.jda.core.requests.restaction.ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new VoiceChannel before creating it
      */
     public ChannelAction createVoiceChannel(String name)
@@ -1824,7 +1868,7 @@ public class GuildController // TODO: docs auditable rest action
      * @return A specific {@link net.dv8tion.jda.core.requests.restaction.ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new Channel before creating it!
      *
-     * @since  3.0
+     * @since  3.1
      *
      * @see    #createTextChannel(String)
      * @see    #createVoiceChannel(String)
@@ -2019,7 +2063,7 @@ public class GuildController // TODO: docs auditable rest action
      * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
      *         If the logged in account is not from {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Emote Emote}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction} - Type: {@link net.dv8tion.jda.core.entities.Emote Emote}
      *         <br>The newly created Emote
      */
     public AuditableRestAction<Emote> createEmote(String name, Icon icon, Role... roles)
@@ -2189,19 +2233,19 @@ public class GuildController // TODO: docs auditable rest action
 
     protected void checkPermission(Permission perm)
     {
-        if (!PermissionUtil.checkPermission(guild, guild.getSelfMember(), perm))
+        if (!guild.getSelfMember().hasPermission(perm))
             throw new PermissionException(perm);
     }
 
     protected void checkPosition(Member member)
     {
-        if(!PermissionUtil.canInteract(guild.getSelfMember(), member))
+        if(!guild.getSelfMember().canInteract(member))
             throw new PermissionException("Can't modify a member with higher or equal highest role than yourself!");
     }
 
     protected void checkPosition(Role role)
     {
-        if(!PermissionUtil.canInteract(guild.getSelfMember(), role))
+        if(!guild.getSelfMember().canInteract(role))
             throw new PermissionException("Can't modify a role with higher or equal highest role than yourself! Role: " + role.toString());
     }
 }

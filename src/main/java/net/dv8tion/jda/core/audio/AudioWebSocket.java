@@ -76,7 +76,7 @@ public class AudioWebSocket extends WebSocketAdapter
 
     public WebSocket socket;
 
-    public AudioWebSocket(ConnectionListener listener, String endpoint, JDAImpl api, Guild guild, String sessionId, String token, boolean shouldReconnect) throws WebSocketException, IOException
+    public AudioWebSocket(ConnectionListener listener, String endpoint, JDAImpl api, Guild guild, String sessionId, String token, boolean shouldReconnect)
     {
         this.listener = listener;
         this.endpoint = endpoint;
@@ -96,29 +96,6 @@ public class AudioWebSocket extends WebSocketAdapter
             throw new IllegalArgumentException("Cannot create a voice connection using a null/empty sessionId!");
         if (token == null || token.isEmpty())
             throw new IllegalArgumentException("Cannot create a voice connection using a null/empty token!");
-
-        try
-        {
-            socket = api.getWebSocketFactory()
-                    .createSocket(wssEndpoint)
-                    .addListener(this);
-            changeStatus(ConnectionStatus.CONNECTING_AWAITING_WEBSOCKET_CONNECT);
-            socket.connect();
-        }
-        catch (WebSocketException e)
-        {
-            LOG.warn("Failed to establish websocket connection: " + e.getError() + " - " + e.getMessage()
-                    + "\nClosing connection and attempting to reconnect.");
-            this.close(ConnectionStatus.ERROR_WEBSOCKET_UNABLE_TO_CONNECT);
-            throw e;
-        }
-        catch (IOException e)
-        {
-            LOG.warn("Encountered IOException while attempting to connect: " + e.getMessage()
-                    + "\nClosing connection and attempting to reconnect.");
-            this.close(ConnectionStatus.ERROR_WEBSOCKET_UNABLE_TO_CONNECT);
-            throw e;
-        }
     }
 
     public void send(String message)
@@ -301,6 +278,35 @@ public class AudioWebSocket extends WebSocketAdapter
                 break;
             default:
                 thread.setName(identifier + " AudioWS-" + threadType + " (guildId: " + guildId + ')');
+        }
+    }
+
+    @Override
+    public void onConnectError(WebSocket webSocket, WebSocketException e)
+    {
+        LOG.warn("Failed to establish websocket connection: " + e.getError() + " - " + e.getMessage()
+                + "\nClosing connection and attempting to reconnect.");
+        this.close(ConnectionStatus.ERROR_WEBSOCKET_UNABLE_TO_CONNECT);
+    }
+
+    public void startConnection()
+    {
+        if (socket != null)
+            throw new RuntimeException("Somehow, someway, this AudioWebSocket has already attempted to start a connection!");
+
+        try
+        {
+            socket = api.getWebSocketFactory()
+                    .createSocket(wssEndpoint)
+                    .addListener(this);
+            changeStatus(ConnectionStatus.CONNECTING_AWAITING_WEBSOCKET_CONNECT);
+            socket.connectAsynchronously();
+        }
+        catch (IOException e)
+        {
+            LOG.warn("Encountered IOException while attempting to connect: " + e.getMessage()
+                    + "\nClosing connection and attempting to reconnect.");
+            this.close(ConnectionStatus.ERROR_WEBSOCKET_UNABLE_TO_CONNECT);
         }
     }
 

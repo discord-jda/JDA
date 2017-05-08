@@ -17,51 +17,25 @@
 package net.dv8tion.jda.core.entities.impl;
 
 import gnu.trove.map.TLongObjectMap;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.exceptions.PermissionException;
-import net.dv8tion.jda.core.managers.ChannelManager;
-import net.dv8tion.jda.core.managers.ChannelManagerUpdatable;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.requests.Route;
-import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.core.requests.restaction.InviteAction;
-import net.dv8tion.jda.core.requests.restaction.PermissionOverrideAction;
+import net.dv8tion.jda.core.entities.ChannelType;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.utils.MiscUtil;
-import org.apache.http.util.Args;
-import org.json.JSONArray;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
-public class VoiceChannelImpl implements VoiceChannel
+public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannelImpl> implements VoiceChannel
 {
-    private final long id;
-    private final GuildImpl guild;
-
-    private final HashMap<Member, PermissionOverride> memberOverrides = new HashMap<>();
-    private final HashMap<Role, PermissionOverride> roleOverrides = new HashMap<>();
     private final TLongObjectMap<Member> connectedMembers = MiscUtil.newLongMap();
-
-    private final Object mngLock = new Object();
-    private volatile ChannelManager manager;
-    private volatile ChannelManagerUpdatable managerUpdatable;
-
-    private String name;
-    private int rawPosition;
     private int userLimit;
     private int bitrate;
 
-    public VoiceChannelImpl(long id, Guild guild)
+    public VoiceChannelImpl(long id, GuildImpl guild)
     {
-        this.id = id;
-        this.guild = (GuildImpl) guild;
+        super(id, guild);
     }
 
     @Override
@@ -77,15 +51,9 @@ public class VoiceChannelImpl implements VoiceChannel
     }
 
     @Override
-    public String getName()
+    public ChannelType getType()
     {
-        return name;
-    }
-
-    @Override
-    public Guild getGuild()
-    {
-        return guild;
+        return ChannelType.VOICE;
     }
 
     @Override
@@ -97,7 +65,7 @@ public class VoiceChannelImpl implements VoiceChannel
     @Override
     public int getPosition()
     {
-        List<VoiceChannel> channels = guild.getVoiceChannels();
+        List<VoiceChannel> channels = getGuild().getVoiceChannels();
         for (int i = 0; i < channels.size(); i++)
         {
             if (channels.get(i) == this)
@@ -107,148 +75,12 @@ public class VoiceChannelImpl implements VoiceChannel
     }
 
     @Override
-    public int getPositionRaw()
-    {
-        return rawPosition;
-    }
-
-    @Override
-    public JDA getJDA()
-    {
-        return guild.getJDA();
-    }
-
-    @Override
-    public PermissionOverride getPermissionOverride(Member member)
-    {
-        return memberOverrides.get(member);
-    }
-
-    @Override
-    public PermissionOverride getPermissionOverride(Role role)
-    {
-        return roleOverrides.get(role);
-    }
-
-    @Override
-    public List<PermissionOverride> getPermissionOverrides()
-    {
-        List<PermissionOverride> overrides = new ArrayList<>(memberOverrides.size() + roleOverrides.size());
-        overrides.addAll(memberOverrides.values());
-        overrides.addAll(roleOverrides.values());
-        return Collections.unmodifiableList(overrides);
-    }
-
-    @Override
-    public List<PermissionOverride> getMemberPermissionOverrides()
-    {
-        return Collections.unmodifiableList(new ArrayList<>(memberOverrides.values()));
-    }
-
-    @Override
-    public List<PermissionOverride> getRolePermissionOverrides()
-    {
-        return Collections.unmodifiableList(new ArrayList<>(roleOverrides.values()));
-    }
-
-    @Override
-    public ChannelManager getManager()
-    {
-        ChannelManager mng = manager;
-        if (mng == null)
-        {
-            synchronized (mngLock)
-            {
-                mng = manager;
-                if (mng == null)
-                    mng = manager = new ChannelManager(this);
-            }
-        }
-        return mng;
-    }
-
-    @Override
-    public ChannelManagerUpdatable getManagerUpdatable()
-    {
-        ChannelManagerUpdatable mng = managerUpdatable;
-        if (mng == null)
-        {
-            synchronized (mngLock)
-            {
-                mng = managerUpdatable;
-                if (mng == null)
-                    mng = managerUpdatable = new ChannelManagerUpdatable(this);
-            }
-        }
-        return mng;
-    }
-
-    @Override
-    public AuditableRestAction<Void> delete()
-    {
-        checkPermission(Permission.MANAGE_CHANNEL);
-
-        Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(getId());
-        return new AuditableRestAction<Void>(getJDA(), route, null)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
-    }
-
-    @Override
-    public PermissionOverrideAction createPermissionOverride(Member member)
-    {
-        checkPermission(Permission.MANAGE_PERMISSIONS);
-        Args.notNull(member, "member");
-        if (!guild.equals(member.getGuild()))
-            throw new IllegalArgumentException("Provided member is not from the same guild as this channel!");
-        if (getMemberOverrideMap().containsKey(member))
-            throw new IllegalStateException("Provided member already has a PermissionOverride in this channel!");
-
-        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(getId(), member.getUser().getId());
-        return new PermissionOverrideAction(getJDA(), route, this, member);
-    }
-
-    @Override
-    public PermissionOverrideAction createPermissionOverride(Role role)
-    {
-        checkPermission(Permission.MANAGE_PERMISSIONS);
-        Args.notNull(role, "role");
-        if (!guild.equals(role.getGuild()))
-            throw new IllegalArgumentException("Provided role is not from the same guild as this channel!");
-        if (getRoleOverrideMap().containsKey(role))
-            throw new IllegalStateException("Provided role already has a PermissionOverride in this channel!");
-
-        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(getId(), role.getId());
-        return new PermissionOverrideAction(getJDA(), route, this, role);
-    }
-
-    @Override
-    public long getIdLong()
-    {
-        return id;
-    }
-
-    @Override
     public boolean equals(Object o)
     {
         if (!(o instanceof VoiceChannel))
             return false;
         VoiceChannel oVChannel = (VoiceChannel) o;
-        return this == oVChannel || this.id == oVChannel.getIdLong();
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return Long.hashCode(id);
+        return this == oVChannel || this.getIdLong() == oVChannel.getIdLong();
     }
 
     @Override
@@ -280,18 +112,6 @@ public class VoiceChannelImpl implements VoiceChannel
 
     // -- Setters --
 
-    public VoiceChannelImpl setName(String name)
-    {
-        this.name = name;
-        return this;
-    }
-
-    public VoiceChannelImpl setRawPosition(int rawPosition)
-    {
-        this.rawPosition = rawPosition;
-        return this;
-    }
-
     public VoiceChannelImpl setUserLimit(int userLimit)
     {
         this.userLimit = userLimit;
@@ -306,71 +126,8 @@ public class VoiceChannelImpl implements VoiceChannel
 
     // -- Map Getters --
 
-    public HashMap<Member, PermissionOverride> getMemberOverrideMap()
-    {
-        return memberOverrides;
-    }
-
-    public HashMap<Role, PermissionOverride> getRoleOverrideMap()
-    {
-        return roleOverrides;
-    }
-
     public TLongObjectMap<Member> getConnectedMembersMap()
     {
         return connectedMembers;
-    }
-
-    private void checkPermission(Permission permission) {checkPermission(permission, null);}
-    private void checkPermission(Permission permission, String message)
-    {
-        if (!guild.getSelfMember().hasPermission(this, permission))
-        {
-            if (message != null)
-                throw new PermissionException(permission, message);
-            else
-                throw new PermissionException(permission);
-        }
-    }
-
-    @Override
-    public RestAction<List<Invite>> getInvites()
-    {
-        if (!this.guild.getSelfMember().hasPermission(this, Permission.MANAGE_CHANNEL))
-            throw new PermissionException(Permission.MANAGE_CHANNEL);
-
-        final Route.CompiledRoute route = Route.Invites.GET_CHANNEL_INVITES.compile(getId());
-
-        return new RestAction<List<Invite>>(getJDA(), route, null)
-        {
-            @Override
-            protected void handleResponse(final Response response, final Request<List<Invite>> request)
-            {
-                if (response.isOk())
-                {
-                    EntityBuilder entityBuilder = this.api.getEntityBuilder();
-                    JSONArray array = response.getArray();
-                    List<Invite> invites = new ArrayList<>(array.length());
-                    for (int i = 0; i < array.length(); i++)
-                    {
-                        invites.add(entityBuilder.createInvite(array.getJSONObject(i)));
-                    }
-                    request.onSuccess(invites);
-                }
-                else
-                {
-                    request.onFailure(response);
-                }
-            }
-        };
-    }
-
-    @Override
-    public InviteAction createInvite()
-    {
-        if (!this.guild.getSelfMember().hasPermission(this, Permission.CREATE_INSTANT_INVITE))
-            throw new PermissionException(Permission.CREATE_INSTANT_INVITE);
-
-        return new InviteAction(this.getJDA(), this.getId());
     }
 }

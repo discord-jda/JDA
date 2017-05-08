@@ -111,6 +111,9 @@ public interface Member extends IMentionable, IPermissionHolder
      * <p>A Member's roles can be changed using the <b>addRolesToMember</b>, <b>removeRolesFromMember</b>, and <b>modifyMemberRoles</b>
      * methods in {@link net.dv8tion.jda.core.managers.GuildController GuildController}.
      *
+     * <p><b>The Public Role ({@code @everyone}) is not included in the returned immutable list of roles
+     * <br>It is implicit that every member holds the Public Role in a Guild thus it is not listed here!</b>
+     *
      * @return An immutable List of {@link net.dv8tion.jda.core.entities.Role Roles} for this Member.
      */
     List<Role> getRoles();

@@ -176,7 +176,7 @@ public interface PermissionOverride
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         if we don't have the permission to {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: Void
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
-    AuditableRestAction<Void> delete();  // TODO: docs auditable rest action
+    AuditableRestAction<Void> delete();
 }

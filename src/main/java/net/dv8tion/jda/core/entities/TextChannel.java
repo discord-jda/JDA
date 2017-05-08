@@ -211,13 +211,16 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *         The clear-reactions request was attempted after the Message had been deleted.</li>
      * </ul>
      *
+     * @param  messageId
+     *         The not-empty valid message id
+     *
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in this channel.
      * @throws java.lang.IllegalArgumentException
      *         If the provided {@code id} is {@code null} or empty.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
      */
     RestAction<Void> clearReactionsById(String messageId);
 
@@ -241,11 +244,14 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *         The clear-reactions request was attempted after the Message had been deleted.</li>
      * </ul>
      *
+     * @param  messageId
+     *         The message id
+     *
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in this channel.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
      */
     default RestAction<Void> clearReactionsById(long messageId) {
         return clearReactionsById(Long.toUnsignedString(messageId));

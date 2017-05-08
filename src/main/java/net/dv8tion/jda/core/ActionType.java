@@ -15,7 +15,11 @@
  */
 
 package net.dv8tion.jda.core;
-// TODO: docs
+
+/**
+ * ActionTypes for {@link net.dv8tion.jda.core.entities.AuditLogEntry AuditLogEntry} instances
+ * <br>Found via {@link net.dv8tion.jda.core.entities.AuditLogEntry#getType() AuditLogEntry.getType()}
+ */
 public enum ActionType
 {
     GUILD_UPDATE(1, TargetType.GUILD),

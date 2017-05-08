@@ -37,6 +37,7 @@ import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.hooks.InterfacedEventManager;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.Presence;
+import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.utils.MiscUtil;
@@ -69,7 +70,7 @@ public class JDAImpl implements JDA
     protected final TLongObjectMap<User> fakeUsers = MiscUtil.newLongMap();
     protected final TLongObjectMap<PrivateChannel> fakePrivateChannels = MiscUtil.newLongMap();
 
-    protected final TLongObjectMap<AudioManager> audioManagers = MiscUtil.newLongMap();
+    protected final TLongObjectMap<AudioManagerImpl> audioManagers = MiscUtil.newLongMap();
 
     protected final HttpHost proxy;
     protected final WebSocketFactory wsFactory;
@@ -593,10 +594,7 @@ public class JDAImpl implements JDA
             {
                 Runtime.getRuntime().removeShutdownHook(shutdownHook);
             }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
+            catch (Exception ignored) { }
         }
 
         if (free)
@@ -771,7 +769,7 @@ public class JDAImpl implements JDA
         return fakePrivateChannels;
     }
 
-    public TLongObjectMap<AudioManager> getAudioManagerMap()
+    public TLongObjectMap<AudioManagerImpl> getAudioManagerMap()
     {
         return audioManagers;
     }

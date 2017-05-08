@@ -125,7 +125,7 @@ public class MemberImpl implements Member
     {
         return Collections.unmodifiableList(
                 Permission.getPermissions(
-                        PermissionUtil.getEffectivePermission(guild, this)));
+                        PermissionUtil.getEffectivePermission(this)));
     }
 
     @Override
@@ -142,7 +142,7 @@ public class MemberImpl implements Member
     @Override
     public boolean hasPermission(Permission... permissions)
     {
-        return PermissionUtil.checkPermission(guild, this, permissions);
+        return PermissionUtil.checkPermission(this, permissions);
     }
 
     @Override

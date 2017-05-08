@@ -42,6 +42,10 @@ import java.util.List;
  * <p><b>Must provide not-null {@link net.dv8tion.jda.core.entities.Guild Guild} to compile a valid guild mentions
  * pagination route.</b>, else it uses the global pagination route.
  *
+ * <h2>Limits:</h2>
+ * Minimum - 1
+ * <br>Maximum - 100
+ *
  * @since  3.0
  * @author Florian Spieß
  */
@@ -64,7 +68,7 @@ public class MentionPaginationAction extends PaginationAction<Message, MentionPa
      */
     public MentionPaginationAction(JDA api)
     {
-        super(api, 1, 100, 25);
+        super(api, 1, 100, 100);
         this.guild = null;
     }
 
@@ -134,9 +138,10 @@ public class MentionPaginationAction extends PaginationAction<Message, MentionPa
     @Override
     protected void finalizeRoute()
     {
+        Message last = this.last;
         String limit, before, everyone, role;
         limit = String.valueOf(super.getLimit());
-        before = cached.isEmpty() ? null : getLast().getId();
+        before = last != null ? last.getId() : null;
         everyone = String.valueOf(isEveryone);
         role = String.valueOf(isRole);
 
@@ -161,8 +166,10 @@ public class MentionPaginationAction extends PaginationAction<Message, MentionPa
         for (int i = 0; i < arr.length(); i++)
         {
             final Message msg = builder.createMessage(arr.getJSONObject(i), false);
-            cached.add(msg);
             mentions.add(msg);
+            if (useCache)
+                cached.add(msg);
+            last = msg;
         }
 
         request.onSuccess(mentions);

@@ -18,13 +18,9 @@ package net.dv8tion.jda.core.requests.restaction;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Channel;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.PermissionOverride;
-import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.impl.AbstractChannelImpl;
 import net.dv8tion.jda.core.entities.impl.PermissionOverrideImpl;
-import net.dv8tion.jda.core.entities.impl.TextChannelImpl;
-import net.dv8tion.jda.core.entities.impl.VoiceChannelImpl;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
@@ -419,24 +415,11 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
         }
 
         JSONObject object = response.getObject();
-        PermissionOverrideImpl override = new PermissionOverrideImpl(channel, member, role).setAllow(allow).setDeny(deny);
+        boolean isMember = isMember();
+        long id = isMember ? member.getUser().getIdLong() : role.getIdLong();
+        PermissionOverrideImpl override = new PermissionOverrideImpl(channel, id, isMember ? member : role).setAllow(allow).setDeny(deny);
 
-        boolean isText = channel instanceof TextChannelImpl;
-
-        if (isMember())
-        {
-            if (isText)
-                ((TextChannelImpl) channel).getMemberOverrideMap().put(member, override);
-            else
-                ((VoiceChannelImpl) channel).getMemberOverrideMap().put(member, override);
-        }
-        else
-        {
-            if (isText)
-                ((TextChannelImpl) channel).getRoleOverrideMap().put(role, override);
-            else
-                ((VoiceChannelImpl) channel).getRoleOverrideMap().put(role, override);
-        }
+        ((AbstractChannelImpl<?>) channel).getOverrideMap().put(id, override);
 
         request.onSuccess(override);
     }

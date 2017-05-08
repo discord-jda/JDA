@@ -18,6 +18,15 @@ package net.dv8tion.jda.core.entities;
 
 import java.util.Objects;
 
+/**
+ * Plain-Old-Java-Object (POJO) representing a single
+ * change for an {@link net.dv8tion.jda.core.entities.AuditLogEntry AuditLogEntry}!
+ * <br>This object holds the {@link #getOldValue() old-} and {@link #getNewValue() new value} for the
+ * updated field. The field is specified by the {@link #getKey() key}.
+ *
+ * @since  3.2
+ * @author Florian Spieß
+ */
 public class AuditLogChange
 {
     protected final Object oldValue;
@@ -31,18 +40,48 @@ public class AuditLogChange
         this.key = key;
     }
 
+    /**
+     * The previous value for the field specified by {@link #getKey()}.
+     *
+     * @param  <T>
+     *         The expected generic type for this value.
+     *         <br>This will be used to cast the value.
+     *
+     * @throws java.lang.ClassCastException
+     *         If the type cast to the generic type fails
+     *
+     * @return The old value
+     */
     @SuppressWarnings("unchecked")
     public <T> T getOldValue()
     {
         return (T) oldValue;
     }
 
+    /**
+     * The updated value for the field specified by {@link #getKey()}.
+     *
+     * @param  <T>
+     *         The expected generic type for this value.
+     *         <br>This will be used to cast the value.
+     *
+     * @throws java.lang.ClassCastException
+     *         If the type cast to the generic type fails
+     *
+     * @return The new value
+     */
     @SuppressWarnings("unchecked")
     public <T> T getNewValue()
     {
         return (T) newValue;
     }
 
+    /**
+     * The key which defines the field that was updated
+     * by this change
+     *
+     * @return The key
+     */
     public String getKey()
     {
         return key;

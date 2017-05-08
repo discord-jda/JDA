@@ -24,6 +24,7 @@ import net.dv8tion.jda.core.entities.impl.MessageImpl;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.core.requests.restaction.pagination.MessagePaginationAction;
 import net.dv8tion.jda.core.utils.IOUtil;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.http.util.Args;
@@ -699,6 +700,43 @@ public interface MessageChannel extends ISnowflake, Formattable
         };
     }
 
+    /**
+     * Attempts to get a {@link net.dv8tion.jda.core.entities.Message Message} from the Discord's servers that has
+     * the same id as the id provided.
+     * <br>Note: when retrieving a Message, you must retrieve it from the channel it was sent in!
+     *
+     * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the
+     *         {@link net.dv8tion.jda.core.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     *         was revoked in the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The request was attempted after the account lost {@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}
+     *         in the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code id} does not refer to a message sent in this channel or the message has already been deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * @param  messageId
+     *         The id of the sought after Message
+     *
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *         </ul>
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Message
+     *         <br>The Message defined by the provided id.
+     */
     default RestAction<Message> getMessageById(long messageId)
     {
         return getMessageById(Long.toUnsignedString(messageId));
@@ -806,11 +844,58 @@ public interface MessageChannel extends ISnowflake, Formattable
      * Creates a new {@link MessageHistory MessageHistory} object for each call of this method.
      * <br>MessageHistory is <b>NOT</b> an internal message cache, but rather it queries the Discord servers for previously sent messages.
      *
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
+     *         and the currently logged in account does not have the permission {@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY MESSAGE_HISTORY}
+     *
      * @return A {@link net.dv8tion.jda.core.entities.MessageHistory MessageHistory} related to this channel.
      */
     default MessageHistory getHistory()
     {
         return new MessageHistory(this);
+    }
+
+    /**
+     * A {@link net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction PaginationAction} implementation
+     * that allows to {@link Iterable iterate} over recent {@link net.dv8tion.jda.core.entities.Message Messages} of
+     * this MessageChannel.
+     * <br>This is <b>not</b> a cache for received messages and it can only view messages that were sent
+     * before. This iterates chronologically backwards (from present to past).
+     *
+     * <p><b><u>It is recommended not to use this in an enhanced for-loop without end conditions as it might cause memory
+     * overflows in channels with a long message history.</u></b>
+     *
+     * <h1>Examples</h1>
+     * <pre><code>
+     * public boolean containsMessage(MessageChannel channel, String content, int checkAmount)
+     * {
+     *     for (Message message : channel.<u>getIterableHistory()</u>)
+     *     {
+     *         if (message.getRawContent().equals(content))
+     *             return true;
+     *         if (checkAmount--{@literal <=} 0) break;
+     *     }
+     *     return false;
+     * }
+     *
+     * public List{@literal <Message>} getMessagesByUser(MessageChannel channel, User user)
+     * {
+     *     return channel.<u>getIterableHistory()</u>.stream()
+     *         .limit(1000)
+     *         .filter(m{@literal ->} m.getAuthor().equals(user))
+     *         .collect(Collectors.toList());
+     * }
+     * </code></pre>
+     *
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
+     *         and the currently logged in account does not have the permission {@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY MESSAGE_HISTORY}
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.pagination.MessagePaginationAction MessagePaginationAction}
+     */
+    default MessagePaginationAction getIterableHistory()
+    {
+        return new MessagePaginationAction(this);
     }
 
     /**

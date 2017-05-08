@@ -481,9 +481,9 @@ public interface Message extends ISnowflake, Formattable
      *         If this Message was not sent by the currently logged in account and it was <b>not</b> sent in a
      *         {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
-    AuditableRestAction<Void> delete(); // TODO: docs auditable rest action
+    AuditableRestAction<Void> delete();
 
     /**
      * Returns the {@link net.dv8tion.jda.core.JDA JDA} instance related to this Message.

@@ -39,6 +39,10 @@ import java.util.List;
  * <p><b>Must provide not-null {@link net.dv8tion.jda.core.entities.MessageReaction MessageReaction} to compile a valid
  * pagination route.</b>
  *
+ * <h2>Limits:</h2>
+ * Minimum - 1
+ * <br>Maximum - 100
+ *
  * @since  3.1
  * @author Florian Spieß
  */
@@ -81,8 +85,9 @@ public class ReactionPaginationAction extends PaginationAction<User, ReactionPag
     {
         String after = null;
         String limit = String.valueOf(getLimit());
-        if (!isEmpty())
-            after = getLast().getId();
+        User last = this.last;
+        if (last != null)
+            after = last.getId();
 
         String channel = reaction.getChannel().getId();
         String message = reaction.getMessageId();
@@ -108,8 +113,10 @@ public class ReactionPaginationAction extends PaginationAction<User, ReactionPag
         for (int i = 0; i < array.length(); i++)
         {
             final User user = builder.createFakeUser(array.getJSONObject(i), false);
-            cached.add(user);
             users.add(user);
+            if (useCache)
+                cached.add(user);
+            last = user;
         }
 
         request.onSuccess(users);

@@ -33,6 +33,7 @@ import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.utils.NativeUtil;
+import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.apache.http.util.Args;
 import org.json.JSONObject;
 
@@ -49,7 +50,7 @@ public class AudioManagerImpl implements AudioManager
     public final Object CONNECTION_LOCK = new Object();
 
     protected final JDAImpl api;
-    protected final GuildImpl guild;
+    protected GuildImpl guild;
     protected AudioConnection audioConnection = null;
     protected VoiceChannel queuedAudioConnection = null;
 
@@ -64,11 +65,16 @@ public class AudioManagerImpl implements AudioManager
 
     protected long timeout = DEFAULT_CONNECTION_TIMEOUT;
 
-    public AudioManagerImpl(Guild guild)
+    public AudioManagerImpl(GuildImpl guild)
     {
-        this.guild = (GuildImpl) guild;
+        this.guild = guild;
         this.api = this.guild.getJDA();
         init(); //Just to make sure that the audio libs have been initialized.
+    }
+
+    public void setGuild(GuildImpl guild)
+    {
+        this.guild = guild;
     }
 
     @Override
@@ -85,7 +91,7 @@ public class AudioManagerImpl implements AudioManager
             throw new GuildUnavailableException("Cannot open an Audio Connection with an unavailable guild. " +
                     "Please wait until this Guild is available to open a connection.");
         final Member self = guild.getSelfMember();
-        if (!self.hasPermission(channel, Permission.VOICE_CONNECT))
+        if (!self.hasPermission(channel, Permission.VOICE_CONNECT) && !self.hasPermission(channel, Permission.VOICE_MOVE_OTHERS))
             throw new PermissionException(Permission.VOICE_CONNECT);
 
         if (audioConnection == null)
@@ -103,9 +109,16 @@ public class AudioManagerImpl implements AudioManager
                 return;
 
             final int userLimit = channel.getUserLimit(); // userLimit is 0 if no limit is set!
-            if (!self.hasPermission(channel, Permission.MANAGE_CHANNEL) && userLimit > 0 && userLimit <= channel.getMembers().size())
-                throw new PermissionException(Permission.MANAGE_CHANNEL,
-                        "Unable to connect to VoiceChannel due to userlimit! Requires permission MANAGE_CHANNEL to bypass");
+            if (!self.isOwner() && !self.hasPermission(Permission.ADMINISTRATOR))
+            {
+                final long perms = PermissionUtil.getImplicitPermission(channel, self);
+                final long voicePerm = Permission.VOICE_MOVE_OTHERS.getRawValue();
+                if (userLimit > 0                                               // If there is a userlimit
+                    && userLimit <= channel.getMembers().size()                 // if that userlimit is reached
+                    && (perms & voicePerm) != voicePerm)                        // If we don't have voice move others permissions
+                    throw new PermissionException(Permission.VOICE_MOVE_OTHERS, // then throw exception!
+                            "Unable to connect to VoiceChannel due to userlimit! Requires permission VOICE_MOVE_OTHERS to bypass");
+            }
 
             api.getClient().queueAudioConnect(channel);
             audioConnection.setChannel(channel);

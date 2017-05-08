@@ -16,11 +16,13 @@
 package net.dv8tion.jda.core.events.channel.text.update;
 
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.IPermissionHolder;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <b><u>TextChannelUpdatePermissionsEvent</u></b><br>
@@ -30,22 +32,32 @@ import java.util.List;
  */
 public class TextChannelUpdatePermissionsEvent extends GenericTextChannelUpdateEvent
 {
-    private final List<Role> changedRoles;
-    private final List<Member> changedMemberRoles;
-    public TextChannelUpdatePermissionsEvent(JDA api, long responseNumber, TextChannel channel, List<Role> changedRoles, List<Member> changedMemberRoles)
+    private final List<IPermissionHolder> changed;
+
+    public TextChannelUpdatePermissionsEvent(JDA api, long responseNumber, TextChannel channel, List<IPermissionHolder> permHolders)
     {
         super(api, responseNumber, channel);
-        this.changedRoles = changedRoles;
-        this.changedMemberRoles = changedMemberRoles;
+        this.changed = permHolders;
+    }
+
+    public List<IPermissionHolder> getChangedPermissionHolders()
+    {
+        return changed;
     }
 
     public List<Role> getChangedRoles()
     {
-        return changedRoles;
+        return changed.stream()
+                      .filter(it -> it instanceof Role)
+                      .map(Role.class::cast)
+                      .collect(Collectors.toList());
     }
 
     public List<Member> getMembersWithPermissionChanges()
     {
-        return changedMemberRoles;
+        return changed.stream()
+                .filter(it -> it instanceof Member)
+                .map(Member.class::cast)
+                .collect(Collectors.toList());
     }
 }

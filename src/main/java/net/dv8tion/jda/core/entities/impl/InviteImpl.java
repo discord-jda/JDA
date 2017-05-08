@@ -89,24 +89,19 @@ public class InviteImpl implements Invite
     }
 
     @Override
-    public AuditableRestAction<Invite> delete()
+    public AuditableRestAction<Void> delete()
     {
         final Route.CompiledRoute route = Route.Invites.DELETE_INVITE.compile(this.code);
 
-        return new AuditableRestAction<Invite>(this.api, route, null)
+        return new AuditableRestAction<Void>(this.api, route, null)
         {
             @Override
-            protected void handleResponse(final Response response, final Request<Invite> request)
+            protected void handleResponse(final Response response, final Request<Void> request)
             {
                 if (response.isOk())
-                {
-                    final Invite invite = this.api.getEntityBuilder().createInvite(response.getObject());
-                    request.onSuccess(invite);
-                }
+                    request.onSuccess(null);
                 else
-                {
                     request.onFailure(response);
-                }
             }
         };
     }
