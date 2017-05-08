@@ -1417,8 +1417,6 @@ public class GuildController
      * Creates a new {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} in this Guild.
      * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission
      *
-     * <p><b>The new roles <u>must not</u> contain the Public Role of the Guild</b>
-     *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
      * <ul>

@@ -39,7 +39,7 @@ public class MessageHistory
 {
     protected final MessageChannel channel;
 
-    protected ListOrderedMap<Long, Message> history = new ListOrderedMap<>();
+    protected final ListOrderedMap<Long, Message> history = new ListOrderedMap<>();
 
     /**
      * Creates a new MessageHistory object.
@@ -63,6 +63,29 @@ public class MessageHistory
     public JDA getJDA()
     {
         return channel.getJDA();
+    }
+
+    /**
+     * The amount of retrieved {@link net.dv8tion.jda.core.entities.Message Messages}
+     * by this MessageHistory.
+     * <br>This returns {@code 0} until any call to retrieve messages has completed.
+     * See {@link #retrievePast(int)} and {@link #retrieveFuture(int)}!
+     *
+     * @return Amount of retrieved messages
+     */
+    public int size()
+    {
+        return history.size();
+    }
+
+    /**
+     * Whether this MessageHistory instance has retrieved any messages.
+     *
+     * @return True, If this MessageHistory instance has not retrieved any messages from discord.
+     */
+    public boolean isEmpty()
+    {
+        return size() == 0;
     }
 
     /**
@@ -253,6 +276,11 @@ public class MessageHistory
      */
     public List<Message> getRetrievedHistory()
     {
+        int size = size();
+        if (size == 0)
+            return Collections.emptyList();
+        else if (size == 1)
+            return Collections.singletonList(history.getValue(0));
         return Collections.unmodifiableList(new ArrayList<>(history.values()));
     }
 
@@ -279,6 +307,19 @@ public class MessageHistory
         return getMessageById(MiscUtil.parseSnowflake(id));
     }
 
+    /**
+     * Used to get a Message from the set of already retrieved message via it's message Id.
+     * <br>If a Message with the provided id has not already been retrieved (thus, doesn't not exist in this MessageHistory
+     * object), then this method returns null.
+     * <p>
+     * <b>Note:</b> This methods is not the same as {@link MessageChannel#getMessageById(long)}, which itself queries
+     * Discord. This method is for getting a message that has already been retrieved by this MessageHistory object.
+     *
+     * @param  id
+     *         The id of the requested Message.
+     *
+     * @return Possibly-null Message with the same {@code id} as the one provided.
+     */
     public Message getMessageById(long id)
     {
         return history.get(id);
