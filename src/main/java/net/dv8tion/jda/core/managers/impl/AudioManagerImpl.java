@@ -38,7 +38,6 @@ import org.apache.http.util.Args;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.List;
 
 public class AudioManagerImpl implements AudioManager
 {
@@ -105,13 +104,14 @@ public class AudioManagerImpl implements AudioManager
                 return;
 
             final int userLimit = channel.getUserLimit(); // userLimit is 0 if no limit is set!
-            final long perms = PermissionUtil.getImplicitPermission(channel, self);
-            final List<Permission> permissions = Permission.getPermissions(perms);
             if (!self.isOwner() && !self.hasPermission(Permission.ADMINISTRATOR))
             {
-                if (userLimit > 0 && userLimit <= channel.getMembers().size()
-                    && !permissions.contains(Permission.VOICE_MOVE_OTHERS))
-                    throw new PermissionException(Permission.VOICE_MOVE_OTHERS,
+                final long perms = PermissionUtil.getImplicitPermission(channel, self);
+                final long voicePerm = Permission.VOICE_MOVE_OTHERS.getRawValue();
+                if (userLimit > 0                                               // If there is a userlimit
+                    && userLimit <= channel.getMembers().size()                 // if that userlimit is reached
+                    && (perms & voicePerm) != voicePerm)                        // If we don't have voice move others permissions
+                    throw new PermissionException(Permission.VOICE_MOVE_OTHERS, // then throw exception!
                             "Unable to connect to VoiceChannel due to userlimit! Requires permission VOICE_MOVE_OTHERS to bypass");
             }
 

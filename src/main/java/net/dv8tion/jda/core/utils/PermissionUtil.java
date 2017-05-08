@@ -25,6 +25,7 @@ import org.apache.http.util.Args;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.BiConsumer;
 
 public class PermissionUtil
 {
@@ -269,8 +270,7 @@ public class PermissionUtil
         Args.notNull(permissions, "Permissions");
 
         GuildImpl guild = (GuildImpl) channel.getGuild();
-        if (!guild.equals(member.getGuild()))
-            throw new IllegalArgumentException("Provided channel and member are not from the same guild!");
+        checkGuild(guild, member.getGuild(), "Member");
 
 //        if (guild.getOwner().equals(member) // Admin or owner? If yes: no need to iterate
 //                || guild.getPublicRole().hasPermission(Permission.ADMINISTRATOR)
@@ -366,7 +366,11 @@ public class PermissionUtil
         AtomicLong allow = new AtomicLong(0);
         AtomicLong deny = new AtomicLong(0);
 
-        getImplicitOverrides(channel, member, allow, deny); // populates allow/deny
+        getImplicitOverrides(channel, member, (a, d) ->
+        {
+            allow.accumulateAndGet(a, PermissionUtil::accumulate);
+            deny.accumulateAndGet(d, PermissionUtil::accumulate);
+        });
         permission = apply(permission, allow.get(), deny.get());
 
         if (isApplied(permission, admin))
@@ -499,12 +503,15 @@ public class PermissionUtil
 
         long permission = guild.getPublicRole().getPermissionsRaw();
 
-
         AtomicLong allow = new AtomicLong(0);
         AtomicLong deny = new AtomicLong(0);
 
         // populates allow/deny
-        getImplicitOverrides(channel, member, allow, deny);
+        getImplicitOverrides(channel, member, (a, d) ->
+        {
+            allow.accumulateAndGet(a, PermissionUtil::accumulate);
+            deny.accumulateAndGet(d, PermissionUtil::accumulate);
+        });
 
         return apply(permission, allow.get(), deny.get());
     }
@@ -540,11 +547,11 @@ public class PermissionUtil
         final Guild guild = role.getGuild();
         checkGuild(channel.getGuild(), guild, "Role");
 
-        long permission = role.getPermissionsRaw() & guild.getPublicRole().getPermissionsRaw();
+        long permission = role.getPermissionsRaw() | guild.getPublicRole().getPermissionsRaw();
         PermissionOverride override = channel.getPermissionOverride(guild.getPublicRole());
         if (override != null)
             permission = apply(permission, override.getAllowedRaw(), override.getDeniedRaw());
-        if (role.equals(guild.getPublicRole()))
+        if (role.isPublicRole())
             return permission;
 
         override = channel.getPermissionOverride(role);
@@ -554,31 +561,26 @@ public class PermissionUtil
             : apply(permission, override.getAllowedRaw(), override.getDeniedRaw());
     }
 
-    private static void getImplicitOverrides(Channel channel, Member member, AtomicLong allow, AtomicLong deny)
+    /**
+     * Pushes all deny/allow values to the specified BiConsumer
+     * <br>First parameter is allow, second is deny
+     */
+    private static void getImplicitOverrides(Channel channel, Member member, BiConsumer<Long, Long> action)
     {
         PermissionOverride override = channel.getPermissionOverride(member.getGuild().getPublicRole());
         if (override != null)
-        {
-            deny.set(override.getDeniedRaw());
-            allow.set(override.getAllowedRaw());
-        }
+            action.accept(override.getAllowedRaw(), override.getDeniedRaw());
 
         for (Role role : member.getRoles())
         {
             override = channel.getPermissionOverride(role);
             if (override != null)
-            {
-                deny.accumulateAndGet(override.getDeniedRaw(), PermissionUtil::accumulate);
-                allow.accumulateAndGet(override.getAllowedRaw(), PermissionUtil::accumulate);
-            }
+                action.accept(override.getAllowedRaw(), override.getDeniedRaw());
         }
 
         override = channel.getPermissionOverride(member);
         if (override != null)
-        {
-            deny.accumulateAndGet(override.getDeniedRaw(), PermissionUtil::accumulate);
-            allow.accumulateAndGet(override.getAllowedRaw(), PermissionUtil::accumulate);
-        }
+            action.accept(override.getAllowedRaw(), override.getDeniedRaw());
     }
 
     private static long accumulate(long o1, long o2)

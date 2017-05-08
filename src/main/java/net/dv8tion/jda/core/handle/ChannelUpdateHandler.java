@@ -60,16 +60,16 @@ public class ChannelUpdateHandler extends SocketHandler
         List<IPermissionHolder> contained = new ArrayList<>();
 
         final long channelId = content.getLong("id");
-        String name = content.getString("name");
-        int position = content.getInt("position");
+        final int position = content.getInt("position");
+        final String name = content.getString("name");
         JSONArray permOverwrites = content.getJSONArray("permission_overwrites");
         switch (type)
         {
             case TEXT:
             {
                 String topic = content.isNull("topic") ? null : content.getString("topic");
-                TextChannelImpl channel = (TextChannelImpl) api.getTextChannelMap().get(channelId);
-                if (channel == null)
+                TextChannelImpl textChannel = (TextChannelImpl) api.getTextChannelMap().get(channelId);
+                if (textChannel == null)
                 {
                     api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
                     EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a TextChannel that does not exist. JSON: " + content);
@@ -77,35 +77,35 @@ public class ChannelUpdateHandler extends SocketHandler
                 }
 
                 //If any properties changed, update the values and fire the proper events.
-                if (!StringUtils.equals(channel.getName(), name))
+                final String oldName = textChannel.getName();
+                final String oldTopic = textChannel.getTopic();
+                final int oldPosition = textChannel.getPositionRaw();
+                if (!StringUtils.equals(oldName, name))
                 {
-                    String oldName = channel.getName();
-                    channel.setName(name);
+                    textChannel.setName(name);
                     api.getEventManager().handle(
                             new TextChannelUpdateNameEvent(
                                     api, responseNumber,
-                                    channel, oldName));
+                                    textChannel, oldName));
                 }
-                if (!StringUtils.equals(channel.getTopic(), topic))
+                if (!StringUtils.equals(oldTopic, topic))
                 {
-                    String oldTopic = channel.getTopic();
-                    channel.setTopic(topic);
+                    textChannel.setTopic(topic);
                     api.getEventManager().handle(
                             new TextChannelUpdateTopicEvent(
                                     api, responseNumber,
-                                    channel, oldTopic));
+                                    textChannel, oldTopic));
                 }
-                if (channel.getPositionRaw() != position)
+                if (oldPosition != position)
                 {
-                    int oldPosition = channel.getPositionRaw();
-                    channel.setRawPosition(position);
+                    textChannel.setRawPosition(position);
                     api.getEventManager().handle(
                             new TextChannelUpdatePositionEvent(
                                     api, responseNumber,
-                                    channel, oldPosition));
+                                    textChannel, oldPosition));
                 }
 
-                applyPermissions(channel, content, permOverwrites, contained, changed);
+                applyPermissions(textChannel, content, permOverwrites, contained, changed);
 
                 //If this update modified permissions in any way.
                 if (!changed.isEmpty())
@@ -113,60 +113,60 @@ public class ChannelUpdateHandler extends SocketHandler
                     api.getEventManager().handle(
                             new TextChannelUpdatePermissionsEvent(
                                     api, responseNumber,
-                                    channel, changed));
+                                    textChannel, changed));
                 }
                 break;  //Finish the TextChannelUpdate case
             }
             case VOICE:
             {
-                VoiceChannelImpl channel = (VoiceChannelImpl) api.getVoiceChannelMap().get(channelId);
+                VoiceChannelImpl voiceChannel = (VoiceChannelImpl) api.getVoiceChannelMap().get(channelId);
                 int userLimit = content.getInt("user_limit");
                 int bitrate = content.getInt("bitrate");
-                if (channel == null)
+                if (voiceChannel == null)
                 {
                     api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
                     EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a VoiceChannel that does not exist. JSON: " + content);
                     return null;
                 }
                 //If any properties changed, update the values and fire the proper events.
-                if (!StringUtils.equals(channel.getName(), name))
+                final String oldName = voiceChannel.getName();
+                final int oldPosition = voiceChannel.getPositionRaw();
+                final int oldLimit = voiceChannel.getUserLimit();
+                final int oldBitrate = voiceChannel.getBitrate();
+                if (!StringUtils.equals(oldName, name))
                 {
-                    String oldName = channel.getName();
-                    channel.setName(name);
+                    voiceChannel.setName(name);
                     api.getEventManager().handle(
                             new VoiceChannelUpdateNameEvent(
                                     api, responseNumber,
-                                    channel, oldName));
+                                    voiceChannel, oldName));
                 }
-                if (channel.getPositionRaw() != position)
+                if (oldPosition != position)
                 {
-                    int oldPosition = channel.getPositionRaw();
-                    channel.setRawPosition(position);
+                    voiceChannel.setRawPosition(position);
                     api.getEventManager().handle(
                             new VoiceChannelUpdatePositionEvent(
                                     api, responseNumber,
-                                    channel, oldPosition));
+                                    voiceChannel, oldPosition));
                 }
-                if (channel.getUserLimit() != userLimit)
+                if (oldLimit != userLimit)
                 {
-                    int oldLimit = channel.getUserLimit();
-                    channel.setUserLimit(userLimit);
+                    voiceChannel.setUserLimit(userLimit);
                     api.getEventManager().handle(
                             new VoiceChannelUpdateUserLimitEvent(
                                     api, responseNumber,
-                                    channel, oldLimit));
+                                    voiceChannel, oldLimit));
                 }
-                if (channel.getBitrate() != bitrate)
+                if (oldBitrate != bitrate)
                 {
-                    int oldBitrate = channel.getBitrate();
-                    channel.setBitrate(bitrate);
+                    voiceChannel.setBitrate(bitrate);
                     api.getEventManager().handle(
                             new VoiceChannelUpdateBitrateEvent(
                                     api, responseNumber,
-                                    channel, oldBitrate));
+                                    voiceChannel, oldBitrate));
                 }
 
-                applyPermissions(channel, content, permOverwrites, contained, changed);
+                applyPermissions(voiceChannel, content, permOverwrites, contained, changed);
 
                 //If this update modified permissions in any way.
                 if (!changed.isEmpty())
@@ -174,9 +174,9 @@ public class ChannelUpdateHandler extends SocketHandler
                     api.getEventManager().handle(
                             new VoiceChannelUpdatePermissionsEvent(
                                     api, responseNumber,
-                                    channel, changed));
+                                    voiceChannel, changed));
                 }
-                break;  //Finish the TextChannelUpdate case
+                break;  //Finish the VoiceChannelUpdate case
             }
             default:
                 throw new IllegalArgumentException("CHANNEL_UPDATE provided an unrecognized channel type JSON: " + content);
@@ -211,15 +211,17 @@ public class ChannelUpdateHandler extends SocketHandler
         final TLongObjectMap<PermissionOverride> overridesMap = channel.getOverrideMap();
 
         TDecorators.wrap(overridesMap.keySet()).stream()
-                .map(id -> mapPermissionHolder(id, channel.getGuild()))
-                .filter(Objects::nonNull)
-                .filter(permHolder -> !contained.contains(permHolder))
-                .forEach(permHolder -> {
-                    changed.add(permHolder);
-                    toRemove.add(getIdLong(permHolder));
-                });
+            .map(id -> mapPermissionHolder(id, channel.getGuild()))
+            .filter(Objects::nonNull)
+            .filter(permHolder -> !contained.contains(permHolder))
+            .forEach(permHolder ->
+            {
+                changed.add(permHolder);
+                toRemove.add(getIdLong(permHolder));
+            });
 
-        toRemove.forEach((id) -> {
+        toRemove.forEach((id) ->
+        {
             overridesMap.remove(id);
             return true;
         });
@@ -270,7 +272,6 @@ public class ChannelUpdateHandler extends SocketHandler
                 throw new IllegalArgumentException("CHANNEL_UPDATE provided an unrecognized PermissionOverride type. JSON: " + content);
         }
 
-
         PermissionOverrideImpl permOverride = (PermissionOverrideImpl) channel.getOverrideMap().get(id);
 
         if (permOverride == null)    //Created
@@ -291,8 +292,8 @@ public class ChannelUpdateHandler extends SocketHandler
     {
         final long groupId = content.getLong("id");
         final long ownerId = content.getLong("owner_id");
-        String name = !content.isNull("name") ? content.getString("name") : null;
-        String iconId = !content.isNull("icon") ? content.getString("icon") : null;
+        final String name   = content.isNull("name") ? null : content.getString("name");
+        final String iconId = content.isNull("icon") ? null : content.getString("icon");
 
         GroupImpl group = (GroupImpl) api.asClient().getGroupById(groupId);
         if (group == null)
@@ -302,34 +303,42 @@ public class ChannelUpdateHandler extends SocketHandler
             return;
         }
 
-        User owner = group.getUserMap().get(ownerId);
+        final User owner = group.getUserMap().get(ownerId);
+        final User oldOwner = group.getOwner();
+        final String oldName = group.getName();
+        final String oldIconId = group.getIconId();
 
-        if (!Objects.equals(name, group.getName()))
+        if (owner == null)
         {
-            String oldName = group.getName();
+            EventCache.LOG.warn("Received CHANNEL_UPDATE for a group with an owner_id for a user that is not cached. owner_id: " + ownerId);
+        }
+        else
+        {
+            if (!Objects.equals(owner, oldOwner))
+            {
+                group.setOwner(owner);
+                api.getEventManager().handle(
+                        new GroupUpdateOwnerEvent(
+                                api, responseNumber,
+                                group, oldOwner));
+            }
+        }
+
+        if (!Objects.equals(name, oldName))
+        {
             group.setName(name);
             api.getEventManager().handle(
                     new GroupUpdateNameEvent(
                             api, responseNumber,
                             group, oldName));
         }
-        if (!Objects.equals(iconId, group.getIconId()))
+        if (!Objects.equals(iconId, oldIconId))
         {
-            String oldIconId = group.getIconId();
             group.setIconId(iconId);
             api.getEventManager().handle(
                     new GroupUpdateIconEvent(
                             api, responseNumber,
                             group, oldIconId));
-        }
-        if (!Objects.equals(owner, group.getOwner()))
-        {
-            User oldOwner = group.getOwner();
-            group.setOwner(owner);
-            api.getEventManager().handle(
-                    new GroupUpdateOwnerEvent(
-                            api, responseNumber,
-                            group, oldOwner));
         }
     }
 }
