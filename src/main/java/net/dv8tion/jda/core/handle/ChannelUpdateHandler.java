@@ -16,6 +16,10 @@
 
 package net.dv8tion.jda.core.handle;
 
+import gnu.trove.TDecorators;
+import gnu.trove.list.TLongList;
+import gnu.trove.list.linked.TLongLinkedList;
+import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.client.entities.impl.GroupImpl;
 import net.dv8tion.jda.client.events.group.update.GroupUpdateIconEvent;
 import net.dv8tion.jda.client.events.group.update.GroupUpdateNameEvent;
@@ -34,7 +38,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class ChannelUpdateHandler extends SocketHandler
 {
@@ -53,22 +56,20 @@ public class ChannelUpdateHandler extends SocketHandler
             return null;
         }
 
-        List<Role> changedRoles = new ArrayList<>();
-        List<Member> changedMembers = new ArrayList<>();
-        List<Role> containedRoles = new ArrayList<>();
-        List<Member> containedMembers = new ArrayList<>();
+        List<IPermissionHolder> changed = new ArrayList<>();
+        List<IPermissionHolder> contained = new ArrayList<>();
 
         final long channelId = content.getLong("id");
-        String name = content.getString("name");
-        int position = content.getInt("position");
+        final int position = content.getInt("position");
+        final String name = content.getString("name");
         JSONArray permOverwrites = content.getJSONArray("permission_overwrites");
         switch (type)
         {
             case TEXT:
             {
                 String topic = content.isNull("topic") ? null : content.getString("topic");
-                TextChannelImpl channel = (TextChannelImpl) api.getTextChannelMap().get(channelId);
-                if (channel == null)
+                TextChannelImpl textChannel = (TextChannelImpl) api.getTextChannelMap().get(channelId);
+                if (textChannel == null)
                 {
                     api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
                     EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a TextChannel that does not exist. JSON: " + content);
@@ -76,150 +77,106 @@ public class ChannelUpdateHandler extends SocketHandler
                 }
 
                 //If any properties changed, update the values and fire the proper events.
-                if (!StringUtils.equals(channel.getName(), name))
+                final String oldName = textChannel.getName();
+                final String oldTopic = textChannel.getTopic();
+                final int oldPosition = textChannel.getPositionRaw();
+                if (!StringUtils.equals(oldName, name))
                 {
-                    String oldName = channel.getName();
-                    channel.setName(name);
+                    textChannel.setName(name);
                     api.getEventManager().handle(
                             new TextChannelUpdateNameEvent(
                                     api, responseNumber,
-                                    channel, oldName));
+                                    textChannel, oldName));
                 }
-                if (!StringUtils.equals(channel.getTopic(), topic))
+                if (!StringUtils.equals(oldTopic, topic))
                 {
-                    String oldTopic = channel.getTopic();
-                    channel.setTopic(topic);
+                    textChannel.setTopic(topic);
                     api.getEventManager().handle(
                             new TextChannelUpdateTopicEvent(
                                     api, responseNumber,
-                                    channel, oldTopic));
+                                    textChannel, oldTopic));
                 }
-                if (channel.getPositionRaw() != position)
+                if (oldPosition != position)
                 {
-                    int oldPosition = channel.getPositionRaw();
-                    channel.setRawPosition(position);
+                    textChannel.setRawPosition(position);
                     api.getEventManager().handle(
                             new TextChannelUpdatePositionEvent(
                                     api, responseNumber,
-                                    channel, oldPosition));
+                                    textChannel, oldPosition));
                 }
 
-                //Determines if a new PermissionOverride was created or updated.
-                //If a PermissionOverride was created or updated it stores it in the proper Map to be reported by the Event.
-                for (int i = 0; i < permOverwrites.length(); i++)
-                {
-                    handlePermissionOverride(permOverwrites.getJSONObject(i), channel, content, changedRoles, containedRoles, changedMembers, containedMembers);
-                }
-
-                //Check if any overrides were deleted because of this event.
-                //Get the current overrides. (we copy them to a new list because the Set returned is backed by the Map, meaning our removes would remove from the Map. Not good.
-                //Loop through all of the json defined overrides. If we find a match, remove the User or Role from our lists.
-                //Any entries remaining in these lists after this for loop is over will be removed from the Channel's overrides.
-                List<Role> collect = channel.getRoleOverrideMap().keySet().stream().filter(role -> !containedRoles.contains(role)).collect(Collectors.toList());
-                collect.forEach(role -> {
-                    changedRoles.add(role);
-                    channel.getRoleOverrideMap().remove(role);
-                });
-                List<Member> collect1 = channel.getMemberOverrideMap().keySet().stream().filter(user -> !containedMembers.contains(user)).collect(Collectors.toList());
-                collect1.forEach(member -> {
-                    changedMembers.add(member);
-                    channel.getMemberOverrideMap().remove(member);
-                });
+                applyPermissions(textChannel, content, permOverwrites, contained, changed);
 
                 //If this update modified permissions in any way.
-                if (!changedRoles.isEmpty()
-                        || !changedMembers.isEmpty())
+                if (!changed.isEmpty())
                 {
                     api.getEventManager().handle(
                             new TextChannelUpdatePermissionsEvent(
                                     api, responseNumber,
-                                    channel,
-                                    changedRoles, changedMembers));
+                                    textChannel, changed));
                 }
                 break;  //Finish the TextChannelUpdate case
             }
             case VOICE:
             {
-                VoiceChannelImpl channel = (VoiceChannelImpl) api.getVoiceChannelMap().get(channelId);
+                VoiceChannelImpl voiceChannel = (VoiceChannelImpl) api.getVoiceChannelMap().get(channelId);
                 int userLimit = content.getInt("user_limit");
                 int bitrate = content.getInt("bitrate");
-                if (channel == null)
+                if (voiceChannel == null)
                 {
                     api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
                     EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a VoiceChannel that does not exist. JSON: " + content);
                     return null;
                 }
                 //If any properties changed, update the values and fire the proper events.
-                if (!StringUtils.equals(channel.getName(), name))
+                final String oldName = voiceChannel.getName();
+                final int oldPosition = voiceChannel.getPositionRaw();
+                final int oldLimit = voiceChannel.getUserLimit();
+                final int oldBitrate = voiceChannel.getBitrate();
+                if (!StringUtils.equals(oldName, name))
                 {
-                    String oldName = channel.getName();
-                    channel.setName(name);
+                    voiceChannel.setName(name);
                     api.getEventManager().handle(
                             new VoiceChannelUpdateNameEvent(
                                     api, responseNumber,
-                                    channel, oldName));
+                                    voiceChannel, oldName));
                 }
-                if (channel.getPositionRaw() != position)
+                if (oldPosition != position)
                 {
-                    int oldPosition = channel.getPositionRaw();
-                    channel.setRawPosition(position);
+                    voiceChannel.setRawPosition(position);
                     api.getEventManager().handle(
                             new VoiceChannelUpdatePositionEvent(
                                     api, responseNumber,
-                                    channel, oldPosition));
+                                    voiceChannel, oldPosition));
                 }
-                if (channel.getUserLimit() != userLimit)
+                if (oldLimit != userLimit)
                 {
-                    int oldLimit = channel.getUserLimit();
-                    channel.setUserLimit(userLimit);
+                    voiceChannel.setUserLimit(userLimit);
                     api.getEventManager().handle(
                             new VoiceChannelUpdateUserLimitEvent(
                                     api, responseNumber,
-                                    channel, oldLimit));
+                                    voiceChannel, oldLimit));
                 }
-                if (channel.getBitrate() != bitrate)
+                if (oldBitrate != bitrate)
                 {
-                    int oldBitrate = channel.getBitrate();
-                    channel.setBitrate(bitrate);
+                    voiceChannel.setBitrate(bitrate);
                     api.getEventManager().handle(
                             new VoiceChannelUpdateBitrateEvent(
                                     api, responseNumber,
-                                    channel, oldBitrate));
+                                    voiceChannel, oldBitrate));
                 }
 
-                //Determines if a new PermissionOverride was created or updated.
-                //If a PermissionOverride was created or updated it stores it in the proper Map to be reported by the Event.
-                for (int i = 0; i < permOverwrites.length(); i++)
-                {
-                    handlePermissionOverride(permOverwrites.getJSONObject(i), channel, content, changedRoles, containedRoles, changedMembers, containedMembers);
-                }
-
-                //Check if any overrides were deleted because of this event.
-                //Get the current overrides. (we copy them to a new list because the Set returned is backed by the Map, meaning our removes would remove from the Map. Not good.
-                //Loop through all of the json defined overrides. If we find a match, remove the User or Role from our lists.
-                //Any entries remaining in these lists after this for loop is over will be removed from the Channel's overrides.
-                List<Role> collect = channel.getRoleOverrideMap().keySet().stream().filter(role -> !containedRoles.contains(role)).collect(Collectors.toList());
-                collect.forEach(role -> {
-                    changedRoles.add(role);
-                    channel.getRoleOverrideMap().remove(role);
-                });
-                List<Member> collect1 = channel.getMemberOverrideMap().keySet().stream().filter(user -> !containedMembers.contains(user)).collect(Collectors.toList());
-                collect1.forEach(member -> {
-                    changedMembers.add(member);
-                    channel.getMemberOverrideMap().remove(member);
-                });
+                applyPermissions(voiceChannel, content, permOverwrites, contained, changed);
 
                 //If this update modified permissions in any way.
-                if (!changedRoles.isEmpty()
-                        || !changedMembers.isEmpty())
+                if (!changed.isEmpty())
                 {
                     api.getEventManager().handle(
                             new VoiceChannelUpdatePermissionsEvent(
                                     api, responseNumber,
-                                    channel,
-                                    changedRoles, changedMembers));
+                                    voiceChannel, changed));
                 }
-                break;  //Finish the TextChannelUpdate case
+                break;  //Finish the VoiceChannelUpdate case
             }
             default:
                 throw new IllegalArgumentException("CHANNEL_UPDATE provided an unrecognized channel type JSON: " + content);
@@ -227,92 +184,116 @@ public class ChannelUpdateHandler extends SocketHandler
         return null;
     }
 
-    private void handlePermissionOverride(JSONObject override, Channel channel, JSONObject content,
-                                          List<Role> changedRoles, List<Role> containedRoles,List<Member> changedMembers, List<Member> containedMembers)
+    private long getIdLong(IPermissionHolder permHolder)
+    {
+        if (permHolder instanceof Member)
+            return ((Member) permHolder).getUser().getIdLong();
+        else
+            return ((Role) permHolder).getIdLong();
+    }
+
+    private void applyPermissions(AbstractChannelImpl<?> channel, JSONObject content,
+                      JSONArray permOverwrites, List<IPermissionHolder> contained, List<IPermissionHolder> changed)
+    {
+
+        //Determines if a new PermissionOverride was created or updated.
+        //If a PermissionOverride was created or updated it stores it in the proper Map to be reported by the Event.
+        for (int i = 0; i < permOverwrites.length(); i++)
+        {
+            handlePermissionOverride(permOverwrites.getJSONObject(i), channel, content, changed, contained);
+        }
+
+        //Check if any overrides were deleted because of this event.
+        //Get the current overrides. (we copy them to a new list because the Set returned is backed by the Map, meaning our removes would remove from the Map. Not good.
+        //Loop through all of the json defined overrides. If we find a match, remove the User or Role from our lists.
+        //Any entries remaining in these lists after this for loop is over will be removed from the Channel's overrides.
+        final TLongList toRemove = new TLongLinkedList();
+        final TLongObjectMap<PermissionOverride> overridesMap = channel.getOverrideMap();
+
+        TDecorators.wrap(overridesMap.keySet()).stream()
+            .map(id -> mapPermissionHolder(id, channel.getGuild()))
+            .filter(Objects::nonNull)
+            .filter(permHolder -> !contained.contains(permHolder))
+            .forEach(permHolder ->
+            {
+                changed.add(permHolder);
+                toRemove.add(getIdLong(permHolder));
+            });
+
+        toRemove.forEach((id) ->
+        {
+            overridesMap.remove(id);
+            return true;
+        });
+    }
+
+    private IPermissionHolder mapPermissionHolder(long id, Guild guild)
+    {
+        final Role holder = guild.getRoleById(id);
+        return holder == null ? guild.getMemberById(id) : holder;
+    }
+
+    private void handlePermissionOverride(JSONObject override, AbstractChannelImpl<?> channel, JSONObject content,
+                                          List<IPermissionHolder> changedPermHolders, List<IPermissionHolder> containedPermHolders)
     {
         final long id = override.getLong("id");
-        int allow = override.getInt("allow");
-        int deny = override.getInt("deny");
+        final long allow = override.getLong("allow");
+        final long deny = override.getLong("deny");
+        final IPermissionHolder permHolder;
 
         switch (override.getString("type"))
         {
             case "role":
             {
-                Role role = ((GuildImpl) channel.getGuild()).getRolesMap().get(id);
-                if (role == null)
+                permHolder = channel.getGuild().getRoleById(id);
+
+                if (permHolder == null)
                 {
                     api.getEventCache().cache(EventCache.Type.ROLE, id, () ->
-                    {
-                        handlePermissionOverride(override, channel, content, changedRoles, containedRoles, changedMembers, containedMembers);
-                    });
+                            handlePermissionOverride(override, channel, content, changedPermHolders, containedPermHolders));
                     EventCache.LOG.debug("CHANNEL_UPDATE attempted to create or update a PermissionOverride for a Role that doesn't exist! RoleId: " + id + " JSON: " + content);
                     return;
                 }
-
-                PermissionOverride permOverride;
-                if (channel instanceof TextChannel)
-                    permOverride = ((TextChannelImpl) channel).getRoleOverrideMap().get(role);
-                else
-                    permOverride = ((VoiceChannelImpl) channel).getRoleOverrideMap().get(role);
-
-                if (permOverride == null)    //Created
-                {
-                    api.getEntityBuilder().createPermissionOverride(override, channel);
-                    changedRoles.add(role);
-                }
-                else if (permOverride.getAllowedRaw() != allow || permOverride.getDeniedRaw() != deny) //Updated
-                {
-                    ((PermissionOverrideImpl) permOverride).setAllow(allow);
-                    ((PermissionOverrideImpl) permOverride).setDeny(deny);
-                    changedRoles.add(role);
-                }
-                containedRoles.add(role);
                 break;
             }
             case "member":
             {
-                Member member = channel.getGuild().getMemberById(id);
-                if (member == null)
+                permHolder = channel.getGuild().getMemberById(id);
+                if (permHolder == null)
                 {
                     api.getEventCache().cache(EventCache.Type.USER, id, () ->
-                    {
-                        handlePermissionOverride(override, channel, content, changedRoles, containedRoles, changedMembers, containedMembers);
-                    });
+                            handlePermissionOverride(override, channel, content, changedPermHolders, containedPermHolders));
                     EventCache.LOG.debug("CHANNEL_UPDATE attempted to create or update a PermissionOverride for Member that doesn't exist in this Guild! MemberId: " + id + " JSON: " + content);
                     return;
                 }
-
-                PermissionOverride permOverride;
-                if (channel instanceof TextChannel)
-                    permOverride = ((TextChannelImpl) channel).getMemberOverrideMap().get(member);
-                else
-                    permOverride = ((VoiceChannelImpl) channel).getMemberOverrideMap().get(member);
-
-                if (permOverride == null)    //Created
-                {
-                    api.getEntityBuilder().createPermissionOverride(override, channel);
-                    changedMembers.add(member);
-                }
-                else if (permOverride.getAllowedRaw() != allow || permOverride.getDeniedRaw() != deny)  //Updated
-                {
-                    ((PermissionOverrideImpl) permOverride).setAllow(allow);
-                    ((PermissionOverrideImpl) permOverride).setDeny(deny);
-                    changedMembers.add(member);
-                }
-                containedMembers.add(member);
                 break;
             }
             default:
                 throw new IllegalArgumentException("CHANNEL_UPDATE provided an unrecognized PermissionOverride type. JSON: " + content);
         }
+
+        PermissionOverrideImpl permOverride = (PermissionOverrideImpl) channel.getOverrideMap().get(id);
+
+        if (permOverride == null)    //Created
+        {
+            api.getEntityBuilder().createPermissionOverride(override, channel);
+            changedPermHolders.add(permHolder);
+        }
+        else if (permOverride.getAllowedRaw() != allow || permOverride.getDeniedRaw() != deny) //Updated
+        {
+            permOverride.setAllow(allow);
+            permOverride.setDeny(deny);
+            changedPermHolders.add(permHolder);
+        }
+        containedPermHolders.add(permHolder);
     }
 
     private void handleGroup(JSONObject content)
     {
         final long groupId = content.getLong("id");
         final long ownerId = content.getLong("owner_id");
-        String name = !content.isNull("name") ? content.getString("name") : null;
-        String iconId = !content.isNull("icon") ? content.getString("icon") : null;
+        final String name   = content.isNull("name") ? null : content.getString("name");
+        final String iconId = content.isNull("icon") ? null : content.getString("icon");
 
         GroupImpl group = (GroupImpl) api.asClient().getGroupById(groupId);
         if (group == null)
@@ -322,34 +303,42 @@ public class ChannelUpdateHandler extends SocketHandler
             return;
         }
 
-        User owner = group.getUserMap().get(ownerId);
+        final User owner = group.getUserMap().get(ownerId);
+        final User oldOwner = group.getOwner();
+        final String oldName = group.getName();
+        final String oldIconId = group.getIconId();
 
-        if (!Objects.equals(name, group.getName()))
+        if (owner == null)
         {
-            String oldName = group.getName();
+            EventCache.LOG.warn("Received CHANNEL_UPDATE for a group with an owner_id for a user that is not cached. owner_id: " + ownerId);
+        }
+        else
+        {
+            if (!Objects.equals(owner, oldOwner))
+            {
+                group.setOwner(owner);
+                api.getEventManager().handle(
+                        new GroupUpdateOwnerEvent(
+                                api, responseNumber,
+                                group, oldOwner));
+            }
+        }
+
+        if (!Objects.equals(name, oldName))
+        {
             group.setName(name);
             api.getEventManager().handle(
                     new GroupUpdateNameEvent(
                             api, responseNumber,
                             group, oldName));
         }
-        if (!Objects.equals(iconId, group.getIconId()))
+        if (!Objects.equals(iconId, oldIconId))
         {
-            String oldIconId = group.getIconId();
             group.setIconId(iconId);
             api.getEventManager().handle(
                     new GroupUpdateIconEvent(
                             api, responseNumber,
                             group, oldIconId));
-        }
-        if (!Objects.equals(owner, group.getOwner()))
-        {
-            User oldOwner = group.getOwner();
-            group.setOwner(owner);
-            api.getEventManager().handle(
-                    new GroupUpdateOwnerEvent(
-                            api, responseNumber,
-                            group, oldOwner));
         }
     }
 }

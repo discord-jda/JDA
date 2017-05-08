@@ -30,7 +30,6 @@ import net.dv8tion.jda.core.entities.impl.*;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.handle.GuildMembersChunkHandler;
 import net.dv8tion.jda.core.handle.ReadyHandler;
-import net.dv8tion.jda.core.requests.GuildLock;
 import net.dv8tion.jda.core.requests.WebSocketClient;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.json.JSONArray;
@@ -986,11 +985,8 @@ public class EntityBuilder
                 permOverride = (PermissionOverrideImpl) chan.getPermissionOverride(member);
                 if (permOverride == null)
                 {
-                    permOverride = new PermissionOverrideImpl(chan, member, null);
-                    if (chan instanceof TextChannel)
-                        ((TextChannelImpl) chan).getMemberOverrideMap().put(member, permOverride);
-                    else
-                        ((VoiceChannelImpl) chan).getMemberOverrideMap().put(member, permOverride);
+                    permOverride = new PermissionOverrideImpl(chan, member.getUser().getIdLong(), member);
+                    ((AbstractChannelImpl<?>) chan).getOverrideMap().put(member.getUser().getIdLong(), permOverride);
                 }
                 break;
             case "role":
@@ -1001,11 +997,8 @@ public class EntityBuilder
                 permOverride = (PermissionOverrideImpl) chan.getPermissionOverride(role);
                 if (permOverride == null)
                 {
-                    permOverride = new PermissionOverrideImpl(chan, null, role);
-                    if (chan instanceof TextChannel)
-                        ((TextChannelImpl) chan).getRoleOverrideMap().put(role, permOverride);
-                    else
-                        ((VoiceChannelImpl) chan).getRoleOverrideMap().put(role, permOverride);
+                    permOverride = new PermissionOverrideImpl(chan, role.getIdLong(), role);
+                    ((AbstractChannelImpl<?>) chan).getOverrideMap().put(role.getIdLong(), permOverride);
                 }
                 break;
             default:

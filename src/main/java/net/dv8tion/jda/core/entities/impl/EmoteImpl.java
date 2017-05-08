@@ -30,7 +30,6 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
-import net.dv8tion.jda.core.utils.PermissionUtil;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -159,7 +158,7 @@ public class EmoteImpl implements Emote
             throw new IllegalStateException("The emote you are trying to delete is not an actual emote we have access to (it is fake)!");
         if (managed)
             throw new UnsupportedOperationException("You cannot delete a managed emote!");
-        if (!PermissionUtil.checkPermission(guild, guild.getSelfMember(), Permission.MANAGE_EMOTES))
+        if (!guild.getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
             throw new PermissionException(Permission.MANAGE_EMOTES);
 
         Route.CompiledRoute route = Route.Emotes.DELETE_EMOTE.compile(getGuild().getId(), getId());

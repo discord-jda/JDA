@@ -17,11 +17,9 @@
 package net.dv8tion.jda.core.managers.fields;
 
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.managers.RoleManagerUpdatable;
-import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.apache.http.util.Args;
 
 import java.util.*;
@@ -33,7 +31,7 @@ import java.util.function.Supplier;
  *
  * <p>The specification for this Field will automatically check provided
  * {@link net.dv8tion.jda.core.Permission Permissions} for access by using
- * {@link net.dv8tion.jda.core.utils.PermissionUtil#checkPermission(Guild, Member, Permission...) PermissionUtil.checkPermission(Guild, Member, Permission...)}
+ * {@link net.dv8tion.jda.core.utils.PermissionUtil#checkPermission(Member, Permission...) PermissionUtil.checkPermission(Member, Permission...)}
  * on the current account's Member instance for the specified {@link net.dv8tion.jda.core.entities.Guild Guild}.
  *
  * <p><b>This class is an extension of {@link net.dv8tion.jda.core.managers.fields.RoleField RoleField}</b>
@@ -301,7 +299,7 @@ public class PermissionField extends RoleField<Long>
 
     protected void checkPermission(Permission perm)
     {
-        if (!PermissionUtil.checkPermission(manager.getGuild(), manager.getGuild().getSelfMember(), perm))
+        if (!manager.getGuild().getSelfMember().hasPermission(perm))
             throw new PermissionException(perm, "Cannot give / revoke the permission because the logged in account does not have access to it! Permission: " + perm);
     }
 }
