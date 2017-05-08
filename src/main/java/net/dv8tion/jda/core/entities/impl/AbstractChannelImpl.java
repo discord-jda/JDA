@@ -157,7 +157,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         checkPermission(Permission.MANAGE_CHANNEL);
 
         Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(getId());
-        return new RestAction<Void>(getJDA(), route, null)
+        return new RestAction<Void>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -217,7 +217,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
 
         final Route.CompiledRoute route = Route.Invites.GET_CHANNEL_INVITES.compile(getId());
 
-        return new RestAction<List<Invite>>(getJDA(), route, null)
+        return new RestAction<List<Invite>>(getJDA(), route)
         {
             @Override
             protected void handleResponse(final Response response, final Request<List<Invite>> request)

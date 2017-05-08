@@ -323,7 +323,7 @@ public class ChannelAction extends RestAction<Channel>
         else
         {
             if (topic != null && !topic.isEmpty())
-                data.put("topic", topic);
+                object.put("topic", topic);
         }
 
         setData(object);

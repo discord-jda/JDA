@@ -117,8 +117,9 @@ public class JDABuilder
     }
 
     // FIXME setHttpClientBuilder() & setWebsocketFactory() are ugly
-    // I don't want users to mess with the ws or http lib
-    // on the other side they can configure the behaviour more this way
+    // I don't like users having to mess with the ws or http lib,
+    // on the other side this allows them to configure the behaviour more deeply without
+    // making JDABuilder overly complicated by adding too many methods 
     /**
      * Sets the httpProxy that will be used by <b>ALL</b> JDA instances.
      * <br>Once this is set <b>IT CANNOT BE CHANGED.</b>

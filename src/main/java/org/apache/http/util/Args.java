@@ -29,7 +29,7 @@ package org.apache.http.util;
 
 import java.util.Collection;
 
-public class Args {
+public class Args { // TODO: should we make our own implementation?
 
     public static void check(final boolean expression, final String message) {
         if (!expression) {

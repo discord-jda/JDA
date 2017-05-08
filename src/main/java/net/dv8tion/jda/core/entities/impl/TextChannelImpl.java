@@ -347,7 +347,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
 
         checkPermission(Permission.MESSAGE_MANAGE);
         Route.CompiledRoute route = Route.Messages.REMOVE_ALL_REACTIONS.compile(getId(), messageId);
-        return new RestAction<Void>(getJDA(), route, null)
+        return new RestAction<Void>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)

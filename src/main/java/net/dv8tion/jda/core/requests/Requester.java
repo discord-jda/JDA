@@ -78,7 +78,7 @@ public class Requester
         {
             Long retryAfter = execute(apiRequest);
             if (retryAfter != null)
-                apiRequest.getRestAction().handleResponse(new Response(429, null, retryAfter), apiRequest);
+                apiRequest.getRestAction().handleResponse(new Response(retryAfter), apiRequest);
         }
     }
 

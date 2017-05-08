@@ -124,7 +124,7 @@ public class ErrorResponseException extends RuntimeException
                 // This means that neither code or message is provided
                 //In that case we simply put the raw response in place!
                 code = response.code;
-                meaning = response.responseText;
+                meaning = response.message;
             }
         }
 

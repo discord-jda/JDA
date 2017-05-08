@@ -25,33 +25,40 @@ import org.json.JSONTokener;
 public class Response
 {
     public static final int ERROR_CODE = -1;
+    public static final String ERROR_MESSAGE = "ERROR";
+
     public final Exception exception;
     public final int code;
+    public final String message;
     public final long retryAfter;
-    
+
     private Object object = null;
 
     protected Response(long retryAfter)
     {
-        this(429, null, retryAfter);
+        this(429, "TOO MANY REQUESTS", null, retryAfter);
     }
 
     protected Response(okhttp3.Response response, long retryAfter)
     {
-        this(response.code(), response, retryAfter);
+        this(response.code(), response.message(), response, retryAfter);
     }
 
-    protected Response(int code, okhttp3.Response response, long retryAfter)
+    protected Response(int code, String message, okhttp3.Response response, long retryAfter)
     {
-        this.code = response.code();
+        this.code = code;
+        this.message = message;
         this.exception = null;
         this.retryAfter = retryAfter;
 
+        if (response == null || response.body().contentLength() == 0)
+            return;
+
         try (Reader reader = response.body().charStream().markSupported() 
                 ? response.body().charStream()
-                : new BufferedReader(response.body().charStream()))
+                : new BufferedReader(response.body().charStream())) // this doesn't add overhead as org.json would do that itself otherwise
         {
-            char begin;
+            char begin; // not sure if I really like this... but we somehow have to get if this is an object or an array  
             int mark = 1;
             do
             {
@@ -81,6 +88,7 @@ public class Response
     protected Response(Exception exception)
     {
         this.code = ERROR_CODE;
+        this.message = ERROR_MESSAGE;
         this.object = null;
         this.exception = exception;
         this.retryAfter = -1;
