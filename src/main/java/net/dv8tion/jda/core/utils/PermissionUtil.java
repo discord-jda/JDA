@@ -25,7 +25,7 @@ import org.apache.http.util.Args;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.BiConsumer;
+import java.util.function.LongBinaryOperator;
 
 public class PermissionUtil
 {
@@ -366,11 +366,7 @@ public class PermissionUtil
         AtomicLong allow = new AtomicLong(0);
         AtomicLong deny = new AtomicLong(0);
 
-        getImplicitOverrides(channel, member, (a, d) ->
-        {
-            allow.accumulateAndGet(a, PermissionUtil::accumulate);
-            deny.accumulateAndGet(d, PermissionUtil::accumulate);
-        });
+        getImplicitOverrides(channel, member, allow, deny);
         permission = apply(permission, allow.get(), deny.get());
 
         if (isApplied(permission, admin))
@@ -507,11 +503,7 @@ public class PermissionUtil
         AtomicLong deny = new AtomicLong(0);
 
         // populates allow/deny
-        getImplicitOverrides(channel, member, (a, d) ->
-        {
-            allow.accumulateAndGet(a, PermissionUtil::accumulate);
-            deny.accumulateAndGet(d, PermissionUtil::accumulate);
-        });
+        getImplicitOverrides(channel, member, allow, deny);
 
         return apply(permission, allow.get(), deny.get());
     }
@@ -565,27 +557,32 @@ public class PermissionUtil
      * Pushes all deny/allow values to the specified BiConsumer
      * <br>First parameter is allow, second is deny
      */
-    private static void getImplicitOverrides(Channel channel, Member member, BiConsumer<Long, Long> action)
+    private static void getImplicitOverrides(Channel channel, Member member, AtomicLong allow, AtomicLong deny)
     {
         PermissionOverride override = channel.getPermissionOverride(member.getGuild().getPublicRole());
+        LongBinaryOperator accumulator = (l1, l2) -> l1 | l2;
         if (override != null)
-            action.accept(override.getAllowedRaw(), override.getDeniedRaw());
+        {
+            allow.accumulateAndGet(override.getAllowedRaw(), accumulator);
+            deny.accumulateAndGet(override.getDeniedRaw(), accumulator);
+        }
 
         for (Role role : member.getRoles())
         {
             override = channel.getPermissionOverride(role);
             if (override != null)
-                action.accept(override.getAllowedRaw(), override.getDeniedRaw());
+            {
+                allow.accumulateAndGet(override.getAllowedRaw(), accumulator);
+                deny.accumulateAndGet(override.getDeniedRaw(), accumulator);
+            }
         }
 
         override = channel.getPermissionOverride(member);
         if (override != null)
-            action.accept(override.getAllowedRaw(), override.getDeniedRaw());
-    }
-
-    private static long accumulate(long o1, long o2)
-    {
-        return o1 | o2;
+        {
+            allow.accumulateAndGet(override.getAllowedRaw(), accumulator);
+            deny.accumulateAndGet(override.getDeniedRaw(), accumulator);
+        }
     }
 
     /*
