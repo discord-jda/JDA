@@ -46,7 +46,7 @@ import java.util.List;
  * Minimum - 1
  * <br>Maximum - 100
  *
- * @since  3.1
+ * @since  3.2
  * @author Florian Spieß
  */
 public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, AuditLogPaginationAction>

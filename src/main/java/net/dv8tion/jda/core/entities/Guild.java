@@ -632,6 +632,38 @@ public interface Guild extends ISnowflake
      */
     MentionPaginationAction getRecentMentions();
 
+    /**
+     * A {@link net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction PaginationAction} implementation
+     * that allows to {@link Iterable iterate} over all {@link net.dv8tion.jda.core.entities.AuditLogEntry AuditLogEntries} of
+     * this Guild.
+     * <br>This iterates from the most recent action to the first logged one. (Limit 90 days into history by discord api)
+     *
+     * <h1>Examples</h1>
+     * <pre><code>
+     * public boolean isLogged(Guild guild, ActionType type, long targetId)
+     * {
+     *     for (AuditLogEntry entry : guild.<u>getAuditLogs().cache(false)</u>)
+     *     {
+     *         if (entry.getType() == type{@literal &&} entry.getTargetIdLong() == targetId)
+     *             return true; // The action is logged
+     *     }
+     *     return false; // nothing found in audit logs
+     * }
+     *
+     * public{@literal List<AuditLogEntry>} getActionsBy(Guild guild, User user)
+     * {
+     *     return guild.<u>getAuditLogs().cache(false)</u>.stream()
+     *         .filter(it{@literal ->} it.getUser().equals(user))
+     *         .collect(Collectors.toList()); // collects actions done by user
+     * }
+     * </code></pre>
+     *
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If the currently logged in account
+     *         does not have the permission {@link net.dv8tion.jda.core.Permission#VIEW_AUDIT_LOGS VIEW_AUDIT_LOGS}
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAction AuditLogPaginationAction}
+     */
     AuditLogPaginationAction getAuditLogs();
 
     /**

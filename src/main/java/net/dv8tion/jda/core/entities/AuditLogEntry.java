@@ -173,11 +173,17 @@ public class AuditLogEntry implements ISnowflake
     }
 
     /**
-     * Shortcut to {@code getOptions().get(key)} lookup!
+     * Shortcut to {@code getOptions().get(name)} lookup!
      * <br>This lookup is case-insensitive!
      *
-     * @param  key
-     *         The key to look for
+     * @param  <T>
+     *         The expected type for this option
+     *         <br>Will be used for casting
+     * @param  name
+     *         The field name to look for
+     *
+     * @throws java.lang.ClassCastException
+     *         If the type-cast failed for the generic type.
      *
      * @return Possibly-null value corresponding to the specified key
      */
