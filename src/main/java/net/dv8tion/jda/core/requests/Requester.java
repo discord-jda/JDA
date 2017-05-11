@@ -27,6 +27,8 @@ import net.dv8tion.jda.core.utils.SimpleLog;
 import okhttp3.Call;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
+import okhttp3.internal.http.HttpMethod;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -36,6 +38,7 @@ public class Requester
     public static final String DISCORD_API_PREFIX = "https://discordapp.com/api/v6/";
     public static String USER_AGENT = "JDA DiscordBot (" + JDAInfo.GITHUB + ", " + JDAInfo.VERSION + ")";
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+    public static final RequestBody EMPTY_BODY = RequestBody.create(null, new byte[]{});
 
     private final JDAImpl api;
     private final RateLimiter rateLimiter;
@@ -104,7 +107,13 @@ public class Requester
         String url = DISCORD_API_PREFIX + route.getCompiledRoute();
         builder.url(url);
 
-        builder.method(apiRequest.getRoute().getMethod().toString(), apiRequest.getData());
+        String method = apiRequest.getRoute().getMethod().toString();
+        RequestBody body = apiRequest.getData();
+
+        if (body == null && HttpMethod.requiresRequestBody(method))
+            body = EMPTY_BODY;
+
+        builder.method(method, body);
 
         builder.header("user-agent", USER_AGENT);
 
