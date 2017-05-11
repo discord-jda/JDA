@@ -24,7 +24,7 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
 import java.awt.Color;
@@ -156,7 +156,7 @@ public class RoleAction extends RestAction<Role>
         {
             for (Permission p : permissions)
             {
-                Args.notNull(p, "Permissions");
+                Checks.notNull(p, "Permissions");
                 checkPermission(p);
             }
         }
@@ -186,7 +186,7 @@ public class RoleAction extends RestAction<Role>
         {
             for (Permission p : permissions)
             {
-                Args.notNull(p, "Permissions");
+                Checks.notNull(p, "Permissions");
                 checkPermission(p);
             }
         }
@@ -217,8 +217,8 @@ public class RoleAction extends RestAction<Role>
      */
     public RoleAction setPermissions(long permissions)
     {
-        Args.notNegative(permissions, "Raw Permissions");
-        Args.check(permissions <= Permission.ALL_PERMISSIONS, "Provided permissions may not be greater than a full permission set!");
+        Checks.notNegative(permissions, "Raw Permissions");
+        Checks.check(permissions <= Permission.ALL_PERMISSIONS, "Provided permissions may not be greater than a full permission set!");
         for (Permission p : Permission.getPermissions(permissions))
             checkPermission(p);
         this.permissions = permissions;

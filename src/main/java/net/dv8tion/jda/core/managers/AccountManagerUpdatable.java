@@ -20,14 +20,13 @@ import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.entities.SelfUser;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.managers.fields.AccountField;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
 import java.util.regex.Pattern;
@@ -312,7 +311,7 @@ public class AccountManagerUpdatable
             @Override
             public void checkValue(String value)
             {
-                Args.notNull(value, "account name");
+                Checks.notNull(value, "account name");
                 if (value.length() < 2 || value.length() > 32)
                     throw new IllegalArgumentException("Provided name must be 2 to 32 characters in length");
             }
@@ -343,7 +342,7 @@ public class AccountManagerUpdatable
                 @Override
                 public void checkValue(String value)
                 {
-                    Args.notNull(value, "account email");
+                    Checks.notNull(value, "account email");
                     if (!EMAIL_PATTERN.matcher(value).find())
                         throw new IllegalArgumentException("Provided email is in invalid format. Provided value: " + value);
                 }
@@ -354,7 +353,7 @@ public class AccountManagerUpdatable
                 @Override
                 public void checkValue(String value)
                 {
-                    Args.notNull(value, "account password");
+                    Checks.notNull(value, "account password");
                     if (value.length() < 6 || value.length() > 128)
                         throw new IllegalArgumentException("Provided password must ben 6 to 128 characters in length");
                 }

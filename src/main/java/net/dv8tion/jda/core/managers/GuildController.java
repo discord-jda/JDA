@@ -34,7 +34,7 @@ import net.dv8tion.jda.core.requests.restaction.WebhookAction;
 import net.dv8tion.jda.core.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.core.requests.restaction.order.RoleOrderAction;
 import net.dv8tion.jda.core.utils.PermissionUtil;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -133,7 +133,7 @@ public class GuildController
     public RestAction<Void> setNickname(Member member, String nickname)
     {
         checkAvailable();
-        Args.notNull(member, "member");
+        Checks.notNull(member, "member");
         checkGuild(member.getGuild(), "member");
 
         if(member.equals(guild.getSelfMember()))
@@ -226,8 +226,8 @@ public class GuildController
     public RestAction<Void> moveVoiceMember(Member member, VoiceChannel voiceChannel)
     {
         checkAvailable();
-        Args.notNull(member, "member");
-        Args.notNull(member, "voiceChannel");
+        Checks.notNull(member, "member");
+        Checks.notNull(member, "voiceChannel");
         checkGuild(member.getGuild(), "member");
         checkGuild(voiceChannel.getGuild(), "voiceChannel");
 
@@ -399,7 +399,7 @@ public class GuildController
     public RestAction<Void> kick(Member member)
     {
         checkAvailable();
-        Args.notNull(member, "member");
+        Checks.notNull(member, "member");
         checkGuild(member.getGuild(), "member");
         checkPermission(Permission.KICK_MEMBERS);
         checkPosition(member);
@@ -455,7 +455,7 @@ public class GuildController
      */
     public RestAction<Void> kick(String userId)
     {
-        Args.notBlank(userId, "userId");
+        Checks.notBlank(userId, "userId");
 
         Member member = guild.getMemberById(userId);
         if (member == null)
@@ -512,7 +512,7 @@ public class GuildController
     public RestAction<Void> ban(Member member, int delDays)
     {
         checkAvailable();
-        Args.notNull(member, "member");
+        Checks.notNull(member, "member");
         //Don't check if the provided member is from this guild. It doesn't matter if they are or aren't.
 
         return ban(member.getUser(), delDays);
@@ -565,7 +565,7 @@ public class GuildController
     public RestAction<Void> ban(User user, int delDays)
     {
         checkAvailable();
-        Args.notNull(user, "user");
+        Checks.notNull(user, "user");
         checkPermission(Permission.BAN_MEMBERS);
 
         if (guild.isMember(user)) // If user is in guild. Check if we are able to ban.
@@ -637,7 +637,7 @@ public class GuildController
     public RestAction<Void> ban(String userId, int delDays)
     {
         checkAvailable();
-        Args.notBlank(userId, "userId");
+        Checks.notBlank(userId, "userId");
         checkPermission(Permission.BAN_MEMBERS);
 
         User user = guild.getJDA().getUserById(userId);
@@ -697,7 +697,7 @@ public class GuildController
      */
     public RestAction<Void> unban(User user)
     {
-        Args.notNull(user, "user");
+        Checks.notNull(user, "user");
 
         return unban(user.getId());
     }
@@ -733,7 +733,7 @@ public class GuildController
     public RestAction<Void> unban(String userId)
     {
         checkAvailable();
-        Args.notBlank(userId, "userId");
+        Checks.notBlank(userId, "userId");
         checkPermission(Permission.BAN_MEMBERS);
 
         Route.CompiledRoute route = Route.Guilds.UNBAN.compile(guild.getId(), userId);
@@ -792,7 +792,7 @@ public class GuildController
     public RestAction<Void> setDeafen(Member member, boolean deafen)
     {
         checkAvailable();
-        Args.notNull(member, "member");
+        Checks.notNull(member, "member");
         checkGuild(member.getGuild(), "member");
         checkPermission(Permission.VOICE_DEAF_OTHERS);
 
@@ -859,7 +859,7 @@ public class GuildController
     public RestAction<Void> setMute(Member member, boolean mute)
     {
         checkAvailable();
-        Args.notNull(member, "member");
+        Checks.notNull(member, "member");
         checkGuild(member.getGuild(), "member");
         checkPermission(Permission.VOICE_MUTE_OTHERS);
 
@@ -1171,14 +1171,14 @@ public class GuildController
     public RestAction<Void> modifyMemberRoles(Member member, Collection<Role> rolesToAdd, Collection<Role> rolesToRemove)
     {
         checkAvailable();
-        Args.notNull(member, "member");
-        Args.notNull(rolesToAdd, "Collection containing roles to be added to the member");
-        Args.notNull(rolesToRemove, "Collection containing roles to be removed from the member");
+        Checks.notNull(member, "member");
+        Checks.notNull(rolesToAdd, "Collection containing roles to be added to the member");
+        Checks.notNull(rolesToRemove, "Collection containing roles to be removed from the member");
         checkGuild(member.getGuild(), "member");
         checkPermission(Permission.MANAGE_ROLES);
         rolesToAdd.forEach(role ->
         {
-            Args.notNull(role, "role in rolesToAdd");
+            Checks.notNull(role, "role in rolesToAdd");
             checkGuild(role.getGuild(), "role: " + role.toString());
             checkPosition(role);
             if (role.isManaged())
@@ -1186,7 +1186,7 @@ public class GuildController
         });
         rolesToRemove.forEach(role ->
         {
-            Args.notNull(role, "role in rolesToRemove");
+            Checks.notNull(role, "role in rolesToRemove");
             checkGuild(role.getGuild(), "role: " + role.toString());
             checkPosition(role);
             if (role.isManaged())
@@ -1307,12 +1307,12 @@ public class GuildController
     public RestAction<Void> modifyMemberRoles(Member member, Collection<Role> roles)
     {
         checkAvailable();
-        Args.notNull(member, "member");
-        Args.notNull(roles, "roles");
+        Checks.notNull(member, "member");
+        Checks.notNull(roles, "roles");
         checkGuild(member.getGuild(), "member");
         roles.forEach(role ->
         {
-            Args.notNull(role, "role in collection");
+            Checks.notNull(role, "role in collection");
             checkGuild(role.getGuild(), "role: " + role.toString());
             checkPosition(role);
         });
@@ -1387,7 +1387,7 @@ public class GuildController
     public RestAction<Void> transferOwnership(Member newOwner)
     {
         checkAvailable();
-        Args.notNull(newOwner, "newOwner member");
+        Checks.notNull(newOwner, "newOwner member");
         checkGuild(newOwner.getGuild(), "newOwner member");
         if (!guild.getOwner().equals(guild.getSelfMember()))
             throw new PermissionException("The logged in account must be the owner of this Guild to be able to transfer ownership");
@@ -1444,7 +1444,7 @@ public class GuildController
     {
         checkAvailable();
         checkPermission(Permission.MANAGE_CHANNEL);
-        Args.notNull(name, "name");
+        Checks.notNull(name, "name");
 
         if (name.length() < 2 || name.length() > 100)
             throw new IllegalArgumentException("Provided name must be 2 - 100 characters in length");
@@ -1487,7 +1487,7 @@ public class GuildController
     {
         checkAvailable();
         checkPermission(Permission.MANAGE_CHANNEL);
-        Args.notNull(name, "name");
+        Checks.notNull(name, "name");
 
         if (name.length() < 2 || name.length() > 100)
             throw new IllegalArgumentException("Provided name must be 2 to 100 characters in length");
@@ -1541,7 +1541,7 @@ public class GuildController
      */
     public ChannelAction createCopyOfChannel(Channel channel)
     {
-        Args.notNull(channel, "Channel");
+        Checks.notNull(channel, "Channel");
         checkPermission(Permission.MANAGE_CHANNEL);
         boolean isVoice = channel instanceof VoiceChannel;
 
@@ -1604,8 +1604,8 @@ public class GuildController
      */
     public WebhookAction createWebhook(TextChannel channel, String name)
     {
-        Args.notNull(name, "Webhook name");
-        Args.notNull(channel, "TextChannel");
+        Checks.notNull(name, "Webhook name");
+        Checks.notNull(channel, "TextChannel");
         checkGuild(channel.getGuild(), "channel");
         if (!guild.getSelfMember().hasPermission(channel, Permission.MANAGE_WEBHOOKS))
             throw new PermissionException(Permission.MANAGE_WEBHOOKS);
@@ -1735,8 +1735,8 @@ public class GuildController
     {
         checkAvailable();
         checkPermission(Permission.MANAGE_EMOTES);
-        Args.notNull(name, "emote name");
-        Args.notNull(icon, "emote icon");
+        Checks.notNull(name, "emote name");
+        Checks.notNull(icon, "emote icon");
 
         if (getJDA().getAccountType() != AccountType.CLIENT)
             throw new AccountTypeException(AccountType.CLIENT);

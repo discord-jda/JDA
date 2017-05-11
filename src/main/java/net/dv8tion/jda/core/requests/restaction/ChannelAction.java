@@ -22,7 +22,7 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONString;
@@ -88,7 +88,7 @@ public class ChannelAction extends RestAction<Channel>
      */
     public ChannelAction setName(String name)
     {
-        Args.notNull(name, "Channel name");
+        Checks.notNull(name, "Channel name");
         if (name.length() < 2 || name.length() > 100)
             throw new IllegalArgumentException("Provided channel name must be 2 to 100 characters in length");
 
@@ -201,12 +201,12 @@ public class ChannelAction extends RestAction<Channel>
      */
     public ChannelAction addPermissionOverride(Role role, long allow, long deny)
     {
-        Args.notNull(role, "Override Role");
-        Args.notNegative(allow, "Granted permissions value");
-        Args.notNegative(deny, "Denied permissions value");
-        Args.check(allow <= Permission.ALL_PERMISSIONS, "Specified allow value may not be greater than a full permission set");
-        Args.check(deny <= Permission.ALL_PERMISSIONS,  "Specified deny value may not be greater than a full permission set");
-        Args.check(role.getGuild().equals(guild), "Specified Role is not in the same Guild!");
+        Checks.notNull(role, "Override Role");
+        Checks.notNegative(allow, "Granted permissions value");
+        Checks.notNegative(deny, "Denied permissions value");
+        Checks.check(allow <= Permission.ALL_PERMISSIONS, "Specified allow value may not be greater than a full permission set");
+        Checks.check(deny <= Permission.ALL_PERMISSIONS,  "Specified deny value may not be greater than a full permission set");
+        Checks.check(role.getGuild().equals(guild), "Specified Role is not in the same Guild!");
 
         String id = role.getId();
         overrides.add(new PromisePermissionOverride(ROLE_TYPE, id, allow, deny));
@@ -241,12 +241,12 @@ public class ChannelAction extends RestAction<Channel>
      */
     public ChannelAction addPermissionOverride(Member member, long allow, long deny)
     {
-        Args.notNull(member, "Override Member");
-        Args.notNegative(allow, "Granted permissions value");
-        Args.notNegative(deny, "Denied permissions value");
-        Args.check(allow <= Permission.ALL_PERMISSIONS, "Specified allow value may not be greater than a full permission set");
-        Args.check(deny <= Permission.ALL_PERMISSIONS,  "Specified deny value may not be greater than a full permission set");
-        Args.check(member.getGuild().equals(guild), "Specified Member is not in the same Guild!");
+        Checks.notNull(member, "Override Member");
+        Checks.notNegative(allow, "Granted permissions value");
+        Checks.notNegative(deny, "Denied permissions value");
+        Checks.check(allow <= Permission.ALL_PERMISSIONS, "Specified allow value may not be greater than a full permission set");
+        Checks.check(deny <= Permission.ALL_PERMISSIONS,  "Specified deny value may not be greater than a full permission set");
+        Checks.check(member.getGuild().equals(guild), "Specified Member is not in the same Guild!");
 
         String id = member.getUser().getId();
         overrides.add(new PromisePermissionOverride(MEMBER_TYPE, id, allow, deny));
@@ -352,7 +352,7 @@ public class ChannelAction extends RestAction<Channel>
         if (permissions == null)
             return;
         for (Permission p : permissions)
-            Args.notNull(p, "Permissions");
+            Checks.notNull(p, "Permissions");
     }
 
     protected void checkPermissions(Collection<Permission> permissions)
@@ -360,7 +360,7 @@ public class ChannelAction extends RestAction<Channel>
         if (permissions == null)
             return;
         for (Permission p : permissions)
-            Args.notNull(p, "Permissions");
+            Checks.notNull(p, "Permissions");
     }
 
     protected final class PromisePermissionOverride implements JSONString

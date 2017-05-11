@@ -34,7 +34,7 @@ import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.utils.NativeUtil;
 import net.dv8tion.jda.core.utils.PermissionUtil;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -80,7 +80,7 @@ public class AudioManagerImpl implements AudioManager
     @Override
     public void openAudioConnection(VoiceChannel channel)
     {
-        Args.notNull(channel, "Provided VoiceChannel");
+        Checks.notNull(channel, "Provided VoiceChannel");
 
         if (!AUDIO_SUPPORTED)
             throw new UnsupportedOperationException("Sorry! Audio is disabled due to an internal JDA error! Contact Dev!");

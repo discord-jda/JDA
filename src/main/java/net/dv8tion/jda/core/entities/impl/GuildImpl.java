@@ -35,7 +35,7 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -216,7 +216,7 @@ public class GuildImpl implements Guild
     @Override
     public List<Member> getMembersByName(String name, boolean ignoreCase)
     {
-        Args.notNull(name, "name");
+        Checks.notNull(name, "name");
         return Collections.unmodifiableList(members.valueCollection().stream()
                 .filter(m ->
                     ignoreCase
@@ -228,7 +228,7 @@ public class GuildImpl implements Guild
     @Override
     public List<Member> getMembersByNickname(String nickname, boolean ignoreCase)
     {
-        Args.notNull(nickname, "nickname");
+        Checks.notNull(nickname, "nickname");
         return Collections.unmodifiableList(members.valueCollection().stream()
                 .filter(m ->
                     ignoreCase
@@ -240,7 +240,7 @@ public class GuildImpl implements Guild
     @Override
     public List<Member> getMembersByEffectiveName(String name, boolean ignoreCase)
     {
-        Args.notNull(name, "name");
+        Checks.notNull(name, "name");
         return Collections.unmodifiableList(members.valueCollection().stream()
                 .filter(m ->
                     ignoreCase
@@ -252,17 +252,17 @@ public class GuildImpl implements Guild
     @Override
     public List<Member> getMembersWithRoles(Role... roles)
     {
-        Args.notNull(roles, "roles");
+        Checks.notNull(roles, "roles");
         return getMembersWithRoles(Arrays.asList(roles));
     }
 
     @Override
     public List<Member> getMembersWithRoles(Collection<Role> roles)
     {
-        Args.notNull(roles, "roles");
+        Checks.notNull(roles, "roles");
         for (Role r : roles)
         {
-            Args.notNull(r, "Role provided in collection");
+            Checks.notNull(r, "Role provided in collection");
             if (!r.getGuild().equals(this))
                 throw new IllegalArgumentException("Role provided was from a different Guild! Role: " + r);
         }
@@ -287,7 +287,7 @@ public class GuildImpl implements Guild
     @Override
     public List<TextChannel> getTextChannelsByName(String name, boolean ignoreCase)
     {
-        Args.notNull(name, "name");
+        Checks.notNull(name, "name");
         return Collections.unmodifiableList(textChannels.valueCollection().stream()
                 .filter(tc ->
                     ignoreCase
@@ -319,7 +319,7 @@ public class GuildImpl implements Guild
     @Override
     public List<VoiceChannel> getVoiceChannelsByName(String name, boolean ignoreCase)
     {
-        Args.notNull(name, "name");
+        Checks.notNull(name, "name");
         return Collections.unmodifiableList(voiceChannels.valueCollection().stream()
             .filter(vc ->
                     ignoreCase
@@ -359,7 +359,7 @@ public class GuildImpl implements Guild
     @Override
     public List<Role> getRolesByName(String name, boolean ignoreCase)
     {
-        Args.notNull(name, "name");
+        Checks.notNull(name, "name");
         return Collections.unmodifiableList(roles.valueCollection().stream()
                 .filter(r ->
                         ignoreCase
@@ -389,7 +389,7 @@ public class GuildImpl implements Guild
     @Override
     public List<Emote> getEmotesByName(String name, boolean ignoreCase)
     {
-        Args.notNull(name, "name");
+        Checks.notNull(name, "name");
         return Collections.unmodifiableList(emotes.valueCollection().parallelStream()
                 .filter(e ->
                         ignoreCase
@@ -504,7 +504,7 @@ public class GuildImpl implements Guild
         JSONObject mfaBody = null;
         if (api.getSelfUser().isMfaEnabled())
         {
-            Args.notEmpty(mfaCode, "Provided MultiFactor Auth code");
+            Checks.notEmpty(mfaCode, "Provided MultiFactor Auth code");
             mfaBody = new JSONObject().put("code", mfaCode);
         }
 

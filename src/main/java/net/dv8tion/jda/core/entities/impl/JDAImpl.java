@@ -42,7 +42,7 @@ import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import okhttp3.OkHttpClient;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
 import javax.security.auth.login.LoginException;
@@ -326,17 +326,17 @@ public class JDAImpl implements JDA
     @Override
     public List<Guild> getMutualGuilds(User... users)
     {
-        Args.notNull(users, "users");
+        Checks.notNull(users, "users");
         return getMutualGuilds(Arrays.asList(users));
     }
 
     @Override
     public List<Guild> getMutualGuilds(Collection<User> users)
     {
-        Args.notNull(users, "users");
+        Checks.notNull(users, "users");
         for(User u : users)
         {
-            Args.notNull(u, "All users");
+            Checks.notNull(u, "All users");
         }
         return Collections.unmodifiableList(getGuilds().stream()
                 .filter(guild -> users.stream().allMatch(guild::isMember))
@@ -688,7 +688,7 @@ public class JDAImpl implements JDA
 
     public void setAudioSendFactory(IAudioSendFactory factory)
     {
-        Args.notNull(factory, "Provided IAudioSendFactory");
+        Checks.notNull(factory, "Provided IAudioSendFactory");
         this.audioSendFactory = factory;
     }
 

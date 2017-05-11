@@ -17,13 +17,12 @@
 package net.dv8tion.jda.core.requests.restaction;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Invite;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
 import java.util.concurrent.TimeUnit;
@@ -85,7 +84,7 @@ public class InviteAction extends RestAction<Invite>
     public final InviteAction setMaxAge(final Integer maxAge)
     {
         if (maxAge != null)
-            Args.notNegative(maxAge, "maxAge");
+            Checks.notNegative(maxAge, "maxAge");
 
         this.maxAge = maxAge;
         return this;
@@ -110,8 +109,8 @@ public class InviteAction extends RestAction<Invite>
         if (maxAge == null)
             return this.setMaxAge(null);
 
-        Args.notNegative(maxAge, "maxAge");
-        Args.notNull(timeUnit, "timeUnit");
+        Checks.notNegative(maxAge, "maxAge");
+        Checks.notNull(timeUnit, "timeUnit");
 
         return this.setMaxAge(Math.toIntExact(timeUnit.toSeconds(maxAge)));
     }
@@ -131,7 +130,7 @@ public class InviteAction extends RestAction<Invite>
     public final InviteAction setMaxUses(final Integer maxUses)
     {
         if (maxUses != null)
-            Args.notNegative(maxUses, "maxUses");
+            Checks.notNegative(maxUses, "maxUses");
 
         this.maxUses = maxUses;
         return this;

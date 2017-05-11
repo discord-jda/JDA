@@ -20,7 +20,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -178,8 +178,8 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>> exte
      */
     public M limit(int limit)
     {
-        Args.check(maxLimit == 0 || limit <= maxLimit, "Limit must not exceed %d!", maxLimit);
-        Args.check(minLimit == 0 || limit >= minLimit, "Limit must be greater or equal to %d", minLimit);
+        Checks.check(maxLimit == 0 || limit <= maxLimit, "Limit must not exceed %d!", maxLimit);
+        Checks.check(minLimit == 0 || limit >= minLimit, "Limit must be greater or equal to %d", minLimit);
 
         this.limit.set(limit);
         return (M) this;

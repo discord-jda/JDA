@@ -16,7 +16,7 @@
 package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.entities.impl.GameImpl;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 
 /**
  * Represents a Discord {@link net.dv8tion.jda.core.entities.Game Game}.
@@ -83,7 +83,7 @@ public interface Game
      */
     static Game of(String name, String url)
     {
-        Args.notEmpty(name, "Provided game name");
+        Checks.notEmpty(name, "Provided game name");
         GameType type;
         if (isValidStreamingUrl(url))
             type = GameType.TWITCH;

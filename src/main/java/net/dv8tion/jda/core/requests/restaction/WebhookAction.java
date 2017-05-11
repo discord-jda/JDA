@@ -17,14 +17,13 @@
 package net.dv8tion.jda.core.requests.restaction;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.entities.Webhook;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
 /**
@@ -56,7 +55,7 @@ public class WebhookAction extends RestAction<Webhook>
      */
     public WebhookAction setName(String name)
     {
-        Args.notNull(name, "Webhook name");
+        Checks.notNull(name, "Webhook name");
         if (name.length() < 2 || name.length() > 100)
             throw new IllegalArgumentException("The webhook name must be in the range of 2-100!");
 

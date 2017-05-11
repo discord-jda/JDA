@@ -25,7 +25,6 @@ import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.entities.impl.UserImpl;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.requests.Requester;
-import org.apache.http.util.Args;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -64,7 +63,7 @@ public class WidgetUtil
      */
     public static String getWidgetBanner(Guild guild, BannerType type)
     {
-        Args.notNull(guild, "Guild");
+        Checks.notNull(guild, "Guild");
         return getWidgetBanner(guild.getId(), type);
     }
     
@@ -83,8 +82,8 @@ public class WidgetUtil
      */
     public static String getWidgetBanner(String guildId, BannerType type)
     {
-        Args.notNull(guildId, "GuildId");
-        Args.notNull(type, "BannerType");
+        Checks.notNull(guildId, "GuildId");
+        Checks.notNull(type, "BannerType");
         return String.format(WIDGET_PNG, guildId, type.name().toLowerCase());
     }
     
@@ -106,7 +105,7 @@ public class WidgetUtil
      */
     public static String getPremadeWidgetHtml(Guild guild, WidgetTheme theme, int width, int height)
     {
-        Args.notNull(guild, "Guild");
+        Checks.notNull(guild, "Guild");
         return getPremadeWidgetHtml(guild.getId(), theme, width, height);
     }
     
@@ -129,10 +128,10 @@ public class WidgetUtil
      */
     public static String getPremadeWidgetHtml(String guildId, WidgetTheme theme, int width, int height)
     {
-        Args.notNull(guildId, "GuildId");
-        Args.notNull(theme, "WidgetTheme");
-        Args.notNegative(width, "Width");
-        Args.notNegative(height, "Height");
+        Checks.notNull(guildId, "GuildId");
+        Checks.notNull(theme, "WidgetTheme");
+        Checks.notNegative(width, "Width");
+        Checks.notNegative(height, "Height");
         return String.format(WIDGET_HTML, guildId, theme.name().toLowerCase(), width, height);
     }
     
@@ -191,7 +190,7 @@ public class WidgetUtil
      */
     public static Widget getWidget(long guildId) throws RateLimitedException
     {
-        Args.notNull(guildId, "GuildId");
+        Checks.notNull(guildId, "GuildId");
         try
         {
             HttpURLConnection connection = (HttpURLConnection) new URL(String.format(WIDGET_URL, guildId)).openConnection();

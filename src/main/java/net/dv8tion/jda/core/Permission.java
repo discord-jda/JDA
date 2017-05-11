@@ -15,7 +15,7 @@
  */
 package net.dv8tion.jda.core;
 
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -264,7 +264,7 @@ public enum Permission
      */
     public static long getRaw(Collection<Permission> permissions)
     {
-        Args.notNull(permissions, "Permission Collection");
+        Checks.notNull(permissions, "Permission Collection");
 
         return getRaw(permissions.toArray(new Permission[permissions.size()]));
     }

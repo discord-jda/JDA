@@ -17,8 +17,7 @@ package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.EmbedBuilder;
-import org.apache.http.util.Args;
-
+import net.dv8tion.jda.core.utils.Checks;
 import java.awt.Color;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -186,7 +185,7 @@ public interface MessageEmbed
      */
     default boolean isSendable(AccountType type)
     {
-        Args.notNull(type, "AccountType");
+        Checks.notNull(type, "AccountType");
         final int length = getLength();
 
         switch (type)

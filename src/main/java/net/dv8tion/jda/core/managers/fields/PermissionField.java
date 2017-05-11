@@ -20,7 +20,7 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.managers.RoleManagerUpdatable;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 
 import java.util.*;
 import java.util.function.Supplier;
@@ -120,10 +120,10 @@ public class PermissionField extends RoleField<Long>
      */
     public RoleManagerUpdatable setPermissions(Collection<Permission> permissions)
     {
-        Args.notNull(permissions, "permissions Collection");
+        Checks.notNull(permissions, "permissions Collection");
         permissions.forEach(p ->
         {
-            Args.notNull(p, "Permission in the Collection");
+            Checks.notNull(p, "Permission in the Collection");
         });
 
         return setValue(Permission.getRaw(permissions));
@@ -132,7 +132,7 @@ public class PermissionField extends RoleField<Long>
     @Override
     public void checkValue(Long value)
     {
-        Args.notNull(value, "permission value");
+        Checks.notNull(value, "permission value");
         Permission.getPermissions(value).forEach(p ->
         {
             checkPermission(p);
@@ -174,10 +174,10 @@ public class PermissionField extends RoleField<Long>
      */
     public RoleManagerUpdatable givePermissions(Collection<Permission> permissions)
     {
-        Args.notNull(permissions, "Permission Collection");
+        Checks.notNull(permissions, "Permission Collection");
         permissions.forEach(p ->
         {
-            Args.notNull(p, "Permission in the Collection");
+            Checks.notNull(p, "Permission in the Collection");
             checkPermission(p);
         });
 
@@ -224,10 +224,10 @@ public class PermissionField extends RoleField<Long>
      */
     public RoleManagerUpdatable revokePermissions(Collection<Permission> permissions)
     {
-        Args.notNull(permissions, "Permission Collection");
+        Checks.notNull(permissions, "Permission Collection");
         permissions.forEach(p ->
         {
-            Args.notNull(p, "Permission in the Collection");
+            Checks.notNull(p, "Permission in the Collection");
             checkPermission(p);
         });
 

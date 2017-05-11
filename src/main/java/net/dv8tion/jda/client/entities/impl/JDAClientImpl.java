@@ -33,7 +33,7 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.MiscUtil;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONArray;
 
 import java.util.ArrayList;
@@ -221,7 +221,7 @@ public class JDAClientImpl implements JDAClient
     @Override
     public MentionPaginationAction getRecentMentions(Guild guild)
     {
-        Args.notNull(guild, "Guild");
+        Checks.notNull(guild, "Guild");
         if (!guild.isAvailable())
             throw new GuildUnavailableException("Cannot retrieve recent mentions for this Guild due to it being temporarily unavailable!");
         return new MentionPaginationAction(guild);
@@ -285,7 +285,7 @@ public class JDAClientImpl implements JDAClient
     @Override
     public RestAction<Application> getApplicationById(String id)
     {
-        Args.notEmpty(id, "id");
+        Checks.notEmpty(id, "id");
 
         Route.CompiledRoute route = Route.Applications.GET_APPLICATION.compile(id);
         return new RestAction<Application>(api, route)
@@ -332,7 +332,7 @@ public class JDAClientImpl implements JDAClient
     @Override
     public RestAction<AuthorizedApplication> getAuthorizedApplicationById(String id)
     {
-        Args.notEmpty(id, "id");
+        Checks.notEmpty(id, "id");
 
         Route.CompiledRoute route = Route.Applications.GET_AUTHORIZED_APPLICATION.compile(id);
         return new RestAction<AuthorizedApplication>(api, route)

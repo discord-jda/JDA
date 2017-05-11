@@ -25,7 +25,7 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.Route.CompiledRoute;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -64,8 +64,8 @@ public class InviteImpl implements Invite
 
     public static RestAction<Invite> resolve(final JDA api, final String code)
     {
-        Args.notNull(code, "code");
-        Args.notNull(api, "api");
+        Checks.notNull(code, "code");
+        Checks.notNull(api, "api");
 
         final Route.CompiledRoute route = Route.Invites.GET_INVITE.compile(code);
 

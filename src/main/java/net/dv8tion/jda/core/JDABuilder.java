@@ -24,7 +24,7 @@ import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import okhttp3.OkHttpClient;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 
 import javax.security.auth.login.LoginException;
 import java.util.Arrays;
@@ -120,40 +120,11 @@ public class JDABuilder
     // I don't like users having to mess with the ws or http lib,
     // on the other side this allows them to configure the behaviour more deeply without
     // making JDABuilder overly complicated by adding too many methods 
-    /**
-     * Sets the httpProxy that will be used by <b>ALL</b> JDA instances.
-     * <br>Once this is set <b>IT CANNOT BE CHANGED.</b>
-     * <br>After a JDA instance as been created, this method can never be called again, even if you are creating a new JDA object.
-     * <br><b>Note:</b> currently this only supports HTTP proxies.
-     *
-     * @param  httpProxy
-     *         The httpProxy to use.
-     *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this method is called after httpProxy settings have already been set or after at least 1 JDA object has been created.
-     *
-     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
-     */
     public JDABuilder setHttpClientBuilder(OkHttpClient.Builder httpClientBuilder)
     {
         this.httpClientBuilder = httpClientBuilder;
         return this;
     }
-
-    /**
-     * Sets the httpProxy that will be used by <b>ALL</b> JDA instances.
-     * <br>Once this is set <b>IT CANNOT BE CHANGED.</b>
-     * <br>After a JDA instance as been created, this method can never be called again, even if you are creating a new JDA object.
-     * <br><b>Note:</b> currently this only supports HTTP proxies.
-     *
-     * @param  httpProxy
-     *         The httpProxy to use.
-     *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this method is called after httpProxy settings have already been set or after at least 1 JDA object has been created.
-     *
-     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
-     */
     public JDABuilder setWebsocketFactory(WebSocketFactory wsFactory)
     {
         this.wsFactory = wsFactory;
@@ -161,7 +132,7 @@ public class JDABuilder
     }
 
     /**
-     * Sets the amount core pool size for the global JDA
+     * Sets the core pool size for the global JDA
      * {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} which is used
      * in various locations throughout the JDA instance created by this builder. (Default: 2)
      *
@@ -171,11 +142,11 @@ public class JDABuilder
      * @throws java.lang.IllegalArgumentException
      *         If the specified core pool size is not positive
      *
-     * @return the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
      */
     public JDABuilder setCorePoolSize(int size)
     {
-        Args.positive(size, "Core pool size");
+        Checks.positive(size, "Core pool size");
         this.corePoolSize = size;
         return this;
     }
@@ -189,7 +160,7 @@ public class JDABuilder
      * @param  enabled
      *         True - enables voice support.
      *
-     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
      */
     public JDABuilder setAudioEnabled(boolean enabled)
     {
@@ -207,7 +178,7 @@ public class JDABuilder
      * @param  enabled
      *         True - The MESSAGE_DELETE_BULK will be split into multiple individual MessageDeleteEvents.
      *
-     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
      */
     public JDABuilder setBulkDeleteSplittingEnabled(boolean enabled)
     {
@@ -405,7 +376,7 @@ public class JDABuilder
      */
     public JDABuilder setMaxReconnectDelay(int maxReconnectDelay)
     {
-        Args.check(maxReconnectDelay >= 32, "Max reconnect delay must be 32 seconds or greater. You provided %d.", maxReconnectDelay);
+        Checks.check(maxReconnectDelay >= 32, "Max reconnect delay must be 32 seconds or greater. You provided %d.", maxReconnectDelay);
 
         this.maxReconnectDelay = maxReconnectDelay;
         return this;

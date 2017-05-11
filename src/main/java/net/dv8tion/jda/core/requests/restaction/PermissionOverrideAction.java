@@ -25,7 +25,7 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
 import java.util.Collection;
@@ -223,8 +223,8 @@ public class PermissionOverrideAction extends RestAction<PermissionOverride>
      */
     public PermissionOverrideAction setAllow(long allowBits)
     {
-        Args.notNegative(allowBits, "Granted permissions value");
-        Args.check(allowBits <= Permission.ALL_PERMISSIONS, "Specified allow value may not be greater than a full permission set");
+        Checks.notNegative(allowBits, "Granted permissions value");
+        Checks.check(allowBits <= Permission.ALL_PERMISSIONS, "Specified allow value may not be greater than a full permission set");
         this.allow = allowBits;
         return this;
     }
@@ -294,8 +294,8 @@ public class PermissionOverrideAction extends RestAction<PermissionOverride>
      */
     public PermissionOverrideAction setDeny(long denyBits)
     {
-        Args.notNegative(denyBits, "Denied permissions value");
-        Args.check(denyBits <= Permission.ALL_PERMISSIONS, "Specified allow value may not be greater than a full permission set");
+        Checks.notNegative(denyBits, "Denied permissions value");
+        Checks.check(denyBits <= Permission.ALL_PERMISSIONS, "Specified allow value may not be greater than a full permission set");
         this.deny = denyBits;
         return this;
     }
@@ -427,15 +427,15 @@ public class PermissionOverrideAction extends RestAction<PermissionOverride>
 
     private void checkNull(Collection<?> collection, String name)
     {
-        Args.notNull(collection, name);
-        collection.forEach(e -> Args.notNull(e, name));
+        Checks.notNull(collection, name);
+        collection.forEach(e -> Checks.notNull(e, name));
     }
 
     private <T> void checkNull(T[] arr, String name)
     {
-        Args.notNull(arr, name);
+        Checks.notNull(arr, name);
         for (T e : arr)
-            Args.notNull(e, name);
+            Checks.notNull(e, name);
     }
 
 }

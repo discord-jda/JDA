@@ -28,7 +28,7 @@ import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okio.ByteString;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.io.File;
@@ -180,8 +180,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     default RestAction<Message> sendMessage(String text)
     {
-        Args.notEmpty(text, "Provided text for message");
-        Args.check(text.length() <= 2000, "Provided text for message must be less than 2000 characters in length");
+        Checks.notEmpty(text, "Provided text for message");
+        Checks.check(text.length() <= 2000, "Provided text for message must be less than 2000 characters in length");
 
         return sendMessage(new MessageBuilder().append(text).build());
     }
@@ -224,7 +224,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     default RestAction<Message> sendMessage(String format, Object... args)
     {
-        Args.notEmpty(format, "Format");
+        Checks.notEmpty(format, "Format");
         return sendMessage(new MessageBuilder().appendFormat(format, args).build());
     }
 
@@ -269,7 +269,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     default RestAction<Message> sendMessage(MessageEmbed embed)
     {
-        Args.notNull(embed, "Provided embed");
+        Checks.notNull(embed, "Provided embed");
 
         return sendMessage(new MessageBuilder().setEmbed(embed).build());
     }
@@ -331,13 +331,13 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     default RestAction<Message> sendMessage(Message msg)
     {
-        Args.notNull(msg, "Message");
+        Checks.notNull(msg, "Message");
 
         if (!msg.getEmbeds().isEmpty())
         {
             AccountType type = getJDA().getAccountType();
             MessageEmbed embed = msg.getEmbeds().get(0);
-            Args.check(embed.isSendable(type),
+            Checks.check(embed.isSendable(type),
                 "Provided Message contains an embed with a length greater than %d characters, which is the max for %s accounts!",
                     type == AccountType.BOT ? MessageEmbed.EMBED_MAX_LENGTH_BOT : MessageEmbed.EMBED_MAX_LENGTH_CLIENT, type);
         }
@@ -403,7 +403,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     default RestAction<Message> sendFile(File file, Message message) throws IOException
     {
-        Args.notNull(file, "file");
+        Checks.notNull(file, "file");
 
         return sendFile(file, file.getName(), message);
     }
@@ -481,11 +481,11 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     default RestAction<Message> sendFile(File file, String fileName, Message message) throws IOException
     {
-        Args.notNull(file, "file");
+        Checks.notNull(file, "file");
 
-        Args.check(file.exists() && file.canRead(),
+        Checks.check(file.exists() && file.canRead(),
             "Provided file is either null, doesn't exist or is not readable!");
-        Args.check(file.length() <= 8<<20,   //8MB, TODO: deal with Discord Nitro allowing 50MB files.
+        Checks.check(file.length() <= 8<<20,   //8MB, TODO: deal with Discord Nitro allowing 50MB files.
             "File is to big! Max file-size is 8MB");
 
         return sendFile(IOUtil.readFully(file), fileName, message);
@@ -524,8 +524,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     default RestAction<Message> sendFile(InputStream data, String fileName, Message message)
     {
-        Args.notNull(data, "data InputStream");
-        Args.notNull(fileName, "fileName");
+        Checks.notNull(data, "data InputStream");
+        Checks.notNull(fileName, "fileName");
 
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
         MultipartBody.Builder builder = new okhttp3.MultipartBody.Builder()
@@ -545,7 +545,7 @@ public interface MessageChannel extends ISnowflake, Formattable
             {
                 AccountType type = getJDA().getAccountType();
                 MessageEmbed embed = message.getEmbeds().get(0);
-                Args.check(embed.isSendable(type),
+                Checks.check(embed.isSendable(type),
                         "Provided Message contains an embed with a length greater than %d characters, which is the max for %s accounts!",
                         type == AccountType.BOT ? MessageEmbed.EMBED_MAX_LENGTH_BOT : MessageEmbed.EMBED_MAX_LENGTH_CLIENT, type);
             }
@@ -604,10 +604,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     default RestAction<Message> sendFile(byte[] data, String fileName, Message message)
     {
-        Args.notNull(data, "file data[]");
-        Args.notNull(fileName, "fileName");
+        Checks.notNull(data, "file data[]");
+        Checks.notNull(fileName, "fileName");
 
-        Args.check(data.length <= 8<<20,   //8MB
+        Checks.check(data.length <= 8<<20,   //8MB
             "Provided data is too large! Max file-size is 8MB");
 
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
@@ -621,7 +621,7 @@ public interface MessageChannel extends ISnowflake, Formattable
             {
                 AccountType type = getJDA().getAccountType();
                 MessageEmbed embed = message.getEmbeds().get(0);
-                Args.check(embed.isSendable(type),
+                Checks.check(embed.isSendable(type),
                         "Provided Message contains an embed with a length greater than %d characters, which is the max for %s accounts!",
                         type == AccountType.BOT ? MessageEmbed.EMBED_MAX_LENGTH_BOT : MessageEmbed.EMBED_MAX_LENGTH_CLIENT, type);
             }
@@ -685,7 +685,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     {
         if (getJDA().getAccountType() != AccountType.BOT)
             throw new AccountTypeException(AccountType.BOT);
-        Args.notEmpty(messageId, "Provided messageId");
+        Checks.notEmpty(messageId, "Provided messageId");
 
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE.compile(getId(), messageId);
         return new RestAction<Message>(getJDA(), route)
@@ -787,7 +787,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     default RestAction<Void> deleteMessageById(String messageId)
     {
-        Args.notEmpty(messageId, "messageId");
+        Checks.notEmpty(messageId, "messageId");
 
         Route.CompiledRoute route = Route.Messages.DELETE_MESSAGE.compile(getId(), messageId);
         return new RestAction<Void>(getJDA(), route) {
@@ -964,8 +964,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     default RestAction<MessageHistory> getHistoryAround(Message message, int limit)
     {
-        Args.notNull(message, "Provided target message");
-        Args.check(message.getChannel().equals(this), "The provided Message is not from the MessageChannel!");
+        Checks.notNull(message, "Provided target message");
+        Checks.check(message.getChannel().equals(this), "The provided Message is not from the MessageChannel!");
 
         return getHistoryAround(message.getId(), limit);
     }
@@ -1030,8 +1030,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     default RestAction<MessageHistory> getHistoryAround(String messageId, int limit)
     {
-        Args.notEmpty(messageId, "Provided messageId");
-        Args.check(limit >= 1 && limit <= 100, "Provided limit was out of bounds. Minimum: 1, Max: 100. Provided: %d", limit);
+        Checks.notEmpty(messageId, "Provided messageId");
+        Checks.check(limit >= 1 && limit <= 100, "Provided limit was out of bounds. Minimum: 1, Max: 100. Provided: %d", limit);
 
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY_AROUND.compile(this.getId(), Integer.toString(limit), messageId);
         return new RestAction<MessageHistory>(getJDA(), route)
@@ -1230,9 +1230,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     default RestAction<Void> addReactionById(String messageId, String unicode)
     {
-        Args.notEmpty(messageId, "MessageId");
-        Args.notEmpty(unicode, "Provided Unicode");
-        Args.containsNoBlanks(unicode, "Provided Unicode");
+        Checks.notEmpty(messageId, "MessageId");
+        Checks.notEmpty(unicode, "Provided Unicode");
+        Checks.noWhitespace(unicode, "Provided Unicode");
 
         String encoded = MiscUtil.encodeUTF8(unicode);
         Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, encoded);
@@ -1370,8 +1370,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     default RestAction<Void> addReactionById(String messageId, Emote emote)
     {
-        Args.notEmpty(messageId, "MessageId");
-        Args.notNull(emote, "Emote");
+        Checks.notEmpty(messageId, "MessageId");
+        Checks.notNull(emote, "Emote");
 
         Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, String.format("%s:%s", emote.getName(), emote.getId()));
         return new RestAction<Void>(getJDA(), route)
@@ -1488,7 +1488,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     default RestAction<Void> pinMessageById(String messageId)
     {
-        Args.notEmpty(messageId, "messageId");
+        Checks.notEmpty(messageId, "messageId");
 
         Route.CompiledRoute route = Route.Messages.ADD_PINNED_MESSAGE.compile(getId(), messageId);
         return new RestAction<Void>(getJDA(), route)
@@ -1587,7 +1587,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     default RestAction<Void> unpinMessageById(String messageId)
     {
-        Args.notEmpty(messageId, "messageId");
+        Checks.notEmpty(messageId, "messageId");
 
         Route.CompiledRoute route = Route.Messages.REMOVE_PINNED_MESSAGE.compile(getId(), messageId);
         return new RestAction<Void>(getJDA(), route)
@@ -1742,8 +1742,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     default RestAction<Message> editMessageById(String messageId, String newContent)
     {
-        Args.notEmpty(newContent, "Provided message content");
-        Args.check(newContent.length() <= 2000, "Provided newContent length must be 2000 or less characters.");
+        Checks.notEmpty(newContent, "Provided message content");
+        Checks.check(newContent.length() <= 2000, "Provided newContent length must be 2000 or less characters.");
 
         return editMessageById(messageId, new MessageBuilder().append(newContent).build());
     }
@@ -1793,14 +1793,14 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     default RestAction<Message> editMessageById(String messageId, Message newContent)
     {
-        Args.notEmpty(messageId, "messageId");
-        Args.notNull(newContent, "message");
+        Checks.notEmpty(messageId, "messageId");
+        Checks.notNull(newContent, "message");
 
         if (!newContent.getEmbeds().isEmpty())
         {
             AccountType type = getJDA().getAccountType();
             MessageEmbed embed = newContent.getEmbeds().get(0);
-            Args.check(embed.isSendable(type),
+            Checks.check(embed.isSendable(type),
                     "Provided Message contains an embed with a length greater than %d characters, which is the max for %s accounts!",
                     type == AccountType.BOT ? MessageEmbed.EMBED_MAX_LENGTH_BOT : MessageEmbed.EMBED_MAX_LENGTH_CLIENT, type);
         }
@@ -1871,7 +1871,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     default RestAction<Message> editMessageById(String messageId, String format, Object... args)
     {
-        Args.notBlank(format, "Format String");
+        Checks.notBlank(format, "Format String");
         return editMessageById(messageId, new MessageBuilder().appendFormat(format, args).build());
     }
 
@@ -1922,7 +1922,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     default RestAction<Message> editMessageById(long messageId, String format, Object... args)
     {
-        Args.notBlank(format, "Format String");
+        Checks.notBlank(format, "Format String");
         return editMessageById(messageId, new MessageBuilder().appendFormat(format, args).build());
     }
 

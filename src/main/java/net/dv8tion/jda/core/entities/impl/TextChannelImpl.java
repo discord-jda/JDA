@@ -25,7 +25,7 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.MiscUtil;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -57,7 +57,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     @Override
     public RestAction<Void> deleteMessages(Collection<Message> messages)
     {
-        Args.notEmpty(messages, "Messages collection");
+        Checks.notEmpty(messages, "Messages collection");
 
         return deleteMessagesByIds(messages.stream()
                 .map(ISnowflake::getId)
@@ -74,8 +74,8 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         long twoWeeksAgo = ((System.currentTimeMillis() - (14 * 24 * 60 * 60 * 1000)) - MiscUtil.DISCORD_EPOCH) << MiscUtil.TIMESTAMP_OFFSET;
         for (String id : messageIds)
         {
-            Args.notEmpty(id, "Message id in messageIds");
-            Args.check(MiscUtil.parseSnowflake(id) > twoWeeksAgo, "Message Id provided was older than 2 weeks. Id: " + id);
+            Checks.notEmpty(id, "Message id in messageIds");
+            Checks.check(MiscUtil.parseSnowflake(id) > twoWeeksAgo, "Message Id provided was older than 2 weeks. Id: " + id);
         }
 
         JSONObject body = new JSONObject().put("messages", messageIds);
@@ -134,7 +134,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     @Override
     public RestAction<Void> deleteWebhookById(String id)
     {
-        Args.notEmpty(id, "webhook id");
+        Checks.notEmpty(id, "webhook id");
 
         if (!guild.getSelfMember().hasPermission(this, Permission.MANAGE_WEBHOOKS))
             throw new PermissionException(Permission.MANAGE_WEBHOOKS);
@@ -225,7 +225,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     @Override
     public RestAction<Message> sendMessage(Message msg)
     {
-        Args.notNull(msg, "Message");
+        Checks.notNull(msg, "Message");
 
         checkVerification();
         checkPermission(Permission.MESSAGE_READ);
@@ -274,7 +274,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     @Override
     public RestAction<Void> deleteMessageById(String messageId)
     {
-        Args.notEmpty(messageId, "messageId");
+        Checks.notEmpty(messageId, "messageId");
         checkPermission(Permission.MESSAGE_READ);
 
         //Call MessageChannel's default method
@@ -343,7 +343,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     @Override
     public RestAction<Void> clearReactionsById(String messageId)
     {
-        Args.notEmpty(messageId, "Message ID");
+        Checks.notEmpty(messageId, "Message ID");
 
         checkPermission(Permission.MESSAGE_MANAGE);
         Route.CompiledRoute route = Route.Messages.REMOVE_ALL_REACTIONS.compile(getId(), messageId);
@@ -363,7 +363,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     @Override
     public RestAction<Message> editMessageById(String id, Message newContent)
     {
-        Args.notNull(newContent, "Message");
+        Checks.notNull(newContent, "Message");
 
         //checkVerification(); no verification needed to edit a message
         checkPermission(Permission.MESSAGE_READ);

@@ -211,6 +211,9 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *         The clear-reactions request was attempted after the Message had been deleted.</li>
      * </ul>
      *
+     * @param  messageId
+     *         The target message's id
+     *
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in this channel.
@@ -240,6 +243,9 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *         The clear-reactions request was attempted after the Message had been deleted.</li>
      * </ul>
+     *
+     * @param  messageId
+     *         The target message's id
      *
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         If the currently logged in account does not have

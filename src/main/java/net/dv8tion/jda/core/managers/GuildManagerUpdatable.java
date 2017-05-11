@@ -29,7 +29,7 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
 /**
@@ -420,7 +420,7 @@ public class GuildManagerUpdatable
             @Override
             public void checkValue(String value)
             {
-                Args.notNull(value, "guild name");
+                Checks.notNull(value, "guild name");
                 if (value.length() < 2 || value.length() > 100)
                     throw new IllegalArgumentException("Provided guild name must be 2 to 100 characters in length");
             }
@@ -431,7 +431,7 @@ public class GuildManagerUpdatable
             @Override
             public void checkValue(Guild.Timeout value)
             {
-                Args.notNull(value, "Timeout");
+                Checks.notNull(value, "Timeout");
             }
         };
 
@@ -476,7 +476,7 @@ public class GuildManagerUpdatable
             @Override
             public void checkValue(Region value)
             {
-                Args.notNull(value, "Region");
+                Checks.notNull(value, "Region");
                 if (value == Region.UNKNOWN)
                     throw new IllegalArgumentException("Cannot set Guild Region to UNKNOWN!");
             }
@@ -497,7 +497,7 @@ public class GuildManagerUpdatable
             @Override
             public void checkValue(Guild.VerificationLevel value)
             {
-                Args.notNull(value, "VerificationLevel");
+                Checks.notNull(value, "VerificationLevel");
                 if (value == Guild.VerificationLevel.UNKNOWN)
                     throw new IllegalArgumentException("Cannot set Guild VerificationLevel to UNKNOWN");
             }
@@ -508,7 +508,7 @@ public class GuildManagerUpdatable
             @Override
             public void checkValue(Guild.NotificationLevel value)
             {
-                Args.notNull(value, "NotificationLevel");
+                Checks.notNull(value, "NotificationLevel");
                 if (value == Guild.NotificationLevel.UNKNOWN)
                     throw new IllegalArgumentException("Cannot set NotificationLevel to UNKNOWN");
             }
@@ -519,7 +519,7 @@ public class GuildManagerUpdatable
             @Override
             public void checkValue(Guild.MFALevel value)
             {
-                Args.notNull(value, "MFALevel");
+                Checks.notNull(value, "MFALevel");
                 if (value == Guild.MFALevel.UNKNOWN)
                     throw new IllegalArgumentException("Cannot set MFALevel to UNKNOWN");
             }

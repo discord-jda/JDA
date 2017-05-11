@@ -30,7 +30,7 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.InviteAction;
 import net.dv8tion.jda.core.requests.restaction.PermissionOverrideAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONArray;
 
 import java.util.ArrayList;
@@ -174,7 +174,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     public PermissionOverrideAction createPermissionOverride(Member member)
     {
         checkPermission(Permission.MANAGE_PERMISSIONS);
-        Args.notNull(member, "member");
+        Checks.notNull(member, "member");
 
         if (!guild.equals(member.getGuild()))
             throw new IllegalArgumentException("Provided member is not from the same guild as this channel!");
@@ -189,7 +189,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     public PermissionOverrideAction createPermissionOverride(Role role)
     {
         checkPermission(Permission.MANAGE_PERMISSIONS);
-        Args.notNull(role, "role");
+        Checks.notNull(role, "role");
 
         if (!guild.equals(role.getGuild()))
             throw new IllegalArgumentException("Provided role is not from the same guild as this channel!");

@@ -25,7 +25,7 @@ import net.dv8tion.jda.core.requests.restaction.CompletedFuture;
 import net.dv8tion.jda.core.requests.restaction.RequestFuture;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import okhttp3.RequestBody;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.util.concurrent.*;
@@ -191,8 +191,6 @@ public abstract class RestAction<T>
      * @param  route
      *         The {@link net.dv8tion.jda.core.requests.Route.CompiledRoute Route.CompiledRoute}
      *         to be used for rate limit handling
-     * @param  data
-     *         The data that should be sent to the specified route. (can be null)
      */
     public RestAction(JDA api, Route.CompiledRoute route)
     {
@@ -424,8 +422,8 @@ public abstract class RestAction<T>
      */
     public ScheduledFuture<T> submitAfter(long delay, TimeUnit unit, ScheduledExecutorService executor)
     {
-        Args.notNull(executor, "Scheduler");
-        Args.notNull(unit, "TimeUnit");
+        Checks.notNull(executor, "Scheduler");
+        Checks.notNull(unit, "TimeUnit");
         return executor.schedule((Callable<T>) this::complete, delay, unit);
     }
 
@@ -449,7 +447,7 @@ public abstract class RestAction<T>
      */
     public T completeAfter(long delay, TimeUnit unit)
     {
-        Args.notNull(unit, "TimeUnit");
+        Checks.notNull(unit, "TimeUnit");
         try
         {
             unit.sleep(delay);
@@ -648,8 +646,8 @@ public abstract class RestAction<T>
      */
     public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<T> success, Consumer<Throwable> failure, ScheduledExecutorService executor)
     {
-        Args.notNull(executor, "Scheduler");
-        Args.notNull(unit, "TimeUnit");
+        Checks.notNull(executor, "Scheduler");
+        Checks.notNull(unit, "TimeUnit");
         return executor.schedule(() -> queue(success, failure), delay, unit);
     }
 
