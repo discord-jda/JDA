@@ -21,7 +21,7 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.PermissionOverride;
-import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
 import java.util.Collection;
 
@@ -102,13 +102,13 @@ public class PermOverrideManager
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link PermOverrideManagerUpdatable#update() #update()}
      *
      * @see    net.dv8tion.jda.core.managers.PermOverrideManagerUpdatable#grant(long)
      * @see    net.dv8tion.jda.core.managers.PermOverrideManagerUpdatable#update()
      */
-    public RestAction<Void> grant(long permissions)
+    public AuditableRestAction<Void> grant(long permissions)
     {
         return updatable.grant(permissions).update();
     }
@@ -126,13 +126,13 @@ public class PermOverrideManager
      * @throws IllegalArgumentException
      *         If any of the provided Permissions is {@code null}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link PermOverrideManagerUpdatable#update() #update()}
      *
      * @see    net.dv8tion.jda.core.managers.PermOverrideManagerUpdatable#grant(Permission...)
      * @see    net.dv8tion.jda.core.managers.PermOverrideManagerUpdatable#update()
      */
-    public RestAction<Void> grant(Permission... permissions)
+    public AuditableRestAction<Void> grant(Permission... permissions)
     {
         return updatable.grant(permissions).update();
     }
@@ -150,13 +150,13 @@ public class PermOverrideManager
      * @throws IllegalArgumentException
      *         If any of the provided Permissions is {@code null}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link PermOverrideManagerUpdatable#update() #update()}
      *
      * @see    net.dv8tion.jda.core.managers.PermOverrideManagerUpdatable#grant(Collection)
      * @see    net.dv8tion.jda.core.managers.PermOverrideManagerUpdatable#update()
      */
-    public RestAction<Void> grant(Collection<Permission> permissions)
+    public AuditableRestAction<Void> grant(Collection<Permission> permissions)
     {
         return updatable.grant(permissions).update();
     }
@@ -172,13 +172,13 @@ public class PermOverrideManager
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link PermOverrideManagerUpdatable#update() #update()}
      *
      * @see    net.dv8tion.jda.core.managers.PermOverrideManagerUpdatable#deny(long)
      * @see    net.dv8tion.jda.core.managers.PermOverrideManagerUpdatable#update()
      */
-    public RestAction<Void> deny(long permissions)
+    public AuditableRestAction<Void> deny(long permissions)
     {
         return updatable.deny(permissions).update();
     }
@@ -196,13 +196,13 @@ public class PermOverrideManager
      * @throws IllegalArgumentException
      *         If any of the provided Permissions is {@code null}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link PermOverrideManagerUpdatable#update() #update()}
      *
      * @see    net.dv8tion.jda.core.managers.PermOverrideManagerUpdatable#deny(Permission...)
      * @see    net.dv8tion.jda.core.managers.PermOverrideManagerUpdatable#update()
      */
-    public RestAction<Void> deny(Permission... permissions)
+    public AuditableRestAction<Void> deny(Permission... permissions)
     {
         return updatable.deny(permissions).update();
     }
@@ -220,13 +220,13 @@ public class PermOverrideManager
      * @throws IllegalArgumentException
      *         If any of the provided Permissions is {@code null}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link PermOverrideManagerUpdatable#update() #update()}
      *
      * @see    net.dv8tion.jda.core.managers.PermOverrideManagerUpdatable#deny(Collection)
      * @see    net.dv8tion.jda.core.managers.PermOverrideManagerUpdatable#update()
      */
-    public RestAction<Void> deny(Collection<Permission> permissions)
+    public AuditableRestAction<Void> deny(Collection<Permission> permissions)
     {
         return updatable.deny(permissions).update();
     }
@@ -243,13 +243,13 @@ public class PermOverrideManager
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link PermOverrideManagerUpdatable#update() #update()}
      *
      * @see    net.dv8tion.jda.core.managers.PermOverrideManagerUpdatable#clear(long)
      * @see    net.dv8tion.jda.core.managers.PermOverrideManagerUpdatable#update()
      */
-    public RestAction<Void> clear(long permissions)
+    public AuditableRestAction<Void> clear(long permissions)
     {
         return updatable.clear(permissions).update();
     }
@@ -268,13 +268,13 @@ public class PermOverrideManager
      * @throws IllegalArgumentException
      *         If any of the provided Permissions is {@code null}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link PermOverrideManagerUpdatable#update() #update()}
      *
      * @see    net.dv8tion.jda.core.managers.PermOverrideManagerUpdatable#clear(Permission...)
      * @see    net.dv8tion.jda.core.managers.PermOverrideManagerUpdatable#update()
      */
-    public RestAction<Void> clear(Permission... permissions)
+    public AuditableRestAction<Void> clear(Permission... permissions)
     {
         return updatable.clear(permissions).update();
     }
@@ -293,13 +293,13 @@ public class PermOverrideManager
      * @throws IllegalArgumentException
      *         If any of the provided Permissions is {@code null}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link PermOverrideManagerUpdatable#update() #update()}
      *
      * @see    net.dv8tion.jda.core.managers.PermOverrideManagerUpdatable#clear(Collection)
      * @see    net.dv8tion.jda.core.managers.PermOverrideManagerUpdatable#update()
      */
-    public RestAction<Void> clear(Collection<Permission> permissions)
+    public AuditableRestAction<Void> clear(Collection<Permission> permissions)
     {
         return updatable.clear(permissions).update();
     }

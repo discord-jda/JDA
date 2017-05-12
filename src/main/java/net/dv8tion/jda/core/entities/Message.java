@@ -695,7 +695,7 @@ public interface Message extends ISnowflake, Formattable
      *         {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
-    RestAction<Void> clearReactions();
+    AuditableRestAction<Void> clearReactions();
 
     /**
      * This specifies the {@link net.dv8tion.jda.core.entities.MessageType MessageType} of this Message.

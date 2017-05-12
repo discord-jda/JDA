@@ -25,8 +25,8 @@ import net.dv8tion.jda.core.managers.fields.PermissionField;
 import net.dv8tion.jda.core.managers.fields.RoleField;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import org.apache.http.util.Args;
 import org.json.JSONObject;
 
@@ -229,16 +229,16 @@ public class RoleManagerUpdatable
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES}
      *         or does not have the power to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Applies all changes that have been made in a single api-call.
      */
-    public RestAction<Void> update()
+    public AuditableRestAction<Void> update()
     {
         checkPermission(Permission.MANAGE_ROLES);
         checkPosition();
 
         if (!needsUpdate())
-            return new RestAction.EmptyRestAction<>(null);
+            return new AuditableRestAction.EmptyRestAction<>(getJDA(), null);
 
         //TODO: check if all of this is *actually* needed.
         JSONObject body = new JSONObject().put("name", role.getName());
@@ -256,7 +256,7 @@ public class RoleManagerUpdatable
 
         reset();
         Route.CompiledRoute route = Route.Roles.MODIFY_ROLE.compile(getGuild().getId(), role.getId());
-        return new RestAction<Void>(getJDA(), route, body)
+        return new AuditableRestAction<Void>(getJDA(), route, body)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)

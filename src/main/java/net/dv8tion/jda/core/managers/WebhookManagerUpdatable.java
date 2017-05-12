@@ -23,8 +23,8 @@ import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.managers.fields.WebhookField;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import org.apache.http.util.Args;
 import org.json.JSONObject;
 
@@ -198,10 +198,10 @@ public class WebhookManagerUpdatable
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_WEBHOOKS MANAGE_WEBHOOKS}
      *         in either the current or selected new TextChannel.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Applies all changes that have been made in a single api-call.
      */
-    public RestAction<Void> update()
+    public AuditableRestAction<Void> update()
     {
         Member self = getGuild().getSelfMember();
         if (!self.hasPermission(webhook.getChannel(), Permission.MANAGE_WEBHOOKS))
@@ -209,7 +209,7 @@ public class WebhookManagerUpdatable
         if (channel.isSet() && !self.hasPermission(channel.getValue(), Permission.MANAGE_WEBHOOKS))
             throw new PermissionException(Permission.MANAGE_WEBHOOKS, "Permission not available in selected new channel");
         if (!shouldUpdate())
-            return new RestAction.EmptyRestAction<>(null);
+            return new AuditableRestAction.EmptyRestAction<>(getJDA(), null);
 
         JSONObject data = new JSONObject();
         data.put("name", name.getOriginalValue());
@@ -225,7 +225,7 @@ public class WebhookManagerUpdatable
         }
 
         Route.CompiledRoute route = Route.Webhooks.MODIFY_WEBHOOK.compile(webhook.getId());
-        return new RestAction<Void>(getJDA(), route, data)
+        return new AuditableRestAction<Void>(getJDA(), route, data)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)

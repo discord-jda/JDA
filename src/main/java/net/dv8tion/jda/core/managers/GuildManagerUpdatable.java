@@ -27,8 +27,8 @@ import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.managers.fields.GuildField;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import org.apache.http.util.Args;
 import org.json.JSONObject;
 
@@ -342,16 +342,16 @@ public class GuildManagerUpdatable
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the Guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Applies all changes that have been made in a single api-call.
      */
-    public RestAction<Void> update()
+    public AuditableRestAction<Void> update()
     {
         checkAvailable();
         checkPermission(Permission.MANAGE_SERVER);
 
         if (!needToUpdate())
-            return new RestAction.EmptyRestAction<>(null);
+            return new AuditableRestAction.EmptyRestAction<>(getJDA(), null);
 
         JSONObject body = new JSONObject().put("name", guild.getName());
         if (name.shouldUpdate())
@@ -375,7 +375,7 @@ public class GuildManagerUpdatable
 
         reset(); //now that we've built our JSON object, reset the manager back to the non-modified state
         Route.CompiledRoute route = Route.Guilds.MODIFY_GUILD.compile(guild.getId());
-        return new RestAction<Void>(guild.getJDA(), route, body)
+        return new AuditableRestAction<Void>(guild.getJDA(), route, body)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
