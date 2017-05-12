@@ -115,7 +115,7 @@ public class MessageImpl implements Message
         }
         else if (reaction.isSelf())
         {
-            return new RestAction.EmptyRestAction<>(null);
+            return new RestAction.EmptyRestAction<>(getJDA(), null);
         }
 
         return channel.addReactionById(getIdLong(), emote);
@@ -131,7 +131,7 @@ public class MessageImpl implements Message
                 .findFirst().orElse(null);
 
         if (reaction != null && reaction.isSelf())
-            return new RestAction.EmptyRestAction<>(null);
+            return new RestAction.EmptyRestAction<>(getJDA(), null);
 
         return channel.addReactionById(getIdLong(), unicode);
     }

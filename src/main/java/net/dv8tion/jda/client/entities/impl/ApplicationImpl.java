@@ -61,7 +61,7 @@ public class ApplicationImpl implements Application
     public RestAction<Application.Bot> createBot()
     {
         if (this.hasBot())
-            return new RestAction.EmptyRestAction<>(this.bot);
+            return new RestAction.EmptyRestAction<>(getJDA(), this.bot);
 
         return new RestAction<Application.Bot>(this.api, Route.Applications.CREATE_BOT.compile(getId()), null)
         {

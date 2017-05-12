@@ -376,7 +376,7 @@ public class JDAImpl implements JDA
         // check cache
         User user = this.getUserById(id);
         if (user != null)
-            return new RestAction.EmptyRestAction<>(user);
+            return new RestAction.EmptyRestAction<>(this, user);
 
         Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
         return new RestAction<User>(this, route, null)

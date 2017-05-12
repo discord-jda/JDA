@@ -20,7 +20,6 @@ import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.entities.SelfUser;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.managers.fields.AccountField;
 import net.dv8tion.jda.core.requests.Request;
@@ -229,7 +228,7 @@ public class AccountManagerUpdatable
             throw new IllegalArgumentException("Provided client account password to be used in auth is null or empty!");
 
         if (!needToUpdate())
-            return new RestAction.EmptyRestAction<>(null);
+            return new RestAction.EmptyRestAction<>(getJDA(), null);
 
         JSONObject body = new JSONObject();
 

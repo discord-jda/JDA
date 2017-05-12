@@ -643,9 +643,9 @@ public abstract class RestAction<T>
     {
         private final T returnObj;
 
-        public EmptyRestAction(T returnObj)
+        public EmptyRestAction(JDA api, T returnObj)
         {
-            super(null, null, null);
+            super(api, null, null);
             this.returnObj = returnObj;
         }
 

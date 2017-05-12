@@ -110,7 +110,7 @@ public class InviteImpl implements Invite
     public RestAction<Invite> expand()
     {
         if (this.expanded)
-            return new RestAction.EmptyRestAction<>(this);
+            return new RestAction.EmptyRestAction<>(getJDA(), this);
 
         final net.dv8tion.jda.core.entities.Guild guild = this.api.getGuildById(this.guild.getIdLong());
 

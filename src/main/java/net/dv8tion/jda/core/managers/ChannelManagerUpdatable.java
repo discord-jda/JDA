@@ -242,7 +242,7 @@ public class ChannelManagerUpdatable
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
      *         in the underlying {@link net.dv8tion.jda.core.entities.Channel Channel}.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Applies all changes that have been made in a single api-call.
      */
     public AuditableRestAction<Void> update()
