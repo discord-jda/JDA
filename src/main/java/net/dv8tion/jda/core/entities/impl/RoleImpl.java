@@ -138,7 +138,8 @@ public class RoleImpl implements Role
         long effectivePerms = rawPermissions | guild.getPublicRole().getPermissionsRaw();
         for (Permission perm : permissions)
         {
-            if (((effectivePerms >> perm.getOffset()) & 1) != 1)
+            final long rawValue = perm.getRawValue();
+            if ((effectivePerms & rawValue) != rawValue)
                 return false;
         }
         return true;
@@ -158,7 +159,8 @@ public class RoleImpl implements Role
         long effectivePerms = PermissionUtil.getEffectivePermission(channel, this);
         for (Permission perm : permissions)
         {
-            if (((effectivePerms >> perm.getOffset()) & 1) != 1)
+            final long rawValue = perm.getRawValue();
+            if ((effectivePerms & rawValue) != rawValue)
                 return false;
         }
         return true;
