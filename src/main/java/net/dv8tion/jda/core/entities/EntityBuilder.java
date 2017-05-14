@@ -951,7 +951,8 @@ public class EntityBuilder
                 fields.add(new Field(
                         fieldJson.isNull("name") ? null : fieldJson.getString("name"),
                         fieldJson.isNull("value") ? null : fieldJson.getString("value"),
-                        !fieldJson.isNull("inline") && fieldJson.getBoolean("inline")));
+                        !fieldJson.isNull("inline") && fieldJson.getBoolean("inline"),
+                        false)); // unchecked field instantiation
             }
             embed.setFields(fields);
         }
