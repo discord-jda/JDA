@@ -228,9 +228,9 @@ public class ReadyHandler extends SocketHandler
             // and reset the
             if (guildIds.length() == 50)
             {
-                api.getClient().send(new JSONObject()
+                api.getClient().chunkOrSyncRequest(new JSONObject()
                         .put("op", 12)
-                        .put("d", guildIds).toString());
+                        .put("d", guildIds));
                 guildIds = new JSONArray();
             }
         }
@@ -238,9 +238,9 @@ public class ReadyHandler extends SocketHandler
         //Send the remaining guilds that need to be sent
         if (guildIds.length() > 0)
         {
-            api.getClient().send(new JSONObject()
+            api.getClient().chunkOrSyncRequest(new JSONObject()
                     .put("op", 12)
-                    .put("d", guildIds).toString());
+                    .put("d", guildIds));
         }
         guildsRequiringSyncing.clear();
     }
@@ -259,13 +259,13 @@ public class ReadyHandler extends SocketHandler
             // and reset the
             if (guildIds.length() == 50)
             {
-                api.getClient().send(new JSONObject()
+                api.getClient().chunkOrSyncRequest(new JSONObject()
                     .put("op", 8)
                     .put("d", new JSONObject()
                         .put("guild_id", guildIds)
                         .put("query", "")
                         .put("limit", 0)
-                    ).toString());
+                    ));
                 guildIds = new JSONArray();
             }
         }
@@ -273,13 +273,13 @@ public class ReadyHandler extends SocketHandler
         //Send the remaining guilds that need to be sent
         if (guildIds.length() > 0)
         {
-            api.getClient().send(new JSONObject()
+            api.getClient().chunkOrSyncRequest(new JSONObject()
                 .put("op", 8)
                 .put("d", new JSONObject()
                         .put("guild_id", guildIds)
                         .put("query", "")
                         .put("limit", 0)
-                ).toString());
+                ));
         }
         guildsRequiringChunking.clear();
     }

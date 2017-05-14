@@ -251,7 +251,7 @@ public class EntityBuilder
                     JSONObject obj = new JSONObject()
                             .put("op", 12)
                             .put("guild_id", guildObj.getId());
-                    api.getClient().send(obj.toString());
+                    api.getClient().chunkOrSyncRequest(obj);
                 }
                 JSONObject obj = new JSONObject()
                         .put("op", 8)
@@ -260,7 +260,7 @@ public class EntityBuilder
                                 .put("query","")
                                 .put("limit", 0)
                         );
-                api.getClient().send(obj.toString());
+                api.getClient().chunkOrSyncRequest(obj);
             }
             else
             {
