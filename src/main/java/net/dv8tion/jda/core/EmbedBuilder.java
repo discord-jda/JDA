@@ -145,8 +145,6 @@ public class EmbedBuilder
      *         <ul>
      *             <li>If the provided {@code title} is an empty String.</li>
      *             <li>If the length of {@code title} is greater than {@link net.dv8tion.jda.core.entities.MessageEmbed#TITLE_MAX_LENGTH}.</li>
-     *             <li>If the length of {@code url} is longer than {@link net.dv8tion.jda.core.entities.MessageEmbed#URL_MAX_LENGTH}.</li>
-     *             <li>If the provided {@code url} is not a properly formatted http or https url.</li>
      *         </ul>
      *
      * @return the builder after the title has been set

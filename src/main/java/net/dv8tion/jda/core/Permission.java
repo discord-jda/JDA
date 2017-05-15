@@ -114,7 +114,8 @@ public enum Permission
      *
      * @return The readable name of this {@link net.dv8tion.jda.core.Permission Permission}.
      */
-    public String getName() {
+    public String getName()
+    {
         return this.name;
     }
 
