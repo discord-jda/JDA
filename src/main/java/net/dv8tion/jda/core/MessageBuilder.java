@@ -372,7 +372,9 @@ public class MessageBuilder implements Appendable
      */
     public MessageBuilder stripMentions(JDA jda)
     {
-        return this.stripMentions(jda, (Guild) null, MentionType.EVERYONE, MentionType.HERE, MentionType.CHANNEL, MentionType.ROLE, MentionType.USER);
+        // Note: Users can rename to "everyone" or "here", so those
+        // should be stripped after the USER mention is stripped.
+        return this.stripMentions(jda, (Guild) null, MentionType.CHANNEL, MentionType.ROLE, MentionType.USER, MentionType.EVERYONE, MentionType.HERE);
     }
 
     /**
@@ -389,7 +391,9 @@ public class MessageBuilder implements Appendable
      */
     public MessageBuilder stripMentions(Guild guild)
     {
-        return this.stripMentions(guild.getJDA(), guild, MentionType.EVERYONE, MentionType.HERE, MentionType.CHANNEL, MentionType.ROLE, MentionType.USER);
+        // Note: Users can rename to "everyone" or "here", so those
+        // should be stripped after the USER mention is stripped.
+        return this.stripMentions(guild.getJDA(), guild, MentionType.CHANNEL, MentionType.ROLE, MentionType.USER, MentionType.EVERYONE, MentionType.HERE);
     }
 
     /**
