@@ -24,6 +24,16 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.requests.RestAction;
 
+/** 
+ * This class acts as a manager for multiple shards. 
+ * It contains several methods to make your life with sharding easier.
+ * 
+ * <br>Custom implementations my not support all methods and throw 
+ * {@link java.lang.UnsupportedOperationException UnsupportedOperationExceptions} instead.  
+ * 
+ * @since  3.1 
+ * @author Aljoscha Grebe 
+ */ 
 public interface ShardManager
 {
 
