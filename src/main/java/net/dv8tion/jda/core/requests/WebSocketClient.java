@@ -89,6 +89,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected volatile boolean printedRateLimitMessage = false;
 
     protected boolean firstInit = true;
+    protected boolean processingReady = true;
 
     public WebSocketClient(JDAImpl api)
     {
@@ -121,6 +122,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         if (initiating)
         {
             initiating = false;
+            processingReady = false;
             if (firstInit)
             {
                 firstInit = false;
@@ -751,12 +753,16 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 //INIT types
                 case "READY":
                     //LOG.debug(String.format("%s -> %s", type, content.toString())); already logged on trace level
+                    processingReady = true;
                     sessionId = content.getString("session_id");
                     handlers.get("READY").handle(responseTotal, raw);
                     break;
                 case "RESUMED":
-                    initiating = false;
-                    ready();
+                    if (!processingReady)
+                    {
+                        initiating = false;
+                        ready();
+                    }
                     break;
                 default:
                     SocketHandler handler = handlers.get(type);
