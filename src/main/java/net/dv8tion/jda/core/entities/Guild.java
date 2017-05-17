@@ -798,17 +798,19 @@ public interface Guild extends ISnowflake
      */
     enum VerificationLevel
     {
-        NONE(0),
-        LOW(1),
-        MEDIUM(2),
-        HIGH(3),
-        UNKNOWN(-1);
+        NONE(0, "None"),
+        LOW(1, "Low"),
+        MEDIUM(2, "Medium"),
+        HIGH(3, "(╯°□°）╯︵ ┻━┻"),
+        UNKNOWN(-1, "Unknown");
 
         private final int key;
+        private final String description;
 
-        VerificationLevel(int key)
+        VerificationLevel(int key, String description)
         {
             this.key = key;
+            this.description = description;
         }
 
         /**
@@ -820,7 +822,17 @@ public interface Guild extends ISnowflake
         {
             return key;
         }
-
+        
+        /**
+         * The description of this VerificationLevel which is displayed in the client.
+         *
+         * @return String description of this VerificationLevel.
+         */
+         public String getDescription()
+         {
+            return description;
+         }
+         
         /**
          * Used to retrieve a {@link net.dv8tion.jda.core.entities.Guild.VerificationLevel VerificationLevel} based
          * on the Discord id key.
@@ -850,15 +862,17 @@ public interface Guild extends ISnowflake
      */
     enum NotificationLevel
     {
-        ALL_MESSAGES(0),
-        MENTIONS_ONLY(1),
-        UNKNOWN(-1);
+        ALL_MESSAGES(0, "All Messages"),
+        MENTIONS_ONLY(1, "Only @mentions"),
+        UNKNOWN(-1, "Unknown");
 
         private final int key;
+        private final String description;
 
-        NotificationLevel(int key)
+        NotificationLevel(int key, String description)
         {
             this.key = key;
+            this.description = description;
         }
 
         /**
@@ -869,6 +883,16 @@ public interface Guild extends ISnowflake
         public int getKey()
         {
             return key;
+        }
+        
+        /**
+         * The description of this NotificationLevel which is displayed in the client.
+         *
+         * @return String description of this NotificationLevel.
+         */
+        public String getDescription()
+        {
+            return description;
         }
 
         /**
