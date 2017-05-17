@@ -47,17 +47,14 @@ import org.json.JSONObject;
 
 import javax.security.auth.login.LoginException;
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 public class JDAImpl implements JDA
 {
     public static final SimpleLog LOG = SimpleLog.getLog("JDA");
 
-    public final ScheduledExecutorService pool;
+    public final ScheduledThreadPoolExecutor pool;
 
     protected final TLongObjectMap<User> users = MiscUtil.newLongMap();
     protected final TLongObjectMap<Guild> guilds = MiscUtil.newLongMap();
@@ -108,7 +105,7 @@ public class JDAImpl implements JDA
         this.audioEnabled = audioEnabled;
         this.shutdownHook = useShutdownHook ? new Thread(() -> JDAImpl.this.shutdown(true), "JDA Shutdown Hook") : null;
         this.bulkDeleteSplittingEnabled = bulkDeleteSplittingEnabled;
-        this.pool = Executors.newScheduledThreadPool(corePoolSize, new JDAThreadFactory());
+        this.pool = new ScheduledThreadPoolExecutor(corePoolSize, new JDAThreadFactory());
         this.maxReconnectDelay = maxReconnectDelay;
 
         this.presence = new PresenceImpl(this);
@@ -569,16 +566,18 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public void shutdown()
+    public void forceShutdown()
     {
-        setStatus(Status.SHUTTING_DOWN);
+        status = Status.SHUTDOWN;
+
         audioManagers.valueCollection().forEach(AudioManager::closeAudioConnection);
         if (audioKeepAlivePool != null)
             audioKeepAlivePool.shutdownNow();
         getClient().setAutoReconnect(false);
         getClient().close();
-        getRequester().shutdown();
-        pool.shutdown();
+
+        pool.shutdownNow();
+        getRequester().forceShutdown();
 
         if (shutdownHook != null)
         {
@@ -586,7 +585,38 @@ public class JDAImpl implements JDA
             {
                 Runtime.getRuntime().removeShutdownHook(shutdownHook);
             }
-            catch (Exception ignored) { }
+            catch (Exception ignored) {}
+        }
+    }
+
+    @Override
+    public void shutdown(long time, TimeUnit unit)
+    {
+        Checks.notNegative(time, "time");
+        Checks.notNull(unit, "unit");
+
+        if (status == Status.SHUTDOWN || status == Status.SHUTTING_DOWN)
+            return;
+
+        setStatus(Status.SHUTTING_DOWN);
+        audioManagers.valueCollection().forEach(AudioManager::closeAudioConnection);
+        if (audioKeepAlivePool != null)
+            audioKeepAlivePool.shutdownNow();
+        getClient().setAutoReconnect(false);
+        getClient().close();
+
+        getRequester().shutdown(time, unit);
+
+        pool.setKeepAliveTime(time, unit);
+        pool.allowCoreThreadTimeOut(true);
+
+        if (shutdownHook != null)
+        {
+            try
+            {
+                Runtime.getRuntime().removeShutdownHook(shutdownHook);
+            }
+            catch (Exception ignored) {}
         }
         setStatus(Status.SHUTDOWN);
     }
@@ -775,13 +805,22 @@ public class JDAImpl implements JDA
             return "JDA";
     }
 
+    public EventCache getEventCache()
+    {
+        return eventCache;
+    }
+
+    public OkHttpClient.Builder getHttpClientBuilder()
+    {
+        return httpClientBuilder;
+    }
+
     private class JDAThreadFactory implements ThreadFactory
     {
         @Override
         public Thread newThread(Runnable r)
         {
             final Thread thread = new Thread(r, "JDA-Thread " + getIdentifierString());
-            thread.setDaemon(true);
             return thread;
         }
     }
@@ -799,15 +838,5 @@ public class JDAImpl implements JDA
             }
         }
         return akap;
-    }
-
-    public EventCache getEventCache()
-    {
-        return eventCache;
-    }
-
-    public OkHttpClient.Builder getHttpClientBuilder()
-    {
-        return httpClientBuilder;
     }
 }
