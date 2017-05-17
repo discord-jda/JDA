@@ -24,6 +24,7 @@ import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.requests.RestAction;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The core of JDA. Acts as a registry system of JDA. All parts of the the API can be accessed starting from this class.
@@ -733,27 +734,29 @@ public interface JDA
 
     /**
      * Shuts down JDA, closing all its connections.
-     *
-     * <p>This is the same as calling {@link #shutdown(boolean) shutdown(true)}.
+     * After this command is issued the JDA Instance can not be used anymore.
+     * <br>This is the same as calling {@link #shutdown(long, TimeUnit) #shutdown(10, TimeUnit.SECONDS)}.
+     * 
+     * @see #shutdown(long, TimeUnit)
      */
     void shutdown();
 
     /**
+     * Force closes this {@link JDA} instance violently. This will also cancel all queued {@link net.dv8tion.jda.core.requests.RestAction RestActions}.
+     */
+    void forceShutdown(); // TODO: docs forceShutdown()
+
+    /**
      * <p>Shuts down JDA, closing all its connections.
      * After this command is issued the JDA Instance can not be used anymore.
-     *
-     * <p>Depending on the value of {@code free}, this will also close the background-thread used for requests by Unirest.
-     * <br>If the background-thread is closed, the system can exit properly, but no further JDA requests are possible (includes other JDA instances).
-     * If you want to create any new instances or if you have any other instances running in parallel, then {@code free}
-     * should be set to false.
-     *
-     * @deprecated This method has been deprecated as it's no longer neccesari to shutdown the rest system globally.
-     *         Use {@link #shutdown()} instead.
-     *
+     * 
      * @param  free If true, shuts down JDA's rest system permanently for all current and future instances.
      */
     @Deprecated
-    void shutdown(boolean free);
+    default void shutdown(boolean free)
+    {
+        this.shutdown();
+    }
 
     /**
      * Installs an auxiliary cable into your system.

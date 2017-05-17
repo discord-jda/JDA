@@ -31,16 +31,15 @@ public abstract class RateLimiter
     //Implementations of this class exist in the net.dv8tion.jda.core.requests.ratelimit package.
 
     protected final Requester requester;
-    protected final ScheduledExecutorService pool;
-    protected volatile boolean isShutdown;
+    protected final ScheduledThreadPoolExecutor pool;
+    protected volatile boolean isShutdown = false; 
     protected volatile ConcurrentHashMap<String, IBucket> buckets = new ConcurrentHashMap<>();
     protected volatile ConcurrentLinkedQueue<IBucket> submittedBuckets = new ConcurrentLinkedQueue<>();
 
     protected RateLimiter(Requester requester, int poolSize)
     {
         this.requester = requester;
-        this.isShutdown = false;
-        this.pool = Executors.newScheduledThreadPool(poolSize, new RateLimitThreadFactory(requester.getJDA()));
+        this.pool = new ScheduledThreadPoolExecutor(poolSize, new RateLimitThreadFactory(requester.getJDA()));
     }
 
 
@@ -73,10 +72,16 @@ public abstract class RateLimiter
         }
     }
 
-    protected void shutdown()
+    protected void shutdown(long time, TimeUnit unit)
     {
         isShutdown = true;
 
+        pool.setKeepAliveTime(time, unit);
+        pool.allowCoreThreadTimeOut(true);
+    }
+
+    public void forceShutdown()
+    {
         pool.shutdownNow();
     }
 

@@ -61,8 +61,6 @@ public class BotRateLimiter extends RateLimiter
     @Override
     protected void queueRequest(Request request)
     {
-        if (isShutdown)
-            throw new RejectedExecutionException("Cannot queue a request after shutdown");
         Bucket bucket = getBucket(request.getRoute());
         synchronized (bucket)
         {

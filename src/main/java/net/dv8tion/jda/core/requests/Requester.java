@@ -32,6 +32,7 @@ import okhttp3.internal.http.HttpMethod;
 import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 public class Requester
 {
@@ -72,8 +73,9 @@ public class Requester
 
     public <T> void request(Request<T> apiRequest)
     {
-        if (rateLimiter.isShutdown)
+        if (rateLimiter.isShutdown) 
             throw new IllegalStateException("The Requester has been shutdown! No new requests can be requested!");
+
         if (apiRequest.shouldQueue())
         {
             rateLimiter.queueRequest(apiRequest);
@@ -197,8 +199,13 @@ public class Requester
         return rateLimiter;
     }
 
-    public void shutdown()
+    public void shutdown(long time, TimeUnit unit)
     {
-        rateLimiter.shutdown();
+        rateLimiter.shutdown(time, unit);
+    }
+
+    public void forceShutdown()
+    {
+        rateLimiter.forceShutdown();
     }
 }
