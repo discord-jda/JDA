@@ -46,18 +46,12 @@ public class MiscUtil
      *
      * @return The creation time of the JDA entity as OffsetDateTime
      */
-    public static OffsetDateTime getCreationTime(long entityId) {
-        try
-        {
-            long timestamp = ((entityId >> TIMESTAMP_OFFSET) + DISCORD_EPOCH);
-            Calendar gmt = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-            gmt.setTimeInMillis(timestamp);
-            return OffsetDateTime.ofInstant(gmt.toInstant(), gmt.getTimeZone().toZoneId());
-        }
-        catch (NumberFormatException ex)
-        {
-            return null;
-        }
+    public static OffsetDateTime getCreationTime(long entityId)
+    {
+        long timestamp = ((entityId >>> TIMESTAMP_OFFSET) + DISCORD_EPOCH);
+        Calendar gmt = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+        gmt.setTimeInMillis(timestamp);
+        return OffsetDateTime.ofInstant(gmt.toInstant(), gmt.getTimeZone().toZoneId());
     }
 
     /**

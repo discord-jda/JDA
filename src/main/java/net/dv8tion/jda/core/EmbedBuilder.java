@@ -17,6 +17,7 @@ package net.dv8tion.jda.core;
 
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.impl.MessageEmbedImpl;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.util.Args;
 
 import java.awt.Color;
@@ -37,8 +38,9 @@ import java.util.regex.Pattern;
 public class EmbedBuilder
 {
     public final static String ZERO_WIDTH_SPACE = "\u200E";
-    public final static Pattern URL_PATTERN = Pattern.compile("\\s*(https?|attachment):\\/\\/.+\\..{2,}\\s*", Pattern.CASE_INSENSITIVE);
-    
+    public final static Pattern URL_PATTERN = Pattern.compile("\\s*(https?|attachment)://.+\\..{2,}\\s*", Pattern.CASE_INSENSITIVE);
+
+    private final List<MessageEmbed.Field> fields;
     private String url;
     private String title;
     private StringBuilder description = new StringBuilder();
@@ -48,8 +50,7 @@ public class EmbedBuilder
     private MessageEmbed.AuthorInfo author;
     private MessageEmbed.Footer footer;
     private MessageEmbed.ImageInfo image;
-    private final List<MessageEmbed.Field> fields;
-    
+
     /**
      * Creates an EmbedBuilder to be used to creates an embed to send.
      * <br>Every part of an embed can be removed or cleared by providing {@code null} to the setter method.
@@ -130,9 +131,33 @@ public class EmbedBuilder
                 && image == null
                 && fields.isEmpty();
     }
+
+    /**
+     * Sets the Title of the embed.
+     * <br>Overload for {@link #setTitle(String, String)} without URL parameter.
+     *
+     * <p><b><a href="http://i.imgur.com/JgZtxIM.png">Example</a></b>
+     *
+     * @param  title
+     *         the title of the embed
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the provided {@code title} is an empty String.</li>
+     *             <li>If the length of {@code title} is greater than {@link net.dv8tion.jda.core.entities.MessageEmbed#TITLE_MAX_LENGTH}.</li>
+     *         </ul>
+     *
+     * @return the builder after the title has been set
+     */
+
+    public EmbedBuilder setTitle(String title)
+    {
+        return setTitle(title, null);
+    }
     
     /**
      * Sets the Title of the embed.
+     * <br>You can provide {@code null} as url if no url should be used.
      *
      * <p><b><a href="http://i.imgur.com/JgZtxIM.png">Example</a></b>
      *
@@ -164,6 +189,8 @@ public class EmbedBuilder
                 throw new IllegalArgumentException("Title cannot be empty!");
             if (title.length() > MessageEmbed.TITLE_MAX_LENGTH)
                 throw new IllegalArgumentException("Title cannot be longer than " + MessageEmbed.TITLE_MAX_LENGTH + " characters.");
+            if (StringUtils.isBlank(url))
+                url = null;
             urlCheck(url);
 
             this.title = title;
@@ -295,7 +322,13 @@ public class EmbedBuilder
     
     /**
      * Sets the Color of the embed.
-     * @param color the color of the embed
+     *
+     * <a href="http://i.imgur.com/2YnxnRM.png" target="_blank">Example</a>
+     *
+     * @param  color
+     *         The {@link java.awt.Color Color} of the embed
+     *         or {@code null} to use no color
+     *
      * @return the builder after the color has been set
      */
     public EmbedBuilder setColor(Color color)
@@ -484,16 +517,6 @@ public class EmbedBuilder
     {
         if (name == null && value == null)
             return this;
-        else if (name == null || value == null)
-            throw new IllegalArgumentException("Both Name and Value must be set!");
-        else if (name.length() > MessageEmbed.TITLE_MAX_LENGTH)
-            throw new IllegalArgumentException("Name cannot be longer than " + MessageEmbed.TITLE_MAX_LENGTH + " characters.");
-        else if (value.length() > MessageEmbed.VALUE_MAX_LENGTH)
-            throw new IllegalArgumentException("Value cannot be longer than " + MessageEmbed.VALUE_MAX_LENGTH + " characters.");
-        if (name.isEmpty())
-            name = ZERO_WIDTH_SPACE;
-        if (value.isEmpty())
-            value = ZERO_WIDTH_SPACE;
         this.fields.add(new MessageEmbed.Field(name, value, inline));
         return this;
     }
@@ -527,6 +550,19 @@ public class EmbedBuilder
     {
         this.fields.clear();
         return this;
+    }
+    
+    /**
+     * <b>Modifiable</b> list of {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} Fields that the builder will
+     * use for {@link #build()}.
+     * <br>You can add/remove Fields and restructure this {@link java.util.List List} and it will then be applied in the
+     * built MessageEmbed. These fields will be available again through {@link net.dv8tion.jda.core.entities.MessageEmbed#getFields() MessageEmbed.getFields()}.
+     *
+     * @return Mutable List of {@link net.dv8tion.jda.core.entities.MessageEmbed.Field Fields}
+     */
+    public List<MessageEmbed.Field> getFields()
+    {
+        return fields;
     }
 
     private void urlCheck(String url)

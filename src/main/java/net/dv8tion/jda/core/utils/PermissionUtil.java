@@ -25,7 +25,6 @@ import org.apache.http.util.Args;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.LongBinaryOperator;
 
 public class PermissionUtil
 {
@@ -361,12 +360,12 @@ public class PermissionUtil
 
         final AbstractChannelImpl<?> abstractChannel = (AbstractChannelImpl<?>) channel;
         final Guild guild = member.getGuild();
-        long permission = getEffectivePermission(member) | getImplicitPermission(channel, member);
+        long permission = getEffectivePermission(member) | getExplicitPermission(channel, member);
 
         AtomicLong allow = new AtomicLong(0);
         AtomicLong deny = new AtomicLong(0);
 
-        getImplicitOverrides(channel, member, allow, deny);
+        getExplicitOverrides(channel, member, allow, deny);
         permission = apply(permission, allow.get(), deny.get());
 
         if (isApplied(permission, admin))
@@ -433,7 +432,7 @@ public class PermissionUtil
     }
 
     /**
-     * Retrieves the implicit permissions of the specified {@link net.dv8tion.jda.core.entities.Member Member}
+     * Retrieves the explicit permissions of the specified {@link net.dv8tion.jda.core.entities.Member Member}
      * in its hosting {@link net.dv8tion.jda.core.entities.Guild Guild}.
      * <br>This method does not calculate the owner in.
      *
@@ -451,7 +450,7 @@ public class PermissionUtil
      *
      * @since  3.1
      */
-    public static long getImplicitPermission(Member member)
+    public static long getExplicitPermission(Member member)
     {
         Args.notNull(member, "Member");
 
@@ -465,7 +464,7 @@ public class PermissionUtil
     }
 
     /**
-     * Retrieves the implicit permissions of the specified {@link net.dv8tion.jda.core.entities.Member Member}
+     * Retrieves the explicit permissions of the specified {@link net.dv8tion.jda.core.entities.Member Member}
      * in its hosting {@link net.dv8tion.jda.core.entities.Guild Guild} and specific {@link net.dv8tion.jda.core.entities.Channel Channel}.
      * <br>This method does not calculate the owner in.
      * <b>Allowed permissions override denied permissions of {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides}!</b>
@@ -489,7 +488,7 @@ public class PermissionUtil
      *
      * @since  3.1
      */
-    public static long getImplicitPermission(Channel channel, Member member)
+    public static long getExplicitPermission(Channel channel, Member member)
     {
         Args.notNull(channel, "Channel");
         Args.notNull(member, "Member");
@@ -503,13 +502,13 @@ public class PermissionUtil
         AtomicLong deny = new AtomicLong(0);
 
         // populates allow/deny
-        getImplicitOverrides(channel, member, allow, deny);
+        getExplicitOverrides(channel, member, allow, deny);
 
         return apply(permission, allow.get(), deny.get());
     }
 
     /**
-     * Retrieves the implicit permissions of the specified {@link net.dv8tion.jda.core.entities.Role Role}
+     * Retrieves the explicit permissions of the specified {@link net.dv8tion.jda.core.entities.Role Role}
      * in its hosting {@link net.dv8tion.jda.core.entities.Guild Guild} and specific {@link net.dv8tion.jda.core.entities.Channel Channel}.
      * <br><b>Allowed permissions override denied permissions of {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides}!</b>
      *
@@ -531,7 +530,7 @@ public class PermissionUtil
      *
      * @since  3.1
      */
-    public static long getImplicitPermission(Channel channel, Role role)
+    public static long getExplicitPermission(Channel channel, Role role)
     {
         Args.notNull(channel, "Channel");
         Args.notNull(role, "Role");
@@ -557,32 +556,47 @@ public class PermissionUtil
      * Pushes all deny/allow values to the specified BiConsumer
      * <br>First parameter is allow, second is deny
      */
-    private static void getImplicitOverrides(Channel channel, Member member, AtomicLong allow, AtomicLong deny)
+    private static void getExplicitOverrides(Channel channel, Member member, AtomicLong allow, AtomicLong deny)
     {
         PermissionOverride override = channel.getPermissionOverride(member.getGuild().getPublicRole());
-        LongBinaryOperator accumulator = (l1, l2) -> l1 | l2;
+        long allowRaw = 0;
+        long denyRaw = 0;
         if (override != null)
         {
-            allow.accumulateAndGet(override.getAllowedRaw(), accumulator);
-            deny.accumulateAndGet(override.getDeniedRaw(), accumulator);
+            denyRaw = override.getDeniedRaw();
+            allowRaw = override.getAllowedRaw();
         }
 
+        long allowRole = 0;
+        long denyRole = 0;
+        // create temporary bit containers for role cascade
         for (Role role : member.getRoles())
         {
             override = channel.getPermissionOverride(role);
             if (override != null)
             {
-                allow.accumulateAndGet(override.getAllowedRaw(), accumulator);
-                deny.accumulateAndGet(override.getDeniedRaw(), accumulator);
+                // important to update role cascade not others
+                denyRole |= override.getDeniedRaw();
+                allowRole |= override.getAllowedRaw();
             }
         }
+        // Override the raw values of public role then apply role cascade
+        allowRaw = (allowRaw & ~denyRole) | allowRole;
+        denyRaw = (denyRaw & ~allowRole) | denyRole;
 
         override = channel.getPermissionOverride(member);
         if (override != null)
         {
-            allow.accumulateAndGet(override.getAllowedRaw(), accumulator);
-            deny.accumulateAndGet(override.getDeniedRaw(), accumulator);
+            // finally override the role cascade with member overrides
+            final long oDeny = override.getDeniedRaw();
+            final long oAllow = override.getAllowedRaw();
+            allowRaw = (allowRaw & ~oDeny) | oAllow;
+            denyRaw = (denyRaw & ~oAllow) | oDeny;
+            // this time we need to exclude new allowed bits from old denied ones and OR the new denied bits as final overrides
         }
+        // set as resulting values
+        allow.set(allowRaw);
+        deny.set(denyRaw);
     }
 
     /*

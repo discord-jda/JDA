@@ -96,12 +96,14 @@ public enum Permission
             .filter(Permission::isVoice).collect(Collectors.toList()));
 
     private final int offset;
+    private final long raw;
     private final boolean isGuild, isChannel;
     private final String name;
 
     Permission(int offset, boolean isGuild, boolean isChannel, String name)
     {
         this.offset = offset;
+        this.raw = 1 << offset;
         this.isGuild = isGuild;
         this.isChannel = isChannel;
         this.name = name;
@@ -110,10 +112,10 @@ public enum Permission
     /**
      * The readable name as used in the Discord client.
      *
-     * @return
-     *      The readable name of this {@link net.dv8tion.jda.core.Permission Permission}.
+     * @return The readable name of this {@link net.dv8tion.jda.core.Permission Permission}.
      */
-    public String getName() {
+    public String getName()
+    {
         return this.name;
     }
 
@@ -137,7 +139,7 @@ public enum Permission
      */
     public long getRawValue()
     {
-        return 1 << getOffset();
+        return raw;
     }
 
     /**
@@ -187,7 +189,8 @@ public enum Permission
      * <br>If there is no {@link net.dv8tion.jda.core.Permission Permssions} that matches the provided
      * offset, {@link net.dv8tion.jda.core.Permission#UNKNOWN Permission.UNKNOWN} is returned.
      *
-     * @param  offset The offset to match a {@link net.dv8tion.jda.core.Permission Permission} to.
+     * @param  offset
+     *         The offset to match a {@link net.dv8tion.jda.core.Permission Permission} to.
      *
      * @return {@link net.dv8tion.jda.core.Permission Permission} relating to the provided offset.
      */
@@ -244,7 +247,7 @@ public enum Permission
         for (Permission perm : permissions)
         {
             if (perm != UNKNOWN)
-                raw |= (1 << perm.getOffset());
+                raw |= perm.raw;
         }
 
         return raw;

@@ -111,7 +111,7 @@ public class AudioManagerImpl implements AudioManager
             final int userLimit = channel.getUserLimit(); // userLimit is 0 if no limit is set!
             if (!self.isOwner() && !self.hasPermission(Permission.ADMINISTRATOR))
             {
-                final long perms = PermissionUtil.getImplicitPermission(channel, self);
+                final long perms = PermissionUtil.getExplicitPermission(channel, self);
                 final long voicePerm = Permission.VOICE_MOVE_OTHERS.getRawValue();
                 if (userLimit > 0                                               // If there is a userlimit
                     && userLimit <= channel.getMembers().size()                 // if that userlimit is reached

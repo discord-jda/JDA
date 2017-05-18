@@ -17,7 +17,6 @@
 package net.dv8tion.jda.core.requests.restaction;
 
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.exceptions.PermissionException;
@@ -234,7 +233,7 @@ public class RoleAction extends AuditableRestAction<Role>
             object.put("name", name);
         if (color != null)
             object.put("color", color & 0xFFFFFF);
-        if (permissions > 0)
+        if (permissions >= 0)
             object.put("permissions", permissions);
         if (hoisted != null)
             object.put("hoist", hoisted.booleanValue());

@@ -70,6 +70,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected boolean connected;
 
     protected volatile boolean chunkingAndSyncing = false;
+    protected boolean sentAuthInfo = false;
     protected boolean initiating;             //cache all events?
     protected final List<JSONObject> cachedEvents = new LinkedList<>();
 
@@ -80,6 +81,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     //GuildId, <TimeOfNextAttempt, AudioConnection>
     protected final TLongObjectMap<MutablePair<Long, VoiceChannel>> queuedAudioConnections = MiscUtil.newLongMap();
 
+    protected final LinkedList<String> chunkSyncQueue = new LinkedList<>();
     protected final LinkedList<String> ratelimitQueue = new LinkedList<>();
     protected volatile Thread ratelimitThread = null;
     protected volatile long ratelimitResetTime;
@@ -87,6 +89,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected volatile boolean printedRateLimitMessage = false;
 
     protected boolean firstInit = true;
+    protected boolean processingReady = true;
 
     public WebSocketClient(JDAImpl api)
     {
@@ -119,6 +122,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         if (initiating)
         {
             initiating = false;
+            processingReady = false;
             if (firstInit)
             {
                 firstInit = false;
@@ -171,6 +175,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         ratelimitQueue.addLast(message);
     }
 
+    public void chunkOrSyncRequest(JSONObject request)
+    {
+        chunkSyncQueue.addLast(request.toString());
+    }
+
     private boolean send(String message, boolean skipQueue)
     {
         if (!connected)
@@ -218,12 +227,27 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 {
                     try
                     {
+                        //Make sure that we don't send any packets before sending auth info.
+                        if (!sentAuthInfo)
+                        {
+                            Thread.sleep(500);
+                            continue;
+                        }
                         attemptedToSend = false;
                         needRatelimit = false;
-
                         MutablePair<Long, VoiceChannel> audioRequest = getNextAudioConnectRequest();
 
-                        if (audioRequest != null)
+                        String chunkOrSyncRequest = chunkSyncQueue.peekFirst();
+                        if (chunkOrSyncRequest != null)
+                        {
+                            needRatelimit = !send(chunkOrSyncRequest, false);
+                            if (!needRatelimit)
+                            {
+                                chunkSyncQueue.removeFirst();
+                            }
+                            attemptedToSend = true;
+                        }
+                        else if (audioRequest != null)
                         {
                             VoiceChannel channel = audioRequest.getRight();
                             AudioManager audioManager = channel.getGuild().getAudioManager();
@@ -383,6 +407,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     @Override
     public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer)
     {
+        sentAuthInfo = false;
         connected = false;
         api.setStatus(JDA.Status.DISCONNECTED);
 
@@ -566,6 +591,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                         .put(shardInfo.getShardTotal()));
         }
         send(identify.toString(), true);
+        sentAuthInfo = true;
     }
 
     protected void sendResume()
@@ -579,12 +605,14 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                         .put("seq", api.getResponseTotal())
                 );
         send(resume.toString(), true);
+        sentAuthInfo = true;
     }
 
     protected void invalidate()
     {
         sessionId = null;
         chunkingAndSyncing = false;
+        sentAuthInfo = false;
 
         api.getTextChannelMap().clear();
         api.getVoiceChannelMap().clear();
@@ -725,12 +753,16 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 //INIT types
                 case "READY":
                     //LOG.debug(String.format("%s -> %s", type, content.toString())); already logged on trace level
+                    processingReady = true;
                     sessionId = content.getString("session_id");
                     handlers.get("READY").handle(responseTotal, raw);
                     break;
                 case "RESUMED":
-                    initiating = false;
-                    ready();
+                    if (!processingReady)
+                    {
+                        initiating = false;
+                        ready();
+                    }
                     break;
                 default:
                     SocketHandler handler = handlers.get(type);

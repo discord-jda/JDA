@@ -16,6 +16,7 @@
 package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.AccountType;
+import net.dv8tion.jda.core.EmbedBuilder;
 import org.apache.http.util.Args;
 
 import java.awt.Color;
@@ -536,11 +537,37 @@ public interface MessageEmbed
         protected final String value;
         protected final boolean inline;
 
+        protected Field(String name, String value, boolean inline, boolean checked)
+        {
+            if (checked)
+            {
+                if (name == null || value == null)
+                    throw new IllegalArgumentException("Both Name and Value must be set!");
+                else if (name.length() > TITLE_MAX_LENGTH)
+                    throw new IllegalArgumentException("Name cannot be longer than " + TITLE_MAX_LENGTH + " characters.");
+                else if (value.length() > VALUE_MAX_LENGTH)
+                    throw new IllegalArgumentException("Value cannot be longer than " + VALUE_MAX_LENGTH + " characters.");
+                if (name.isEmpty())
+                    this.name = EmbedBuilder.ZERO_WIDTH_SPACE;
+                else
+                    this.name = name;
+                if (value.isEmpty())
+                    this.value = EmbedBuilder.ZERO_WIDTH_SPACE;
+                else
+                    this.value = value;
+                this.inline = inline;
+            }
+            else
+            {
+                this.name = name;
+                this.value = value;
+                this.inline = inline;
+            }
+        }
+        
         public Field(String name, String value, boolean inline)
         {
-            this.name = name;
-            this.value = value;
-            this.inline = inline;
+            this(name, value, inline, true);
         }
 
         /**
