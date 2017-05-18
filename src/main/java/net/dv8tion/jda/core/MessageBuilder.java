@@ -32,7 +32,8 @@ import java.util.regex.Pattern;
  * {@link String#format(String, Object...)}.
  *
  * @since  1.0
- * @author Michael Ritter and Aljoscha Grebe
+ * @author Michael Ritter
+ * @author Aljoscha Grebe
  */
 public class MessageBuilder implements Appendable
 {
