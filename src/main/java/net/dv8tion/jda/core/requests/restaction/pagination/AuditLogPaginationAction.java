@@ -18,10 +18,12 @@ package net.dv8tion.jda.core.requests.restaction.pagination;
 
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.AuditLogEntry;
 import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
+import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
@@ -56,6 +58,8 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
     public AuditLogPaginationAction(Guild guild)
     {
         super(guild.getJDA(), 1, 100, 100);
+        if (!guild.getSelfMember().hasPermission(Permission.VIEW_AUDIT_LOGS))
+            throw new PermissionException(Permission.VIEW_AUDIT_LOGS);
         this.guild = guild;
     }
 
