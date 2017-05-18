@@ -36,6 +36,25 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
         super(api, route, data);
     }
 
+    /**
+     * Applies the specified reason as audit-log reason field.
+     * <br>When the provided reason is empty or {@code null} it will be treated as not set.
+     *
+     * <p>Reasons for any AuditableRestAction may be retrieved
+     * via {@link net.dv8tion.jda.core.entities.AuditLogEntry#getReason() AuditLogEntry.getReason()}
+     * in iterable {@link net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAction AuditLogPaginationActions}
+     * from {@link net.dv8tion.jda.core.entities.Guild#getAuditLogs() Guild.getAuditLogs()}!
+     *
+     * <p>This will specify the reason via the {@code X-Audit-Log-Reason} Request Header.
+     * <br><b>Note: This may not be available to accounts for {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}.
+     * <br>Using methods with a reason parameter will always work and <u>override</u> this header.</b>
+     * (ct. {@link net.dv8tion.jda.core.managers.GuildController#ban(net.dv8tion.jda.core.entities.User, int, String) GuildController.ban(User, int, String)})
+     *
+     * @param  reason
+     *         The reason for this action which should be logged in the Guild's AuditLogs
+     *
+     * @return The current AuditableRestAction instance for chaining convenience
+     */
     public AuditableRestAction<T> reason(String reason)
     {
         this.reason = reason;

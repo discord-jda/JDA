@@ -391,7 +391,7 @@ public class GuildController
      *         The {@link net.dv8tion.jda.core.entities.Member Member} to kick
      *         from the from the {@link net.dv8tion.jda.core.entities.Guild Guild}.
      * @param  reason
-     *         The reason for this action or {@code null} if there is specified reason
+     *         The reason for this action or {@code null} if there is no specified reason
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided member is not a Member of this Guild or is {@code null}
@@ -458,7 +458,7 @@ public class GuildController
      *         The id of the {@link net.dv8tion.jda.core.entities.User User} to kick
      *         from the from the {@link net.dv8tion.jda.core.entities.Guild Guild}.
      * @param  reason
-     *         The reason for this action or {@code null} if there is specified reason
+     *         The reason for this action or {@code null} if there is no specified reason
      *
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         <ul>
@@ -593,7 +593,7 @@ public class GuildController
      * @param  delDays
      *         The history of messages, in days, that will be deleted.
      * @param  reason
-     *         The reason for this action or {@code null} if there is specified reason
+     *         The reason for this action or {@code null} if there is no specified reason
      *
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         <ul>
@@ -649,7 +649,7 @@ public class GuildController
      * @param  delDays
      *         The history of messages, in days, that will be deleted.
      * @param  reason
-     *         The reason for this action or {@code null} if there is specified reason
+     *         The reason for this action or {@code null} if there is no specified reason
      *
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         <ul>
@@ -742,7 +742,7 @@ public class GuildController
      * @param  delDays
      *         The history of messages, in days, that will be deleted.
      * @param  reason
-     *         The reason for this action or {@code null} if there is specified reason
+     *         The reason for this action or {@code null} if there is no specified reason
      *
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         <ul>
