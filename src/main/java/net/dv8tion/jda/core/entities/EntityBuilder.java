@@ -1232,12 +1232,12 @@ public class EntityBuilder
         final String reason = entryJson.isNull("reason") ? null : entryJson.getString("reason");
 
         final UserImpl user = (UserImpl) createFakeUser(userJson, false);
-        final List<AuditLogChange> changesList;
+        final Set<AuditLogChange> changesList;
         final ActionType type = ActionType.from(typeKey);
 
         if (changes != null)
         {
-            changesList = new ArrayList<>(changes.length());
+            changesList = new HashSet<>(changes.length());
             for (int i = 0; i < changes.length(); i++)
             {
                 final JSONObject object = changes.getJSONObject(i);
@@ -1247,13 +1247,12 @@ public class EntityBuilder
         }
         else
         {
-            changesList = Collections.emptyList();
+            changesList = Collections.emptySet();
         }
 
         CaseInsensitiveMap<String, AuditLogChange> changeMap = new CaseInsensitiveMap<>(changeToMap(changesList));
         CaseInsensitiveMap<String, Object> optionMap = options != null
-            ? new CaseInsensitiveMap<>(options.toMap())
-            : null;
+                ? new CaseInsensitiveMap<>(options.toMap()) : null;
 
         return new AuditLogEntry(type, id, targetId, guild, user, reason, changeMap, optionMap);
     }
@@ -1279,7 +1278,7 @@ public class EntityBuilder
         return new AuditLogChange(oldValue, newValue, key);
     }
 
-    private Map<String, AuditLogChange> changeToMap(List<AuditLogChange> changesList)
+    private Map<String, AuditLogChange> changeToMap(Set<AuditLogChange> changesList)
     {
         return changesList.stream().collect(Collectors.toMap(AuditLogChange::getKey, UnaryOperator.identity()));
     }

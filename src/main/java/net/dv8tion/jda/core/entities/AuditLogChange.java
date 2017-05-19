@@ -88,6 +88,12 @@ public class AuditLogChange
     }
 
     @Override
+    public int hashCode()
+    {
+        return Objects.hash(key, oldValue, newValue);
+    }
+
+    @Override
     public boolean equals(Object obj)
     {
         if (!(obj instanceof AuditLogChange))
