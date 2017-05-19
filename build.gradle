@@ -29,7 +29,7 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '1.2.4'
 }
 
-def versionObj = new Version(major: 3, minor: 0, revision: "0")
+def versionObj = new Version(major: 3, minor: 1, revision: "0")
 
 group = "net.dv8tion"
 archivesBaseName = "JDA"
@@ -192,7 +192,7 @@ String getProjectProperty(String propertyName)
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '3.4.1'
+    gradleVersion = '3.5'
 }
 
 
