@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
+import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.GuildController;
@@ -396,6 +397,65 @@ public class GuildImpl implements Guild
                         ? StringUtils.equalsIgnoreCase(e.getName(), name)
                         : StringUtils.equals(e.getName(), name))
                 .collect(Collectors.toList()));
+    }
+
+    @Override
+    public RestAction<List<User>> getBans()
+    {
+        if (!isAvailable())
+            throw new GuildUnavailableException();
+        if (!getSelfMember().hasPermission(Permission.BAN_MEMBERS))
+            throw new PermissionException(Permission.BAN_MEMBERS);
+
+        Route.CompiledRoute route = Route.Guilds.GET_BANS.compile(getId());
+        return new RestAction<List<User>>(getJDA(), route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request<List<User>> request)
+            {
+                if (!response.isOk())
+                {
+                    request.onFailure(response);
+                    return;
+                }
+
+                EntityBuilder builder = api.getEntityBuilder();
+                List<User> bans = new LinkedList<>();
+                JSONArray bannedArr = response.getArray();
+
+                for (int i = 0; i < bannedArr.length(); i++)
+                {
+                    JSONObject user = bannedArr.getJSONObject(i).getJSONObject("user");
+                    bans.add(builder.createFakeUser(user, false));
+                }
+                request.onSuccess(Collections.unmodifiableList(bans));
+            }
+        };
+    }
+
+    @Override
+    public RestAction<Integer> getPrunableMemberCount(int days)
+    {
+        if (!isAvailable())
+            throw new GuildUnavailableException();
+        if (!getSelfMember().hasPermission(Permission.KICK_MEMBERS))
+            throw new PermissionException(Permission.KICK_MEMBERS);
+
+        if (days < 1)
+            throw new IllegalArgumentException("Days amount must be at minimum 1 day.");
+
+        Route.CompiledRoute route = Route.Guilds.PRUNABLE_COUNT.compile(getId(), Integer.toString(days));
+        return new RestAction<Integer>(getJDA(), route, null)
+        {
+            @Override
+            protected void handleResponse(Response response, Request<Integer> request)
+            {
+                if (response.isOk())
+                    request.onSuccess(response.getObject().getInt("pruned"));
+                else
+                    request .onFailure(response);
+            }
+        };
     }
 
     @Override

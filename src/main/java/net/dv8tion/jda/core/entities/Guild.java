@@ -498,6 +498,60 @@ public interface Guild extends ISnowflake
     List<Emote> getEmotesByName(String name, boolean ignoreCase);
 
     /**
+     * Gets an unmodifiable list of the currently banned {@link net.dv8tion.jda.core.entities.User Users}.
+     * <br>If you wish to ban or unban a user, please {@link GuildController#ban(User, int) GuildController.ban(User, int)} or
+     * {@link GuildController#unban(User) GuildController.ban(User)}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The ban list cannot be fetched due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>We were removed from the Guild before finishing the task</li>
+     * </ul>
+     *
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.
+     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
+     *         If the guild is temporarily not {@link #isAvailable() available}
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@literal List<}{@link net.dv8tion.jda.core.entities.User User}{@literal >}
+     *         <br>An unmodifiable list of all users currently banned from this Guild
+     */
+    RestAction<List<User>> getBans();
+
+    /**
+     * The method calculates the amount of Members that would be pruned if {@link GuildController#prune(int)} was executed.
+     * Prunability is determined by a Member being offline for at least <i>days</i> days.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The prune count cannot be fetched due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>We were removed from the Guild before finishing the task</li>
+     * </ul>
+     *
+     * @param  days
+     *         Minimum number of days since a member has been offline to get affected.
+     *
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If the account doesn't have {@link net.dv8tion.jda.core.Permission#KICK_MEMBERS KICK_MEMBER} Permission.
+     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
+     *         If the guild is temporarily not {@link #isAvailable() available}
+     * @throws IllegalArgumentException
+     *         If the provided days are less than {@code 1}
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Integer
+     *         <br>The amount of Members that would be affected.
+     */
+    RestAction<Integer> getPrunableMemberCount(int days);
+
+    /**
      * The @everyone {@link net.dv8tion.jda.core.entities.Role Role} of this {@link net.dv8tion.jda.core.entities.Guild Guild}.
      * <br>This role is special because its {@link net.dv8tion.jda.core.entities.Role#getPosition()} is calculated as
      * {@code -1}. All other role positions are 0 or greater. This implies that the public role is <b>always</b> below

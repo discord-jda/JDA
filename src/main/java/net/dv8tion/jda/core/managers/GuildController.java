@@ -338,26 +338,10 @@ public class GuildController
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Integer
      *         <br>The amount of Members that would be affected.
      */
+    @Deprecated
     public RestAction<Integer> getPrunableMemberCount(int days)
     {
-        checkAvailable();
-        checkPermission(Permission.KICK_MEMBERS);
-
-        if (days < 1)
-            throw new IllegalArgumentException("Days amount must be at minimum 1 day.");
-
-        Route.CompiledRoute route = Route.Guilds.PRUNABLE_COUNT.compile(guild.getId(), Integer.toString(days));
-        return new RestAction<Integer>(guild.getJDA(), route, null)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Integer> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(response.getObject().getInt("pruned"));
-                else
-                    request .onFailure(response);
-            }
-        };
+        return getGuild().getPrunableMemberCount(days);
     }
 
     /**
@@ -909,35 +893,10 @@ public class GuildController
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@literal List<}{@link net.dv8tion.jda.core.entities.User User}{@literal >}
      *         <br>An unmodifiable list of all users currently banned from this Guild
      */
+    @Deprecated
     public RestAction<List<User>> getBans()
     {
-        checkAvailable();
-        checkPermission(Permission.BAN_MEMBERS);
-
-        Route.CompiledRoute route = Route.Guilds.GET_BANS.compile(guild.getId());
-        return new RestAction<List<User>>(guild.getJDA(), route, null)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<List<User>> request)
-            {
-                if (!response.isOk())
-                {
-                    request.onFailure(response);
-                    return;
-                }
-
-                EntityBuilder builder = guild.getJDA().getEntityBuilder();
-                List<User> bans = new LinkedList<>();
-                JSONArray bannedArr = response.getArray();
-
-                for (int i = 0; i < bannedArr.length(); i++)
-                {
-                    JSONObject user = bannedArr.getJSONObject(i).getJSONObject("user");
-                    bans.add(builder.createFakeUser(user, false));
-                }
-                request.onSuccess(Collections.unmodifiableList(bans));
-            }
-        };
+        return getGuild().getBans();
     }
 
     /**
