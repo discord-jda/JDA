@@ -122,7 +122,7 @@ public class EmbedBuilder
     public boolean isEmpty()
     {
         return title == null
-                && description == null
+                && description.length() == 0
                 && timestamp == null
                 && color == null
                 && thumbnail == null

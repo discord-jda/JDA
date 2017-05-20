@@ -403,8 +403,10 @@ public class GuildImpl implements Guild
     @Override
     public RestAction<List<User>> getBans()
     {
-        checkAvailable();
-        checkPermission(Permission.BAN_MEMBERS);
+        if (!isAvailable())
+            throw new GuildUnavailableException();
+        if (!getSelfMember().hasPermission(Permission.BAN_MEMBERS))
+            throw new PermissionException(Permission.BAN_MEMBERS);
 
         Route.CompiledRoute route = Route.Guilds.GET_BANS.compile(getId());
         return new RestAction<List<User>>(getJDA(), route, null)
@@ -435,8 +437,10 @@ public class GuildImpl implements Guild
     @Override
     public RestAction<Integer> getPrunableMemberCount(int days)
     {
-        checkAvailable();
-        checkPermission(Permission.KICK_MEMBERS);
+        if (!isAvailable())
+            throw new GuildUnavailableException();
+        if (!getSelfMember().hasPermission(Permission.KICK_MEMBERS))
+            throw new PermissionException(Permission.KICK_MEMBERS);
 
         if (days < 1)
             throw new IllegalArgumentException("Days amount must be at minimum 1 day.");
@@ -846,20 +850,6 @@ public class GuildImpl implements Guild
                 }
             }
         };
-    }
-
-    // -- Private Methods --
-
-    protected void checkAvailable()
-    {
-        if (!isAvailable())
-            throw new GuildUnavailableException();
-    }
-
-    protected void checkPermission(Permission perm)
-    {
-        if (!getSelfMember().hasPermission(perm))
-            throw new PermissionException(perm);
     }
 
 }
