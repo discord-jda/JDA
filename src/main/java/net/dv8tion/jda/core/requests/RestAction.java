@@ -27,6 +27,7 @@ import net.dv8tion.jda.core.utils.SimpleLog;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.http.util.Args;
 
+import java.nio.charset.Charset;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
 
@@ -629,6 +630,12 @@ public abstract class RestAction<T>
         return null;
     }
 
+    protected static String encodeHeaderValue(String reason)
+    {
+        byte[] bytes = reason.getBytes();
+        return new String(bytes, Charset.forName("iso-8859-1"));
+    }
+
     protected abstract void handleResponse(Response response, Request<T> request);
 
     /**
@@ -641,6 +648,7 @@ public abstract class RestAction<T>
      */
     public static class EmptyRestAction<T> extends RestAction<T>
     {
+
         private final T returnObj;
 
         public EmptyRestAction(JDA api, T returnObj)

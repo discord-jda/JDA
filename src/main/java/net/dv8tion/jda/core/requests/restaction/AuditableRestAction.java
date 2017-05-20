@@ -67,7 +67,7 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
         if (reason == null)
             return null;
         CaseInsensitiveMap<String, String> map = new CaseInsensitiveMap<>();
-        map.put("X-Audit-Log-Reason", reason);
+        map.put("X-Audit-Log-Reason", encodeHeaderValue(reason));
         return map;
     }
 
