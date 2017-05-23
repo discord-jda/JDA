@@ -412,7 +412,7 @@ public interface Message extends ISnowflake, Formattable
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
      *     <br>The {@link net.dv8tion.jda.core.entities.Message Message} with the updated content
      */
-    RestAction<Message> editMessage(String format, Object... args);
+    RestAction<Message> editMessageFormat(String format, Object... args);
 
     /**
      * Edits this Message's content to the provided {@link net.dv8tion.jda.core.entities.Message Message}.
