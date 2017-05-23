@@ -163,6 +163,12 @@ public class MessageImpl implements Message
     {
         return Collections.unmodifiableList(mentionedUsers);
     }
+    
+    @Override
+    public List<Member> getMentionedMembers() {
+        Guild guild = getGuild();
+        return guild.equals(null) ? null : Collections.unmodifiableList(mentionedUsers.stream().map(guild::getMember).collect(Collectors.toList()));
+    }
 
     @Override
     public boolean isMentioned(User user)
@@ -170,6 +176,11 @@ public class MessageImpl implements Message
         return mentionsEveryone() || mentionedUsers.contains(user);
     }
 
+    @Override
+    public boolean isMentioned(Member member) {
+        return mentionsEveryone() || getMentionedMembers().contains(member);
+    }
+    
     @Override
     public List<TextChannel> getMentionedChannels()
     {
