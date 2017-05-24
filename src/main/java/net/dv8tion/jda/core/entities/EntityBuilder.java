@@ -134,7 +134,8 @@ public class EntityBuilder
                 .setAfkTimeout(Guild.Timeout.fromKey(guild.getInt("afk_timeout")))
                 .setVerificationLevel(Guild.VerificationLevel.fromKey(guild.getInt("verification_level")))
                 .setDefaultNotificationLevel(Guild.NotificationLevel.fromKey(guild.getInt("default_message_notifications")))
-                .setRequiredMFALevel(Guild.MFALevel.fromKey(guild.getInt("mfa_level")));
+                .setRequiredMFALevel(Guild.MFALevel.fromKey(guild.getInt("mfa_level")))
+                .setExplicitContentLevel(Guild.ExplicitContentLevel.fromKey(guild.getInt("explicit_content_filter")));
 
         JSONArray roles = guild.getJSONArray("roles");
         for (int i = 0; i < roles.length(); i++)

@@ -806,6 +806,14 @@ public interface Guild extends ISnowflake
     MFALevel getRequiredMFALevel();
 
     /**
+     * The level of content filtering enabled in this Guild.
+     * <br>This decides which messages sent by which Members will be scanned for explicit content.
+     *
+     * @return {@link net.dv8tion.jda.core.entities.Guild.ExplicitContentLevel ExplicitContentLevel} for this Guild
+     */
+    ExplicitContentLevel getExplicitContentLevel();
+
+    /**
      * Checks if the current Verification-level of this guild allows JDA to send messages to it.
      *
      * @return True if Verification-level allows sending of messages, false if not.
@@ -1024,6 +1032,58 @@ public interface Guild extends ISnowflake
             for (MFALevel level : values())
             {
                 if (level.getKey() == key)
+                    return level;
+            }
+            return UNKNOWN;
+        }
+    }
+
+    /**
+     * The Explicit-Content-Filter Level of a Guild.
+     * <br>This decides whom's messages should be scanned for explicit content.
+     */
+    enum ExplicitContentLevel
+    {
+        OFF(0, "Don't scan any messages."),
+        NO_ROLE(1, "Scan messages from members without a role."),
+        ALL(2, "Scan messages sent by all members."),
+
+        UNKNOWN(-1, "Unknown filter level!");
+
+        private final int key;
+        private final String description;
+
+        ExplicitContentLevel(int key, String description)
+        {
+            this.key = key;
+            this.description = description;
+        }
+
+        /**
+         * The key for this level
+         *
+         * @return key
+         */
+        public int getKey()
+        {
+            return key;
+        }
+
+        /**
+         * Description of this level in the official Discord Client (as of 5th May, 2017)
+         *
+         * @return Description for this level
+         */
+        public String getDescription()
+        {
+            return description;
+        }
+
+        public static ExplicitContentLevel fromKey(int key)
+        {
+            for (ExplicitContentLevel level : values())
+            {
+                if (level.key == key)
                     return level;
             }
             return UNKNOWN;

@@ -22,7 +22,6 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.guild.update.*;
-import net.dv8tion.jda.core.requests.GuildLock;
 import org.json.JSONObject;
 
 import java.util.Objects;
@@ -51,6 +50,7 @@ public class GuildUpdateHandler extends SocketHandler
         Guild.VerificationLevel verificationLevel = Guild.VerificationLevel.fromKey(content.getInt("verification_level"));
         Guild.NotificationLevel notificationLevel = Guild.NotificationLevel.fromKey(content.getInt("default_message_notifications"));
         Guild.MFALevel mfaLevel = Guild.MFALevel.fromKey(content.getInt("mfa_level"));
+        Guild.ExplicitContentLevel explicitContentLevel = Guild.ExplicitContentLevel.fromKey(content.getInt("explicit_content_filter"));
         Guild.Timeout afkTimeout = Guild.Timeout.fromKey(content.getInt("afk_timeout"));
         VoiceChannel afkChannel = !content.isNull("afk_channel_id")
                 ? guild.getVoiceChannelMap().get(content.getLong("afk_channel_id"))
@@ -127,6 +127,15 @@ public class GuildUpdateHandler extends SocketHandler
                     new GuildUpdateMFALevelEvent(
                             api, responseNumber,
                             guild, oldMfaLevel));
+        }
+        if (!Objects.equals(explicitContentLevel, guild.getExplicitContentLevel()))
+        {
+            Guild.ExplicitContentLevel oldExplicitContentLevel = guild.getExplicitContentLevel();
+            guild.setExplicitContentLevel(explicitContentLevel);
+            api.getEventManager().handle(
+                    new GuildUpdateExplicitContentLevelEvent(
+                            api, responseNumber,
+                            guild, oldExplicitContentLevel));
         }
         if (!Objects.equals(afkTimeout, guild.getAfkTimeout()))
         {
