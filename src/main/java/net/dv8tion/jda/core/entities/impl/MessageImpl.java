@@ -22,10 +22,7 @@ import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.PermissionException;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.requests.Route;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.util.Args;
 import org.json.JSONObject;
@@ -129,7 +126,7 @@ public class MessageImpl implements Message
         Args.notEmpty(unicode, "Provided Unicode");
 
         MessageReaction reaction = reactions.parallelStream()
-                .filter(r -> r.getEmote().getName().equals(unicode))
+                .filter(r -> Objects.equals(r.getEmote().getName(), unicode))
                 .findFirst().orElse(null);
 
         if (reaction != null && reaction.isSelf())

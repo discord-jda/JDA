@@ -139,9 +139,52 @@ public class PermissionUtil
 
         if (!issuer.getGuild().equals(emote.getGuild()))
             throw new IllegalArgumentException("The issuer and target are not in the same Guild");
-        return !emote.isFake() // Fake emote -> can't use
-                && (emote.getRoles().isEmpty() // Emote restricted to roles -> check if the issuer has them
+        return (emote.getRoles().isEmpty() // Emote restricted to roles -> check if the issuer has them
                     || CollectionUtils.containsAny(issuer.getRoles(), emote.getRoles()));
+    }
+
+    /**
+     * Checks whether the specified {@link net.dv8tion.jda.core.entities.Emote Emote} can be used by the provided
+     * {@link net.dv8tion.jda.core.entities.User User} in the {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.
+     *
+     * @param  issuer
+     *         The user that tries to interact with the Emote
+     * @param  emote
+     *         The emote that is the target interaction
+     * @param  channel
+     *         The MessageChannel this emote should be interacted within
+     * @param  botOverride
+     *         Whether bots can use non-managed emotes in other guilds
+     *
+     * @throws IllegalArgumentException
+     *         if any of the provided parameters is {@code null}
+     *         or the provided entities are not from the same guild
+     *
+     * @return True, if the issuer can interact with the emote within the specified MessageChannel
+     */
+    public static boolean canInteract(User issuer, Emote emote, MessageChannel channel, boolean botOverride)
+    {
+        Args.notNull(issuer,  "Issuer Member");
+        Args.notNull(emote,   "Target Emote");
+        Args.notNull(channel, "Target Channel");
+
+        if (emote.isFake() || !emote.getGuild().isMember(issuer))
+            return false; // cannot use an emote if you're not in its guild
+        Member member = emote.getGuild().getMemberById(issuer.getIdLong());
+        if (!canInteract(member, emote))
+            return false;
+        // external means it is available outside of its own guild - works for bots or if its managed
+        final boolean external = emote.isManaged() || (issuer.isBot() && botOverride);
+        switch (channel.getType())
+        {
+            case TEXT:
+                TextChannel text = (TextChannel) channel;
+                member = text.getGuild().getMemberById(issuer.getIdLong());
+                return emote.getGuild().equals(text.getGuild()) // within the same guild
+                    || (external && member.hasPermission(text, Permission.MESSAGE_EXT_EMOJI)); // in different guild
+            default:
+                return external; // In Group or Private it only needs to be external
+        }
     }
 
     /**
@@ -163,25 +206,7 @@ public class PermissionUtil
      */
     public static boolean canInteract(User issuer, Emote emote, MessageChannel channel)
     {
-        Args.notNull(issuer,  "Issuer Member");
-        Args.notNull(emote,   "Target Emote");
-        Args.notNull(channel, "Target Channel");
-
-        if (emote.isFake() || !emote.getGuild().isMember(issuer))
-            return false; // cannot use an emote if you're not in its guild
-        Member member = emote.getGuild().getMemberById(issuer.getIdLong());
-        if (!canInteract(member, emote))
-            return false;
-        switch (channel.getType())
-        {
-            case TEXT:
-                TextChannel text = (TextChannel) channel;
-                member = text.getGuild().getMemberById(issuer.getIdLong());
-                return emote.getGuild().equals(text.getGuild()) // within the same guild
-                    || (emote.isManaged() && checkPermission(text, member, Permission.MESSAGE_EXT_EMOJI)); // in different guild
-            default:
-                return emote.isManaged(); // In Group or Private it only needs to be managed
-        }
+        return canInteract(issuer, emote, channel, true);
     }
 
     @Deprecated
