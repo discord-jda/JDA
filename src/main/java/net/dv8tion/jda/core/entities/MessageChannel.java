@@ -221,7 +221,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
      *         <br>The newly created Message after it has been sent to Discord.
      */
-    default RestAction<Message> sendMessage(String format, Object... args)
+    default RestAction<Message> sendMessageFormat(String format, Object... args)
     {
         Args.notEmpty(format, "Format");
         return sendMessage(new MessageBuilder().appendFormat(format, args).build());
@@ -1863,7 +1863,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message}
      *         <br>The modified Message
      */
-    default RestAction<Message> editMessageById(String messageId, String format, Object... args)
+    default RestAction<Message> editMessageFormatById(String messageId, String format, Object... args)
     {
         Args.notBlank(format, "Format String");
         return editMessageById(messageId, new MessageBuilder().appendFormat(format, args).build());
@@ -1914,7 +1914,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message}
      *         <br>The modified Message
      */
-    default RestAction<Message> editMessageById(long messageId, String format, Object... args)
+    default RestAction<Message> editMessageFormatById(long messageId, String format, Object... args)
     {
         Args.notBlank(format, "Format String");
         return editMessageById(messageId, new MessageBuilder().appendFormat(format, args).build());
