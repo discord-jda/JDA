@@ -182,6 +182,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
 
     /**
      * Whether the specified Member can interact with this Emote within the provided MessageChannel
+     * <br>Same logic as {@link #canInteract(User, MessageChannel, boolean) canInteract(issuer, channel, true)}!
      *
      * @param  issuer
      *         The User to test
@@ -196,5 +197,26 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
     default boolean canInteract(User issuer, MessageChannel channel)
     {
         return PermissionUtil.canInteract(issuer, this, channel);
+    }
+
+    /**
+     * Whether the specified Member can interact with this Emote within the provided MessageChannel
+     * <br>Special override to exclude elevated bot permissions in case of (for instance) reacting to messages.
+     *
+     * @param  issuer
+     *         The User to test
+     * @param  channel
+     *         The MessageChannel to test
+     * @param  botOverride
+     *         Whether bots can use non-managed emotes in other guilds
+     *
+     * @return True, if the provided Member can use this Emote
+     *
+     * @see    net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Emote)
+     * @see    net.dv8tion.jda.core.utils.PermissionUtil#canInteract(User, Emote, MessageChannel, boolean)
+     */
+    default boolean canInteract(User issuer, MessageChannel channel, boolean botOverride)
+    {
+        return PermissionUtil.canInteract(issuer, this, channel, botOverride);
     }
 }

@@ -126,7 +126,7 @@ public class MessageImpl implements Message
         Args.notEmpty(unicode, "Provided Unicode");
 
         MessageReaction reaction = reactions.parallelStream()
-                .filter(r -> r.getEmote().getName().equals(unicode))
+                .filter(r -> Objects.equals(r.getEmote().getName(), unicode))
                 .findFirst().orElse(null);
 
         if (reaction != null && reaction.isSelf())
