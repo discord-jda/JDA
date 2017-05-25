@@ -149,10 +149,10 @@ All dependencies are managed automatically by Gradle.
    * Version: **1.31**
    * [Github](https://github.com/TakahikoKawasaki/nv-websocket-client)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/com.neovisionaries%3Anv-websocket-client/view)
- * Unirest
-   * Version: **1.4.9**
-   * [Github](https://github.com/Mashape/unirest-java)
-   * [JCenter Repository](https://bintray.com/bintray/jcenter/com.mashape.unirest%3Aunirest-java/view)
+ * OkHttp
+   * Version: **3.7.0**
+   * [Github](https://github.com/square/okhttp)
+   * [JCenter Repository](https://bintray.com/bintray/jcenter/com.squareup.okhttp:okhttp)
  * Apache Commons Lang3
    * Version: **3.5**
    * [Website](https://commons.apache.org/proper/commons-lang/)
