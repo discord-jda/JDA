@@ -71,11 +71,22 @@ public enum ActionType
         this.target = target;
     }
 
+    /**
+     * The raw key used to identify types within the api.
+     *
+     * @return Raw key for this ActionType
+     */
     public int getKey()
     {
         return key;
     }
 
+    /**
+     * The expected {@link net.dv8tion.jda.core.TargetType TargetType}
+     * for this ActionType
+     *
+     * @return {@link net.dv8tion.jda.core.TargetType TargetType}
+     */
     public TargetType getTargetType()
     {
         return target;

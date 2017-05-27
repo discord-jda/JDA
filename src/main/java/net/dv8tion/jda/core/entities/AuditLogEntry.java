@@ -241,6 +241,54 @@ public class AuditLogEntry implements ISnowflake
     }
 
     /**
+     * Shortcut to <code>{@link #getOptions() getOptions()}.get(name)</code> lookup!
+     *
+     * @param  <T>
+     *         The expected type for this option <br>Will be used for casting
+     * @param  option
+     *         The {@link net.dv8tion.jda.core.entities.AuditLogEntry.AuditLogOption AuditLogOption}
+     *
+     * @throws java.lang.ClassCastException
+     *         If the type-cast failed for the generic type.
+     * @throws java.lang.IllegalArgumentException
+     *         If provided with {@code null} option.
+     *
+     * @return Possibly-null value corresponding to the specified option constant
+     */
+    public <T> T getOption(AuditLogOption option)
+    {
+        Args.notNull(option, "Option");
+        return getOptionByName(option.getKey());
+    }
+
+    /**
+     * Constructs a filtered, immutable list of options corresponding to
+     * the provided {@link net.dv8tion.jda.core.entities.AuditLogEntry.AuditLogOption AuditLogOptions}.
+     * <br>This will exclude options with {@code null} values!
+     *
+     * @param  options
+     *         The not-null {@link net.dv8tion.jda.core.entities.AuditLogEntry.AuditLogOption AuditLogOptions}
+     *         which will be used to gather option values via {@link #getOption(AuditLogEntry.AuditLogOption) getOption(AuditLogOption)}!
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If provided with null options
+     *
+     * @return Unmodifiable list of representative values
+     */
+    public List<Object> getOptions(AuditLogOption... options)
+    {
+        Args.notNull(options, "Options");
+        List<Object> items = new ArrayList<>(options.length);
+        for (AuditLogOption option : options)
+        {
+            Object obj = getOption(option);
+            if (obj != null)
+                items.add(obj);
+        }
+        return Collections.unmodifiableList(items);
+    }
+
+    /**
      * The {@link net.dv8tion.jda.core.ActionType ActionType} defining what auditable
      * Action is referred to by this entry.
      *
@@ -294,6 +342,15 @@ public class AuditLogEntry implements ISnowflake
      */
     public enum AuditLogKey
     {
+        /**
+         * This is sometimes visible for {@link net.dv8tion.jda.core.ActionType ActionTypes}
+         * which create a new entity.
+         * <br>Use with designated {@code getXById} method.
+         *
+         * <p>Expected type: <b>String</b>
+         */
+        ID("id"),
+
         // GUILD
         /**
          * Change for the {@link Guild#getName() Guild.getName()} value
@@ -575,6 +632,93 @@ public class AuditLogEntry implements ISnowflake
             this.key = key;
         }
 
+        public String getKey()
+        {
+            return key;
+        }
+
+        @Override
+        public String toString()
+        {
+            return name() + '(' + key + ')';
+        }
+    }
+
+    /**
+     * Enum constants for possible options
+     * <br>Providing detailed description of possible occasions and expected types.
+     *
+     * <p>The expected types are not guaranteed to be accurate!
+     */
+    public enum AuditLogOption
+    {
+        /**
+         * Possible detail for {@link net.dv8tion.jda.core.ActionType#MESSAGE_DELETE ActionType.MESSAGE_DELETE}
+         * describing the amount of deleted messages.
+         *
+         * <p>Expected type: <b>Integer</b>
+         */
+        COUNT("count"),
+
+        /**
+         * Possible secondary target of an {@link net.dv8tion.jda.core.ActionType ActionType}
+         * such as {@link net.dv8tion.jda.core.ActionType#CHANNEL_OVERRIDE_CREATE ActionType.CHANNEL_OVERRIDE_CREATE}
+         * <br>Use with {@link Guild#getTextChannelById(String) Guild.getTextChannelById(String)}
+         * or similar method for {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels}
+         *
+         * <p>Expected type: <b>String</b>
+         */
+        CHANNEL("channel_id"),
+
+        /**
+         * Possible secondary target of an {@link net.dv8tion.jda.core.ActionType ActionType}
+         * such as {@link net.dv8tion.jda.core.ActionType#CHANNEL_OVERRIDE_CREATE ActionType.CHANNEL_OVERRIDE_CREATE}
+         * <br>Use with {@link JDA#getUserById(String) JDA.getUserById(String)}
+         *
+         * <p>Expected type: <b>String</b>
+         */
+        USER("user_id"),
+
+        /**
+         * Possible secondary target of an {@link net.dv8tion.jda.core.ActionType ActionType}
+         * such as {@link net.dv8tion.jda.core.ActionType#CHANNEL_OVERRIDE_CREATE ActionType.CHANNEL_OVERRIDE_CREATE}
+         * <br>Use with {@link Guild#getRoleById(String) Guild.getRoleById(String)}
+         *
+         * <p>Expected type: <b>String</b>
+         */
+        ROLE("role_id"),
+
+        /**
+         * Possible option indicating the type of an entity.
+         * <br>Maybe for {@link net.dv8tion.jda.core.ActionType#CHANNEL_OVERRIDE_CREATE ActionType.CHANNEL_OVERRIDE_CREATE}
+         * or {@link net.dv8tion.jda.core.ActionType#CHANNEL_CREATE ActionType.CHANNEL_CREATE}.
+         *
+         * <p>Expected type: <b>String</b> or <b>Integer</b>
+         * <br>This type depends on the action taken place.
+         */
+        TYPE("type"),
+
+        /**
+         * This is sometimes visible for {@link net.dv8tion.jda.core.ActionType ActionTypes}
+         * which create a new entity.
+         * <br>Use with designated {@code getXById} method.
+         *
+         * <p>Expected type: <b>String</b>
+         */
+        ID("id");
+
+        private final String key;
+
+        AuditLogOption(String key)
+        {
+            this.key = key;
+        }
+
+        /**
+         * Key used in {@link net.dv8tion.jda.core.entities.AuditLogEntry#getOptionByName(String) AuditLogEntry.getOptionByName(String)}
+         *
+         * @return Key for this option
+         */
         public String getKey()
         {
             return key;
