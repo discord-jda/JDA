@@ -131,7 +131,7 @@ public class EmoteManagerUpdatable
      * throw an {@link IllegalArgumentException IllegalArgumentException}.
      * <br>Example names: {@code fmgSUP}, {@code tatDAB}
      *
-     *  @return {@link net.dv8tion.jda.client.managers.fields.EmoteField EmoteField} - Type: {@code String}
+     * @return {@link net.dv8tion.jda.client.managers.fields.EmoteField EmoteField} - Type: {@code String}
      */
     public EmoteField<String> getNameField()
     {
@@ -150,8 +150,12 @@ public class EmoteManagerUpdatable
      * <br>Otherwise {@link net.dv8tion.jda.core.managers.fields.Field#setValue(Object) Field.setValue(...)} will
      * throw an {@link IllegalArgumentException IllegalArgumentException}.
      *
-     *  @return {@link net.dv8tion.jda.client.managers.fields.EmoteField EmoteField} - Type: {@link Collection}
+     * @return {@link net.dv8tion.jda.client.managers.fields.EmoteField EmoteField} - Type: {@link Collection}
+     *
+     * @deprecated
+     *         This setting is only available to whitelisted accounts and <i>may</i> be removed in successive builds.
      */
+    @Deprecated
     public EmoteField<Collection<Role>> getRolesField()
     {
         return roles;

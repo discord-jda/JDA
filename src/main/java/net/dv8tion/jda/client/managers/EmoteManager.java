@@ -132,7 +132,11 @@ public class EmoteManager
      *
      * @see    net.dv8tion.jda.client.managers.EmoteManagerUpdatable#getRolesField()
      * @see    net.dv8tion.jda.client.managers.EmoteManagerUpdatable#update()
+     *
+     * @deprecated
+     *         This setting is only available to whitelisted accounts and <i>may</i> be removed in successive builds.
      */
+    @Deprecated
     public AuditableRestAction<Void> setRoles(Set<Role> roles)
     {
         return updatable.getRolesField().setValue(roles).update();
