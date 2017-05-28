@@ -303,7 +303,6 @@ public class AudioManagerImpl implements AudioManager
         audioConnection.setSendingHandler(sendHandler);
         audioConnection.setReceivingHandler(receiveHandler);
         audioConnection.setQueueTimeout(queueTimeout);
-        audioConnection.ready(timeout);
     }
 
     public void prepareForRegionChange()

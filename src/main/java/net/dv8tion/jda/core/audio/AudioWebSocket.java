@@ -117,6 +117,7 @@ public class AudioWebSocket extends WebSocketAdapter
         send(connectObj.toString());
         connected = true;
         changeStatus(ConnectionStatus.CONNECTING_AWAITING_AUTHENTICATING);
+        audioConnection.ready();
     }
 
     @Override
