@@ -34,9 +34,6 @@ import java.util.Map;
  * AuditLogPaginationAction}.
  * <br>This entry contains all options/changes and details for the action
  * that was logged by the {@link net.dv8tion.jda.core.entities.Guild Guild} audit-logs.
- *
- * @since  3.2
- * @author Florian Spieß
  */
 public class AuditLogEntry implements ISnowflake
 {

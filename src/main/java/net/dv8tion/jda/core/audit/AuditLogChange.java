@@ -23,9 +23,6 @@ import java.util.Objects;
  * change for an {@link net.dv8tion.jda.core.audit.AuditLogEntry AuditLogEntry}!
  * <br>This object holds the {@link #getOldValue() old-} and {@link #getNewValue() new value} for the
  * updated field. The field is specified by the {@link #getKey() key}.
- *
- * @since  3.2
- * @author Florian Spieß
  */
 public class AuditLogChange
 {
