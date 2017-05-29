@@ -75,6 +75,7 @@ public class GuildImpl implements Guild
     private VerificationLevel verificationLevel;
     private NotificationLevel defaultNotificationLevel;
     private MFALevel mfaLevel;
+    private ExplicitContentLevel explicitContentLevel;
     private Timeout afkTimeout;
     private boolean available;
     private boolean canSendVerification = false;
@@ -647,6 +648,12 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    public ExplicitContentLevel getExplicitContentLevel()
+    {
+        return explicitContentLevel;
+    }
+
+    @Override
     public boolean checkVerification()
     {
         if (api.getAccountType() == AccountType.BOT)
@@ -755,6 +762,12 @@ public class GuildImpl implements Guild
     public GuildImpl setRequiredMFALevel(MFALevel level)
     {
         this.mfaLevel = level;
+        return this;
+    }
+
+    public GuildImpl setExplicitContentLevel(ExplicitContentLevel level)
+    {
+        this.explicitContentLevel = level;
         return this;
     }
 
