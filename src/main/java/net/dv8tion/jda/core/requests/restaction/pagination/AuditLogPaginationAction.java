@@ -18,9 +18,9 @@ package net.dv8tion.jda.core.requests.restaction.pagination;
 
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
-import net.dv8tion.jda.core.ActionType;
+import net.dv8tion.jda.core.audit.ActionType;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.AuditLogEntry;
+import net.dv8tion.jda.core.audit.AuditLogEntry;
 import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
@@ -75,10 +75,10 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
     }
 
     /**
-     * Filters retrieved entities by the specified {@link net.dv8tion.jda.core.ActionType ActionType}
+     * Filters retrieved entities by the specified {@link net.dv8tion.jda.core.audit.ActionType ActionType}
      *
      * @param  type
-     *         {@link net.dv8tion.jda.core.ActionType ActionType} used to filter,
+     *         {@link net.dv8tion.jda.core.audit.ActionType ActionType} used to filter,
      *         or {@code null} to remove type filtering
      *
      * @return The current AuditLogPaginationAction for chaining convenience

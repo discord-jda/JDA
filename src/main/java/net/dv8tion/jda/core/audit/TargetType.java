@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core;
+package net.dv8tion.jda.core.audit;
 
 /**
- * TargetType for an {@link net.dv8tion.jda.core.ActionType ActionType}
+ * TargetType for an {@link net.dv8tion.jda.core.audit.ActionType ActionType}
  * <br>This describes what kind of Discord entity is being targeted by an auditable action!
  *
- * <p>This can be found via {@link ActionType#getTargetType() ActionType.getTargetType()}
- * or {@link net.dv8tion.jda.core.entities.AuditLogEntry#getTargetType() AuditLogEntry.getTargetType()}.
+ * <p>This can be found via {@link net.dv8tion.jda.core.audit.ActionType#getTargetType() ActionType.getTargetType()}
+ * or {@link net.dv8tion.jda.core.audit.AuditLogEntry#getTargetType() AuditLogEntry.getTargetType()}.
  * <br>This helps to decide what entity type the target id of an AuditLogEntry refers to.
  *
  * <h2>Example</h2>

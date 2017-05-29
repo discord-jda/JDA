@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.entities;
+package net.dv8tion.jda.core.audit;
 
 import java.util.Objects;
 
 /**
  * Plain-Old-Java-Object (POJO) representing a single
- * change for an {@link net.dv8tion.jda.core.entities.AuditLogEntry AuditLogEntry}!
+ * change for an {@link net.dv8tion.jda.core.audit.AuditLogEntry AuditLogEntry}!
  * <br>This object holds the {@link #getOldValue() old-} and {@link #getNewValue() new value} for the
  * updated field. The field is specified by the {@link #getKey() key}.
  *

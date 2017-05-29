@@ -41,7 +41,7 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
      * <br>When the provided reason is empty or {@code null} it will be treated as not set.
      *
      * <p>Reasons for any AuditableRestAction may be retrieved
-     * via {@link net.dv8tion.jda.core.entities.AuditLogEntry#getReason() AuditLogEntry.getReason()}
+     * via {@link net.dv8tion.jda.core.audit.AuditLogEntry#getReason() AuditLogEntry.getReason()}
      * in iterable {@link net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAction AuditLogPaginationActions}
      * from {@link net.dv8tion.jda.core.entities.Guild#getAuditLogs() Guild.getAuditLogs()}!
      *

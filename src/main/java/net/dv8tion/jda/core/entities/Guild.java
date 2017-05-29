@@ -633,7 +633,7 @@ public interface Guild extends ISnowflake
 
     /**
      * A {@link net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction PaginationAction} implementation
-     * that allows to {@link Iterable iterate} over all {@link net.dv8tion.jda.core.entities.AuditLogEntry AuditLogEntries} of
+     * that allows to {@link Iterable iterate} over all {@link net.dv8tion.jda.core.audit.AuditLogEntry AuditLogEntries} of
      * this Guild.
      * <br>This iterates from the most recent action to the first logged one. (Limit 90 days into history by discord api)
      *

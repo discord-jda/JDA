@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core;
+package net.dv8tion.jda.core.audit;
 
 /**
- * ActionTypes for {@link net.dv8tion.jda.core.entities.AuditLogEntry AuditLogEntry} instances
- * <br>Found via {@link net.dv8tion.jda.core.entities.AuditLogEntry#getType() AuditLogEntry.getType()}
+ * ActionTypes for {@link net.dv8tion.jda.core.audit.AuditLogEntry AuditLogEntry} instances
+ * <br>Found via {@link net.dv8tion.jda.core.audit.AuditLogEntry#getType() AuditLogEntry.getType()}
  */
 public enum ActionType
 {
@@ -82,10 +82,10 @@ public enum ActionType
     }
 
     /**
-     * The expected {@link net.dv8tion.jda.core.TargetType TargetType}
+     * The expected {@link net.dv8tion.jda.core.audit.TargetType TargetType}
      * for this ActionType
      *
-     * @return {@link net.dv8tion.jda.core.TargetType TargetType}
+     * @return {@link net.dv8tion.jda.core.audit.TargetType TargetType}
      */
     public TargetType getTargetType()
     {
