@@ -90,13 +90,15 @@ public class AudioConnection
         this.threadIdentifier = api.getIdentifierString() + " AudioConnection Guild: " + channel.getGuild().getId();
     }
 
-    public void ready(long timeout)
+    public void ready()
     {
         Thread readyThread = new Thread(threadIdentifier + " Ready Thread")
         {
             @Override
             public void run()
             {
+                final long timeout = getGuild().getAudioManager().getConnectTimeout();
+
                 JDAImpl api = (JDAImpl) getJDA();
                 long started = System.currentTimeMillis();
                 boolean connectionTimeout = false;
