@@ -20,7 +20,11 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.managers.WebhookManager;
 import net.dv8tion.jda.core.managers.WebhookManagerUpdatable;
-import net.dv8tion.jda.core.requests.*;
+import net.dv8tion.jda.core.requests.Request;
+import net.dv8tion.jda.core.requests.Requester;
+import net.dv8tion.jda.core.requests.Response;
+import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
 /**
  * The implementation for {@link net.dv8tion.jda.core.entities.Webhook Webhook}
@@ -98,10 +102,10 @@ public class WebhookImpl implements Webhook
     }
 
     @Override
-    public RestAction<Void> delete()
+    public AuditableRestAction<Void> delete()
     {
         Route.CompiledRoute route = Route.Webhooks.DELETE_TOKEN_WEBHOOK.compile(getId(), token);
-        return new RestAction<Void>(getJDA(), route, null)
+        return new AuditableRestAction<Void>(getJDA(), route, null)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)

@@ -16,6 +16,7 @@
 package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
 
 import java.util.Collection;
@@ -48,6 +49,23 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
     * @return True, If this TextChannel is considered NSFW by the official Discord Client
     */
     boolean isNSFW();
+
+    /**
+     * Retrieves the {@link net.dv8tion.jda.core.entities.Webhook Webhooks} attached to this TextChannel.
+     *
+     * <p>Possible ErrorResponses include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>if this channel was deleted</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>if we were removed from the guild</li>
+     * </ul>
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.core.entities.Webhook Webhook}{@literal >}
+     *         <br>An immutable list of Webhook attached to this channel
+     */
+    RestAction<List<Webhook>> getWebhooks();
 
     /**
      * Bulk deletes a list of messages.
@@ -87,11 +105,11 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         If this account does not have MANAGE_MESSAGES
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *
      * @see    #deleteMessagesByIds(Collection)
      */
-    RestAction<Void> deleteMessages(Collection<Message> messages);
+    AuditableRestAction<Void> deleteMessages(Collection<Message> messages);
 
     /**
      * Bulk deletes a list of messages.
@@ -134,28 +152,11 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         If this account does not have MANAGE_MESSAGES
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *
      * @see    #deleteMessages(Collection)
      */
-    RestAction<Void> deleteMessagesByIds(Collection<String> messageIds);
-
-    /**
-     * Retrieves the {@link net.dv8tion.jda.core.entities.Webhook Webhooks} attached to this TextChannel.
-     *
-     * <p>Possible ErrorResponses include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
-     *     <br>if this channel was deleted</li>
-     *
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>if we were removed from the guild</li>
-     * </ul>
-     *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.core.entities.Webhook Webhook}{@literal >}
-     *         <br>An immutable list of Webhook attached to this channel
-     */
-    RestAction<List<Webhook>> getWebhooks();
+    AuditableRestAction<Void> deleteMessagesByIds(Collection<String> messageIds);
 
     /**
      * Deletes a {@link net.dv8tion.jda.core.entities.Webhook Webhook} attached to this channel
@@ -187,9 +188,9 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MANAGE_WEBHOOKS Permission.MANAGE_WEBHOOKS} in this channel.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: Void
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
-    RestAction<Void> deleteWebhookById(String id);
+    AuditableRestAction<Void> deleteWebhookById(String id);
 
     /**
      * Attempts to remove all reactions from a message with the specified {@code messageId} in this TextChannel
@@ -210,6 +211,9 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *         The clear-reactions request was attempted after the Message had been deleted.</li>
      * </ul>
+     *
+     * @param  messageId
+     *         The not-empty valid message id
      *
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         If the currently logged in account does not have
@@ -217,9 +221,9 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * @throws java.lang.IllegalArgumentException
      *         If the provided {@code id} is {@code null} or empty.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
-    RestAction<Void> clearReactionsById(String messageId);
+    AuditableRestAction<Void> clearReactionsById(String messageId);
 
     /**
      * Attempts to remove all reactions from a message with the specified {@code messageId} in this TextChannel
@@ -241,13 +245,16 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *         The clear-reactions request was attempted after the Message had been deleted.</li>
      * </ul>
      *
+     * @param  messageId
+     *         The message id
+     *
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in this channel.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
-    default RestAction<Void> clearReactionsById(long messageId) {
+    default AuditableRestAction<Void> clearReactionsById(long messageId) {
         return clearReactionsById(Long.toUnsignedString(messageId));
     }
 

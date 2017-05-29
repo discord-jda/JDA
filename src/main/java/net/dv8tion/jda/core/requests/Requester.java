@@ -115,6 +115,10 @@ public class Requester
             request = createRequest(route, bodyData);
         }
 
+        // Apply custom headers like X-Audit-Log-Reason
+        //If customHeaders is null this does nothing
+        request.getHttpRequest().headers(apiRequest.customHeaders);
+
         Set<String> rays = new LinkedHashSet<>();
         try
         {

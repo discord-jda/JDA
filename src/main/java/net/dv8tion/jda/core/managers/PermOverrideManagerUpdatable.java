@@ -24,8 +24,8 @@ import net.dv8tion.jda.core.entities.PermissionOverride;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import org.apache.http.util.Args;
 import org.json.JSONObject;
 
@@ -421,15 +421,15 @@ public class PermOverrideManagerUpdatable
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS}
      *         in the {@link #getChannel() Channel}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Applies all changes that have been made in a single api-call.
      */
-    public RestAction<Void> update()
+    public AuditableRestAction<Void> update()
     {
         checkPermission(Permission.MANAGE_PERMISSIONS);
 
         if (!shouldUpdate())
-            return new RestAction.EmptyRestAction<>(null);
+            return new AuditableRestAction.EmptyRestAction<>(getJDA(), null);
 
         String targetId = override.isRoleOverride() ? override.getRole().getId() : override.getMember().getUser().getId();
         JSONObject body = new JSONObject()
@@ -440,7 +440,7 @@ public class PermOverrideManagerUpdatable
 
         reset();
         Route.CompiledRoute route = Route.Channels.MODIFY_PERM_OVERRIDE.compile(override.getChannel().getId(), targetId);
-        return new RestAction<Void>(getJDA(), route, body)
+        return new AuditableRestAction<Void>(getJDA(), route, body)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)

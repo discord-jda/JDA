@@ -34,6 +34,7 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.util.Args;
@@ -524,6 +525,12 @@ public class GuildImpl implements Guild
         if (getJDA().getAccountType() != AccountType.CLIENT)
             throw new AccountTypeException(AccountType.CLIENT);
         return getJDA().asClient().getRecentMentions(this);
+    }
+
+    @Override
+    public AuditLogPaginationAction getAuditLogs()
+    {
+        return new AuditLogPaginationAction(this);
     }
 
     @Override

@@ -29,8 +29,8 @@ import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import org.apache.http.util.Args;
 import org.json.JSONObject;
 
@@ -131,7 +131,7 @@ public class EmoteManagerUpdatable
      * throw an {@link IllegalArgumentException IllegalArgumentException}.
      * <br>Example names: {@code fmgSUP}, {@code tatDAB}
      *
-     *  @return {@link net.dv8tion.jda.client.managers.fields.EmoteField EmoteField} - Type: {@code String}
+     * @return {@link net.dv8tion.jda.client.managers.fields.EmoteField EmoteField} - Type: {@code String}
      */
     public EmoteField<String> getNameField()
     {
@@ -150,8 +150,12 @@ public class EmoteManagerUpdatable
      * <br>Otherwise {@link net.dv8tion.jda.core.managers.fields.Field#setValue(Object) Field.setValue(...)} will
      * throw an {@link IllegalArgumentException IllegalArgumentException}.
      *
-     *  @return {@link net.dv8tion.jda.client.managers.fields.EmoteField EmoteField} - Type: {@link Collection}
+     * @return {@link net.dv8tion.jda.client.managers.fields.EmoteField EmoteField} - Type: {@link Collection}
+     *
+     * @deprecated
+     *         This setting is only available to whitelisted accounts and <i>may</i> be removed in successive builds.
      */
+    @Deprecated
     public EmoteField<Collection<Role>> getRolesField()
     {
         return roles;
@@ -194,15 +198,15 @@ public class EmoteManagerUpdatable
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES MANAGE_EMOTES}
      *         in the underlying {@link net.dv8tion.jda.core.entities.Guild Guild}.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Applies all changes that have been made in a single api-call.
      */
-    public RestAction<Void> update()
+    public AuditableRestAction<Void> update()
     {
         checkPermission(Permission.MANAGE_EMOTES);
 
         if (!needsUpdate())
-            return new RestAction.EmptyRestAction<>(null);
+            return new AuditableRestAction.EmptyRestAction<>(getJDA(), null);
 
         JSONObject body = new JSONObject();
 
@@ -213,7 +217,7 @@ public class EmoteManagerUpdatable
 
         reset(); //reset because we built the JSONObject needed to update
         Route.CompiledRoute route = Route.Emotes.MODIFY_EMOTE.compile(getGuild().getId(), emote.getId());
-        return new RestAction<Void>(getJDA(), route, body)
+        return new AuditableRestAction<Void>(getJDA(), route, body)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)

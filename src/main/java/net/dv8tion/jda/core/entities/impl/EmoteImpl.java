@@ -28,8 +28,8 @@ import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -150,7 +150,7 @@ public class EmoteImpl implements Emote
     }
 
     @Override
-    public RestAction<Void> delete()
+    public AuditableRestAction<Void> delete()
     {
         if (getJDA().getAccountType() != AccountType.CLIENT)
             throw new AccountTypeException(AccountType.CLIENT);
@@ -162,7 +162,7 @@ public class EmoteImpl implements Emote
             throw new PermissionException(Permission.MANAGE_EMOTES);
 
         Route.CompiledRoute route = Route.Emotes.DELETE_EMOTE.compile(getGuild().getId(), getId());
-        return new RestAction<Void>(getJDA(), route, null)
+        return new AuditableRestAction<Void>(getJDA(), route, null)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)

@@ -20,7 +20,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
 import java.awt.Color;
 import java.util.Arrays;
@@ -95,13 +95,13 @@ public class RoleManager
      * @throws IllegalArgumentException
      *         If the provided name is {@code null} or not between 1-32 characters long
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link RoleManagerUpdatable#update() #update()}
      *
      * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#getNameField()
      * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#update()
      */
-    public RestAction<Void> setName(String name)
+    public AuditableRestAction<Void> setName(String name)
     {
         return updatable.getNameField().setValue(name).update();
     }
@@ -121,7 +121,7 @@ public class RoleManager
      *         <br>or does not meet the required hierarchy position to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
      *         <br>or does not have permission to apply one of the specified permissions
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link RoleManagerUpdatable#update() #update()}
      *
      * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#getPermissionField()
@@ -129,7 +129,7 @@ public class RoleManager
      * @see    #setPermissions(Collection)
      * @see    #setPermissions(Permission...)
      */
-    public RestAction<Void> setPermissions(long perms)
+    public AuditableRestAction<Void> setPermissions(long perms)
     {
         return updatable.getPermissionField().setValue(perms).update();
     }
@@ -151,7 +151,7 @@ public class RoleManager
      * @throws java.lang.IllegalArgumentException
      *         If any of the provided values is {@code null}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link RoleManagerUpdatable#update() #update()}
      *
      * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#getPermissionField()
@@ -159,7 +159,7 @@ public class RoleManager
      * @see    #setPermissions(Collection)
      * @see    #setPermissions(long)
      */
-    public RestAction<Void> setPermissions(Permission... permissions)
+    public AuditableRestAction<Void> setPermissions(Permission... permissions)
     {
         return setPermissions(Arrays.asList(permissions));
     }
@@ -181,7 +181,7 @@ public class RoleManager
      * @throws java.lang.IllegalArgumentException
      *         If any of the provided values is {@code null}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link RoleManagerUpdatable#update() #update()}
      *
      * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#getPermissionField()
@@ -189,7 +189,7 @@ public class RoleManager
      * @see    #setPermissions(Permission...)
      * @see    #setPermissions(long)
      */
-    public RestAction<Void> setPermissions(Collection<Permission> permissions)
+    public AuditableRestAction<Void> setPermissions(Collection<Permission> permissions)
     {
         return updatable.getPermissionField().setPermissions(permissions).update();
     }
@@ -205,13 +205,13 @@ public class RoleManager
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES}
      *         or does not meet the required hierarchy position to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link RoleManagerUpdatable#update() #update()}
      *
      * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#getColorField()
      * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#update()
      */
-    public RestAction<Void> setColor(Color color)
+    public AuditableRestAction<Void> setColor(Color color)
     {
         return updatable.getColorField().setValue(color).update();
     }
@@ -227,13 +227,13 @@ public class RoleManager
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES}
      *         or does not meet the required hierarchy position to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link RoleManagerUpdatable#update() #update()}
      *
      * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#getHoistedField()
      * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#update()
      */
-    public RestAction<Void> setHoisted(boolean hoisted)
+    public AuditableRestAction<Void> setHoisted(boolean hoisted)
     {
         return updatable.getHoistedField().setValue(hoisted).update();
     }
@@ -249,13 +249,13 @@ public class RoleManager
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES}
      *         or does not meet the required hierarchy position to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link RoleManagerUpdatable#update() #update()}
      *
      * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#getMentionableField()
      * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#update()
      */
-    public RestAction<Void> setMentionable(boolean mentionable)
+    public AuditableRestAction<Void> setMentionable(boolean mentionable)
     {
         return updatable.getMentionableField().setValue(mentionable).update();
     }
@@ -275,7 +275,7 @@ public class RoleManager
      *         <br>or does not meet the required hierarchy position to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
      *         <br>or does not have permission to apply one of the specified permissions
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link RoleManagerUpdatable#update() #update()}
      *
      * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#getPermissionField()
@@ -283,7 +283,7 @@ public class RoleManager
      * @see    #setPermissions(Collection)
      * @see    #setPermissions(Permission...)
      */
-    public RestAction<Void> givePermissions(Permission... perms)
+    public AuditableRestAction<Void> givePermissions(Permission... perms)
     {
         return givePermissions(Arrays.asList(perms));
     }
@@ -303,7 +303,7 @@ public class RoleManager
      *         <br>or does not meet the required hierarchy position to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
      *         <br>or does not have permission to apply one of the specified permissions
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link RoleManagerUpdatable#update() #update()}
      *
      * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#getPermissionField()
@@ -311,7 +311,7 @@ public class RoleManager
      * @see    #setPermissions(Collection)
      * @see    #setPermissions(Permission...)
      */
-    public RestAction<Void> givePermissions(Collection<Permission> perms)
+    public AuditableRestAction<Void> givePermissions(Collection<Permission> perms)
     {
         return updatable.getPermissionField().givePermissions(perms).update();
     }
@@ -331,7 +331,7 @@ public class RoleManager
      *         <br>or does not meet the required hierarchy position to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
      *         <br>or does not have permission to revoke one of the specified permissions
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link RoleManagerUpdatable#update() #update()}
      *
      * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#getPermissionField()
@@ -339,7 +339,7 @@ public class RoleManager
      * @see    #setPermissions(Collection)
      * @see    #setPermissions(Permission...)
      */
-    public RestAction<Void> revokePermissions(Permission... perms)
+    public AuditableRestAction<Void> revokePermissions(Permission... perms)
     {
         return revokePermissions(Arrays.asList(perms));
     }
@@ -359,7 +359,7 @@ public class RoleManager
      *         <br>or does not meet the required hierarchy position to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
      *         <br>or does not have permission to revoke one of the specified permissions
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link RoleManagerUpdatable#update() #update()}
      *
      * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#getPermissionField()
@@ -367,7 +367,7 @@ public class RoleManager
      * @see    #setPermissions(Collection)
      * @see    #setPermissions(Permission...)
      */
-    public RestAction<Void> revokePermissions(Collection<Permission> perms)
+    public AuditableRestAction<Void> revokePermissions(Collection<Permission> perms)
     {
         return updatable.getPermissionField().revokePermissions(perms).update();
     }

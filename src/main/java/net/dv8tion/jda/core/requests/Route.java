@@ -105,10 +105,9 @@ public class Route
         public static final Route MODIFY_CHANNELS =    new Route(PATCH,  "guilds/{guild_id}/channels",          "guild_id");
         public static final Route MODIFY_ROLES =       new Route(PATCH,  "guilds/{guild_id}/roles",             "guild_id");
         public static final Route GET_BANS =           new Route(GET,    "guilds/{guild_id}/bans",              "guild_id");
-        public static final Route BAN =                new Route(PUT,    "guilds/{guild_id}/bans/{user_id}",    "guild_id");
-        public static final Route BAN_WITH_DELETE =    new Route(PUT,    "guilds/{guild_id}/bans/{user_id}?delete-message-days={}",    "guild_id");
         public static final Route UNBAN =              new Route(DELETE, "guilds/{guild_id}/bans/{user_id}",    "guild_id");
         public static final Route KICK_MEMBER =        new Route(DELETE, "guilds/{guild_id}/members/{user_id}", "guild_id");
+        public static final Route KICK_MEMBER_REASON = new Route(DELETE, "guilds/{guild_id}/members/{user_id}?reason={}", "guild_id");
         public static final Route MODIFY_MEMBER =      new Route(PATCH,  "guilds/{guild_id}/members/{user_id}", "guild_id");
         public static final Route MODIFY_SELF_NICK =   new Route(PATCH,  "guilds/{guild_id}/members/@me/nick",  "guild_id");
         public static final Route PRUNABLE_COUNT =     new Route(GET,    "guilds/{guild_id}/prune?days={}",     "guild_id");
@@ -124,12 +123,29 @@ public class Route
         public static final Route MODIFY_INTEGRATION = new Route(PATCH,  "guilds/{guild_id}/integrations/{integration_id}",      "guild_id");
         public static final Route SYNC_INTEGRATION =   new Route(POST,   "guilds/{guild_id}/integrations/{integration_id}/sync", "guild_id");
 
+        public static final Route BAN =                    new Route(PUT, "guilds/{guild_id}/bans/{user_id}",           "guild_id");
+        public static final Route BAN_REASON =             new Route(PUT, "guilds/{guild_id}/bans/{user_id}?reason={}", "guild_id");
+        public static final Route BAN_WITH_DELETE =        new Route(PUT, "guilds/{guild_id}/bans/{user_id}?delete-message-days={}",           "guild_id");
+        public static final Route BAN_WITH_DELETE_REASON = new Route(PUT, "guilds/{guild_id}/bans/{user_id}?delete-message-days={}&reason={}", "guild_id");
+
         //Client Only
         public static final Route CREATE_GUILD = new Route(POST, "guilds");
         public static final Route DELETE_GUILD = new Route(POST, "guilds/{guild_id}/delete");
         public static final Route ACK_GUILD =    new Route(POST, "guilds/{guild_id}/ack");
 
         public static final Route MODIFY_NOTIFICATION_SETTINGS = new Route(PATCH, "users/@me/guilds/{guild_id}/settings");
+    }
+
+    public static class AuditLogs
+    {
+        public static final Route GET_AUDIT_LOGS =        new Route(GET, "guilds/{guild_id}/audit-logs?limit={}",           "guild_id");
+        public static final Route GET_AUDIT_LOGS_BEFORE = new Route(GET, "guilds/{guild_id}/audit-logs?limit={}&before={}", "guild_id");
+        public static final Route GET_AUDIT_LOGS_USER =        new Route(GET, "guilds/{guild_id}/audit-logs?limit={}&user_id={}",           "guild_id");
+        public static final Route GET_AUDIT_LOGS_USER_BEFORE = new Route(GET, "guilds/{guild_id}/audit-logs?limit={}&user_id={}&before={}", "guild_id");
+        public static final Route GET_AUDIT_LOGS_ACTION =        new Route(GET, "guilds/{guild_id}/audit-logs?limit={}&action_type={}",           "guild_id");
+        public static final Route GET_AUDIT_LOGS_ACTION_BEFORE = new Route(GET, "guilds/{guild_id}/audit-logs?limit={}&action_type={}&before={}", "guild_id");
+        public static final Route GET_AUDIT_LOGS_USER_ACTION =        new Route(GET, "guilds/{guild_id}/audit-logs?limit={}&user_id={}&action_type={}",           "guild_id");
+        public static final Route GET_AUDIT_LOGS_USER_ACTION_BEFORE = new Route(GET, "guilds/{guild_id}/audit-logs?limit={}&user_id={}&action_type={}&before={}", "guild_id");
     }
 
     public static class Emotes

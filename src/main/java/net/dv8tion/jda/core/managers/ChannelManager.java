@@ -19,7 +19,7 @@ package net.dv8tion.jda.core.managers;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
 /**
  * Facade for a {@link net.dv8tion.jda.core.managers.ChannelManagerUpdatable ChannelManagerUpdatable} instance.
@@ -97,13 +97,13 @@ public class ChannelManager
      * @throws IllegalArgumentException
      *         If the provided name is {@code null} or not between 2-100 characters long
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link ChannelManagerUpdatable#update() #update()}
      *
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getNameField()
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */
-    public RestAction<Void> setName(String name)
+    public AuditableRestAction<Void> setName(String name)
     {
         return updatable.getNameField().setValue(name).update();
     }
@@ -125,13 +125,13 @@ public class ChannelManager
      * @throws IllegalArgumentException
      *         If the provided topic is greater than {@code 1024} in length
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link ChannelManagerUpdatable#update() #update()}
      *
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getTopicField()
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */
-    public RestAction<Void> setTopic(String topic)
+    public AuditableRestAction<Void> setTopic(String topic)
     {
         return updatable.getTopicField().setValue(topic).update();
     }
@@ -153,13 +153,13 @@ public class ChannelManager
      * @throws IllegalArgumentException
      *         If the provided user-limit is negative or greater than {@code 99}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link ChannelManagerUpdatable#update() #update()}
      *
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getUserLimitField()
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */
-    public RestAction<Void> setUserLimit(int userLimit)
+    public AuditableRestAction<Void> setUserLimit(int userLimit)
     {
         return updatable.getUserLimitField().setValue(userLimit).update();
     }
@@ -181,13 +181,13 @@ public class ChannelManager
      * @throws IllegalArgumentException
      *         If the provided bitrate is not between 8000-96000
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link ChannelManagerUpdatable#update() #update()}
      *
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getBitrateField()
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */
-    public RestAction<Void> setBitrate(int bitrate)
+    public AuditableRestAction<Void> setBitrate(int bitrate)
     {
         return updatable.getBitrateField().setValue(bitrate).update();
     }

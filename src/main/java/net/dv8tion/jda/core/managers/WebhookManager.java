@@ -21,7 +21,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.Webhook;
-import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
 /**
  * Facade for a {@link net.dv8tion.jda.core.managers.WebhookManagerUpdatable WebhookManagerUpdatable} instance.
@@ -103,13 +103,13 @@ public class WebhookManager
      * @throws IllegalArgumentException
      *         If the provided name is {@code null}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link WebhookManagerUpdatable#update() #update()}
      *
      * @see    net.dv8tion.jda.core.managers.WebhookManagerUpdatable#getNameField()
      * @see    net.dv8tion.jda.core.managers.WebhookManagerUpdatable#update()
      */
-    public RestAction<Void> setName(String name)
+    public AuditableRestAction<Void> setName(String name)
     {
         return manager.getNameField().setValue(name).update();
     }
@@ -125,13 +125,13 @@ public class WebhookManager
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_WEBHOOKS MANAGE_WEBHOOKS}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link WebhookManagerUpdatable#update() #update()}
      *
      * @see    net.dv8tion.jda.core.managers.WebhookManagerUpdatable#getAvatarField()
      * @see    net.dv8tion.jda.core.managers.WebhookManagerUpdatable#update()
      */
-    public RestAction<Void> setAvatar(Icon icon)
+    public AuditableRestAction<Void> setAvatar(Icon icon)
     {
         return manager.getAvatarField().setValue(icon).update();
     }
@@ -152,13 +152,13 @@ public class WebhookManager
      * @throws IllegalArgumentException
      *         If the provided channel is {@code null} or from a different Guild
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link WebhookManagerUpdatable#update() #update()}
      *
      * @see    net.dv8tion.jda.core.managers.WebhookManagerUpdatable#getChannelField()
      * @see    net.dv8tion.jda.core.managers.WebhookManagerUpdatable#update()
      */
-    public RestAction<Void> setChannel(TextChannel channel)
+    public AuditableRestAction<Void> setChannel(TextChannel channel)
     {
         return manager.getChannelField().setValue(channel).update();
     }

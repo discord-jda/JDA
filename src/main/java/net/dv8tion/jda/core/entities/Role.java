@@ -18,7 +18,7 @@ package net.dv8tion.jda.core.entities;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.managers.RoleManager;
 import net.dv8tion.jda.core.managers.RoleManagerUpdatable;
-import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
 import java.awt.Color;
 
@@ -166,7 +166,7 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: Void
      */
-    RestAction<Void> delete();
+    AuditableRestAction<Void> delete();
 
     /**
      * Returns the {@link net.dv8tion.jda.core.JDA JDA} instance of this Role

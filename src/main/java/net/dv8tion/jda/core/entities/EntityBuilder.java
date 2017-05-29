@@ -21,10 +21,10 @@ import net.dv8tion.jda.bot.entities.ApplicationInfo;
 import net.dv8tion.jda.bot.entities.impl.ApplicationInfoImpl;
 import net.dv8tion.jda.client.entities.*;
 import net.dv8tion.jda.client.entities.impl.*;
-import net.dv8tion.jda.core.AccountType;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.OnlineStatus;
-import net.dv8tion.jda.core.Region;
+import net.dv8tion.jda.core.*;
+import net.dv8tion.jda.core.audit.ActionType;
+import net.dv8tion.jda.core.audit.AuditLogChange;
+import net.dv8tion.jda.core.audit.AuditLogEntry;
 import net.dv8tion.jda.core.entities.MessageEmbed.*;
 import net.dv8tion.jda.core.entities.impl.*;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
@@ -32,6 +32,7 @@ import net.dv8tion.jda.core.handle.GuildMembersChunkHandler;
 import net.dv8tion.jda.core.handle.ReadyHandler;
 import net.dv8tion.jda.core.requests.WebSocketClient;
 import net.dv8tion.jda.core.utils.MiscUtil;
+import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,8 +42,10 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class EntityBuilder
 {
@@ -1220,5 +1223,66 @@ public class EntityBuilder
         final String name = application.getString("name");
 
         return new AuthorizedApplicationImpl(api, authId, description, iconId, id, name, scopes);
+    }
+
+    public AuditLogEntry createAuditLogEntry(GuildImpl guild, JSONObject entryJson, JSONObject userJson)
+    {
+        final long targetId = entryJson.isNull("target_id") ? 0 : entryJson.getLong("target_id");
+        final long id = entryJson.getLong("id");
+        final int typeKey = entryJson.getInt("action_type");
+        final JSONArray changes = entryJson.isNull("changes") ? null : entryJson.getJSONArray("changes");
+        final JSONObject options = entryJson.isNull("options") ? null : entryJson.getJSONObject("options");
+        final String reason = entryJson.isNull("reason") ? null : entryJson.getString("reason");
+
+        final UserImpl user = (UserImpl) createFakeUser(userJson, false);
+        final Set<AuditLogChange> changesList;
+        final ActionType type = ActionType.from(typeKey);
+
+        if (changes != null)
+        {
+            changesList = new HashSet<>(changes.length());
+            for (int i = 0; i < changes.length(); i++)
+            {
+                final JSONObject object = changes.getJSONObject(i);
+                AuditLogChange change = createAuditLogChange(object);
+                changesList.add(change);
+            }
+        }
+        else
+        {
+            changesList = Collections.emptySet();
+        }
+
+        CaseInsensitiveMap<String, AuditLogChange> changeMap = new CaseInsensitiveMap<>(changeToMap(changesList));
+        CaseInsensitiveMap<String, Object> optionMap = options != null
+                ? new CaseInsensitiveMap<>(options.toMap()) : null;
+
+        return new AuditLogEntry(type, id, targetId, guild, user, reason, changeMap, optionMap);
+    }
+
+    public AuditLogChange createAuditLogChange(JSONObject change)
+    {
+        final String key = change.getString("key");
+        Object oldValue = change.isNull("old_value") ? null : change.get("old_value");
+        Object newValue = change.isNull("new_value") ? null : change.get("new_value");
+
+        // Don't confront users with JSON
+        if (oldValue instanceof JSONArray || newValue instanceof JSONArray)
+        {
+            oldValue = oldValue instanceof JSONArray ? ((JSONArray) oldValue).toList() : oldValue;
+            newValue = newValue instanceof JSONArray ? ((JSONArray) newValue).toList() : newValue;
+        }
+        else if (oldValue instanceof JSONObject || newValue instanceof JSONObject)
+        {
+            oldValue = oldValue instanceof JSONObject ? ((JSONObject) oldValue).toMap() : oldValue;
+            newValue = newValue instanceof JSONObject ? ((JSONObject) newValue).toMap() : newValue;
+        }
+
+        return new AuditLogChange(oldValue, newValue, key);
+    }
+
+    private Map<String, AuditLogChange> changeToMap(Set<AuditLogChange> changesList)
+    {
+        return changesList.stream().collect(Collectors.toMap(AuditLogChange::getKey, UnaryOperator.identity()));
     }
 }

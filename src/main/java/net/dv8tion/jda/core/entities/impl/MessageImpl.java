@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.util.Args;
 import org.json.JSONObject;
@@ -114,7 +115,7 @@ public class MessageImpl implements Message
         }
         else if (reaction.isSelf())
         {
-            return new RestAction.EmptyRestAction<>(null);
+            return new RestAction.EmptyRestAction<>(getJDA(), null);
         }
 
         return channel.addReactionById(getIdLong(), emote);
@@ -130,13 +131,13 @@ public class MessageImpl implements Message
                 .findFirst().orElse(null);
 
         if (reaction != null && reaction.isSelf())
-            return new RestAction.EmptyRestAction<>(null);
+            return new RestAction.EmptyRestAction<>(getJDA(), null);
 
         return channel.addReactionById(getIdLong(), unicode);
     }
 
     @Override
-    public RestAction<Void> clearReactions()
+    public AuditableRestAction<Void> clearReactions()
     {
         if (!isFromType(ChannelType.TEXT))
             throw new IllegalStateException("Cannot clear reactions from a message in a Group or PrivateChannel.");
@@ -459,7 +460,7 @@ public class MessageImpl implements Message
     }
 
     @Override
-    public RestAction<Void> delete()
+    public AuditableRestAction<Void> delete()
     {
         if (!getJDA().getSelfUser().equals(getAuthor()))
         {

@@ -24,6 +24,7 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.http.util.Args;
 import org.json.JSONArray;
@@ -52,45 +53,6 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     public String getAsMention()
     {
         return "<#" + id + '>';
-    }
-
-    @Override
-    public RestAction<Void> deleteMessages(Collection<Message> messages)
-    {
-        Args.notEmpty(messages, "Messages collection");
-
-        return deleteMessagesByIds(messages.stream()
-                .map(ISnowflake::getId)
-                .collect(Collectors.toList()));
-    }
-
-    @Override
-    public RestAction<Void> deleteMessagesByIds(Collection<String> messageIds)
-    {
-        checkPermission(Permission.MESSAGE_MANAGE, "Must have MESSAGE_MANAGE in order to bulk delete messages in this channel regardless of author.");
-        if (messageIds.size() < 2 || messageIds.size() > 100)
-            throw new IllegalArgumentException("Must provide at least 2 or at most 100 messages to be deleted.");
-
-        long twoWeeksAgo = ((System.currentTimeMillis() - (14 * 24 * 60 * 60 * 1000)) - MiscUtil.DISCORD_EPOCH) << MiscUtil.TIMESTAMP_OFFSET;
-        for (String id : messageIds)
-        {
-            Args.notEmpty(id, "Message id in messageIds");
-            Args.check(MiscUtil.parseSnowflake(id) > twoWeeksAgo, "Message Id provided was older than 2 weeks. Id: " + id);
-        }
-
-        JSONObject body = new JSONObject().put("messages", messageIds);
-        Route.CompiledRoute route = Route.Messages.DELETE_MESSAGES.compile(getId());
-        return new RestAction<Void>(getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
     }
 
     @Override
@@ -132,7 +94,46 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     }
 
     @Override
-    public RestAction<Void> deleteWebhookById(String id)
+    public AuditableRestAction<Void> deleteMessages(Collection<Message> messages)
+    {
+        Args.notEmpty(messages, "Messages collection");
+
+        return deleteMessagesByIds(messages.stream()
+                .map(ISnowflake::getId)
+                .collect(Collectors.toList()));
+    }
+
+    @Override
+    public AuditableRestAction<Void> deleteMessagesByIds(Collection<String> messageIds)
+    {
+        checkPermission(Permission.MESSAGE_MANAGE, "Must have MESSAGE_MANAGE in order to bulk delete messages in this channel regardless of author.");
+        if (messageIds.size() < 2 || messageIds.size() > 100)
+            throw new IllegalArgumentException("Must provide at least 2 or at most 100 messages to be deleted.");
+
+        long twoWeeksAgo = ((System.currentTimeMillis() - (14 * 24 * 60 * 60 * 1000)) - MiscUtil.DISCORD_EPOCH) << MiscUtil.TIMESTAMP_OFFSET;
+        for (String id : messageIds)
+        {
+            Args.notEmpty(id, "Message id in messageIds");
+            Args.check(MiscUtil.parseSnowflake(id) > twoWeeksAgo, "Message Id provided was older than 2 weeks. Id: " + id);
+        }
+
+        JSONObject body = new JSONObject().put("messages", messageIds);
+        Route.CompiledRoute route = Route.Messages.DELETE_MESSAGES.compile(getId());
+        return new AuditableRestAction<Void>(getJDA(), route, body)
+        {
+            @Override
+            protected void handleResponse(Response response, Request<Void> request)
+            {
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
+    }
+
+    @Override
+    public AuditableRestAction<Void> deleteWebhookById(String id)
     {
         Args.notEmpty(id, "webhook id");
 
@@ -140,7 +141,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
             throw new PermissionException(Permission.MANAGE_WEBHOOKS);
 
         Route.CompiledRoute route = Route.Webhooks.DELETE_WEBHOOK.compile(id);
-        return new RestAction<Void>(getJDA(), route, null)
+        return new AuditableRestAction<Void>(getJDA(), route, null)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -272,7 +273,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     }
 
     @Override
-    public RestAction<Void> deleteMessageById(String messageId)
+    public AuditableRestAction<Void> deleteMessageById(String messageId)
     {
         Args.notEmpty(messageId, "messageId");
         checkPermission(Permission.MESSAGE_READ);
@@ -341,13 +342,13 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     }
 
     @Override
-    public RestAction<Void> clearReactionsById(String messageId)
+    public AuditableRestAction<Void> clearReactionsById(String messageId)
     {
         Args.notEmpty(messageId, "Message ID");
 
         checkPermission(Permission.MESSAGE_MANAGE);
         Route.CompiledRoute route = Route.Messages.REMOVE_ALL_REACTIONS.compile(getId(), messageId);
-        return new RestAction<Void>(getJDA(), route, null)
+        return new AuditableRestAction<Void>(getJDA(), route, null)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)

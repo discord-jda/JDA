@@ -19,7 +19,7 @@ package net.dv8tion.jda.core.entities;
 import net.dv8tion.jda.client.managers.EmoteManager;
 import net.dv8tion.jda.client.managers.EmoteManagerUpdatable;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 
 import java.util.List;
@@ -102,10 +102,10 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
      *         if the current account is not from {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType#CLIENT}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         The RestAction to delete this Emote.
      */
-    RestAction<Void> delete();
+    AuditableRestAction<Void> delete();
 
     /**
      * The {@link net.dv8tion.jda.client.managers.EmoteManager Manager} for this emote, used to modify

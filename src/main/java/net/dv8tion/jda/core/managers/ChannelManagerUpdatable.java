@@ -27,8 +27,8 @@ import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.managers.fields.ChannelField;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import org.apache.http.util.Args;
 import org.json.JSONObject;
 
@@ -242,15 +242,15 @@ public class ChannelManagerUpdatable
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
      *         in the underlying {@link net.dv8tion.jda.core.entities.Channel Channel}.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Applies all changes that have been made in a single api-call.
      */
-    public RestAction<Void> update()
+    public AuditableRestAction<Void> update()
     {
         checkPermission(Permission.MANAGE_CHANNEL);
 
         if (!needToUpdate())
-            return new RestAction.EmptyRestAction<Void>(null);
+            return new AuditableRestAction.EmptyRestAction<>(getJDA(), null);
 
         JSONObject frame = new JSONObject().put("name", channel.getName());
         if (name.shouldUpdate())
@@ -264,7 +264,7 @@ public class ChannelManagerUpdatable
 
         reset();    //now that we've built our JSON object, reset the manager back to the non-modified state
         Route.CompiledRoute route = Route.Channels.MODIFY_CHANNEL.compile(channel.getId());
-        return new RestAction<Void>(channel.getJDA(), route, frame)
+        return new AuditableRestAction<Void>(channel.getJDA(), route, frame)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)

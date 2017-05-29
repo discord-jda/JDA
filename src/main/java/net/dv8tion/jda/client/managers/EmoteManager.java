@@ -21,7 +21,7 @@ import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.impl.EmoteImpl;
-import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
 import java.util.Set;
 
@@ -101,13 +101,13 @@ public class EmoteManager
      * @throws IllegalArgumentException
      *         If the provided name is {@code null} or not between 2-32 characters long
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link EmoteManagerUpdatable#update() #update()}
      *
      * @see    net.dv8tion.jda.client.managers.EmoteManagerUpdatable#getNameField()
      * @see    net.dv8tion.jda.client.managers.EmoteManagerUpdatable#update()
      */
-    public RestAction<Void> setName(String name)
+    public AuditableRestAction<Void> setName(String name)
     {
         return updatable.getNameField().setValue(name).update();
     }
@@ -127,13 +127,17 @@ public class EmoteManager
      * @throws IllegalArgumentException
      *         If any of the provided values is {@code null}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link EmoteManagerUpdatable#update() #update()}
      *
      * @see    net.dv8tion.jda.client.managers.EmoteManagerUpdatable#getRolesField()
      * @see    net.dv8tion.jda.client.managers.EmoteManagerUpdatable#update()
+     *
+     * @deprecated
+     *         This setting is only available to whitelisted accounts and <i>may</i> be removed in successive builds.
      */
-    public RestAction<Void> setRoles(Set<Role> roles)
+    @Deprecated
+    public AuditableRestAction<Void> setRoles(Set<Role> roles)
     {
         return updatable.getRolesField().setValue(roles).update();
     }

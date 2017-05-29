@@ -322,7 +322,7 @@ public class ApplicationManagerUpdatable
     public RestAction<Void> update()
     {
         if (!this.needsUpdate())
-            return new RestAction.EmptyRestAction<>(null);
+            return new RestAction.EmptyRestAction<>(getJDA(), null);
 
         final JSONObject body = new JSONObject();
 

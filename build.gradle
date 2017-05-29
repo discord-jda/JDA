@@ -22,7 +22,6 @@ import org.apache.tools.ant.filters.ReplaceTokens
 plugins {
     id 'com.jfrog.bintray' version '1.7.2'
     id 'java'
-    id 'maven'
     id 'maven-publish'
     id 'signing'
     id 'com.github.ben-manes.versions' version '0.13.0'
@@ -114,7 +113,9 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 javadoc {
     failOnError = false
     options.memberLevel = JavadocMemberLevel.PUBLIC
-    
+    options.author()
+    options.encoding = 'UTF-8'
+
     //### excludes ###
     //jda internals
     exclude("net/dv8tion/jda/bot/entities/impl")

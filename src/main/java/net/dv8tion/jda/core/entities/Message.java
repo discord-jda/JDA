@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
 import java.io.File;
 import java.io.InputStream;
@@ -480,9 +481,9 @@ public interface Message extends ISnowflake, Formattable
      *         If this Message was not sent by the currently logged in account and it was <b>not</b> sent in a
      *         {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
-    RestAction<Void> delete();
+    AuditableRestAction<Void> delete();
 
     /**
      * Returns the {@link net.dv8tion.jda.core.JDA JDA} instance related to this Message.
@@ -694,7 +695,7 @@ public interface Message extends ISnowflake, Formattable
      *         {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
-    RestAction<Void> clearReactions();
+    AuditableRestAction<Void> clearReactions();
 
     /**
      * This specifies the {@link net.dv8tion.jda.core.entities.MessageType MessageType} of this Message.

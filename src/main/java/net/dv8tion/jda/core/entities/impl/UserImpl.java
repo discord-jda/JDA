@@ -103,7 +103,7 @@ public class UserImpl implements User
     public RestAction<PrivateChannel> openPrivateChannel()
     {
         if (privateChannel != null)
-            return new RestAction.EmptyRestAction<>(privateChannel);
+            return new RestAction.EmptyRestAction<>(getJDA(), privateChannel);
 
         if (fake)
             throw new IllegalStateException("Cannot open a PrivateChannel with a Fake user.");

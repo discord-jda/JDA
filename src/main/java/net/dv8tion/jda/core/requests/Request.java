@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
+import org.apache.commons.collections4.map.CaseInsensitiveMap;
 
 import java.util.function.Consumer;
 
@@ -34,7 +35,10 @@ public class Request<T>
 
     private boolean isCanceled = false;
 
-    public Request(RestAction<T> restAction, Consumer<T> onSuccess, Consumer<Throwable> onFailure, boolean shouldQueue)
+    /* package */ final CaseInsensitiveMap<String, String> customHeaders;
+
+    public Request(RestAction<T> restAction, Consumer<T> onSuccess, Consumer<Throwable> onFailure,
+                   boolean shouldQueue, CaseInsensitiveMap<String, String> headers)
     {
         this.restAction = restAction;
         this.data = restAction.data;
@@ -42,6 +46,12 @@ public class Request<T>
         this.onFailure = onFailure;
         this.shouldQueue = shouldQueue;
         this.api = (JDAImpl) restAction.getJDA();
+        this.customHeaders = headers;
+    }
+
+    public Request(RestAction<T> restAction, Consumer<T> onSuccess, Consumer<Throwable> onFailure, boolean shouldQueue)
+    {
+        this(restAction, onSuccess, onFailure, shouldQueue, null);
     }
 
     public void onSuccess(T successObj)
