@@ -899,6 +899,7 @@ public interface Guild extends ISnowflake
         LOW(1),
         MEDIUM(2),
         HIGH(3),
+        VERY_HIGH(4),
         UNKNOWN(-1);
 
         private final int key;
