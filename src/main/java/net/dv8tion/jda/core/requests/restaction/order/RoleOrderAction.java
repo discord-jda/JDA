@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
+import okhttp3.RequestBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -95,7 +96,7 @@ public class RoleOrderAction extends OrderAction<Role, RoleOrderAction>
     }
 
     @Override
-    protected void finalizeData()
+    protected RequestBody finalizeData()
     {
         final Member self = guild.getSelfMember();
         final boolean isOwner = self.isOwner();
@@ -129,7 +130,7 @@ public class RoleOrderAction extends OrderAction<Role, RoleOrderAction>
                     .put("position", i + 1)); //plus 1 because position 0 is the @everyone position.
         }
 
-        setData(array);
+        return getRequestBody(array);
     }
 
     @Override

@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
+import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 /**
@@ -78,13 +79,13 @@ public class WebhookAction extends AuditableRestAction<Webhook>
     }
 
     @Override
-    public void finalizeData()
+    public RequestBody finalizeData()
     {
         JSONObject object = new JSONObject();
         object.put("name",   name);
         object.put("avatar", avatar != null ? avatar.getEncoding() : JSONObject.NULL);
 
-        setData(object);
+        return getRequestBody(object);
     }
 
     @Override

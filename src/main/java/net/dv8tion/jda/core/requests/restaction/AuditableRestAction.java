@@ -76,12 +76,17 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
     @Override
     protected CaseInsensitiveMap<String, String> finalizeHeaders()
     {
+        CaseInsensitiveMap<String, String> headers = super.finalizeHeaders();
+
         if (reason == null || reason.isEmpty())
-            return null;
-        CaseInsensitiveMap<String, String> map = new CaseInsensitiveMap<>();
-        String encodedReason = uriEncode(reason);
-        map.put("X-Audit-Log-Reason", encodedReason);
-        return map;
+            return headers;
+
+        if (headers == null)
+            headers = new CaseInsensitiveMap<>();
+
+        headers.put("X-Audit-Log-Reason", uriEncode(reason));
+
+        return headers;
     }
 
     private String uriEncode(String input)

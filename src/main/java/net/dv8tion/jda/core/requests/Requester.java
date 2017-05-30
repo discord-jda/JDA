@@ -39,7 +39,7 @@ public class Requester
     public static final SimpleLog LOG = SimpleLog.getLog("JDARequester");
     public static final String DISCORD_API_PREFIX = "https://discordapp.com/api/v6/";
     public static String USER_AGENT = "JDA DiscordBot (" + JDAInfo.GITHUB + ", " + JDAInfo.VERSION + ")";
-    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+    public static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json; charset=utf-8");
     public static final RequestBody EMPTY_BODY = RequestBody.create(null, new byte[]{});
 
     private final JDAImpl api;
@@ -130,7 +130,7 @@ public class Requester
         // Apply custom headers like X-Audit-Log-Reason
         //If customHeaders is null this does nothing
 
-        for (Entry<String, String> header : apiRequest.customHeaders.entrySet())
+        for (Entry<String, String> header : apiRequest.getHeaders().entrySet())
             builder.addHeader(header.getKey(), header.getValue());
 
         okhttp3.Request request = builder.build();

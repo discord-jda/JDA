@@ -19,23 +19,16 @@ package net.dv8tion.jda.core.requests.restaction;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.RestAction;
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
-
 import java.util.concurrent.CompletableFuture;
 
 public class RequestFuture<T> extends CompletableFuture<T>
 {
     final Request<T> request;
 
-    public RequestFuture(RestAction<T> restAction, boolean shouldQueue, CaseInsensitiveMap<String, String> headers)
-    {
-        this.request = new Request<T>(restAction, this::complete, this::completeExceptionally, shouldQueue, headers);
-        ((JDAImpl) restAction.getJDA()).getRequester().request(request);
-    }
-
     public RequestFuture(RestAction<T> restAction, boolean shouldQueue)
     {
-        this(restAction, shouldQueue, null);
+        this.request = new Request<T>(restAction, this::complete, this::completeExceptionally, shouldQueue);
+        ((JDAImpl) restAction.getJDA()).getRequester().request(request);
     }
 
     @Override

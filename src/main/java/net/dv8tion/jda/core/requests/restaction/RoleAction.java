@@ -25,6 +25,7 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
+import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import java.awt.Color;
@@ -226,7 +227,7 @@ public class RoleAction extends AuditableRestAction<Role>
     }
 
     @Override
-    protected void finalizeData()
+    protected RequestBody finalizeData()
     {
         JSONObject object = new JSONObject();
         if (name != null)
@@ -240,8 +241,7 @@ public class RoleAction extends AuditableRestAction<Role>
         if (mentionable != null)
             object.put("mentionable", mentionable.booleanValue());
 
-        setData(object);
-        super.finalizeData();
+        return getRequestBody(object);
     }
 
     @Override

@@ -300,7 +300,6 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>> exte
         return StreamSupport.stream(spliterator(), true);
     }
 
-    protected abstract void finalizeRoute();
     protected abstract void handleResponse(Response response, Request<List<T>> request);
 
     /**

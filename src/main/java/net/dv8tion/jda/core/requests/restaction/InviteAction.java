@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
+import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import java.util.concurrent.TimeUnit;
@@ -43,7 +44,7 @@ public class InviteAction extends AuditableRestAction<Invite>
     }
 
     @Override
-    protected void finalizeData()
+    protected RequestBody finalizeData()
     {
         final JSONObject object = new JSONObject();
 
@@ -56,7 +57,7 @@ public class InviteAction extends AuditableRestAction<Invite>
         if (this.unique != null)
             object.put("unique", (boolean) this.unique);
 
-        setData(object);
+        return getRequestBody(object);
     }
 
     @Override

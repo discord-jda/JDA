@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.Route.CompiledRoute;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.json.JSONArray;
 
@@ -79,9 +80,8 @@ public class ReactionPaginationAction extends PaginationAction<User, ReactionPag
         return reaction;
     }
 
-
     @Override
-    protected void finalizeRoute()
+    protected CompiledRoute finalizeRoute()
     {
         String after = null;
         String limit = String.valueOf(getLimit());
@@ -93,9 +93,9 @@ public class ReactionPaginationAction extends PaginationAction<User, ReactionPag
         String message = reaction.getMessageId();
 
         if (after != null)
-            route = Route.Messages.GET_REACTION_USERS_AFTER.compile(channel, message, code, limit, after);
+            return Route.Messages.GET_REACTION_USERS_AFTER.compile(channel, message, code, limit, after);
         else
-            route = Route.Messages.GET_REACTION_USERS_LIMIT.compile(channel, message, code, limit);
+            return Route.Messages.GET_REACTION_USERS_LIMIT.compile(channel, message, code, limit);
     }
 
     @Override

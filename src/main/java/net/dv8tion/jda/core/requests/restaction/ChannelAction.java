@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
+import okhttp3.RequestBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONString;
@@ -306,7 +307,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
     }
 
     @Override
-    protected void finalizeData()
+    protected RequestBody finalizeData()
     {
         JSONObject object = new JSONObject();
         object.put("name", name);
@@ -325,8 +326,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
                 object.put("topic", topic);
         }
 
-        setData(object);
-        super.finalizeData();
+        return getRequestBody(object);
     }
 
     @Override

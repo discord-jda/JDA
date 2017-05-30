@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.Route.CompiledRoute;
 import net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction;
 import org.json.JSONArray;
 
@@ -136,7 +137,7 @@ public class MentionPaginationAction extends PaginationAction<Message, MentionPa
     }
 
     @Override
-    protected void finalizeRoute()
+    protected CompiledRoute finalizeRoute()
     {
         Message last = this.last;
         String limit, before, everyone, role;
@@ -146,9 +147,9 @@ public class MentionPaginationAction extends PaginationAction<Message, MentionPa
         role = String.valueOf(isRole);
 
         if (guild != null)
-            route = prepareGuild(limit, before, everyone, role);
+            return prepareGuild(limit, before, everyone, role);
         else
-            route = prepareGlobal(limit, before, everyone, role);
+            return prepareGlobal(limit, before, everyone, role);
     }
 
     @Override

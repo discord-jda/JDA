@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.Route.CompiledRoute;
 import org.json.JSONArray;
 
 import java.util.ArrayList;
@@ -85,15 +86,15 @@ public class MessagePaginationAction extends PaginationAction<Message, MessagePa
     }
 
     @Override
-    protected void finalizeRoute()
+    protected CompiledRoute finalizeRoute()
     {
         final String limit = String.valueOf(this.getLimit());
         final Message last = this.last;
 
         if (last == null)
-            route = Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId(), limit);
+            return Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId(), limit);
         else
-            route = Route.Messages.GET_MESSAGE_HISTORY_BEFORE.compile(channel.getId(), limit, last.getId());
+            return Route.Messages.GET_MESSAGE_HISTORY_BEFORE.compile(channel.getId(), limit, last.getId());
     }
 
     @Override

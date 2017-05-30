@@ -28,30 +28,19 @@ public class Request<T>
 {
     private final JDAImpl api;
     private final RestAction<T> restAction;
-    private final RequestBody data;
     private final Consumer<T> onSuccess;
     private final Consumer<Throwable> onFailure;
     private final boolean shouldQueue;
 
     private boolean isCanceled = false;
 
-    /* package */ final CaseInsensitiveMap<String, String> customHeaders;
-
-    public Request(RestAction<T> restAction, Consumer<T> onSuccess, Consumer<Throwable> onFailure,
-                   boolean shouldQueue, CaseInsensitiveMap<String, String> headers)
+    public Request(RestAction<T> restAction, Consumer<T> onSuccess, Consumer<Throwable> onFailure, boolean shouldQueue)
     {
         this.restAction = restAction;
-        this.data = restAction.data;
         this.onSuccess = onSuccess;
         this.onFailure = onFailure;
         this.shouldQueue = shouldQueue;
         this.api = (JDAImpl) restAction.getJDA();
-        this.customHeaders = headers;
-    }
-
-    public Request(RestAction<T> restAction, Consumer<T> onSuccess, Consumer<Throwable> onFailure, boolean shouldQueue)
-    {
-        this(restAction, onSuccess, onFailure, shouldQueue, null);
     }
 
     public void onSuccess(T successObj)
@@ -120,14 +109,19 @@ public class Request<T>
         return onFailure;
     }
 
+    public CaseInsensitiveMap<String, String> getHeaders()
+    {
+        return restAction.getHeaders();
+    }
+
     public Route.CompiledRoute getRoute()
     {
-        return restAction.route;
+        return restAction.getRoute();
     }
 
     public RequestBody getData()
     {
-        return data;
+        return restAction.getData();
     }
 
     public boolean shouldQueue()

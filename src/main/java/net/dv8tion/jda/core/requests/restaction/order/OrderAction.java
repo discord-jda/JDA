@@ -410,7 +410,5 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
             request.onFailure(response);
     }
 
-    @Override
-    protected abstract void finalizeData();
     protected abstract void validateInput(T entity);
 }
