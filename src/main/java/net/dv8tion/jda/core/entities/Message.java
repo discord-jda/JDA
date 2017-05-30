@@ -21,13 +21,10 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
-
+import okhttp3.Request;
+import okhttp3.Response;
 import java.io.File;
 import java.io.InputStream;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.URL;
-import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.OffsetDateTime;
@@ -720,7 +717,7 @@ public interface Message extends ISnowflake, Formattable
         private final int size;
         private final int height;
         private final int width;
-        private final JDA jda;
+        private final JDAImpl jda;
 
         public Attachment(String id, String url, String proxyUrl, String fileName, int size, int height, int width, JDA jda)
         {
@@ -731,7 +728,7 @@ public interface Message extends ISnowflake, Formattable
             this.size = size;
             this.height = height;
             this.width = width;
-            this.jda = jda;
+            this.jda = (JDAImpl) jda;
         }
 
         /**
@@ -789,19 +786,9 @@ public interface Message extends ISnowflake, Formattable
             InputStream in = null;
             try
             {
-                URL url = new URL(getUrl());
-                URLConnection con;
-                if (jda.getGlobalProxy() == null)
-                {
-                    con = url.openConnection();
-                }
-                else
-                {
-                    con = url.openConnection(new Proxy(Proxy.Type.HTTP,
-                            new InetSocketAddress(jda.getGlobalProxy().getAddress(), jda.getGlobalProxy().getPort())));
-                }
-                con.addRequestProperty("user-agent", Requester.USER_AGENT);
-                in = con.getInputStream();
+                Request request = new Request.Builder().addHeader("user-agent", Requester.USER_AGENT).url(getUrl()).build();
+                Response response = jda.getRequester().getHttpClient().newCall(request).execute();
+                in = response.body().byteStream();
                 Files.copy(in, Paths.get(file.getAbsolutePath()));
                 return true;
             }

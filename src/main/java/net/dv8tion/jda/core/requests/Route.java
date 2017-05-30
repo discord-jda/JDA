@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.core.requests;
 
-import com.mashape.unirest.http.HttpMethod;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -24,7 +23,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.mashape.unirest.http.HttpMethod.*;
+import static net.dv8tion.jda.core.requests.Method.*;
 
 public class Route
 {
@@ -253,16 +252,16 @@ public class Route
     private final String ratelimitRoute;
     private final String compilableRoute;
     private final int paramCount;
-    private final HttpMethod method;
+    private final Method method;
     private final List<Integer> majorParamIndexes = new ArrayList<>();
     private final RateLimit ratelimit;
 
-    private Route(HttpMethod method, String route, String... majorParameters)
+    private Route(Method method, String route, String... majorParameters)
     {
         this(method, null, route, majorParameters);
     }
 
-    private Route(HttpMethod method, RateLimit rateLimit, String route, String... majorParameters)
+    private Route(Method method, RateLimit rateLimit, String route, String... majorParameters)
     {
         this.method = method;
         this.ratelimit = rateLimit;
@@ -308,7 +307,7 @@ public class Route
             ratelimitRoute = route;
     }
 
-    public HttpMethod getMethod()
+    public Method getMethod()
     {
         return method;
     }
@@ -416,7 +415,7 @@ public class Route
             return baseRoute;
         }
 
-        public HttpMethod getMethod()
+        public Method getMethod()
         {
             return baseRoute.method;
         }

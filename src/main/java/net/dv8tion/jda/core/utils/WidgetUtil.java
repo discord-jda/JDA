@@ -15,10 +15,6 @@
  */
 package net.dv8tion.jda.core.utils;
 
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.core.OnlineStatus;
@@ -29,10 +25,13 @@ import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.entities.impl.UserImpl;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.requests.Requester;
-import org.apache.http.util.Args;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
+import org.json.JSONTokener;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -64,7 +63,7 @@ public class WidgetUtil
      */
     public static String getWidgetBanner(Guild guild, BannerType type)
     {
-        Args.notNull(guild, "Guild");
+        Checks.notNull(guild, "Guild");
         return getWidgetBanner(guild.getId(), type);
     }
     
@@ -83,8 +82,8 @@ public class WidgetUtil
      */
     public static String getWidgetBanner(String guildId, BannerType type)
     {
-        Args.notNull(guildId, "GuildId");
-        Args.notNull(type, "BannerType");
+        Checks.notNull(guildId, "GuildId");
+        Checks.notNull(type, "BannerType");
         return String.format(WIDGET_PNG, guildId, type.name().toLowerCase());
     }
     
@@ -106,7 +105,7 @@ public class WidgetUtil
      */
     public static String getPremadeWidgetHtml(Guild guild, WidgetTheme theme, int width, int height)
     {
-        Args.notNull(guild, "Guild");
+        Checks.notNull(guild, "Guild");
         return getPremadeWidgetHtml(guild.getId(), theme, width, height);
     }
     
@@ -129,10 +128,10 @@ public class WidgetUtil
      */
     public static String getPremadeWidgetHtml(String guildId, WidgetTheme theme, int width, int height)
     {
-        Args.notNull(guildId, "GuildId");
-        Args.notNull(theme, "WidgetTheme");
-        Args.notNegative(width, "Width");
-        Args.notNegative(height, "Height");
+        Checks.notNull(guildId, "GuildId");
+        Checks.notNull(theme, "WidgetTheme");
+        Checks.notNegative(width, "Width");
+        Checks.notNegative(height, "Height");
         return String.format(WIDGET_HTML, guildId, theme.name().toLowerCase(), width, height);
     }
     
@@ -191,22 +190,33 @@ public class WidgetUtil
      */
     public static Widget getWidget(long guildId) throws RateLimitedException
     {
-        Args.notNull(guildId, "GuildId");
+        Checks.notNull(guildId, "GuildId");
         try
         {
-            HttpResponse<JsonNode> result = Unirest.get(String.format(WIDGET_URL, guildId)).asJson();
-            switch(result.getStatus())
+            HttpURLConnection connection = (HttpURLConnection) new URL(String.format(WIDGET_URL, guildId)).openConnection();
+            connection.setRequestMethod("GET");
+            connection.addRequestProperty("user-agent", Requester.USER_AGENT);
+            connection.connect();
+            
+            switch(connection.getResponseCode())
             {
-                case 200: return new Widget(result.getBody().getObject()); // ok
+                case 200: // ok
+                    try (InputStream stream = connection.getInputStream())
+                    {
+                        return new Widget(new JSONObject(new JSONTokener(stream)));
+                    }
+                    catch (IOException ignored) {
+                        return null;
+                    }
                 case 400:              // not valid snowflake
                 case 404: return null; // guild not found
                 case 403: return new Widget(guildId); // widget disabled
                 case 429: // ratelimited
                 {
                     long retryAfter;
-                    try
+                    try (InputStream stream = connection.getInputStream())
                     {
-                        retryAfter = result.getBody().getObject().getLong("retry_after");
+                        retryAfter = new JSONObject(new JSONTokener(stream)).getLong("retry_after");
                     }
                     catch (Exception e)
                     {
@@ -214,10 +224,10 @@ public class WidgetUtil
                     }
                     throw new RateLimitedException(WIDGET_URL, retryAfter);
                 }
-                default: throw new RuntimeException("An unknown status was returned: " + result.getStatus() + " " + result.getStatusText());
+                default: throw new RuntimeException("An unknown status was returned: " + connection.getResponseCode() + " " + connection.getResponseMessage());
             }
         }
-        catch (UnirestException ex)
+        catch (IOException ex)
         {
             throw new RuntimeException(ex);
         }

@@ -55,7 +55,7 @@ public class AuthorizedApplicationImpl implements AuthorizedApplication
     {
         CompiledRoute route = Route.Applications.DELETE_AUTHORIZED_APPLICATION.compile(getAuthId());
 
-        return new RestAction<Void>(this.api, route, null)
+        return new RestAction<Void>(this.api, route)
         {
             @Override
             protected void handleResponse(final Response response, final Request<Void> request)

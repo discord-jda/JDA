@@ -21,14 +21,14 @@ import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
-
+import okhttp3.RequestBody;
 import java.util.function.Consumer;
 
 public class Request<T>
 {
     private final JDAImpl api;
     private final RestAction<T> restAction;
-    private final Object data;
+    private final RequestBody data;
     private final Consumer<T> onSuccess;
     private final Consumer<Throwable> onFailure;
     private final boolean shouldQueue;
@@ -125,7 +125,7 @@ public class Request<T>
         return restAction.route;
     }
 
-    public Object getData()
+    public RequestBody getData()
     {
         return data;
     }

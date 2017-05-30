@@ -21,7 +21,7 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -61,7 +61,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      *        in the order list
      * @param route
      *        The {@link net.dv8tion.jda.core.requests.Route.CompiledRoute CompiledRoute}
-     *        which is provided to the {@link RestAction#RestAction(JDA, Route.CompiledRoute, Object) RestAction Constructor}
+     *        which is provided to the {@link RestAction#RestAction(JDA, Route.CompiledRoute, okhttp3.RequestBody) RestAction Constructor}
      */
     public OrderAction(JDA api, Route.CompiledRoute route)
     {
@@ -78,11 +78,11 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      *        Whether or not the order of items should be ascending
      * @param route
      *        The {@link net.dv8tion.jda.core.requests.Route.CompiledRoute CompiledRoute}
-     *        which is provided to the {@link RestAction#RestAction(JDA, Route.CompiledRoute, Object) RestAction Constructor}
+     *        which is provided to the {@link RestAction#RestAction(JDA, Route.CompiledRoute, okhttp3.RequestBody) RestAction Constructor}
      */
     public OrderAction(JDA api, boolean ascendingOrder, Route.CompiledRoute route)
     {
-        super(api, route, null);
+        super(api, route);
         this.api = api;
         this.orderList = new ArrayList<>();
         this.ascendingOrder = ascendingOrder;
@@ -128,8 +128,8 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      */
     public M selectPosition(int selectedPosition)
     {
-        Args.notNegative(selectedPosition, "Provided selectedPosition");
-        Args.check(selectedPosition < orderList.size(), "Provided selectedPosition is too big and is out of bounds. selectedPosition: " + selectedPosition);
+        Checks.notNegative(selectedPosition, "Provided selectedPosition");
+        Checks.check(selectedPosition < orderList.size(), "Provided selectedPosition is too big and is out of bounds. selectedPosition: " + selectedPosition);
 
         this.selectedPosition = selectedPosition;
 
@@ -153,7 +153,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      */
     public M selectPosition(T selectedEntity)
     {
-        Args.notNull(selectedEntity, "Channel");
+        Checks.notNull(selectedEntity, "Channel");
         validateInput(selectedEntity);
 
         return selectPosition(orderList.indexOf(selectedEntity));
@@ -204,18 +204,18 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      */
     public M moveUp(int amount)
     {
-        Args.notNegative(amount, "Provided amount");
+        Checks.notNegative(amount, "Provided amount");
         if (selectedPosition == -1)
             throw new IllegalStateException("Cannot move until an item has been selected. Use #selectPosition first.");
         if (ascendingOrder)
         {
-            Args.check(selectedPosition - amount >= 0,
+            Checks.check(selectedPosition - amount >= 0,
                     "Amount provided to move up is too large and would be out of bounds." +
                             "Selected position: " + selectedPosition + " Amount: " + amount + " Largest Position: " + orderList.size());
         }
         else
         {
-            Args.check(selectedPosition + amount < orderList.size(),
+            Checks.check(selectedPosition + amount < orderList.size(),
                     "Amount provided to move up is too large and would be out of bounds." +
                             "Selected position: " + selectedPosition + " Amount: " + amount + " Largest Position: " + orderList.size());
         }
@@ -244,19 +244,19 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      */
     public M moveDown(int amount)
     {
-        Args.notNegative(amount, "Provided amount");
+        Checks.notNegative(amount, "Provided amount");
         if (selectedPosition == -1)
             throw new IllegalStateException("Cannot move until an item has been selected. Use #selectPosition first.");
 
         if (ascendingOrder)
         {
-            Args.check(selectedPosition + amount < orderList.size(),
+            Checks.check(selectedPosition + amount < orderList.size(),
                     "Amount provided to move down is too large and would be out of bounds." +
                             "Selected position: " + selectedPosition + " Amount: " + amount + " Largest Position: " + orderList.size());
         }
         else
         {
-            Args.check(selectedPosition - amount >= orderList.size(),
+            Checks.check(selectedPosition - amount >= orderList.size(),
                     "Amount provided to move down is too large and would be out of bounds." +
                             "Selected position: " + selectedPosition + " Amount: " + amount + " Largest Position: " + orderList.size());
         }
@@ -287,8 +287,8 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      */
     public M moveTo(int position)
     {
-        Args.notNegative(position, "Provided position");
-        Args.check(position < orderList.size(), "Provided position is too big and is out of bounds.");
+        Checks.notNegative(position, "Provided position");
+        Checks.check(position < orderList.size(), "Provided position is too big and is out of bounds.");
 
         T selectedItem = orderList.remove(selectedPosition);
         orderList.add(position, selectedItem);
@@ -312,8 +312,8 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      */
     public M swapPosition(int swapPosition)
     {
-        Args.notNegative(swapPosition, "Provided swapPosition");
-        Args.check(swapPosition < orderList.size(), "Provided swapPosition is too big and is out of bounds. swapPosition: "
+        Checks.notNegative(swapPosition, "Provided swapPosition");
+        Checks.check(swapPosition < orderList.size(), "Provided swapPosition is too big and is out of bounds. swapPosition: "
                 + swapPosition);
 
         T selectedItem = orderList.get(selectedPosition);
@@ -344,7 +344,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      */
     public M swapPosition(T swapEntity)
     {
-        Args.notNull(swapEntity, "Provided swapEntity");
+        Checks.notNull(swapEntity, "Provided swapEntity");
         validateInput(swapEntity);
 
         return swapPosition(orderList.indexOf(swapEntity));
@@ -395,7 +395,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      */
     public M sortOrder(final Comparator<T> comparator)
     {
-        Args.notNull(comparator, "Provided comparator");
+        Checks.notNull(comparator, "Provided comparator");
 
         this.orderList.sort(comparator);
         return (M) this;

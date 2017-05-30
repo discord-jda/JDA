@@ -22,8 +22,7 @@ import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.UserImpl;
-import org.apache.http.util.Args;
-
+import net.dv8tion.jda.core.utils.Checks;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -190,7 +189,7 @@ public class AuditLogEntry implements ISnowflake
      */
     public List<AuditLogChange> getChangesForKeys(AuditLogKey... keys)
     {
-        Args.notNull(keys, "Keys");
+        Checks.notNull(keys, "Keys");
         List<AuditLogChange> changes = new ArrayList<>(keys.length);
         for (AuditLogKey key : keys)
         {
@@ -255,7 +254,7 @@ public class AuditLogEntry implements ISnowflake
      */
     public <T> T getOption(AuditLogOption option)
     {
-        Args.notNull(option, "Option");
+        Checks.notNull(option, "Option");
         return getOptionByName(option.getKey());
     }
 
@@ -275,7 +274,7 @@ public class AuditLogEntry implements ISnowflake
      */
     public List<Object> getOptions(AuditLogOption... options)
     {
-        Args.notNull(options, "Options");
+        Checks.notNull(options, "Options");
         List<Object> items = new ArrayList<>(options.length);
         for (AuditLogOption option : options)
         {

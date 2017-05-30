@@ -42,7 +42,7 @@ public class ApplicationAction extends RestAction<Application>
 
     public ApplicationAction(final JDAImpl api, String name)
     {
-        super(api, Route.Applications.CREATE_APPLICATION.compile(), null);
+        super(api, Route.Applications.CREATE_APPLICATION.compile());
 
        this.setName(name);
     }
@@ -59,7 +59,7 @@ public class ApplicationAction extends RestAction<Application>
         if (this.icon != null)
             object.put("icon", this.icon.getEncoding());
 
-        this.data = object;
+        setData(object);
     }
 
     @Override

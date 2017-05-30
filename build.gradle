@@ -60,9 +60,7 @@ dependencies {
 
     //Web Connection Support
     compile 'com.neovisionaries:nv-websocket-client:2.0'
-    compile ( 'com.mashape.unirest:unirest-java:1.4.9' ) {
-        exclude group: 'junit', module: 'junit'
-    }
+    compile 'com.squareup.okhttp3:okhttp:3.7.0'
 
     //Sets the dependencies for the examples
     examplesCompile configurations.compile

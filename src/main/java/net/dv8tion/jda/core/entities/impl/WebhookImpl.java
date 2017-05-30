@@ -105,7 +105,7 @@ public class WebhookImpl implements Webhook
     public AuditableRestAction<Void> delete()
     {
         Route.CompiledRoute route = Route.Webhooks.DELETE_TOKEN_WEBHOOK.compile(getId(), token);
-        return new AuditableRestAction<Void>(getJDA(), route, null)
+        return new AuditableRestAction<Void>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)

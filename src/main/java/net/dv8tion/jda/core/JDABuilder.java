@@ -15,7 +15,6 @@
  */
 package net.dv8tion.jda.core;
 
-import com.neovisionaries.ws.client.ProxySettings;
 import com.neovisionaries.ws.client.WebSocketFactory;
 import net.dv8tion.jda.core.JDA.Status;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
@@ -24,8 +23,8 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
-import org.apache.http.HttpHost;
-import org.apache.http.util.Args;
+import okhttp3.OkHttpClient;
+import net.dv8tion.jda.core.utils.Checks;
 
 import javax.security.auth.login.LoginException;
 import java.util.Arrays;
@@ -46,11 +45,10 @@ import java.util.List;
  */
 public class JDABuilder
 {
-    protected static boolean jdaCreated = false;
-    protected static HttpHost proxy = null;
-
     protected final List<Object> listeners;
 
+    protected OkHttpClient.Builder httpClientBuilder = null;
+    protected WebSocketFactory wsFactory = null;
     protected AccountType accountType;
     protected String token = null;
     protected IEventManager eventManager = null;
@@ -58,7 +56,6 @@ public class JDABuilder
     protected JDA.ShardInfo shardInfo = null;
     protected Game game = null;
     protected OnlineStatus status = OnlineStatus.ONLINE;
-    protected int websocketTimeout = 0;
     protected int maxReconnectDelay = 900;
     protected int corePoolSize = 2;
     protected boolean enableVoice = true;
@@ -119,52 +116,23 @@ public class JDABuilder
         return this;
     }
 
-    /**
-     * Sets the proxy that will be used by <b>ALL</b> JDA instances.
-     * <br>Once this is set <b>IT CANNOT BE CHANGED.</b>
-     * <br>After a JDA instance as been created, this method can never be called again, even if you are creating a new JDA object.
-     * <br><b>Note:</b> currently this only supports HTTP proxies.
-     *
-     * @param  proxy
-     *         The proxy to use.
-     *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this method is called after proxy settings have already been set or after at least 1 JDA object has been created.
-     *
-     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
-     */
-    public JDABuilder setProxy(HttpHost proxy)
+    // FIXME setHttpClientBuilder() & setWebsocketFactory() are ugly
+    // I don't like users having to mess with the ws or http lib,
+    // on the other side this allows them to configure the behaviour more deeply without
+    // making JDABuilder overly complicated by adding too many methods 
+    public JDABuilder setHttpClientBuilder(OkHttpClient.Builder httpClientBuilder)
     {
-        if (jdaCreated)
-            throw new UnsupportedOperationException("You cannot change the proxy after a JDA object has been created. Proxy settings are global among all instances!");
-        this.proxy = proxy;
+        this.httpClientBuilder = httpClientBuilder;
+        return this;
+    }
+    public JDABuilder setWebsocketFactory(WebSocketFactory wsFactory)
+    {
+        this.wsFactory = wsFactory;
         return this;
     }
 
     /**
-     * Sets the timeout (in milliseconds) for all Websockets created by JDA (MainWS and AudioWS's) for this instance.
-     *
-     * <p>By default, this is set to <b>0</b> which is supposed to represent infinite-timeout, however due to how the JVM
-     * is implemented at the lower level (typically C), an infinite timeout will usually not be respected, and as such
-     * providing an explicitly defined timeout will typically work better.
-     *
-     * <p>Default: <b>0 - Infinite-Timeout (maybe?)</b>
-     *
-     * @param  websocketTimeout
-     *         Non-negative int representing Websocket timeout in milliseconds.
-     *
-     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
-     */
-    public JDABuilder setWebSocketTimeout(int websocketTimeout)
-    {
-        Args.notNegative(websocketTimeout, "Provided WebSocket timeout cannot be negative!");
-
-        this.websocketTimeout = websocketTimeout;
-        return this;
-    }
-
-    /**
-     * Sets the amount core pool size for the global JDA
+     * Sets the core pool size for the global JDA
      * {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} which is used
      * in various locations throughout the JDA instance created by this builder. (Default: 2)
      *
@@ -174,11 +142,11 @@ public class JDABuilder
      * @throws java.lang.IllegalArgumentException
      *         If the specified core pool size is not positive
      *
-     * @return the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
      */
     public JDABuilder setCorePoolSize(int size)
     {
-        Args.positive(size, "Core pool size");
+        Checks.positive(size, "Core pool size");
         this.corePoolSize = size;
         return this;
     }
@@ -192,7 +160,7 @@ public class JDABuilder
      * @param  enabled
      *         True - enables voice support.
      *
-     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
      */
     public JDABuilder setAudioEnabled(boolean enabled)
     {
@@ -210,7 +178,7 @@ public class JDABuilder
      * @param  enabled
      *         True - The MESSAGE_DELETE_BULK will be split into multiple individual MessageDeleteEvents.
      *
-     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
      */
     public JDABuilder setBulkDeleteSplittingEnabled(boolean enabled)
     {
@@ -408,7 +376,7 @@ public class JDABuilder
      */
     public JDABuilder setMaxReconnectDelay(int maxReconnectDelay)
     {
-        Args.check(maxReconnectDelay >= 32, "Max reconnect delay must be 32 seconds or greater. You provided %d.", maxReconnectDelay);
+        Checks.check(maxReconnectDelay >= 32, "Max reconnect delay must be 32 seconds or greater. You provided %d.", maxReconnectDelay);
 
         this.maxReconnectDelay = maxReconnectDelay;
         return this;
@@ -465,18 +433,7 @@ public class JDABuilder
      */
     public JDA buildAsync() throws LoginException, IllegalArgumentException, RateLimitedException
     {
-        jdaCreated = true;
-
-        WebSocketFactory wsFactory = new WebSocketFactory();
-        wsFactory.setConnectionTimeout(websocketTimeout);
-        if (proxy != null)
-        {
-            ProxySettings settings = wsFactory.getProxySettings();
-            settings.setHost(proxy.getHostName());
-            settings.setPort(proxy.getPort());
-        }
-
-        JDAImpl jda = new JDAImpl(accountType, proxy, wsFactory, autoReconnect, enableVoice, enableShutdownHook,
+        JDAImpl jda = new JDAImpl(accountType, httpClientBuilder, wsFactory, autoReconnect, enableVoice, enableShutdownHook,
                 enableBulkDeleteSplitting, corePoolSize, maxReconnectDelay);
 
         if (eventManager != null)

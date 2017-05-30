@@ -162,7 +162,7 @@ public class EmoteImpl implements Emote
             throw new PermissionException(Permission.MANAGE_EMOTES);
 
         Route.CompiledRoute route = Route.Emotes.DELETE_EMOTE.compile(getGuild().getId(), getId());
-        return new AuditableRestAction<Void>(getJDA(), route, null)
+        return new AuditableRestAction<Void>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)

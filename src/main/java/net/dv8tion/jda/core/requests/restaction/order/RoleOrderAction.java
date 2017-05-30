@@ -22,7 +22,7 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.requests.Route;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -129,14 +129,14 @@ public class RoleOrderAction extends OrderAction<Role, RoleOrderAction>
                     .put("position", i + 1)); //plus 1 because position 0 is the @everyone position.
         }
 
-        this.data = array;
+        setData(array);
     }
 
     @Override
     protected void validateInput(Role entity)
     {
-        Args.check(entity.getGuild().equals(guild), "Provided selected role is not from this Guild!");
-        Args.check(orderList.contains(entity), "Provided role is not in the list of orderable roles!");
+        Checks.check(entity.getGuild().equals(guild), "Provided selected role is not from this Guild!");
+        Checks.check(orderList.contains(entity), "Provided role is not in the list of orderable roles!");
     }
 }
 

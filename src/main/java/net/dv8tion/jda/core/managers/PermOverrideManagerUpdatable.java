@@ -26,7 +26,7 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
 import java.util.Arrays;
@@ -163,10 +163,10 @@ public class PermOverrideManagerUpdatable
      */
     public PermOverrideManagerUpdatable grant(Collection<Permission> permissions)
     {
-        Args.notNull(permissions, "Permission Collection");
+        Checks.notNull(permissions, "Permission Collection");
         permissions.forEach(perm ->
         {
-            Args.notNull(perm, "Permission in Permission Collection");
+            Checks.notNull(perm, "Permission in Permission Collection");
             //checkPermission(perm);
         });
         setupValues();
@@ -230,10 +230,10 @@ public class PermOverrideManagerUpdatable
      */
     public PermOverrideManagerUpdatable deny(Collection<Permission> permissions)
     {
-        Args.notNull(permissions, "Permission Collection");
+        Checks.notNull(permissions, "Permission Collection");
         permissions.forEach(perm ->
         {
-            Args.notNull(perm, "Permission in Permission Collection");
+            Checks.notNull(perm, "Permission in Permission Collection");
             //checkPermission(perm);
         });
         setupValues();
@@ -300,10 +300,10 @@ public class PermOverrideManagerUpdatable
      */
     public PermOverrideManagerUpdatable clear(Collection<Permission> permissions)
     {
-        Args.notNull(permissions, "Permission Collection");
+        Checks.notNull(permissions, "Permission Collection");
         permissions.forEach(perm ->
         {
-            Args.notNull(perm, "Permission in Permission Collection");
+            Checks.notNull(perm, "Permission in Permission Collection");
             //checkPermission(perm);
         });
         setupValues();

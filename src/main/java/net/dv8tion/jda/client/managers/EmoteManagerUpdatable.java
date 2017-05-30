@@ -31,7 +31,7 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
 import java.util.Collection;
@@ -249,7 +249,7 @@ public class EmoteManagerUpdatable
             @Override
             public void checkValue(String value)
             {
-                Args.notNull(value, "emote name");
+                Checks.notNull(value, "emote name");
                 if (value.length() < 2 || value.length() > 32)
                     throw new IllegalArgumentException("Emote name must be 2 to 32 characters in length");
 
@@ -264,8 +264,8 @@ public class EmoteManagerUpdatable
             @Override
             public void checkValue(Collection<Role> value)
             {
-                Args.notNull(value, "Role Collection");
-                value.forEach(r -> Args.notNull(r, "Role in Collection"));
+                Checks.notNull(value, "Role Collection");
+                value.forEach(r -> Checks.notNull(r, "Role in Collection"));
             }
         };
     }

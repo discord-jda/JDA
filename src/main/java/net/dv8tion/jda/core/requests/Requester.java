@@ -16,13 +16,6 @@
 
 package net.dv8tion.jda.core.requests;
 
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
-import com.mashape.unirest.request.BaseRequest;
-import com.mashape.unirest.request.GetRequest;
-import com.mashape.unirest.request.HttpRequest;
-import com.mashape.unirest.request.body.MultipartBody;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDAInfo;
@@ -31,18 +24,27 @@ import net.dv8tion.jda.core.requests.Route.CompiledRoute;
 import net.dv8tion.jda.core.requests.ratelimit.BotRateLimiter;
 import net.dv8tion.jda.core.requests.ratelimit.ClientRateLimiter;
 import net.dv8tion.jda.core.utils.SimpleLog;
-
+import okhttp3.Call;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
+import okhttp3.internal.http.HttpMethod;
 import java.util.LinkedHashSet;
+import java.util.Map.Entry;
 import java.util.Set;
 
 public class Requester
 {
     public static final SimpleLog LOG = SimpleLog.getLog("JDARequester");
-    public static final String DISCORD_API_PREFIX = "https://discordapp.com/api/";
+    public static final String DISCORD_API_PREFIX = "https://discordapp.com/api/v6/";
     public static String USER_AGENT = "JDA DiscordBot (" + JDAInfo.GITHUB + ", " + JDAInfo.VERSION + ")";
+    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+    public static final RequestBody EMPTY_BODY = RequestBody.create(null, new byte[]{});
 
     private final JDAImpl api;
     private final RateLimiter rateLimiter;
+
+    private final OkHttpClient httpClient;
 
     public Requester(JDA api)
     {
@@ -59,6 +61,8 @@ public class Requester
             rateLimiter = new BotRateLimiter(this, 5);
         else
             rateLimiter = new ClientRateLimiter(this, 5);
+        
+        httpClient = this.api.getHttpClientBuilder().build();
     }
 
     public JDAImpl getJDA()
@@ -78,7 +82,7 @@ public class Requester
         {
             Long retryAfter = execute(apiRequest);
             if (retryAfter != null)
-                apiRequest.getRestAction().handleResponse(new Response(429, null, retryAfter), apiRequest);
+                apiRequest.getRestAction().handleResponse(new Response(retryAfter), apiRequest);
         }
     }
 
@@ -99,58 +103,69 @@ public class Requester
         if (retryAfter != null)
             return retryAfter;
 
-        BaseRequest request;
-        Object body = apiRequest.getData();
+        okhttp3.Request.Builder builder = new okhttp3.Request.Builder();
 
-        //Special case handling for MessageChannel#sendFile.
-        // If a MultipartBody request was passed as the body then we assume it was constructed correctly
-        // and just wrap it in auth headers and allow processing.
-        if (body instanceof MultipartBody)
+        String url = DISCORD_API_PREFIX + route.getCompiledRoute();
+        builder.url(url);
+
+        String method = apiRequest.getRoute().getMethod().toString();
+        RequestBody body = apiRequest.getData();
+
+        if (body == null && HttpMethod.requiresRequestBody(method))
+            body = EMPTY_BODY;
+
+        builder.method(method, body);
+
+        builder.header("user-agent", USER_AGENT);
+
+        //adding token to all requests to the discord api or cdn pages
+        //we can check for startsWith(DISCORD_API_PREFIX) because the cdn endpoints don't need any kind of authorization
+        if (url.startsWith(DISCORD_API_PREFIX) && api.getToken() != null)
         {
-            request = addHeaders((MultipartBody) body);
-        }
-        else
-        {
-            String bodyData = body != null ? body.toString() : null;
-            request = createRequest(route, bodyData);
+            builder.header("authorization", api.getToken());
         }
 
         // Apply custom headers like X-Audit-Log-Reason
         //If customHeaders is null this does nothing
-        request.getHttpRequest().headers(apiRequest.customHeaders);
+
+        for (Entry<String, String> header : apiRequest.customHeaders.entrySet())
+            builder.addHeader(header.getKey(), header.getValue());
+
+        okhttp3.Request request = builder.build();
 
         Set<String> rays = new LinkedHashSet<>();
         try
         {
-            HttpResponse<String> response;
+            okhttp3.Response response;
             int attempt = 0;
             do
             {
                 //If the request has been canceled via the Future, don't execute.
                 if (apiRequest.isCanceled())
                     return null;
-                response = request.asString();
-                String cfRay = response.getHeaders().getFirst("CF-RAY");
+                Call call = httpClient.newCall(request);
+                response = call.execute();
+                String cfRay = response.header("CF-RAY");
                 if (cfRay != null)
                     rays.add(cfRay);
 
-                if (response.getStatus() < 500)
+                if (response.code() < 500)
                     break;
 
                 attempt++;
                 LOG.debug(String.format("Requesting %s -> %s returned status %d... retrying (attempt %d)",
-                        request.getHttpRequest().getHttpMethod().name(),
-                        request.getHttpRequest().getUrl(),
-                        response.getStatus(), attempt));
+                        apiRequest.getRoute().getMethod().toString(),
+                        url,
+                        response.code(), attempt));
                 try
                 {
                     Thread.sleep(50 * attempt);
                 }
                 catch (InterruptedException ignored) {}
             }
-            while (attempt < 3 && response.getStatus() >= 500);
+            while (attempt < 3 && response.code() >= 500);
 
-            if (response.getStatus() >= 500)
+            if (response.code() >= 500)
             {
                 //Epic failure from other end. Attempted 4 times.
                 return null;
@@ -160,16 +175,21 @@ public class Requester
             if (!rays.isEmpty())
                 LOG.debug("Received response with following cf-rays: " + rays);
             if (retryAfter == null)
-                apiRequest.getRestAction().handleResponse(new Response(response.getStatus(), response.getBody(), -1), apiRequest);
+                apiRequest.getRestAction().handleResponse(new Response(response, -1), apiRequest);
 
             return retryAfter;
         }
-        catch (UnirestException e)
+        catch (Exception e)
         {
             LOG.log(e); //This originally only printed on DEBUG in 2.x
             apiRequest.getRestAction().handleResponse(new Response(e), apiRequest);
             return null;
         }
+    }
+
+    public OkHttpClient getHttpClient()
+    {
+        return this.httpClient;
     }
 
     public RateLimiter getRateLimiter()
@@ -180,49 +200,5 @@ public class Requester
     public void shutdown()
     {
         rateLimiter.shutdown();
-    }
-
-    private BaseRequest createRequest(Route.CompiledRoute route, String body)
-    {
-        String url = DISCORD_API_PREFIX + route.getCompiledRoute();
-        BaseRequest request = null;
-        switch (route.getMethod())
-        {
-            case GET:
-                request = addHeaders(Unirest.get(url));
-                break;
-            case POST:
-                request = addHeaders(Unirest.post(url)).body(body);
-                break;
-            case PUT:
-                request = addHeaders(Unirest.put(url)).body(body);
-                break;
-            case DELETE:
-                request = addHeaders(Unirest.delete(url));
-                break;
-            case PATCH:
-                request = addHeaders(Unirest.patch(url)).body(body);
-                break;
-        }
-        return request;
-    }
-
-    protected <T extends BaseRequest> T addHeaders(T baseRequest)
-    {
-        HttpRequest request = baseRequest.getHttpRequest();
-
-        //adding token to all requests to the discord api or cdn pages
-        //can't check for startsWith(DISCORD_API_PREFIX) due to cdn endpoints
-        if (api.getToken() != null && request.getUrl().contains("discordapp.com"))
-        {
-            request.header("authorization", api.getToken());
-        }
-        if (!(request instanceof GetRequest) && !(baseRequest instanceof MultipartBody))
-        {
-            request.header("Content-Type", "application/json");
-        }
-        request.header("user-agent", USER_AGENT);
-        request.header("Accept-Encoding", "gzip");
-        return baseRequest;
     }
 }

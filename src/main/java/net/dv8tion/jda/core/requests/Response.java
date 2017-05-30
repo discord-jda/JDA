@@ -16,30 +16,80 @@
 
 package net.dv8tion.jda.core.requests;
 
+import java.io.BufferedReader;
+import java.io.Reader;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
 public class Response
 {
     public static final int ERROR_CODE = -1;
+    public static final String ERROR_MESSAGE = "ERROR";
+
     public final Exception exception;
     public final int code;
+    public final String message;
     public final long retryAfter;
-    public final String responseText;
 
-    protected Response(int code, String response, long retryAfter)
+    private Object object = null;
+
+    protected Response(long retryAfter)
+    {
+        this(429, "TOO MANY REQUESTS", null, retryAfter);
+    }
+
+    protected Response(okhttp3.Response response, long retryAfter)
+    {
+        this(response.code(), response.message(), response, retryAfter);
+    }
+
+    protected Response(int code, String message, okhttp3.Response response, long retryAfter)
     {
         this.code = code;
-        this.responseText = response;
+        this.message = message;
         this.exception = null;
         this.retryAfter = retryAfter;
+
+        if (response == null || response.body().contentLength() == 0)
+            return;
+
+        try (Reader reader = response.body().charStream().markSupported() 
+                ? response.body().charStream()
+                : new BufferedReader(response.body().charStream())) // this doesn't add overhead as org.json would do that itself otherwise
+        {
+            char begin; // not sure if I really like this... but we somehow have to get if this is an object or an array  
+            int mark = 1;
+            do
+            {
+                reader.mark(mark++);
+                begin = (char) reader.read();
+            }
+            while (Character.isWhitespace(begin));
+
+            reader.reset();
+
+            if (begin == '{')
+            {
+                object = new JSONObject(new JSONTokener(reader));
+            }
+            else if (begin == '[')
+            {
+                object = new JSONArray(new JSONTokener(reader));
+            }
+        }
+        catch (Exception e)
+        {
+            // TODO rethrow?
+            e.printStackTrace();
+        }
     }
 
     protected Response(Exception exception)
     {
         this.code = ERROR_CODE;
-        this.responseText = null;
+        this.message = ERROR_MESSAGE;
+        this.object = null;
         this.exception = exception;
         this.retryAfter = -1;
     }
@@ -61,36 +111,11 @@ public class Response
 
     public JSONObject getObject()
     {
-        try
-        {
-            return responseText == null ? null : new JSONObject(responseText);
-        }
-        catch (JSONException ex)
-        {
-            return null;
-        }
+      return (JSONObject) object;
     }
 
     public JSONArray getArray()
     {
-        try
-        {
-            return responseText == null ? null : new JSONArray(responseText);
-        }
-        catch (JSONException ex)
-        {
-            return null;
-        }
-    }
-
-    public String getString()
-    {
-        return responseText;
-    }
-
-    public String toString()
-    {
-        return exception == null ? "HTTPResponse[" + code + ": " + responseText + ']'
-                : "HTTPException[" + exception.getMessage() + ']';
+        return (JSONArray) object;
     }
 }

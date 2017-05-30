@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.core.requests;
 
-import com.mashape.unirest.http.HttpResponse;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.Route.CompiledRoute;
 import net.dv8tion.jda.core.requests.ratelimit.IBucket;
@@ -48,7 +47,7 @@ public abstract class RateLimiter
     // -- Required Implementations --
     public abstract Long getRateLimit(CompiledRoute route);
     protected abstract void queueRequest(Request request);
-    protected abstract Long handleResponse(CompiledRoute route, HttpResponse<String> response);
+    protected abstract Long handleResponse(CompiledRoute route, okhttp3.Response response);
 
 
     // --- Default Implementations --

@@ -22,8 +22,6 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.requests.RestAction;
-import org.apache.http.HttpHost;
-
 import java.util.Collection;
 import java.util.List;
 
@@ -696,14 +694,6 @@ public interface JDA
     int getMaxReconnectDelay();
 
     /**
-     * The proxy settings used by all JDA instances.
-     *
-     * @return The proxy settings used by all JDA instances. If JDA currently isn't using a proxy,
-     *         {@link java.net.Proxy#NO_PROXY Proxy.NO_PROXY} is returned.
-     */
-    HttpHost getGlobalProxy();
-
-    /**
      * Sets whether or not JDA should try to automatically reconnect if a connection-error is encountered.
      * <br>This will use an incremental reconnect (timeouts are increased each time an attempt fails).
      *
@@ -749,7 +739,7 @@ public interface JDA
     void shutdown();
 
     /**
-     * Shuts down JDA, closing all its connections.
+     * <p>Shuts down JDA, closing all its connections.
      * After this command is issued the JDA Instance can not be used anymore.
      *
      * <p>Depending on the value of {@code free}, this will also close the background-thread used for requests by Unirest.
@@ -757,8 +747,12 @@ public interface JDA
      * If you want to create any new instances or if you have any other instances running in parallel, then {@code free}
      * should be set to false.
      *
+     * @deprecated This method has been deprecated as it's no longer neccesari to shutdown the rest system globally.
+     *         Use {@link #shutdown()} instead.
+     *
      * @param  free If true, shuts down JDA's rest system permanently for all current and future instances.
      */
+    @Deprecated
     void shutdown(boolean free);
 
     /**

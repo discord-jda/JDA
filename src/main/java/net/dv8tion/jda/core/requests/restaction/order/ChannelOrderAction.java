@@ -23,7 +23,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.requests.Route;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -103,13 +103,13 @@ public class ChannelOrderAction<T extends Channel> extends OrderAction<T, Channe
                     .put("position", i));
         }
 
-        this.data = array;
+        setData(array);
     }
 
     @Override
     protected void validateInput(T entity)
     {
-        Args.check(entity.getGuild().equals(guild), "Provided channel is not from this Guild!");
-        Args.check(orderList.contains(entity), "Provided channel is not in the list of orderable channels!");
+        Checks.check(entity.getGuild().equals(guild), "Provided channel is not from this Guild!");
+        Checks.check(orderList.contains(entity), "Provided channel is not in the list of orderable channels!");
     }
 }
