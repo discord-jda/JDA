@@ -109,7 +109,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *
      * @see    #deleteMessagesByIds(Collection)
      */
-    AuditableRestAction<Void> deleteMessages(Collection<Message> messages);
+    RestAction<Void> deleteMessages(Collection<Message> messages);
 
     /**
      * Bulk deletes a list of messages.
@@ -156,7 +156,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *
      * @see    #deleteMessages(Collection)
      */
-    AuditableRestAction<Void> deleteMessagesByIds(Collection<String> messageIds);
+    RestAction<Void> deleteMessagesByIds(Collection<String> messageIds);
 
     /**
      * Deletes a {@link net.dv8tion.jda.core.entities.Webhook Webhook} attached to this channel
@@ -223,7 +223,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
-    AuditableRestAction<Void> clearReactionsById(String messageId);
+    RestAction<Void> clearReactionsById(String messageId);
 
     /**
      * Attempts to remove all reactions from a message with the specified {@code messageId} in this TextChannel
@@ -254,7 +254,8 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
-    default AuditableRestAction<Void> clearReactionsById(long messageId) {
+    default RestAction<Void> clearReactionsById(long messageId)
+    {
         return clearReactionsById(Long.toUnsignedString(messageId));
     }
 

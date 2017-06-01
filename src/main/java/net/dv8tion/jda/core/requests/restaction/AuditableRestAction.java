@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 
 import java.util.concurrent.Future;
@@ -67,7 +68,7 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
         if (reason == null)
             return null;
         CaseInsensitiveMap<String, String> map = new CaseInsensitiveMap<>();
-        map.put("X-Audit-Log-Reason", encodeHeaderValue(reason));
+        map.put("X-Audit-Log-Reason", MiscUtil.encodeUTF8(reason));
         return map;
     }
 
