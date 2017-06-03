@@ -888,10 +888,11 @@ public interface Guild extends ISnowflake
      * Represents the Verification-Level of the Guild.
      * The Verification-Level determines what requirement you have to meet to be able to speak in this Guild.
      * <p>
-     * <br><b>None</b>   {@literal ->} everyone can talk.
-     * <br><b>Low</b>    {@literal ->} verified email required.
-     * <br><b>Medium</b> {@literal ->} you have to be member of discord for at least 5min.
-     * <br><b>High</b>   {@literal ->} you have to be member of this guild for at least 10min.
+     * <br><b>None</b>      {@literal ->} everyone can talk.
+     * <br><b>Low</b>       {@literal ->} verified email required.
+     * <br><b>Medium</b>    {@literal ->} you have to be member of discord for at least 5min.
+     * <br><b>High</b>      {@literal ->} you have to be member of this guild for at least 10min.
+     * <br><b>Very High</b> {@literal ->} you must have a verified phone on your discord account.
      */
     enum VerificationLevel
     {
