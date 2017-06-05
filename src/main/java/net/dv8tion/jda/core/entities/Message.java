@@ -73,6 +73,14 @@ public interface Message extends ISnowflake, Formattable
     List<User> getMentionedUsers();
 
     /**
+     * A immutable list of all mentioned members. if no member was mentioned, this list is empty.
+     * <br>In {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel's}, this always returns an empty List
+     *
+     * @return immutable list of mentioned members
+     */
+    List<Member> getMentionedMembers();
+
+    /**
      * Checks if given user was mentioned in this message in any way (@User, @everyone, @here).
      *
      * @param  user
@@ -81,6 +89,16 @@ public interface Message extends ISnowflake, Formattable
      * @return True if the given user was mentioned in this message.
      */
     boolean isMentioned(User user);
+    
+    /**
+    * Checks if given member was mentioned in this message in any way (@User, @everyone, @here).
+     *
+     * @param  member
+     *         The member to check on.
+     *
+     * @return True if the given member was mentioned in this message.
+     */
+     boolean isMentioned(Member member);
 
     /**
      * A immutable list of all mentioned {@link net.dv8tion.jda.core.entities.TextChannel TextChannels}. If none were mentioned, this list is empty.
