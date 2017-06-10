@@ -1,3 +1,13 @@
+[version]: https://api.bintray.com/packages/dv8fromtheworld/maven/JDA/images/download.svg
+[download]: https://bintray.com/dv8fromtheworld/maven/JDA/_latestVersion
+[discord-invite]: https://discord.gg/0hMr4ce0tIl3SLv5
+[license]: https://img.shields.io/badge/License-Apache%202.0-lightgrey.svg
+[jenkins]: https://img.shields.io/badge/Download-Jenkins-brightgreen.svg
+[ ![version][] ][download]
+[ ![jenkins][] ](http://home.dv8tion.net:8080/job/JDA/lastSuccessfulBuild/)
+[ ![license][] ](https://github.com/DV8FromTheWorld/JDA/tree/master/LICENSE)
+[ ![Discord](https://discordapp.com/api/guilds/125227483518861312/widget.png) ][discord-invite]
+
 # JDA (Java Discord API)
 JDA strives to provide a clean and full wrapping of the Discord REST api and its Websocket-Events for Java.
 
@@ -14,7 +24,7 @@ Creating the JDA Object is done via the JDABuilder class by providing an Account
 After setting the token via setter,
 the JDA Object is then created by calling the `.buildBlocking()` or the `.buildAsync()` (non-blocking login) method.
 
-Example:
+**Example**:
 
 ```java
 JDA jda = new JDABuilder(AccountType.BOT).setToken("token").buildBlocking();
@@ -23,7 +33,7 @@ JDA jda = new JDABuilder(AccountType.BOT).setToken("token").buildBlocking();
 **Note**: It is important to set the correct AccountType because Bot-accounts require a token prefix to login.
 
 ## Events
-There are a ***TON*** of events in JDA that you can listen to.<br>
+There are a [***TON*** of events](https://github.com/DV8FromTheWorld/JDA/wiki/8\)-List-of-Events) in JDA that you can listen to.<br>
 Currently, there are 2 ways of writing your Event-Listener:
   1. Extend ListenerAdapter and use the provided methods that get fired depending on the Event-Type. [Event Methods](https://github.com/DV8FromTheWorld/JDA/blob/master/src/main/java/net/dv8tion/jda/core/hooks/ListenerAdapter.java)
   2. Implement EventListener and listen to onEvent and figure out if it is the event you want (Not suggested)<br>
@@ -31,6 +41,8 @@ Currently, there are 2 ways of writing your Event-Listener:
 Listeners can be registered either in the JDABuilder (will catch all Events; recommended), or in the JDA instance (initial Events, especially the *READY*-Event could get lost)
 
 #### Examples:
+
+**Using EventListener**:
 ```java
 public class ReadyListener implements EventListener
 {
@@ -52,7 +64,7 @@ public class ReadyListener implements EventListener
     }
 }
 ```
-
+**Using ListenerAdapter**:
 ```java
 public class MessageListener extends ListenerAdapter
 {
@@ -87,9 +99,16 @@ public class MessageListener extends ListenerAdapter
 ## More Examples
 We provide a small set of Examples in the [Example Directory](https://github.com/DV8FromTheWorld/JDA/tree/master/src/examples/java).
 
+In addition you can look at the many Discord Bots that were implemented using JDA:
+- [Yui](https://github.com/DV8FromTheWorld/Yui)
+- [Spectra](https://github.com/jagrosh/Spectra)
+- [FredBoat](https://github.com/Frederikam/FredBoat)
+
+[And many more!](https://github.com/search?q=JDA+discord+bot&type=Repositories&utf8=%E2%9C%93)
+
 ## Download
 Latest Version:
-[ ![Download](https://api.bintray.com/packages/dv8fromtheworld/maven/JDA/images/download.svg) ](https://bintray.com/dv8fromtheworld/maven/JDA/_latestVersion)
+[ ![version][] ][download]
 
 Be sure to replace the **VERSION** key below with the latest version shown above!
 
@@ -129,9 +148,45 @@ Docs can be found on the [Jenkins](http://home.dv8tion.net:8080/) or directly [h
 If you need help, or just want to talk with the JDA or other Discord Devs, you can join the [Unofficial Discord API](https://discord.gg/0SBTUU1wZTUydsWv) Guild.
 
 Once you joined, you can find JDA-specific help in the #java_jda channel<br>
-We have our own Discord Server [here](https://discord.gg/0hMr4ce0tIl3SLv5)
+We have our own Discord Server [here][discord-invite]
 
 For guides and setup help you can also take a look at the [wiki](https://github.com/DV8FromTheWorld/JDA/wiki)
+<br>Especially interesting are the [Getting Started](https://github.com/DV8FromTheWorld/JDA/wiki/3\)-Getting-Started)
+and [Setup](https://github.com/DV8FromTheWorld/JDA/wiki/2\)-Setup) Pages.
+
+## Third Party Recommendations
+
+### [JDA-Utilities](https://github.com/JDA-Applications/JDA-Utilities)
+
+Created and maintained by [jagrosh](https://github.com/jagrosh).
+<br>JDA-Utilities provides a Command-Extension and several utilities to make using JDA very simple.
+
+Features include:
+- Paginated Message using Reactions
+- EventWaiter allowing to wait for a response and other events
+
+### [Kotlin-JDA](https://github.com/JDA-Applications/Kotlin-JDA)
+
+Created and maintained by [MinnDevelopment](https://github.com/MinnDevelopment)
+<br>Kotlin-JDA provides several extensions allowing to easily use kotlin idioms with JDA.
+
+Features include:
+- Groovy-style Builders
+- Coroutine RestActions
+
+### [JDAction](https://github.com/sedmelluq/jdaction)
+
+Created and maintained by [sedmelluq](https://github.com/sedmelluq)
+<br>JDAction is a [Gradle](https://gradle.org/) plugin which makes sure that the return values of all methods which return a RestAction are used.
+Since it is a common mistake to forget to `.queue()`/`.complete()`/`.submit()` RestActions,
+and it is often only discovered after noticing that something doesn't work,
+this plugin will help catch those cases quickly as it will cause a build failure in such case.
+
+More info about RestAction: [Wiki](https://github.com/DV8FromTheWorld/JDA/wiki/7\)-Using-RestAction)
+
+------
+
+More can be found in our github organization: [JDA-Applications](https://github.com/JDA-Applications)
 
 ## Contributing to JDA
 If you want to contribute to JDA, make sure to base your branch off of our master branch (or a feature-branch)
@@ -140,7 +195,7 @@ and create your PR into that **same** branch. **We will be rejecting any PRs bet
 It is also highly recommended to get in touch with the Devs before opening Pull Requests (either through an issue or the Discord servers mentioned above).<br>
 It is very possible that your change might already be in development or you missed something.
 
-More information can be found at the wiki page [5) Contributing](https://github.com/DV8FromTheWorld/JDA/wiki/5\)-Contributing)
+More information can be found at the wiki page [Contributing](https://github.com/DV8FromTheWorld/JDA/wiki/5\)-Contributing)
 
 ## Dependencies:
 This project requires **Java 8**.<br>
