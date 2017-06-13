@@ -744,7 +744,7 @@ public interface JDA
     /**
      * Force closes this {@link JDA} instance violently. This will also cancel all queued {@link net.dv8tion.jda.core.requests.RestAction RestActions}.
      */
-    void forceShutdown(); // TODO: docs forceShutdown()
+    void forceShutdown();
 
     /**
      * <p>Shuts down JDA, closing all its connections.

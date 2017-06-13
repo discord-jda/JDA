@@ -95,6 +95,14 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
         return formEncode.replace('+', ' ');
     }
 
+    /**
+     * Specialized form of {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction} that is used to provide information that
+     * has already been retrieved or generated so that another request does not need to be made to Discord.
+     * <br>Basically: Allows you to provide a value directly to the success returns.
+     *
+     * @param <T>
+     *        The generic response type for this RestAction
+     */
     public static class EmptyRestAction<T> extends AuditableRestAction<T>
     {
         protected final T content;
@@ -120,5 +128,46 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
 
         @Override
         protected void handleResponse(Response response, Request<T> request) { }
+    }
+
+    /**
+     * Specialized form of {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction} that is used to provide information that
+     * an error has occured before the request could be made.
+     * <br>Basically: Allows you to provide an exception directly to the failure consumer.
+     *
+     * @param <T>
+     *        The generic response type for this RestAction
+     */
+    public static class FailedRestAction<T> extends AuditableRestAction<T>
+    {
+        private final Exception exception;
+
+        public FailedRestAction(Exception exception)
+        {
+            super(null, null);
+            this.exception = exception;
+        }
+
+        @Override
+        public void queue(Consumer<T> success, Consumer<Throwable> failure)
+        {
+            if (failure != null)
+                failure.accept(exception);
+        }
+
+        @Override
+        public Future<T> submit(boolean shouldQueue)
+        {
+            return new FailedFuture<>(exception);
+        }
+
+        @Override
+        public T complete(boolean shouldQueue)
+        {
+            throw new RuntimeException(exception);
+        }
+
+        @Override
+        protected void handleResponse(Response response, Request<T> request) {}
     }
 }

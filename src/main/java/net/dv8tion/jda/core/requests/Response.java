@@ -27,24 +27,22 @@ public class Response
     public static final int ERROR_CODE = -1;
     public static final String ERROR_MESSAGE = "ERROR";
 
-    public final Exception exception;
     public final int code;
+    public final Exception exception;
     public final String message;
     public final long retryAfter;
+    private final Object object;
 
-    private Object object = null;
-
-    protected Response(long retryAfter)
+    protected Response(final Exception exception)
     {
-        this(429, "TOO MANY REQUESTS", null, retryAfter);
+        this.code = Response.ERROR_CODE;
+        this.message = Response.ERROR_MESSAGE;
+        this.object = null;
+        this.exception = exception;
+        this.retryAfter = -1;
     }
 
-    protected Response(okhttp3.Response response, long retryAfter)
-    {
-        this(response.code(), response.message(), response, retryAfter);
-    }
-
-    protected Response(int code, String message, okhttp3.Response response, long retryAfter)
+    protected Response(final int code, final String message, final okhttp3.Response response, final long retryAfter)
     {
         this.code = code;
         this.message = message;
@@ -52,13 +50,15 @@ public class Response
         this.retryAfter = retryAfter;
 
         if (response == null || response.body().contentLength() == 0)
+        {
+            this.object = null;
             return;
+        }
 
-        try (Reader reader = response.body().charStream().markSupported() 
-                ? response.body().charStream()
+        try (Reader reader = response.body().charStream().markSupported() ? response.body().charStream()
                 : new BufferedReader(response.body().charStream())) // this doesn't add overhead as org.json would do that itself otherwise
         {
-            char begin; // not sure if I really like this... but we somehow have to get if this is an object or an array  
+            char begin; // not sure if I really like this... but we somehow have to get if this is an object or an array
             int mark = 1;
             do
             {
@@ -70,52 +70,58 @@ public class Response
             reader.reset();
 
             if (begin == '{')
-            {
-                object = new JSONObject(new JSONTokener(reader));
-            }
+                this.object = new JSONObject(new JSONTokener(reader));
             else if (begin == '[')
-            {
-                object = new JSONArray(new JSONTokener(reader));
-            }
+                this.object = new JSONArray(new JSONTokener(reader));
+            else
+                this.object = null;
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
-            // TODO rethrow?
-            e.printStackTrace();
+            throw new RuntimeException("An error occured while parsing a RestAction the response", e);
         }
     }
 
-    protected Response(Exception exception)
+    protected Response(final long retryAfter)
     {
-        this.code = ERROR_CODE;
-        this.message = ERROR_MESSAGE;
-        this.object = null;
-        this.exception = exception;
-        this.retryAfter = -1;
+        this(429, "TOO MANY REQUESTS", null, retryAfter);
     }
 
-    public boolean isError()
+    protected Response(final okhttp3.Response response, final long retryAfter)
     {
-        return code == ERROR_CODE;
-    }
-
-    public boolean isOk()
-    {
-        return code > 199 && code < 300;
-    }
-
-    public boolean isRateLimit()
-    {
-        return code == 429;
-    }
-
-    public JSONObject getObject()
-    {
-      return (JSONObject) object;
+        this(response.code(), response.message(), response, retryAfter);
     }
 
     public JSONArray getArray()
     {
-        return (JSONArray) object;
+        return this.object instanceof JSONArray ? (JSONArray) this.object : null;
+    }
+
+    public JSONObject getObject()
+    {
+        return this.object instanceof JSONObject ? (JSONObject) this.object : null;
+    }
+
+    public boolean isError()
+    {
+        return this.code == Response.ERROR_CODE;
+    }
+
+    public boolean isOk()
+    {
+        return this.code > 199 && this.code < 300;
+    }
+
+    public boolean isRateLimit()
+    {
+        return this.code == 429;
+    }
+
+    @Override
+    public String toString()
+    {
+        return this.exception == null
+                ? "RestActionResponse[" + this.code + (this.object == null ? "" : ", " + this.object.toString()) + ']'
+                : "RestActionException[" + this.exception.getMessage() + ']';
     }
 }

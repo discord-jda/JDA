@@ -213,11 +213,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * </ul>
      *
      * @param  messageId
-<<<<<<< master
      *         The not-empty valid message id
-=======
-     *         The target message's id
->>>>>>> Squashed and rebased onto master
      *
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         If the currently logged in account does not have
@@ -250,11 +246,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * </ul>
      *
      * @param  messageId
-<<<<<<< master
      *         The message id
-=======
-     *         The target message's id
->>>>>>> Squashed and rebased onto master
      *
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         If the currently logged in account does not have

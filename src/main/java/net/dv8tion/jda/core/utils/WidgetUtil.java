@@ -201,13 +201,16 @@ public class WidgetUtil
             switch(connection.getResponseCode())
             {
                 case 200: // ok
+                {
                     try (InputStream stream = connection.getInputStream())
                     {
                         return new Widget(new JSONObject(new JSONTokener(stream)));
                     }
-                    catch (IOException ignored) {
-                        return null;
+                    catch (IOException e)
+                    {
+                        throw e;
                     }
+                }
                 case 400:              // not valid snowflake
                 case 404: return null; // guild not found
                 case 403: return new Widget(guildId); // widget disabled
