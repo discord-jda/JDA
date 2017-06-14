@@ -101,7 +101,7 @@ We provide a small set of Examples in the [Example Directory](https://github.com
 
 In addition you can look at the many Discord Bots that were implemented using JDA:
 - [Yui](https://github.com/DV8FromTheWorld/Yui)
-- [Spectra](https://github.com/jagrosh/Spectra)
+- [Vortex](https://github.com/jagrosh/Vortex)
 - [FredBoat](https://github.com/Frederikam/FredBoat)
 
 [And many more!](https://github.com/search?q=JDA+discord+bot&type=Repositories&utf8=%E2%9C%93)
@@ -228,3 +228,12 @@ All dependencies are managed automatically by Gradle.
    * Version: **3.0.3**
    * [BitBucket](https://bitbucket.org/trove4j/trove)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/net.sf.trove4j%3Atrove4j/view)
+   
+## Related Projects
+
+- [Discord4J](https://github.com/austinv11/Discord4J)
+- [Discord.NET](https://github.com/RogueException/Discord.Net)
+- [discord.py](https://github.com/Rapptz/discord.py)
+- [serenity](https://github.com/zeyla/serenity)
+
+**See also:** https://discordapp.com/developers/docs/topics/libraries
