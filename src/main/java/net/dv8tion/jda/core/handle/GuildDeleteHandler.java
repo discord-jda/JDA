@@ -104,8 +104,11 @@ public class GuildDeleteHandler extends SocketHandler
             }
         }
 
+        long selfId = api.getSelfUser().getIdLong();
         memberIds.forEach(memberId ->
         {
+            if (memberId == selfId)
+                return true; // don't remove selfUser from cache
             UserImpl user = (UserImpl) api.getUserMap().remove(memberId);
             if (user.hasPrivateChannel())
             {
