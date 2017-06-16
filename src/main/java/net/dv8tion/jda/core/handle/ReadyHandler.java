@@ -49,7 +49,7 @@ public class ReadyHandler extends SocketHandler
     @Override
     protected Long handleInternally(JSONObject content)
     {
-        EntityBuilder builder = api.getEntityBuilder();;
+        EntityBuilder builder = api.getEntityBuilder();
 
         //Core
         JSONArray guilds = content.getJSONArray("guilds");
@@ -112,7 +112,7 @@ public class ReadyHandler extends SocketHandler
     public void guildLoadComplete(JSONObject content)
     {
         api.getClient().setChunkingAndSyncing(false);
-        EntityBuilder builder = api.getEntityBuilder();;
+        EntityBuilder builder = api.getEntityBuilder();
         JSONArray privateChannels = content.getJSONArray("private_channels");
 
         if (api.getAccountType() == AccountType.CLIENT)

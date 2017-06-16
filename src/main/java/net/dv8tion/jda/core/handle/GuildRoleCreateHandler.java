@@ -15,12 +15,10 @@
  */
 package net.dv8tion.jda.core.handle;
 
-import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.role.RoleCreateEvent;
-import net.dv8tion.jda.core.requests.GuildLock;
 import org.json.JSONObject;
 
 public class GuildRoleCreateHandler extends SocketHandler

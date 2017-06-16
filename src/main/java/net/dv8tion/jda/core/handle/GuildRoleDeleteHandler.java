@@ -21,7 +21,6 @@ import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.entities.impl.MemberImpl;
 import net.dv8tion.jda.core.events.role.RoleDeleteEvent;
-import net.dv8tion.jda.core.requests.GuildLock;
 import org.json.JSONObject;
 
 public class GuildRoleDeleteHandler extends SocketHandler
