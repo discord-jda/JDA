@@ -65,11 +65,18 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
     @Override
     protected CaseInsensitiveMap<String, String> finalizeHeaders()
     {
-        if (reason == null)
+        if (reason == null || reason.isEmpty())
             return null;
         CaseInsensitiveMap<String, String> map = new CaseInsensitiveMap<>();
-        map.put("X-Audit-Log-Reason", MiscUtil.encodeUTF8(reason));
+        String encodedReason = uriEncode(reason);
+        map.put("X-Audit-Log-Reason", encodedReason);
         return map;
+    }
+
+    private String uriEncode(String input)
+    {
+        String formEncode = MiscUtil.encodeUTF8(input);
+        return formEncode.replace('+', ' ');
     }
 
     public static class EmptyRestAction<T> extends AuditableRestAction<T>
