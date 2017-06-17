@@ -123,15 +123,13 @@ public class Requester
         //adding token to all requests to the discord api or cdn pages
         //we can check for startsWith(DISCORD_API_PREFIX) because the cdn endpoints don't need any kind of authorization
         if (url.startsWith(DISCORD_API_PREFIX) && api.getToken() != null)
-        {
             builder.header("authorization", api.getToken());
-        }
 
         // Apply custom headers like X-Audit-Log-Reason
-        //If customHeaders is null this does nothing
-
-        for (Entry<String, String> header : apiRequest.getHeaders().entrySet())
-            builder.addHeader(header.getKey(), header.getValue());
+        // If customHeaders is null this does nothing
+        if (apiRequest.getHeaders() != null)
+            for (Entry<String, String> header : apiRequest.getHeaders().entrySet())
+                builder.addHeader(header.getKey(), header.getValue());
 
         okhttp3.Request request = builder.build();
 
