@@ -144,13 +144,15 @@ public class ShardManagerImpl implements ShardManager
     @Override
     public Guild getGuildById(final long id)
     {
-        return this.findSnowflakeInCombinedCollection(jda -> jda.getGuildMap().valueCollection(), id);
+        int shardId = MiscUtil.getShardForGuild(id, shardsTotal);
+        JDA jda = this.getShard(shardId);
+        return jda != null ? jda.getGuildById(id) : null;
     }
 
     @Override
     public Guild getGuildById(final String id)
     {
-        return this.findSnowflakeInCombinedCollection(jda -> jda.getGuildMap().valueCollection(), id);
+        return this.getGuildById(MiscUtil.parseSnowflake(id));
     }
 
     @Override
