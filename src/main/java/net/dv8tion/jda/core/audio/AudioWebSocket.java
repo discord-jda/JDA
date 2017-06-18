@@ -35,10 +35,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class AudioWebSocket extends WebSocketAdapter
@@ -65,7 +62,7 @@ public class AudioWebSocket extends WebSocketAdapter
     private boolean connected = false;
     private boolean ready = false;
     private boolean shutdown = false;
-    private Runnable keepAliveRunnable;
+    private Future<?> keepAliveHandle;
     private String wssEndpoint;
     private boolean shouldReconnect;
 
@@ -338,10 +335,10 @@ public class AudioWebSocket extends WebSocketAdapter
                 );
             api.getClient().send(obj.toString());
         }
-        if (keepAliveRunnable != null)
+        if (keepAliveHandle != null)
         {
-            keepAlivePool.remove(keepAliveRunnable);
-            keepAliveRunnable = null;
+            keepAliveHandle.cancel(true);
+            keepAliveHandle = null;
         }
 
         if (audioConnection != null)
@@ -483,10 +480,10 @@ public class AudioWebSocket extends WebSocketAdapter
 
     private void setupKeepAlive(final int keepAliveInterval)
     {
-        if (keepAliveRunnable != null)
+        if (keepAliveHandle != null)
             LOG.fatal("Setting up a KeepAlive runnable while the previous one seems to still be active!!");
 
-        keepAliveRunnable = () ->
+        Runnable keepAliveRunnable = () ->
         {
             if (socket.isOpen() && socket.isOpen() && !udpSocket.isClosed())
             {
@@ -521,7 +518,7 @@ public class AudioWebSocket extends WebSocketAdapter
 
         try
         {
-            keepAlivePool.scheduleAtFixedRate(keepAliveRunnable, 0, keepAliveInterval, TimeUnit.MILLISECONDS);
+            keepAliveHandle = keepAlivePool.scheduleAtFixedRate(keepAliveRunnable, 0, keepAliveInterval, TimeUnit.MILLISECONDS);
         }
         catch (RejectedExecutionException ignored) {} //ignored because this is probably caused due to a race condition
                                                       // related to the threadpool shutdown.
