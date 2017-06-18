@@ -103,6 +103,14 @@ public class AudioWebSocket extends WebSocketAdapter
     @Override
     public void onConnected(WebSocket websocket, Map<String, List<String>> headers)
     {
+        if (shutdown)
+        {
+            //Somehow this AudioWebSocket was shutdown before we finished connecting....
+            // thus we just disconnect here since we were asked to shutdown
+            socket.sendClose(1006);
+            return;
+        }
+
         JSONObject connectObj = new JSONObject()
                 .put("op", 0)
                 .put("d", new JSONObject()
@@ -532,6 +540,16 @@ public class AudioWebSocket extends WebSocketAdapter
         this.shouldReconnect = shouldReconnect;
     }
 
+    @Override
+    protected void finalize() throws Throwable
+    {
+        if (!shutdown)
+        {
+            LOG.fatal("Finalization hook of AudioWebSocket was triggered without properly shutting down");
+            close(ConnectionStatus.ERROR_LOST_CONNECTION);
+        }
+    }
+
     public static class KeepAliveThreadFactory implements ThreadFactory
     {
         final String identifier;
@@ -545,7 +563,7 @@ public class AudioWebSocket extends WebSocketAdapter
         @Override
         public Thread newThread(Runnable r)
         {
-            Thread t = new Thread(r, identifier + " - Thread " + threadCount.getAndIncrement());
+            Thread t = new Thread(AudioManagerImpl.AUDIO_THREADS, r, identifier + " - Thread " + threadCount.getAndIncrement());
             t.setDaemon(true);
 
             return t;
