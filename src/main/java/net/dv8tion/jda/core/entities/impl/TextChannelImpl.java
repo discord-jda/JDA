@@ -94,7 +94,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     }
 
     @Override
-    public AuditableRestAction<Void> deleteMessages(Collection<Message> messages)
+    public RestAction<Void> deleteMessages(Collection<Message> messages)
     {
         Args.notEmpty(messages, "Messages collection");
 
@@ -104,7 +104,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     }
 
     @Override
-    public AuditableRestAction<Void> deleteMessagesByIds(Collection<String> messageIds)
+    public RestAction<Void> deleteMessagesByIds(Collection<String> messageIds)
     {
         checkPermission(Permission.MESSAGE_MANAGE, "Must have MESSAGE_MANAGE in order to bulk delete messages in this channel regardless of author.");
         if (messageIds.size() < 2 || messageIds.size() > 100)
@@ -119,7 +119,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
 
         JSONObject body = new JSONObject().put("messages", messageIds);
         Route.CompiledRoute route = Route.Messages.DELETE_MESSAGES.compile(getId());
-        return new AuditableRestAction<Void>(getJDA(), route, body)
+        return new RestAction<Void>(getJDA(), route, body)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -342,13 +342,13 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     }
 
     @Override
-    public AuditableRestAction<Void> clearReactionsById(String messageId)
+    public RestAction<Void> clearReactionsById(String messageId)
     {
         Args.notEmpty(messageId, "Message ID");
 
         checkPermission(Permission.MESSAGE_MANAGE);
         Route.CompiledRoute route = Route.Messages.REMOVE_ALL_REACTIONS.compile(getId(), messageId);
-        return new AuditableRestAction<Void>(getJDA(), route, null)
+        return new RestAction<Void>(getJDA(), route, null)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)

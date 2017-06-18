@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 
 import java.util.concurrent.Future;
@@ -64,11 +65,18 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
     @Override
     protected CaseInsensitiveMap<String, String> finalizeHeaders()
     {
-        if (reason == null)
+        if (reason == null || reason.isEmpty())
             return null;
         CaseInsensitiveMap<String, String> map = new CaseInsensitiveMap<>();
-        map.put("X-Audit-Log-Reason", encodeHeaderValue(reason));
+        String encodedReason = uriEncode(reason);
+        map.put("X-Audit-Log-Reason", encodedReason);
         return map;
+    }
+
+    private String uriEncode(String input)
+    {
+        String formEncode = MiscUtil.encodeUTF8(input);
+        return formEncode.replace('+', ' ');
     }
 
     public static class EmptyRestAction<T> extends AuditableRestAction<T>
