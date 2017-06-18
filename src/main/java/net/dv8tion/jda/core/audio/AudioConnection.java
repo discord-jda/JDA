@@ -30,6 +30,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONObject;
@@ -286,7 +287,7 @@ public class AudioConnection
     {
         if (receiveThread == null)
         {
-            receiveThread = new Thread(threadIdentifier + " Receiving Thread")
+            receiveThread = new Thread(AudioManagerImpl.AUDIO_THREADS, threadIdentifier + " Receiving Thread")
             {
                 @Override
                 public void run()
@@ -414,7 +415,8 @@ public class AudioConnection
     {
         if (combinedAudioExecutor == null)
         {
-            combinedAudioExecutor = Executors.newSingleThreadScheduledExecutor( r -> new Thread(r, threadIdentifier + " Combined Thread"));
+            combinedAudioExecutor = Executors.newSingleThreadScheduledExecutor( r ->
+                    new Thread(AudioManagerImpl.AUDIO_THREADS, r, threadIdentifier + " Combined Thread"));
             combinedAudioExecutor.scheduleAtFixedRate(() ->
             {
                 try
