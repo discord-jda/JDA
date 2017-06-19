@@ -182,6 +182,9 @@ public abstract class RestAction<T>
      */
     public RestAction(JDA api, Route.CompiledRoute route, RequestBody data)
     {
+        Checks.notNull(api, "api");
+        Checks.notNull(route, "route");
+
         this.api = (JDAImpl) api;
         this.route = route;
         this.data = data;

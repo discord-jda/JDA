@@ -32,13 +32,7 @@ import java.util.List;
 
 /**
  * {@link net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction PaginationAction}
- * that paginates the endpoints:
- * <ul>
- *     <li>{@link net.dv8tion.jda.core.requests.Route.Self#GET_RECENT_MENTIONS Route.Self.GET_RECENT_MENTIONS}</li>
- *     <li>{@link net.dv8tion.jda.core.requests.Route.Self#GET_RECENT_MENTIONS_BEFORE Route.Self.GET_RECENT_MENTIONS_BEFORE}</li>
- *     <li>{@link net.dv8tion.jda.core.requests.Route.Self#GET_RECENT_MENTIONS_GUILD Route.Self.GET_RECENT_MENTIONS_GUILD}</li>
- *     <li>{@link net.dv8tion.jda.core.requests.Route.Self#GET_RECENT_MENTIONS_GUILD_BEFORE Route.Self.GET_RECENT_MENTIONS_GUILD_BEFORE}</li>
- * </ul>
+ * that paginates the endpoint {@link net.dv8tion.jda.core.requests.Route.Self#GET_RECENT_MENTIONS Route.Self.GET_RECENT_MENTIONS}.
  *
  * <p><b>Must provide not-null {@link net.dv8tion.jda.core.entities.Guild Guild} to compile a valid guild mentions
  * pagination route.</b>, else it uses the global pagination route.

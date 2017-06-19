@@ -83,10 +83,10 @@ public class JDABuilder
     }
 
     /**
-     * <strike>Sets the proxy that will be used by <b>ALL</b> JDA instances.
+     * Sets the proxy that will be used by <b>ALL</b> JDA instances.
      * <br>Once this is set <b>IT CANNOT BE CHANGED.</b>
      * <br>After a JDA instance as been created, this method can never be called again, even if you are creating a new JDA object.
-     * <br><b>Note:</b> currently this only supports HTTP proxies.</strike>
+     * <br><b>Note:</b> currently this only supports HTTP proxies.
      *
      * @deprecated Use {@link #setHttpClientBuilder(okhttp3.OkHttpClient.Builder)} instead.
      *
@@ -94,7 +94,7 @@ public class JDABuilder
      *         The proxy to use.
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this method is called after proxy settings have already been set or after at least 1 JDA object has been created.<strike>
+     *         If this method is called after proxy settings have already been set or after at least 1 JDA object has been created.
      *
      * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
      */
@@ -162,27 +162,32 @@ public class JDABuilder
     }
 
     /**
-     * 
-     * @param httpClientBuilder
-     * @return
+     * Sets the {@link okhttp3.OkHttpClient.Builder Builder} that will be used by JDA's requester.
+     * This can be used to set things such as connection timeout and proxy. 
+     *
+     * @param  builder
+     *         The new {@link okhttp3.OkHttpClient.Builder Builder} to use.
+     *
+     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
      */
-    public JDABuilder setHttpClientBuilder(OkHttpClient.Builder httpClientBuilder)
+    public JDABuilder setHttpClientBuilder(OkHttpClient.Builder builder)
     {
-        this.httpClientBuilder = httpClientBuilder;
+        this.httpClientBuilder = builder;
         return this;
     }
 
     /**
-     * 
-     * 
-     * @param  wsFactory
-     *         The websocket factory that should be used
-     * 
+     * Sets the {@link com.neovisionaries.ws.client.WebSocketFactory WebSocketFactory} that will be used by JDA's websocket client.
+     * This can be used to set things such as connection timeout and proxy.
+     *
+     * @param  factory
+     *         The new {@link com.neovisionaries.ws.client.WebSocketFactory WebSocketFactory} to use.
+     *
      * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
      */
-    public JDABuilder setWebsocketFactory(WebSocketFactory wsFactory)
+    public JDABuilder setWebsocketFactory(WebSocketFactory factory)
     {
-        this.wsFactory = wsFactory;
+        this.wsFactory = factory;
         return this;
     }
 

@@ -57,6 +57,8 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>> exte
      *
      * @param api
      *        The current JDA instance
+     * @param route
+     *        The base route
      * @param maxLimit
      *        The inclusive maximum limit that can be used in {@link #limit(int)}
      * @param minLimit

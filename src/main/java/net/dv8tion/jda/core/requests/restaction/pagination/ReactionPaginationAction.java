@@ -31,11 +31,7 @@ import java.util.List;
 
 /**
  * {@link net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction PaginationAction}
- * that paginates the endpoints:
- * <ul>
- *     <li>{@link net.dv8tion.jda.core.requests.Route.Messages#GET_REACTION_USERS_LIMIT Route.Messages.GET_REACTION_USERS_LIMIT}</li>
- *     <li>{@link net.dv8tion.jda.core.requests.Route.Messages#GET_REACTION_USERS_AFTER Route.Messages.GET_REACTION_USERS_AFTER}</li>
- * </ul>
+ * that paginates the endpoint {@link net.dv8tion.jda.core.requests.Route.Messages#GET_REACTION_USERS Route.Messages.GET_REACTION_USERS}.
  *
  * <p><b>Must provide not-null {@link net.dv8tion.jda.core.entities.MessageReaction MessageReaction} to compile a valid
  * pagination route.</b>

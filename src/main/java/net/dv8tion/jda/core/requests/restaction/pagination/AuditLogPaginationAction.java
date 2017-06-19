@@ -38,17 +38,7 @@ import java.util.List;
 
 /**
  * {@link net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction PaginationAction}
- * that paginates the endpoints:
- * <ul>
- *     <li>{@link net.dv8tion.jda.core.requests.Route.AuditLogs#GET_AUDIT_LOGS Route.AuditLogs.GET_AUDIT_LOGS}</li>
- *     <li>{@link net.dv8tion.jda.core.requests.Route.AuditLogs#GET_AUDIT_LOGS_BEFORE Route.AuditLogs.GET_AUDIT_LOGS_BEFORE}</li>
- *     <li>{@link net.dv8tion.jda.core.requests.Route.AuditLogs#GET_AUDIT_LOGS_USER Route.AuditLogs.GET_AUDIT_LOGS_USER}</li>
- *     <li>{@link net.dv8tion.jda.core.requests.Route.AuditLogs#GET_AUDIT_LOGS_USER_BEFORE Route.AuditLogs.GET_AUDIT_LOGS_USER_BEFORE}</li>
- *     <li>{@link net.dv8tion.jda.core.requests.Route.AuditLogs#GET_AUDIT_LOGS_ACTION Route.AuditLogs.GET_AUDIT_LOGS_ACTION}</li>
- *     <li>{@link net.dv8tion.jda.core.requests.Route.AuditLogs#GET_AUDIT_LOGS_ACTION_BEFORE Route.AuditLogs.GET_AUDIT_LOGS_ACTION_BEFORE}</li>
- *     <li>{@link net.dv8tion.jda.core.requests.Route.AuditLogs#GET_AUDIT_LOGS_USER_ACTION Route.AuditLogs.GET_AUDIT_LOGS_USER_ACTION}</li>
- *     <li>{@link net.dv8tion.jda.core.requests.Route.AuditLogs#GET_AUDIT_LOGS_USER_ACTION_BEFORE Route.AuditLogs.GET_AUDIT_LOGS_USER_ACTION_BEFORE}</li>
- * </ul>
+ * that paginates the endpoint {@link net.dv8tion.jda.core.requests.Route.Guilds#GET_AUDIT_LOGS Route.Guilds.GET_AUDIT_LOGS}.
  *
  * <p><b>Must provide not-null {@link net.dv8tion.jda.core.entities.Guild Guild} to compile a valid guild audit logs
  * pagination route</b>

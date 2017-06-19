@@ -736,21 +736,18 @@ public interface JDA
     /**
      * Shuts down JDA, closing all its connections.
      * After this command is issued the JDA Instance can not be used anymore.
-     * <br>This is the same as calling {@link #shutdown(long, TimeUnit) #shutdown(10, TimeUnit.SECONDS)}.
-     * 
-     * @see #shutdown(long, TimeUnit)
+     * Already enqueued {@link net.dv8tion.jda.core.requests.RestAction RestActions} are still be executed.
      */
     void shutdown();
 
     /**
-     * Force closes this {@link JDA} instance violently. This will also cancel all queued {@link net.dv8tion.jda.core.requests.RestAction RestActions}.
-     */
-    void forceShutdown();
-
-    /**
-     * <p>Shuts down JDA, closing all its connections.
+     * Shuts down JDA, closing all its connections.
      * After this command is issued the JDA Instance can not be used anymore.
+     * Already enqueued {@link net.dv8tion.jda.core.requests.RestAction RestActions} are still be executed.
      * 
+     * @deprecated
+     *         Use {@link #shutdown()} instead.
+     *
      * @param  free If true, shuts down JDA's rest system permanently for all current and future instances.
      */
     @Deprecated
@@ -760,10 +757,18 @@ public interface JDA
     }
 
     /**
+     * Force closes this {@link JDA} instance violently.
+     * This will also cancel all queued {@link net.dv8tion.jda.core.requests.RestAction RestActions}.
+     */
+    void forceShutdown();
+
+    /**
      * Installs an auxiliary cable into the given port of your system.
      *
      * @param  port
      *         The port in which the cable should be installed.
+     *         
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}{@literal <}{@link Void}{@literal >}
      */
     AuditableRestAction<Void> installAuxiliaryCable(int port);
 
