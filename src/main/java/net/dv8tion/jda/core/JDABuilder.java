@@ -83,6 +83,51 @@ public class JDABuilder
     }
 
     /**
+     * <strike>Sets the proxy that will be used by <b>ALL</b> JDA instances.
+     * <br>Once this is set <b>IT CANNOT BE CHANGED.</b>
+     * <br>After a JDA instance as been created, this method can never be called again, even if you are creating a new JDA object.
+     * <br><b>Note:</b> currently this only supports HTTP proxies.</strike>
+     *
+     * @deprecated Use {@link #setHttpClientBuilder(okhttp3.OkHttpClient.Builder)} instead.
+     *
+     * @param  proxy
+     *         The proxy to use.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this method is called after proxy settings have already been set or after at least 1 JDA object has been created.<strike>
+     *
+     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    @Deprecated
+    public JDABuilder setProxy(Object proxy)
+    {
+        return this;
+    }
+    
+    /**
+     * Sets the timeout (in milliseconds) for all Websockets created by JDA (MainWS and AudioWS's) for this instance.
+     *
+     * <p>By default, this is set to <b>0</b> which is supposed to represent infinite-timeout, however due to how the JVM
+     * is implemented at the lower level (typically C), an infinite timeout will usually not be respected, and as such
+     * providing an explicitly defined timeout will typically work better.
+     *
+     * <p>Default: <b>0 - Infinite-Timeout (maybe?)</b>
+     *
+     * @deprecated
+     *         Use the more powerfull {@link #setWebsocketFactory(WebSocketFactory)} instead
+     *
+     * @param  websocketTimeout
+     *         Non-negative int representing Websocket timeout in milliseconds.
+     *
+     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    @Deprecated
+    public JDABuilder setWebSocketTimeout(int websocketTimeout)
+    {
+        return this;
+    }
+    
+    /**
      * Sets the token that will be used by the {@link net.dv8tion.jda.core.JDA} instance to log in when
      * {@link net.dv8tion.jda.core.JDABuilder#buildAsync() buildAsync()}
      * or {@link net.dv8tion.jda.core.JDABuilder#buildBlocking() buildBlocking()}
@@ -116,15 +161,25 @@ public class JDABuilder
         return this;
     }
 
-    // FIXME setHttpClientBuilder() & setWebsocketFactory() are ugly
-    // I don't like users having to mess with the ws or http lib,
-    // on the other side this allows them to configure the behaviour more deeply without
-    // making JDABuilder overly complicated by adding too many methods 
+    /**
+     * 
+     * @param httpClientBuilder
+     * @return
+     */
     public JDABuilder setHttpClientBuilder(OkHttpClient.Builder httpClientBuilder)
     {
         this.httpClientBuilder = httpClientBuilder;
         return this;
     }
+
+    /**
+     * 
+     * 
+     * @param  wsFactory
+     *         The websocket factory that should be used
+     * 
+     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
     public JDABuilder setWebsocketFactory(WebSocketFactory wsFactory)
     {
         this.wsFactory = wsFactory;

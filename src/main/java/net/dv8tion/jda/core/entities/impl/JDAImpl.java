@@ -39,6 +39,7 @@ import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.*;
+import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import okhttp3.OkHttpClient;
@@ -650,9 +651,9 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public void installAuxiliaryCable(int port) throws UnsupportedOperationException
+    public AuditableRestAction<Void> installAuxiliaryCable(int port) throws UnsupportedOperationException
     {
-        throw new UnsupportedOperationException("Nice try m8!");
+        return new AuditableRestAction.FailedRestAction<>(new UnsupportedOperationException("nice try but next time think first :)"));
     }
 
     @Override

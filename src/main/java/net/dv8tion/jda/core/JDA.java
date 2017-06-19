@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -759,15 +760,12 @@ public interface JDA
     }
 
     /**
-     * Installs an auxiliary cable into your system.
+     * Installs an auxiliary cable into the given port of your system.
      *
      * @param  port
-     *         the port to install to.
-     *
-     * @throws UnsupportedOperationException
-     *         when you don't read the docs
+     *         The port in which the cable should be installed.
      */
-    void installAuxiliaryCable(int port) throws UnsupportedOperationException;
+    AuditableRestAction<Void> installAuxiliaryCable(int port);
 
     /**
      * The {@link net.dv8tion.jda.core.AccountType} of the currently logged in account.

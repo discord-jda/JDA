@@ -52,7 +52,7 @@ public class MessagePaginationAction extends PaginationAction<Message, MessagePa
 
     public MessagePaginationAction(MessageChannel channel)
     {
-        super(channel.getJDA(), 1, 100, 100);
+        super(channel.getJDA(), Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId()), 1, 100, 100);
 
         if (channel.getType() == ChannelType.TEXT)
         {
@@ -88,13 +88,17 @@ public class MessagePaginationAction extends PaginationAction<Message, MessagePa
     @Override
     protected CompiledRoute finalizeRoute()
     {
+        CompiledRoute route = super.finalizeRoute();
+
         final String limit = String.valueOf(this.getLimit());
         final Message last = this.last;
 
-        if (last == null)
-            return Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId(), limit);
-        else
-            return Route.Messages.GET_MESSAGE_HISTORY_BEFORE.compile(channel.getId(), limit, last.getId());
+        route = route.withQueryParams("limit", limit);
+
+        if (last != null)
+            route = route.withQueryParams("before", last.getId());
+
+        return route;
     }
 
     @Override

@@ -60,7 +60,7 @@ dependencies {
 
     //Web Connection Support
     compile 'com.neovisionaries:nv-websocket-client:2.0'
-    compile 'com.squareup.okhttp3:okhttp:3.7.0'
+    compile 'com.squareup.okhttp3:okhttp:3.8.1'
 
     //Sets the dependencies for the examples
     examplesCompile configurations.compile

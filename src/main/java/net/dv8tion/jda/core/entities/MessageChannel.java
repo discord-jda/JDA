@@ -1058,7 +1058,8 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.notEmpty(messageId, "Provided messageId");
         Checks.check(limit >= 1 && limit <= 100, "Provided limit was out of bounds. Minimum: 1, Max: 100. Provided: %d", limit);
 
-        Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY_AROUND.compile(this.getId(), Integer.toString(limit), messageId);
+        Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY.compile(this.getId()).withQueryParams("limit", Integer.toString(limit), "around", messageId);
+
         return new RestAction<MessageHistory>(getJDA(), route)
         {
             @Override

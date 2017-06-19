@@ -446,7 +446,7 @@ public class GuildImpl implements Guild
         if (days < 1)
             throw new IllegalArgumentException("Days amount must be at minimum 1 day.");
 
-        Route.CompiledRoute route = Route.Guilds.PRUNABLE_COUNT.compile(getId(), Integer.toString(days));
+        Route.CompiledRoute route = Route.Guilds.PRUNABLE_COUNT.compile(getId()).withQueryParams("days", Integer.toString(days));
         return new RestAction<Integer>(getJDA(), route)
         {
             @Override

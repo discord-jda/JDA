@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import net.dv8tion.jda.core.utils.Checks;
 
 import static net.dv8tion.jda.core.requests.Method.*;
 
@@ -71,12 +72,7 @@ public class Route
         public static final Route USER_SETTINGS =       new Route(GET, "users/@me/settings");
         public static final Route GET_CONNECTIONS =     new Route(GET, "users/@me/connections");
         public static final Route FRIEND_SUGGESTIONS =  new Route(GET, "friend-suggestions");
-
-        public static final Route GET_RECENT_MENTIONS        = new Route(GET, "users/@me/mentions?limit={limit}&roles={}&everyone={}");
-        public static final Route GET_RECENT_MENTIONS_BEFORE = new Route(GET, "users/@me/mentions?limit={limit}&roles={}&everyone={}&before={}");
-
-        public static final Route GET_RECENT_MENTIONS_GUILD        = new Route(GET, "users/@me/mentions?limit={limit}&roles={}&everyone={}&guild_id={guild_id}");
-        public static final Route GET_RECENT_MENTIONS_GUILD_BEFORE = new Route(GET, "users/@me/mentions?limit={limit}&roles={}&everyone={}&guild_id={guild_id}&before={}");
+        public static final Route GET_RECENT_MENTIONS = new Route(GET, "users/@me/mentions");
     }
 
     public static class Users
@@ -106,15 +102,16 @@ public class Route
         public static final Route GET_BANS =           new Route(GET,    "guilds/{guild_id}/bans",              "guild_id");
         public static final Route UNBAN =              new Route(DELETE, "guilds/{guild_id}/bans/{user_id}",    "guild_id");
         public static final Route KICK_MEMBER =        new Route(DELETE, "guilds/{guild_id}/members/{user_id}", "guild_id");
-        public static final Route KICK_MEMBER_REASON = new Route(DELETE, "guilds/{guild_id}/members/{user_id}?reason={}", "guild_id");
+        public static final Route BAN =                new Route(PUT,    "guilds/{guild_id}/bans/{user_id}",    "guild_id");
         public static final Route MODIFY_MEMBER =      new Route(PATCH,  "guilds/{guild_id}/members/{user_id}", "guild_id");
         public static final Route MODIFY_SELF_NICK =   new Route(PATCH,  "guilds/{guild_id}/members/@me/nick",  "guild_id");
-        public static final Route PRUNABLE_COUNT =     new Route(GET,    "guilds/{guild_id}/prune?days={}",     "guild_id");
-        public static final Route PRUNE_MEMBERS =      new Route(POST,   "guilds/{guild_id}/prune?days={}",     "guild_id");
+        public static final Route PRUNABLE_COUNT =     new Route(GET,    "guilds/{guild_id}/prune",             "guild_id");
+        public static final Route PRUNE_MEMBERS =      new Route(POST,   "guilds/{guild_id}/prune",             "guild_id");
         public static final Route GET_WEBHOOKS =       new Route(GET,    "guilds/{guild_id}/webhooks",          "guild_id");
         public static final Route GET_GUILD_EMBED =    new Route(GET,    "guilds/{guild_id}/embed",             "guild_id");
         public static final Route MODIFY_GUILD_EMBED = new Route(PATCH,  "guilds/{guild_id}/embed",             "guild_id");
         public static final Route GET_GUILD_EMOTES =   new Route(GET,    "guilds/{guild_id}/emojis",            "guild_id");
+        public static final Route GET_AUDIT_LOGS =     new Route(GET,    "guilds/{guild_id}/audit-logs",        "guild_id");
 
         public static final Route GET_INTEGRATIONS =   new Route(GET,    "guilds/{guild_id}/integrations",                       "guild_id");
         public static final Route CREATE_INTEGRATION = new Route(POST,   "guilds/{guild_id}/integrations",                       "guild_id");
@@ -122,10 +119,6 @@ public class Route
         public static final Route MODIFY_INTEGRATION = new Route(PATCH,  "guilds/{guild_id}/integrations/{integration_id}",      "guild_id");
         public static final Route SYNC_INTEGRATION =   new Route(POST,   "guilds/{guild_id}/integrations/{integration_id}/sync", "guild_id");
 
-        public static final Route BAN =                    new Route(PUT, "guilds/{guild_id}/bans/{user_id}",           "guild_id");
-        public static final Route BAN_REASON =             new Route(PUT, "guilds/{guild_id}/bans/{user_id}?reason={}", "guild_id");
-        public static final Route BAN_WITH_DELETE =        new Route(PUT, "guilds/{guild_id}/bans/{user_id}?delete-message-days={}",           "guild_id");
-        public static final Route BAN_WITH_DELETE_REASON = new Route(PUT, "guilds/{guild_id}/bans/{user_id}?delete-message-days={}&reason={}", "guild_id");
 
         //Client Only
         public static final Route CREATE_GUILD = new Route(POST, "guilds");
@@ -133,18 +126,6 @@ public class Route
         public static final Route ACK_GUILD =    new Route(POST, "guilds/{guild_id}/ack");
 
         public static final Route MODIFY_NOTIFICATION_SETTINGS = new Route(PATCH, "users/@me/guilds/{guild_id}/settings");
-    }
-
-    public static class AuditLogs
-    {
-        public static final Route GET_AUDIT_LOGS =        new Route(GET, "guilds/{guild_id}/audit-logs?limit={}",           "guild_id");
-        public static final Route GET_AUDIT_LOGS_BEFORE = new Route(GET, "guilds/{guild_id}/audit-logs?limit={}&before={}", "guild_id");
-        public static final Route GET_AUDIT_LOGS_USER =        new Route(GET, "guilds/{guild_id}/audit-logs?limit={}&user_id={}",           "guild_id");
-        public static final Route GET_AUDIT_LOGS_USER_BEFORE = new Route(GET, "guilds/{guild_id}/audit-logs?limit={}&user_id={}&before={}", "guild_id");
-        public static final Route GET_AUDIT_LOGS_ACTION =        new Route(GET, "guilds/{guild_id}/audit-logs?limit={}&action_type={}",           "guild_id");
-        public static final Route GET_AUDIT_LOGS_ACTION_BEFORE = new Route(GET, "guilds/{guild_id}/audit-logs?limit={}&action_type={}&before={}", "guild_id");
-        public static final Route GET_AUDIT_LOGS_USER_ACTION =        new Route(GET, "guilds/{guild_id}/audit-logs?limit={}&user_id={}&action_type={}",           "guild_id");
-        public static final Route GET_AUDIT_LOGS_USER_ACTION_BEFORE = new Route(GET, "guilds/{guild_id}/audit-logs?limit={}&user_id={}&action_type={}&before={}", "guild_id");
     }
 
     public static class Emotes
@@ -211,16 +192,12 @@ public class Route
         public static final Route REMOVE_PINNED_MESSAGE = new Route(DELETE, "channels/{channel_id}/pins/{message_id}",     "channel_id");
 
         public static final Route ADD_REACTION =             new Route(PUT,    new RateLimit(1, 250),
-                                                                               "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}/@me",                         "channel_id");
-        public static final Route REMOVE_REACTION =          new Route(DELETE, "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}/{user_id}",                   "channel_id");
-        public static final Route REMOVE_ALL_REACTIONS =     new Route(DELETE, "channels/{channel_id}/messages/{message_id}/reactions",                                             "channel_id");
-        public static final Route GET_REACTION_USERS_LIMIT = new Route(GET,    "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}?limit={limit}",               "channel_id");
-        public static final Route GET_REACTION_USERS_AFTER = new Route(GET,    "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}?limit={limit}&after={after}", "channel_id");
+                                                                               "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}/@me",       "channel_id");
+        public static final Route REMOVE_REACTION =          new Route(DELETE, "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}/{user_id}", "channel_id");
+        public static final Route REMOVE_ALL_REACTIONS =     new Route(DELETE, "channels/{channel_id}/messages/{message_id}/reactions",                           "channel_id");
+        public static final Route GET_REACTION_USERS =       new Route(GET,    "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}",           "channel_id");
 
-        public static final Route GET_MESSAGE_HISTORY =        new Route(GET, "channels/{channel_id}/messages?limit={}",           "channel_id");
-        public static final Route GET_MESSAGE_HISTORY_BEFORE = new Route(GET, "channels/{channel_id}/messages?limit={}&before={}", "channel_id");
-        public static final Route GET_MESSAGE_HISTORY_AFTER =  new Route(GET, "channels/{channel_id}/messages?limit={}&after={}",  "channel_id");
-        public static final Route GET_MESSAGE_HISTORY_AROUND = new Route(GET, "channels/{channel_id}/messages?limit={}&around={}", "channel_id");
+        public static final Route GET_MESSAGE_HISTORY =        new Route(GET, "channels/{channel_id}/messages", "channel_id");
 
         //Bot only
         public static final Route GET_MESSAGE =     new Route(GET,  "channels/{channel_id}/messages/{message_id}", "channel_id");
@@ -392,12 +369,36 @@ public class Route
         private final Route baseRoute;
         private final String ratelimitRoute;
         private final String compiledRoute;
+        private final boolean hasQueryParams; 
 
-        private CompiledRoute(Route baseRoute, String ratelimitRoute, String compiledRoute)
+        private CompiledRoute(Route baseRoute, String ratelimitRoute, String compiledRoute, boolean hasQueryParams)
         {
             this.baseRoute = baseRoute;
             this.ratelimitRoute = ratelimitRoute;
             this.compiledRoute = compiledRoute;
+            this.hasQueryParams = hasQueryParams;
+        }
+
+        private CompiledRoute(Route baseRoute, String ratelimitRoute, String compiledRoute)
+        {
+            this(baseRoute, ratelimitRoute, compiledRoute, false);
+        }
+
+        public CompiledRoute withQueryParams(String name, String value)
+        {
+            return new CompiledRoute(baseRoute, ratelimitRoute, compiledRoute + (hasQueryParams ? '&' : '?') + name + '=' + value, true);
+        }
+
+        public CompiledRoute withQueryParams(String... params)
+        {
+            Checks.check(params.length % 2 == 0, "param length has to be even");
+
+            StringBuilder newRoute = new StringBuilder(compiledRoute);
+            for (int i = 0; i < params.length; i++)
+            {
+                newRoute.append(!hasQueryParams && i == 0 ? '?' : '&').append(params[i]).append('=').append(params[++i]);
+            }
+            return new CompiledRoute(baseRoute, ratelimitRoute, newRoute.toString(), true);
         }
 
         public String getRatelimitRoute()

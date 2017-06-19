@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.Route.CompiledRoute;
 import net.dv8tion.jda.core.utils.Checks;
 
 import java.util.*;
@@ -63,9 +64,9 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>> exte
      * @param initialLimit
      *        The initial limit to use on the pagination endpoint
      */
-    public PaginationAction(JDA api, int minLimit, int maxLimit, int initialLimit)
+    public PaginationAction(JDA api, CompiledRoute route, int minLimit, int maxLimit, int initialLimit)
     {
-        super(api, null);
+        super(api, route);
         this.maxLimit = maxLimit;
         this.minLimit = minLimit;
         this.limit = new AtomicInteger(initialLimit);

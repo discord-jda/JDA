@@ -51,7 +51,6 @@ public class ReactionPaginationAction extends PaginationAction<User, ReactionPag
 {
 
     protected final MessageReaction reaction;
-    protected final String code;
 
     /**
      * Creates a new PaginationAction instance
@@ -61,11 +60,15 @@ public class ReactionPaginationAction extends PaginationAction<User, ReactionPag
      */
     public ReactionPaginationAction(MessageReaction reaction)
     {
-        super(reaction.getJDA(), 1, 100, 100);
+        super(reaction.getJDA(), Route.Messages.GET_REACTION_USERS.compile(reaction.getChannel().getId(), reaction.getMessageId(), getCode(reaction)), 1, 100, 100);
         this.reaction = reaction;
+    }
 
+    protected static String getCode(MessageReaction reaction)
+    {
         MessageReaction.ReactionEmote emote = reaction.getEmote();
-        code = emote.isEmote()
+
+        return emote.isEmote()
             ? emote.getName() + ":" + emote.getId()
             : MiscUtil.encodeUTF8(emote.getName());
     }
@@ -83,19 +86,20 @@ public class ReactionPaginationAction extends PaginationAction<User, ReactionPag
     @Override
     protected CompiledRoute finalizeRoute()
     {
+        CompiledRoute route = super.finalizeRoute();
+
         String after = null;
         String limit = String.valueOf(getLimit());
         User last = this.last;
         if (last != null)
             after = last.getId();
 
-        String channel = reaction.getChannel().getId();
-        String message = reaction.getMessageId();
+        route = route.withQueryParams("limit", limit);
 
         if (after != null)
-            return Route.Messages.GET_REACTION_USERS_AFTER.compile(channel, message, code, limit, after);
-        else
-            return Route.Messages.GET_REACTION_USERS_LIMIT.compile(channel, message, code, limit);
+            route = route.withQueryParams("after", after);
+
+        return route;
     }
 
     @Override

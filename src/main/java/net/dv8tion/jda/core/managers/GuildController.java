@@ -301,7 +301,7 @@ public class GuildController
         if (days < 1)
             throw new IllegalArgumentException("Days amount must be at minimum 1 day.");
 
-        Route.CompiledRoute route = Route.Guilds.PRUNE_MEMBERS.compile(guild.getId(), Integer.toString(days));
+        Route.CompiledRoute route = Route.Guilds.PRUNE_MEMBERS.compile(guild.getId()).withQueryParams("days", Integer.toString(days));
         return new AuditableRestAction<Integer>(guild.getJDA(), route)
         {
             @Override
@@ -400,11 +400,11 @@ public class GuildController
 
         final String userId = member.getUser().getId();
         final String guildId = guild.getId();
-        final Route.CompiledRoute route;
+
+        Route.CompiledRoute route = Route.Guilds.KICK_MEMBER.compile(guildId, userId);
         if (reason != null && !reason.isEmpty())
-            route = Route.Guilds.KICK_MEMBER_REASON.compile(guildId, userId, MiscUtil.encodeUTF8(reason));
-        else
-            route = Route.Guilds.KICK_MEMBER.compile(guildId, userId);
+            route = route.withQueryParams("reason", MiscUtil.encodeUTF8(reason));
+
         return new AuditableRestAction<Void>(guild.getJDA(), route)
         {
             @Override
@@ -663,26 +663,12 @@ public class GuildController
             throw new IllegalArgumentException("Provided delDays cannot be less that 0. How can you delete messages that are -1 days old?");
 
         final String userId = user.getId();
-        final boolean isReason = reason != null && !reason.isEmpty();
-        if (isReason)
-            reason = MiscUtil.encodeUTF8(reason);
 
-        final Route.CompiledRoute route;
+        Route.CompiledRoute route = Route.Guilds.BAN.compile(guild.getId(), userId);
+        if (reason != null && !reason.isEmpty())
+            route = route.withQueryParams("reason", MiscUtil.encodeUTF8(reason));
         if (delDays > 0)
-        {
-            final String days = Integer.toString(delDays);
-            if (isReason)
-                route = Route.Guilds.BAN_WITH_DELETE_REASON.compile(guild.getId(), userId, days, reason);
-            else
-                route = Route.Guilds.BAN_WITH_DELETE.compile(guild.getId(), userId, days);
-        }
-        else
-        {
-            if (isReason)
-                route = Route.Guilds.BAN_REASON.compile(guild.getId(), userId, reason);
-            else
-                route = Route.Guilds.BAN.compile(guild.getId(), userId);
-        }
+            route = route.withQueryParams("delete-message-days", Integer.toString(delDays));
 
         return new AuditableRestAction<Void>(guild.getJDA(), route)
         {
@@ -752,27 +738,11 @@ public class GuildController
             return ban(user, delDays, reason);
         }
 
-        final boolean isReason = reason != null && !reason.isEmpty();
-        if (isReason)
-            reason = MiscUtil.encodeUTF8(reason);
-
-        final String guildId = guild.getId();
-        final Route.CompiledRoute route;
+        Route.CompiledRoute route = Route.Guilds.BAN.compile(guild.getId(), userId);
+        if (reason != null && !reason.isEmpty())
+            route = route.withQueryParams("reason", MiscUtil.encodeUTF8(reason));
         if (delDays > 0)
-        {
-            final String days = Integer.toString(delDays);
-            if (isReason)
-                route = Route.Guilds.BAN_WITH_DELETE_REASON.compile(guildId, userId, days, reason);
-            else
-                route = Route.Guilds.BAN_WITH_DELETE.compile(guildId, userId, days);
-        }
-        else
-        {
-            if (isReason)
-                route = Route.Guilds.BAN_REASON.compile(guildId, userId, reason);
-            else
-                route = Route.Guilds.BAN.compile(guildId, userId);
-        }
+            route = route.withQueryParams("delete-message-days", Integer.toString(delDays));
 
         return new AuditableRestAction<Void>(guild.getJDA(), route)
         {
@@ -1742,9 +1712,6 @@ public class GuildController
         if (name.length() < 2 || name.length() > 100)
             throw new IllegalArgumentException("Provided name must be 2 - 100 characters in length");
 
-        JSONObject body = new JSONObject()
-                .put("type", "text")
-                .put("name", name);
         Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(guild.getId());
         return new ChannelAction(route, name, guild, false);
     }
@@ -1785,9 +1752,6 @@ public class GuildController
         if (name.length() < 2 || name.length() > 100)
             throw new IllegalArgumentException("Provided name must be 2 to 100 characters in length");
 
-        JSONObject body = new JSONObject()
-                .put("type", "voice")
-                .put("name", name);
         Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(guild.getId());
         return new ChannelAction(route, name, guild, true);
     }
@@ -1979,8 +1943,6 @@ public class GuildController
      */
     public RoleAction createCopyOfRole(Role role)
     {
-        Route.CompiledRoute route = Route.Roles.CREATE_ROLE.compile(guild.getId());
-
         return createRole()
                 .setColor(role.getColor())
                 .setPermissions(role.getPermissionsRaw())

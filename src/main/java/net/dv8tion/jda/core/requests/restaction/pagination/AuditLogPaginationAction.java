@@ -69,7 +69,7 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
 
     public AuditLogPaginationAction(Guild guild)
     {
-        super(guild.getJDA(), 1, 100, 100);
+        super(guild.getJDA(), Route.Guilds.GET_AUDIT_LOGS.compile(guild.getId()), 1, 100, 100);
         if (!guild.getSelfMember().hasPermission(Permission.VIEW_AUDIT_LOGS))
             throw new PermissionException(Permission.VIEW_AUDIT_LOGS);
         this.guild = guild;
@@ -147,53 +147,23 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
     @Override
     protected CompiledRoute finalizeRoute()
     {
+        CompiledRoute route = super.finalizeRoute();
+
         final String limit = String.valueOf(this.limit.get());
-        final String id = guild.getId();
         final AuditLogEntry last = this.last;
-        final boolean beforeSet = last != null;
-        final boolean typeSet = type != null;
-        final boolean userSet = userId != null;
 
-        if (beforeSet)
-            return finalizeRouteBefore(typeSet, userSet, id, limit, last.getId());
-        else
-            return finalizeRouteDefault(typeSet, userSet, id, limit);
-    }
+        route = route.withQueryParams("limit", limit);
 
-    private CompiledRoute finalizeRouteBefore(boolean typeSet, boolean userSet, String guildId, String limit, String before)
-    {
-        if (typeSet)
-        {
-            if (userSet)
-                return Route.AuditLogs.GET_AUDIT_LOGS_USER_ACTION_BEFORE.compile(guildId, limit, userId, String.valueOf(type.getKey()), before);
-            else
-                return Route.AuditLogs.GET_AUDIT_LOGS_ACTION_BEFORE.compile(guildId, limit, String.valueOf(type.getKey()), before);
-        }
-        else
-        {
-            if (userSet)
-                return Route.AuditLogs.GET_AUDIT_LOGS_USER_BEFORE.compile(guildId, limit, userId, before);
-            else
-                return Route.AuditLogs.GET_AUDIT_LOGS_BEFORE.compile(guildId, limit, before);
-        }
-    }
+        if (type != null)
+            route = route.withQueryParams("action_type", String.valueOf(type.getKey()));
 
-    private CompiledRoute finalizeRouteDefault(boolean typeSet, boolean userSet, String id, String limit)
-    {
-        if (typeSet)
-        {
-            if (userSet)
-                return Route.AuditLogs.GET_AUDIT_LOGS_USER_ACTION.compile(id, limit, userId, String.valueOf(type.getKey()));
-            else
-                return Route.AuditLogs.GET_AUDIT_LOGS_ACTION.compile(id, limit, String.valueOf(type.getKey()));
-        }
-        else
-        {
-            if (userSet)
-                return Route.AuditLogs.GET_AUDIT_LOGS_USER.compile(id, limit, userId);
-            else
-                return Route.AuditLogs.GET_AUDIT_LOGS.compile(id, limit);
-        }
+        if (userId != null)
+            route = route.withQueryParams("action_type", userId);
+
+        if (last != null)
+            route = route.withQueryParams("before", last.getId());
+
+        return route;
     }
 
     @Override
