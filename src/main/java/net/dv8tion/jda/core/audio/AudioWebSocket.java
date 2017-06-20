@@ -337,7 +337,7 @@ public class AudioWebSocket extends WebSocketAdapter
         }
         if (keepAliveHandle != null)
         {
-            keepAliveHandle.cancel(true);
+            keepAliveHandle.cancel(false);
             keepAliveHandle = null;
         }
 
