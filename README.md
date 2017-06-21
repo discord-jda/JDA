@@ -8,6 +8,8 @@
 [ ![license][] ](https://github.com/DV8FromTheWorld/JDA/tree/master/LICENSE)
 [ ![Discord](https://discordapp.com/api/guilds/125227483518861312/widget.png) ][discord-invite]
 
+<img align="right" src="https://i.imgur.com/OG7Tne8.png" height="200" width="200">
+
 # JDA (Java Discord API)
 JDA strives to provide a clean and full wrapping of the Discord REST api and its Websocket-Events for Java.
 
@@ -31,14 +33,6 @@ JDA jda = new JDABuilder(AccountType.BOT).setToken("token").buildBlocking();
 ```
 
 **Note**: It is important to set the correct AccountType because Bot-accounts require a token prefix to login.
-
-## Events
-There are a [***TON*** of events](https://github.com/DV8FromTheWorld/JDA/wiki/8\)-List-of-Events) in JDA that you can listen to.<br>
-Currently, there are 2 ways of writing your Event-Listener:
-  1. Extend ListenerAdapter and use the provided methods that get fired depending on the Event-Type. [Event Methods](https://github.com/DV8FromTheWorld/JDA/blob/master/src/main/java/net/dv8tion/jda/core/hooks/ListenerAdapter.java)
-  2. Implement EventListener and listen to onEvent and figure out if it is the event you want (Not suggested)<br>
-
-Listeners can be registered either in the JDABuilder (will catch all Events; recommended), or in the JDA instance (initial Events, especially the *READY*-Event could get lost)
 
 #### Examples:
 
@@ -140,9 +134,9 @@ repositories {
 
 The builds are distributed using JCenter through Bintray [JDA JCenter Bintray](https://bintray.com/dv8fromtheworld/maven/JDA/)
 
-## Docs
+## Documentation
 Docs can be found on the [Jenkins](http://home.dv8tion.net:8080/) or directly [here](http://home.dv8tion.net:8080/job/JDA/javadoc/)
-<br>A simple Wiki can also be found in this repo's [Wiki section](https://github.com/DV8FromTheWorld/JDA/wiki)
+<br>A simple Wiki can also be found in this repository's [Wiki section](https://github.com/DV8FromTheWorld/JDA/wiki)
 
 ## Getting Help
 If you need help, or just want to talk with the JDA or other Discord Devs, you can join the [Unofficial Discord API](https://discord.gg/0SBTUU1wZTUydsWv) Guild.
@@ -155,6 +149,20 @@ For guides and setup help you can also take a look at the [wiki](https://github.
 and [Setup](https://github.com/DV8FromTheWorld/JDA/wiki/2\)-Setup) Pages.
 
 ## Third Party Recommendations
+
+### [LavaPlayer](https://github.com/sedmelluq/lavaplayer)
+
+Created and maintained by [sedmelluq](https://github.com/sedmelluq)
+<br>LavaPlayer is the most popular library used by Music Bots created in Java.
+It is highly compatible with JDA and Discord4J and allows to play audio from
+Youtube, Soundcloud, Twitch, Bandcamp and [more providers](https://github.com/sedmelluq/lavaplayer#supported-formats). 
+<br>The library can easily be expanded to more services by implementing your own AudioSourceManager and registering it.
+
+It is recommended to read the [Usage](https://github.com/sedmelluq/lavaplayer#usage) section of LavaPlayer
+to understand a proper implementation.
+<br>Sedmelluq provided a demo in his repository which presents an example implementation for JDA:
+https://github.com/sedmelluq/lavaplayer/tree/master/demo-jda
+
 
 ### [JDA-Utilities](https://github.com/JDA-Applications/JDA-Utilities)
 
