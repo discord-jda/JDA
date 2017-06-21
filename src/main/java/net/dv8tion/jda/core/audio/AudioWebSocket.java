@@ -107,7 +107,7 @@ public class AudioWebSocket extends WebSocketAdapter
         {
             //Somehow this AudioWebSocket was shutdown before we finished connecting....
             // thus we just disconnect here since we were asked to shutdown
-            socket.sendClose(1006);
+            socket.sendClose(1000);
             return;
         }
 
@@ -141,7 +141,7 @@ public class AudioWebSocket extends WebSocketAdapter
                 int heartbeatInterval = content.getInt("heartbeat_interval");
 
                 //Find our external IP and Port using Discord
-                InetSocketAddress externalIpAndPort = null;
+                InetSocketAddress externalIpAndPort;
 
                 changeStatus(ConnectionStatus.CONNECTING_ATTEMPTING_UDP_DISCOVERY);
                 int tries = 0;
