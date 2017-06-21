@@ -22,7 +22,6 @@ import net.dv8tion.jda.core.entities.impl.MemberImpl;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberNickChangeEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberRoleRemoveEvent;
-import net.dv8tion.jda.core.requests.GuildLock;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -80,21 +79,18 @@ public class GuildMemberUpdateHandler extends SocketHandler
 
         //Find the roles removed.
         List<Role> removedRoles = new LinkedList<>();
-        for (Role role : currentRoles)
+        each: for (Role role : currentRoles)
         {
-            boolean roleFound = false;
             for (Iterator<Role> it = newRoles.iterator(); it.hasNext();)
             {
                 Role r = it.next();
                 if (role.equals(r))
                 {
                     it.remove();
-                    roleFound = true;
-                    break;
+                    continue each;
                 }
             }
-            if (!roleFound)
-                removedRoles.add(role);
+            removedRoles.add(role);
         }
 
         if (removedRoles.size() > 0)

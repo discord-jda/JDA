@@ -22,7 +22,6 @@ import net.dv8tion.jda.core.events.user.UserAvatarUpdateEvent;
 import net.dv8tion.jda.core.events.user.UserGameUpdateEvent;
 import net.dv8tion.jda.core.events.user.UserNameUpdateEvent;
 import net.dv8tion.jda.core.events.user.UserOnlineStatusUpdateEvent;
-import net.dv8tion.jda.core.requests.GuildLock;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 

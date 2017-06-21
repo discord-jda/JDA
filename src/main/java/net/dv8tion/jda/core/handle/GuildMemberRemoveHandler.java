@@ -21,7 +21,6 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.*;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent;
-import net.dv8tion.jda.core.requests.GuildLock;
 import net.dv8tion.jda.core.requests.WebSocketClient;
 import org.json.JSONObject;
 
@@ -71,8 +70,9 @@ public class GuildMemberRemoveHandler extends SocketHandler
 
         //The user is not in a different guild that we share
         // The user also is not a friend of this account in the case that the logged in account is a client account.
-        if (api.getGuildMap().valueCollection().stream().noneMatch(g -> ((GuildImpl) g).getMembersMap().containsKey(userId))
-                && !(api.getAccountType() == AccountType.CLIENT && api.asClient().getFriendById(userId) != null))
+        if (userId != api.getSelfUser().getIdLong() // don't remove selfUser from cache
+            && api.getGuildMap().valueCollection().stream().noneMatch(g -> ((GuildImpl) g).getMembersMap().containsKey(userId))
+            && !(api.getAccountType() == AccountType.CLIENT && api.asClient().getFriendById(userId) != null))
         {
             UserImpl user = (UserImpl) api.getUserMap().remove(userId);
             if (user.hasPrivateChannel())

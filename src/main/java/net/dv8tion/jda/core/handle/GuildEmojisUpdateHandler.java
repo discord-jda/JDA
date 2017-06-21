@@ -26,7 +26,6 @@ import net.dv8tion.jda.core.events.emote.EmoteAddedEvent;
 import net.dv8tion.jda.core.events.emote.EmoteRemovedEvent;
 import net.dv8tion.jda.core.events.emote.update.EmoteUpdateNameEvent;
 import net.dv8tion.jda.core.events.emote.update.EmoteUpdateRolesEvent;
-import net.dv8tion.jda.core.requests.GuildLock;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;

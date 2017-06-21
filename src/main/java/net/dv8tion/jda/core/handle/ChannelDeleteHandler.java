@@ -31,7 +31,6 @@ import net.dv8tion.jda.core.events.channel.priv.PrivateChannelDeleteEvent;
 import net.dv8tion.jda.core.events.channel.text.TextChannelDeleteEvent;
 import net.dv8tion.jda.core.events.channel.voice.VoiceChannelDeleteEvent;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
-import net.dv8tion.jda.core.requests.GuildLock;
 import org.json.JSONObject;
 
 public class ChannelDeleteHandler extends SocketHandler
@@ -88,7 +87,7 @@ public class ChannelDeleteHandler extends SocketHandler
                 }
 
                 //We use this instead of getAudioManager(Guild) so we don't create a new instance. Efficiency!
-                AudioManagerImpl manager = (AudioManagerImpl) api.getAudioManagerMap().get(guild.getIdLong());
+                AudioManagerImpl manager = api.getAudioManagerMap().get(guild.getIdLong());
                 if (manager != null && manager.isConnected()
                         && manager.getConnectedChannel().getIdLong() == channel.getIdLong())
                 {

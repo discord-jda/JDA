@@ -15,7 +15,6 @@
  */
 package net.dv8tion.jda.core.handle;
 
-import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.guild.GuildAvailableEvent;

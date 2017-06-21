@@ -27,7 +27,6 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageEmbedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.core.events.message.priv.PrivateMessageEmbedEvent;
 import net.dv8tion.jda.core.events.message.priv.PrivateMessageUpdateEvent;
-import net.dv8tion.jda.core.requests.GuildLock;
 import net.dv8tion.jda.core.requests.WebSocketClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -152,7 +151,7 @@ public class MessageUpdateHandler extends SocketHandler
 
     private Long handleMessageEmbed(JSONObject content)
     {
-        EntityBuilder builder = api.getEntityBuilder();;
+        EntityBuilder builder = api.getEntityBuilder();
         final long messageId = content.getLong("id");
         final long channelId = content.getLong("channel_id");
         LinkedList<MessageEmbed> embeds = new LinkedList<>();

@@ -16,17 +16,13 @@
 
 package net.dv8tion.jda.core.handle;
 
-import com.neovisionaries.ws.client.WebSocketException;
 import net.dv8tion.jda.core.audio.AudioConnection;
 import net.dv8tion.jda.core.audio.AudioWebSocket;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
-import net.dv8tion.jda.core.requests.GuildLock;
 import net.dv8tion.jda.core.requests.WebSocketClient;
 import org.json.JSONObject;
-
-import java.io.IOException;
 
 public class VoiceServerUpdateHandler extends SocketHandler
 {
