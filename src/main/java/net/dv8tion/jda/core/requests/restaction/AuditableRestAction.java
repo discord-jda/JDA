@@ -17,15 +17,11 @@
 package net.dv8tion.jda.core.requests.restaction;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.json.JSONObject;
-import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
 public abstract class AuditableRestAction<T> extends RestAction<T>
@@ -121,9 +117,9 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
         }
 
         @Override
-        public Future<T> submit(boolean shouldQueue)
+        public RequestFuture<T> submit(boolean shouldQueue)
         {
-            return new CompletedFuture<>(content);
+            return new RestFuture<>(content);
         }
 
         @Override
@@ -140,31 +136,31 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
      */
     public static class FailedRestAction<T> extends AuditableRestAction<T>
     {
-        private final Exception exception;
+        private final Throwable throwable;
 
-        public FailedRestAction(Exception exception)
+        public FailedRestAction(Throwable throwable)
         {
             super(null, null);
-            this.exception = exception;
+            this.throwable = throwable;
         }
 
         @Override
         public void queue(Consumer<T> success, Consumer<Throwable> failure)
         {
             if (failure != null)
-                failure.accept(exception);
+                failure.accept(throwable);
         }
 
         @Override
-        public Future<T> submit(boolean shouldQueue)
+        public RequestFuture<T> submit(boolean shouldQueue)
         {
-            return new FailedFuture<>(exception);
+            return new RestFuture<>(throwable);
         }
 
         @Override
         public T complete(boolean shouldQueue)
         {
-            throw new RuntimeException(exception);
+            throw new RuntimeException(throwable);
         }
 
         @Override

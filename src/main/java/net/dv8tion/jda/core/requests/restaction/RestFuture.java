@@ -16,28 +16,49 @@
 
 package net.dv8tion.jda.core.requests.restaction;
 
+import java.util.concurrent.CompletableFuture;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.Request;
+import net.dv8tion.jda.core.requests.RequestFuture;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
-import java.util.concurrent.CompletableFuture;
 
-public class RequestFuture<T> extends CompletableFuture<T>
+public class RestFuture<T> extends CompletableFuture<T> implements RequestFuture<T>
 {
     final Request<T> request;
 
-    public RequestFuture(RestAction<T> restAction, boolean shouldQueue, RequestBody data, Route.CompiledRoute route, CaseInsensitiveMap<String, String> headers)
+    public RestFuture(final RestAction<T> restAction, final boolean shouldQueue, final RequestBody data, final Route.CompiledRoute route, final CaseInsensitiveMap<String, String> headers)
     {
-        this.request = new Request<T>(restAction, this::complete, this::completeExceptionally, shouldQueue, data, route, headers);
-        ((JDAImpl) restAction.getJDA()).getRequester().request(request);
+        this.request = new Request<>(restAction, this::complete, this::completeExceptionally, shouldQueue, data, route, headers);
+        ((JDAImpl) restAction.getJDA()).getRequester().request(this.request);
+    }
+
+    public RestFuture(final T t)
+    {
+        this.request = null;
+        this.complete(t);
+    }
+
+    public RestFuture(final Throwable t)
+    {
+        this.request = null;
+        this.completeExceptionally(t);
     }
 
     @Override
-    public boolean cancel(boolean mayInterrupt)
+    public boolean cancel(final boolean mayInterrupt)
     {
-        request.cancel();
+        if (this.request != null)
+            this.request.cancel();
+
         return super.cancel(mayInterrupt);
+    }
+
+    @Override
+    public CompletableFuture<T> toCompletableFuture()
+    {
+        throw new UnsupportedOperationException("");
     }
 }
