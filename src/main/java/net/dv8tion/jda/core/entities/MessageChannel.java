@@ -172,6 +172,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         returns false.
      * @throws java.lang.IllegalArgumentException
      *         if the provided text is null, empty or longer than 2000 characters
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}
+     *         and both the currently logged in account and the target user are bots.
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
      *         <br>The newly created Message after it has been sent to Discord.
@@ -218,6 +221,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         returns false.
      * @throws java.lang.IllegalArgumentException
      *         If the provided format text is {@code null}, empty or longer than 2000 characters
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}
+     *         and both the currently logged in account and the target user are bots.
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
      *         <br>The newly created Message after it has been sent to Discord.
@@ -258,8 +264,11 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         {@link net.dv8tion.jda.core.entities.TextChannel#getGuild() TextChannel.getGuild()}{@link net.dv8tion.jda.core.entities.Guild#checkVerification() .checkVerification()}
      *         returns false.
      * @throws java.lang.IllegalArgumentException
-     *         if the provided embed is {@code null} or if the provided {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed}
+     *         If the provided embed is {@code null} or if the provided {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed}
      *         is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}
+     *         and both the currently logged in account and the target user are bots.
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
      *         <br>The newly created Message after it has been sent to Discord.
@@ -320,9 +329,12 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         {@link net.dv8tion.jda.core.entities.TextChannel#getGuild() TextChannel.getGuild()}{@link net.dv8tion.jda.core.entities.Guild#checkVerification() .checkVerification()}
      *         returns false.
      * @throws java.lang.IllegalArgumentException
-     *         if the provided message is {@code null} or the provided {@link net.dv8tion.jda.core.entities.Message Message}
+     *         If the provided message is {@code null} or the provided {@link net.dv8tion.jda.core.entities.Message Message}
      *         contains an {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed}
      *         that is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}
+     *         and both the currently logged in account and the target user are bots.
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
      *         <br>The newly created Message after it has been sent to Discord.
@@ -397,6 +409,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}</li>
      *         </ul>
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}
+     *         and both the currently logged in account and the target user are bots.
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
      *         <br>The {@link net.dv8tion.jda.core.entities.Message Message} created from this upload.
@@ -475,6 +490,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}</li>
      *         </ul>
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}
+     *         and both the currently logged in account and the target user are bots.
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
      *         <br>The {@link net.dv8tion.jda.core.entities.Message Message} created from this upload.
@@ -518,6 +536,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}</li>
      *         </ul>
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}
+     *         and both the currently logged in account and the target user are bots.
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
      *         <br>The {@link net.dv8tion.jda.core.entities.Message Message} created from this upload.
@@ -592,6 +613,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}</li>
      *         </ul>
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}
+     *         and both the currently logged in account and the target user are bots.
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
      *         <br>The {@link net.dv8tion.jda.core.entities.Message Message} created from this upload.
