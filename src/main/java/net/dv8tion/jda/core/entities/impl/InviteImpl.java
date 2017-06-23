@@ -24,7 +24,6 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
-import net.dv8tion.jda.core.requests.Route.CompiledRoute;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONArray;
@@ -119,7 +118,7 @@ public class InviteImpl implements Invite
 
         final Member member = guild.getSelfMember();
 
-        CompiledRoute route;
+        Route.CompiledRoute route;
 
         final net.dv8tion.jda.core.entities.Channel channel = this.channel.getType() == ChannelType.TEXT
                 ? guild.getTextChannelById(this.channel.getIdLong())

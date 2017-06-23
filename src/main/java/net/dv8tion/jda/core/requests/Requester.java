@@ -20,7 +20,6 @@ import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDAInfo;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.requests.Route.CompiledRoute;
 import net.dv8tion.jda.core.requests.ratelimit.BotRateLimiter;
 import net.dv8tion.jda.core.requests.ratelimit.ClientRateLimiter;
 import net.dv8tion.jda.core.utils.SimpleLog;
@@ -100,7 +99,7 @@ public class Requester
      */
     public <T> Long execute(Request<T> apiRequest)
     {
-        CompiledRoute route = apiRequest.getRoute();
+        Route.CompiledRoute route = apiRequest.getRoute();
         Long retryAfter = rateLimiter.getRateLimit(route);
         if (retryAfter != null)
             return retryAfter;
@@ -202,7 +201,7 @@ public class Requester
         rateLimiter.shutdown(time, unit);
     }
 
-    public void forceShutdown()
+    public void shutdownNow()
     {
         rateLimiter.forceShutdown();
     }

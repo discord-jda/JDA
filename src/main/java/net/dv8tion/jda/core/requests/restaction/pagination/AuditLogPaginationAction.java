@@ -29,7 +29,6 @@ import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
-import net.dv8tion.jda.core.requests.Route.CompiledRoute;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -135,9 +134,9 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
     }
 
     @Override
-    protected CompiledRoute finalizeRoute()
+    protected Route.CompiledRoute finalizeRoute()
     {
-        CompiledRoute route = super.finalizeRoute();
+        Route.CompiledRoute route = super.finalizeRoute();
 
         final String limit = String.valueOf(this.limit.get());
         final AuditLogEntry last = this.last;

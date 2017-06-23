@@ -157,8 +157,9 @@ public class MessageHistory
             throw new IllegalArgumentException("Message retrieval limit is between 1 and 100 messages. No more, no less. Limit provided: " + amount);
 
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId()).withQueryParams("limit", Integer.toString(amount));
+
         if (!history.isEmpty())
-            route.withQueryParams("before",String.valueOf(history.lastKey()));
+            route = route.withQueryParams("before", String.valueOf(history.lastKey()));
 
         return new RestAction<List<Message>>(getJDA(), route)
         {

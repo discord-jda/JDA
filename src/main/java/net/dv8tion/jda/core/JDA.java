@@ -25,7 +25,6 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * The core of JDA. Acts as a registry system of JDA. All parts of the the API can be accessed starting from this class.
@@ -734,16 +733,20 @@ public interface JDA
     boolean isBulkDeleteSplittingEnabled();
 
     /**
-     * Shuts down JDA, closing all its connections.
+     * Shuts down this {@link JDA} instance, closing all its connections.
      * After this command is issued the JDA Instance can not be used anymore.
      * Already enqueued {@link net.dv8tion.jda.core.requests.RestAction RestActions} are still be executed.
+     *
+     * If you want this instance to shutdown without executing  
+     *
+     * @see #shutdownNow()
      */
     void shutdown();
 
     /**
      * Shuts down JDA, closing all its connections.
      * After this command is issued the JDA Instance can not be used anymore.
-     * Already enqueued {@link net.dv8tion.jda.core.requests.RestAction RestActions} are still be executed.
+     * Already enqueued {@link net.dv8tion.jda.core.requests.RestAction RestActions} are still executed.
      * 
      * @deprecated
      *         Use {@link #shutdown()} instead.
@@ -757,10 +760,12 @@ public interface JDA
     }
 
     /**
-     * Force closes this {@link JDA} instance violently.
+     * Shuts down this {@link JDA} instance instantly.
      * This will also cancel all queued {@link net.dv8tion.jda.core.requests.RestAction RestActions}.
+     *
+     * @see #shutdown()
      */
-    void forceShutdown();
+    void shutdownNow();
 
     /**
      * Installs an auxiliary cable into the given port of your system.

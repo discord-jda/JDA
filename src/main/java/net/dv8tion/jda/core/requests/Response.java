@@ -121,7 +121,7 @@ public class Response
     public String toString()
     {
         return this.exception == null
-                ? "RestActionResponse[" + this.code + (this.object == null ? "" : ", " + this.object.toString()) + ']'
-                : "RestActionException[" + this.exception.getMessage() + ']';
+                ? "HTTPResponse[" + this.code + (this.object == null ? "" : ", " + this.object.toString()) + ']'
+                : "HTTPException[" + this.exception.getMessage() + ']';
     }
 }

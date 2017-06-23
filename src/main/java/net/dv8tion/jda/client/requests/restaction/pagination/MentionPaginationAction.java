@@ -23,7 +23,6 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
-import net.dv8tion.jda.core.requests.Route.CompiledRoute;
 import net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction;
 import org.json.JSONArray;
 
@@ -136,9 +135,9 @@ public class MentionPaginationAction extends PaginationAction<Message, MentionPa
     }
 
     @Override
-    protected CompiledRoute finalizeRoute()
+    protected Route.CompiledRoute finalizeRoute()
     {
-        CompiledRoute route = super.finalizeRoute();
+        Route.CompiledRoute route = super.finalizeRoute();
 
         String limit, before, everyone, role;
         limit = String.valueOf(super.getLimit());

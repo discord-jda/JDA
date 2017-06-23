@@ -21,7 +21,6 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
-import net.dv8tion.jda.core.requests.Route.CompiledRoute;
 import net.dv8tion.jda.core.requests.restaction.CompletedFuture;
 import net.dv8tion.jda.core.requests.restaction.FailedFuture;
 import net.dv8tion.jda.core.requests.restaction.RequestFuture;
@@ -165,9 +164,10 @@ public abstract class RestAction<T>
     };
 
     protected final JDAImpl api;
-    private Route.CompiledRoute route;
-    private RequestBody data;
-    private CaseInsensitiveMap<String, String> headers;
+
+    private final Route.CompiledRoute route;
+    private final RequestBody data;
+    private final CaseInsensitiveMap<String, String> headers;
 
     /**
      * Creates a new RestAction instance
@@ -273,12 +273,11 @@ public abstract class RestAction<T>
      */
     public void queue(Consumer<T> success, Consumer<Throwable> failure)
     {
-        finalizeAction();
         if (success == null)
             success = DEFAULT_SUCCESS;
         if (failure == null)
             failure = DEFAULT_FAILURE;
-        api.getRequester().request(new Request<>(this, success, failure, true));
+        api.getRequester().request(new Request<>(this, success, failure, true, finalizeData(), finalizeRoute(), finalizeHeaders()));
     }
 
     /**
@@ -309,8 +308,7 @@ public abstract class RestAction<T>
      */
     public Future<T> submit(boolean shouldQueue)
     {
-        finalizeAction();
-        return new RequestFuture<>(this, shouldQueue);
+        return new RequestFuture<>(this, shouldQueue, finalizeData(), finalizeRoute(), finalizeHeaders());
     }
 
     /**
@@ -657,30 +655,9 @@ public abstract class RestAction<T>
         return executor.schedule(() -> queue(success, failure), delay, unit);
     }
 
-    private final void finalizeAction() {
-        this.data = finalizeData();
-        this.route = this.finalizeRoute();
-        this.headers = this.finalizeHeaders();
-    }
-
     protected RequestBody finalizeData() { return data; }
-    protected CompiledRoute finalizeRoute() { return route; }
-    protected CaseInsensitiveMap<String, String> finalizeHeaders() { return headers; }
-
-    protected Route.CompiledRoute getRoute()
-    {
-        return this.route;
-    }
-
-    protected RequestBody getData()
-    {
-        return this.data;
-    }
-
-    protected CaseInsensitiveMap<String, String> getHeaders()
-    {
-        return this.headers;
-    }
+    protected Route.CompiledRoute finalizeRoute() { return route; }
+    protected CaseInsensitiveMap<String, String> finalizeHeaders() { return headers == null ? null : new CaseInsensitiveMap<>(headers); } // maps are mutable 
 
     protected static RequestBody getRequestBody(JSONObject object)
     {

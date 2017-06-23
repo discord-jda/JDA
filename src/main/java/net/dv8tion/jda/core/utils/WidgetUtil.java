@@ -191,48 +191,62 @@ public class WidgetUtil
     public static Widget getWidget(long guildId) throws RateLimitedException
     {
         Checks.notNull(guildId, "GuildId");
+
+        HttpURLConnection connection;
+        int code;
+
         try
         {
-            HttpURLConnection connection = (HttpURLConnection) new URL(String.format(WIDGET_URL, guildId)).openConnection();
+            connection = (HttpURLConnection) new URL(String.format(WIDGET_URL, guildId)).openConnection();
             connection.setRequestMethod("GET");
             connection.addRequestProperty("user-agent", Requester.USER_AGENT);
             connection.connect();
-            
-            switch(connection.getResponseCode())
-            {
-                case 200: // ok
-                {
-                    try (InputStream stream = connection.getInputStream())
-                    {
-                        return new Widget(new JSONObject(new JSONTokener(stream)));
-                    }
-                    catch (IOException e)
-                    {
-                        throw e;
-                    }
-                }
-                case 400:              // not valid snowflake
-                case 404: return null; // guild not found
-                case 403: return new Widget(guildId); // widget disabled
-                case 429: // ratelimited
-                {
-                    long retryAfter;
-                    try (InputStream stream = connection.getInputStream())
-                    {
-                        retryAfter = new JSONObject(new JSONTokener(stream)).getLong("retry_after");
-                    }
-                    catch (Exception e)
-                    {
-                        retryAfter = 0;
-                    }
-                    throw new RateLimitedException(WIDGET_URL, retryAfter);
-                }
-                default: throw new RuntimeException("An unknown status was returned: " + connection.getResponseCode() + " " + connection.getResponseMessage());
-            }
+
+            code = connection.getResponseCode();
         }
-        catch (IOException ex)
+        catch (IOException e)
         {
-            throw new RuntimeException(ex);
+            throw new RuntimeException(e);
+        }
+
+        switch (code)
+        {
+            case 200: // ok
+            {
+                try (InputStream stream = connection.getInputStream())
+                {
+                    return new Widget(new JSONObject(new JSONTokener(stream)));
+                }
+                catch (IOException e)
+                {
+                    throw new RuntimeException(e);
+                }
+            }
+            case 400:              // not valid snowflake
+            case 404: return null; // guild not found
+            case 403: return new Widget(guildId); // widget disabled
+            case 429: // ratelimited
+            {
+                long retryAfter;
+                try (InputStream stream = connection.getInputStream())
+                {
+                    retryAfter = new JSONObject(new JSONTokener(stream)).getLong("retry_after");
+                }
+                catch (Exception e)
+                {
+                    retryAfter = 0;
+                }
+                throw new RateLimitedException(WIDGET_URL, retryAfter);
+            }
+            default: 
+                try
+                {
+                    throw new RuntimeException("An unknown status was returned: " + connection.getResponseCode() + " " + connection.getResponseMessage());
+                }
+                catch (IOException e)
+                {
+                    throw new RuntimeException(e);
+                }
         }
     }
     

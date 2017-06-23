@@ -558,7 +558,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         }
         catch (IOException e)
         {
-            return new RestAction.FailedRestAction<Message>(e);
+            return new RestAction.FailedRestAction<>(e);
         }
 
         if (message != null)

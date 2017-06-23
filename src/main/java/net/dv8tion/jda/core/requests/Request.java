@@ -31,15 +31,22 @@ public class Request<T>
     private final Consumer<T> onSuccess;
     private final Consumer<Throwable> onFailure;
     private final boolean shouldQueue;
+    private final Route.CompiledRoute route;
+    private final RequestBody data;
+    private final CaseInsensitiveMap<String, String> headers;
 
     private boolean isCanceled = false;
 
-    public Request(RestAction<T> restAction, Consumer<T> onSuccess, Consumer<Throwable> onFailure, boolean shouldQueue)
+    public Request(RestAction<T> restAction, Consumer<T> onSuccess, Consumer<Throwable> onFailure, boolean shouldQueue, RequestBody data, Route.CompiledRoute route, CaseInsensitiveMap<String, String> headers)
     {
         this.restAction = restAction;
         this.onSuccess = onSuccess;
         this.onFailure = onFailure;
         this.shouldQueue = shouldQueue;
+        this.data = data;
+        this.route = route;
+        this.headers = headers;
+
         this.api = (JDAImpl) restAction.getJDA();
     }
 
@@ -65,7 +72,7 @@ public class Request<T>
     {
         if (response.code == 429)
         {
-            onFailure(new RateLimitedException(getRoute(), response.retryAfter));
+            onFailure(new RateLimitedException(route, response.retryAfter));
         }
         else
         {
@@ -111,17 +118,17 @@ public class Request<T>
 
     public CaseInsensitiveMap<String, String> getHeaders()
     {
-        return restAction.getHeaders();
+        return headers;
     }
 
     public Route.CompiledRoute getRoute()
     {
-        return restAction.getRoute();
+        return route;
     }
 
     public RequestBody getData()
     {
-        return restAction.getData();
+        return data;
     }
 
     public boolean shouldQueue()

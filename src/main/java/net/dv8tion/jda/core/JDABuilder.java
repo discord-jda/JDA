@@ -103,7 +103,7 @@ public class JDABuilder
     {
         return this;
     }
-    
+
     /**
      * Sets the timeout (in milliseconds) for all Websockets created by JDA (MainWS and AudioWS's) for this instance.
      *
@@ -126,7 +126,7 @@ public class JDABuilder
     {
         return this;
     }
-    
+
     /**
      * Sets the token that will be used by the {@link net.dv8tion.jda.core.JDA} instance to log in when
      * {@link net.dv8tion.jda.core.JDABuilder#buildAsync() buildAsync()}

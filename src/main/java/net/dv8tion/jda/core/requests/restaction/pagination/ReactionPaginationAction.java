@@ -22,7 +22,6 @@ import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
-import net.dv8tion.jda.core.requests.Route.CompiledRoute;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.json.JSONArray;
 
@@ -80,9 +79,9 @@ public class ReactionPaginationAction extends PaginationAction<User, ReactionPag
     }
 
     @Override
-    protected CompiledRoute finalizeRoute()
+    protected Route.CompiledRoute finalizeRoute()
     {
-        CompiledRoute route = super.finalizeRoute();
+        Route.CompiledRoute route = super.finalizeRoute();
 
         String after = null;
         String limit = String.valueOf(getLimit());

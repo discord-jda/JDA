@@ -21,7 +21,7 @@ import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.requests.RateLimiter;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Requester;
-import net.dv8tion.jda.core.requests.Route.CompiledRoute;
+import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.Route.RateLimit;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import okhttp3.Headers;
@@ -49,7 +49,7 @@ public class BotRateLimiter extends RateLimiter
     }
 
     @Override
-    public Long getRateLimit(CompiledRoute route)
+    public Long getRateLimit(Route.CompiledRoute route)
     {
         Bucket bucket = getBucket(route);
         synchronized (bucket)
@@ -69,7 +69,7 @@ public class BotRateLimiter extends RateLimiter
     }
 
     @Override
-    protected Long handleResponse(CompiledRoute route, okhttp3.Response response)
+    protected Long handleResponse(Route.CompiledRoute route, okhttp3.Response response)
     {
         Bucket bucket = getBucket(route);
         synchronized (bucket)
@@ -85,10 +85,10 @@ public class BotRateLimiter extends RateLimiter
                 String retry = headers.get("Retry-After");
                 if (retry == null || retry.isEmpty())
                 {
-                    try (Reader reader = response.body().charStream()) {
+                    try (Reader reader = response.body().charStream())
+                    {
                         JSONObject limitObj = new JSONObject(new JSONTokener(reader));
                         retry = limitObj.get("retry_after").toString();
-                        
                     }
                     catch (IOException ignored)
                     {
@@ -117,7 +117,7 @@ public class BotRateLimiter extends RateLimiter
 
     }
 
-    private Bucket getBucket(CompiledRoute route)
+    private Bucket getBucket(Route.CompiledRoute route)
     {
         String rateLimitRoute = route.getRatelimitRoute();
         Bucket bucket = (Bucket) buckets.get(rateLimitRoute);

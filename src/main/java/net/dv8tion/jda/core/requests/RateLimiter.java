@@ -17,7 +17,6 @@
 package net.dv8tion.jda.core.requests;
 
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.requests.Route.CompiledRoute;
 import net.dv8tion.jda.core.requests.ratelimit.IBucket;
 
 import java.util.ArrayList;
@@ -44,14 +43,14 @@ public abstract class RateLimiter
 
 
     // -- Required Implementations --
-    public abstract Long getRateLimit(CompiledRoute route);
+    public abstract Long getRateLimit(Route.CompiledRoute route);
     protected abstract void queueRequest(Request request);
-    protected abstract Long handleResponse(CompiledRoute route, okhttp3.Response response);
+    protected abstract Long handleResponse(Route.CompiledRoute route, okhttp3.Response response);
 
 
     // --- Default Implementations --
 
-    public boolean isRateLimited(CompiledRoute route)
+    public boolean isRateLimited(Route.CompiledRoute route)
     {
         return getRateLimit(route) != null;
     }
