@@ -532,6 +532,18 @@ public class MessageBuilder implements Appendable
     {
         return this.builder;
     }
+    
+    /**
+     * Clears the current builder. Useful for mass message creation.
+     *
+     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
+     */
+    public MessageBuilder clear() {
+        this.builder.setLength(0);
+        this.embed = null;
+        this.isTTS = false;
+        return this;
+    }
 
     /**
      * Returns the index within this string of the first occurrence of the
