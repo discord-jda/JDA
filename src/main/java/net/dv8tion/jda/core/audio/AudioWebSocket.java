@@ -243,10 +243,13 @@ public class AudioWebSocket extends WebSocketAdapter
             LOG.debug("ClientReason: " + clientCloseFrame.getCloseReason());
             LOG.debug("ClientCode: " + clientCloseFrame.getCloseCode());
             if (clientCloseFrame.getCloseCode() != 1000)
+            {
+                // unexpected close -> error
                 this.close(ConnectionStatus.ERROR_LOST_CONNECTION);
+                return;
+            }
         }
-        else
-            this.close(ConnectionStatus.NOT_CONNECTED);
+        this.close(ConnectionStatus.NOT_CONNECTED);
     }
 
     @Override
