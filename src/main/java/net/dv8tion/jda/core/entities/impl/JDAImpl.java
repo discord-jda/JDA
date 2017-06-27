@@ -42,6 +42,8 @@ import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.SimpleLog;
+import net.dv8tion.jda.core.utils.SnowflakeCacheView;
+import net.dv8tion.jda.core.utils.SnowflakeCacheViewImpl;
 import org.apache.http.HttpHost;
 import org.apache.http.util.Args;
 import org.json.JSONObject;
@@ -61,11 +63,11 @@ public class JDAImpl implements JDA
 
     public final ScheduledExecutorService pool;
 
-    protected final TLongObjectMap<User> users = MiscUtil.newLongMap();
-    protected final TLongObjectMap<Guild> guilds = MiscUtil.newLongMap();
-    protected final TLongObjectMap<TextChannel> textChannels = MiscUtil.newLongMap();
-    protected final TLongObjectMap<VoiceChannel> voiceChannels = MiscUtil.newLongMap();
-    protected final TLongObjectMap<PrivateChannel> privateChannels = MiscUtil.newLongMap();
+    protected final SnowflakeCacheViewImpl<User> userCache = new SnowflakeCacheViewImpl<>();
+    protected final SnowflakeCacheViewImpl<Guild> guildCache = new SnowflakeCacheViewImpl<>();
+    protected final SnowflakeCacheViewImpl<TextChannel> textChannelCache = new SnowflakeCacheViewImpl<>();
+    protected final SnowflakeCacheViewImpl<VoiceChannel> voiceChannelCache = new SnowflakeCacheViewImpl<>();
+    protected final SnowflakeCacheViewImpl<PrivateChannel> privateChannelCache = new SnowflakeCacheViewImpl<>();
 
     protected final TLongObjectMap<User> fakeUsers = MiscUtil.newLongMap();
     protected final TLongObjectMap<PrivateChannel> fakePrivateChannels = MiscUtil.newLongMap();
@@ -314,24 +316,6 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public List<User> getUsers()
-    {
-        return Collections.unmodifiableList(new ArrayList<>(users.valueCollection()));
-    }
-
-    @Override
-    public User getUserById(String id)
-    {
-        return users.get(MiscUtil.parseSnowflake(id));
-    }
-
-    @Override
-    public User getUserById(long id)
-    {
-        return users.get(id);
-    }
-
-    @Override
     public List<Guild> getMutualGuilds(User... users)
     {
         Args.notNull(users, "users");
@@ -349,16 +333,6 @@ public class JDAImpl implements JDA
         return Collections.unmodifiableList(getGuilds().stream()
                 .filter(guild -> users.stream().allMatch(guild::isMember))
                 .collect(Collectors.toList()));
-    }
-
-    @Override
-    public List<User> getUsersByName(String name, boolean ignoreCase)
-    {
-        return users.valueCollection().stream().filter(u ->
-            ignoreCase
-            ? name.equalsIgnoreCase(u.getName())
-            : name.equals(u.getName()))
-        .collect(Collectors.toList());
     }
 
     @Override
@@ -396,37 +370,15 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public List<Guild> getGuilds()
+    public SnowflakeCacheView<Guild> getGuildCache()
     {
-        return Collections.unmodifiableList(new ArrayList<>(guilds.valueCollection()));
-    }
-
-    @Override
-    public Guild getGuildById(String id)
-    {
-        return guilds.get(MiscUtil.parseSnowflake(id));
-    }
-
-    @Override
-    public Guild getGuildById(long id)
-    {
-        return guilds.get(id);
-    }
-
-    @Override
-    public List<Guild> getGuildsByName(String name, boolean ignoreCase)
-    {
-        return guilds.valueCollection().stream().filter(g ->
-                ignoreCase
-                        ? name.equalsIgnoreCase(g.getName())
-                        : name.equals(g.getName()))
-                .collect(Collectors.toList());
+        return guildCache;
     }
 
     @Override
     public List<Role> getRoles()
     {
-        return guilds.valueCollection().stream()
+        return guildCache.stream()
                 .flatMap(guild -> guild.getRoles().stream())
                 .collect(Collectors.toList());
     }
@@ -440,7 +392,7 @@ public class JDAImpl implements JDA
     @Override
     public Role getRoleById(long id)
     {
-        for (Guild guild : guilds.valueCollection())
+        for (Guild guild : guildCache)
         {
             Role r = guild.getRoleById(id);
             if (r != null)
@@ -452,89 +404,33 @@ public class JDAImpl implements JDA
     @Override
     public List<Role> getRolesByName(String name, boolean ignoreCase)
     {
-        return guilds.valueCollection().stream()
+        return guildCache.stream()
                 .flatMap(guild -> guild.getRolesByName(name, ignoreCase).stream())
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<TextChannel> getTextChannels()
+    public SnowflakeCacheView<TextChannel> getTextChannelCache()
     {
-        return Collections.unmodifiableList(new ArrayList<>(textChannels.valueCollection()));
+        return textChannelCache;
     }
 
     @Override
-    public TextChannel getTextChannelById(String id)
+    public SnowflakeCacheView<VoiceChannel> getVoiceChannelCache()
     {
-        return textChannels.get(MiscUtil.parseSnowflake(id));
+        return voiceChannelCache;
     }
 
     @Override
-    public TextChannel getTextChannelById(long id)
+    public SnowflakeCacheView<PrivateChannel> getPrivateChannelCache()
     {
-        return textChannels.get(id);
-    }
-
-    @Override
-    public List<TextChannel> getTextChannelsByName(String name, boolean ignoreCase)
-    {
-        return textChannels.valueCollection().stream().filter(tc ->
-                ignoreCase
-                        ? name.equalsIgnoreCase(tc.getName())
-                        : name.equals(tc.getName()))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<VoiceChannel> getVoiceChannels()
-    {
-        return Collections.unmodifiableList(new ArrayList<>(voiceChannels.valueCollection()));
-    }
-
-    @Override
-    public VoiceChannel getVoiceChannelById(String id)
-    {
-        return voiceChannels.get(MiscUtil.parseSnowflake(id));
-    }
-
-    @Override
-    public VoiceChannel getVoiceChannelById(long id)
-    {
-        return voiceChannels.get(id);
-    }
-
-    @Override
-    public List<VoiceChannel> getVoiceChannelByName(String name, boolean ignoreCase)
-    {
-        return voiceChannels.valueCollection().stream().filter(vc ->
-                ignoreCase
-                        ? name.equalsIgnoreCase(vc.getName())
-                        : name.equals(vc.getName()))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<PrivateChannel> getPrivateChannels()
-    {
-        return Collections.unmodifiableList(new ArrayList<>(privateChannels.valueCollection()));
-    }
-
-    @Override
-    public PrivateChannel getPrivateChannelById(String id)
-    {
-        return privateChannels.get(MiscUtil.parseSnowflake(id));
-    }
-
-    @Override
-    public PrivateChannel getPrivateChannelById(long id)
-    {
-        return privateChannels.get(id);
+        return privateChannelCache;
     }
 
     @Override
     public List<Emote> getEmotes()
     {
-        return guilds.valueCollection().stream()
+        return guildCache.stream()
                 .flatMap(guild -> guild.getEmotes().stream())
                 .collect(Collectors.toList());
     }
@@ -542,7 +438,7 @@ public class JDAImpl implements JDA
     @Override
     public List<Emote> getEmotesByName(String name, boolean ignoreCase)
     {
-        return guilds.valueCollection().stream()
+        return guildCache.stream()
                 .flatMap(guild -> guild.getEmotesByName(name, ignoreCase).stream())
                 .collect(Collectors.toList());
     }
@@ -556,7 +452,7 @@ public class JDAImpl implements JDA
     @Override
     public Emote getEmoteById(long id)
     {
-        for (Guild guild : getGuilds())
+        for (Guild guild : guildCache)
         {
             Emote emote = guild.getEmoteById(id);
             if (emote != null)
@@ -688,6 +584,12 @@ public class JDAImpl implements JDA
         return Collections.unmodifiableList(eventManager.getRegisteredListeners());
     }
 
+    @Override
+    public SnowflakeCacheView<User> getUserCache()
+    {
+        return userCache;
+    }
+
     public EntityBuilder getEntityBuilder()
     {
         return entityBuilder;
@@ -736,27 +638,27 @@ public class JDAImpl implements JDA
 
     public TLongObjectMap<User> getUserMap()
     {
-        return users;
+        return userCache.getMap();
     }
 
     public TLongObjectMap<Guild> getGuildMap()
     {
-        return guilds;
+        return guildCache.getMap();
     }
 
     public TLongObjectMap<TextChannel> getTextChannelMap()
     {
-        return textChannels;
+        return textChannelCache.getMap();
     }
 
     public TLongObjectMap<VoiceChannel> getVoiceChannelMap()
     {
-        return voiceChannels;
+        return voiceChannelCache.getMap();
     }
 
     public TLongObjectMap<PrivateChannel> getPrivateChannelMap()
     {
-        return privateChannels;
+        return privateChannelCache.getMap();
     }
 
     public TLongObjectMap<User> getFakeUserMap()

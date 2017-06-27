@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.utils.SnowflakeCacheView;
 import org.apache.http.HttpHost;
 
 import java.util.Collection;
@@ -206,18 +207,23 @@ public interface JDA
      */
     List<Object> getRegisteredListeners();
 
+    SnowflakeCacheView<User> getUserCache();
+
     /**
      * An unmodifiable list of all {@link net.dv8tion.jda.core.entities.User Users} that share a
      * {@link net.dv8tion.jda.core.entities.Guild Guild} with the currently logged in account.
-     * <br>This list will never contain duplicates and represents all {@link net.dv8tion.jda.core.entities.User Users}
-     * that JDA can currently see.
+     * <br>This list will never contain duplicates and represents all
+     * {@link net.dv8tion.jda.core.entities.User Users} that JDA can currently see.
      *
      * <p>If the developer is sharding, then only users from guilds connected to the specifically logged in
      * shard will be returned in the List.
      *
      * @return List of all {@link net.dv8tion.jda.core.entities.User Users} that are visible to JDA.
      */
-    List<User> getUsers();
+    default List<User> getUsers()
+    {
+        return getUserCache().asList();
+    }
 
     /**
      * This returns the {@link net.dv8tion.jda.core.entities.User User} which has the same id as the one provided.
@@ -231,7 +237,10 @@ public interface JDA
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.User User} with matching id.
      */
-    User getUserById(String id);
+    default User getUserById(String id)
+    {
+        return getUserCache().getElementById(id);
+    }
 
     /**
      * This returns the {@link net.dv8tion.jda.core.entities.User User} which has the same id as the one provided.
@@ -242,7 +251,28 @@ public interface JDA
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.User User} with matching id.
      */
-    User getUserById(long id);
+    default User getUserById(long id)
+    {
+        return getUserCache().getElementById(id);
+    }
+
+    /**
+     * This unmodifiable returns all {@link net.dv8tion.jda.core.entities.User Users} that have the same username as the one provided.
+     * <br>If there are no {@link net.dv8tion.jda.core.entities.User Users} with the provided name, then this returns an empty list.
+     *
+     * <p><b>Note: </b> This does **not** consider nicknames, it only considers {@link net.dv8tion.jda.core.entities.User#getName()}
+     *
+     * @param  name
+     *         The name of the requested {@link net.dv8tion.jda.core.entities.User Users}.
+     * @param  ignoreCase
+     *         Whether to ignore case or not when comparing the provided name to each {@link net.dv8tion.jda.core.entities.User#getName()}.
+     *
+     * @return Possibly-empty list of {@link net.dv8tion.jda.core.entities.User Users} that all have the same name as the provided name.
+     */
+    default List<User> getUsersByName(String name, boolean ignoreCase)
+    {
+        return getUserCache().getElementsByName(name, ignoreCase);
+    }
 
     /**
      * Gets all {@link net.dv8tion.jda.core.entities.Guild Guilds} that contain all given users as their members.
@@ -263,21 +293,6 @@ public interface JDA
      * @return Unmodifiable list of all {@link net.dv8tion.jda.core.entities.Guild Guild} instances which have all {@link net.dv8tion.jda.core.entities.User Users} in them.
      */
     List<Guild> getMutualGuilds(Collection<User> users);
-
-    /**
-     * This unmodifiable returns all {@link net.dv8tion.jda.core.entities.User Users} that have the same username as the one provided.
-     * <br>If there are no {@link net.dv8tion.jda.core.entities.User Users} with the provided name, then this returns an empty list.
-     *
-     * <p><b>Note: </b> This does **not** consider nicknames, it only considers {@link net.dv8tion.jda.core.entities.User#getName()}
-     *
-     * @param  name
-     *         The name of the requested {@link net.dv8tion.jda.core.entities.User Users}.
-     * @param  ignoreCase
-     *         Whether to ignore case or not when comparing the provided name to each {@link net.dv8tion.jda.core.entities.User#getName()}.
-     *
-     * @return Possibly-empty list of {@link net.dv8tion.jda.core.entities.User Users} that all have the same name as the provided name.
-     */
-    List<User> getUsersByName(String name, boolean ignoreCase);
 
     /**
      * Attempts to retrieve a {@link net.dv8tion.jda.core.entities.User User} object based on the provided id.
@@ -333,20 +348,24 @@ public interface JDA
      */
     RestAction<User> retrieveUserById(long id);
 
+    SnowflakeCacheView<Guild> getGuildCache();
+
     /**
      * An unmodifiable List of all {@link net.dv8tion.jda.core.entities.Guild Guilds} that the logged account is connected to.
-     * <br>If this account is not connected to any {@link net.dv8tion.jda.core.entities.Guild Guilds}, this will return
-     * an empty list.
+     * <br>If this account is not connected to any {@link net.dv8tion.jda.core.entities.Guild Guilds}, this will return an empty list.
      *
-     * <p>If the developer is sharding ({@link net.dv8tion.jda.core.JDABuilder#useSharding(int, int)},
-     * then this list will only contain the {@link net.dv8tion.jda.core.entities.Guild Guilds} that the shard is
-     * actually connected to. Discord determines which guilds a shard is connect to using the following format:
+     * <p>If the developer is sharding ({@link net.dv8tion.jda.core.JDABuilder#useSharding(int, int)}, then this list
+     * will only contain the {@link net.dv8tion.jda.core.entities.Guild Guilds} that the shard is actually connected to.
+     * Discord determines which guilds a shard is connect to using the following format:
      * <br>Guild connected if shardId == (guildId {@literal >>} 22) % totalShards;
      * <br>Source for formula: <a href="https://discordapp.com/developers/docs/topics/gateway#sharding">Discord Documentation</a>
      *
      * @return Possibly-empty list of all the {@link net.dv8tion.jda.core.entities.Guild Guilds} that this account is connected to.
      */
-    List<Guild> getGuilds();
+    default List<Guild> getGuilds()
+    {
+        return getGuildCache().asList();
+    }
 
     /**
      * This returns the {@link net.dv8tion.jda.core.entities.Guild Guild} which has the same id as the one provided.
@@ -360,7 +379,10 @@ public interface JDA
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Guild Guild} with matching id.
      */
-    Guild getGuildById(String id);
+    default Guild getGuildById(String id)
+    {
+        return getGuildCache().getElementById(id);
+    }
 
     /**
      * This returns the {@link net.dv8tion.jda.core.entities.Guild Guild} which has the same id as the one provided.
@@ -371,7 +393,10 @@ public interface JDA
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Guild Guild} with matching id.
      */
-    Guild getGuildById(long id);
+    default Guild getGuildById(long id)
+    {
+        return getGuildCache().getElementById(id);
+    }
 
     /**
      * An unmodifiable list of all {@link net.dv8tion.jda.core.entities.Guild Guilds} that have the same name as the one provided.
@@ -381,11 +406,13 @@ public interface JDA
      *         The name of the requested {@link net.dv8tion.jda.core.entities.Guild Guilds}.
      * @param  ignoreCase
      *         Whether to ignore case or not when comparing the provided name to each {@link net.dv8tion.jda.core.entities.Guild#getName()}.
-     * @return
-     *      Possibly-empty list of all the {@link net.dv8tion.jda.core.entities.Guild Guilds} that all have the same name as
-     *      the provided name.
+     *
+     * @return Possibly-empty list of all the {@link net.dv8tion.jda.core.entities.Guild Guilds} that all have the same name as the provided name.
      */
-    List<Guild> getGuildsByName(String name, boolean ignoreCase);
+    default List<Guild> getGuildsByName(String name, boolean ignoreCase)
+    {
+        return getGuildCache().getElementsByName(name, ignoreCase);
+    }
 
     /**
      * All {@link net.dv8tion.jda.core.entities.Role Roles} this JDA instance can see.
@@ -436,24 +463,29 @@ public interface JDA
      */
     List<Role> getRolesByName(String name, boolean ignoreCase);
 
+    SnowflakeCacheView<TextChannel> getTextChannelCache();
+
     /**
      * An unmodifiable List of all {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} of all connected
      * {@link net.dv8tion.jda.core.entities.Guild Guilds}.
      *
      * <p><b>Note:</b> just because a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} is present in this list does
      * not mean that you will be able to send messages to it. Furthermore, if you log into this account on the discord
-     * client, it is possible that you will see fewer channels than this returns. This is because the discord client
-     * hides any {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} that you don't have the
+     * client, it is possible that you will see fewer channels than this returns. This is because the discord
+     * client hides any {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} that you don't have the
      * {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ} permission in.
      *
      * @return Possibly-empty list of all known {@link net.dv8tion.jda.core.entities.TextChannel TextChannels}.
      */
-    List<TextChannel> getTextChannels();
+    default List<TextChannel> getTextChannels()
+    {
+        return getTextChannelCache().asList();
+    }
 
     /**
      * This returns the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} which has the same id as the one provided.
-     * <br>If there is no known {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} with an id that matches the provided
-     * one, then this returns {@code null}.
+     * <br>If there is no known {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} with an id that matches the
+     * provided one, then this returns {@code null}.
      *
      * <p><b>Note:</b> just because a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} is present does
      * not mean that you will be able to send messages to it. Furthermore, if you log into this account on the discord
@@ -463,18 +495,20 @@ public interface JDA
      *
      * @param  id
      *         The id of the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
-     *
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} with matching id.
      */
-    TextChannel getTextChannelById(String id);
+    default TextChannel getTextChannelById(String id)
+    {
+        return getTextChannelCache().getElementById(id);
+    }
 
     /**
      * This returns the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} which has the same id as the one provided.
-     * <br>If there is no known {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} with an id that matches the provided
-     * one, then this returns {@code null}.
+     * <br>If there is no known {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} with an id that matches the
+     * provided one, then this returns {@code null}.
      *
      * <p><b>Note:</b> just because a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} is present does
      * not mean that you will be able to send messages to it. Furthermore, if you log into this account on the discord
@@ -487,7 +521,10 @@ public interface JDA
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} with matching id.
      */
-    TextChannel getTextChannelById(long id);
+    default TextChannel getTextChannelById(long id)
+    {
+        return getTextChannelCache().getElementById(id);
+    }
 
     /**
      * An unmodifiable list of all {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} that have the same name as the one provided.
@@ -505,9 +542,14 @@ public interface JDA
      *         Whether to ignore case or not when comparing the provided name to each {@link net.dv8tion.jda.core.entities.TextChannel#getName()}.
      *
      * @return Possibly-empty list of all the {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} that all have the
-     *      same name as the provided name.
+     *         same name as the provided name.
      */
-    List<TextChannel> getTextChannelsByName(String name, boolean ignoreCase);
+    default List<TextChannel> getTextChannelsByName(String name, boolean ignoreCase)
+    {
+        return getTextChannelCache().getElementsByName(name, ignoreCase);
+    }
+
+    SnowflakeCacheView<VoiceChannel> getVoiceChannelCache();
 
     /**
      * An unmodifiable list of all {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels} of all connected
@@ -515,32 +557,42 @@ public interface JDA
      *
      * @return Possible-empty list of all known {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels}.
      */
-    List<VoiceChannel> getVoiceChannels();
+    default List<VoiceChannel> getVoiceChannels()
+    {
+        return getVoiceChannelCache().asList();
+    }
 
     /**
      * This returns the {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} which has the same id as the one provided.
      * <br>If there is no known {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} with an id that matches the provided
      * one, then this returns {@code null}.
      *
-     * @param  id The id of the {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}.
-     *
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}.
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} with matching id.
      */
-    VoiceChannel getVoiceChannelById(String id);
+    default VoiceChannel getVoiceChannelById(String id)
+    {
+        return getVoiceChannelCache().getElementById(id);
+    }
 
     /**
      * This returns the {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} which has the same id as the one provided.
      * <br>If there is no known {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} with an id that matches the provided
      * one, then this returns {@code null}.
      *
-     * @param  id The id of the {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}.
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}.
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} with matching id.
      */
-    VoiceChannel getVoiceChannelById(long id);
+    default VoiceChannel getVoiceChannelById(long id)
+    {
+        return getVoiceChannelCache().getElementById(id);
+    }
 
     /**
      * An unmodifiable list of all {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels} that have the same name as the one provided.
@@ -552,43 +604,56 @@ public interface JDA
      *         Whether to ignore case or not when comparing the provided name to each {@link net.dv8tion.jda.core.entities.VoiceChannel#getName()}.
      *
      * @return Possibly-empty list of all the {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels} that all have the
-     *      same name as the provided name.
+     *         same name as the provided name.
      */
-    List<VoiceChannel> getVoiceChannelByName(String name, boolean ignoreCase);
+    default List<VoiceChannel> getVoiceChannelByName(String name, boolean ignoreCase)
+    {
+        return getVoiceChannelCache().getElementsByName(name, ignoreCase);
+    }
+
+    SnowflakeCacheView<PrivateChannel> getPrivateChannelCache();
 
     /**
      * An unmodifiable list of all known {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannels}.
      *
      * @return Possibly-empty list of all {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannels}.
      */
-    List<PrivateChannel> getPrivateChannels();
+    default List<PrivateChannel> getPrivateChannels()
+    {
+        return getPrivateChannelCache().asList();
+    }
 
     /**
      * This returns the {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} which has the same id as the one provided.
-     * <br>If there is no known {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} with an id that matches the
-     * provided one, then this returns {@code null}.
+     * <br>If there is no known {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} with an id that matches the provided
+     * one, then this returns {@code null}.
      *
      * @param  id
      *         The id of the {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}.
-     *
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} with matching id.
      */
-    PrivateChannel getPrivateChannelById(String id);
+    default PrivateChannel getPrivateChannelById(String id)
+    {
+        return getPrivateChannelCache().getElementById(id);
+    }
 
     /**
      * This returns the {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} which has the same id as the one provided.
-     * <br>If there is no known {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} with an id that matches the
-     * provided one, then this returns {@code null}.
+     * <br>If there is no known {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} with an id that matches the provided
+     * one, then this returns {@code null}.
      *
      * @param  id
      *         The id of the {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}.
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} with matching id.
      */
-    PrivateChannel getPrivateChannelById(long id);
+    default PrivateChannel getPrivateChannelById(long id)
+    {
+        return getPrivateChannelCache().getElementById(id);
+    }
 
     /**
      * A collection of all to us known emotes (managed/restricted included).
