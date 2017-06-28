@@ -22,7 +22,7 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.utils.SnowflakeCacheView;
+import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 import org.apache.http.HttpHost;
 
 import java.util.Collection;

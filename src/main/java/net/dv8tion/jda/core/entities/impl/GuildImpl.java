@@ -36,7 +36,10 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
-import org.apache.commons.lang3.StringUtils;
+import net.dv8tion.jda.core.utils.cache.MemberCacheView;
+import net.dv8tion.jda.core.utils.cache.MemberCacheViewImpl;
+import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.core.utils.cache.SnowflakeCacheViewImpl;
 import org.apache.http.util.Args;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,18 +47,27 @@ import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class GuildImpl implements Guild
 {
     private final long id;
     private final JDAImpl api;
-    private final TLongObjectMap<TextChannel> textChannels = MiscUtil.newLongMap();
-    private final TLongObjectMap<VoiceChannel> voiceChannels = MiscUtil.newLongMap();
-    private final TLongObjectMap<Member> members = MiscUtil.newLongMap();
-    private final TLongObjectMap<Role> roles = MiscUtil.newLongMap();
-    private final TLongObjectMap<Emote> emotes = MiscUtil.newLongMap();
+//    private final TLongObjectMap<TextChannel> textChannels = MiscUtil.newLongMap();
+//    private final TLongObjectMap<VoiceChannel> voiceChannels = MiscUtil.newLongMap();
+//    private final TLongObjectMap<Member> members = MiscUtil.newLongMap();
+//    private final TLongObjectMap<Role> roles = MiscUtil.newLongMap();
+//    private final TLongObjectMap<Emote> emotes = MiscUtil.newLongMap();
+
+    private final SnowflakeCacheViewImpl<VoiceChannel> voiceChannelCache = new SnowflakeCacheViewImpl<>();
+    private final SnowflakeCacheViewImpl<TextChannel> textChannelCache = new SnowflakeCacheViewImpl<>();
+    private final SnowflakeCacheViewImpl<Emote> emoteCache = new SnowflakeCacheViewImpl<>();
+    private final SnowflakeCacheViewImpl<Role> roleCache = new SnowflakeCacheViewImpl<>();
+    private final MemberCacheViewImpl memberCache = new MemberCacheViewImpl();
 
     private final TLongObjectMap<JSONObject> cachedPresences = MiscUtil.newLongMap();
 
@@ -183,7 +195,7 @@ public class GuildImpl implements Guild
     @Override
     public boolean isMember(User user)
     {
-        return members.containsKey(user.getIdLong());
+        return memberCache.getMap().containsKey(user.getIdLong());
     }
 
     @Override
@@ -199,206 +211,33 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public Member getMemberById(String userId)
+    public MemberCacheView getMemberCache()
     {
-        return members.get(MiscUtil.parseSnowflake(userId));
+        return memberCache;
     }
 
     @Override
-    public Member getMemberById(long userId)
+    public SnowflakeCacheView<TextChannel> getTextChannelCache()
     {
-        return members.get(userId);
+        return textChannelCache;
     }
 
     @Override
-    public List<Member> getMembers()
+    public SnowflakeCacheView<VoiceChannel> getVoiceChannelCache()
     {
-        return Collections.unmodifiableList(new ArrayList<>(members.valueCollection()));
+        return voiceChannelCache;
     }
 
     @Override
-    public List<Member> getMembersByName(String name, boolean ignoreCase)
+    public SnowflakeCacheView<Role> getRoleCache()
     {
-        Args.notNull(name, "name");
-        return Collections.unmodifiableList(members.valueCollection().stream()
-                .filter(m ->
-                    ignoreCase
-                    ? name.equalsIgnoreCase(m.getUser().getName())
-                    : name.equals(m.getUser().getName()))
-                .collect(Collectors.toList()));
+        return roleCache;
     }
 
     @Override
-    public List<Member> getMembersByNickname(String nickname, boolean ignoreCase)
+    public SnowflakeCacheView<Emote> getEmoteCache()
     {
-        Args.notNull(nickname, "nickname");
-        return Collections.unmodifiableList(members.valueCollection().stream()
-                .filter(m ->
-                    ignoreCase
-                    ? nickname.equalsIgnoreCase(m.getNickname())
-                    : nickname.equals(m.getNickname()))
-                .collect(Collectors.toList()));
-    }
-
-    @Override
-    public List<Member> getMembersByEffectiveName(String name, boolean ignoreCase)
-    {
-        Args.notNull(name, "name");
-        return Collections.unmodifiableList(members.valueCollection().stream()
-                .filter(m ->
-                    ignoreCase
-                    ? name.equalsIgnoreCase(m.getEffectiveName())
-                    : name.equals(m.getEffectiveName()))
-                .collect(Collectors.toList()));
-    }
-
-    @Override
-    public List<Member> getMembersWithRoles(Role... roles)
-    {
-        Args.notNull(roles, "roles");
-        return getMembersWithRoles(Arrays.asList(roles));
-    }
-
-    @Override
-    public List<Member> getMembersWithRoles(Collection<Role> roles)
-    {
-        Args.notNull(roles, "roles");
-        for (Role r : roles)
-        {
-            Args.notNull(r, "Role provided in collection");
-            if (!r.getGuild().equals(this))
-                throw new IllegalArgumentException("Role provided was from a different Guild! Role: " + r);
-        }
-
-        return Collections.unmodifiableList(members.valueCollection().stream()
-                        .filter(m -> m.getRoles().containsAll(roles))
-                        .collect(Collectors.toList()));
-    }
-
-    @Override
-    public TextChannel getTextChannelById(String id)
-    {
-        return textChannels.get(MiscUtil.parseSnowflake(id));
-    }
-
-    @Override
-    public TextChannel getTextChannelById(long id)
-    {
-        return textChannels.get(id);
-    }
-
-    @Override
-    public List<TextChannel> getTextChannelsByName(String name, boolean ignoreCase)
-    {
-        Args.notNull(name, "name");
-        return Collections.unmodifiableList(textChannels.valueCollection().stream()
-                .filter(tc ->
-                    ignoreCase
-                    ? name.equalsIgnoreCase(tc.getName())
-                    : name.equals(tc.getName()))
-                .collect(Collectors.toList()));
-    }
-
-    @Override
-    public List<TextChannel> getTextChannels()
-    {
-        ArrayList<TextChannel> channels = new ArrayList<>(textChannels.valueCollection());
-        channels.sort(Comparator.reverseOrder());
-        return Collections.unmodifiableList(channels);
-    }
-
-    @Override
-    public VoiceChannel getVoiceChannelById(String id)
-    {
-        return voiceChannels.get(MiscUtil.parseSnowflake(id));
-    }
-
-    @Override
-    public VoiceChannel getVoiceChannelById(long id)
-    {
-        return voiceChannels.get(id);
-    }
-
-    @Override
-    public List<VoiceChannel> getVoiceChannelsByName(String name, boolean ignoreCase)
-    {
-        Args.notNull(name, "name");
-        return Collections.unmodifiableList(voiceChannels.valueCollection().stream()
-            .filter(vc ->
-                    ignoreCase
-                    ? name.equalsIgnoreCase(vc.getName())
-                    : name.equals(vc.getName()))
-            .collect(Collectors.toList()));
-    }
-
-    @Override
-    public List<VoiceChannel> getVoiceChannels()
-    {
-        List<VoiceChannel> channels = new ArrayList<>(voiceChannels.valueCollection());
-        channels.sort(Comparator.reverseOrder());
-        return Collections.unmodifiableList(channels);
-    }
-
-    @Override
-    public Role getRoleById(String id)
-    {
-        return roles.get(MiscUtil.parseSnowflake(id));
-    }
-
-    @Override
-    public Role getRoleById(long id)
-    {
-        return roles.get(id);
-    }
-
-    @Override
-    public List<Role> getRoles()
-    {
-        List<Role> list = new ArrayList<>(roles.valueCollection());
-        list.sort(Comparator.reverseOrder());
-        return Collections.unmodifiableList(list);
-    }
-
-    @Override
-    public List<Role> getRolesByName(String name, boolean ignoreCase)
-    {
-        Args.notNull(name, "name");
-        return Collections.unmodifiableList(roles.valueCollection().stream()
-                .filter(r ->
-                        ignoreCase
-                        ? name.equalsIgnoreCase(r.getName())
-                        : name.equals(r.getName()))
-                .collect(Collectors.toList()));
-    }
-
-    @Override
-    public Emote getEmoteById(String id)
-    {
-        return emotes.get(MiscUtil.parseSnowflake(id));
-    }
-
-    @Override
-    public Emote getEmoteById(long id)
-    {
-        return emotes.get(id);
-    }
-
-    @Override
-    public List<Emote> getEmotes()
-    {
-        return Collections.unmodifiableList(new LinkedList<>(emotes.valueCollection()));
-    }
-
-    @Override
-    public List<Emote> getEmotesByName(String name, boolean ignoreCase)
-    {
-        Args.notNull(name, "name");
-        return Collections.unmodifiableList(emotes.valueCollection().parallelStream()
-                .filter(e ->
-                        ignoreCase
-                        ? StringUtils.equalsIgnoreCase(e.getName(), name)
-                        : StringUtils.equals(e.getName(), name))
-                .collect(Collectors.toList()));
+        return emoteCache;
     }
 
     @Override
@@ -626,7 +465,7 @@ public class GuildImpl implements Guild
     public List<GuildVoiceState> getVoiceStates()
     {
         return Collections.unmodifiableList(
-                members.valueCollection().stream().map(Member::getVoiceState).collect(Collectors.toList()));
+                getMembersMap().valueCollection().stream().map(Member::getVoiceState).collect(Collectors.toList()));
     }
 
     @Override
@@ -781,32 +620,32 @@ public class GuildImpl implements Guild
 
     public TLongObjectMap<TextChannel> getTextChannelsMap()
     {
-        return textChannels;
+        return textChannelCache.getMap();
     }
 
     public TLongObjectMap<VoiceChannel> getVoiceChannelMap()
     {
-        return voiceChannels;
+        return voiceChannelCache.getMap();
     }
 
     public TLongObjectMap<Member> getMembersMap()
     {
-        return members;
+        return memberCache.getMap();
     }
 
     public TLongObjectMap<Role> getRolesMap()
     {
-        return roles;
+        return roleCache.getMap();
+    }
+
+    public TLongObjectMap<Emote> getEmoteMap()
+    {
+        return emoteCache.getMap();
     }
 
     public TLongObjectMap<JSONObject> getCachedPresenceMap()
     {
         return cachedPresences;
-    }
-
-    public TLongObjectMap<Emote> getEmoteMap()
-    {
-        return emotes;
     }
 
 

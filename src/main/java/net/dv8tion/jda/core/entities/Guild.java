@@ -24,6 +24,8 @@ import net.dv8tion.jda.core.managers.GuildManager;
 import net.dv8tion.jda.core.managers.GuildManagerUpdatable;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAction;
+import net.dv8tion.jda.core.utils.cache.MemberCacheView;
+import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 
 import java.util.Collection;
 import java.util.List;
@@ -184,7 +186,10 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Member Member} with the related {@code userId}.
      */
-    Member getMemberById(String userId);
+    default Member getMemberById(String userId)
+    {
+        return getMemberCache().getElementById(userId);
+    }
 
     /**
      * Gets a {@link net.dv8tion.jda.core.entities.Member Member} object via the id of the user. The id relates to
@@ -197,7 +202,10 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Member Member} with the related {@code userId}.
      */
-    Member getMemberById(long userId);
+    default Member getMemberById(long userId)
+    {
+        return getMemberCache().getElementById(userId);
+    }
 
     /**
      * A list of all {@link net.dv8tion.jda.core.entities.Member Members} in this Guild.
@@ -205,7 +213,10 @@ public interface Guild extends ISnowflake
      *
      * @return Immutable list of all members in this Guild.
      */
-    List<Member> getMembers();
+    default List<Member> getMembers()
+    {
+        return getMemberCache().asList();
+    }
 
     /**
      * Gets a list of all {@link net.dv8tion.jda.core.entities.Member Members} who have the same name as the one provided.
@@ -219,7 +230,10 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-empty immutable list of all Members with the same name as the name provided.
      */
-    List<Member> getMembersByName(String name, boolean ignoreCase);
+    default List<Member> getMembersByName(String name, boolean ignoreCase)
+    {
+        return getMemberCache().getElementsByUsername(name, ignoreCase);
+    }
 
     /**
      * Gets a list of all {@link net.dv8tion.jda.core.entities.Member Members} who have the same nickname as the one provided.
@@ -233,7 +247,10 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-empty immutable list of all Members with the same nickname as the nickname provided.
      */
-    List<Member> getMembersByNickname(String nickname, boolean ignoreCase);
+    default List<Member> getMembersByNickname(String nickname, boolean ignoreCase)
+    {
+        return getMemberCache().getElementsByNickname(nickname, ignoreCase);
+    }
 
     /**
      * Gets a list of all {@link net.dv8tion.jda.core.entities.Member Members} who have the same effective name as the one provided.
@@ -248,7 +265,10 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-empty immutable list of all Members with the same effective name as the name provided.
      */
-    List<Member> getMembersByEffectiveName(String name, boolean ignoreCase);
+    default List<Member> getMembersByEffectiveName(String name, boolean ignoreCase)
+    {
+        return getMemberCache().getElementsByEffectiveName(name, ignoreCase);
+    }
 
     /**
      * Gets a list of {@link net.dv8tion.jda.core.entities.Member Members} that have all
@@ -264,7 +284,10 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-empty immutable list of Members with all provided Roles.
      */
-    List<Member> getMembersWithRoles(Role... roles);
+    default List<Member> getMembersWithRoles(Role... roles)
+    {
+        return getMemberCache().getElementsWithRoles(roles);
+    }
 
     /**
      * Gets a list of {@link net.dv8tion.jda.core.entities.Member Members} that have all provided
@@ -280,7 +303,12 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-empty immutable list of Members with all provided Roles.
      */
-    List<Member> getMembersWithRoles(Collection<Role> roles);
+    default List<Member> getMembersWithRoles(Collection<Role> roles)
+    {
+        return getMemberCache().getElementsWithRoles(roles);
+    }
+
+    MemberCacheView getMemberCache();
 
     /**
      * Gets a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} from this guild that has the same id as the
@@ -297,7 +325,10 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} with matching id.
      */
-    TextChannel getTextChannelById(String id);
+    default TextChannel getTextChannelById(String id)
+    {
+        return getTextChannelCache().getElementById(id);
+    }
 
     /**
      * Gets a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} from this guild that has the same id as the
@@ -311,7 +342,10 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} with matching id.
      */
-    TextChannel getTextChannelById(long id);
+    default TextChannel getTextChannelById(long id)
+    {
+        return getTextChannelCache().getElementById(id);
+    }
 
     /**
      * Gets all {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} in this {@link net.dv8tion.jda.core.entities.Guild Guild}.
@@ -319,7 +353,10 @@ public interface Guild extends ISnowflake
      *
      * @return An immutable List of all {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} in this Guild.
      */
-    List<TextChannel> getTextChannels();
+    default List<TextChannel> getTextChannels()
+    {
+        return getTextChannelCache().asList();
+    }
 
     /**
      * Gets a list of all {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} in this Guild that have the same
@@ -333,7 +370,12 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-empty immutable list of all TextChannels names that match the provided name.
      */
-    List<TextChannel> getTextChannelsByName(String name, boolean ignoreCase);
+    default List<TextChannel> getTextChannelsByName(String name, boolean ignoreCase)
+    {
+        return getTextChannelCache().getElementsByName(name, ignoreCase);
+    }
+
+    SnowflakeCacheView<TextChannel> getTextChannelCache();
 
     /**
      * Gets a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} from this guild that has the same id as the
@@ -350,7 +392,10 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} with matching id.
      */
-    VoiceChannel getVoiceChannelById(String id);
+    default VoiceChannel getVoiceChannelById(String id)
+    {
+        return getVoiceChannelCache().getElementById(id);
+    }
 
     /**
      * Gets a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} from this guild that has the same id as the
@@ -364,7 +409,10 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} with matching id.
      */
-    VoiceChannel getVoiceChannelById(long id);
+    default VoiceChannel getVoiceChannelById(long id)
+    {
+        return getVoiceChannelCache().getElementById(id);
+    }
 
     /**
      * Gets all {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels} in this {@link net.dv8tion.jda.core.entities.Guild Guild}.
@@ -372,7 +420,10 @@ public interface Guild extends ISnowflake
      *
      * @return An immutable List of {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels}.
      */
-    List<VoiceChannel> getVoiceChannels();
+    default List<VoiceChannel> getVoiceChannels()
+    {
+        return getVoiceChannelCache().asList();
+    }
 
     /**
      * Gets a list of all {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels} in this Guild that have the same
@@ -386,7 +437,12 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-empty immutable list of all VoiceChannel names that match the provided name.
      */
-    List<VoiceChannel> getVoiceChannelsByName(String name, boolean ignoreCase);
+    default List<VoiceChannel> getVoiceChannelsByName(String name, boolean ignoreCase)
+    {
+        return getVoiceChannelCache().getElementsByName(name, ignoreCase);
+    }
+
+    SnowflakeCacheView<VoiceChannel> getVoiceChannelCache();
 
     /**
      * Gets a {@link net.dv8tion.jda.core.entities.Role Role} from this guild that has the same id as the
@@ -402,7 +458,10 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Role Role} with matching id.
      */
-    Role getRoleById(String id);
+    default Role getRoleById(String id)
+    {
+        return getRoleCache().getElementById(id);
+    }
 
     /**
      * Gets a {@link net.dv8tion.jda.core.entities.Role Role} from this guild that has the same id as the
@@ -415,7 +474,10 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Role Role} with matching id.
      */
-    Role getRoleById(long id);
+    default Role getRoleById(long id)
+    {
+        return getRoleCache().getElementById(id);
+    }
 
     /**
      * Gets all {@link net.dv8tion.jda.core.entities.Role Roles} in this {@link net.dv8tion.jda.core.entities.Guild Guild}.
@@ -423,7 +485,10 @@ public interface Guild extends ISnowflake
      *
      * @return An immutable List of {@link net.dv8tion.jda.core.entities.Role Roles}.
      */
-    List<Role> getRoles();
+    default List<Role> getRoles()
+    {
+        return getRoleCache().asList();
+    }
 
     /**
      * Gets a list of all {@link net.dv8tion.jda.core.entities.Role Roles} in this Guild that have the same
@@ -437,7 +502,12 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-empty immutable list of all Role names that match the provided name.
      */
-    List<Role> getRolesByName(String name, boolean ignoreCase);
+    default List<Role> getRolesByName(String name, boolean ignoreCase)
+    {
+        return getRoleCache().getElementsByName(name, ignoreCase);
+    }
+
+    SnowflakeCacheView<Role> getRoleCache();
 
     /**
      * Gets an {@link net.dv8tion.jda.core.entities.Emote Emote} from this guild that has the same id as the
@@ -455,7 +525,10 @@ public interface Guild extends ISnowflake
      *
      * @return An Emote matching the specified Id.
      */
-    Emote getEmoteById(String id);
+    default Emote getEmoteById(String id)
+    {
+        return getEmoteCache().getElementById(id);
+    }
 
     /**
      * Gets an {@link net.dv8tion.jda.core.entities.Emote Emote} from this guild that has the same id as the
@@ -470,7 +543,10 @@ public interface Guild extends ISnowflake
      *
      * @return An Emote matching the specified Id.
      */
-    Emote getEmoteById(long id);
+    default Emote getEmoteById(long id)
+    {
+        return getEmoteCache().getElementById(id);
+    }
 
     /**
      * Gets all custom {@link net.dv8tion.jda.core.entities.Emote Emotes} belonging to this {@link net.dv8tion.jda.core.entities.Guild Guild}.
@@ -480,7 +556,10 @@ public interface Guild extends ISnowflake
      *
      * @return An immutable List of {@link net.dv8tion.jda.core.entities.Emote Emotes}.
      */
-    List<Emote> getEmotes();
+    default List<Emote> getEmotes()
+    {
+        return getEmoteCache().asList();
+    }
 
     /**
      * Gets a list of all {@link net.dv8tion.jda.core.entities.Emote Emotes} in this Guild that have the same
@@ -496,7 +575,12 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-empty immutable list of all Role names that match the provided name.
      */
-    List<Emote> getEmotesByName(String name, boolean ignoreCase);
+    default List<Emote> getEmotesByName(String name, boolean ignoreCase)
+    {
+        return getEmoteCache().getElementsByName(name, ignoreCase);
+    }
+
+    SnowflakeCacheView<Emote> getEmoteCache();
 
     /**
      * Gets an unmodifiable list of the currently banned {@link net.dv8tion.jda.core.entities.User Users}.

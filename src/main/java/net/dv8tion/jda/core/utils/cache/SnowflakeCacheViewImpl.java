@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.utils;
+package net.dv8tion.jda.core.utils.cache;
 
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.core.entities.ISnowflake;
+import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.http.util.Args;
 
 import java.util.*;
