@@ -59,7 +59,7 @@ dependencies {
     compile 'net.java.dev.jna:jna:4.4.0'
 
     //Web Connection Support
-    compile 'com.neovisionaries:nv-websocket-client:2.0'
+    compile 'com.neovisionaries:nv-websocket-client:2.2'
     compile 'com.squareup.okhttp3:okhttp:3.8.1'
 
     //Sets the dependencies for the examples

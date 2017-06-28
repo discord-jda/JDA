@@ -384,20 +384,16 @@ public class Route
             this(baseRoute, ratelimitRoute, compiledRoute, false);
         }
 
-        public CompiledRoute withQueryParams(String name, String value)
-        {
-            return new CompiledRoute(baseRoute, ratelimitRoute, compiledRoute + (hasQueryParams ? '&' : '?') + name + '=' + value, true);
-        }
-
         public CompiledRoute withQueryParams(String... params)
         {
-            Checks.check(params.length % 2 == 0, "param length has to be even");
+            Checks.check(params.length < 2, "params length must be at least 2");
+            Checks.check(params.length % 2 == 0, "params length must be a multiple of 2");
 
             StringBuilder newRoute = new StringBuilder(compiledRoute);
+
             for (int i = 0; i < params.length; i++)
-            {
                 newRoute.append(!hasQueryParams && i == 0 ? '?' : '&').append(params[i]).append('=').append(params[++i]);
-            }
+
             return new CompiledRoute(baseRoute, ratelimitRoute, newRoute.toString(), true);
         }
 

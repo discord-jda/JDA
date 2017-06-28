@@ -17,7 +17,8 @@
 package net.dv8tion.jda.core.requests;
 
 import java.io.BufferedReader;
-import java.io.Reader;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -55,8 +56,8 @@ public class Response
             return;
         }
 
-        try (Reader reader = response.body().charStream().markSupported() ? response.body().charStream()
-                : new BufferedReader(response.body().charStream())) // this doesn't add overhead as org.json would do that itself otherwise
+        // I really hate org.json for not having a common superclass/interface for JSONObject and JSONArray...  
+        try (BufferedReader reader = new BufferedReader(response.body().charStream())) // this doesn't add overhead as org.json would do that itself otherwise
         {
             char begin; // not sure if I really like this... but we somehow have to get if this is an object or an array
             int mark = 1;
@@ -74,11 +75,11 @@ public class Response
             else if (begin == '[')
                 this.object = new JSONArray(new JSONTokener(reader));
             else
-                this.object = null;
+                this.object = reader.lines().collect(Collectors.joining());
         }
         catch (final Exception e)
         {
-            throw new RuntimeException("An error occured while parsing a RestAction the response", e);
+            throw new RuntimeException("An error occurred while parsing a RestAction the response", e);
         }
     }
 
@@ -100,6 +101,11 @@ public class Response
     public JSONObject getObject()
     {
         return this.object instanceof JSONObject ? (JSONObject) this.object : null;
+    }
+
+    public String getString()
+    {
+        return Objects.toString(object);
     }
 
     public boolean isError()

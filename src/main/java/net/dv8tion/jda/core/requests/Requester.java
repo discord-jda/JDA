@@ -62,7 +62,7 @@ public class Requester
         else
             rateLimiter = new ClientRateLimiter(this, 5);
         
-        httpClient = this.api.getHttpClientBuilder().build();
+        this.httpClient = this.api.getHttpClientBuilder().build();
     }
 
     public JDAImpl getJDA()
