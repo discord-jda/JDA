@@ -578,7 +578,12 @@ public class MessageImpl implements Message
         obj.put("content", content);
         obj.put("tts",     isTTS);
         if (!embeds.isEmpty())
-            obj.put("embed", ((MessageEmbedImpl) embeds.get(0)).toJSONObject());
+        {
+            if (embeds.get(0) == MessageEmbed.REMOVE)
+                obj.put("embed", JSONObject.NULL);
+            else
+                obj.put("embed", ((MessageEmbedImpl) embeds.get(0)).toJSONObject());
+        }
         return obj;
     }
 

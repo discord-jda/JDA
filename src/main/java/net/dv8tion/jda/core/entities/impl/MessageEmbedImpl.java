@@ -298,4 +298,93 @@ public class MessageEmbedImpl implements MessageEmbed
         }
         return obj;
     }
+    
+    public static class Remove implements MessageEmbed
+    {
+        private static final String message = "This singleton implementation of MessageEmbed cannot be used outside of JDA internals.";
+        
+        @Override
+        public String getUrl()
+        {
+            throw new UnsupportedOperationException(message);
+        }
+
+        @Override
+        public String getTitle()
+        {
+            throw new UnsupportedOperationException(message);
+        }
+
+        @Override
+        public String getDescription()
+        {
+            throw new UnsupportedOperationException(message);
+        }
+
+        @Override
+        public EmbedType getType()
+        {
+            throw new UnsupportedOperationException(message);
+        }
+
+        @Override
+        public Thumbnail getThumbnail()
+        {
+            throw new UnsupportedOperationException(message);
+        }
+
+        @Override
+        public Provider getSiteProvider()
+        {
+            throw new UnsupportedOperationException(message);
+        }
+
+        @Override
+        public AuthorInfo getAuthor()
+        {
+            throw new UnsupportedOperationException(message);
+        }
+
+        @Override
+        public VideoInfo getVideoInfo()
+        {
+            throw new UnsupportedOperationException(message);
+        }
+
+        @Override
+        public Footer getFooter()
+        {
+            throw new UnsupportedOperationException(message);
+        }
+
+        @Override
+        public ImageInfo getImage()
+        {
+            throw new UnsupportedOperationException(message);
+        }
+
+        @Override
+        public List<Field> getFields()
+        {
+            throw new UnsupportedOperationException(message);
+        }
+
+        @Override
+        public Color getColor()
+        {
+            throw new UnsupportedOperationException(message);
+        }
+
+        @Override
+        public OffsetDateTime getTimestamp()
+        {
+            throw new UnsupportedOperationException(message);
+        }
+
+        @Override
+        public int getLength()
+        {
+            throw new UnsupportedOperationException(message);
+        }
+    }
 }

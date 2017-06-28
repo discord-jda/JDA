@@ -22,6 +22,7 @@ import org.apache.http.util.Args;
 import java.awt.Color;
 import java.time.OffsetDateTime;
 import java.util.List;
+import net.dv8tion.jda.core.entities.impl.MessageEmbedImpl;
 
 /**
  * Represents an embed displayed by Discord.
@@ -31,6 +32,8 @@ import java.util.List;
  */
 public interface MessageEmbed
 {
+    public final static MessageEmbed REMOVE = new MessageEmbedImpl.Remove();
+    
     int TITLE_MAX_LENGTH = 256;
     int VALUE_MAX_LENGTH = 1024;
     int TEXT_MAX_LENGTH = 2048;
