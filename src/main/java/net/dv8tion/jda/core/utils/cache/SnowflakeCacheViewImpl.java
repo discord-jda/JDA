@@ -21,6 +21,8 @@ import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.http.util.Args;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 
 public class SnowflakeCacheViewImpl<T extends ISnowflake> implements SnowflakeCacheView<T>
@@ -65,23 +67,37 @@ public class SnowflakeCacheViewImpl<T extends ISnowflake> implements SnowflakeCa
     public List<T> getElementsByName(String name, boolean ignoreCase)
     {
         Args.notEmpty(name, "Name");
+        if (elements.isEmpty())
+            return Collections.emptyList();
+        Iterator<T> iter = iterator();
+        T elem = iter.next();
+        Method method = getNameGetter(elem);
+        if (method == null) // no getName method available
+            throw new UnsupportedOperationException("The contained elements are not assigned with names.");
+
         List<T> list = new LinkedList<>();
-        for (T e : elements.valueCollection())
+        do
         {
-            String elementName = getName(e);
-            if (elementName == null) // no getName method available
-                throw new UnsupportedOperationException("The contained elements are not assigned with names.");
-            if (ignoreCase)
+            String elementName = getName(elem, method);
+            if (elementName != null)
             {
-                if (elementName.equalsIgnoreCase(name))
-                    list.add(e);
+                if (ignoreCase)
+                {
+                    if (elementName.equalsIgnoreCase(name))
+                        list.add(elem);
+                }
+                else
+                {
+                    if (elementName.equals(name))
+                        list.add(elem);
+                }
             }
-            else
-            {
-                if (elementName.equals(name))
-                    list.add(e);
-            }
+
+            if (!iter.hasNext())
+                break;
+            elem = iter.next();
         }
+        while (elem != null);
 
         return list;
     }
@@ -92,13 +108,25 @@ public class SnowflakeCacheViewImpl<T extends ISnowflake> implements SnowflakeCa
         return elements.get(id);
     }
 
-    protected String getName(T element)
+    protected Method getNameGetter(T element)
     {
         try
         {
-            return (String) element.getClass().getMethod("getName").invoke(element);
+            return element.getClass().getMethod("getName");
         }
         catch (Exception e)
+        {
+            return null;
+        }
+    }
+
+    protected String getName(T element, Method method)
+    {
+        try
+        {
+            return (String) method.invoke(element);
+        }
+        catch (IllegalAccessException | InvocationTargetException e)
         {
             return null;
         }
