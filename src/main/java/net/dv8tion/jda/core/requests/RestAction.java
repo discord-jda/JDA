@@ -167,6 +167,8 @@ public abstract class RestAction<T>
     private final RequestBody data;
     private final CaseInsensitiveMap<String, String> headers;
 
+    private Object rawData;
+
     /**
      * Creates a new RestAction instance
      *
@@ -217,6 +219,8 @@ public abstract class RestAction<T>
     public RestAction(JDA api, Route.CompiledRoute route, JSONObject data)
     {
         this(api, route, data == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, data.toString()));
+
+        this.rawData = data;
     }
 
     /**
@@ -275,7 +279,7 @@ public abstract class RestAction<T>
             success = DEFAULT_SUCCESS;
         if (failure == null)
             failure = DEFAULT_FAILURE;
-        api.getRequester().request(new Request<>(this, success, failure, true, finalizeData(), finalizeRoute(), finalizeHeaders()));
+        api.getRequester().request(new Request<>(this, success, failure, true, finalizeData(), rawData, finalizeRoute(), finalizeHeaders()));
     }
 
     /**
@@ -302,7 +306,7 @@ public abstract class RestAction<T>
      */
     public RequestFuture<T> submit(boolean shouldQueue)
     {
-        return new RestFuture<>(this, shouldQueue, finalizeData(), finalizeRoute(), finalizeHeaders());
+        return new RestFuture<>(this, shouldQueue, finalizeData(), rawData, finalizeRoute(), finalizeHeaders());
     }
 
     /**
@@ -653,13 +657,17 @@ public abstract class RestAction<T>
     protected Route.CompiledRoute finalizeRoute() { return route; }
     protected CaseInsensitiveMap<String, String> finalizeHeaders() { return headers == null ? null : new CaseInsensitiveMap<>(headers); } // maps are mutable 
 
-    protected static RequestBody getRequestBody(JSONObject object)
+    protected RequestBody getRequestBody(JSONObject object)
     {
+        this.rawData = data;
+
         return object == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, object.toString());
     }
 
-    protected static RequestBody getRequestBody(JSONArray array)
+    protected RequestBody getRequestBody(JSONArray array)
     {
+        this.rawData = data;
+
         return array == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, array.toString());
     }
 
@@ -675,7 +683,6 @@ public abstract class RestAction<T>
      */
     public static class EmptyRestAction<T> extends RestAction<T>
     {
-
         private final T returnObj;
 
         public EmptyRestAction(JDA api, T returnObj)
@@ -687,7 +694,6 @@ public abstract class RestAction<T>
         @Override
         public void queue(Consumer<T> success, Consumer<Throwable> failure)
         {
-            
             if (success != null)
                 success.accept(returnObj);
         }

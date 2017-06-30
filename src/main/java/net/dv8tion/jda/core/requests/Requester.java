@@ -81,9 +81,9 @@ public class Requester
         }
         else
         {
-            Long retryAfter = execute(apiRequest);
-            if (retryAfter != null)
-                apiRequest.getRestAction().handleResponse(new Response(retryAfter), apiRequest);
+            Response response = execute(apiRequest);
+            if (response != null)
+                apiRequest.handleResponse(response);
         }
     }
 
@@ -97,12 +97,12 @@ public class Requester
      *         the request can be made again. This could either be for the Per-Route ratelimit or the Global ratelimit.
      *         <br>Check if globalCooldown is {@code null} to determine if it was Per-Route or Global.
      */
-    public <T> Long execute(Request<T> apiRequest)
+    public <T> Response execute(Request<T> apiRequest)
     {
         Route.CompiledRoute route = apiRequest.getRoute();
         Long retryAfter = rateLimiter.getRateLimit(route);
         if (retryAfter != null)
-            return retryAfter;
+            return new Response(retryAfter);
 
         okhttp3.Request.Builder builder = new okhttp3.Request.Builder();
 
@@ -110,7 +110,7 @@ public class Requester
         builder.url(url);
 
         String method = apiRequest.getRoute().getMethod().toString();
-        RequestBody body = apiRequest.getData();
+        RequestBody body = apiRequest.getBody();
 
         if (body == null && HttpMethod.requiresRequestBody(method))
             body = EMPTY_BODY;
@@ -133,9 +133,10 @@ public class Requester
         okhttp3.Request request = builder.build();
 
         Set<String> rays = new LinkedHashSet<>();
+
+        okhttp3.Response response = null;
         try
         {
-            okhttp3.Response response;
             int attempt = 0;
             do
             {
@@ -174,15 +175,14 @@ public class Requester
             if (!rays.isEmpty())
                 LOG.debug("Received response with following cf-rays: " + rays);
             if (retryAfter == null)
-                apiRequest.getRestAction().handleResponse(new Response(response, -1), apiRequest);
+                return new Response(response, -1);
 
-            return retryAfter;
+            return new Response(retryAfter);
         }
         catch (Exception e)
         {
             LOG.log(e); //This originally only printed on DEBUG in 2.x
-            apiRequest.getRestAction().handleResponse(new Response(e), apiRequest);
-            return null;
+            return new Response(response, e);
         }
     }
 

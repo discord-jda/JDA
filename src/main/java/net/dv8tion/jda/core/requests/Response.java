@@ -33,9 +33,11 @@ public class Response
     public final String message;
     public final long retryAfter;
     private final Object object;
+    private final okhttp3.Response rawResponse;
 
-    protected Response(final Exception exception)
+    protected Response(final okhttp3.Response response, final Exception exception)
     {
+        this.rawResponse = response;
         this.code = Response.ERROR_CODE;
         this.message = Response.ERROR_MESSAGE;
         this.object = null;
@@ -43,8 +45,9 @@ public class Response
         this.retryAfter = -1;
     }
 
-    protected Response(final int code, final String message, final okhttp3.Response response, final long retryAfter)
+    protected Response(final okhttp3.Response response, final int code, final String message, final long retryAfter)
     {
+        this.rawResponse = response;
         this.code = code;
         this.message = message;
         this.exception = null;
@@ -85,12 +88,12 @@ public class Response
 
     protected Response(final long retryAfter)
     {
-        this(429, "TOO MANY REQUESTS", null, retryAfter);
+        this(null, 429, "TOO MANY REQUESTS", retryAfter);
     }
 
     protected Response(final okhttp3.Response response, final long retryAfter)
     {
-        this(response.code(), response.message(), response, retryAfter);
+        this(response, response.code(), response.message(), retryAfter);
     }
 
     public JSONArray getArray()
@@ -106,6 +109,11 @@ public class Response
     public String getString()
     {
         return Objects.toString(object);
+    }
+
+    public okhttp3.Response getRawResponse()
+    {
+        return this.rawResponse;
     }
 
     public boolean isError()

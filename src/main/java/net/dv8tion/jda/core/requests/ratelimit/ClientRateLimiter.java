@@ -18,12 +18,8 @@ package net.dv8tion.jda.core.requests.ratelimit;
 
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.ExceptionEvent;
-import net.dv8tion.jda.core.requests.RateLimiter;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Requester;
-import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.requests.Route.RateLimit;
-import okhttp3.Response;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import java.io.IOException;
@@ -64,7 +60,7 @@ public class ClientRateLimiter extends RateLimiter
     }
 
     @Override
-    protected Long handleResponse(Route.CompiledRoute route, Response response)
+    protected Long handleResponse(Route.CompiledRoute route, okhttp3.Response response)
     {
         Bucket bucket = getBucket(route);
         synchronized (bucket)
@@ -204,8 +200,10 @@ public class ClientRateLimiter extends RateLimiter
                         try
                         {
                             request = it.next();
-                            Long retryAfter = requester.execute(request);
-                            if (retryAfter != null)
+                            Response response = requester.execute(request);
+                            if (response != null)
+                                request.handleResponse(response);
+                            if (response.retryAfter > 0)
                             {
                                 break;
                             }

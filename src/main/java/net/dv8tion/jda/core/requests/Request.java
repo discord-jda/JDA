@@ -18,6 +18,7 @@ package net.dv8tion.jda.core.requests;
 
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.ExceptionEvent;
+import net.dv8tion.jda.core.events.http.HttpRequestEvent;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
@@ -32,18 +33,20 @@ public class Request<T>
     private final Consumer<Throwable> onFailure;
     private final boolean shouldQueue;
     private final Route.CompiledRoute route;
-    private final RequestBody data;
+    private final RequestBody body;
+    private final Object rawBody;
     private final CaseInsensitiveMap<String, String> headers;
 
     private boolean isCanceled = false;
 
-    public Request(RestAction<T> restAction, Consumer<T> onSuccess, Consumer<Throwable> onFailure, boolean shouldQueue, RequestBody data, Route.CompiledRoute route, CaseInsensitiveMap<String, String> headers)
+    public Request(RestAction<T> restAction, Consumer<T> onSuccess, Consumer<Throwable> onFailure, boolean shouldQueue, RequestBody body, Object rawBody, Route.CompiledRoute route, CaseInsensitiveMap<String, String> headers)
     {
         this.restAction = restAction;
         this.onSuccess = onSuccess;
         this.onFailure = onFailure;
         this.shouldQueue = shouldQueue;
-        this.data = data;
+        this.body = body;
+        this.rawBody = rawBody;
         this.route = route;
         this.headers = headers;
 
@@ -126,9 +129,14 @@ public class Request<T>
         return route;
     }
 
-    public RequestBody getData()
+    public RequestBody getBody()
     {
-        return data;
+        return body;
+    }
+
+    public Object getRawBody()
+    {
+        return rawBody;
     }
 
     public boolean shouldQueue()
@@ -144,5 +152,11 @@ public class Request<T>
     public boolean isCanceled()
     {
         return isCanceled;
+    }
+
+    public void handleResponse(Response response)
+    {
+        restAction.api.getEventManager().handle(new HttpRequestEvent(this, response));
+        restAction.handleResponse(response, this);
     }
 }

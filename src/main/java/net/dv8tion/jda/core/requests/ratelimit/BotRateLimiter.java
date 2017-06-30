@@ -18,10 +18,7 @@ package net.dv8tion.jda.core.requests.ratelimit;
 
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.ExceptionEvent;
-import net.dv8tion.jda.core.requests.RateLimiter;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Requester;
-import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.requests.Route.RateLimit;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import okhttp3.Headers;
@@ -306,8 +303,10 @@ public class BotRateLimiter extends RateLimiter
                         try
                         {
                             request = it.next();
-                            Long retryAfter = requester.execute(request);
-                            if (retryAfter != null)
+                            Response response = requester.execute(request);
+                            if (response != null)
+                                request.handleResponse(response);
+                            if (response.retryAfter > 0)
                             {
                                 break;
                             }
