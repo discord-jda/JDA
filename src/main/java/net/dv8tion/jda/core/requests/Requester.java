@@ -28,6 +28,8 @@ import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import okhttp3.internal.http.HttpMethod;
+
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -102,7 +104,7 @@ public class Requester
         Route.CompiledRoute route = apiRequest.getRoute();
         Long retryAfter = rateLimiter.getRateLimit(route);
         if (retryAfter != null)
-            return new Response(retryAfter);
+            return new Response(retryAfter, Collections.emptySet());
 
         okhttp3.Request.Builder builder = new okhttp3.Request.Builder();
 
@@ -175,14 +177,14 @@ public class Requester
             if (!rays.isEmpty())
                 LOG.debug("Received response with following cf-rays: " + rays);
             if (retryAfter == null)
-                return new Response(response, -1);
+                return new Response(response, -1, rays);
 
-            return new Response(retryAfter);
+            return new Response(retryAfter, rays);
         }
         catch (Exception e)
         {
             LOG.log(e); //This originally only printed on DEBUG in 2.x
-            return new Response(response, e);
+            return new Response(response, e, rays);
         }
     }
 

@@ -16,12 +16,14 @@
 
 package net.dv8tion.jda.core.requests;
 
-import java.io.BufferedReader;
-import java.util.Objects;
-import java.util.stream.Collectors;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+
+import java.io.BufferedReader;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Response
 {
@@ -34,8 +36,9 @@ public class Response
     public final long retryAfter;
     private final Object object;
     private final okhttp3.Response rawResponse;
+    private final Set<String> cfRays;
 
-    protected Response(final okhttp3.Response response, final Exception exception)
+    protected Response(final okhttp3.Response response, final Exception exception, final Set<String> cfRays)
     {
         this.rawResponse = response;
         this.code = Response.ERROR_CODE;
@@ -43,15 +46,17 @@ public class Response
         this.object = null;
         this.exception = exception;
         this.retryAfter = -1;
+        this.cfRays = cfRays;
     }
 
-    protected Response(final okhttp3.Response response, final int code, final String message, final long retryAfter)
+    protected Response(final okhttp3.Response response, final int code, final String message, final long retryAfter, final Set<String> cfRays)
     {
         this.rawResponse = response;
         this.code = code;
         this.message = message;
         this.exception = null;
         this.retryAfter = retryAfter;
+        this.cfRays = cfRays;
 
         if (response == null || response.body().contentLength() == 0)
         {
@@ -86,14 +91,14 @@ public class Response
         }
     }
 
-    protected Response(final long retryAfter)
+    protected Response(final long retryAfter, final Set<String> cfRays)
     {
-        this(null, 429, "TOO MANY REQUESTS", retryAfter);
+        this(null, 429, "TOO MANY REQUESTS", retryAfter, cfRays);
     }
 
-    protected Response(final okhttp3.Response response, final long retryAfter)
+    protected Response(final okhttp3.Response response, final long retryAfter, final Set<String> cfRays)
     {
-        this(response, response.code(), response.message(), retryAfter);
+        this(response, response.code(), response.message(), retryAfter, cfRays);
     }
 
     public JSONArray getArray()
@@ -114,6 +119,11 @@ public class Response
     public okhttp3.Response getRawResponse()
     {
         return this.rawResponse;
+    }
+
+    public Set<String> getCFRays()
+    {
+        return cfRays;
     }
 
     public boolean isError()

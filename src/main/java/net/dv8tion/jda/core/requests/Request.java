@@ -21,8 +21,9 @@ import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.events.http.HttpRequestEvent;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import okhttp3.RequestBody;
+import org.apache.commons.collections4.map.CaseInsensitiveMap;
+
 import java.util.function.Consumer;
 
 public class Request<T>
@@ -104,6 +105,11 @@ public class Request<T>
         });
     }
 
+    public JDAImpl getJDA()
+    {
+        return api;
+    }
+
     public RestAction<T> getRestAction()
     {
         return restAction;
@@ -156,7 +162,7 @@ public class Request<T>
 
     public void handleResponse(Response response)
     {
-        restAction.api.getEventManager().handle(new HttpRequestEvent(this, response));
+        api.getEventManager().handle(new HttpRequestEvent(this, response));
         restAction.handleResponse(response, this);
     }
 }

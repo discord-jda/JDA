@@ -659,14 +659,14 @@ public abstract class RestAction<T>
 
     protected RequestBody getRequestBody(JSONObject object)
     {
-        this.rawData = data;
+        this.rawData = object;
 
         return object == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, object.toString());
     }
 
     protected RequestBody getRequestBody(JSONArray array)
     {
-        this.rawData = data;
+        this.rawData = array;
 
         return array == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, array.toString());
     }

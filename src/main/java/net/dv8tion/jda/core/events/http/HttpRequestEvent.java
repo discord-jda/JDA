@@ -1,3 +1,19 @@
+/*
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package net.dv8tion.jda.core.events.http;
 
 import net.dv8tion.jda.core.events.Event;
@@ -11,38 +27,40 @@ import okhttp3.ResponseBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.Collections;
+import java.util.Set;
+
 /**
- * Fired when a Rest request has been executed.<br>
+ * Fired when a Rest request has been executed.
  * 
- * Depending on the request and it's result not all values have to be populated. 
+ * <p>Depending on the request and its result not all values have to be populated.
  */
 public class HttpRequestEvent extends Event
 {
-    private final Request<?> reqeust;
-    /** May be {@code null} */
+    private final Request<?> request;
     private final Response response;
 
     public HttpRequestEvent(final Request<?> request, final Response response)
     {
-        super(request.getRestAction().getJDA(), -1);
+        super(request.getJDA());
 
-        this.reqeust = request;
+        this.request = request;
         this.response = response;
     }
 
     public Request<?> getRequest()
     {
-        return this.reqeust;
+        return this.request;
     }
 
     public RequestBody getRequestBody()
     {
-        return this.reqeust.getBody();
+        return this.request.getBody();
     }
 
     public Object getRequestBodyRaw()
     {
-        return this.reqeust.getRawBody();
+        return this.request.getRawBody();
     }
 
     public Headers getRequestHeaders()
@@ -90,14 +108,19 @@ public class HttpRequestEvent extends Event
         return this.response == null ? null : this.response.getRawResponse();
     }
 
+    public Set<String> getCFRays()
+    {
+        return this.response == null ? Collections.emptySet() : this.response.getCFRays();
+    }
+
     public RestAction<?> getRestAction()
     {
-        return this.reqeust.getRestAction();
+        return this.request.getRestAction();
     }
 
     public CompiledRoute getRoute()
     {
-        return this.reqeust.getRoute();
+        return this.request.getRoute();
     }
 
     public boolean isRateLimit()
