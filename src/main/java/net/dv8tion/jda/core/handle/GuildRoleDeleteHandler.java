@@ -65,6 +65,7 @@ public class GuildRoleDeleteHandler extends SocketHandler
                 new RoleDeleteEvent(
                         api, responseNumber,
                         removedRole));
+        api.getEventCache().clear(roleId, EventCache.Type.ROLE);
         return null;
     }
 }
