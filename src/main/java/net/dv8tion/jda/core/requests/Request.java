@@ -164,5 +164,6 @@ public class Request<T>
     {
         api.getEventManager().handle(new HttpRequestEvent(this, response));
         restAction.handleResponse(response, this);
+        response.close();
     }
 }

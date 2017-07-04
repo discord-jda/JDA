@@ -61,6 +61,7 @@ import java.util.List;
  */
 public interface Message extends ISnowflake, Formattable
 {
+    int MAX_FILE_SIZE = 8 << 20; // 8mb
     /**
      * A immutable list of all mentioned users. if no user was mentioned, this list is empty.
      * <br>In {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel's}, this always returns an empty List

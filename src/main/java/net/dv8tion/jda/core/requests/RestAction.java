@@ -183,7 +183,6 @@ public abstract class RestAction<T>
     public RestAction(JDA api, Route.CompiledRoute route, RequestBody data)
     {
         Checks.notNull(api, "api");
-        Checks.notNull(route, "route");
 
         this.api = (JDAImpl) api;
         this.route = route;
@@ -275,19 +274,23 @@ public abstract class RestAction<T>
      */
     public void queue(Consumer<T> success, Consumer<Throwable> failure)
     {
+        Route.CompiledRoute route = finalizeRoute();
+        RequestBody data = finalizeData();
+        CaseInsensitiveMap<String, String> headers = finalizeHeaders();
+        Checks.notNull(route, "Route");
         if (success == null)
             success = DEFAULT_SUCCESS;
         if (failure == null)
             failure = DEFAULT_FAILURE;
-        api.getRequester().request(new Request<>(this, success, failure, true, finalizeData(), rawData, finalizeRoute(), finalizeHeaders()));
+        api.getRequester().request(new Request<>(this, success, failure, true, data, rawData, route, headers));
     }
 
     /**
-     * Submits a Request for execution and provides an {@link net.dv8tion.jda.core.requests.restaction.RequestFuture RequestFuture} 
+     * Submits a Request for execution and provides an {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture}
      * representing its completion task.
      * <br>Cancelling the returned Future will result in the cancellation of the Request!
      *
-     * @return Never-null {@link net.dv8tion.jda.core.requests.restaction.RequestFuture RequestFuture} representing the completion promise
+     * @return Never-null {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the completion promise
      */
     public RequestFuture<T> submit()
     {
@@ -295,18 +298,22 @@ public abstract class RestAction<T>
     }
 
     /**
-     * Submits a Request for execution and provides an {@link net.dv8tion.jda.core.requests.restaction.RequestFuture RequestFuture} 
+     * Submits a Request for execution and provides an {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture}
      * representing its completion task.
      * <br>Cancelling the returned Future will result in the cancellation of the Request!
      *
      * @param  shouldQueue
      *         Whether the Request should automatically handle rate limitations. (default true)
      *
-     * @return Never-null {@link net.dv8tion.jda.core.requests.restaction.RequestFuture RequestFuture} task representing the completion promise
+     * @return Never-null {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} task representing the completion promise
      */
     public RequestFuture<T> submit(boolean shouldQueue)
     {
-        return new RestFuture<>(this, shouldQueue, finalizeData(), rawData, finalizeRoute(), finalizeHeaders());
+        Route.CompiledRoute route = finalizeRoute();
+        RequestBody data = finalizeData();
+        CaseInsensitiveMap<String, String> headers = finalizeHeaders();
+        Checks.notNull(route, "Route");
+        return new RestFuture<>(this, shouldQueue, data, rawData, route, headers);
     }
 
     /**

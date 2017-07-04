@@ -200,17 +200,11 @@ public class ClientRateLimiter extends RateLimiter
                         try
                         {
                             request = it.next();
-                            Response response = requester.execute(request);
-                            if (response != null)
-                                request.handleResponse(response);
-                            if (response.retryAfter > 0)
-                            {
+                            Long retryAfter = requester.execute(request);
+                            if (retryAfter != null)
                                 break;
-                            }
                             else
-                            {
                                 it.remove();
-                            }
                         }
                         catch (Throwable t)
                         {

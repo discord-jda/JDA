@@ -16,13 +16,13 @@
 
 package net.dv8tion.jda.core.requests;
 
+import net.dv8tion.jda.core.utils.Checks;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import net.dv8tion.jda.core.utils.Checks;
 
 import static net.dv8tion.jda.core.requests.Method.*;
 
@@ -386,7 +386,7 @@ public class Route
 
         public CompiledRoute withQueryParams(String... params)
         {
-            Checks.check(params.length < 2, "params length must be at least 2");
+            Checks.check(params.length >= 2, "params length must be at least 2");
             Checks.check(params.length % 2 == 0, "params length must be a multiple of 2");
 
             StringBuilder newRoute = new StringBuilder(compiledRoute);

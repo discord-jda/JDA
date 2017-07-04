@@ -21,32 +21,28 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import java.io.BufferedReader;
+import java.io.Closeable;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class Response
+public class Response implements Closeable
 {
     public static final int ERROR_CODE = -1;
     public static final String ERROR_MESSAGE = "ERROR";
 
     public final int code;
-    public final Exception exception;
     public final String message;
     public final long retryAfter;
     private final Object object;
     private final okhttp3.Response rawResponse;
     private final Set<String> cfRays;
+    private Exception exception;
 
     protected Response(final okhttp3.Response response, final Exception exception, final Set<String> cfRays)
     {
-        this.rawResponse = response;
-        this.code = Response.ERROR_CODE;
-        this.message = Response.ERROR_MESSAGE;
-        this.object = null;
+        this(response, response != null ? response.code() : ERROR_CODE, ERROR_MESSAGE, -1, cfRays);
         this.exception = exception;
-        this.retryAfter = -1;
-        this.cfRays = cfRays;
     }
 
     protected Response(final okhttp3.Response response, final int code, final String message, final long retryAfter, final Set<String> cfRays)
@@ -147,5 +143,12 @@ public class Response
         return this.exception == null
                 ? "HTTPResponse[" + this.code + (this.object == null ? "" : ", " + this.object.toString()) + ']'
                 : "HTTPException[" + this.exception.getMessage() + ']';
+    }
+
+    @Override
+    public void close()
+    {
+        if (rawResponse != null)
+            rawResponse.close();
     }
 }

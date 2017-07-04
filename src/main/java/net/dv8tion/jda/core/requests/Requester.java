@@ -78,15 +78,14 @@ public class Requester
             throw new IllegalStateException("The Requester has been shutdown! No new requests can be requested!");
 
         if (apiRequest.shouldQueue())
-        {
             rateLimiter.queueRequest(apiRequest);
-        }
         else
-        {
-            Response response = execute(apiRequest);
-            if (response != null)
-                apiRequest.handleResponse(response);
-        }
+            execute(apiRequest, true);
+    }
+
+    public Long execute(Request<?> apiRequest)
+    {
+        return execute(apiRequest, false);
     }
 
     /**
@@ -99,12 +98,16 @@ public class Requester
      *         the request can be made again. This could either be for the Per-Route ratelimit or the Global ratelimit.
      *         <br>Check if globalCooldown is {@code null} to determine if it was Per-Route or Global.
      */
-    public <T> Response execute(Request<T> apiRequest)
+    public Long execute(Request<?> apiRequest, boolean handleOnRatelimit)
     {
         Route.CompiledRoute route = apiRequest.getRoute();
         Long retryAfter = rateLimiter.getRateLimit(route);
         if (retryAfter != null)
-            return new Response(retryAfter, Collections.emptySet());
+        {
+            if (handleOnRatelimit)
+                apiRequest.handleResponse(new Response(retryAfter, Collections.emptySet()));
+            return retryAfter;
+        }
 
         okhttp3.Request.Builder builder = new okhttp3.Request.Builder();
 
@@ -157,8 +160,9 @@ public class Requester
                 attempt++;
                 LOG.debug(String.format("Requesting %s -> %s returned status %d... retrying (attempt %d)",
                         apiRequest.getRoute().getMethod().toString(),
-                        url,
-                        response.code(), attempt));
+                        url, response.code(), attempt));
+
+                response.close();
                 try
                 {
                     Thread.sleep(50 * attempt);
@@ -176,15 +180,21 @@ public class Requester
             retryAfter = rateLimiter.handleResponse(route, response);
             if (!rays.isEmpty())
                 LOG.debug("Received response with following cf-rays: " + rays);
-            if (retryAfter == null)
-                return new Response(response, -1, rays);
 
-            return new Response(retryAfter, rays);
+            if (retryAfter == null)
+                apiRequest.handleResponse(new Response(response, -1, rays));
+            else if (handleOnRatelimit)
+                apiRequest.handleResponse(new Response(response, retryAfter, rays));
+            else
+                response.close();
+
+            return retryAfter;
         }
         catch (Exception e)
         {
             LOG.log(e); //This originally only printed on DEBUG in 2.x
-            return new Response(response, e, rays);
+            apiRequest.handleResponse(new Response(response, e, rays));
+            return null;
         }
     }
 
