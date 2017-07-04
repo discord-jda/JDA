@@ -144,6 +144,7 @@ public class GuildDeleteHandler extends SocketHandler
                 new GuildLeaveEvent(
                         api, responseNumber,
                         guild));
+        api.getEventCache().clear(guild.getIdLong(), EventCache.Type.GUILD);
         return null;
     }
 }

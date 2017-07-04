@@ -77,6 +77,17 @@ public class EventCache
                 .sum();
     }
 
+    public void clear(long triggerId, Type type)
+    {
+        TLongObjectMap<List<Runnable>> cache = eventCache.get(type);
+        List<Runnable> events = cache.get(triggerId);
+        if (events == null)
+            return;
+        LOG.debug("Clearing cache for type " + type + " with ID " + triggerId + " (Size: " + events.size() + ')');
+        events.clear();
+        cache.remove(triggerId);
+    }
+
     public void clear()
     {
         eventCache.clear();
