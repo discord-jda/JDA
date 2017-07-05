@@ -85,10 +85,9 @@ public class ChannelDeleteHandler extends SocketHandler
                 //We use this instead of getAudioManager(Guild) so we don't create a new instance. Efficiency!
                 AudioManagerImpl manager = api.getAudioManagerMap().get(guild.getIdLong());
                 if (manager != null && manager.isConnected()
-                        && manager.getConnectedChannel().getIdLong() == channel.getIdLong())
-                {
+                        && manager.getConnectedChannel().getIdLong() == channelId)
                     manager.closeAudioConnection(ConnectionStatus.DISCONNECTED_CHANNEL_DELETED);
-                }
+
                 guild.getVoiceChannelMap().remove(channel.getIdLong());
                 api.getEventManager().handle(
                     new VoiceChannelDeleteEvent(
@@ -145,6 +144,7 @@ public class ChannelDeleteHandler extends SocketHandler
                             && api.asClient().getGroups().stream().noneMatch(g -> g.getUsers().contains(user)))
                     {
                         api.getFakeUserMap().remove(userId);
+                        user.dispose(); // dispose fake user before removing it entirely
                     }
 
                     return true;

@@ -25,6 +25,7 @@ import net.dv8tion.jda.core.audio.AudioSendHandler;
 import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.audio.hooks.ListenerProxy;
+import net.dv8tion.jda.core.entities.Disposable;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.VoiceChannel;
@@ -40,7 +41,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
-public class AudioManagerImpl implements AudioManager
+public class AudioManagerImpl implements AudioManager, Disposable
 {
     public static final ThreadGroup AUDIO_THREADS = new ThreadGroup("jda-audio");
     //These values are set at the bottom of this file.
@@ -61,6 +62,7 @@ public class AudioManagerImpl implements AudioManager
     protected ListenerProxy connectionListener = new ListenerProxy();
     protected long queueTimeout = 100;
     protected boolean shouldReconnect = true;
+    protected boolean disposed = false;
 
     protected boolean selfMuted = false;
     protected boolean selfDeafened = false;
@@ -349,6 +351,23 @@ public class AudioManagerImpl implements AudioManager
                     );
             api.getClient().send(voiceStateChange.toString());
         }
+    }
+
+    @Override
+    public boolean dispose()
+    {
+        synchronized (CONNECTION_LOCK)
+        {
+            guild = null;
+            closeAudioConnection(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD);
+            return disposed = true;
+        }
+    }
+
+    @Override
+    public boolean isDisposed()
+    {
+        return disposed;
     }
 
     //Load the Opus library.

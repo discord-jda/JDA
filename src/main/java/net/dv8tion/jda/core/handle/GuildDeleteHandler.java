@@ -25,7 +25,6 @@ import net.dv8tion.jda.client.entities.Relationship;
 import net.dv8tion.jda.client.entities.RelationshipType;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.core.AccountType;
-import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
@@ -33,7 +32,6 @@ import net.dv8tion.jda.core.entities.impl.PrivateChannelImpl;
 import net.dv8tion.jda.core.entities.impl.UserImpl;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.guild.GuildUnavailableEvent;
-import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import org.json.JSONObject;
 
 public class GuildDeleteHandler extends SocketHandler
@@ -47,31 +45,38 @@ public class GuildDeleteHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long id = content.getLong("id");
-        GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
+        GuildImpl guild = api.getGuildMap().get(id);
+
+        if (guild == null)
+        {
+            api.getEventCache().cache(EventCache.Type.GUILD, id, () -> handle(responseNumber, allContent));
+            EventCache.LOG.debug("Received GUILD_DELETE for a Guild that is not yet cached. ID: " + id);
+            return null;
+        }
 
         //If the event is attempting to mark the guild as unavailable, but it is already unavailable,
         // ignore the event
-        if ((guild == null || !guild.isAvailable()) && content.has("unavailable") && content.getBoolean("unavailable"))
+        boolean nowUnavailable = !content.isNull("unavailable") && content.getBoolean("unavailable");
+        if (!guild.isAvailable() && nowUnavailable)
             return null;
 
         if (api.getGuildLock().isLocked(id))
             return id;
 
-        if (content.has("unavailable") && content.getBoolean("unavailable"))
+        if (nowUnavailable)
         {
             guild.setAvailable(false);
             api.getEventManager().handle(
-                    new GuildUnavailableEvent(
-                            api, responseNumber,
-                            guild)
-            );
+                new GuildUnavailableEvent(
+                    api, responseNumber,
+                    guild));
             return null;
         }
 
-        final TLongObjectMap<AudioManagerImpl> audioManagerMap = api.getAudioManagerMap();
-        final AudioManagerImpl manager = audioManagerMap.remove(id); // remove manager from central map to avoid old guild references
-        if (manager != null) // close existing audio connection if needed
-            manager.closeAudioConnection(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD);
+//        final TLongObjectMap<AudioManagerImpl> audioManagerMap = api.getAudioManagerMap();
+//        final AudioManagerImpl manager = audioManagerMap.remove(id); // remove manager from central map to avoid old guild references
+//        if (manager != null) // close existing audio connection if needed
+//            manager.closeAudioConnection(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD); //moved into GuildImpl#dispose()
 
         //cleaning up all users that we do not share a guild with anymore
         // Anything left in memberIds will be removed from the main userMap
@@ -109,7 +114,7 @@ public class GuildDeleteHandler extends SocketHandler
         {
             if (memberId == selfId)
                 return true; // don't remove selfUser from cache
-            UserImpl user = (UserImpl) api.getUserMap().remove(memberId);
+            UserImpl user = api.getUserMap().remove(memberId);
             if (user.hasPrivateChannel())
             {
                 PrivateChannelImpl priv = (PrivateChannelImpl) user.getPrivateChannel();
@@ -117,6 +122,7 @@ public class GuildDeleteHandler extends SocketHandler
                 priv.setFake(true);
                 api.getFakeUserMap().put(user.getIdLong(), user);
                 api.getFakePrivateChannelMap().put(priv.getIdLong(), priv);
+                return true; //use return to not dispose this user
             }
             else if (api.getAccountType() == AccountType.CLIENT)
             {
@@ -129,11 +135,11 @@ public class GuildDeleteHandler extends SocketHandler
                     {
                         user.setFake(true);
                         api.getFakeUserMap().put(user.getIdLong(), user);
-                        break; //Breaks from groups loop, not memberIds loop
+                        return true; //use return to not dispose this user
                     }
                 }
             }
-
+            user.dispose();
             return true;
         });
 
@@ -141,9 +147,9 @@ public class GuildDeleteHandler extends SocketHandler
         guild.getTextChannels().forEach(chan -> api.getTextChannelMap().remove(chan.getIdLong()));
         guild.getVoiceChannels().forEach(chan -> api.getVoiceChannelMap().remove(chan.getIdLong()));
         api.getEventManager().handle(
-                new GuildLeaveEvent(
-                        api, responseNumber,
-                        guild));
+            new GuildLeaveEvent(
+                api, responseNumber,
+                guild));
         api.getEventCache().clear(guild.getIdLong(), EventCache.Type.GUILD);
         guild.dispose();
         return null;

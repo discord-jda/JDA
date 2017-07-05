@@ -114,7 +114,6 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannelImpl> impl
     public boolean dispose()
     {
         connectedMembers.clear();
-        guild.getJDA().getVoiceChannelMap().remove(id);
         return super.dispose();
     }
 
