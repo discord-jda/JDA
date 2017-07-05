@@ -80,6 +80,8 @@ public class EventCache
     public void clear(long triggerId, Type type)
     {
         TLongObjectMap<List<Runnable>> cache = eventCache.get(type);
+        if (cache == null)
+            return;
         List<Runnable> events = cache.get(triggerId);
         if (events == null)
             return;
