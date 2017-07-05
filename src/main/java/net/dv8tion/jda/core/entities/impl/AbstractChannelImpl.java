@@ -40,9 +40,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> implements Channel
+public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> implements Channel, Disposable
 {
-
     protected final long id;
     protected final GuildImpl guild;
 
@@ -54,6 +53,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
 
     protected String name;
     protected int rawPosition;
+    protected boolean disposed = false;
 
     public AbstractChannelImpl(long id, GuildImpl guild)
     {
@@ -271,6 +271,23 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     {
         this.rawPosition = rawPosition;
         return (T) this;
+    }
+
+    @Override
+    public boolean dispose()
+    {
+        synchronized (mngLock)
+        {
+            manager = null;
+            managerUpdatable = null;
+            return disposed = true;
+        }
+    }
+
+    @Override
+    public boolean isDisposed()
+    {
+        return disposed;
     }
 
     protected void checkPermission(Permission permission) {checkPermission(permission, null);}

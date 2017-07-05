@@ -21,6 +21,7 @@ import net.dv8tion.jda.client.managers.ApplicationManager;
 import net.dv8tion.jda.client.managers.ApplicationManagerUpdatable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.Disposable;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
@@ -30,25 +31,26 @@ import org.json.JSONObject;
 
 import java.util.*;
 
-public class ApplicationImpl implements Application
+public class ApplicationImpl implements Application, Disposable
 {
-
     private final JDA api;
+
     private final Object mngLock = new Object();
-    private ApplicationManager manager;
-    private ApplicationManagerUpdatable managerUpdatable;
+    private volatile ApplicationManager manager;
+    private volatile ApplicationManagerUpdatable managerUpdatable;
 
     private BotImpl bot;
-    private String description;
-    private boolean doesBotRequireCodeGrant;
     private int flags;
-    private String iconId;
-    private long id;
-    private boolean isBotPublic;
-    private String name;
-    private List<String> redirectUris;
     private int rpcApplicationState;
+    private long id;
+    private boolean doesBotRequireCodeGrant;
+    private boolean isBotPublic;
+    private boolean disposed = false;
+    private String description;
+    private String iconId;
+    private String name;
     private String secret;
+    private List<String> redirectUris;
 
     public ApplicationImpl(final JDA api, final JSONObject object)
     {
@@ -230,6 +232,23 @@ public class ApplicationImpl implements Application
                     request.onFailure(response);
             }
         };
+    }
+
+    @Override
+    public boolean dispose()
+    {
+        synchronized (mngLock)
+        {
+            manager = null;
+            managerUpdatable = null;
+            return disposed = true;
+        }
+    }
+
+    @Override
+    public boolean isDisposed()
+    {
+        return disposed;
     }
 
     @Override

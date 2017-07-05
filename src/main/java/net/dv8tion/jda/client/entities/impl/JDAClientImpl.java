@@ -44,9 +44,9 @@ import java.util.stream.Collectors;
 public class JDAClientImpl implements JDAClient
 {
     protected final JDAImpl api;
-    protected final TLongObjectMap<Group> groups = MiscUtil.newLongMap();
+    protected final TLongObjectMap<GroupImpl> groups = MiscUtil.newLongMap();
     protected final TLongObjectMap<Relationship> relationships = MiscUtil.newLongMap();
-    protected final TLongObjectMap<CallUser> callUsers = MiscUtil.newLongMap();
+    protected final TLongObjectMap<CallUserImpl> callUsers = MiscUtil.newLongMap();
     protected UserSettingsImpl userSettings;
 
     public JDAClientImpl(JDAImpl api)
@@ -233,7 +233,7 @@ public class JDAClientImpl implements JDAClient
         return userSettings;
     }
 
-    public TLongObjectMap<Group> getGroupMap()
+    public TLongObjectMap<GroupImpl> getGroupMap()
     {
         return groups;
     }
@@ -243,7 +243,7 @@ public class JDAClientImpl implements JDAClient
         return relationships;
     }
 
-    public TLongObjectMap<CallUser> getCallUserMap()
+    public TLongObjectMap<CallUserImpl> getCallUserMap()
     {
         return callUsers;
     }

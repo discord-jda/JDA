@@ -17,6 +17,7 @@
 package net.dv8tion.jda.core.entities.impl;
 
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.Disposable;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.User;
@@ -31,7 +32,7 @@ import java.util.FormattableFlags;
 import java.util.Formatter;
 import java.util.List;
 
-public class UserImpl implements User
+public class UserImpl implements User, Disposable
 {
     protected final long id;
     protected final JDAImpl api;
@@ -39,9 +40,10 @@ public class UserImpl implements User
     protected short discriminator;
     protected String name;
     protected String avatarId;
-    protected PrivateChannel privateChannel;
+    protected PrivateChannelImpl privateChannel;
     protected boolean bot;
     protected boolean fake = false;
+    protected boolean disposed = false;
 
     public UserImpl(long id, JDAImpl api)
     {
@@ -117,7 +119,7 @@ public class UserImpl implements User
             {
                 if (response.isOk())
                 {
-                    PrivateChannel priv = api.getEntityBuilder().createPrivateChannel(response.getObject());
+                    PrivateChannelImpl priv = api.getEntityBuilder().createPrivateChannel(response.getObject());
                     UserImpl.this.privateChannel = priv;
                     request.onSuccess(priv);
                 }
@@ -194,6 +196,18 @@ public class UserImpl implements User
         return "U:" + getName() + '(' + id + ')';
     }
 
+    @Override
+    public boolean dispose()
+    {
+        return disposed = privateChannel == null || privateChannel.dispose();
+    }
+
+    @Override
+    public boolean isDisposed()
+    {
+        return disposed;
+    }
+
     // -- Setters --
 
     public UserImpl setName(String name)
@@ -214,7 +228,7 @@ public class UserImpl implements User
         return this;
     }
 
-    public UserImpl setPrivateChannel(PrivateChannel privateChannel)
+    public UserImpl setPrivateChannel(PrivateChannelImpl privateChannel)
     {
         this.privateChannel = privateChannel;
         return this;

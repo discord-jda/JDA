@@ -74,7 +74,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
             && api.getGuildMap().valueCollection().stream().noneMatch(g -> ((GuildImpl) g).getMembersMap().containsKey(userId))
             && !(api.getAccountType() == AccountType.CLIENT && api.asClient().getFriendById(userId) != null))
         {
-            UserImpl user = (UserImpl) api.getUserMap().remove(userId);
+            UserImpl user = api.getUserMap().remove(userId);
             if (user.hasPrivateChannel())
             {
                 PrivateChannelImpl priv = (PrivateChannelImpl) user.getPrivateChannel();
@@ -100,9 +100,10 @@ public class GuildMemberRemoveHandler extends SocketHandler
             }
         }
         api.getEventManager().handle(
-                new GuildMemberLeaveEvent(
-                        api, responseNumber,
-                        guild, member));
+            new GuildMemberLeaveEvent(
+                api, responseNumber,
+                guild, member));
+        member.dispose();
         return null;
     }
 }

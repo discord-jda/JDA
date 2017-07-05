@@ -29,7 +29,7 @@ import java.util.List;
 
 public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannelImpl> implements VoiceChannel
 {
-    private final TLongObjectMap<Member> connectedMembers = MiscUtil.newLongMap();
+    private final TLongObjectMap<MemberImpl> connectedMembers = MiscUtil.newLongMap();
     private int userLimit;
     private int bitrate;
 
@@ -110,6 +110,14 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannelImpl> impl
         return chanTime.compareTo(thisTime);
     }
 
+    @Override
+    public boolean dispose()
+    {
+        connectedMembers.clear();
+        guild.getJDA().getVoiceChannelMap().remove(id);
+        return super.dispose();
+    }
+
     // -- Setters --
 
     public VoiceChannelImpl setUserLimit(int userLimit)
@@ -126,7 +134,7 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannelImpl> impl
 
     // -- Map Getters --
 
-    public TLongObjectMap<Member> getConnectedMembersMap()
+    public TLongObjectMap<MemberImpl> getConnectedMembersMap()
     {
         return connectedMembers;
     }

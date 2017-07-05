@@ -57,14 +57,14 @@ public class JDAImpl implements JDA
 
     public final ScheduledThreadPoolExecutor pool;
 
-    protected final TLongObjectMap<User> users = MiscUtil.newLongMap();
-    protected final TLongObjectMap<Guild> guilds = MiscUtil.newLongMap();
-    protected final TLongObjectMap<TextChannel> textChannels = MiscUtil.newLongMap();
-    protected final TLongObjectMap<VoiceChannel> voiceChannels = MiscUtil.newLongMap();
-    protected final TLongObjectMap<PrivateChannel> privateChannels = MiscUtil.newLongMap();
+    protected final TLongObjectMap<UserImpl> users = MiscUtil.newLongMap();
+    protected final TLongObjectMap<GuildImpl> guilds = MiscUtil.newLongMap();
+    protected final TLongObjectMap<TextChannelImpl> textChannels = MiscUtil.newLongMap();
+    protected final TLongObjectMap<VoiceChannelImpl> voiceChannels = MiscUtil.newLongMap();
+    protected final TLongObjectMap<PrivateChannelImpl> privateChannels = MiscUtil.newLongMap();
 
-    protected final TLongObjectMap<User> fakeUsers = MiscUtil.newLongMap();
-    protected final TLongObjectMap<PrivateChannel> fakePrivateChannels = MiscUtil.newLongMap();
+    protected final TLongObjectMap<UserImpl> fakeUsers = MiscUtil.newLongMap();
+    protected final TLongObjectMap<PrivateChannelImpl> fakePrivateChannels = MiscUtil.newLongMap();
 
     protected final TLongObjectMap<AudioManagerImpl> audioManagers = MiscUtil.newLongMap();
 
@@ -741,37 +741,37 @@ public class JDAImpl implements JDA
         return client;
     }
 
-    public TLongObjectMap<User> getUserMap()
+    public TLongObjectMap<UserImpl> getUserMap()
     {
         return users;
     }
 
-    public TLongObjectMap<Guild> getGuildMap()
+    public TLongObjectMap<GuildImpl> getGuildMap()
     {
         return guilds;
     }
 
-    public TLongObjectMap<TextChannel> getTextChannelMap()
+    public TLongObjectMap<TextChannelImpl> getTextChannelMap()
     {
         return textChannels;
     }
 
-    public TLongObjectMap<VoiceChannel> getVoiceChannelMap()
+    public TLongObjectMap<VoiceChannelImpl> getVoiceChannelMap()
     {
         return voiceChannels;
     }
 
-    public TLongObjectMap<PrivateChannel> getPrivateChannelMap()
+    public TLongObjectMap<PrivateChannelImpl> getPrivateChannelMap()
     {
         return privateChannels;
     }
 
-    public TLongObjectMap<User> getFakeUserMap()
+    public TLongObjectMap<UserImpl> getFakeUserMap()
     {
         return fakeUsers;
     }
 
-    public TLongObjectMap<PrivateChannel> getFakePrivateChannelMap()
+    public TLongObjectMap<PrivateChannelImpl> getFakePrivateChannelMap()
     {
         return fakePrivateChannels;
     }

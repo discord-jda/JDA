@@ -32,20 +32,19 @@ import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
  * @since  3.0
  * @author Florian Spieß
  */
-public class WebhookImpl implements Webhook
+public class WebhookImpl implements Webhook, Disposable
 {
-
-    protected volatile WebhookManagerUpdatable managerUpdatable = null;
-    protected volatile WebhookManager manager = null;
-
-    private final Object mngLock = new Object();
     private final TextChannel channel;
     private final long id;
 
-    private Member owner;
-    private User user;
-    private String token;
+    private final Object mngLock = new Object();
+    protected volatile WebhookManagerUpdatable managerUpdatable = null;
+    protected volatile WebhookManager manager = null;
 
+    private Member owner;
+    private UserImpl user;
+    private String token;
+    private boolean disposed = false;
 
     public WebhookImpl(TextChannel channel, long id)
     {
@@ -170,7 +169,7 @@ public class WebhookImpl implements Webhook
         return this;
     }
 
-    public WebhookImpl setUser(User user)
+    public WebhookImpl setUser(UserImpl user)
     {
         this.user = user;
         return this;
@@ -195,5 +194,23 @@ public class WebhookImpl implements Webhook
     public String toString()
     {
         return "WH:" + getName() + "(" + id + ")";
+    }
+
+    @Override
+    public boolean dispose()
+    {
+        user.dispose();
+        synchronized (mngLock)
+        {
+            manager = null;
+            managerUpdatable = null;
+            return disposed = true;
+        }
+    }
+
+    @Override
+    public boolean isDisposed()
+    {
+        return disposed;
     }
 }

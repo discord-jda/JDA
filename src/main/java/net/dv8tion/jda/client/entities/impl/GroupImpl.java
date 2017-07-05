@@ -23,8 +23,10 @@ import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.client.entities.Relationship;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.ChannelType;
+import net.dv8tion.jda.core.entities.Disposable;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.entities.impl.UserImpl;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
 
@@ -32,18 +34,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class GroupImpl implements Group
+public class GroupImpl implements Group, Disposable
 {
     private final long id;
     private final JDAImpl api;
 
-    private final TLongObjectMap<User> userMap = MiscUtil.newLongMap();
+    private final TLongObjectMap<UserImpl> userMap = MiscUtil.newLongMap();
 
-    private Call currentCall;
+    private CallImpl currentCall;
     private User owner;
     private String name;
     private String iconId;
     private long lastMessageId;
+    private boolean disposed = false;
 
     public GroupImpl(long id, JDAImpl api)
     {
@@ -161,6 +164,26 @@ public class GroupImpl implements Group
     }
 
     @Override
+    public long getIdLong()
+    {
+        return id;
+    }
+
+    @Override
+    public boolean dispose()
+    {
+        if (currentCall != null)
+            currentCall.dispose();
+        return disposed = true;
+    }
+
+    @Override
+    public boolean isDisposed()
+    {
+        return disposed;
+    }
+
+    @Override
     public String toString()
     {
         return String.format("G:%s(%d)", getName(), id);
@@ -182,12 +205,12 @@ public class GroupImpl implements Group
         return Long.hashCode(id);
     }
 
-    public TLongObjectMap<User> getUserMap()
+    public TLongObjectMap<UserImpl> getUserMap()
     {
         return userMap;
     }
 
-    public GroupImpl setCurrentCall(Call call)
+    public GroupImpl setCurrentCall(CallImpl call)
     {
         this.currentCall = call;
         return this;
@@ -221,11 +244,5 @@ public class GroupImpl implements Group
     {
         if (obj == null)
             throw new NullPointerException("Provided " + name + " was null!");
-    }
-
-    @Override
-    public long getIdLong()
-    {
-        return id;
     }
 }

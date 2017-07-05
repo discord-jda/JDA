@@ -47,15 +47,15 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class GuildImpl implements Guild
+public class GuildImpl implements Guild, Disposable
 {
     private final long id;
     private final JDAImpl api;
-    private final TLongObjectMap<TextChannel> textChannels = MiscUtil.newLongMap();
-    private final TLongObjectMap<VoiceChannel> voiceChannels = MiscUtil.newLongMap();
-    private final TLongObjectMap<Member> members = MiscUtil.newLongMap();
-    private final TLongObjectMap<Role> roles = MiscUtil.newLongMap();
-    private final TLongObjectMap<Emote> emotes = MiscUtil.newLongMap();
+    private final TLongObjectMap<TextChannelImpl> textChannels = MiscUtil.newLongMap();
+    private final TLongObjectMap<VoiceChannelImpl> voiceChannels = MiscUtil.newLongMap();
+    private final TLongObjectMap<MemberImpl> members = MiscUtil.newLongMap();
+    private final TLongObjectMap<RoleImpl> roles = MiscUtil.newLongMap();
+    private final TLongObjectMap<EmoteImpl> emotes = MiscUtil.newLongMap();
 
     private final TLongObjectMap<JSONObject> cachedPresences = MiscUtil.newLongMap();
 
@@ -71,7 +71,7 @@ public class GuildImpl implements Guild
     private Region region;
     private TextChannel publicChannel;
     private VoiceChannel afkChannel;
-    private Role publicRole;
+    private RoleImpl publicRole;
     private VerificationLevel verificationLevel;
     private NotificationLevel defaultNotificationLevel;
     private MFALevel mfaLevel;
@@ -79,6 +79,7 @@ public class GuildImpl implements Guild
     private Timeout afkTimeout;
     private boolean available;
     private boolean canSendVerification = false;
+    private boolean disposed = false;
 
     public GuildImpl(JDAImpl api, long id)
     {
@@ -740,7 +741,7 @@ public class GuildImpl implements Guild
         return this;
     }
 
-    public GuildImpl setPublicRole(Role publicRole)
+    public GuildImpl setPublicRole(RoleImpl publicRole)
     {
         this.publicRole = publicRole;
         return this;
@@ -779,34 +780,34 @@ public class GuildImpl implements Guild
 
     // -- Map getters --
 
-    public TLongObjectMap<TextChannel> getTextChannelsMap()
+    public TLongObjectMap<TextChannelImpl> getTextChannelsMap()
     {
         return textChannels;
     }
 
-    public TLongObjectMap<VoiceChannel> getVoiceChannelMap()
+    public TLongObjectMap<VoiceChannelImpl> getVoiceChannelMap()
     {
         return voiceChannels;
     }
 
-    public TLongObjectMap<Member> getMembersMap()
+    public TLongObjectMap<MemberImpl> getMembersMap()
     {
         return members;
     }
 
-    public TLongObjectMap<Role> getRolesMap()
+    public TLongObjectMap<RoleImpl> getRolesMap()
     {
         return roles;
+    }
+
+    public TLongObjectMap<EmoteImpl> getEmoteMap()
+    {
+        return emotes;
     }
 
     public TLongObjectMap<JSONObject> getCachedPresenceMap()
     {
         return cachedPresences;
-    }
-
-    public TLongObjectMap<Emote> getEmoteMap()
-    {
-        return emotes;
     }
 
 
@@ -865,4 +866,34 @@ public class GuildImpl implements Guild
         };
     }
 
+    @Override
+    public boolean dispose()
+    {
+        textChannels.forEachValue(Disposable::dispose);
+        voiceChannels.forEachValue(Disposable::dispose);
+        members.forEachValue(Disposable::dispose);
+        roles.forEachValue(Disposable::dispose);
+        emotes.forEachValue(Disposable::dispose);
+        if (publicRole != null) // just in case
+            publicRole.dispose();
+
+        textChannels.clear();
+        voiceChannels.clear();
+        members.clear();
+        roles.clear();
+        emotes.clear();
+        synchronized (mngLock)
+        {
+            manager = null;
+            managerUpdatable = null;
+            controller = null;
+            return disposed = true;
+        }
+    }
+
+    @Override
+    public boolean isDisposed()
+    {
+        return disposed;
+    }
 }

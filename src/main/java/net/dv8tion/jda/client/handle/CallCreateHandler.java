@@ -17,7 +17,6 @@
 package net.dv8tion.jda.client.handle;
 
 import gnu.trove.map.TLongObjectMap;
-import net.dv8tion.jda.client.entities.CallUser;
 import net.dv8tion.jda.client.entities.CallableChannel;
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.client.entities.impl.*;
@@ -58,7 +57,7 @@ public class CallCreateHandler extends SocketHandler
 
         CallImpl call = new CallImpl(channel, messageId);
         call.setRegion(region);
-        TLongObjectMap<CallUser> callUsers = call.getCallUserMap();
+        TLongObjectMap<CallUserImpl> callUsers = call.getCallUserMap();
 
         if (channel instanceof Group)
         {
@@ -98,7 +97,7 @@ public class CallCreateHandler extends SocketHandler
         {
             JSONObject voiceState = voiceStates.getJSONObject(i);
             final long userId = voiceState.getLong("user_id");
-            CallUser cUser = callUsers.get(userId);
+            CallUserImpl cUser = callUsers.get(userId);
             CallVoiceStateImpl vState = (CallVoiceStateImpl) cUser.getVoiceState();
 
             vState.setInCall(true);

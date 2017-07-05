@@ -17,7 +17,6 @@
 package net.dv8tion.jda.client.handle;
 
 import net.dv8tion.jda.client.entities.CallableChannel;
-import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.client.entities.impl.CallImpl;
 import net.dv8tion.jda.client.entities.impl.GroupImpl;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
@@ -57,7 +56,7 @@ public class CallDeleteHandler extends SocketHandler
             return null;
         }
 
-        if (channel instanceof Group)
+        if (channel instanceof GroupImpl)
         {
             GroupImpl group = (GroupImpl) channel;
             group.setCurrentCall(null);
@@ -76,9 +75,10 @@ public class CallDeleteHandler extends SocketHandler
         }
 
         api.getEventManager().handle(
-                new CallDeleteEvent(
-                        api, responseNumber,
-                        call));
+            new CallDeleteEvent(
+                api, responseNumber,
+                call));
+        call.dispose();
         return null;
     }
 }

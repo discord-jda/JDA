@@ -19,6 +19,7 @@ package net.dv8tion.jda.core.requests;
 import com.neovisionaries.ws.client.*;
 import gnu.trove.iterator.TLongObjectIterator;
 import gnu.trove.map.TLongObjectMap;
+import net.dv8tion.jda.client.entities.impl.GroupImpl;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.client.handle.*;
 import net.dv8tion.jda.core.AccountType;
@@ -27,10 +28,10 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.WebSocketCode;
 import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
+import net.dv8tion.jda.core.entities.Disposable;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
-import net.dv8tion.jda.core.entities.impl.GuildImpl;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.entities.impl.*;
 import net.dv8tion.jda.core.events.*;
 import net.dv8tion.jda.core.handle.*;
 import net.dv8tion.jda.core.managers.AudioManager;
@@ -648,13 +649,25 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         chunkingAndSyncing = false;
         sentAuthInfo = false;
 
-        api.getTextChannelMap().clear();
-        api.getVoiceChannelMap().clear();
-        api.getGuildMap().clear();
-        api.getUserMap().clear();
-        api.getPrivateChannelMap().clear();
-        api.getFakeUserMap().clear();
-        api.getFakePrivateChannelMap().clear();
+        TLongObjectMap<TextChannelImpl> textChannels = api.getTextChannelMap();
+        TLongObjectMap<VoiceChannelImpl> voiceChannels = api.getVoiceChannelMap();
+        TLongObjectMap<GuildImpl> guilds = api.getGuildMap();
+        TLongObjectMap<UserImpl> users = api.getUserMap();
+        TLongObjectMap<PrivateChannelImpl> privateChannels = api.getPrivateChannelMap();
+        TLongObjectMap<UserImpl> fakeUsers = api.getFakeUserMap();
+        TLongObjectMap<PrivateChannelImpl> fakePrivateChannels = api.getFakePrivateChannelMap();
+
+        guilds.forEachValue(Disposable::dispose);
+        users.forEachValue(Disposable::dispose);
+        fakeUsers.forEachValue(Disposable::dispose);
+
+        textChannels.clear();
+        voiceChannels.clear();
+        guilds.clear();
+        users.clear();
+        privateChannels.clear();
+        fakeUsers.clear();
+        fakePrivateChannels.clear();
         api.getEntityBuilder().clearCache();
         api.getEventCache().clear();
         api.getGuildLock().clear();
@@ -665,8 +678,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             JDAClientImpl client = (JDAClientImpl) api.asClient();
 
+            TLongObjectMap<GroupImpl> groups = client.getGroupMap();
+            groups.forEachValue(Disposable::dispose);
+
+            groups.clear();
             client.getRelationshipMap().clear();
-            client.getGroupMap().clear();
             client.getCallUserMap().clear();
         }
     }

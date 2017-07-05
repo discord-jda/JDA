@@ -21,6 +21,7 @@ import net.dv8tion.jda.client.managers.EmoteManagerUpdatable;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.Disposable;
 import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
@@ -42,7 +43,7 @@ import java.util.List;
  * @since  2.2
  * @author Florian Spieß
  */
-public class EmoteImpl implements Emote
+public class EmoteImpl implements Emote, Disposable
 {
 
     private final long id;
@@ -55,6 +56,7 @@ public class EmoteImpl implements Emote
     private volatile EmoteManagerUpdatable managerUpdatable = null;
 
     private boolean managed = false;
+    private boolean disposed = false;
     private String name;
 
     public EmoteImpl(long id, GuildImpl guild)
@@ -229,5 +231,24 @@ public class EmoteImpl implements Emote
         copy.roles.addAll(roles);
         return copy;
 
+    }
+
+    @Override
+    public boolean dispose()
+    {
+        synchronized (mngLock)
+        {
+            manager = null;
+            managerUpdatable = null;
+            if (roles != null)
+                roles.clear();
+            return disposed = true;
+        }
+    }
+
+    @Override
+    public boolean isDisposed()
+    {
+        return disposed;
     }
 }

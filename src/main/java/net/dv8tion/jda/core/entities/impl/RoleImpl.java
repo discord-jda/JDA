@@ -19,6 +19,7 @@ package net.dv8tion.jda.core.entities.impl;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Channel;
+import net.dv8tion.jda.core.entities.Disposable;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.exceptions.PermissionException;
@@ -37,10 +38,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class RoleImpl implements Role
+public class RoleImpl implements Role, Disposable
 {
     private final long id;
-    private final Guild guild;
+    private final GuildImpl guild;
 
     private final Object mngLock = new Object();
     private volatile RoleManager manager;
@@ -51,10 +52,11 @@ public class RoleImpl implements Role
     private boolean managed;
     private boolean hoisted;
     private boolean mentionable;
+    private boolean disposed = false;
     private long rawPermissions;
     private int rawPosition;
 
-    public RoleImpl(long id, Guild guild)
+    public RoleImpl(long id, GuildImpl guild)
     {
         this.id = id;
         this.guild = guild;
@@ -300,6 +302,23 @@ public class RoleImpl implements Role
         // discord deals with hierarchy. The more recent a role was created, the lower its hierarchy ranking when
         // it shares the same position as another role.
         return rTime.compareTo(thisTime);
+    }
+
+    @Override
+    public boolean dispose()
+    {
+        synchronized (mngLock)
+        {
+            manager = null;
+            managerUpdatable = null;
+            return disposed = true;
+        }
+    }
+
+    @Override
+    public boolean isDisposed()
+    {
+        return disposed;
     }
 
     // -- Setters --

@@ -110,7 +110,18 @@ public class SelfUserImpl extends UserImpl implements SelfUser
         return mng;
     }
 
-//    @Override
+    @Override
+    public boolean dispose()
+    {
+        synchronized (mngLock)
+        {
+            manager = null;
+            managerUpdatable = null;
+        }
+        return super.dispose();
+    }
+
+    //    @Override
 //    public String getAuthUrl(Permission... perms)
 //    {
 //        return ApplicationUtil.getAuthInvite(getJDA(), perms);

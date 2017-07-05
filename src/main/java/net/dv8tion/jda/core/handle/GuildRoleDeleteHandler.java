@@ -16,10 +16,10 @@
 package net.dv8tion.jda.core.handle;
 
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.entities.impl.MemberImpl;
+import net.dv8tion.jda.core.entities.impl.RoleImpl;
 import net.dv8tion.jda.core.events.role.RoleDeleteEvent;
 import org.json.JSONObject;
 
@@ -38,7 +38,7 @@ public class GuildRoleDeleteHandler extends SocketHandler
         if (api.getGuildLock().isLocked(guildId))
             return guildId;
 
-        GuildImpl guild = (GuildImpl) api.getGuildMap().get(guildId);
+        GuildImpl guild = api.getGuildMap().get(guildId);
         if (guild == null)
         {
             api.getEventCache().cache(EventCache.Type.GUILD, guildId, () -> handle(responseNumber, allContent));
@@ -47,7 +47,7 @@ public class GuildRoleDeleteHandler extends SocketHandler
         }
 
         final long roleId = content.getLong("role_id");
-        Role removedRole = guild.getRolesMap().remove(roleId);
+        RoleImpl removedRole = guild.getRolesMap().remove(roleId);
         if (removedRole == null)
         {
             api.getEventCache().cache(EventCache.Type.ROLE, roleId, () -> handle(responseNumber, allContent));
@@ -62,10 +62,11 @@ public class GuildRoleDeleteHandler extends SocketHandler
             member.getRoleSet().remove(removedRole);
         }
         api.getEventManager().handle(
-                new RoleDeleteEvent(
-                        api, responseNumber,
-                        removedRole));
+            new RoleDeleteEvent(
+                    api, responseNumber,
+                    removedRole));
         api.getEventCache().clear(roleId, EventCache.Type.ROLE);
+        removedRole.dispose();
         return null;
     }
 }
