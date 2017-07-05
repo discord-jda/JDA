@@ -449,6 +449,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
             api.setStatus(JDA.Status.SHUTDOWN);
             api.getEventManager().handle(new ShutdownEvent(api, OffsetDateTime.now(), rawCloseCode));
+            invalidate();
         }
         else
         {
