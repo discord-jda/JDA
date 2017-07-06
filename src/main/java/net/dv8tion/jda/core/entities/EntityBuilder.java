@@ -1195,12 +1195,12 @@ public class EntityBuilder
         final boolean isBotPublic = object.getBoolean("bot_public");
         final User owner = createFakeUser(object.getJSONObject("owner"), false);
 
-        return new ApplicationInfoImpl(api, description, doesBotRequireCodeGrant, iconId, id, isBotPublic, name, owner);
+        return new ApplicationInfoImpl(description, doesBotRequireCodeGrant, iconId, id, isBotPublic, name, owner);
     }
 
     public Application createApplication(JSONObject object)
     {
-        return new ApplicationImpl(api, object);
+        return new ApplicationImpl((JDAClientImpl) api.asClient(), object);
     }
 
     public AuthorizedApplication createAuthorizedApplication(JSONObject object)
@@ -1220,7 +1220,7 @@ public class EntityBuilder
         final long id = application.getLong("id");
         final String name = application.getString("name");
 
-        return new AuthorizedApplicationImpl(api, authId, description, iconId, id, name, scopes);
+        return new AuthorizedApplicationImpl((JDAClientImpl) api.asClient(), authId, description, iconId, id, name, scopes);
     }
 
     public AuditLogEntry createAuditLogEntry(GuildImpl guild, JSONObject entryJson, JSONObject userJson)

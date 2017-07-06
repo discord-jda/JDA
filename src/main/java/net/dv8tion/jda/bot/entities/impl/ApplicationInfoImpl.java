@@ -26,9 +26,6 @@ import java.util.Collection;
 
 public class ApplicationInfoImpl implements ApplicationInfo
 {
-    private final JDA api;
-
-
     private final boolean doesBotRequireCodeGrant;
     private final boolean isBotPublic;
     private final long id;
@@ -37,10 +34,9 @@ public class ApplicationInfoImpl implements ApplicationInfo
     private final String name;
     private final User owner;
 
-    public ApplicationInfoImpl(JDA api, String description, boolean doesBotRequireCodeGrant, String iconId, long id,
+    public ApplicationInfoImpl(String description, boolean doesBotRequireCodeGrant, String iconId, long id,
             boolean isBotPublic, String name, User owner)
     {
-        this.api = api;
         this.description = description;
         this.doesBotRequireCodeGrant = doesBotRequireCodeGrant;
         this.iconId = iconId;
@@ -127,7 +123,7 @@ public class ApplicationInfoImpl implements ApplicationInfo
     @Override
     public JDA getJDA()
     {
-        return this.api;
+        return owner.getJDA();
     }
 
     @Override

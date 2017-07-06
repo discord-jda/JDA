@@ -32,6 +32,7 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
+import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -45,10 +46,9 @@ import java.util.List;
  */
 public class EmoteImpl implements Emote, Disposable
 {
-
     private final long id;
     private final GuildImpl guild;
-    private final JDAImpl api;
+    private final WeakReference<JDAImpl> apiRef;
     private final HashSet<Role> roles;
 
     private final Object mngLock = new Object();
@@ -63,14 +63,14 @@ public class EmoteImpl implements Emote, Disposable
     {
         this.id = id;
         this.guild = guild;
-        this.api = guild.getJDA();
+        this.apiRef = new WeakReference<>(guild.getJDA());
         this.roles = new HashSet<>();
     }
 
     public EmoteImpl(long id, JDAImpl api)
     {
         this.id = id;
-        this.api = api;
+        this.apiRef = new WeakReference<>(api);
         this.guild = null;
         this.roles = null;
     }
@@ -116,7 +116,7 @@ public class EmoteImpl implements Emote, Disposable
     @Override
     public JDA getJDA()
     {
-        return api;
+        return guild != null ? guild.getJDA() : apiRef.get();
     }
 
     @Override

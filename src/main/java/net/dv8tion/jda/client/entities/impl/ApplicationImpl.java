@@ -33,7 +33,7 @@ import java.util.*;
 
 public class ApplicationImpl implements Application, Disposable
 {
-    private final JDA api;
+    private final JDAClientImpl clientAPI;
 
     private final Object mngLock = new Object();
     private volatile ApplicationManager manager;
@@ -52,9 +52,9 @@ public class ApplicationImpl implements Application, Disposable
     private String secret;
     private List<String> redirectUris;
 
-    public ApplicationImpl(final JDA api, final JSONObject object)
+    public ApplicationImpl(final JDAClientImpl api, final JSONObject object)
     {
-        this.api = api;
+        this.clientAPI = api;
 
         this.updateFromJson(object);
     }
@@ -65,7 +65,7 @@ public class ApplicationImpl implements Application, Disposable
         if (this.hasBot())
             return new RestAction.EmptyRestAction<>(getJDA(), this.bot);
 
-        return new RestAction<Application.Bot>(this.api, Route.Applications.CREATE_BOT.compile(getId()))
+        return new RestAction<Application.Bot>(getJDA(), Route.Applications.CREATE_BOT.compile(getId()))
         {
             @Override
             protected void handleResponse(final Response response, final Request<Application.Bot> request)
@@ -81,7 +81,7 @@ public class ApplicationImpl implements Application, Disposable
     @Override
     public RestAction<Void> delete()
     {
-        return new RestAction<Void>(this.api, Route.Applications.DELETE_APPLICATION.compile(getId()))
+        return new RestAction<Void>(getJDA(), Route.Applications.DELETE_APPLICATION.compile(getId()))
         {
             @Override
             protected void handleResponse(final Response response, final Request<Void> request)
@@ -146,7 +146,8 @@ public class ApplicationImpl implements Application, Disposable
     @Override
     public JDA getJDA()
     {
-        return this.api;
+        checkDisposed();
+        return clientAPI.getJDA();
     }
 
     @Override
@@ -221,7 +222,7 @@ public class ApplicationImpl implements Application, Disposable
     public RestAction<Application> resetSecret()
     {
         Route.CompiledRoute route = Route.Applications.RESET_BOT_TOKEN.compile(getId());
-        return new RestAction<Application>(this.api, route)
+        return new RestAction<Application>(getJDA(), route)
         {
             @Override
             protected void handleResponse(final Response response, final Request<Application> request)

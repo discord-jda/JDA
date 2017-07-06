@@ -28,6 +28,7 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
 import java.util.FormattableFlags;
 import java.util.Formatter;
 import java.util.List;
@@ -35,7 +36,7 @@ import java.util.List;
 public class UserImpl implements User, Disposable
 {
     protected final long id;
-    protected final JDAImpl api;
+    protected final WeakReference<JDAImpl> apiRef;
 
     protected short discriminator;
     protected String name;
@@ -48,7 +49,7 @@ public class UserImpl implements User, Disposable
     public UserImpl(long id, JDAImpl api)
     {
         this.id = id;
-        this.api = api;
+        this.apiRef = new WeakReference<>(api);
     }
 
     @Override
@@ -112,7 +113,7 @@ public class UserImpl implements User, Disposable
 
         Route.CompiledRoute route = Route.Self.CREATE_PRIVATE_CHANNEL.compile();
         JSONObject body = new JSONObject().put("recipient_id", getId());
-        return new RestAction<PrivateChannel>(api, route, body)
+        return new RestAction<PrivateChannel>(getJDA(), route, body)
         {
             @Override
             protected void handleResponse(Response response, Request<PrivateChannel> request)
@@ -154,7 +155,8 @@ public class UserImpl implements User, Disposable
     @Override
     public JDA getJDA()
     {
-        return api;
+        checkDisposed();
+        return apiRef.get();
     }
 
     @Override

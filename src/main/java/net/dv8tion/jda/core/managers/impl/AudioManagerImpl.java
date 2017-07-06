@@ -30,7 +30,6 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.managers.AudioManager;
@@ -52,7 +51,6 @@ public class AudioManagerImpl implements AudioManager, Disposable
 
     public final Object CONNECTION_LOCK = new Object();
 
-    protected final JDAImpl api;
     protected GuildImpl guild;
     protected AudioConnection audioConnection = null;
     protected VoiceChannel queuedAudioConnection = null;
@@ -72,7 +70,6 @@ public class AudioManagerImpl implements AudioManager, Disposable
     public AudioManagerImpl(GuildImpl guild)
     {
         this.guild = guild;
-        this.api = this.guild.getJDA();
         init(); //Just to make sure that the audio libs have been initialized.
     }
 
@@ -102,7 +99,7 @@ public class AudioManagerImpl implements AudioManager, Disposable
         {
             //Start establishing connection, joining provided channel
             queuedAudioConnection = channel;
-            api.getClient().queueAudioConnect(channel);
+            guild.getJDA().getClient().queueAudioConnect(channel);
         }
         else
         {
@@ -124,7 +121,7 @@ public class AudioManagerImpl implements AudioManager, Disposable
                             "Unable to connect to VoiceChannel due to userlimit! Requires permission VOICE_MOVE_OTHERS to bypass");
             }
 
-            api.getClient().queueAudioConnect(channel);
+            guild.getJDA().getClient().queueAudioConnect(channel);
             audioConnection.setChannel(channel);
         }
     }
@@ -139,7 +136,7 @@ public class AudioManagerImpl implements AudioManager, Disposable
     {
         synchronized (CONNECTION_LOCK)
         {
-            api.getClient().getQueuedAudioConnectionMap().remove(guild.getIdLong());
+            guild.getJDA().getClient().getQueuedAudioConnectionMap().remove(guild.getIdLong());
             this.queuedAudioConnection = null;
             if (audioConnection == null)
                 return;
@@ -151,7 +148,7 @@ public class AudioManagerImpl implements AudioManager, Disposable
     @Override
     public JDA getJDA()
     {
-        return api;
+        return guild.getJDA();
     }
 
     @Override
@@ -349,7 +346,7 @@ public class AudioManagerImpl implements AudioManager, Disposable
                             .put("self_mute", isSelfMuted())
                             .put("self_deaf", isSelfDeafened())
                     );
-            api.getClient().send(voiceStateChange.toString());
+            guild.getJDA().getClient().send(voiceStateChange.toString());
         }
     }
 
@@ -358,8 +355,8 @@ public class AudioManagerImpl implements AudioManager, Disposable
     {
         synchronized (CONNECTION_LOCK)
         {
-            guild = null;
             closeAudioConnection(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD);
+            guild = null;
             return disposed = true;
         }
     }

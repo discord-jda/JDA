@@ -42,6 +42,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -50,7 +51,7 @@ import java.util.stream.Collectors;
 public class GuildImpl implements Guild, Disposable
 {
     private final long id;
-    private final JDAImpl api;
+    private final WeakReference<JDAImpl> apiRef; // using WeakReference to properly dispose
     private final TLongObjectMap<TextChannelImpl> textChannels = MiscUtil.newLongMap();
     private final TLongObjectMap<VoiceChannelImpl> voiceChannels = MiscUtil.newLongMap();
     private final TLongObjectMap<MemberImpl> members = MiscUtil.newLongMap();
@@ -84,7 +85,7 @@ public class GuildImpl implements Guild, Disposable
     public GuildImpl(JDAImpl api, long id)
     {
         this.id = id;
-        this.api = api;
+        this.apiRef = new WeakReference<>(api);
     }
 
     @Override
@@ -131,7 +132,7 @@ public class GuildImpl implements Guild, Disposable
 
         Route.CompiledRoute route = Route.Guilds.GET_WEBHOOKS.compile(getId());
 
-        return new RestAction<List<Webhook>>(api, route)
+        return new RestAction<List<Webhook>>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<List<Webhook>> request)
@@ -542,7 +543,7 @@ public class GuildImpl implements Guild, Disposable
             throw new IllegalStateException("Cannot leave a guild that you are the owner of! Transfer guild ownership first!");
 
         Route.CompiledRoute route = Route.Self.LEAVE_GUILD.compile(getId());
-        return new RestAction<Void>(api, route)
+        return new RestAction<Void>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -558,7 +559,7 @@ public class GuildImpl implements Guild, Disposable
     @Override
     public RestAction<Void> delete()
     {
-        if (api.getSelfUser().isMfaEnabled())
+        if (getJDA().getSelfUser().isMfaEnabled())
             throw new IllegalStateException("Cannot delete a guild without providing MFA code. Use Guild#delete(String)");
 
         return delete(null);
@@ -571,14 +572,14 @@ public class GuildImpl implements Guild, Disposable
             throw new PermissionException("Cannot delete a guild that you do not own!");
 
         JSONObject mfaBody = null;
-        if (api.getSelfUser().isMfaEnabled())
+        if (getJDA().getSelfUser().isMfaEnabled())
         {
             Checks.notEmpty(mfaCode, "Provided MultiFactor Auth code");
             mfaBody = new JSONObject().put("code", mfaCode);
         }
 
         Route.CompiledRoute route = Route.Guilds.DELETE_GUILD.compile(getId());
-        return new RestAction<Void>(api, route, mfaBody)
+        return new RestAction<Void>(getJDA(), route, mfaBody)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -594,10 +595,10 @@ public class GuildImpl implements Guild, Disposable
     @Override
     public AudioManager getAudioManager()
     {
-        if (!api.isAudioEnabled())
+        if (!getJDA().isAudioEnabled())
             throw new IllegalStateException("Audio is disabled. Cannot retrieve an AudioManager while audio is disabled.");
 
-        final TLongObjectMap<AudioManagerImpl> managerMap = api.getAudioManagerMap();
+        final TLongObjectMap<AudioManagerImpl> managerMap = getJDA().getAudioManagerMap();
         AudioManagerImpl mng = managerMap.get(id);
         if (mng == null)
         {
@@ -620,7 +621,8 @@ public class GuildImpl implements Guild, Disposable
     @Override
     public JDAImpl getJDA()
     {
-        return api;
+        checkDisposed();
+        return apiRef.get();
     }
 
     @Override
@@ -657,7 +659,7 @@ public class GuildImpl implements Guild, Disposable
     @Override
     public boolean checkVerification()
     {
-        if (api.getAccountType() == AccountType.BOT)
+        if (getJDA().getAccountType() == AccountType.BOT)
             return true;
         if(canSendVerification)
             return true;
@@ -667,10 +669,10 @@ public class GuildImpl implements Guild, Disposable
                 if(ChronoUnit.MINUTES.between(getSelfMember().getJoinDate(), OffsetDateTime.now()) < 10)
                     break;
             case MEDIUM:
-                if(ChronoUnit.MINUTES.between(MiscUtil.getCreationTime(api.getSelfUser()), OffsetDateTime.now()) < 5)
+                if(ChronoUnit.MINUTES.between(MiscUtil.getCreationTime(getJDA().getSelfUser()), OffsetDateTime.now()) < 5)
                     break;
             case LOW:
-                if(!api.getSelfUser().isVerified())
+                if(!getJDA().getSelfUser().isVerified())
                     break;
             case NONE:
                 canSendVerification = true;
@@ -842,7 +844,7 @@ public class GuildImpl implements Guild, Disposable
 
         final Route.CompiledRoute route = Route.Invites.GET_GUILD_INVITES.compile(getId());
 
-        return new RestAction<List<Invite>>(api, route)
+        return new RestAction<List<Invite>>(getJDA(), route)
         {
             @Override
             protected void handleResponse(final Response response, final Request<List<Invite>> request)
@@ -876,9 +878,9 @@ public class GuildImpl implements Guild, Disposable
         emotes.forEachValue(Disposable::dispose);
         if (publicRole != null) // just in case
             publicRole.dispose();
-        synchronized (api.getAudioManagerMap())
+        synchronized (getJDA().getAudioManagerMap())
         {
-            AudioManagerImpl audioManager = api.getAudioManagerMap().remove(id);
+            AudioManagerImpl audioManager = getJDA().getAudioManagerMap().remove(id);
             if (audioManager != null)
                 audioManager.dispose();
         }

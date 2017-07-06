@@ -30,6 +30,7 @@ import net.dv8tion.jda.core.entities.impl.UserImpl;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -37,7 +38,7 @@ import java.util.List;
 public class GroupImpl implements Group, Disposable
 {
     private final long id;
-    private final JDAImpl api;
+    private final WeakReference<JDAImpl> apiRef;
 
     private final TLongObjectMap<UserImpl> userMap = MiscUtil.newLongMap();
 
@@ -51,7 +52,7 @@ public class GroupImpl implements Group, Disposable
     public GroupImpl(long id, JDAImpl api)
     {
         this.id = id;
-        this.api = api;
+        this.apiRef = new WeakReference<>(api);
     }
 
     @Override
@@ -111,7 +112,7 @@ public class GroupImpl implements Group, Disposable
     public List<User> getNonFriendUsers()
     {
         List<User> nonFriends = new ArrayList<>();
-        TLongObjectMap<Relationship> map = ((JDAClientImpl) api.asClient()).getRelationshipMap();
+        TLongObjectMap<Relationship> map = ((JDAClientImpl) getJDA().asClient()).getRelationshipMap();
         userMap.forEachEntry((userId, user) ->
         {
             Relationship relationship = map.get(userId);
@@ -127,7 +128,7 @@ public class GroupImpl implements Group, Disposable
     public List<Friend> getFriends()
     {
         List<Friend> friends = new ArrayList<>();
-        TLongObjectMap<Relationship> map = ((JDAClientImpl) api.asClient()).getRelationshipMap();
+        TLongObjectMap<Relationship> map = ((JDAClientImpl) getJDA().asClient()).getRelationshipMap();
         userMap.forEachKey(userId ->
         {
             Relationship relationship = map.get(userId);
@@ -160,7 +161,7 @@ public class GroupImpl implements Group, Disposable
     @Override
     public JDA getJDA()
     {
-        return api;
+        return apiRef.get();
     }
 
     @Override
