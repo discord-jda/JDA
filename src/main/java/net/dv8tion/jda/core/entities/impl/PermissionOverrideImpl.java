@@ -137,6 +137,7 @@ public class PermissionOverrideImpl implements PermissionOverride, Disposable
         {
             synchronized (mngLock)
             {
+                checkDisposed();
                 mng = manager;
                 if (mng == null)
                     mng = manager = new PermOverrideManager(this);
@@ -153,6 +154,7 @@ public class PermissionOverrideImpl implements PermissionOverride, Disposable
         {
             synchronized (mngLock)
             {
+                checkDisposed();
                 mng = managerUpdatable;
                 if (mng == null)
                     mng = managerUpdatable = new PermOverrideManagerUpdatable(this);
@@ -164,7 +166,7 @@ public class PermissionOverrideImpl implements PermissionOverride, Disposable
     @Override
     public AuditableRestAction<Void> delete()
     {
-        if (!channel.getGuild().getSelfMember().hasPermission(channel, Permission.MANAGE_PERMISSIONS))
+        if (!getGuild().getSelfMember().hasPermission(channel, Permission.MANAGE_PERMISSIONS))
             throw new PermissionException(Permission.MANAGE_PERMISSIONS);
 
         String targetId = isRoleOverride() ? getRole().getId() : getMember().getUser().getId();

@@ -125,6 +125,7 @@ public class WebhookImpl implements Webhook, Disposable
         {
             synchronized (mngLock)
             {
+                checkDisposed();
                 mng = manager;
                 if (mng == null)
                     mng = manager = new WebhookManager(this);
@@ -141,6 +142,7 @@ public class WebhookImpl implements Webhook, Disposable
         {
             synchronized (mngLock)
             {
+                checkDisposed();
                 mng = managerUpdatable;
                 if (mng == null)
                     mng = managerUpdatable = new WebhookManagerUpdatable(this);

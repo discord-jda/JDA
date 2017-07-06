@@ -185,6 +185,7 @@ public class GuildImpl implements Guild, Disposable
     @Override
     public boolean isMember(User user)
     {
+        checkDisposed();
         return members.containsKey(user.getIdLong());
     }
 
@@ -203,24 +204,27 @@ public class GuildImpl implements Guild, Disposable
     @Override
     public Member getMemberById(String userId)
     {
-        return members.get(MiscUtil.parseSnowflake(userId));
+        return getMemberById(MiscUtil.parseSnowflake(userId));
     }
 
     @Override
     public Member getMemberById(long userId)
     {
+        checkDisposed();
         return members.get(userId);
     }
 
     @Override
     public List<Member> getMembers()
     {
+        checkDisposed();
         return Collections.unmodifiableList(new ArrayList<>(members.valueCollection()));
     }
 
     @Override
     public List<Member> getMembersByName(String name, boolean ignoreCase)
     {
+        checkDisposed();
         Checks.notNull(name, "name");
         return Collections.unmodifiableList(members.valueCollection().stream()
                 .filter(m ->
@@ -233,6 +237,7 @@ public class GuildImpl implements Guild, Disposable
     @Override
     public List<Member> getMembersByNickname(String nickname, boolean ignoreCase)
     {
+        checkDisposed();
         Checks.notNull(nickname, "nickname");
         return Collections.unmodifiableList(members.valueCollection().stream()
                 .filter(m ->
@@ -245,6 +250,7 @@ public class GuildImpl implements Guild, Disposable
     @Override
     public List<Member> getMembersByEffectiveName(String name, boolean ignoreCase)
     {
+        checkDisposed();
         Checks.notNull(name, "name");
         return Collections.unmodifiableList(members.valueCollection().stream()
                 .filter(m ->
@@ -264,6 +270,7 @@ public class GuildImpl implements Guild, Disposable
     @Override
     public List<Member> getMembersWithRoles(Collection<Role> roles)
     {
+        checkDisposed();
         Checks.notNull(roles, "roles");
         for (Role r : roles)
         {
@@ -280,18 +287,20 @@ public class GuildImpl implements Guild, Disposable
     @Override
     public TextChannel getTextChannelById(String id)
     {
-        return textChannels.get(MiscUtil.parseSnowflake(id));
+        return getTextChannelById(MiscUtil.parseSnowflake(id));
     }
 
     @Override
     public TextChannel getTextChannelById(long id)
     {
+        checkDisposed();
         return textChannels.get(id);
     }
 
     @Override
     public List<TextChannel> getTextChannelsByName(String name, boolean ignoreCase)
     {
+        checkDisposed();
         Checks.notNull(name, "name");
         return Collections.unmodifiableList(textChannels.valueCollection().stream()
                 .filter(tc ->
@@ -304,6 +313,7 @@ public class GuildImpl implements Guild, Disposable
     @Override
     public List<TextChannel> getTextChannels()
     {
+        checkDisposed();
         ArrayList<TextChannel> channels = new ArrayList<>(textChannels.valueCollection());
         channels.sort(Comparator.reverseOrder());
         return Collections.unmodifiableList(channels);
@@ -312,18 +322,20 @@ public class GuildImpl implements Guild, Disposable
     @Override
     public VoiceChannel getVoiceChannelById(String id)
     {
-        return voiceChannels.get(MiscUtil.parseSnowflake(id));
+        return getVoiceChannelById(MiscUtil.parseSnowflake(id));
     }
 
     @Override
     public VoiceChannel getVoiceChannelById(long id)
     {
+        checkDisposed();
         return voiceChannels.get(id);
     }
 
     @Override
     public List<VoiceChannel> getVoiceChannelsByName(String name, boolean ignoreCase)
     {
+        checkDisposed();
         Checks.notNull(name, "name");
         return Collections.unmodifiableList(voiceChannels.valueCollection().stream()
             .filter(vc ->
@@ -336,6 +348,7 @@ public class GuildImpl implements Guild, Disposable
     @Override
     public List<VoiceChannel> getVoiceChannels()
     {
+        checkDisposed();
         List<VoiceChannel> channels = new ArrayList<>(voiceChannels.valueCollection());
         channels.sort(Comparator.reverseOrder());
         return Collections.unmodifiableList(channels);
@@ -344,18 +357,20 @@ public class GuildImpl implements Guild, Disposable
     @Override
     public Role getRoleById(String id)
     {
-        return roles.get(MiscUtil.parseSnowflake(id));
+        return getRoleById(MiscUtil.parseSnowflake(id));
     }
 
     @Override
     public Role getRoleById(long id)
     {
+        checkDisposed();
         return roles.get(id);
     }
 
     @Override
     public List<Role> getRoles()
     {
+        checkDisposed();
         List<Role> list = new ArrayList<>(roles.valueCollection());
         list.sort(Comparator.reverseOrder());
         return Collections.unmodifiableList(list);
@@ -364,6 +379,7 @@ public class GuildImpl implements Guild, Disposable
     @Override
     public List<Role> getRolesByName(String name, boolean ignoreCase)
     {
+        checkDisposed();
         Checks.notNull(name, "name");
         return Collections.unmodifiableList(roles.valueCollection().stream()
                 .filter(r ->
@@ -376,24 +392,27 @@ public class GuildImpl implements Guild, Disposable
     @Override
     public Emote getEmoteById(String id)
     {
-        return emotes.get(MiscUtil.parseSnowflake(id));
+        return getEmoteById(MiscUtil.parseSnowflake(id));
     }
 
     @Override
     public Emote getEmoteById(long id)
     {
+        checkDisposed();
         return emotes.get(id);
     }
 
     @Override
     public List<Emote> getEmotes()
     {
+        checkDisposed();
         return Collections.unmodifiableList(new LinkedList<>(emotes.valueCollection()));
     }
 
     @Override
     public List<Emote> getEmotesByName(String name, boolean ignoreCase)
     {
+        checkDisposed();
         Checks.notNull(name, "name");
         return Collections.unmodifiableList(emotes.valueCollection().parallelStream()
                 .filter(e ->
@@ -482,6 +501,7 @@ public class GuildImpl implements Guild, Disposable
         {
             synchronized (mngLock)
             {
+                checkDisposed();
                 mng = manager;
                 if (mng == null)
                     mng = manager = new GuildManager(this);
@@ -498,6 +518,7 @@ public class GuildImpl implements Guild, Disposable
         {
             synchronized (mngLock)
             {
+                checkDisposed();
                 mng = managerUpdatable;
                 if (mng == null)
                     mng = managerUpdatable = new GuildManagerUpdatable(this);
@@ -514,6 +535,7 @@ public class GuildImpl implements Guild, Disposable
         {
             synchronized (mngLock)
             {
+                checkDisposed();
                 ctrl = controller;
                 if (ctrl == null)
                     ctrl = controller = new GuildController(this);
@@ -628,6 +650,7 @@ public class GuildImpl implements Guild, Disposable
     @Override
     public List<GuildVoiceState> getVoiceStates()
     {
+        checkDisposed();
         return Collections.unmodifiableList(
                 members.valueCollection().stream().map(Member::getVoiceState).collect(Collectors.toList()));
     }
@@ -839,7 +862,7 @@ public class GuildImpl implements Guild, Disposable
     @Override
     public RestAction<List<Invite>> getInvites()
     {
-        if (!this.getSelfMember().hasPermission(Permission.MANAGE_SERVER))
+        if (!getSelfMember().hasPermission(Permission.MANAGE_SERVER))
             throw new PermissionException(Permission.MANAGE_SERVER);
 
         final Route.CompiledRoute route = Route.Invites.GET_GUILD_INVITES.compile(getId());

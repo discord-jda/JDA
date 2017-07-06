@@ -128,6 +128,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         {
             synchronized (mngLock)
             {
+                checkDisposed();
                 mng = manager;
                 if (mng == null)
                     mng = manager = new ChannelManager(this);
@@ -144,6 +145,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         {
             synchronized (mngLock)
             {
+                checkDisposed();
                 mng = managerUpdatable;
                 if (mng == null)
                     mng = managerUpdatable = new ChannelManagerUpdatable(this);

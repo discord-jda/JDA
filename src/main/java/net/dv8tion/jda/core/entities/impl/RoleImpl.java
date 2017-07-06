@@ -196,6 +196,7 @@ public class RoleImpl implements Role, Disposable
         {
             synchronized (mngLock)
             {
+                checkDisposed();
                 mng = manager;
                 if (mng == null)
                     mng = manager = new RoleManager(this);
@@ -212,6 +213,7 @@ public class RoleImpl implements Role, Disposable
         {
             synchronized (mngLock)
             {
+                checkDisposed();
                 mng = managerUpdatable;
                 if (mng == null)
                     mng = managerUpdatable = new RoleManagerUpdatable(this);

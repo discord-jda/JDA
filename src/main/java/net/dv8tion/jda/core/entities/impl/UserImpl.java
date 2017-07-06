@@ -105,6 +105,7 @@ public class UserImpl implements User, Disposable
     @Override
     public RestAction<PrivateChannel> openPrivateChannel()
     {
+        checkDisposed();
         if (privateChannel != null)
             return new RestAction.EmptyRestAction<>(getJDA(), privateChannel);
 
