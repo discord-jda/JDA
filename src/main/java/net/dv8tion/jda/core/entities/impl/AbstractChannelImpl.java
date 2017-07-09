@@ -89,18 +89,21 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     @Override
     public PermissionOverride getPermissionOverride(Member member)
     {
+        checkDisposed();
         return member != null ? overrides.get(member.getUser().getIdLong()) : null;
     }
 
     @Override
     public PermissionOverride getPermissionOverride(Role role)
     {
+        checkDisposed();
         return role != null ? overrides.get(role.getIdLong()) : null;
     }
 
     @Override
     public List<PermissionOverride> getPermissionOverrides()
     {
+        checkDisposed();
         // already unmodifiable!
         return Arrays.asList(overrides.values(new PermissionOverride[overrides.size()]));
     }
@@ -282,6 +285,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         JDAImpl api = guild.getJDA();
         if (api != null)
             api.getEventCache().clear(id, EventCache.Type.CHANNEL);
+        overrides.clear();
         synchronized (mngLock)
         {
             manager = null;
@@ -299,6 +303,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     protected void checkPermission(Permission permission) {checkPermission(permission, null);}
     protected void checkPermission(Permission permission, String message)
     {
+        checkDisposed();
         if (!guild.getSelfMember().hasPermission(this, permission))
         {
             if (message != null)

@@ -79,6 +79,9 @@ public interface PermissionOverride
      * The {@link net.dv8tion.jda.core.JDA JDA} instance that this {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
      * is related to.
      *
+     * @throws net.dv8tion.jda.core.exceptions.DisposedException
+     *         If this PermissionOverride was disposed from JDA cache invalidation
+     *
      * @return Never-null {@link net.dv8tion.jda.core.JDA JDA} instance.
      */
     JDA getJDA();
@@ -142,6 +145,9 @@ public interface PermissionOverride
      * Returns the {@link net.dv8tion.jda.core.managers.PermOverrideManager PermOverrideManager} for this PermissionOverride.
      * In the PermOverrideManager you can modify the permissions of the override.
      *
+     * @throws net.dv8tion.jda.core.exceptions.DisposedException
+     *         If this PermissionOverride was disposed from JDA cache invalidation
+     *
      * @return The PermOverrideManager of this override.
      *
      * @see    #getManagerUpdatable()
@@ -152,6 +158,9 @@ public interface PermissionOverride
      *  Returns the {@link net.dv8tion.jda.core.managers.PermOverrideManager PermOverrideManager} for this PermissionOverride.
      * In the PermOverrideManager you can modify the permissions of the override.
      * <br>This can be used to bulk update channel settings.
+     *
+     * @throws net.dv8tion.jda.core.exceptions.DisposedException
+     *         If this PermissionOverride was disposed from JDA cache invalidation
      *
      * @return The PermOverrideManager of this override.
      *
@@ -176,6 +185,8 @@ public interface PermissionOverride
      *
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         if we don't have the permission to {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
+     * @throws net.dv8tion.jda.core.exceptions.DisposedException
+     *         If this PermissionOverride was disposed from JDA cache invalidation
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */

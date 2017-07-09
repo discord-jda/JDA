@@ -627,6 +627,7 @@ public class GuildImpl implements Guild, Disposable
             // No previous manager found -> create one
             synchronized (managerMap)
             {
+                checkDisposed();
                 mng = managerMap.get(id);
                 if (mng == null)
                 {

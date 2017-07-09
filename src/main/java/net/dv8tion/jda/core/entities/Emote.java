@@ -75,6 +75,9 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
     /**
      * The {@link net.dv8tion.jda.core.JDA JDA} instance of this Emote
      *
+     * @throws net.dv8tion.jda.core.exceptions.DisposedException
+     *         If this Guild was disposed from JDA cache invalidation
+     *
      * @return The JDA instance of this Emote
      */
     JDA getJDA();
@@ -102,6 +105,8 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      *         if the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES MANAGE_EMOTES} is not given
      * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
      *         if the current account is not from {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType#CLIENT}
+     * @throws net.dv8tion.jda.core.exceptions.DisposedException
+     *         If this Emote was disposed from JDA cache invalidation
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         The RestAction to delete this Emote.
@@ -119,6 +124,8 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      *         if this is not used with {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType#CLIENT}
      * @throws IllegalStateException
      *         if this emote is fake
+     * @throws net.dv8tion.jda.core.exceptions.DisposedException
+     *         If this Emote was disposed from JDA cache invalidation
      *
      * @return The EmoteManager for this Emote
      */
@@ -136,6 +143,8 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      *         if this is not used with {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType#CLIENT}
      * @throws IllegalStateException
      *         if this emote is fake
+     * @throws net.dv8tion.jda.core.exceptions.DisposedException
+     *         If this Emote was disposed from JDA cache invalidation
      *
      * @return The EmoteManagerUpdatable for this Emote
      */

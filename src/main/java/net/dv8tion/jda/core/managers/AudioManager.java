@@ -67,6 +67,8 @@ public interface AudioManager
      *             <li>If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#VOICE_MOVE_OTHERS VOICE_MOVE_OTHERS}
      *                 and the {@link net.dv8tion.jda.core.entities.VoiceChannel#getUserLimit() user limit} has been exceeded!</li>
      *         </ul>
+     * @throws net.dv8tion.jda.core.exceptions.DisposedException
+     *         If this Manager was disposed from JDA cache invalidation
      */
     void openAudioConnection(VoiceChannel channel);
 
@@ -74,11 +76,17 @@ public interface AudioManager
      * Close down the current audio connection of this {@link net.dv8tion.jda.core.entities.Guild Guild}
      * and disconnects from the {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}.
      * <br>If this is called when JDA doesn't have an audio connection, nothing happens.
+     *
+     * @throws net.dv8tion.jda.core.exceptions.DisposedException
+     *         If this Manager was disposed from JDA cache invalidation
      */
     void closeAudioConnection();
 
     /**
      * Gets the {@link net.dv8tion.jda.core.JDA JDA} instance that this AudioManager is a part of.
+     *
+     * @throws net.dv8tion.jda.core.exceptions.DisposedException
+     *         If this Manager was disposed from JDA cache invalidation
      *
      * @return The corresponding JDA instance
      */
@@ -86,6 +94,9 @@ public interface AudioManager
 
     /**
      * Gets the {@link net.dv8tion.jda.core.entities.Guild Guild} instance that this AudioManager is used for.
+     *
+     * @throws net.dv8tion.jda.core.exceptions.DisposedException
+     *         If this Manager was disposed from JDA cache invalidation
      *
      * @return The Guild that this AudioManager manages.
      */
