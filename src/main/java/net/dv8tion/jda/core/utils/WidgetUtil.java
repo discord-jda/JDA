@@ -25,13 +25,16 @@ import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.entities.impl.UserImpl;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.requests.Requester;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -193,60 +196,57 @@ public class WidgetUtil
         Checks.notNull(guildId, "GuildId");
 
         HttpURLConnection connection;
-        int code;
+        OkHttpClient client = new OkHttpClient.Builder().build();
+        Request request = new Request.Builder()
+                    .url(String.format(WIDGET_URL, guildId))
+                    .method("GET", null)
+                    .header("user-agent", Requester.USER_AGENT)
+                    .header("accept-encoding", "gzip")
+                    .build();
 
-        try
+        try (Response response = client.newCall(request).execute())
         {
-            connection = (HttpURLConnection) new URL(String.format(WIDGET_URL, guildId)).openConnection();
-            connection.setRequestMethod("GET");
-            connection.addRequestProperty("user-agent", Requester.USER_AGENT);
-            connection.connect();
+            final int code = response.code();
+            InputStream data = Requester.getBody(response);
 
-            code = connection.getResponseCode();
+            switch (code)
+            {
+                case 200: // ok
+                {
+                    try (InputStream stream = data)
+                    {
+                        return new Widget(new JSONObject(new JSONTokener(stream)));
+                    }
+                    catch (IOException e)
+                    {
+                        throw new RuntimeException(e);
+                    }
+                }
+                case 400: // not valid snowflake
+                case 404: // guild not found
+                    return null;
+                case 403: // widget disabled
+                    return new Widget(guildId);
+                case 429: // ratelimited
+                {
+                    long retryAfter;
+                    try (InputStream stream = data)
+                    {
+                        retryAfter = new JSONObject(new JSONTokener(stream)).getLong("retry_after");
+                    }
+                    catch (Exception e)
+                    {
+                        retryAfter = 0;
+                    }
+                    throw new RateLimitedException(WIDGET_URL, retryAfter);
+                }
+                default:
+                    throw new RuntimeException("An unknown status was returned: " + code + " " + response.message());
+            }
         }
         catch (IOException e)
         {
             throw new RuntimeException(e);
-        }
-
-        switch (code)
-        {
-            case 200: // ok
-            {
-                try (InputStream stream = connection.getInputStream())
-                {
-                    return new Widget(new JSONObject(new JSONTokener(stream)));
-                }
-                catch (IOException e)
-                {
-                    throw new RuntimeException(e);
-                }
-            }
-            case 400:              // not valid snowflake
-            case 404: return null; // guild not found
-            case 403: return new Widget(guildId); // widget disabled
-            case 429: // ratelimited
-            {
-                long retryAfter;
-                try (InputStream stream = connection.getInputStream())
-                {
-                    retryAfter = new JSONObject(new JSONTokener(stream)).getLong("retry_after");
-                }
-                catch (Exception e)
-                {
-                    retryAfter = 0;
-                }
-                throw new RateLimitedException(WIDGET_URL, retryAfter);
-            }
-            default: 
-                try
-                {
-                    throw new RuntimeException("An unknown status was returned: " + connection.getResponseCode() + " " + connection.getResponseMessage());
-                }
-                catch (IOException e)
-                {
-                    throw new RuntimeException(e);
-                }
         }
     }
     

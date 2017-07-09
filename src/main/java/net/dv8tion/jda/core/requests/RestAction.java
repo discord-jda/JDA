@@ -21,7 +21,6 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
-import net.dv8tion.jda.core.requests.restaction.RestFuture;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import okhttp3.RequestBody;
@@ -165,9 +164,22 @@ public abstract class RestAction<T>
 
     private final Route.CompiledRoute route;
     private final RequestBody data;
-    private final CaseInsensitiveMap<String, String> headers;
 
     private Object rawData;
+
+    /**
+     * Creates a new RestAction instance
+     *
+     * @param  api
+     *         The current JDA instance
+     * @param  route
+     *         The {@link net.dv8tion.jda.core.requests.Route.CompiledRoute Route.CompiledRoute}
+     *         to be used for rate limit handling
+     */
+    public RestAction(JDA api, Route.CompiledRoute route)
+    {
+        this(api, route, (RequestBody) null);
+    }
 
     /**
      * Creates a new RestAction instance
@@ -187,21 +199,6 @@ public abstract class RestAction<T>
         this.api = (JDAImpl) api;
         this.route = route;
         this.data = data;
-        this.headers = null;
-    }
-
-    /**
-     * Creates a new RestAction instance
-     *
-     * @param  api
-     *         The current JDA instance
-     * @param  route
-     *         The {@link net.dv8tion.jda.core.requests.Route.CompiledRoute Route.CompiledRoute}
-     *         to be used for rate limit handling
-     */
-    public RestAction(JDA api, Route.CompiledRoute route)
-    {
-        this(api, route, (RequestBody) null);
     }
 
     /**
@@ -275,9 +272,9 @@ public abstract class RestAction<T>
     public void queue(Consumer<T> success, Consumer<Throwable> failure)
     {
         Route.CompiledRoute route = finalizeRoute();
+        Checks.notNull(route, "Route");
         RequestBody data = finalizeData();
         CaseInsensitiveMap<String, String> headers = finalizeHeaders();
-        Checks.notNull(route, "Route");
         if (success == null)
             success = DEFAULT_SUCCESS;
         if (failure == null)
@@ -286,9 +283,11 @@ public abstract class RestAction<T>
     }
 
     /**
-     * Submits a Request for execution and provides an {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture}
+     * Submits a Request for execution and provides a {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture}
      * representing its completion task.
      * <br>Cancelling the returned Future will result in the cancellation of the Request!
+     *
+     * <p>Note: The usage of {@link java.util.concurrent.CompletionStage#toCompletableFuture() CompletionStage.toCompletableFuture()} is not supported.
      *
      * @return Never-null {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the completion promise
      */
@@ -298,9 +297,11 @@ public abstract class RestAction<T>
     }
 
     /**
-     * Submits a Request for execution and provides an {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture}
+     * Submits a Request for execution and provides a {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture}
      * representing its completion task.
      * <br>Cancelling the returned Future will result in the cancellation of the Request!
+     *
+     * <p>Note: The usage of {@link java.util.concurrent.CompletionStage#toCompletableFuture() CompletionStage.toCompletableFuture()} is not supported.
      *
      * @param  shouldQueue
      *         Whether the Request should automatically handle rate limitations. (default true)
@@ -310,9 +311,9 @@ public abstract class RestAction<T>
     public RequestFuture<T> submit(boolean shouldQueue)
     {
         Route.CompiledRoute route = finalizeRoute();
+        Checks.notNull(route, "Route");
         RequestBody data = finalizeData();
         CaseInsensitiveMap<String, String> headers = finalizeHeaders();
-        Checks.notNull(route, "Route");
         return new RestFuture<>(this, shouldQueue, data, rawData, route, headers);
     }
 
@@ -662,7 +663,7 @@ public abstract class RestAction<T>
 
     protected RequestBody finalizeData() { return data; }
     protected Route.CompiledRoute finalizeRoute() { return route; }
-    protected CaseInsensitiveMap<String, String> finalizeHeaders() { return headers == null ? null : new CaseInsensitiveMap<>(headers); } // maps are mutable 
+    protected CaseInsensitiveMap<String, String> finalizeHeaders() { return null; }
 
     protected RequestBody getRequestBody(JSONObject object)
     {
@@ -723,7 +724,7 @@ public abstract class RestAction<T>
 
     /**
      * Specialized form of {@link net.dv8tion.jda.core.requests.RestAction} that is used to provide information that
-     * an error has occured before the request could be made.
+     * an error has occurred while attempting to execute a request.
      * <br>Basically: Allows you to provide an exception directly to the failure consumer.
      *
      * @param <T>

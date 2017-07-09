@@ -493,6 +493,8 @@ public class JDABuilder
      */
     public JDA buildAsync() throws LoginException, IllegalArgumentException, RateLimitedException
     {
+        OkHttpClient.Builder httpClientBuilder = this.httpClientBuilder == null ? new OkHttpClient.Builder() : this.httpClientBuilder;
+        WebSocketFactory wsFactory = this.wsFactory == null ? new WebSocketFactory() : this.wsFactory;
         JDAImpl jda = new JDAImpl(accountType, httpClientBuilder, wsFactory, autoReconnect, enableVoice, enableShutdownHook,
                 enableBulkDeleteSplitting, corePoolSize, maxReconnectDelay);
 

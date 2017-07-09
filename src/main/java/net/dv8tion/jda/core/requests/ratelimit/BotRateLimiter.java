@@ -18,14 +18,18 @@ package net.dv8tion.jda.core.requests.ratelimit;
 
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.ExceptionEvent;
-import net.dv8tion.jda.core.requests.*;
+import net.dv8tion.jda.core.requests.RateLimiter;
+import net.dv8tion.jda.core.requests.Request;
+import net.dv8tion.jda.core.requests.Requester;
+import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.Route.RateLimit;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import okhttp3.Headers;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+
 import java.io.IOException;
-import java.io.Reader;
+import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
@@ -82,14 +86,14 @@ public class BotRateLimiter extends RateLimiter
                 String retry = headers.get("Retry-After");
                 if (retry == null || retry.isEmpty())
                 {
-                    try (Reader reader = response.body().charStream())
+                    try (InputStream in = Requester.getBody(response))
                     {
-                        JSONObject limitObj = new JSONObject(new JSONTokener(reader));
+                        JSONObject limitObj = new JSONObject(new JSONTokener(in));
                         retry = limitObj.get("retry_after").toString();
                     }
-                    catch (IOException ignored)
+                    catch (IOException e)
                     {
-                        // will never happen as OkHttp discards the internally
+                        throw new RuntimeException(e);
                     }
                 }
                 long retryAfter = Long.parseLong(retry);

@@ -29,14 +29,14 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
 
     protected String reason = null;
 
-    public AuditableRestAction(JDA api, Route.CompiledRoute route, RequestBody data)
-    {
-        super(api, route, data);
-    }
-
     public AuditableRestAction(JDA api, Route.CompiledRoute route)
     {
         super(api, route);
+    }
+
+    public AuditableRestAction(JDA api, Route.CompiledRoute route, RequestBody data)
+    {
+        super(api, route, data);
     }
 
     public AuditableRestAction(JDA api, Route.CompiledRoute route, JSONObject data)
@@ -128,7 +128,7 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
 
     /**
      * Specialized form of {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction} that is used to provide information that
-     * an error has occured before the request could be made.
+     * an error has occurred while attempting to execute a request.
      * <br>Basically: Allows you to provide an exception directly to the failure consumer.
      *
      * @param <T>

@@ -23,22 +23,20 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.ratelimit.BotRateLimiter;
 import net.dv8tion.jda.core.requests.ratelimit.ClientRateLimiter;
 import net.dv8tion.jda.core.utils.SimpleLog;
-import okhttp3.Call;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.RequestBody;
+import okhttp3.*;
 import okhttp3.internal.http.HttpMethod;
 
-import java.util.Collections;
-import java.util.LinkedHashSet;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.GZIPInputStream;
 
 public class Requester
 {
     public static final SimpleLog LOG = SimpleLog.getLog("JDARequester");
-    public static final String DISCORD_API_PREFIX = "https://discordapp.com/api/v6/";
+    public static final String DISCORD_API_PREFIX = String.format("https://discordapp.com/api/v%d/", JDAInfo.DISCORD_REST_VERSION);
     public static String USER_AGENT = "JDA DiscordBot (" + JDAInfo.GITHUB + ", " + JDAInfo.VERSION + ")";
     public static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json; charset=utf-8");
     public static final RequestBody EMPTY_BODY = RequestBody.create(null, new byte[]{});
@@ -120,9 +118,9 @@ public class Requester
         if (body == null && HttpMethod.requiresRequestBody(method))
             body = EMPTY_BODY;
 
-        builder.method(method, body);
-
-        builder.header("user-agent", USER_AGENT);
+        builder.method(method, body)
+               .header("user-agent", USER_AGENT)
+               .header("accept-encoding", "gzip");
 
         //adding token to all requests to the discord api or cdn pages
         //we can check for startsWith(DISCORD_API_PREFIX) because the cdn endpoints don't need any kind of authorization
@@ -132,14 +130,18 @@ public class Requester
         // Apply custom headers like X-Audit-Log-Reason
         // If customHeaders is null this does nothing
         if (apiRequest.getHeaders() != null)
+        {
             for (Entry<String, String> header : apiRequest.getHeaders().entrySet())
                 builder.addHeader(header.getKey(), header.getValue());
+        }
 
         okhttp3.Request request = builder.build();
 
         Set<String> rays = new LinkedHashSet<>();
-
-        okhttp3.Response response = null;
+        okhttp3.Response[] responses = new okhttp3.Response[4];
+        // we have an array of all responses to later close them all at once
+        //the response below this comment is used as the first successful response from the server
+        okhttp3.Response firstSuccess = null;
         try
         {
             int attempt = 0;
@@ -149,52 +151,58 @@ public class Requester
                 if (apiRequest.isCanceled())
                     return null;
                 Call call = httpClient.newCall(request);
-                response = call.execute();
-                String cfRay = response.header("CF-RAY");
+                firstSuccess = call.execute();
+                responses[attempt] = firstSuccess;
+                String cfRay = firstSuccess.header("CF-RAY");
                 if (cfRay != null)
                     rays.add(cfRay);
 
-                if (response.code() < 500)
-                    break;
+                if (firstSuccess.code() < 500)
+                    break; // break loop, got a successful response!
 
                 attempt++;
                 LOG.debug(String.format("Requesting %s -> %s returned status %d... retrying (attempt %d)",
                         apiRequest.getRoute().getMethod().toString(),
-                        url, response.code(), attempt));
-
-                response.close();
+                        url, firstSuccess.code(), attempt));
                 try
                 {
                     Thread.sleep(50 * attempt);
                 }
                 catch (InterruptedException ignored) {}
             }
-            while (attempt < 3 && response.code() >= 500);
+            while (attempt < 3 && firstSuccess.code() >= 500);
 
-            if (response.code() >= 500)
+            if (firstSuccess.code() >= 500)
             {
                 //Epic failure from other end. Attempted 4 times.
                 return null;
             }
 
-            retryAfter = rateLimiter.handleResponse(route, response);
+            retryAfter = rateLimiter.handleResponse(route, firstSuccess);
             if (!rays.isEmpty())
                 LOG.debug("Received response with following cf-rays: " + rays);
 
             if (retryAfter == null)
-                apiRequest.handleResponse(new Response(response, -1, rays));
+                apiRequest.handleResponse(new Response(firstSuccess, -1, rays));
             else if (handleOnRatelimit)
-                apiRequest.handleResponse(new Response(response, retryAfter, rays));
-            else
-                response.close();
+                apiRequest.handleResponse(new Response(firstSuccess, retryAfter, rays));
 
             return retryAfter;
         }
         catch (Exception e)
         {
             LOG.log(e); //This originally only printed on DEBUG in 2.x
-            apiRequest.handleResponse(new Response(response, e, rays));
+            apiRequest.handleResponse(new Response(firstSuccess, e, rays));
             return null;
+        }
+        finally
+        {
+            for (okhttp3.Response r : responses)
+            {
+                if (r == null)
+                    break;
+                r.close();
+            }
         }
     }
 
@@ -216,5 +224,28 @@ public class Requester
     public void shutdownNow()
     {
         rateLimiter.forceShutdown();
+    }
+
+    /**
+     * Retrieves an {@link java.io.InputStream InputStream} for the provided {@link okhttp3.Response Response}.
+     * <br>When the header for {@code content-encoding} is set with {@code gzip} this will wrap the body
+     * in a {@link java.util.zip.GZIPInputStream GZIPInputStream} which decodes the data.
+     *
+     * <p>This is used to make usage of encoded responses more user-friendly in various parts of JDA.
+     *
+     * @param  response
+     *         The not-null Response object
+     *
+     * @throws IOException
+     *         If a GZIP format error has occurred or the compression method used is unsupported
+     *
+     * @return InputStream representing the body of this response
+     */
+    public static InputStream getBody(okhttp3.Response response) throws IOException
+    {
+        String encoding = response.header("content-encoding", "");
+        if (encoding.equals("gzip"))
+            return new GZIPInputStream(response.body().byteStream());
+        return response.body().byteStream();
     }
 }

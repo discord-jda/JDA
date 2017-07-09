@@ -20,8 +20,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import java.io.BufferedReader;
-import java.io.Closeable;
+import java.io.*;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -60,9 +59,13 @@ public class Response implements Closeable
             return;
         }
 
-        // I really hate org.json for not having a common superclass/interface for JSONObject and JSONArray...  
-        try (BufferedReader reader = new BufferedReader(response.body().charStream())) // this doesn't add overhead as org.json would do that itself otherwise
+        InputStream body = null;
+        BufferedReader reader = null;
+        try
         {
+            body = Requester.getBody(response);
+            // this doesn't add overhead as org.json would do that itself otherwise
+            reader = new BufferedReader(new InputStreamReader(body));
             char begin; // not sure if I really like this... but we somehow have to get if this is an object or an array
             int mark = 1;
             do
@@ -84,6 +87,14 @@ public class Response implements Closeable
         catch (final Exception e)
         {
             throw new RuntimeException("An error occurred while parsing a RestAction the response", e);
+        }
+        finally
+        {
+            try
+            {
+                body.close();
+                reader.close();
+            } catch (NullPointerException | IOException ignored) {}
         }
     }
 

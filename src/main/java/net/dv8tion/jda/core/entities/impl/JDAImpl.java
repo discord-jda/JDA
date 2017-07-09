@@ -100,11 +100,11 @@ public class JDAImpl implements JDA
             boolean useShutdownHook, boolean bulkDeleteSplittingEnabled, int corePoolSize, int maxReconnectDelay)
     {
         this.accountType = accountType;
-        this.httpClientBuilder = httpClientBuilder == null ? new OkHttpClient.Builder() : httpClientBuilder;
-        this.wsFactory = wsFactory == null ? new WebSocketFactory() : wsFactory;
+        this.httpClientBuilder = httpClientBuilder;
+        this.wsFactory = wsFactory;
         this.autoReconnect = autoReconnect;
         this.audioEnabled = audioEnabled;
-        this.shutdownHook = useShutdownHook ? new Thread(() -> JDAImpl.this.shutdown(true), "JDA Shutdown Hook") : null;
+        this.shutdownHook = useShutdownHook ? new Thread(JDAImpl.this::shutdown, "JDA Shutdown Hook") : null;
         this.bulkDeleteSplittingEnabled = bulkDeleteSplittingEnabled;
         this.pool = new ScheduledThreadPoolExecutor(corePoolSize, new JDAThreadFactory());
         this.maxReconnectDelay = maxReconnectDelay;

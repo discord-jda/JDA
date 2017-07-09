@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.requests.restaction;
+package net.dv8tion.jda.core.requests;
 
-import java.util.concurrent.CompletableFuture;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.RequestFuture;
-import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.requests.Route;
 import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
+
+import java.util.concurrent.CompletableFuture;
 
 public class RestFuture<T> extends CompletableFuture<T> implements RequestFuture<T>
 {
@@ -59,6 +56,6 @@ public class RestFuture<T> extends CompletableFuture<T> implements RequestFuture
     @Override
     public CompletableFuture<T> toCompletableFuture()
     {
-        throw new UnsupportedOperationException("");
+        throw new UnsupportedOperationException("Access to the CompletableFuture is not supported to secure JDA Requester integrity.");
     }
 }
