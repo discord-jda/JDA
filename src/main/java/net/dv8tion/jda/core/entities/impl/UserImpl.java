@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.entities.Disposable;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.handle.EventCache;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
@@ -202,6 +203,9 @@ public class UserImpl implements User, Disposable
     @Override
     public boolean dispose()
     {
+        JDAImpl api = apiRef.get();
+        if (api != null)
+            api.getEventCache().clear(id, EventCache.Type.USER);
         return disposed = privateChannel == null || privateChannel.dispose();
     }
 

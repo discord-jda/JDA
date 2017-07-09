@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.entities.Disposable;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.handle.EventCache;
 import net.dv8tion.jda.core.managers.RoleManager;
 import net.dv8tion.jda.core.managers.RoleManagerUpdatable;
 import net.dv8tion.jda.core.requests.Request;
@@ -309,6 +310,9 @@ public class RoleImpl implements Role, Disposable
     @Override
     public boolean dispose()
     {
+        JDAImpl api = guild.getJDA();
+        if (api != null)
+            api.getEventCache().clear(id, EventCache.Type.ROLE);
         synchronized (mngLock)
         {
             manager = null;

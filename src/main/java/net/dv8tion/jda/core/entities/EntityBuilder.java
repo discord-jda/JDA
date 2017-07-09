@@ -31,6 +31,7 @@ import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.handle.GuildMembersChunkHandler;
 import net.dv8tion.jda.core.handle.ReadyHandler;
 import net.dv8tion.jda.core.requests.WebSocketClient;
+import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.json.JSONArray;
@@ -73,9 +74,7 @@ public class EntityBuilder
             api.setSelfUser(selfUser);
         }
         if (!api.getUserMap().containsKey(selfUser.getIdLong()))
-        {
             api.getUserMap().put(selfUser.getIdLong(), selfUser);
-        }
         return (SelfUser) selfUser
                 .setVerified(self.getBoolean("verified"))
                 .setMfaEnabled(self.getBoolean("mfa_enabled"))
@@ -91,10 +90,7 @@ public class EntityBuilder
         final long id = guild.getLong("id");
         GuildImpl guildObj = api.getGuildMap().get(id);
         if (guildObj == null)
-        {
-            guildObj = new GuildImpl(api, id);
-            api.getGuildMap().put(id, guildObj);
-        }
+            api.getGuildMap().put(id, guildObj = new GuildImpl(api, id));
         if (guild.has("unavailable") && guild.getBoolean("unavailable"))
         {
             guildObj.setAvailable(false);
@@ -482,10 +478,7 @@ public class EntityBuilder
         User user = createUser(memberJson.getJSONObject("user"));
         MemberImpl member = (MemberImpl) guild.getMember(user);
         if (member == null)
-        {
-            member = new MemberImpl(guild, user);
-            guild.getMembersMap().put(user.getIdLong(), member);
-        }
+            guild.getMembersMap().put(user.getIdLong(), member = new MemberImpl(guild, user));
 
         ((GuildVoiceStateImpl) member.getVoiceState())
             .setGuildMuted(memberJson.getBoolean("mute"))
@@ -581,7 +574,7 @@ public class EntityBuilder
         {
             GuildImpl guild = api.getGuildMap().get(guildId);
             channel = new TextChannelImpl(id, guild);
-            guild.getTextChannelsMap().put(id, channel);
+            guild.getTextChannelMap().put(id, channel);
             api.getTextChannelMap().put(id, channel);
         }
 
@@ -644,7 +637,7 @@ public class EntityBuilder
         if (user == null)
         {   //The API can give us private channels connected to Users that we can no longer communicate with.
             // As such, make a fake user and fake private channel.
-            user = (UserImpl) createFakeUser(recipient, true);
+            user = createFakeUser(recipient, true);
         }
 
         final long channelId = privatechat.getLong("id");
@@ -666,12 +659,10 @@ public class EntityBuilder
     {
         final long id = roleJson.getLong("id");
         GuildImpl guild = api.getGuildMap().get(guildId);
-        RoleImpl role = guild.getRolesMap().get(id);
+        final TLongObjectMap<RoleImpl> rolesMap = guild.getRolesMap();
+        RoleImpl role = rolesMap.get(id);
         if (role == null)
-        {
-            role = new RoleImpl(id, guild);
-            guild.getRolesMap().put(id, role);
-        }
+            rolesMap.put(id, role = new RoleImpl(id, guild));
         return role.setName(roleJson.getString("name"))
                 .setRawPosition(roleJson.getInt("position"))
                 .setRawPermissions(roleJson.getLong("permissions"))
@@ -726,13 +717,13 @@ public class EntityBuilder
             if (user == null)
                 user = api.getFakeUserMap().get(authorId);
             if (user == null && fromWebhook)
-                user = (UserImpl) createFakeUser(author, false);
+                user = createFakeUser(author, false);
             if (user == null)
             {
                 if (exceptionOnMissingUser)
                     throw new IllegalArgumentException(MISSING_USER);   //Specifically for MESSAGE_CREATE
                 else
-                    user = (UserImpl) createFakeUser(author, false);  //Any message creation that isn't MESSAGE_CREATE
+                    user = createFakeUser(author, false);  //Any message creation that isn't MESSAGE_CREATE
             }
             message.setAuthor(user);
 
@@ -844,7 +835,7 @@ public class EntityBuilder
                     }
                 }
             }
-            message.setMentionedUsers(new LinkedList<User>(mentionedUsers.values()));
+            message.setMentionedUsers(new LinkedList<>(mentionedUsers.values()));
 
             TreeMap<Integer, Role> mentionedRoles = new TreeMap<>();
             if (!jsonObject.isNull("mention_roles"))
@@ -861,10 +852,10 @@ public class EntityBuilder
                     }
                 }
             }
-            message.setMentionedRoles(new LinkedList<Role>(mentionedRoles.values()));
+            message.setMentionedRoles(new LinkedList<>(mentionedRoles.values()));
 
             List<TextChannel> mentionedChannels = new LinkedList<>();
-            TLongObjectMap<TextChannelImpl> chanMap = ((GuildImpl) textChannel.getGuild()).getTextChannelsMap();
+            TLongObjectMap<TextChannelImpl> chanMap = ((GuildImpl) textChannel.getGuild()).getTextChannelMap();
             Matcher matcher = channelMentionPattern.matcher(content);
             while (matcher.find())
             {
@@ -976,7 +967,7 @@ public class EntityBuilder
 
     public PermissionOverride createPermissionOverride(JSONObject override, Channel chan)
     {
-        PermissionOverrideImpl permOverride = null;
+        PermissionOverrideImpl permOverride;
         final long id = override.getLong("id");
         long allow = override.getLong("allow");
         long deny = override.getLong("deny");
@@ -985,8 +976,9 @@ public class EntityBuilder
         {
             case "member":
                 Member member = chan.getGuild().getMemberById(id);
-                if (member == null)
-                    throw new IllegalArgumentException("Attempted to create a PermissionOverride for a non-existent user. Guild: " + chan.getGuild() + ", Channel: " + chan + ", JSON: " + override);
+                Checks.check(member != null,
+                    "Attempted to create a PermissionOverride for a non-existent user. Guild: %s, Channel: %s, JSON: %s",
+                    chan.getGuild().toString(), chan.toString(), override);
 
                 permOverride = (PermissionOverrideImpl) chan.getPermissionOverride(member);
                 if (permOverride == null)
@@ -997,8 +989,7 @@ public class EntityBuilder
                 break;
             case "role":
                 Role role = ((GuildImpl) chan.getGuild()).getRolesMap().get(id);
-                if (role == null)
-                    throw new IllegalArgumentException("Attempted to create a PermissionOverride for a non-existent role! JSON: " + override);
+                Checks.check(role != null, "Attempted to create a PermissionOverride for a non-existent role! JSON: %s", override);
 
                 permOverride = (PermissionOverrideImpl) chan.getPermissionOverride(role);
                 if (permOverride == null)
@@ -1232,7 +1223,7 @@ public class EntityBuilder
         final JSONObject options = entryJson.isNull("options") ? null : entryJson.getJSONObject("options");
         final String reason = entryJson.isNull("reason") ? null : entryJson.getString("reason");
 
-        final UserImpl user = (UserImpl) createFakeUser(userJson, false);
+        final UserImpl user = createFakeUser(userJson, false);
         final Set<AuditLogChange> changesList;
         final ActionType type = ActionType.from(typeKey);
 

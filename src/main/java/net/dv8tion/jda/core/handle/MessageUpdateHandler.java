@@ -88,12 +88,9 @@ public class MessageUpdateHandler extends SocketHandler
             {
                 case EntityBuilder.MISSING_CHANNEL:
                 {
-//                    final long channelId = content.getLong("channel_id");
-//                    api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
-//                    EventCache.LOG.debug("Received a message update for a channel that JDA does not currently have cached");
-                    // When we receive message events from a channel that is not in our cache we are expected to discard them
-                    //the only events that should get cached are MESSAGE_CREATE because in the case of private channels
-                    //we can expect a CHANNEL_CREATE to be fired eventually (see Eventually Consistent)
+                    final long channelId = content.getLong("channel_id");
+                    api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+                    EventCache.LOG.debug("Received a message update for a channel that JDA does not currently have cached");
                     return null;
                 }
                 case EntityBuilder.MISSING_USER:

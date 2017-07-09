@@ -61,6 +61,7 @@ public class MessageDeleteHandler extends SocketHandler
 //            api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
 //            EventCache.LOG.debug("Got message delete for a channel/group that is not yet cached. ChannelId: " + channelId);
             // Don't cache message events for channels unless they are MESSAGE_CREATE
+            //see: https://github.com/hammerandchisel/discord-api-docs/issues/184#issuecomment-312962153
             return null;
         }
 

@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.handle.EventCache;
 import net.dv8tion.jda.core.managers.ChannelManager;
 import net.dv8tion.jda.core.managers.ChannelManagerUpdatable;
 import net.dv8tion.jda.core.requests.Request;
@@ -184,7 +185,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         if (overrides.containsKey(member.getUser().getIdLong()))
             throw new IllegalStateException("Provided member already has a PermissionOverride in this channel!");
 
-        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(getId(), member.getUser().getId());
+        Route.CompiledRoute route = Route.Channels.PUT_PERM_OVERRIDE.compile(getId(), member.getUser().getId());
         return new PermissionOverrideAction(getJDA(), route, this, member);
     }
 
@@ -199,7 +200,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         if (overrides.containsKey(role.getIdLong()))
             throw new IllegalStateException("Provided role already has a PermissionOverride in this channel!");
 
-        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(getId(), role.getId());
+        Route.CompiledRoute route = Route.Channels.PUT_PERM_OVERRIDE.compile(getId(), role.getId());
         return new PermissionOverrideAction(getJDA(), route, this, role);
     }
 
@@ -278,6 +279,9 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     @Override
     public boolean dispose()
     {
+        JDAImpl api = guild.getJDA();
+        if (api != null)
+            api.getEventCache().clear(id, EventCache.Type.CHANNEL);
         synchronized (mngLock)
         {
             manager = null;

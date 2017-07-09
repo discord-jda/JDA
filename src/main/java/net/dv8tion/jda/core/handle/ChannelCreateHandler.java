@@ -80,6 +80,8 @@ public class ChannelCreateHandler extends SocketHandler
             }
             case GROUP:
             {
+                if (api.getPrivateChannelById(content.getLong("id")) != null)
+                    return null;
                 api.getEventManager().handle(
                     new GroupJoinEvent(
                         api, responseNumber,

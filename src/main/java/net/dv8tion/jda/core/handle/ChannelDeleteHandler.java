@@ -63,7 +63,7 @@ public class ChannelDeleteHandler extends SocketHandler
                     return null;
                 }
 
-                guild.getTextChannelsMap().remove(channel.getIdLong());
+                guild.getTextChannelMap().remove(channel.getIdLong());
                 api.getEventManager().handle(
                     new TextChannelDeleteEvent(
                         api, responseNumber,
@@ -160,7 +160,6 @@ public class ChannelDeleteHandler extends SocketHandler
             default:
                 throw new IllegalArgumentException("CHANNEL_DELETE provided an unknown channel type. JSON: " + content);
         }
-        api.getEventCache().clear(channelId, EventCache.Type.CHANNEL);
         return null;
     }
 }

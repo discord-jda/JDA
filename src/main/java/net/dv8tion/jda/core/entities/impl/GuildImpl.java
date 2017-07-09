@@ -805,7 +805,7 @@ public class GuildImpl implements Guild, Disposable
 
     // -- Map getters --
 
-    public TLongObjectMap<TextChannelImpl> getTextChannelsMap()
+    public TLongObjectMap<TextChannelImpl> getTextChannelMap()
     {
         return textChannels;
     }

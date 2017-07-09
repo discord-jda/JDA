@@ -82,12 +82,11 @@ public class EventCache
         TLongObjectMap<List<Runnable>> cache = eventCache.get(type);
         if (cache == null)
             return;
-        List<Runnable> events = cache.get(triggerId);
+        List<Runnable> events = cache.remove(triggerId);
         if (events == null)
             return;
         LOG.debug("Clearing cache for type " + type + " with ID " + triggerId + " (Size: " + events.size() + ')');
         events.clear();
-        cache.remove(triggerId);
     }
 
     public void clear()
