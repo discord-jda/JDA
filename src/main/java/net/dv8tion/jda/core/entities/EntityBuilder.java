@@ -340,7 +340,7 @@ public class EntityBuilder
 
             MemberImpl member = guild.getMembersMap().get(userId);
             if (member == null)
-                WebSocketClient.LOG.fatal("Received a Presence for a non-existent Member when dealing with GuildSync!");
+                WebSocketClient.LOG.debug("Received a Presence for a non-existent Member when dealing with GuildSync!");
             else
                 this.createPresence(member, presenceJson);
         }
