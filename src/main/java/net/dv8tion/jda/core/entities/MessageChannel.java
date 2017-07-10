@@ -27,7 +27,6 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.pagination.MessagePaginationAction;
 import net.dv8tion.jda.core.utils.Checks;
-import net.dv8tion.jda.core.utils.IOUtil;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -36,6 +35,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -510,7 +510,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.check(file.length() <= Message.MAX_FILE_SIZE,// TODO: deal with Discord Nitro allowing 50MB files.
             "File is to big! Max file-size is 8MB");
 
-        return sendFile(IOUtil.readFully(file), fileName, message);
+        return sendFile(new FileInputStream(file), fileName, message);
     }
 
     /**
@@ -555,18 +555,8 @@ public interface MessageChannel extends ISnowflake, Formattable
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
         MultipartBody.Builder builder = new okhttp3.MultipartBody.Builder()
                 .setType(MultipartBody.FORM);
-        try
-        {
-            byte[] bytes = IOUtil.readFully(data);
-            Checks.check(bytes.length <= Message.MAX_FILE_SIZE,
-                    "Provided data is too large! Max file-size is 8MB (%d)", Message.MAX_FILE_SIZE);
-            builder.addFormDataPart("file", fileName,
-                    RequestBody.create(MediaType.parse("application/octet-stream"), bytes));
-        }
-        catch (IOException e)
-        {
-            return new RestAction.FailedRestAction<>(e);
-        }
+
+        builder.addFormDataPart("file", fileName, MiscUtil.createRequestBody(MediaType.parse("application/octet-stream"), data));
 
         if (message != null)
         {

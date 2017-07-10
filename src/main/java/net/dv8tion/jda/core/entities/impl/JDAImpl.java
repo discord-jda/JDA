@@ -104,7 +104,7 @@ public class JDAImpl implements JDA
         this.wsFactory = wsFactory;
         this.autoReconnect = autoReconnect;
         this.audioEnabled = audioEnabled;
-        this.shutdownHook = useShutdownHook ? new Thread(JDAImpl.this::shutdown, "JDA Shutdown Hook") : null;
+        this.shutdownHook = useShutdownHook ? new Thread(this::shutdown, "JDA Shutdown Hook") : null;
         this.bulkDeleteSplittingEnabled = bulkDeleteSplittingEnabled;
         this.pool = new ScheduledThreadPoolExecutor(corePoolSize, new JDAThreadFactory());
         this.maxReconnectDelay = maxReconnectDelay;

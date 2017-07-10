@@ -19,9 +19,15 @@ import gnu.trove.TCollections;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.core.entities.ISnowflake;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import okio.BufferedSink;
+import okio.Okio;
+import okio.Source;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.time.OffsetDateTime;
@@ -171,5 +177,34 @@ public class MiscUtil
         {
             throw new AssertionError(e);
         }
+    }
+
+    /**
+     *  Returns a new request body that transmits the provided {@link java.io.InputStream InputStream}.
+     *  
+     *  @param contentType
+     *         The {@link okhttp3.MediaType MediaType} of the data
+     *  @param stream
+     *         The {@link java.io.InputStream InputStream} to be transmitted
+     */
+    public static RequestBody createRequestBody(final MediaType contentType, final InputStream stream)
+    {
+        return new RequestBody()
+        {
+            @Override
+            public MediaType contentType()
+            {
+                return contentType;
+            }
+
+            @Override
+            public void writeTo(BufferedSink sink) throws IOException
+            {
+                try (Source source = Okio.source(stream))
+                {
+                    sink.writeAll(source);
+                }
+            }
+        };
     }
 }
