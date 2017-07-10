@@ -69,7 +69,7 @@ public class GuildImpl implements Guild, Disposable
     private String name;
     private String iconId;
     private String splashId;
-    private Region region;
+    private String region;
     private TextChannel publicChannel;
     private VoiceChannel afkChannel;
     private RoleImpl publicRole;
@@ -178,6 +178,12 @@ public class GuildImpl implements Guild, Disposable
 
     @Override
     public Region getRegion()
+    {
+        return Region.fromKey(region);
+    }
+
+    @Override
+    public String getRegionRaw()
     {
         return region;
     }
@@ -749,7 +755,7 @@ public class GuildImpl implements Guild, Disposable
         return this;
     }
 
-    public GuildImpl setRegion(Region region)
+    public GuildImpl setRegion(String region)
     {
         this.region = region;
         return this;

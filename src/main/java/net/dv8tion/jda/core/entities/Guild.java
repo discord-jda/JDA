@@ -133,13 +133,30 @@ public interface Guild extends ISnowflake
      * The {@link net.dv8tion.jda.core.Region Region} that this {@link net.dv8tion.jda.core.entities.Guild Guild} is
      * using for audio connections.
      * <br>If the {@link net.dv8tion.jda.core.Region Region} is not recognized, returns {@link net.dv8tion.jda.core.Region#UNKNOWN UNKNOWN}.
-     * <p>
-     * This value can be modified using {@link net.dv8tion.jda.core.managers.GuildManager#setRegion(net.dv8tion.jda.core.Region)}
+     *
+     * <p>This value can be modified using {@link net.dv8tion.jda.core.managers.GuildManager#setRegion(net.dv8tion.jda.core.Region)}
      * or {@link net.dv8tion.jda.core.managers.GuildManagerUpdatable#getRegionField()}.
      *
+     * <p><b>Note</b>: If the returned region is {@link net.dv8tion.jda.core.Region#UNKNOWN UNKNOWN} you may use {@link #getRegionRaw()} instead.
+     *
      * @return The the audio Region this Guild is using for audio connections. Can return Region.UNKNOWN.
+     *
+     * @see    #getRegionRaw()
      */
     Region getRegion();
+
+    /**
+     * The raw voice region name used in {@link Region#fromKey(String) Region.fromKey(String)} to
+     * find a predefined enum constant to represent the selected Voice Region.
+     *
+     * <p>This is an alternative for regions which are not yet implemented by this library.
+     * <br>Useful for debugging and reporting unknown regions.
+     *
+     * @return Raw string representing the selected voice region
+     *
+     * @see    #getRegion()
+     */
+    String getRegionRaw();
 
     /**
      * Used to determine if the provided {@link net.dv8tion.jda.core.entities.User User} is a member of this Guild.

@@ -22,15 +22,20 @@ import net.dv8tion.jda.core.entities.Guild;
 
 public class GuildUpdateRegionEvent extends GenericGuildUpdateEvent
 {
-    private final Region oldRegion;
+    private final String oldRegion;
 
-    public GuildUpdateRegionEvent(JDA api, long responseNumber, Guild guild, Region oldRegion)
+    public GuildUpdateRegionEvent(JDA api, long responseNumber, Guild guild, String oldRegion)
     {
         super(api, responseNumber, guild);
         this.oldRegion = oldRegion;
     }
 
     public Region getOldRegion()
+    {
+        return Region.fromKey(oldRegion);
+    }
+
+    public String getOldRegionRaw()
     {
         return oldRegion;
     }
