@@ -1130,15 +1130,11 @@ public class EntityBuilder
     {
         final String code = object.getString("code");
 
-        final JSONObject channelObject = object.getJSONObject("channel");
-        final String channelTypeName = channelObject.getString("type");
         final User inviter = object.has("inviter") ? this.createFakeUser(object.getJSONObject("inviter"), false) : null;
 
-        final ChannelType channelType = channelTypeName.equals("text")
-            ? ChannelType.TEXT
-            : channelTypeName.equals("voice")
-                ? ChannelType.VOICE
-                : ChannelType.UNKNOWN;
+        final JSONObject channelObject = object.getJSONObject("channel");
+
+        final ChannelType channelType = ChannelType.fromId(channelObject.getInt("type"));
         final long channelId = channelObject.getLong("id");
         final String channelName = channelObject.getString("name");
 
