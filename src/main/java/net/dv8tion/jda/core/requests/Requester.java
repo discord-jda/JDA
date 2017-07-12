@@ -184,9 +184,12 @@ public class Requester
 
     private BaseRequest createRequest(Route.CompiledRoute route, String body)
     {
-        String url = DISCORD_API_PREFIX + route.getCompiledRoute();
-        BaseRequest request = null;
-        switch (route.getMethod())
+    	String url = route.getCompiledRoute();
+    	if(!url.startsWith("https://")){                      // Some Group DMs Operations don't work properly using the default API prefix (I needed to include 'v6'
+    		url = DISCORD_API_PREFIX.concat(url);             // in the URL for it to work as expected some reason), so I did this because I'm guessing adding 'v6' to
+    	}                                                     // the URL prefix permanently is a bad idea. Basically this keeps the default URL prefix off the compiled
+        BaseRequest request = null;                           // route URL if the route starts with 'https://', so non-default-prefix routes can be implemented easily
+        switch (route.getMethod())                            //                      yee
         {
             case GET:
                 request = addHeaders(Unirest.get(url));

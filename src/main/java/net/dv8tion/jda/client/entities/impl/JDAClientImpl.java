@@ -35,8 +35,10 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.http.util.Args;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -343,6 +345,37 @@ public class JDAClientImpl implements JDAClient
                 if (response.isOk())
                     request.onSuccess(api.getEntityBuilder().createAuthorizedApplication(response.getObject()));
                 else
+                    request.onFailure(response);
+            }
+        };
+    }
+
+    @Override
+    public RestAction<Group> createGroupDM(Collection<User> users)
+    {
+    	Args.notNull(users, "user collection");
+    	
+        if(users.size() < 2)
+            throw new IllegalArgumentException("Users array must contain at least two users!");
+        if(users.size() > 9)
+            throw new IllegalArgumentException("Group DM cannot contain more than 10 members! (You are the tenth member, max array size is 9)");
+        
+        JSONArray array = new JSONArray();
+        
+        for(User user : users)
+        {
+            array.put(user.getId());
+        }
+        
+        Route.CompiledRoute route = Route.Self.CREATE_PRIVATE_CHANNEL_V6.compile();
+        return new RestAction<Group>(api, route, new JSONObject().put("recipients", array))
+        {
+            @Override
+            protected void handleResponse(Response response, Request<Group> request)
+            {
+                if (response.isOk()){
+                    request.onSuccess(api.getEntityBuilder().createGroup(response.getObject()));
+                }else
                     request.onFailure(response);
             }
         };

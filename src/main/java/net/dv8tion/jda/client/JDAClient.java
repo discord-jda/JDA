@@ -25,6 +25,7 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.requests.RestAction;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface JDAClient
@@ -168,5 +169,20 @@ public interface JDAClient
      *         {@link net.dv8tion.jda.client.entities.AuthorizedApplication AuthorizedApplication}
      *         <br>The Application behind the provided id.
      */
-    RestAction<AuthorizedApplication> getAuthorizedApplicationById(String id);    
+    RestAction<AuthorizedApplication> getAuthorizedApplicationById(String id);   
+    
+    
+    
+    /**
+     * Opens a new Group DM between this account and the users specified by the users param
+     *
+     * @param  users The users to open the Group DM with
+     * 
+     * @throws IllegalArgumentException If the user collection contains less than 2 user objects or more than 9 user objects
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: 
+     *         {@link net.dv8tion.jda.client.entities.Group Group}
+     *         <br>The new Group DM
+     */
+    RestAction<Group> createGroupDM(Collection<User> users);
 }
