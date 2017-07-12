@@ -123,19 +123,19 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             if (firstInit)
             {
                 firstInit = false;
-                JDAImpl.LOG.info("Finished Loading!");
-                if (api.getGuilds().size() >= 2500) //Show large warning when connected to >2500 guilds
+                if (api.getGuilds().size() >= 2000) //Show large warning when connected to >=2000 guilds
                 {
                     JDAImpl.LOG.warn(" __      __ _    ___  _  _  ___  _  _   ___  _ ");
                     JDAImpl.LOG.warn(" \\ \\    / //_\\  | _ \\| \\| ||_ _|| \\| | / __|| |");
                     JDAImpl.LOG.warn("  \\ \\/\\/ // _ \\ |   /| .` | | | | .` || (_ ||_|");
                     JDAImpl.LOG.warn("   \\_/\\_//_/ \\_\\|_|_\\|_|\\_||___||_|\\_| \\___|(_)");
-                    JDAImpl.LOG.warn("You're running a session with over 2500 connected");
+                    JDAImpl.LOG.warn("You're running a session with over 2000 connected");
                     JDAImpl.LOG.warn("guilds. You should shard the connection in order");
                     JDAImpl.LOG.warn("to split the load or things like resuming");
                     JDAImpl.LOG.warn("connection might not work as expected.");
                     JDAImpl.LOG.warn("For more info see https://git.io/vrFWP");
                 }
+                JDAImpl.LOG.info("Finished Loading!");
                 api.getEventManager().handle(new ReadyEvent(api, api.getResponseTotal()));
             }
             else
@@ -320,16 +320,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         try
         {
-            if (gatewayUrl == null)
-            {
-                gatewayUrl = getGateway();
-                if (gatewayUrl == null)
-                {
-                    throw new RuntimeException("Could not fetch WS-Gateway!");
-                }
-            }
             socket = api.getWebSocketFactory()
-                    .createSocket(gatewayUrl)
+                    .createSocket(api.getGateway())
                     .addHeader("Accept-Encoding", "gzip")
                     .addListener(this);
             socket.connect();

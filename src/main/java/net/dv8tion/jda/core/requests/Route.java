@@ -32,6 +32,7 @@ public class Route
     {
         public static final Route GET_VOICE_REGIONS = new Route(GET,  "voice/regions");
         public static final Route GATEWAY =           new Route(GET,  "gateway");
+        public static final Route GATEWAY_BOT =       new Route(GET,  "gateway/bot");
         public static final Route TRACK =             new Route(POST, "track");
     }
 

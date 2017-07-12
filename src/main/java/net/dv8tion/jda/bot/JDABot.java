@@ -17,6 +17,7 @@
 package net.dv8tion.jda.bot;
 
 import net.dv8tion.jda.bot.entities.ApplicationInfo;
+import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.requests.RestAction;
@@ -71,4 +72,6 @@ public interface JDABot
      * @return A valid OAuth2 invite url for the currently logged in Bot-Account
      */
     String getInviteUrl(Collection<Permission> permissions);
+    
+    ShardManager getShardManager(); // TODO: docs getShardManager() 
 }
