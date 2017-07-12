@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.JDA.Status;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
@@ -114,7 +115,7 @@ public class JDABuilder
      * <p>Default: <b>0 - Infinite-Timeout (maybe?)</b>
      *
      * @deprecated
-     *         Use the more powerfull {@link #setWebsocketFactory(WebSocketFactory)} instead
+     *         Use the more powerful {@link #setWebsocketFactory(WebSocketFactory)} instead
      *
      * @param  websocketTimeout
      *         Non-negative int representing Websocket timeout in milliseconds.
@@ -448,23 +449,29 @@ public class JDABuilder
      * <br>The shardId that receives all stuff related to given bot is calculated as follows: shardId == (guildId {@literal >>} 22) % shardTotal;
      * <br><b>PMs are only sent to shard 0.</b>
      *
-     * <p>Please note, that a shard will not even know about guilds not assigned to.
+     * <p>Please note, that a shard will not even know about guilds which are not assigned to it.
      *
      * @param  shardId
      *         The id of this shard (starting at 0).
      * @param  shardTotal
      *         The number of overall shards.
      *
-     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
+     *         If this is used on a JDABuilder for {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided shard configuration is invalid
+     *         ({@code 0 <= shardId < shardTotal} with {@code shardTotal > 0})
+     *
+     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
      *
      * @see    net.dv8tion.jda.core.JDA#getShardInfo() JDA.getShardInfo()
      */
     public JDABuilder useSharding(int shardId, int shardTotal)
     {
-        if (shardId < 0 || shardTotal < 2 || shardId >= shardTotal)
-        {
-            throw new RuntimeException("This configuration of shardId and shardTotal is not allowed! 0 <= shardId < shardTotal with shardTotal > 1");
-        }
+        if (accountType != AccountType.BOT)
+            throw new AccountTypeException(AccountType.BOT);
+        if (shardId < 0 || shardTotal < 1 || shardId >= shardTotal)
+            throw new RuntimeException("This configuration of shardId and shardTotal is not allowed! 0 <= shardId < shardTotal with shardTotal > 0");
         shardInfo = new JDA.ShardInfo(shardId, shardTotal);
         return this;
     }

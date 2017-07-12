@@ -733,11 +733,11 @@ public interface JDA
     boolean isBulkDeleteSplittingEnabled();
 
     /**
-     * Shuts down this {@link JDA} instance, closing all its connections.
+     * Shuts down this JDA instance, closing all its connections.
      * After this command is issued the JDA Instance can not be used anymore.
-     * Already enqueued {@link net.dv8tion.jda.core.requests.RestAction RestActions} are still be executed.
+     * Already enqueued {@link net.dv8tion.jda.core.requests.RestAction RestActions} are still going to be executed.
      *
-     * If you want this instance to shutdown without executing  
+     * <p>If you want this instance to shutdown without executing, use {@link #shutdownNow() shutdownNow()}
      *
      * @see #shutdownNow()
      */
@@ -760,7 +760,7 @@ public interface JDA
     }
 
     /**
-     * Shuts down this {@link JDA} instance instantly.
+     * Shuts down this JDA instance instantly.
      * This will also cancel all queued {@link net.dv8tion.jda.core.requests.RestAction RestActions}.
      *
      * @see #shutdown()

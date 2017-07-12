@@ -19,7 +19,6 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.AbstractChannelImpl;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
-import net.dv8tion.jda.core.entities.impl.PermissionOverrideImpl;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
@@ -208,30 +207,6 @@ public class PermissionUtil
         return canInteract(issuer, emote, channel, true);
     }
 
-    @Deprecated
-    public static PermissionOverride getFullPermOverride()
-    {
-        PermissionOverrideImpl override = new PermissionOverrideImpl(null, 0, null);
-        long allow = 0, deny = 0;
-        for (Permission permission : Permission.values())
-        {
-            if(permission != Permission.UNKNOWN)
-            {
-                allow = allow | (1 << permission.getOffset());
-            }
-        }
-        return override.setAllow(allow).setDeny(deny);
-    }
-
-    /**
-     * @deprecated Use {@link #checkPermission(net.dv8tion.jda.core.entities.Member, net.dv8tion.jda.core.Permission...)} instead
-     */
-    @Deprecated
-    public static boolean checkPermission(Guild guild, Member member, Permission... permissions)
-    {
-        return checkPermission(member, permissions);
-    }
-
     /**
      * Checks to see if the {@link net.dv8tion.jda.core.entities.Member Member} has the specified {@link net.dv8tion.jda.core.Permission Permissions}
      * in the specified {@link net.dv8tion.jda.core.entities.Guild Guild}. This method properly deals with Owner status.
@@ -303,15 +278,6 @@ public class PermissionUtil
         long effectivePerms = getEffectivePermission(channel, member);
         return isApplied(effectivePerms, Permission.ADMINISTRATOR.getRawValue())
                 || isApplied(effectivePerms, Permission.getRaw(permissions));
-    }
-
-    /**
-     * @deprecated Use {@link #getEffectivePermission(net.dv8tion.jda.core.entities.Member)} instead
-     */
-    @Deprecated
-    public static long getEffectivePermission(Guild guild, Member member)
-    {
-        return getEffectivePermission(member);
     }
 
     /**

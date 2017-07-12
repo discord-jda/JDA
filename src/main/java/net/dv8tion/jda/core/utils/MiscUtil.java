@@ -180,12 +180,14 @@ public class MiscUtil
     }
 
     /**
-     *  Returns a new request body that transmits the provided {@link java.io.InputStream InputStream}.
+     * Creates a new request body that transmits the provided {@link java.io.InputStream InputStream}.
      *  
-     *  @param contentType
+     * @param  contentType
      *         The {@link okhttp3.MediaType MediaType} of the data
-     *  @param stream
+     * @param  stream
      *         The {@link java.io.InputStream InputStream} to be transmitted
+     *
+     * @return RequestBody capable of transmitting the provided InputStream of data
      */
     public static RequestBody createRequestBody(final MediaType contentType, final InputStream stream)
     {
