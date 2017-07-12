@@ -348,7 +348,7 @@ public class MessageReaction
                     ? emote.getName() + ":" + emote.getId()
                     : MiscUtil.encodeUTF8(emote.getName());
         Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(channel.getId(), getMessageId(), code, user.getId());
-        return new RestAction<Void>(getJDA(), route, null)
+        return new RestAction<Void>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)

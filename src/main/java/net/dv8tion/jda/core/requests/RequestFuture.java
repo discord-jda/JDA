@@ -13,14 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package net.dv8tion.jda.core.requests;
 
-/**
- * Extensions of {@link net.dv8tion.jda.core.requests.RestAction RestAction} that allow
- * to access paginated discord endpoints like {@link net.dv8tion.jda.core.requests.Route.Messages#GET_REACTION_USERS Route.Messages.GET_REACTION_USERS}
- * <br>The {@link net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction PaginationAction} is designed to work
- * as an {@link java.lang.Iterable Iterable} of the specified endpoint. Each implementation specifies the endpoints it will
- * use in the class-level javadoc
- *
- * @since 3.1
- */
-package net.dv8tion.jda.core.requests.restaction.pagination;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.Future;
+
+public interface RequestFuture<T> extends Future<T>, CompletionStage<T>
+{
+    /**
+     * <b>This method is unsupported by the current implementation!</b>
+     *
+     * <p>{@inheritDoc}
+     */
+    @Override
+    public CompletableFuture<T> toCompletableFuture();
+}

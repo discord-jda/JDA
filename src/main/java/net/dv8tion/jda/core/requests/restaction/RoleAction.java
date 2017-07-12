@@ -24,7 +24,8 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
+import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import java.awt.Color;
@@ -59,7 +60,7 @@ public class RoleAction extends AuditableRestAction<Role>
      */
     public RoleAction(Route.CompiledRoute route, Guild guild)
     {
-        super(guild.getJDA(), route, null);
+        super(guild.getJDA(), route);
         this.guild = guild;
     }
 
@@ -156,7 +157,7 @@ public class RoleAction extends AuditableRestAction<Role>
         {
             for (Permission p : permissions)
             {
-                Args.notNull(p, "Permissions");
+                Checks.notNull(p, "Permissions");
                 checkPermission(p);
             }
         }
@@ -186,7 +187,7 @@ public class RoleAction extends AuditableRestAction<Role>
         {
             for (Permission p : permissions)
             {
-                Args.notNull(p, "Permissions");
+                Checks.notNull(p, "Permissions");
                 checkPermission(p);
             }
         }
@@ -217,8 +218,8 @@ public class RoleAction extends AuditableRestAction<Role>
      */
     public RoleAction setPermissions(long permissions)
     {
-        Args.notNegative(permissions, "Raw Permissions");
-        Args.check(permissions <= Permission.ALL_PERMISSIONS, "Provided permissions may not be greater than a full permission set!");
+        Checks.notNegative(permissions, "Raw Permissions");
+        Checks.check(permissions <= Permission.ALL_PERMISSIONS, "Provided permissions may not be greater than a full permission set!");
         for (Permission p : Permission.getPermissions(permissions))
             checkPermission(p);
         this.permissions = permissions;
@@ -226,7 +227,7 @@ public class RoleAction extends AuditableRestAction<Role>
     }
 
     @Override
-    protected void finalizeData()
+    protected RequestBody finalizeData()
     {
         JSONObject object = new JSONObject();
         if (name != null)
@@ -240,8 +241,7 @@ public class RoleAction extends AuditableRestAction<Role>
         if (mentionable != null)
             object.put("mentionable", mentionable.booleanValue());
 
-        super.data = object;
-        super.finalizeData();
+        return getRequestBody(object);
     }
 
     @Override

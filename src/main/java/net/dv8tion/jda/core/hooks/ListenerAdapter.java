@@ -55,6 +55,7 @@ import net.dv8tion.jda.core.events.guild.*;
 import net.dv8tion.jda.core.events.guild.member.*;
 import net.dv8tion.jda.core.events.guild.update.*;
 import net.dv8tion.jda.core.events.guild.voice.*;
+import net.dv8tion.jda.core.events.http.HttpRequestEvent;
 import net.dv8tion.jda.core.events.message.*;
 import net.dv8tion.jda.core.events.message.guild.*;
 import net.dv8tion.jda.core.events.message.guild.react.GenericGuildMessageReactionEvent;
@@ -239,6 +240,9 @@ public abstract class ListenerAdapter implements EventListener
     //Emote Update Events
     public void onEmoteUpdateName(EmoteUpdateNameEvent event) {}
     public void onEmoteUpdateRoles(EmoteUpdateRolesEvent event) {}
+
+    // Debug Events
+    public void onHttpRequest(HttpRequestEvent event) {}
 
     //Generic Events
     public void onGenericMessage(GenericMessageEvent event) {}
@@ -560,6 +564,10 @@ public abstract class ListenerAdapter implements EventListener
             onEmoteUpdateName((EmoteUpdateNameEvent) event);
         else if (event instanceof EmoteUpdateRolesEvent)
             onEmoteUpdateRoles((EmoteUpdateRolesEvent) event);
+
+        // Debug Events
+        else if (event instanceof HttpRequestEvent)
+            onHttpRequest((HttpRequestEvent) event);
 
         //Generic Events
         //Start a new if statement so that these are no overridden by the above events.

@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
-import com.mashape.unirest.http.Unirest;
 import com.neovisionaries.ws.client.WebSocketFactory;
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.bot.JDABot;
@@ -40,26 +39,23 @@ import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.*;
+import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.SimpleLog;
-import org.apache.http.HttpHost;
-import org.apache.http.util.Args;
+import okhttp3.OkHttpClient;
+import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
 import javax.security.auth.login.LoginException;
-import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 public class JDAImpl implements JDA
 {
     public static final SimpleLog LOG = SimpleLog.getLog("JDA");
 
-    public final ScheduledExecutorService pool;
+    public final ScheduledThreadPoolExecutor pool;
 
     protected final TLongObjectMap<User> users = MiscUtil.newLongMap();
     protected final TLongObjectMap<Guild> guilds = MiscUtil.newLongMap();
@@ -72,7 +68,7 @@ public class JDAImpl implements JDA
 
     protected final TLongObjectMap<AudioManagerImpl> audioManagers = MiscUtil.newLongMap();
 
-    protected final HttpHost proxy;
+    protected final OkHttpClient.Builder httpClientBuilder;
     protected final WebSocketFactory wsFactory;
     protected final AccountType accountType;
     protected final PresenceImpl presence;
@@ -100,21 +96,21 @@ public class JDAImpl implements JDA
     protected long responseTotal;
     protected long ping = -1;
 
-    public JDAImpl(AccountType accountType, HttpHost proxy, WebSocketFactory wsFactory,
-                   boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled,
-                   int corePoolSize, int maxReconnectDelay)
+    public JDAImpl(AccountType accountType, OkHttpClient.Builder httpClientBuilder, WebSocketFactory wsFactory, boolean autoReconnect, boolean audioEnabled,
+            boolean useShutdownHook, boolean bulkDeleteSplittingEnabled, int corePoolSize, int maxReconnectDelay)
     {
-        this.presence = new PresenceImpl(this);
         this.accountType = accountType;
-        this.requester = new Requester(this);
-        this.proxy = proxy;
+        this.httpClientBuilder = httpClientBuilder;
         this.wsFactory = wsFactory;
         this.autoReconnect = autoReconnect;
         this.audioEnabled = audioEnabled;
-        this.shutdownHook = useShutdownHook ? new Thread(() -> JDAImpl.this.shutdown(true), "JDA Shutdown Hook") : null;
+        this.shutdownHook = useShutdownHook ? new Thread(this::shutdown, "JDA Shutdown Hook") : null;
         this.bulkDeleteSplittingEnabled = bulkDeleteSplittingEnabled;
-        this.pool = Executors.newScheduledThreadPool(corePoolSize, new JDAThreadFactory());
+        this.pool = new ScheduledThreadPoolExecutor(corePoolSize, new JDAThreadFactory());
         this.maxReconnectDelay = maxReconnectDelay;
+
+        this.presence = new PresenceImpl(this);
+        this.requester = new Requester(this);
 
         this.jdaClient = accountType == AccountType.CLIENT ? new JDAClientImpl(this) : null;
         this.jdaBot = accountType == AccountType.BOT ? new JDABotImpl(this) : null;
@@ -160,7 +156,7 @@ public class JDAImpl implements JDA
 
     public void verifyToken() throws LoginException, RateLimitedException
     {
-        RestAction<JSONObject> login = new RestAction<JSONObject>(this, Route.Self.GET_SELF.compile(), null)
+        RestAction<JSONObject> login = new RestAction<JSONObject>(this, Route.Self.GET_SELF.compile())
         {
             @Override
             protected void handleResponse(Response response, Request<JSONObject> request)
@@ -262,12 +258,6 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public HttpHost getGlobalProxy()
-    {
-        return proxy;
-    }
-
-    @Override
     public boolean isAudioEnabled()
     {
         return audioEnabled;
@@ -334,17 +324,17 @@ public class JDAImpl implements JDA
     @Override
     public List<Guild> getMutualGuilds(User... users)
     {
-        Args.notNull(users, "users");
+        Checks.notNull(users, "users");
         return getMutualGuilds(Arrays.asList(users));
     }
 
     @Override
     public List<Guild> getMutualGuilds(Collection<User> users)
     {
-        Args.notNull(users, "users");
+        Checks.notNull(users, "users");
         for(User u : users)
         {
-            Args.notNull(u, "All users");
+            Checks.notNull(u, "All users");
         }
         return Collections.unmodifiableList(getGuilds().stream()
                 .filter(guild -> users.stream().allMatch(guild::isMember))
@@ -379,7 +369,7 @@ public class JDAImpl implements JDA
             return new RestAction.EmptyRestAction<>(this, user);
 
         Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
-        return new RestAction<User>(this, route, null)
+        return new RestAction<User>(this, route)
         {
             @Override
             protected void handleResponse(Response response, Request<User> request)
@@ -571,22 +561,41 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public void shutdown()
+    @Deprecated
+    public void shutdown(boolean free)
     {
-        shutdown(true);
+        shutdown();
     }
 
     @Override
-    public void shutdown(boolean free)
+    public void shutdownNow()
     {
+        shutdown();
+
+        pool.shutdownNow();
+        getRequester().shutdownNow();
+    }
+
+    @Override
+    public void shutdown()
+    {
+        if (status == Status.SHUTDOWN || status == Status.SHUTTING_DOWN)
+            return;
+
         setStatus(Status.SHUTTING_DOWN);
         audioManagers.valueCollection().forEach(AudioManager::closeAudioConnection);
+
         if (audioKeepAlivePool != null)
             audioKeepAlivePool.shutdownNow();
+
         getClient().setAutoReconnect(false);
         getClient().close();
-        getRequester().shutdown();
-        pool.shutdown();
+
+        final long time = 5L;
+        final TimeUnit unit = TimeUnit.SECONDS;
+        getRequester().shutdown(time, unit);
+        pool.setKeepAliveTime(time, unit);
+        pool.allowCoreThreadTimeOut(true);
 
         if (shutdownHook != null)
         {
@@ -594,17 +603,9 @@ public class JDAImpl implements JDA
             {
                 Runtime.getRuntime().removeShutdownHook(shutdownHook);
             }
-            catch (Exception ignored) { }
+            catch (Exception ignored) {}
         }
 
-        if (free)
-        {
-            try
-            {
-                Unirest.shutdown();
-            }
-            catch (IOException ignored) {}
-        }
         setStatus(Status.SHUTDOWN);
     }
 
@@ -651,9 +652,9 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public void installAuxiliaryCable(int port) throws UnsupportedOperationException
+    public AuditableRestAction<Void> installAuxiliaryCable(int port) throws UnsupportedOperationException
     {
-        throw new UnsupportedOperationException("Nice try m8!");
+        return new AuditableRestAction.FailedRestAction<>(new UnsupportedOperationException("nice try but next time think first :)"));
     }
 
     @Override
@@ -705,7 +706,7 @@ public class JDAImpl implements JDA
 
     public void setAudioSendFactory(IAudioSendFactory factory)
     {
-        Args.notNull(factory, "Provided IAudioSendFactory");
+        Checks.notNull(factory, "Provided IAudioSendFactory");
         this.audioSendFactory = factory;
     }
 
@@ -792,6 +793,16 @@ public class JDAImpl implements JDA
             return "JDA";
     }
 
+    public EventCache getEventCache()
+    {
+        return eventCache;
+    }
+
+    public OkHttpClient.Builder getHttpClientBuilder()
+    {
+        return httpClientBuilder;
+    }
+
     private class JDAThreadFactory implements ThreadFactory
     {
         @Override
@@ -816,10 +827,5 @@ public class JDAImpl implements JDA
             }
         }
         return akap;
-    }
-
-    public EventCache getEventCache()
-    {
-        return eventCache;
     }
 }

@@ -29,11 +29,7 @@ import java.util.List;
 
 /**
  * {@link net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction PaginationAction}
- * that paginates the endpoints:
- * <ul>
- *     <li>{@link net.dv8tion.jda.core.requests.Route.Messages#GET_MESSAGE_HISTORY Route.Messages.GET_MESSAGE_HISTORY}</li>
- *     <li>{@link net.dv8tion.jda.core.requests.Route.Messages#GET_MESSAGE_HISTORY_BEFORE Route.Messages.GET_MESSAGE_HISTORY_BEFORE}</li>
- * </ul>
+ * that paginates the endpoints {@link net.dv8tion.jda.core.requests.Route.Messages#GET_MESSAGE_HISTORY Route.Messages.GET_MESSAGE_HISTORY}.
  *
  * <p><b>Must provide not-null {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel} to compile a valid
  * pagination route.</b>
@@ -51,7 +47,7 @@ public class MessagePaginationAction extends PaginationAction<Message, MessagePa
 
     public MessagePaginationAction(MessageChannel channel)
     {
-        super(channel.getJDA(), 1, 100, 100);
+        super(channel.getJDA(), Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId()), 1, 100, 100);
 
         if (channel.getType() == ChannelType.TEXT)
         {
@@ -85,15 +81,19 @@ public class MessagePaginationAction extends PaginationAction<Message, MessagePa
     }
 
     @Override
-    protected void finalizeRoute()
+    protected Route.CompiledRoute finalizeRoute()
     {
+        Route.CompiledRoute route = super.finalizeRoute();
+
         final String limit = String.valueOf(this.getLimit());
         final Message last = this.last;
 
-        if (last == null)
-            route = Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId(), limit);
-        else
-            route = Route.Messages.GET_MESSAGE_HISTORY_BEFORE.compile(channel.getId(), limit, last.getId());
+        route = route.withQueryParams("limit", limit);
+
+        if (last != null)
+            route = route.withQueryParams("before", last.getId());
+
+        return route;
     }
 
     @Override

@@ -21,7 +21,7 @@ import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.managers.Presence;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
 /**
@@ -105,7 +105,7 @@ public class PresenceImpl implements Presence
     {
         JSONObject gameObj = getGameJson(game);
 
-        Args.check(status != OnlineStatus.UNKNOWN,
+        Checks.check(status != OnlineStatus.UNKNOWN,
                 "Cannot set the presence status to an unknown OnlineStatus!");
         if (status == OnlineStatus.OFFLINE || status == null)
             status = OnlineStatus.INVISIBLE;
@@ -130,7 +130,7 @@ public class PresenceImpl implements Presence
     {
         JSONObject gameObj = getGameJson(game);
 
-        Args.check(status != OnlineStatus.UNKNOWN,
+        Checks.check(status != OnlineStatus.UNKNOWN,
                 "Cannot set the presence status to an unknown OnlineStatus!");
         if (status == OnlineStatus.OFFLINE || status == null)
             status = OnlineStatus.INVISIBLE;
@@ -151,7 +151,7 @@ public class PresenceImpl implements Presence
     @Override
     public void setPresence(OnlineStatus status, boolean idle)
     {
-        Args.check(status != OnlineStatus.UNKNOWN,
+        Checks.check(status != OnlineStatus.UNKNOWN,
                 "Cannot set the presence status to an unknown OnlineStatus!");
         if (status == OnlineStatus.OFFLINE || status == null)
             status = OnlineStatus.INVISIBLE;

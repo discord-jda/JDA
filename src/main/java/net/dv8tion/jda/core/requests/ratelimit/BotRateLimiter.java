@@ -16,18 +16,20 @@
 
 package net.dv8tion.jda.core.requests.ratelimit;
 
-import com.mashape.unirest.http.Headers;
-import com.mashape.unirest.http.HttpResponse;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.requests.RateLimiter;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Requester;
-import net.dv8tion.jda.core.requests.Route.CompiledRoute;
+import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.Route.RateLimit;
 import net.dv8tion.jda.core.utils.SimpleLog;
+import okhttp3.Headers;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
@@ -48,7 +50,7 @@ public class BotRateLimiter extends RateLimiter
     }
 
     @Override
-    public Long getRateLimit(CompiledRoute route)
+    public Long getRateLimit(Route.CompiledRoute route)
     {
         Bucket bucket = getBucket(route);
         synchronized (bucket)
@@ -60,8 +62,6 @@ public class BotRateLimiter extends RateLimiter
     @Override
     protected void queueRequest(Request request)
     {
-        if (isShutdown)
-            throw new RejectedExecutionException("Cannot queue a request after shutdown");
         Bucket bucket = getBucket(request.getRoute());
         synchronized (bucket)
         {
@@ -70,24 +70,31 @@ public class BotRateLimiter extends RateLimiter
     }
 
     @Override
-    protected Long handleResponse(CompiledRoute route, HttpResponse<String> response)
+    protected Long handleResponse(Route.CompiledRoute route, okhttp3.Response response)
     {
         Bucket bucket = getBucket(route);
         synchronized (bucket)
         {
-            Headers headers = response.getHeaders();
-            int code = response.getStatus();
+            Headers headers = response.headers();
+            int code = response.code();
             if (timeOffset == null)
                 setTimeOffset(headers);
 
             if (code == 429)
             {
-                String global = headers.getFirst("X-RateLimit-Global");
-                String retry = headers.getFirst("Retry-After");
+                String global = headers.get("X-RateLimit-Global");
+                String retry = headers.get("Retry-After");
                 if (retry == null || retry.isEmpty())
                 {
-                    JSONObject limitObj = new JSONObject(response.getBody());
-                    retry = limitObj.get("retry_after").toString();
+                    try (InputStream in = Requester.getBody(response))
+                    {
+                        JSONObject limitObj = new JSONObject(new JSONTokener(in));
+                        retry = limitObj.get("retry_after").toString();
+                    }
+                    catch (IOException e)
+                    {
+                        throw new RuntimeException(e);
+                    }
                 }
                 long retryAfter = Long.parseLong(retry);
                 if (!Boolean.parseBoolean(global))  //Not global ratelimit
@@ -111,7 +118,7 @@ public class BotRateLimiter extends RateLimiter
 
     }
 
-    private Bucket getBucket(CompiledRoute route)
+    private Bucket getBucket(Route.CompiledRoute route)
     {
         String rateLimitRoute = route.getRatelimitRoute();
         Bucket bucket = (Bucket) buckets.get(rateLimitRoute);
@@ -148,7 +155,7 @@ public class BotRateLimiter extends RateLimiter
         {
             //Get the date header provided by Discord.
             //Format:  "date" : "Fri, 16 Sep 2016 05:49:36 GMT"
-            String date = headers.getFirst("Date");
+            String date = headers.get("Date");
             if (date != null)
             {
                 OffsetDateTime tDate = OffsetDateTime.parse(date, DateTimeFormatter.RFC_1123_DATE_TIME);
@@ -169,8 +176,8 @@ public class BotRateLimiter extends RateLimiter
             }
             else
             {
-                bucket.resetTime = Long.parseLong(headers.getFirst("X-RateLimit-Reset")) * 1000; //Seconds to milliseconds
-                bucket.routeUsageLimit = Integer.parseInt(headers.getFirst("X-RateLimit-Limit"));
+                bucket.resetTime = Long.parseLong(headers.get("X-RateLimit-Reset")) * 1000; //Seconds to milliseconds
+                bucket.routeUsageLimit = Integer.parseInt(headers.get("X-RateLimit-Limit"));
             }
 
             //Currently, we check the remaining amount even for hardcoded ratelimits just to further respect Discord
@@ -184,7 +191,7 @@ public class BotRateLimiter extends RateLimiter
             // header system due to their headers only supporting accuracy to the second. The custom ratelimit system
             // allows for hardcoded ratelimits that allow accuracy to the millisecond which is important for some
             // ratelimits like Reactions which is 1/0.25s, but discord reports the ratelimit as 1/1s with headers.
-            bucket.routeUsageRemaining = Integer.parseInt(headers.getFirst("X-RateLimit-Remaining"));
+            bucket.routeUsageRemaining = Integer.parseInt(headers.get("X-RateLimit-Remaining"));
         }
         catch (NumberFormatException ex)
         {
@@ -302,13 +309,9 @@ public class BotRateLimiter extends RateLimiter
                             request = it.next();
                             Long retryAfter = requester.execute(request);
                             if (retryAfter != null)
-                            {
                                 break;
-                            }
                             else
-                            {
                                 it.remove();
-                            }
                         }
                         catch (Throwable t)
                         {

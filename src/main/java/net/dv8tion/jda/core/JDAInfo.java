@@ -20,6 +20,7 @@ package net.dv8tion.jda.core;
  */
 public class JDAInfo
 {
+    public static final int DISCORD_REST_VERSION = 6;
     public static final String GITHUB = "https://github.com/DV8FromTheWorld/JDA";
     public static final String VERSION_MAJOR = "@versionMajor@";
     public static final String VERSION_MINOR = "@versionMinor@";

@@ -209,13 +209,13 @@ More information can be found at the wiki page [Contributing](https://github.com
 This project requires **Java 8**.<br>
 All dependencies are managed automatically by Gradle.
  * NV Websocket Client
-   * Version: **1.31**
+   * Version: **2.2**
    * [Github](https://github.com/TakahikoKawasaki/nv-websocket-client)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/com.neovisionaries%3Anv-websocket-client/view)
- * Unirest
-   * Version: **1.4.9**
-   * [Github](https://github.com/Mashape/unirest-java)
-   * [JCenter Repository](https://bintray.com/bintray/jcenter/com.mashape.unirest%3Aunirest-java/view)
+ * OkHttp
+   * Version: **3.8.1**
+   * [Github](https://github.com/square/okhttp)
+   * [JCenter Repository](https://bintray.com/bintray/jcenter/com.squareup.okhttp:okhttp)
  * Apache Commons Lang3
    * Version: **3.5**
    * [Website](https://commons.apache.org/proper/commons-lang/)
