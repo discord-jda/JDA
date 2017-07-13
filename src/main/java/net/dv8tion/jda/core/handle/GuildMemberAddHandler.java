@@ -36,7 +36,7 @@ public class GuildMemberAddHandler extends SocketHandler
         if (api.getGuildLock().isLocked(id))
             return id;
 
-        GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
+        GuildImpl guild = api.getGuildMap().get(id);
         if (guild == null)
         {
             api.getEventCache().cache(EventCache.Type.GUILD, id, () ->

@@ -140,7 +140,7 @@ public class UserImpl implements User, Disposable
         return getJDA().getMutualGuilds(this);
     }
 
-    public PrivateChannel getPrivateChannel()
+    public PrivateChannelImpl getPrivateChannel()
     {
         if (!hasPrivateChannel())
             throw new IllegalStateException("There is no PrivateChannel for this user yet! Use User#openPrivateChannel() first!");

@@ -48,7 +48,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
 
         JSONObject userJson = content.getJSONObject("user");
         final long userId = userJson.getLong("id");
-        GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
+        GuildImpl guild = api.getGuildMap().get(id);
         if (guild == null)
         {
             api.getEventCache().cache(EventCache.Type.GUILD, userId, () ->
@@ -59,7 +59,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
             return null;
         }
 
-        MemberImpl member = (MemberImpl) guild.getMembersMap().get(userId);
+        MemberImpl member = guild.getMembersMap().get(userId);
         if (member == null)
         {
             api.getEventCache().cache(EventCache.Type.USER, userId, () ->

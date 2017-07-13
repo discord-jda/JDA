@@ -446,7 +446,7 @@ public class EntityBuilder
                     api.getUserMap().put(userObj.getIdLong(), userObj);
                     if (userObj.hasPrivateChannel())
                     {
-                        PrivateChannelImpl priv = (PrivateChannelImpl) userObj.getPrivateChannel();
+                        PrivateChannelImpl priv = userObj.getPrivateChannel();
                         priv.setFake(false);
                         api.getFakePrivateChannelMap().remove(priv.getIdLong());
                         api.getPrivateChannelMap().put(priv.getIdLong(), priv);

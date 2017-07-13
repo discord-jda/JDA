@@ -20,7 +20,6 @@ import net.dv8tion.jda.client.events.message.group.GroupMessageDeleteEvent;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.PrivateChannel;
-import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.entities.impl.PrivateChannelImpl;
 import net.dv8tion.jda.core.entities.impl.TextChannelImpl;
@@ -65,7 +64,7 @@ public class MessageDeleteHandler extends SocketHandler
             return null;
         }
 
-        if (channel instanceof TextChannel)
+        if (channel instanceof TextChannelImpl)
         {
             TextChannelImpl tChan = (TextChannelImpl) channel;
             if (api.getGuildLock().isLocked(tChan.getGuild().getIdLong()))

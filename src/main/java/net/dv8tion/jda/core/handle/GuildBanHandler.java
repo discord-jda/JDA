@@ -40,7 +40,7 @@ public class GuildBanHandler extends SocketHandler
             return id;
 
         JSONObject userJson = content.getJSONObject("user");
-        GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
+        GuildImpl guild = api.getGuildMap().get(id);
         if (guild == null)
         {
             api.getEventCache().cache(EventCache.Type.GUILD, id, () ->

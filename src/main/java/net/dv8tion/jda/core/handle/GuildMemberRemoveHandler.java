@@ -77,7 +77,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
             UserImpl user = api.getUserMap().remove(userId);
             if (user.hasPrivateChannel())
             {
-                PrivateChannelImpl priv = (PrivateChannelImpl) user.getPrivateChannel();
+                PrivateChannelImpl priv = user.getPrivateChannel();
                 user.setFake(true);
                 priv.setFake(true);
                 api.getFakeUserMap().put(user.getIdLong(), user);
