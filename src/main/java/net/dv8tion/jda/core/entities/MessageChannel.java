@@ -36,7 +36,6 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
@@ -394,8 +393,6 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @param  message
      *         The message to be sent along with the uploaded file. This value can be {@code null}.
      *
-     * @throws IOException
-     *         If an I/O error occurs while reading the File.
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>Provided {@code file} is null.</li>
@@ -420,7 +417,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
      *         <br>The {@link net.dv8tion.jda.core.entities.Message Message} created from this upload.
      */
-    default RestAction<Message> sendFile(File file, Message message) throws IOException
+    default RestAction<Message> sendFile(File file, Message message)
     {
         Checks.notNull(file, "file");
 
@@ -475,8 +472,6 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @param  message
      *         The message to be sent along with the uploaded file. This value can be {@code null}.
      *
-     * @throws IOException
-     *         If an I/O error occurs while reading the File.
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>Provided {@code file} is null.</li>
@@ -501,16 +496,47 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
      *         <br>The {@link net.dv8tion.jda.core.entities.Message Message} created from this upload.
      */
-    default RestAction<Message> sendFile(File file, String fileName, Message message) throws IOException
+    default RestAction<Message> sendFile(File file, String fileName, Message message)
     {
         Checks.notNull(file, "file");
-
         Checks.check(file.exists() && file.canRead(),
             "Provided file is either null, doesn't exist or is not readable!");
         Checks.check(file.length() <= Message.MAX_FILE_SIZE,// TODO: deal with Discord Nitro allowing 50MB files.
             "File is to big! Max file-size is 8MB");
 
-        return sendFile(new FileInputStream(file), fileName, message);
+        Checks.notNull(fileName, "fileName");
+
+        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
+        MultipartBody.Builder builder = new okhttp3.MultipartBody.Builder()
+                .setType(MultipartBody.FORM);
+
+        builder.addFormDataPart("file", fileName, RequestBody.create(MediaType.parse("application/octet-stream"), file));
+
+        if (message != null)
+        {
+            if (!message.getEmbeds().isEmpty())
+            {
+                AccountType type = getJDA().getAccountType();
+                MessageEmbed embed = message.getEmbeds().get(0);
+                Checks.check(embed.isSendable(type),
+                        "Provided Message contains an embed with a length greater than %d characters, which is the max for %s accounts!",
+                        type == AccountType.BOT ? MessageEmbed.EMBED_MAX_LENGTH_BOT : MessageEmbed.EMBED_MAX_LENGTH_CLIENT, type);
+            }
+
+            builder.addFormDataPart("payload_json", ((MessageImpl) message).toJSONObject().toString());
+        }
+
+        return new RestAction<Message>(getJDA(), route, builder.build())
+        {
+            @Override
+            protected void handleResponse(Response response, Request<Message> request)
+            {
+                if (response.isOk())
+                    request.onSuccess(api.getEntityBuilder().createMessage(response.getObject(), MessageChannel.this, false));
+                else
+                    request.onFailure(response);
+            }
+        };
     }
 
     /**
