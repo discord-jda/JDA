@@ -24,7 +24,6 @@ import okhttp3.RequestBody;
 import okio.BufferedSink;
 import okio.Okio;
 import okio.Source;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -87,6 +86,44 @@ public class MiscUtil
     public static String getDateTimeString(OffsetDateTime time)
     {
         return time.format(dtFormatter);
+    }
+
+    /**
+     * Returns the shard id the given guild will be loaded on for the given amout of shards.
+     *
+     * Discord determines which guilds a shard is connect to using the following format:
+     * {@code shardId == (guildId >> 22) % totalShards}
+     * <br>Source for formula: <a href="https://discordapp.com/developers/docs/topics/gateway#sharding">Discord Documentation</a>
+     *
+     * @param guildId
+     *             The guild id.
+     * @param shards
+     *             The amount of shards.
+     * 
+     * @return The shard id for the guild.
+     */
+    public static int getShardForGuild(long guildId, int shards)
+    {
+        return (int) ((guildId >> 22) % shards);
+    }
+
+    /**
+     * Returns the shard id the given guild will be loaded on for the given amout of shards.
+     *
+     * Discord determines which guilds a shard is connect to using the following format:
+     * {@code shardId == (guildId >> 22) % totalShards}
+     * <br>Source for formula: <a href="https://discordapp.com/developers/docs/topics/gateway#sharding">Discord Documentation</a>
+     *
+     * @param guildId
+     *             The guild id.
+     * @param shards
+     *             The amount of shards.
+     * 
+     * @return The shard id for the guild.
+     */
+    public static int getShardForGuild(String guildId, int shards)
+    {
+        return getShardForGuild(parseSnowflake(guildId), shards);
     }
 
     /**
