@@ -569,7 +569,9 @@ public class MessageImpl implements Message
     @Override
     public String toString()
     {
-        return String.format("M:%#s:%.20s(%s)", author, this, getId());
+        return author != null
+            ? String.format("M:%#s:%.20s(%s)", author, this, getId())
+            : String.format("M:%.20s", this); // this message was made using MessageBuilder
     }
 
     public JSONObject toJSONObject()
