@@ -16,8 +16,8 @@
 
 package net.dv8tion.jda.core.entities;
 
-import net.dv8tion.jda.core.utils.IOUtil;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.IOUtil;
 
 import java.io.File;
 import java.io.IOException;

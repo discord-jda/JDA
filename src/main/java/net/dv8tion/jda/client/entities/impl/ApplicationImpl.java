@@ -21,7 +21,7 @@ import net.dv8tion.jda.client.managers.ApplicationManager;
 import net.dv8tion.jda.client.managers.ApplicationManagerUpdatable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Disposable;
+import net.dv8tion.jda.core.entities.impl.Disposable;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;

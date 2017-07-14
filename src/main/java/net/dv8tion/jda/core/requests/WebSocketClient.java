@@ -28,7 +28,7 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.WebSocketCode;
 import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
-import net.dv8tion.jda.core.entities.Disposable;
+import net.dv8tion.jda.core.entities.impl.Disposable;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.*;

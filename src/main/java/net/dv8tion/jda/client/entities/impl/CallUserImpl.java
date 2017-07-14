@@ -19,7 +19,7 @@ package net.dv8tion.jda.client.entities.impl;
 import net.dv8tion.jda.client.entities.Call;
 import net.dv8tion.jda.client.entities.CallUser;
 import net.dv8tion.jda.client.entities.CallVoiceState;
-import net.dv8tion.jda.core.entities.Disposable;
+import net.dv8tion.jda.core.entities.impl.Disposable;
 import net.dv8tion.jda.core.entities.User;
 
 public class CallUserImpl implements CallUser, Disposable

@@ -14,15 +14,31 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.client.entities;
+package net.dv8tion.jda.core.entities;
 
-import net.dv8tion.jda.core.entities.DisposingState;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.utils.Checks;
 
-public interface CallUser extends DisposingState<CallUser>
+import java.util.function.Consumer;
+
+public interface DisposingState<T extends DisposingState<T>>
 {
-    User getUser();
-    Call getCall();
-    CallVoiceState getVoiceState();
-    boolean isRinging();
+    boolean isDisposed();
+
+    @SuppressWarnings("unchecked")
+    default T ifDisposed(Consumer<T> then)
+    {
+        Checks.notNull(then, "Consumer");
+        if (isDisposed())
+            then.accept((T) this);
+        return (T) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    default T ifNotDisposed(Consumer<T> then)
+    {
+        Checks.notNull(then, "Consumer");
+        if (!isDisposed())
+            then.accept((T) this);
+        return (T) this;
+    }
 }

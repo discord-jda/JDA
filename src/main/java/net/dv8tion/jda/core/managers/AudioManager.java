@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.audio.AudioReceiveHandler;
 import net.dv8tion.jda.core.audio.AudioSendHandler;
 import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
+import net.dv8tion.jda.core.entities.DisposingState;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.utils.SimpleLog;
@@ -29,7 +30,7 @@ import net.dv8tion.jda.core.utils.SimpleLog;
  * AudioManager deals with creating, managing and severing audio connections to
  * {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels}. Also controls audio handlers.
  */
-public interface AudioManager
+public interface AudioManager extends DisposingState<AudioManager>
 {
     long DEFAULT_CONNECTION_TIMEOUT = 10000;
     SimpleLog LOG = SimpleLog.getLog("JDAAudioManager");

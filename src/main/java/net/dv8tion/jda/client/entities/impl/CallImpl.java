@@ -22,7 +22,7 @@ import net.dv8tion.jda.client.entities.CallUser;
 import net.dv8tion.jda.client.entities.CallableChannel;
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.Region;
-import net.dv8tion.jda.core.entities.Disposable;
+import net.dv8tion.jda.core.entities.impl.Disposable;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.utils.MiscUtil;
 

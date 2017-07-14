@@ -17,7 +17,6 @@
 package net.dv8tion.jda.core.entities.impl;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Disposable;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.User;

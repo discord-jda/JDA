@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.entities;
+package net.dv8tion.jda.core.entities.impl;
 
 import net.dv8tion.jda.core.exceptions.DisposedException;
 
@@ -22,7 +22,6 @@ public interface Disposable
 {
     boolean dispose();
     boolean isDisposed();
-
     default void checkDisposed()
     {
         if (isDisposed())

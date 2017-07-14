@@ -26,7 +26,7 @@ import javax.annotation.CheckReturnValue;
 /**
  * Represents a {@link net.dv8tion.jda.core.entities.Guild Guild}'s Role. Used to control permissions for Members.
  */
-public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Comparable<Role>
+public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Comparable<Role>, DisposingState<Role>
 {
     /**
      * The hierarchical position of this {@link net.dv8tion.jda.core.entities.Role Role}

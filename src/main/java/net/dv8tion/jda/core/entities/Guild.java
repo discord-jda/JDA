@@ -33,7 +33,7 @@ import javax.annotation.CheckReturnValue;
  * Represents a Discord {@link net.dv8tion.jda.core.entities.Guild Guild}.
  * This should contain all information provided from Discord about a Guild.
  */
-public interface Guild extends ISnowflake
+public interface Guild extends ISnowflake, DisposingState<Guild>
 {
     /**
      * The human readable name of the {@link net.dv8tion.jda.core.entities.Guild Guild}.

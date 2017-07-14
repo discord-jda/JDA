@@ -47,7 +47,7 @@ public class SelfUserImpl extends UserImpl implements SelfUser
     }
 
     @Override
-    public PrivateChannel getPrivateChannel()
+    public PrivateChannelImpl getPrivateChannel()
     {
         throw new UnsupportedOperationException("You cannot get a PrivateChannel with yourself (SelfUser)");
     }

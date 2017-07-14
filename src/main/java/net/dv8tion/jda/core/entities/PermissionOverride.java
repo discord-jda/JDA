@@ -28,7 +28,7 @@ import javax.annotation.CheckReturnValue;
  * Represents the specific {@link net.dv8tion.jda.core.entities.Member Member} or {@link net.dv8tion.jda.core.entities.Role Role}
  * permission overrides that can be set for channels.
  */
-public interface PermissionOverride
+public interface PermissionOverride extends DisposingState<PermissionOverride>
 {
     /**
      * This is the raw binary representation (as a base 10 long) of the permissions <b>allowed</b> by this override.

@@ -22,7 +22,7 @@ package net.dv8tion.jda.core.entities;
  * This interface only exists to distinct {@link net.dv8tion.jda.core.entities.Channel Channels} into
  * VoiceChannels and {@link net.dv8tion.jda.core.entities.TextChannel TextChannels}.
  */
-public interface VoiceChannel extends Channel, AudioChannel, Comparable<VoiceChannel>
+public interface VoiceChannel extends Channel, AudioChannel, Comparable<VoiceChannel>, DisposingState<VoiceChannel>
 {
     /**
      * The maximum amount of {@link net.dv8tion.jda.core.entities.Member Members} that can be in this
