@@ -161,6 +161,7 @@ public class ChannelDeleteHandler extends SocketHandler
             default:
                 throw new IllegalArgumentException("CHANNEL_DELETE provided an unknown channel type. JSON: " + content);
         }
+        api.getEventCache().clear(channelId, EventCache.Type.CHANNEL);
         return null;
     }
 }
