@@ -39,8 +39,6 @@ public interface ShardManager
 
     /**
      * Adds all provided listeners to the event-listeners that will be used to handle events.
-     * This uses the {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventListener} by default.
-     * To switch to the {@link net.dv8tion.jda.core.hooks.AnnotatedEventManager AnnotatedEventManager}, use {@link #setEventManager(IEventManager)}.
      *
      * Note: when using the {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventListener} (default),
      * given listener <b>must</b> be instance of {@link net.dv8tion.jda.core.hooks.EventListener EventListener}!
@@ -105,8 +103,8 @@ public interface ShardManager
     /**
      * Gets all {@link net.dv8tion.jda.core.entities.Guild Guilds} that contain all given users as their members.
      *
-     * @param users
-     *        The users which all the returned {@link net.dv8tion.jda.core.entities.Guild Guilds} must contain.
+     * @param  users
+     *         The users which all the returned {@link net.dv8tion.jda.core.entities.Guild Guilds} must contain.
      *
      * @return Unmodifiable list of all {@link net.dv8tion.jda.core.entities.Guild Guild} instances which have all {@link net.dv8tion.jda.core.entities.User Users} in them.
      */
@@ -125,10 +123,10 @@ public interface ShardManager
     /**
      * Gets all {@link net.dv8tion.jda.core.entities.Guild Guilds} that contain all given users as their members.
      *
-     * @param  users
-     *         The users which all the returned {@link net.dv8tion.jda.core.entities.Guild Guilds} must contain.
+     * @param  user
+     *         The user which all the returned {@link net.dv8tion.jda.core.entities.Guild Guilds} must contain.
      *
-     * @return Unmodifiable list of all {@link net.dv8tion.jda.core.entities.Guild Guild} instances which have all {@link net.dv8tion.jda.core.entities.User Users} in them.
+     * @return Unmodifiable list of all {@link net.dv8tion.jda.core.entities.Guild Guild} instances which have the {@link net.dv8tion.jda.core.entities.User User} in them.
      */
     List<Guild> getMutualGuilds(User user);
 
@@ -144,6 +142,10 @@ public interface ShardManager
      */
     JDA getShard(int shardId);
 
+    /**Returns a Collection of all online shards.
+     *
+     * @return Unmodifiable list of all online shards controlled by this ShardManager.
+     */
     Collection<? extends JDA> getShards();
 
     /**
@@ -205,7 +207,7 @@ public interface ShardManager
      *
      * <p><b>Note:</b> just because a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} is present does
      * not mean that you will be able to send messages to it. Furthermore, if you log into this account on the discord
-     * client, it is you will not see the channel that this returns. This is because the discord client
+     * client, it is possible that you will not see the channel that this returns. This is because the discord client
      * hides any {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} that you don't have the
      * {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ} permission in.
      *
@@ -258,10 +260,7 @@ public interface ShardManager
      * <br>This list will never contain duplicates and represents all {@link net.dv8tion.jda.core.entities.User Users}
      * that JDA can currently see.
      *
-     * <p>If the developer is sharding, then only users from guilds connected to the specifically logged in
-     * shard will be returned in the List.
-     *
-     * @return List of all {@link net.dv8tion.jda.core.entities.User Users} that are visible to JDA.
+     * @return List of all {@link net.dv8tion.jda.core.entities.User Users} that are visible to all online shards.
      */
     List<User> getUsers();
 
@@ -289,7 +288,7 @@ public interface ShardManager
 
     /**
      * An unmodifiable list of all {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels} of all connected
-     * {@link net.dv8tion.jda.core.entities.Guild Guilds}.
+     * {@link net.dv8tion.jda.core.entities.Guild Guilds} of all online shards.
      *
      * @return Possible-empty list of all known {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels}.
      */
@@ -309,7 +308,10 @@ public interface ShardManager
     void restart();
 
     /**
-     * Restarts the shards with the given id.
+     * Restarts the shard with the given id.
+     *
+     * @param  shardId
+     *         The id of the shard to be restarted.
      *
      * @throws IllegalArgumentException
      *         if shardId is lower than minShardId or higher than maxShardId
@@ -335,16 +337,19 @@ public interface ShardManager
      * <p>This is relevant to client accounts to monitor
      * whether new messages should trigger mobile push-notifications.
      *
-     * @param idle
-     *        boolean
+     * @param  idle
+     *         Whether or not the shards should be marked afk.
      */
     void setIdle(boolean idle);
 
     /**
-     * Sets the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} for the given shards.
+     * Sets the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} for the shard with the given id.
      *
      * @throws IllegalArgumentException
      *         if the provided OnlineStatus is {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}
+     *
+     * @param  shardId
+     *         The id of the shard to set the status for.
      *
      * @param  status
      *         the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus}
@@ -366,27 +371,40 @@ public interface ShardManager
 
     /**
      * Shuts down all JDA shards, closing all their connections.
-     * After this command is issShardManageragerImpl instance can not be used anymore.
-     *
-     * <p>This is the same as calling {@link #shutdown(boolean) shutdown(true)}.
+     * After this command is issued, this ShardManager instance can not be used anymore.
      */
     void shutdown();
 
     /**
      * Shuts down all JDA shards, closing all their connections.
-     * After this command is issued the ShardManager instance can not be used anymore.
+     * After this command is issued, the ShardManager instance can not be used anymore.
      *
-     * <p>Depending on the value of {@code free}, this will also close the background-thread used for requests by Unirest.
-     * <br>If the background-thread is closed, the system can exit properly, but no further JDA requests are possible (includes other JDA instances).
-     * If you want to create any new instances or if you have any other instances running in parallel, then {@code free}
-     * should be set to false.
+     * @deprecated
+     *        Use {@link #shutdown()} instead.
      *
      * @param  free If true, shuts down JDA's rest system permanently for all current and future instances.
      */
-    void shutdown(boolean free);
+    @Deprecated
+    default void shutdown(boolean free)
+    {
+        shutdown();
+    }
 
-    void shutdown(int shardId); // TODO: docs shutdown(int shardId)
+    /**
+     * Shuts down down the JDA shard specified by shardId, closing its connections.
+     * After this method is called, getShard(shardId) will return null.
+     *
+     * @param  shardId
+     *         The id of the shard to be shutdown.
+     */
+    void shutdown(int shardId);
 
-    void start(int shardId); // TODO: docs start(int shardId)
+    /**
+     * Queues a shard with the provided id to be created at some point in the future, unless there is already an online shard with the provided id.
+     *
+     * @param  shardId
+     *         The id of the shard to be started.
+     */
+    void start(int shardId);
 
 }

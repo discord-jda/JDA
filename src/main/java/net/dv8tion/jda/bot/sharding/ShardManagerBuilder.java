@@ -130,7 +130,7 @@ public class ShardManagerBuilder
 
     /**
      * Builds a new {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} instance and uses the provided token to start the login process.
-     * <br>This method will block until all JDA insatnces have logged in and finished loading all resources.
+     * <br>This method will block until all JDA instances have logged in and finished loading all resources.
      *
      * @throws  LoginException
      *          If the provided token is invalid.
@@ -376,7 +376,7 @@ public class ShardManagerBuilder
 
     /**
      * Sets the range of shards the {@link net.dv8tion.jda.bot.entities.impl.ShardManagerImpl ShardManagerImpl} should contain.
-     * This is usefull if you want to split your shards between multiple JVMs or servers.
+     * This is useful if you want to split your shards between multiple JVMs or servers.
      *
      * <p><b>This does not have any effect if the total shard count is set to {@code -1} (get recommended shards from discord).</b>
      *
@@ -413,11 +413,8 @@ public class ShardManagerBuilder
      *
      * <p><b>This does not have any effect if the total shard count is set to {@code -1} (get recommended shards from discord).</b>
      *
-     * @param  minShardId
-     *         The lowest shard id the ShardManagerImpl should contain
-     *
-     * @param  maxShardId
-     *         The highest shard id the ShardManagerImpl should contain
+     * @param  shardIds
+     *         An array of shard ids the ShardManagerImpl should contain
      *
      * @throws IllegalArgumentException
      *         If either minShardId is negative, maxShardId is lower than shardsTotal or
@@ -441,15 +438,12 @@ public class ShardManagerBuilder
 
     /**
      * Sets the range of shards the {@link net.dv8tion.jda.bot.entities.impl.ShardManagerImpl ShardManagerImpl} should contain.
-     * This is usefull if you want to split your shards between multiple JVMs or servers.
+     * This is useful if you want to split your shards between multiple JVMs or servers.
      *
      * <p><b>This does not have any effect if the total shard count is set to {@code -1} (get recommended shards from discord).</b>
      *
-     * @param  minShardId
-     *         The lowest shard id the ShardManagerImpl should contain
-     *
-     * @param  maxShardId
-     *         The highest shard id the ShardManagerImpl should contain
+     * @param  shardIds
+     *         An {@link gnu.trove.TIntCollection} of shard ids the ShardManagerImpl should contain
      *
      * @throws IllegalArgumentException
      *         If either minShardId is negative, maxShardId is lower than shardsTotal or
@@ -478,12 +472,12 @@ public class ShardManagerBuilder
      *
      * <p> Of this is set to {@code -1}
      *
-     * @param  shardTotal
+     * @param  shardsTotal
      *         The number of overall shards or {@code -1} if JDA should use the recommended amount from discord.
      *
      * @return The {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder ShardManagerBuilder} instance. Useful for chaining.
      *
-     * @see    #setShardRange(int, int)
+     * @see    #setShards(int, int)
      */
     public ShardManagerBuilder setShardTotal(final int shardsTotal)
     {

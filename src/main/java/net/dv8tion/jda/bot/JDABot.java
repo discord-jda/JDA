@@ -72,6 +72,11 @@ public interface JDABot
      * @return A valid OAuth2 invite url for the currently logged in Bot-Account
      */
     String getInviteUrl(Collection<Permission> permissions);
-    
-    ShardManager getShardManager(); // TODO: docs getShardManager() 
+
+    /**
+     * Returns the {@link net.dv8tion.jda.bot.sharding.ShardManager} that created this instance of JDABot, or null otherwise.
+     *
+     * @return The {@link net.dv8tion.jda.bot.sharding.ShardManager} that created this JDABot,  if it exists, otherwise null.
+     */
+    ShardManager getShardManager();
 }
