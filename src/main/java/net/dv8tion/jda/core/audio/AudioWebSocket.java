@@ -17,6 +17,7 @@
 package net.dv8tion.jda.core.audio;
 
 import com.neovisionaries.ws.client.*;
+import net.dv8tion.jda.core.WebSocketCode;
 import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.entities.Guild;
@@ -329,7 +330,7 @@ public class AudioWebSocket extends WebSocketAdapter
         if (closeStatus != ConnectionStatus.AUDIO_REGION_CHANGE)
         {
             JSONObject obj = new JSONObject()
-                .put("op", 4)
+                .put("op", WebSocketCode.VOICE_STATE)
                 .put("d", new JSONObject()
                     .put("guild_id", guild.getId())
                     .put("channel_id", JSONObject.NULL)

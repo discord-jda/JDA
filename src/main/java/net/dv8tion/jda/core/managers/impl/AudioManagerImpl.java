@@ -18,6 +18,7 @@ package net.dv8tion.jda.core.managers.impl;
 import com.sun.jna.Platform;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.WebSocketCode;
 import net.dv8tion.jda.core.audio.AudioConnection;
 import net.dv8tion.jda.core.audio.AudioReceiveHandler;
 import net.dv8tion.jda.core.audio.AudioSendHandler;
@@ -339,7 +340,7 @@ public class AudioManagerImpl implements AudioManager
 
             //This is technically equivalent to an audio open/move packet.
             JSONObject voiceStateChange = new JSONObject()
-                    .put("op", 4)
+                    .put("op", WebSocketCode.VOICE_STATE)
                     .put("d", new JSONObject()
                             .put("guild_id", guild.getId())
                             .put("channel_id", channel.getId())
