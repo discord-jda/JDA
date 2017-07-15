@@ -20,12 +20,12 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
-    id 'com.jfrog.bintray' version '1.7.2'
+    id 'com.jfrog.bintray' version '1.7.3'
     id 'java'
     id 'maven-publish'
     id 'signing'
-    id 'com.github.ben-manes.versions' version '0.13.0'
-    id 'com.github.johnrengelman.shadow' version '1.2.4'
+    id 'com.github.ben-manes.versions' version '0.15.0'
+    id 'com.github.johnrengelman.shadow' version '2.0.1'
 }
 
 def versionObj = new Version(major: 3, minor: 1, revision: 1)
@@ -193,7 +193,6 @@ String getProjectProperty(String propertyName)
 task wrapper(type: Wrapper) {
     gradleVersion = '4.0.1'
 }
-
 
 build {
     dependsOn clean
