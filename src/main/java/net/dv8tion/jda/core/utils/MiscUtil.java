@@ -24,7 +24,6 @@ import okhttp3.RequestBody;
 import okio.BufferedSink;
 import okio.Okio;
 import okio.Source;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -164,14 +163,14 @@ public class MiscUtil
             Appendable appendable = formatter.out();
             if (precision > -1 && out.length() > precision)
             {
-                appendable.append(StringUtils.truncate(out, precision));
+                appendable.append(Helpers.truncate(out, precision));
                 return;
             }
 
             if (leftJustified)
-                appendable.append(StringUtils.rightPad(out, width));
+                appendable.append(Helpers.rightPad(out, width));
             else
-                appendable.append(StringUtils.leftPad(out, width));
+                appendable.append(Helpers.leftPad(out, width));
         }
         catch (IOException e)
         {

@@ -16,8 +16,6 @@
 
 package net.dv8tion.jda.core.utils;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.Collection;
 
 public class Checks
@@ -50,21 +48,21 @@ public class Checks
     public static void notEmpty(final CharSequence argument, final String name)
     {
         notNull(argument, name);
-        if (StringUtils.isEmpty(argument))
+        if (Helpers.isEmpty(argument))
             throw new IllegalArgumentException(name + " may not be empty");
     }
 
     public static void notBlank(final CharSequence argument, final String name)
     {
         notNull(argument, name);
-        if (StringUtils.isBlank(argument))
+        if (Helpers.isBlank(argument))
             throw new IllegalArgumentException(name + " may not be blank");
     }
 
     public static void noWhitespace(final CharSequence argument, final String name)
     {
         notNull(argument, name);
-        if (StringUtils.containsWhitespace(argument))
+        if (Helpers.containsWhitespace(argument))
             throw new IllegalArgumentException(name + " may not contain blanks");
     }
 
