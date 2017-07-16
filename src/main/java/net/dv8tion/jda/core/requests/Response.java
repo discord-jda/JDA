@@ -133,6 +133,11 @@ public class Response implements Closeable
         return cfRays;
     }
 
+    public Exception getException()
+    {
+        return exception;
+    }
+
     public boolean isError()
     {
         return this.code == Response.ERROR_CODE;
