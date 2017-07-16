@@ -110,7 +110,15 @@ public class ErrorResponseException extends RuntimeException
         JSONObject obj = response.getObject();
         String meaning = errorResponse.getMeaning();
         int code = errorResponse.getCode();
-        if (obj != null)
+        if (response.isError() && response.getException() != null)
+        {
+            // this generally means that an exception occurred trying to
+            //make an http request. e.g.:
+            //SocketTimeoutException/ UnknownHostException
+            code = response.code;
+            meaning = response.getException().getClass().getName();
+        }
+        else if (obj != null)
         {
             if (!obj.isNull("code") || !obj.isNull("message"))
             {
