@@ -21,6 +21,7 @@ import net.dv8tion.jda.client.entities.impl.FriendImpl;
 import net.dv8tion.jda.client.entities.impl.UserSettingsImpl;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.OnlineStatus;
+import net.dv8tion.jda.core.WebSocketCode;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Guild;
@@ -229,7 +230,7 @@ public class ReadyHandler extends SocketHandler
             if (guildIds.length() == 50)
             {
                 api.getClient().chunkOrSyncRequest(new JSONObject()
-                        .put("op", 12)
+                        .put("op", WebSocketCode.GUILD_SYNC)
                         .put("d", guildIds));
                 guildIds = new JSONArray();
             }
@@ -239,7 +240,7 @@ public class ReadyHandler extends SocketHandler
         if (guildIds.length() > 0)
         {
             api.getClient().chunkOrSyncRequest(new JSONObject()
-                    .put("op", 12)
+                    .put("op", WebSocketCode.GUILD_SYNC)
                     .put("d", guildIds));
         }
         guildsRequiringSyncing.clear();

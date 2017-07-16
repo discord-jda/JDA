@@ -18,6 +18,7 @@ package net.dv8tion.jda.core.managers.impl;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
+import net.dv8tion.jda.core.WebSocketCode;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.managers.Presence;
@@ -244,7 +245,7 @@ public class PresenceImpl implements Presence
     {
         api.getClient().send(new JSONObject()
             .put("d", data)
-            .put("op", 3).toString());
+            .put("op", WebSocketCode.PRESENCE).toString());
     }
 
 }

@@ -253,16 +253,16 @@ public class EntityBuilder
                 if (api.getAccountType() == AccountType.CLIENT)
                 {
                     JSONObject obj = new JSONObject()
-                            .put("op", 12)
+                            .put("op", WebSocketCode.GUILD_SYNC)
                             .put("guild_id", guildObj.getId());
                     api.getClient().chunkOrSyncRequest(obj);
                 }
                 JSONObject obj = new JSONObject()
-                        .put("op", 8)
+                        .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
                         .put("d", new JSONObject()
-                                .put("guild_id", id)
-                                .put("query","")
-                                .put("limit", 0)
+                            .put("guild_id", id)
+                            .put("query","")
+                            .put("limit", 0)
                         );
                 api.getClient().chunkOrSyncRequest(obj);
             }
