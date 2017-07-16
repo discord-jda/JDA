@@ -258,7 +258,7 @@ public class EntityBuilder
                     api.getClient().chunkOrSyncRequest(obj);
                 }
                 JSONObject obj = new JSONObject()
-                        .put("op", WebSocketCode.REQUEST_MEMBERS)
+                        .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
                         .put("d", new JSONObject()
                             .put("guild_id", id)
                             .put("query","")
