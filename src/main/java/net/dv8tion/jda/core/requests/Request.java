@@ -18,8 +18,10 @@ package net.dv8tion.jda.core.requests;
 
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.ExceptionEvent;
+import net.dv8tion.jda.core.events.http.HttpRequestEvent;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
+import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 
 import java.util.function.Consumer;
@@ -28,30 +30,28 @@ public class Request<T>
 {
     private final JDAImpl api;
     private final RestAction<T> restAction;
-    private final Object data;
     private final Consumer<T> onSuccess;
     private final Consumer<Throwable> onFailure;
     private final boolean shouldQueue;
+    private final Route.CompiledRoute route;
+    private final RequestBody body;
+    private final Object rawBody;
+    private final CaseInsensitiveMap<String, String> headers;
 
     private boolean isCanceled = false;
 
-    /* package */ final CaseInsensitiveMap<String, String> customHeaders;
-
-    public Request(RestAction<T> restAction, Consumer<T> onSuccess, Consumer<Throwable> onFailure,
-                   boolean shouldQueue, CaseInsensitiveMap<String, String> headers)
+    public Request(RestAction<T> restAction, Consumer<T> onSuccess, Consumer<Throwable> onFailure, boolean shouldQueue, RequestBody body, Object rawBody, Route.CompiledRoute route, CaseInsensitiveMap<String, String> headers)
     {
         this.restAction = restAction;
-        this.data = restAction.data;
         this.onSuccess = onSuccess;
         this.onFailure = onFailure;
         this.shouldQueue = shouldQueue;
-        this.api = (JDAImpl) restAction.getJDA();
-        this.customHeaders = headers;
-    }
+        this.body = body;
+        this.rawBody = rawBody;
+        this.route = route;
+        this.headers = headers;
 
-    public Request(RestAction<T> restAction, Consumer<T> onSuccess, Consumer<Throwable> onFailure, boolean shouldQueue)
-    {
-        this(restAction, onSuccess, onFailure, shouldQueue, null);
+        this.api = (JDAImpl) restAction.getJDA();
     }
 
     public void onSuccess(T successObj)
@@ -76,7 +76,7 @@ public class Request<T>
     {
         if (response.code == 429)
         {
-            onFailure(new RateLimitedException(getRoute(), response.retryAfter));
+            onFailure(new RateLimitedException(route, response.retryAfter));
         }
         else
         {
@@ -105,6 +105,11 @@ public class Request<T>
         });
     }
 
+    public JDAImpl getJDA()
+    {
+        return api;
+    }
+
     public RestAction<T> getRestAction()
     {
         return restAction;
@@ -120,14 +125,24 @@ public class Request<T>
         return onFailure;
     }
 
-    public Route.CompiledRoute getRoute()
+    public CaseInsensitiveMap<String, String> getHeaders()
     {
-        return restAction.route;
+        return headers;
     }
 
-    public Object getData()
+    public Route.CompiledRoute getRoute()
     {
-        return data;
+        return route;
+    }
+
+    public RequestBody getBody()
+    {
+        return body;
+    }
+
+    public Object getRawBody()
+    {
+        return rawBody;
     }
 
     public boolean shouldQueue()
@@ -143,5 +158,11 @@ public class Request<T>
     public boolean isCanceled()
     {
         return isCanceled;
+    }
+
+    public void handleResponse(Response response)
+    {
+        api.getEventManager().handle(new HttpRequestEvent(this, response));
+        restAction.handleResponse(response, this);
     }
 }

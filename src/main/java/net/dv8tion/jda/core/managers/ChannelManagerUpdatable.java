@@ -29,7 +29,7 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
 /**
@@ -298,7 +298,7 @@ public class ChannelManagerUpdatable
             @Override
             public void checkValue(String value)
             {
-                Args.notEmpty(value, "name");
+                Checks.notEmpty(value, "name");
                 if (value.length() < 2 || value.length() > 100)
                     throw new IllegalArgumentException("Provided channel name must be 2 to 100 characters in length");
             }
@@ -325,7 +325,7 @@ public class ChannelManagerUpdatable
                 @Override
                 public void checkValue(Integer value)
                 {
-                    Args.notNull(value, "user limit");
+                    Checks.notNull(value, "user limit");
                     if (value < 0 || value > 99)
                         throw new IllegalArgumentException("Provided user limit must be 0 to 99.");
                 }
@@ -336,7 +336,7 @@ public class ChannelManagerUpdatable
                 @Override
                 public void checkValue(Integer value)
                 {
-                    Args.notNull(value, "bitrate");
+                    Checks.notNull(value, "bitrate");
                     if (value < 8000 || value > 96000) // TODO: vip servers can go up to 128000
                         throw new IllegalArgumentException("Provided bitrate must be 8000 to 96000");
                 }

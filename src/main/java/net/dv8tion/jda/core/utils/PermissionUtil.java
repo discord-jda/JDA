@@ -19,9 +19,7 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.AbstractChannelImpl;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
-import net.dv8tion.jda.core.entities.impl.PermissionOverrideImpl;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.http.util.Args;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -45,8 +43,8 @@ public class PermissionUtil
      */
     public static boolean canInteract(Member issuer, Member target)
     {
-        Args.notNull(issuer, "Issuer Member");
-        Args.notNull(target, "Target Member");
+        Checks.notNull(issuer, "Issuer Member");
+        Checks.notNull(target, "Target Member");
 
         Guild guild = issuer.getGuild();
         if (!guild.equals(target.getGuild()))
@@ -77,8 +75,8 @@ public class PermissionUtil
      */
     public static boolean canInteract(Member issuer, Role target)
     {
-        Args.notNull(issuer, "Issuer Member");
-        Args.notNull(target, "Target Role");
+        Checks.notNull(issuer, "Issuer Member");
+        Checks.notNull(target, "Target Role");
 
         Guild guild = issuer.getGuild();
         if (!guild.equals(target.getGuild()))
@@ -106,8 +104,8 @@ public class PermissionUtil
      */
     public static boolean canInteract(Role issuer, Role target)
     {
-        Args.notNull(issuer, "Issuer Role");
-        Args.notNull(target, "Target Role");
+        Checks.notNull(issuer, "Issuer Role");
+        Checks.notNull(target, "Target Role");
 
         if(!issuer.getGuild().equals(target.getGuild()))
             throw new IllegalArgumentException("The 2 Roles are not from same Guild!");
@@ -134,8 +132,8 @@ public class PermissionUtil
      */
     public static boolean canInteract(Member issuer, Emote emote)
     {
-        Args.notNull(issuer, "Issuer Member");
-        Args.notNull(emote,  "Target Emote");
+        Checks.notNull(issuer, "Issuer Member");
+        Checks.notNull(emote,  "Target Emote");
 
         if (!issuer.getGuild().equals(emote.getGuild()))
             throw new IllegalArgumentException("The issuer and target are not in the same Guild");
@@ -164,9 +162,9 @@ public class PermissionUtil
      */
     public static boolean canInteract(User issuer, Emote emote, MessageChannel channel, boolean botOverride)
     {
-        Args.notNull(issuer,  "Issuer Member");
-        Args.notNull(emote,   "Target Emote");
-        Args.notNull(channel, "Target Channel");
+        Checks.notNull(issuer,  "Issuer Member");
+        Checks.notNull(emote,   "Target Emote");
+        Checks.notNull(channel, "Target Channel");
 
         if (emote.isFake() || !emote.getGuild().isMember(issuer))
             return false; // cannot use an emote if you're not in its guild
@@ -209,30 +207,6 @@ public class PermissionUtil
         return canInteract(issuer, emote, channel, true);
     }
 
-    @Deprecated
-    public static PermissionOverride getFullPermOverride()
-    {
-        PermissionOverrideImpl override = new PermissionOverrideImpl(null, 0, null);
-        long allow = 0, deny = 0;
-        for (Permission permission : Permission.values())
-        {
-            if(permission != Permission.UNKNOWN)
-            {
-                allow = allow | (1 << permission.getOffset());
-            }
-        }
-        return override.setAllow(allow).setDeny(deny);
-    }
-
-    /**
-     * @deprecated Use {@link #checkPermission(net.dv8tion.jda.core.entities.Member, net.dv8tion.jda.core.Permission...)} instead
-     */
-    @Deprecated
-    public static boolean checkPermission(Guild guild, Member member, Permission... permissions)
-    {
-        return checkPermission(member, permissions);
-    }
-
     /**
      * Checks to see if the {@link net.dv8tion.jda.core.entities.Member Member} has the specified {@link net.dv8tion.jda.core.Permission Permissions}
      * in the specified {@link net.dv8tion.jda.core.entities.Guild Guild}. This method properly deals with Owner status.
@@ -255,8 +229,8 @@ public class PermissionUtil
      */
     public static boolean checkPermission(Member member, Permission... permissions)
     {
-        Args.notNull(member, "Member");
-        Args.notNull(permissions, "Permissions");
+        Checks.notNull(member, "Member");
+        Checks.notNull(permissions, "Permissions");
 
         long effectivePerms = getEffectivePermission(member);
         return isApplied(effectivePerms, Permission.ADMINISTRATOR.getRawValue())
@@ -289,9 +263,9 @@ public class PermissionUtil
      */
     public static boolean checkPermission(Channel channel, Member member, Permission... permissions)
     {
-        Args.notNull(channel, "Channel");
-        Args.notNull(member, "Member");
-        Args.notNull(permissions, "Permissions");
+        Checks.notNull(channel, "Channel");
+        Checks.notNull(member, "Member");
+        Checks.notNull(permissions, "Permissions");
 
         GuildImpl guild = (GuildImpl) channel.getGuild();
         checkGuild(guild, member.getGuild(), "Member");
@@ -304,15 +278,6 @@ public class PermissionUtil
         long effectivePerms = getEffectivePermission(channel, member);
         return isApplied(effectivePerms, Permission.ADMINISTRATOR.getRawValue())
                 || isApplied(effectivePerms, Permission.getRaw(permissions));
-    }
-
-    /**
-     * @deprecated Use {@link #getEffectivePermission(net.dv8tion.jda.core.entities.Member)} instead
-     */
-    @Deprecated
-    public static long getEffectivePermission(Guild guild, Member member)
-    {
-        return getEffectivePermission(member);
     }
 
     /**
@@ -335,7 +300,7 @@ public class PermissionUtil
      */
     public static long getEffectivePermission(Member member)
     {
-        Args.notNull(member, "Member");
+        Checks.notNull(member, "Member");
 
         if (member.isOwner())
             return Permission.ALL_PERMISSIONS;
@@ -372,8 +337,8 @@ public class PermissionUtil
      */
     public static long getEffectivePermission(Channel channel, Member member)
     {
-        Args.notNull(channel, "Channel");
-        Args.notNull(member, "Member");
+        Checks.notNull(channel, "Channel");
+        Checks.notNull(member, "Member");
         final long admin = Permission.ADMINISTRATOR.getRawValue();
 
         if (!channel.getGuild().equals(member.getGuild()))
@@ -429,8 +394,8 @@ public class PermissionUtil
      */
     public static long getEffectivePermission(Channel channel, Role role)
     {
-        Args.notNull(channel, "Channel");
-        Args.notNull(role, "Role");
+        Checks.notNull(channel, "Channel");
+        Checks.notNull(role, "Role");
 
         Guild guild = channel.getGuild();
         if (!guild.equals(role.getGuild()))
@@ -477,7 +442,7 @@ public class PermissionUtil
      */
     public static long getExplicitPermission(Member member)
     {
-        Args.notNull(member, "Member");
+        Checks.notNull(member, "Member");
 
         final Guild guild = member.getGuild();
         long permission = guild.getPublicRole().getPermissionsRaw();
@@ -515,8 +480,8 @@ public class PermissionUtil
      */
     public static long getExplicitPermission(Channel channel, Member member)
     {
-        Args.notNull(channel, "Channel");
-        Args.notNull(member, "Member");
+        Checks.notNull(channel, "Channel");
+        Checks.notNull(member, "Member");
 
         final Guild guild = member.getGuild();
         checkGuild(channel.getGuild(), guild, "Member");
@@ -557,8 +522,8 @@ public class PermissionUtil
      */
     public static long getExplicitPermission(Channel channel, Role role)
     {
-        Args.notNull(channel, "Channel");
-        Args.notNull(role, "Role");
+        Checks.notNull(channel, "Channel");
+        Checks.notNull(role, "Role");
 
         final Guild guild = role.getGuild();
         checkGuild(channel.getGuild(), guild, "Role");
@@ -642,7 +607,7 @@ public class PermissionUtil
 
     private static void checkGuild(Guild o1, Guild o2, String name)
     {
-        Args.check(o1.equals(o2),
+        Checks.check(o1.equals(o2),
             "Specified %s is not in the same guild! (%s / %s)", name, o1.toString(), o2.toString());
     }
 }

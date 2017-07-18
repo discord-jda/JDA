@@ -36,6 +36,12 @@ public abstract class Event
         this.responseNumber = responseNumber;
     }
 
+    public Event(JDA api)
+    {
+        this.api = api;
+        this.responseNumber = api.getResponseTotal();
+    }
+
     /**
      * Returns the JDA instance corresponding to this Event
      *

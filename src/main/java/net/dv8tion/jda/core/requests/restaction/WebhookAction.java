@@ -22,7 +22,8 @@ import net.dv8tion.jda.core.entities.Webhook;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
+import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 /**
@@ -37,7 +38,7 @@ public class WebhookAction extends AuditableRestAction<Webhook>
 
     public WebhookAction(JDA api, Route.CompiledRoute route, String name)
     {
-        super(api, route, null);
+        super(api, route);
         this.name = name;
     }
 
@@ -54,7 +55,7 @@ public class WebhookAction extends AuditableRestAction<Webhook>
      */
     public WebhookAction setName(String name)
     {
-        Args.notNull(name, "Webhook name");
+        Checks.notNull(name, "Webhook name");
         if (name.length() < 2 || name.length() > 100)
             throw new IllegalArgumentException("The webhook name must be in the range of 2-100!");
 
@@ -78,13 +79,13 @@ public class WebhookAction extends AuditableRestAction<Webhook>
     }
 
     @Override
-    public void finalizeData()
+    public RequestBody finalizeData()
     {
-        JSONObject data = new JSONObject();
-        data.put("name",   name);
-        data.put("avatar", avatar != null ? avatar.getEncoding() : JSONObject.NULL);
+        JSONObject object = new JSONObject();
+        object.put("name",   name);
+        object.put("avatar", avatar != null ? avatar.getEncoding() : JSONObject.NULL);
 
-        super.data = data;
+        return getRequestBody(object);
     }
 
     @Override

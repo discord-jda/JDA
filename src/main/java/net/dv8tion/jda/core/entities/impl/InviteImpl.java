@@ -24,9 +24,8 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
-import net.dv8tion.jda.core.requests.Route.CompiledRoute;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -65,12 +64,12 @@ public class InviteImpl implements Invite
 
     public static RestAction<Invite> resolve(final JDA api, final String code)
     {
-        Args.notNull(code, "code");
-        Args.notNull(api, "api");
+        Checks.notNull(code, "code");
+        Checks.notNull(api, "api");
 
         final Route.CompiledRoute route = Route.Invites.GET_INVITE.compile(code);
 
-        return new RestAction<Invite>(api, route, null)
+        return new RestAction<Invite>(api, route)
         {
             @Override
             protected void handleResponse(final Response response, final Request<Invite> request)
@@ -93,7 +92,7 @@ public class InviteImpl implements Invite
     {
         final Route.CompiledRoute route = Route.Invites.DELETE_INVITE.compile(this.code);
 
-        return new AuditableRestAction<Void>(this.api, route, null)
+        return new AuditableRestAction<Void>(this.api, route)
         {
             @Override
             protected void handleResponse(final Response response, final Request<Void> request)
@@ -119,7 +118,7 @@ public class InviteImpl implements Invite
 
         final Member member = guild.getSelfMember();
 
-        CompiledRoute route;
+        Route.CompiledRoute route;
 
         final net.dv8tion.jda.core.entities.Channel channel = this.channel.getType() == ChannelType.TEXT
                 ? guild.getTextChannelById(this.channel.getIdLong())
@@ -138,7 +137,7 @@ public class InviteImpl implements Invite
             throw new PermissionException("You don't have the permission to view the full invite info");
         }
 
-        return new RestAction<Invite>(this.api, route, null)
+        return new RestAction<Invite>(this.api, route)
         {
             @Override
             protected void handleResponse(final Response response, final Request<Invite> request)

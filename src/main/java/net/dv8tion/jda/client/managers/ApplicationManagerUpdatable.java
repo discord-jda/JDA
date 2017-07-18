@@ -25,7 +25,7 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -237,7 +237,7 @@ public class ApplicationManagerUpdatable
             @Override
             public void checkValue(final Boolean value)
             {
-                Args.notNull(value, "doesBotRequireCodeGrant");
+                Checks.notNull(value, "doesBotRequireCodeGrant");
             }
         };
 
@@ -266,7 +266,7 @@ public class ApplicationManagerUpdatable
             @Override
             public void checkValue(final Boolean value)
             {
-                Args.notNull(value, "isBotPublic");
+                Checks.notNull(value, "isBotPublic");
             }
         };
 
@@ -275,7 +275,7 @@ public class ApplicationManagerUpdatable
             @Override
             public void checkValue(final String value)
             {
-                Args.notNull(value, "application name");
+                Checks.notNull(value, "application name");
                 if (value.length() < 2 || value.length() > 32)
                     throw new IllegalArgumentException("Application name must be 2 to 32 characters in length");
             }
@@ -286,11 +286,11 @@ public class ApplicationManagerUpdatable
             @Override
             public void checkValue(final List<String> value)
             {
-                Args.notNull(value, "redirect uris");
+                Checks.notNull(value, "redirect uris");
                 for (final String url : value)
                 {
 
-                    Args.notNull(url, "redirect uri");
+                    Checks.notNull(url, "redirect uri");
                     if (!ApplicationManagerUpdatable.URL_PATTERN.matcher(url).matches())
                         throw new IllegalArgumentException("URL must be a valid http or https url.");
                 }

@@ -15,17 +15,17 @@
  */
 package net.dv8tion.jda.core;
 
-import com.neovisionaries.ws.client.ProxySettings;
 import com.neovisionaries.ws.client.WebSocketFactory;
 import net.dv8tion.jda.core.JDA.Status;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
-import org.apache.http.HttpHost;
-import org.apache.http.util.Args;
+import okhttp3.OkHttpClient;
+import net.dv8tion.jda.core.utils.Checks;
 
 import javax.security.auth.login.LoginException;
 import java.util.Arrays;
@@ -46,11 +46,10 @@ import java.util.List;
  */
 public class JDABuilder
 {
-    protected static boolean jdaCreated = false;
-    protected static HttpHost proxy = null;
-
     protected final List<Object> listeners;
 
+    protected OkHttpClient.Builder httpClientBuilder = null;
+    protected WebSocketFactory wsFactory = null;
     protected AccountType accountType;
     protected String token = null;
     protected IEventManager eventManager = null;
@@ -58,7 +57,6 @@ public class JDABuilder
     protected JDA.ShardInfo shardInfo = null;
     protected Game game = null;
     protected OnlineStatus status = OnlineStatus.ONLINE;
-    protected int websocketTimeout = 0;
     protected int maxReconnectDelay = 900;
     protected int corePoolSize = 2;
     protected boolean enableVoice = true;
@@ -83,6 +81,51 @@ public class JDABuilder
             throw new NullPointerException("Provided AccountType was null!");
         this.accountType = accountType;
         listeners = new LinkedList<>();
+    }
+
+    /**
+     * Sets the proxy that will be used by <b>ALL</b> JDA instances.
+     * <br>Once this is set <b>IT CANNOT BE CHANGED.</b>
+     * <br>After a JDA instance as been created, this method can never be called again, even if you are creating a new JDA object.
+     * <br><b>Note:</b> currently this only supports HTTP proxies.
+     *
+     * @deprecated Use {@link #setHttpClientBuilder(okhttp3.OkHttpClient.Builder)} instead.
+     *
+     * @param  proxy
+     *         The proxy to use.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this method is called after proxy settings have already been set or after at least 1 JDA object has been created.
+     *
+     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    @Deprecated
+    public JDABuilder setProxy(Object proxy)
+    {
+        return this;
+    }
+
+    /**
+     * Sets the timeout (in milliseconds) for all Websockets created by JDA (MainWS and AudioWS's) for this instance.
+     *
+     * <p>By default, this is set to <b>0</b> which is supposed to represent infinite-timeout, however due to how the JVM
+     * is implemented at the lower level (typically C), an infinite timeout will usually not be respected, and as such
+     * providing an explicitly defined timeout will typically work better.
+     *
+     * <p>Default: <b>0 - Infinite-Timeout (maybe?)</b>
+     *
+     * @deprecated
+     *         Use the more powerful {@link #setWebsocketFactory(WebSocketFactory)} instead
+     *
+     * @param  websocketTimeout
+     *         Non-negative int representing Websocket timeout in milliseconds.
+     *
+     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    @Deprecated
+    public JDABuilder setWebSocketTimeout(int websocketTimeout)
+    {
+        return this;
     }
 
     /**
@@ -120,51 +163,37 @@ public class JDABuilder
     }
 
     /**
-     * Sets the proxy that will be used by <b>ALL</b> JDA instances.
-     * <br>Once this is set <b>IT CANNOT BE CHANGED.</b>
-     * <br>After a JDA instance as been created, this method can never be called again, even if you are creating a new JDA object.
-     * <br><b>Note:</b> currently this only supports HTTP proxies.
+     * Sets the {@link okhttp3.OkHttpClient.Builder Builder} that will be used by JDA's requester.
+     * This can be used to set things such as connection timeout and proxy. 
      *
-     * @param  proxy
-     *         The proxy to use.
-     *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this method is called after proxy settings have already been set or after at least 1 JDA object has been created.
+     * @param  builder
+     *         The new {@link okhttp3.OkHttpClient.Builder Builder} to use.
      *
      * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
      */
-    public JDABuilder setProxy(HttpHost proxy)
+    public JDABuilder setHttpClientBuilder(OkHttpClient.Builder builder)
     {
-        if (jdaCreated)
-            throw new UnsupportedOperationException("You cannot change the proxy after a JDA object has been created. Proxy settings are global among all instances!");
-        this.proxy = proxy;
+        this.httpClientBuilder = builder;
         return this;
     }
 
     /**
-     * Sets the timeout (in milliseconds) for all Websockets created by JDA (MainWS and AudioWS's) for this instance.
+     * Sets the {@link com.neovisionaries.ws.client.WebSocketFactory WebSocketFactory} that will be used by JDA's websocket client.
+     * This can be used to set things such as connection timeout and proxy.
      *
-     * <p>By default, this is set to <b>0</b> which is supposed to represent infinite-timeout, however due to how the JVM
-     * is implemented at the lower level (typically C), an infinite timeout will usually not be respected, and as such
-     * providing an explicitly defined timeout will typically work better.
+     * @param  factory
+     *         The new {@link com.neovisionaries.ws.client.WebSocketFactory WebSocketFactory} to use.
      *
-     * <p>Default: <b>0 - Infinite-Timeout (maybe?)</b>
-     *
-     * @param  websocketTimeout
-     *         Non-negative int representing Websocket timeout in milliseconds.
-     *
-     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
      */
-    public JDABuilder setWebSocketTimeout(int websocketTimeout)
+    public JDABuilder setWebsocketFactory(WebSocketFactory factory)
     {
-        Args.notNegative(websocketTimeout, "Provided WebSocket timeout cannot be negative!");
-
-        this.websocketTimeout = websocketTimeout;
+        this.wsFactory = factory;
         return this;
     }
 
     /**
-     * Sets the amount core pool size for the global JDA
+     * Sets the core pool size for the global JDA
      * {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} which is used
      * in various locations throughout the JDA instance created by this builder. (Default: 2)
      *
@@ -174,11 +203,11 @@ public class JDABuilder
      * @throws java.lang.IllegalArgumentException
      *         If the specified core pool size is not positive
      *
-     * @return the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
      */
     public JDABuilder setCorePoolSize(int size)
     {
-        Args.positive(size, "Core pool size");
+        Checks.positive(size, "Core pool size");
         this.corePoolSize = size;
         return this;
     }
@@ -192,7 +221,7 @@ public class JDABuilder
      * @param  enabled
      *         True - enables voice support.
      *
-     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
      */
     public JDABuilder setAudioEnabled(boolean enabled)
     {
@@ -210,7 +239,7 @@ public class JDABuilder
      * @param  enabled
      *         True - The MESSAGE_DELETE_BULK will be split into multiple individual MessageDeleteEvents.
      *
-     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
      */
     public JDABuilder setBulkDeleteSplittingEnabled(boolean enabled)
     {
@@ -408,7 +437,7 @@ public class JDABuilder
      */
     public JDABuilder setMaxReconnectDelay(int maxReconnectDelay)
     {
-        Args.check(maxReconnectDelay >= 32, "Max reconnect delay must be 32 seconds or greater. You provided %d.", maxReconnectDelay);
+        Checks.check(maxReconnectDelay >= 32, "Max reconnect delay must be 32 seconds or greater. You provided %d.", maxReconnectDelay);
 
         this.maxReconnectDelay = maxReconnectDelay;
         return this;
@@ -420,23 +449,31 @@ public class JDABuilder
      * <br>The shardId that receives all stuff related to given bot is calculated as follows: shardId == (guildId {@literal >>} 22) % shardTotal;
      * <br><b>PMs are only sent to shard 0.</b>
      *
-     * <p>Please note, that a shard will not even know about guilds not assigned to.
+     * <p>Please note, that a shard will not know about guilds which are not assigned to it.
+     *
+     * <p><b>It is not possible to use sharding with an account for {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}!</b>
      *
      * @param  shardId
      *         The id of this shard (starting at 0).
      * @param  shardTotal
      *         The number of overall shards.
      *
-     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
+     *         If this is used on a JDABuilder for {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided shard configuration is invalid
+     *         ({@code 0 <= shardId < shardTotal} with {@code shardTotal > 0})
+     *
+     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
      *
      * @see    net.dv8tion.jda.core.JDA#getShardInfo() JDA.getShardInfo()
      */
     public JDABuilder useSharding(int shardId, int shardTotal)
     {
-        if (shardId < 0 || shardTotal < 2 || shardId >= shardTotal)
-        {
-            throw new RuntimeException("This configuration of shardId and shardTotal is not allowed! 0 <= shardId < shardTotal with shardTotal > 1");
-        }
+        if (accountType != AccountType.BOT)
+            throw new AccountTypeException(AccountType.BOT);
+        if (shardId < 0 || shardTotal < 1 || shardId >= shardTotal)
+            throw new RuntimeException("This configuration of shardId and shardTotal is not allowed! 0 <= shardId < shardTotal with shardTotal > 0");
         shardInfo = new JDA.ShardInfo(shardId, shardTotal);
         return this;
     }
@@ -465,18 +502,9 @@ public class JDABuilder
      */
     public JDA buildAsync() throws LoginException, IllegalArgumentException, RateLimitedException
     {
-        jdaCreated = true;
-
-        WebSocketFactory wsFactory = new WebSocketFactory();
-        wsFactory.setConnectionTimeout(websocketTimeout);
-        if (proxy != null)
-        {
-            ProxySettings settings = wsFactory.getProxySettings();
-            settings.setHost(proxy.getHostName());
-            settings.setPort(proxy.getPort());
-        }
-
-        JDAImpl jda = new JDAImpl(accountType, proxy, wsFactory, autoReconnect, enableVoice, enableShutdownHook,
+        OkHttpClient.Builder httpClientBuilder = this.httpClientBuilder == null ? new OkHttpClient.Builder() : this.httpClientBuilder;
+        WebSocketFactory wsFactory = this.wsFactory == null ? new WebSocketFactory() : this.wsFactory;
+        JDAImpl jda = new JDAImpl(accountType, httpClientBuilder, wsFactory, autoReconnect, enableVoice, enableShutdownHook,
                 enableBulkDeleteSplitting, corePoolSize, maxReconnectDelay);
 
         if (eventManager != null)

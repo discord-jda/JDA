@@ -24,6 +24,7 @@ import net.dv8tion.jda.client.handle.*;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.WebSocketCode;
 import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.entities.Guild;
@@ -38,7 +39,6 @@ import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import org.apache.commons.lang3.tuple.MutablePair;
-import org.apache.http.HttpHost;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -57,7 +57,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected final JDAImpl api;
     protected final JDA.ShardInfo shardInfo;
-    protected final HttpHost proxy;
     protected final Map<String, SocketHandler> handlers = new HashMap<>();
     protected final List<String> cfRays = new LinkedList<>();
 
@@ -83,6 +82,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected final LinkedList<String> chunkSyncQueue = new LinkedList<>();
     protected final LinkedList<String> ratelimitQueue = new LinkedList<>();
+    protected final LinkedList<String> traces = new LinkedList<>();
     protected volatile Thread ratelimitThread = null;
     protected volatile long ratelimitResetTime;
     protected volatile int messagesSent;
@@ -95,7 +95,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         this.api = api;
         this.shardInfo = api.getShardInfo();
-        this.proxy = api.getGlobalProxy();
         this.shouldReconnect = api.isAutoReconnect();
         setupHandlers();
         setupSendingThread();
@@ -105,6 +104,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public List<String> getCfRays()
     {
         return cfRays;
+    }
+
+    public List<String> getTraces()
+    {
+        return traces;
     }
 
     public void setAutoReconnect(boolean reconnect)
@@ -348,7 +352,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         try
         {
-            RestAction<String> gateway = new RestAction<String>(api, Route.Misc.GATEWAY.compile(),null)
+            RestAction<String> gateway = new RestAction<String>(api, Route.Misc.GATEWAY.compile())
             {
                 @Override
                 protected void handleResponse(Response response, Request<String> request)
@@ -395,13 +399,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         messagesSent = 0;
         ratelimitResetTime = System.currentTimeMillis() + 60000;
         if (sessionId == null)
-        {
             sendIdentify();
-        }
         else
-        {
             sendResume();
-        }
     }
 
     @Override
@@ -496,27 +496,35 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         switch (opCode)
         {
-            case 0:
+            case WebSocketCode.DISPATCH:
                 handleEvent(content);
                 break;
-            case 1:
+            case WebSocketCode.HEARTBEAT:
                 LOG.debug("Got Keep-Alive request (OP 1). Sending response...");
                 sendKeepAlive();
                 break;
-            case 7:
+            case WebSocketCode.RECONNECT:
                 LOG.debug("Got Reconnect request (OP 7). Closing connection now...");
                 close();
                 break;
-            case 9:
+            case WebSocketCode.INVALIDATE_SESSION:
                 LOG.debug("Got Invalidate request (OP 9). Invalidating...");
                 invalidate();
                 sendIdentify();
                 break;
-            case 10:
+            case WebSocketCode.HELLO:
                 LOG.debug("Got HELLO packet (OP 10). Initializing keep-alive.");
-                setupKeepAlive(content.getJSONObject("d").getLong("heartbeat_interval"));
+                final JSONObject data = content.getJSONObject("d");
+                setupKeepAlive(data.getLong("heartbeat_interval"));
+                if (!data.isNull("_trace"))
+                {
+                    final JSONArray arr = data.getJSONArray("_trace");
+                    WebSocketClient.LOG.debug("Received a _trace for HELLO (OP: " + WebSocketCode.HELLO + ") with " + arr);
+                    for (Object o : arr)
+                        traces.add(String.valueOf(o));
+                }
                 break;
-            case 11:
+            case WebSocketCode.HEARTBEAT_ACK:
                 LOG.trace("Got Heartbeat Ack (OP 11).");
                 api.setPing(System.currentTimeMillis() - heartbeatStartTime);
                 break;
@@ -555,7 +563,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         String keepAlivePacket =
                 new JSONObject()
-                    .put("op", 1)
+                    .put("op", WebSocketCode.HEARTBEAT)
                     .put("d", api.getResponseTotal()
                 ).toString();
 
@@ -569,7 +577,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         LOG.debug("Sending Identify-packet...");
         PresenceImpl presenceObj = (PresenceImpl) api.getPresence();
         JSONObject identify = new JSONObject()
-                .put("op", 2)
+                .put("op", WebSocketCode.IDENTIFY)
                 .put("d", new JSONObject()
                         .put("presence", presenceObj.getFullPresence())
                         .put("token", api.getToken())
@@ -598,12 +606,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         LOG.debug("Sending Resume-packet...");
         JSONObject resume = new JSONObject()
-                .put("op", 6)
-                .put("d", new JSONObject()
-                        .put("session_id", sessionId)
-                        .put("token", api.getToken())
-                        .put("seq", api.getResponseTotal())
-                );
+            .put("op", WebSocketCode.RESUME)
+            .put("d", new JSONObject()
+                .put("session_id", sessionId)
+                .put("token", api.getToken())
+                .put("seq", api.getResponseTotal())
+            );
         send(resume.toString(), true);
         sentAuthInfo = true;
     }
@@ -776,6 +784,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             LOG.warn("Got an unexpected Json-parse error. Please redirect following message to the devs:\n\t"
                     + ex.getMessage() + "\n\t" + type + " -> " + content);
+            LOG.log(ex);
         }
         catch (Exception ex)
         {

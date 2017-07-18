@@ -31,13 +31,7 @@ import java.util.List;
 
 /**
  * {@link net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction PaginationAction}
- * that paginates the endpoints:
- * <ul>
- *     <li>{@link net.dv8tion.jda.core.requests.Route.Self#GET_RECENT_MENTIONS Route.Self.GET_RECENT_MENTIONS}</li>
- *     <li>{@link net.dv8tion.jda.core.requests.Route.Self#GET_RECENT_MENTIONS_BEFORE Route.Self.GET_RECENT_MENTIONS_BEFORE}</li>
- *     <li>{@link net.dv8tion.jda.core.requests.Route.Self#GET_RECENT_MENTIONS_GUILD Route.Self.GET_RECENT_MENTIONS_GUILD}</li>
- *     <li>{@link net.dv8tion.jda.core.requests.Route.Self#GET_RECENT_MENTIONS_GUILD_BEFORE Route.Self.GET_RECENT_MENTIONS_GUILD_BEFORE}</li>
- * </ul>
+ * that paginates the endpoint {@link net.dv8tion.jda.core.requests.Route.Self#GET_RECENT_MENTIONS Route.Self.GET_RECENT_MENTIONS}.
  *
  * <p><b>Must provide not-null {@link net.dv8tion.jda.core.entities.Guild Guild} to compile a valid guild mentions
  * pagination route.</b>, else it uses the global pagination route.
@@ -68,8 +62,7 @@ public class MentionPaginationAction extends PaginationAction<Message, MentionPa
      */
     public MentionPaginationAction(JDA api)
     {
-        super(api, 1, 100, 100);
-        this.guild = null;
+        this(api, null);
     }
 
     /**
@@ -86,7 +79,13 @@ public class MentionPaginationAction extends PaginationAction<Message, MentionPa
      */
     public MentionPaginationAction(Guild guild)
     {
-        super(guild.getJDA(), 1, 100, 25);
+        this(guild.getJDA(), guild);
+    }
+
+    private MentionPaginationAction(JDA api, Guild guild)
+    {
+        super(api, Route.Self.GET_RECENT_MENTIONS.compile(), 1, 100, 100);
+
         this.guild = guild;
     }
 
@@ -136,19 +135,25 @@ public class MentionPaginationAction extends PaginationAction<Message, MentionPa
     }
 
     @Override
-    protected void finalizeRoute()
+    protected Route.CompiledRoute finalizeRoute()
     {
-        Message last = this.last;
+        Route.CompiledRoute route = super.finalizeRoute();
+
         String limit, before, everyone, role;
         limit = String.valueOf(super.getLimit());
         before = last != null ? last.getId() : null;
         everyone = String.valueOf(isEveryone);
         role = String.valueOf(isRole);
 
+        route = route.withQueryParams("limit", limit, "roles", role, "everyone", everyone);
+
         if (guild != null)
-            route = prepareGuild(limit, before, everyone, role);
-        else
-            route = prepareGlobal(limit, before, everyone, role);
+            route = route.withQueryParams("guild_id", guild.getId());
+
+        if (before != null)
+            route = route.withQueryParams("before", before);
+
+        return route;
     }
 
     @Override
@@ -173,22 +178,6 @@ public class MentionPaginationAction extends PaginationAction<Message, MentionPa
         }
 
         request.onSuccess(mentions);
-    }
-
-    protected Route.CompiledRoute prepareGuild(String limit, String before, String everyone, String role)
-    {
-        if (before != null)
-            return Route.Self.GET_RECENT_MENTIONS_GUILD_BEFORE.compile(limit, role, everyone, guild.getId(), before);
-        else
-            return Route.Self.GET_RECENT_MENTIONS_GUILD.compile(limit, role, everyone, guild.getId());
-    }
-
-    protected Route.CompiledRoute prepareGlobal(String limit, String before, String everyone, String role)
-    {
-        if (before != null)
-            return Route.Self.GET_RECENT_MENTIONS_BEFORE.compile(limit, role, everyone, before);
-        else
-            return Route.Self.GET_RECENT_MENTIONS.compile(limit, role, everyone);
     }
 
 }

@@ -135,7 +135,6 @@ public class UserImpl implements User
         return getJDA().getMutualGuilds(this);
     }
 
-    @Override
     public PrivateChannel getPrivateChannel()
     {
         if (!hasPrivateChannel())
