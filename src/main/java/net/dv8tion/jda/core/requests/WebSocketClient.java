@@ -58,7 +58,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected final JDAImpl api;
     protected final JDA.ShardInfo shardInfo;
     protected final Map<String, SocketHandler> handlers = new HashMap<>();
-    protected final List<String> cfRays = new LinkedList<>();
+    protected final Set<String> cfRays = new HashSet<>();
+    protected final Set<String> traces = new HashSet<>();
 
     protected WebSocket socket;
     protected String gatewayUrl = null;
@@ -82,7 +83,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected final LinkedList<String> chunkSyncQueue = new LinkedList<>();
     protected final LinkedList<String> ratelimitQueue = new LinkedList<>();
-    protected final LinkedList<String> traces = new LinkedList<>();
     protected volatile Thread ratelimitThread = null;
     protected volatile long ratelimitResetTime;
     protected volatile int messagesSent;
@@ -101,12 +101,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         connect();
     }
 
-    public List<String> getCfRays()
+    public Set<String> getCfRays()
     {
         return cfRays;
     }
 
-    public List<String> getTraces()
+    public Set<String> getTraces()
     {
         return traces;
     }

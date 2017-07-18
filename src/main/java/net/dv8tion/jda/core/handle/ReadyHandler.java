@@ -34,7 +34,7 @@ import net.dv8tion.jda.core.requests.WebSocketClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.List;
+import java.util.Set;
 
 public class ReadyHandler extends SocketHandler
 {
@@ -58,7 +58,7 @@ public class ReadyHandler extends SocketHandler
         {
             final JSONArray arr = content.getJSONArray("_trace");
             WebSocketClient.LOG.debug("Received a _trace for READY (OP: " + WebSocketCode.DISPATCH + ") with " + arr);
-            final List<String> traces = api.getClient().getTraces();
+            final Set<String> traces = api.getClient().getTraces();
             for (Object o : arr)
                 traces.add(String.valueOf(o));
         }
