@@ -304,6 +304,12 @@ public class JDAImpl implements JDA
     }
 
     @Override
+    public List<String> getWebSocketTrace()
+    {
+        return Collections.unmodifiableList(new LinkedList<>(client.getTraces()));
+    }
+
+    @Override
     public List<User> getUsers()
     {
         return Collections.unmodifiableList(new ArrayList<>(users.valueCollection()));

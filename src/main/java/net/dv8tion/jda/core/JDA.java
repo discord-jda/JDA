@@ -167,6 +167,15 @@ public interface JDA
     List<String> getCloudflareRays();
 
     /**
+     * Receives all valid {@code _trace} lines that have been sent to us
+     * in this session.
+     * <br>These values reset on every reconnect! (not resume)
+     *
+     * @return List of all websocket traces
+     */
+    List<String> getWebSocketTrace();
+
+    /**
      * Changes the internal EventManager.
      *
      * <p>The default EventManager is {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventListener}.

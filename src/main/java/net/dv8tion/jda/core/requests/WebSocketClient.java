@@ -82,6 +82,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected final LinkedList<String> chunkSyncQueue = new LinkedList<>();
     protected final LinkedList<String> ratelimitQueue = new LinkedList<>();
+    protected final LinkedList<String> traces = new LinkedList<>();
     protected volatile Thread ratelimitThread = null;
     protected volatile long ratelimitResetTime;
     protected volatile int messagesSent;
@@ -103,6 +104,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public List<String> getCfRays()
     {
         return cfRays;
+    }
+
+    public List<String> getTraces()
+    {
+        return traces;
     }
 
     public void setAutoReconnect(boolean reconnect)
@@ -393,13 +399,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         messagesSent = 0;
         ratelimitResetTime = System.currentTimeMillis() + 60000;
         if (sessionId == null)
-        {
             sendIdentify();
-        }
         else
-        {
             sendResume();
-        }
     }
 
     @Override
@@ -512,7 +514,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 break;
             case WebSocketCode.HELLO:
                 LOG.debug("Got HELLO packet (OP 10). Initializing keep-alive.");
-                setupKeepAlive(content.getJSONObject("d").getLong("heartbeat_interval"));
+                final JSONObject data = content.getJSONObject("d");
+                setupKeepAlive(data.getLong("heartbeat_interval"));
+                if (!data.isNull("_trace"))
+                {
+                    final JSONArray arr = data.getJSONArray("_trace");
+                    WebSocketClient.LOG.debug("Received a _trace for HELLO (OP: " + WebSocketCode.HELLO + ") with " + arr);
+                    for (Object o : arr)
+                        traces.add(String.valueOf(o));
+                }
                 break;
             case WebSocketCode.HEARTBEAT_ACK:
                 LOG.trace("Got Heartbeat Ack (OP 11).");
@@ -596,12 +606,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         LOG.debug("Sending Resume-packet...");
         JSONObject resume = new JSONObject()
-                .put("op", WebSocketCode.RESUME)
-                .put("d", new JSONObject()
-                        .put("session_id", sessionId)
-                        .put("token", api.getToken())
-                        .put("seq", api.getResponseTotal())
-                );
+            .put("op", WebSocketCode.RESUME)
+            .put("d", new JSONObject()
+                .put("session_id", sessionId)
+                .put("token", api.getToken())
+                .put("seq", api.getResponseTotal())
+            );
         send(resume.toString(), true);
         sentAuthInfo = true;
     }
@@ -774,6 +784,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             LOG.warn("Got an unexpected Json-parse error. Please redirect following message to the devs:\n\t"
                     + ex.getMessage() + "\n\t" + type + " -> " + content);
+            LOG.log(ex);
         }
         catch (Exception ex)
         {
