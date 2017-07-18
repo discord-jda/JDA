@@ -598,7 +598,8 @@ public class EntityBuilder
                 .setLastMessageId(json.isNull("last_message_id") ? -1 : json.getLong("last_message_id"))
                 .setName(json.getString("name"))
                 .setTopic(json.isNull("topic") ? "" : json.getString("topic"))
-                .setRawPosition(json.getInt("position"));
+                .setRawPosition(json.getInt("position"))
+                .setNsfw(json.optBoolean("nsfw", false)); // missing defaults to false
     }
 
     public VoiceChannel createVoiceChannel(JSONObject json, long guildId)
