@@ -34,8 +34,6 @@ import net.dv8tion.jda.core.requests.WebSocketClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.Set;
-
 public class ReadyHandler extends SocketHandler
 {
     private final TLongSet incompleteGuilds = new TLongHashSet();
@@ -55,13 +53,7 @@ public class ReadyHandler extends SocketHandler
         EntityBuilder builder = api.getEntityBuilder();
 
         if (!content.isNull("_trace"))
-        {
-            final JSONArray arr = content.getJSONArray("_trace");
-            WebSocketClient.LOG.debug("Received a _trace for READY (OP: " + WebSocketCode.DISPATCH + ") with " + arr);
-            final Set<String> traces = api.getClient().getTraces();
-            for (Object o : arr)
-                traces.add(String.valueOf(o));
-        }
+            api.getClient().updateTraces(content.getJSONArray("_trace"), "Received a _trace for READY (OP: " + WebSocketCode.DISPATCH + ") with");
         //Core
         JSONArray guilds = content.getJSONArray("guilds");
         JSONObject selfJson = content.getJSONObject("user");

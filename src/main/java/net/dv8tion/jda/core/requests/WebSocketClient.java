@@ -111,6 +111,14 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         return traces;
     }
 
+    public void updateTraces(JSONArray arr, String message)
+    {
+        WebSocketClient.LOG.debug(message + ' ' + arr);
+        traces.clear();
+        for (Object o : arr)
+            traces.add(String.valueOf(o));
+    }
+
     public void setAutoReconnect(boolean reconnect)
     {
         this.shouldReconnect = reconnect;
@@ -517,12 +525,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 final JSONObject data = content.getJSONObject("d");
                 setupKeepAlive(data.getLong("heartbeat_interval"));
                 if (!data.isNull("_trace"))
-                {
-                    final JSONArray arr = data.getJSONArray("_trace");
-                    WebSocketClient.LOG.debug("Received a _trace for HELLO (OP: " + WebSocketCode.HELLO + ") with " + arr);
-                    for (Object o : arr)
-                        traces.add(String.valueOf(o));
-                }
+                    updateTraces(data.getJSONArray("_trace"), "Received a _trace for HELLO (OP: " + WebSocketCode.HELLO + ") with");
                 break;
             case WebSocketCode.HEARTBEAT_ACK:
                 LOG.trace("Got Heartbeat Ack (OP 11).");
@@ -771,6 +774,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                         initiating = false;
                         ready();
                     }
+                    if (!content.isNull("_trace"))
+                        updateTraces(content.getJSONArray("_trace"), "Received a _trace for RESUMED (OP: " + WebSocketCode.DISPATCH + ") with");
                     break;
                 default:
                     SocketHandler handler = handlers.get(type);
