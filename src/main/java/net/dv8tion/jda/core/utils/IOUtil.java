@@ -16,8 +16,6 @@
 
 package net.dv8tion.jda.core.utils;
 
-import org.apache.http.util.Args;
-
 import java.io.*;
 
 public class IOUtil
@@ -42,8 +40,8 @@ public class IOUtil
      */
     public static byte[] readFully(File file) throws IOException
     {
-        Args.notNull(file, "File");
-        Args.check(file.exists(), "Provided file does not exist!");
+        Checks.notNull(file, "File");
+        Checks.check(file.exists(), "Provided file does not exist!");
 
         try (InputStream is = new FileInputStream(file))
         {
@@ -100,7 +98,7 @@ public class IOUtil
      */
     public static byte[] readFully(InputStream stream) throws IOException
     {
-        Args.notNull(stream, "InputStream");
+        Checks.notNull(stream, "InputStream");
 
         byte[] buffer = new byte[1024];
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream())

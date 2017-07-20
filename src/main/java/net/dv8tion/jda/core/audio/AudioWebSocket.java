@@ -17,6 +17,7 @@
 package net.dv8tion.jda.core.audio;
 
 import com.neovisionaries.ws.client.*;
+import net.dv8tion.jda.core.WebSocketCode;
 import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.entities.Guild;
@@ -103,6 +104,14 @@ public class AudioWebSocket extends WebSocketAdapter
     @Override
     public void onConnected(WebSocket websocket, Map<String, List<String>> headers)
     {
+        if (shutdown)
+        {
+            //Somehow this AudioWebSocket was shutdown before we finished connecting....
+            // thus we just disconnect here since we were asked to shutdown
+            socket.sendClose(1000);
+            return;
+        }
+
         JSONObject connectObj = new JSONObject()
                 .put("op", 0)
                 .put("d", new JSONObject()
@@ -133,7 +142,7 @@ public class AudioWebSocket extends WebSocketAdapter
                 int heartbeatInterval = content.getInt("heartbeat_interval");
 
                 //Find our external IP and Port using Discord
-                InetSocketAddress externalIpAndPort = null;
+                InetSocketAddress externalIpAndPort;
 
                 changeStatus(ConnectionStatus.CONNECTING_ATTEMPTING_UDP_DISCOVERY);
                 int tries = 0;
@@ -235,10 +244,13 @@ public class AudioWebSocket extends WebSocketAdapter
             LOG.debug("ClientReason: " + clientCloseFrame.getCloseReason());
             LOG.debug("ClientCode: " + clientCloseFrame.getCloseCode());
             if (clientCloseFrame.getCloseCode() != 1000)
+            {
+                // unexpected close -> error
                 this.close(ConnectionStatus.ERROR_LOST_CONNECTION);
+                return;
+            }
         }
-        else
-            this.close(ConnectionStatus.NOT_CONNECTED);
+        this.close(ConnectionStatus.NOT_CONNECTED);
     }
 
     @Override
@@ -318,7 +330,7 @@ public class AudioWebSocket extends WebSocketAdapter
         if (closeStatus != ConnectionStatus.AUDIO_REGION_CHANGE)
         {
             JSONObject obj = new JSONObject()
-                .put("op", 4)
+                .put("op", WebSocketCode.VOICE_STATE)
                 .put("d", new JSONObject()
                     .put("guild_id", guild.getId())
                     .put("channel_id", JSONObject.NULL)
@@ -532,6 +544,16 @@ public class AudioWebSocket extends WebSocketAdapter
         this.shouldReconnect = shouldReconnect;
     }
 
+    @Override
+    protected void finalize() throws Throwable
+    {
+        if (!shutdown)
+        {
+            LOG.fatal("Finalization hook of AudioWebSocket was triggered without properly shutting down");
+            close(ConnectionStatus.ERROR_LOST_CONNECTION);
+        }
+    }
+
     public static class KeepAliveThreadFactory implements ThreadFactory
     {
         final String identifier;
@@ -545,7 +567,7 @@ public class AudioWebSocket extends WebSocketAdapter
         @Override
         public Thread newThread(Runnable r)
         {
-            Thread t = new Thread(r, identifier + " - Thread " + threadCount.getAndIncrement());
+            Thread t = new Thread(AudioManagerImpl.AUDIO_THREADS, r, identifier + " - Thread " + threadCount.getAndIncrement());
             t.setDaemon(true);
 
             return t;

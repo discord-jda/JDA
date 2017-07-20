@@ -24,8 +24,8 @@ package net.dv8tion.jda.core.entities;
  * <br>A fake user can occur when sharding. Discord only sends private messages to Shard 0. If a User which is connected
  * to Guilds on shard 1 sends a private message to the logged in account, it is received on Shard 0. However, if Shard 0
  * does not know about the User due to not having a Guild connection with them, it will use the information provided in
- * the MESSAGE_CREATE event to create a temporary fake user. In this case, the {@link net.dv8tion.jda.core.entities.User#getPrivateChannel()}
- * is also fake!
+ * the MESSAGE_CREATE event to create a temporary fake user.
+ * In this case, the associated {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} is also fake!
  *
  * <p>Another example would be a fake {@link net.dv8tion.jda.core.entities.Emote Emote}. If a user sends a message containing
  * an Emote from a {@link net.dv8tion.jda.core.entities.Guild Guild} that the currently logged in account is not a part of,

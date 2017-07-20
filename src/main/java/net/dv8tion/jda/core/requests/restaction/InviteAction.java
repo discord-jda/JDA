@@ -21,7 +21,8 @@ import net.dv8tion.jda.core.entities.Invite;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
+import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import java.util.concurrent.TimeUnit;
@@ -39,11 +40,11 @@ public class InviteAction extends AuditableRestAction<Invite>
 
     public InviteAction(final JDA api, final String channelId)
     {
-        super(api, Route.Invites.CREATE_INVITE.compile(channelId), null);
+        super(api, Route.Invites.CREATE_INVITE.compile(channelId));
     }
 
     @Override
-    protected void finalizeData()
+    protected RequestBody finalizeData()
     {
         final JSONObject object = new JSONObject();
 
@@ -56,7 +57,7 @@ public class InviteAction extends AuditableRestAction<Invite>
         if (this.unique != null)
             object.put("unique", (boolean) this.unique);
 
-        this.data = object;
+        return getRequestBody(object);
     }
 
     @Override
@@ -83,7 +84,7 @@ public class InviteAction extends AuditableRestAction<Invite>
     public final InviteAction setMaxAge(final Integer maxAge)
     {
         if (maxAge != null)
-            Args.notNegative(maxAge, "maxAge");
+            Checks.notNegative(maxAge, "maxAge");
 
         this.maxAge = maxAge;
         return this;
@@ -108,8 +109,8 @@ public class InviteAction extends AuditableRestAction<Invite>
         if (maxAge == null)
             return this.setMaxAge(null);
 
-        Args.notNegative(maxAge, "maxAge");
-        Args.notNull(timeUnit, "timeUnit");
+        Checks.notNegative(maxAge, "maxAge");
+        Checks.notNull(timeUnit, "timeUnit");
 
         return this.setMaxAge(Math.toIntExact(timeUnit.toSeconds(maxAge)));
     }
@@ -129,7 +130,7 @@ public class InviteAction extends AuditableRestAction<Invite>
     public final InviteAction setMaxUses(final Integer maxUses)
     {
         if (maxUses != null)
-            Args.notNegative(maxUses, "maxUses");
+            Checks.notNegative(maxUses, "maxUses");
 
         this.maxUses = maxUses;
         return this;

@@ -21,7 +21,7 @@ import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.utils.PermissionUtil;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 
 import java.awt.Color;
 import java.time.OffsetDateTime;
@@ -148,7 +148,7 @@ public class MemberImpl implements Member
     @Override
     public boolean hasPermission(Collection<Permission> permissions)
     {
-        Args.notNull(permissions, "Permission Collection");
+        Checks.notNull(permissions, "Permission Collection");
 
         return hasPermission(permissions.toArray(new Permission[permissions.size()]));
     }
@@ -162,7 +162,7 @@ public class MemberImpl implements Member
     @Override
     public boolean hasPermission(Channel channel, Collection<Permission> permissions)
     {
-        Args.notNull(permissions, "Permission Collection");
+        Checks.notNull(permissions, "Permission Collection");
 
         return hasPermission(channel, permissions.toArray(new Permission[permissions.size()]));
     }

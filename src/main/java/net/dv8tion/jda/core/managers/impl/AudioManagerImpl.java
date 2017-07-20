@@ -18,6 +18,7 @@ package net.dv8tion.jda.core.managers.impl;
 import com.sun.jna.Platform;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.WebSocketCode;
 import net.dv8tion.jda.core.audio.AudioConnection;
 import net.dv8tion.jda.core.audio.AudioReceiveHandler;
 import net.dv8tion.jda.core.audio.AudioSendHandler;
@@ -34,13 +35,14 @@ import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.utils.NativeUtil;
 import net.dv8tion.jda.core.utils.PermissionUtil;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
 import java.io.IOException;
 
 public class AudioManagerImpl implements AudioManager
 {
+    public static final ThreadGroup AUDIO_THREADS = new ThreadGroup("jda-audio");
     //These values are set at the bottom of this file.
     public static boolean AUDIO_SUPPORTED;
     public static String OPUS_LIB_NAME;
@@ -80,7 +82,7 @@ public class AudioManagerImpl implements AudioManager
     @Override
     public void openAudioConnection(VoiceChannel channel)
     {
-        Args.notNull(channel, "Provided VoiceChannel");
+        Checks.notNull(channel, "Provided VoiceChannel");
 
         if (!AUDIO_SUPPORTED)
             throw new UnsupportedOperationException("Sorry! Audio is disabled due to an internal JDA error! Contact Dev!");
@@ -338,7 +340,7 @@ public class AudioManagerImpl implements AudioManager
 
             //This is technically equivalent to an audio open/move packet.
             JSONObject voiceStateChange = new JSONObject()
-                    .put("op", 4)
+                    .put("op", WebSocketCode.VOICE_STATE)
                     .put("d", new JSONObject()
                             .put("guild_id", guild.getId())
                             .put("channel_id", channel.getId())

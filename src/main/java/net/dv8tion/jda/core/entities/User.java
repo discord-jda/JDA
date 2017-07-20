@@ -148,25 +148,6 @@ public interface User extends ISnowflake, IMentionable, IFakeable
     List<Guild> getMutualGuilds();
 
     /**
-     * Gets the {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} of this
-     * {@link net.dv8tion.jda.core.entities.User User} for use in sending direct messages.
-     *
-     * @throws java.lang.IllegalStateException
-     *         If JDA does not have a private channel cached for this user. Use {@link #hasPrivateChannel()} to check
-     *         and {@link #openPrivateChannel()} to open a channel.
-     *
-     * @return Never-null {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} that is associated with this {@link net.dv8tion.jda.core.entities.User User}.
-     *
-     * @deprecated
-     *         This method will be removed in version <b>3.2</b> due to improper usage by most new users.
-     *         <br>Please use {@link #openPrivateChannel()} instead and use the response PrivateChannel.
-     *         More information can be found in the wiki:
-     *         <a target="_blank" href="https://github.com/DV8FromTheWorld/JDA/wiki/7%29-Using-RestAction">Using RestAction</a>
-     */
-    @Deprecated
-    PrivateChannel getPrivateChannel();
-
-    /**
      * Returns whether or not the given user is a Bot-Account (special badge in client, some different behaviour)
      *
      * @return If the User's Account is marked as Bot

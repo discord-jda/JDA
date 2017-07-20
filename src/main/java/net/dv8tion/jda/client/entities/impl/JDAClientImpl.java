@@ -33,7 +33,7 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.MiscUtil;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONArray;
 
 import java.util.ArrayList;
@@ -221,7 +221,7 @@ public class JDAClientImpl implements JDAClient
     @Override
     public MentionPaginationAction getRecentMentions(Guild guild)
     {
-        Args.notNull(guild, "Guild");
+        Checks.notNull(guild, "Guild");
         if (!guild.isAvailable())
             throw new GuildUnavailableException("Cannot retrieve recent mentions for this Guild due to it being temporarily unavailable!");
         return new MentionPaginationAction(guild);
@@ -258,7 +258,7 @@ public class JDAClientImpl implements JDAClient
     public RestAction<List<Application>> getApplications()
     {
         Route.CompiledRoute route = Route.Applications.GET_APPLICATIONS.compile();
-        return new RestAction<List<Application>>(api, route, null)
+        return new RestAction<List<Application>>(api, route)
         {
             @Override
             protected void handleResponse(Response response, Request<List<Application>> request)
@@ -285,10 +285,10 @@ public class JDAClientImpl implements JDAClient
     @Override
     public RestAction<Application> getApplicationById(String id)
     {
-        Args.notEmpty(id, "id");
+        Checks.notEmpty(id, "id");
 
         Route.CompiledRoute route = Route.Applications.GET_APPLICATION.compile(id);
-        return new RestAction<Application>(api, route, null)
+        return new RestAction<Application>(api, route)
         {
             @Override
             protected void handleResponse(Response response, Request<Application> request)
@@ -305,7 +305,7 @@ public class JDAClientImpl implements JDAClient
     public RestAction<List<AuthorizedApplication>> getAuthorizedApplications()
     {
         Route.CompiledRoute route = Route.Applications.GET_AUTHORIZED_APPLICATIONS.compile();
-        return new RestAction<List<AuthorizedApplication>>(api, route, null)
+        return new RestAction<List<AuthorizedApplication>>(api, route)
         {
             @Override
             protected void handleResponse(Response response, Request<List<AuthorizedApplication>> request)
@@ -332,10 +332,10 @@ public class JDAClientImpl implements JDAClient
     @Override
     public RestAction<AuthorizedApplication> getAuthorizedApplicationById(String id)
     {
-        Args.notEmpty(id, "id");
+        Checks.notEmpty(id, "id");
 
         Route.CompiledRoute route = Route.Applications.GET_AUTHORIZED_APPLICATION.compile(id);
-        return new RestAction<AuthorizedApplication>(api, route, null)
+        return new RestAction<AuthorizedApplication>(api, route)
         {
             @Override
             protected void handleResponse(Response response, Request<AuthorizedApplication> request)

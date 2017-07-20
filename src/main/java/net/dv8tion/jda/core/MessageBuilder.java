@@ -17,7 +17,7 @@ package net.dv8tion.jda.core;
 
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.MessageImpl;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -221,7 +221,7 @@ public class MessageBuilder implements Appendable
      */
     public MessageBuilder appendFormat(String format, Object... args)
     {
-        Args.notEmpty(format, "Format String");
+        Checks.notEmpty(format, "Format String");
         this.append(String.format(format, args));
         return this;
     }

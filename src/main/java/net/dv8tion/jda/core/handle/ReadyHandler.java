@@ -21,6 +21,7 @@ import net.dv8tion.jda.client.entities.impl.FriendImpl;
 import net.dv8tion.jda.client.entities.impl.UserSettingsImpl;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.OnlineStatus;
+import net.dv8tion.jda.core.WebSocketCode;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Guild;
@@ -31,6 +32,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class ReadyHandler extends SocketHandler
@@ -51,6 +53,14 @@ public class ReadyHandler extends SocketHandler
     {
         EntityBuilder builder = api.getEntityBuilder();
 
+        if (!content.isNull("_trace"))
+        {
+            final JSONArray arr = content.getJSONArray("_trace");
+            WebSocketClient.LOG.debug("Received a _trace for READY (OP: " + WebSocketCode.DISPATCH + ") with " + arr);
+            final List<String> traces = api.getClient().getTraces();
+            for (Object o : arr)
+                traces.add(String.valueOf(o));
+        }
         //Core
         JSONArray guilds = content.getJSONArray("guilds");
         JSONObject selfJson = content.getJSONObject("user");
@@ -229,7 +239,7 @@ public class ReadyHandler extends SocketHandler
             if (guildIds.length() == 50)
             {
                 api.getClient().chunkOrSyncRequest(new JSONObject()
-                        .put("op", 12)
+                        .put("op", WebSocketCode.GUILD_SYNC)
                         .put("d", guildIds));
                 guildIds = new JSONArray();
             }
@@ -239,7 +249,7 @@ public class ReadyHandler extends SocketHandler
         if (guildIds.length() > 0)
         {
             api.getClient().chunkOrSyncRequest(new JSONObject()
-                    .put("op", 12)
+                    .put("op", WebSocketCode.GUILD_SYNC)
                     .put("d", guildIds));
         }
         guildsRequiringSyncing.clear();

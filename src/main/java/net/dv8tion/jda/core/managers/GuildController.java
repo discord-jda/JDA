@@ -38,7 +38,7 @@ import net.dv8tion.jda.core.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.core.requests.restaction.order.RoleOrderAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.PermissionUtil;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -140,8 +140,8 @@ public class GuildController
     public RestAction<Void> moveVoiceMember(Member member, VoiceChannel voiceChannel)
     {
         checkAvailable();
-        Args.notNull(member, "member");
-        Args.notNull(member, "voiceChannel");
+        Checks.notNull(member, "member");
+        Checks.notNull(member, "voiceChannel");
         checkGuild(member.getGuild(), "member");
         checkGuild(voiceChannel.getGuild(), "voiceChannel");
 
@@ -222,7 +222,7 @@ public class GuildController
     public AuditableRestAction<Void> setNickname(Member member, String nickname)
     {
         checkAvailable();
-        Args.notNull(member, "member");
+        Checks.notNull(member, "member");
         checkGuild(member.getGuild(), "member");
 
         if(member.equals(guild.getSelfMember()))
@@ -301,8 +301,8 @@ public class GuildController
         if (days < 1)
             throw new IllegalArgumentException("Days amount must be at minimum 1 day.");
 
-        Route.CompiledRoute route = Route.Guilds.PRUNE_MEMBERS.compile(guild.getId(), Integer.toString(days));
-        return new AuditableRestAction<Integer>(guild.getJDA(), route, null)
+        Route.CompiledRoute route = Route.Guilds.PRUNE_MEMBERS.compile(guild.getId()).withQueryParams("days", Integer.toString(days));
+        return new AuditableRestAction<Integer>(guild.getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Integer> request)
@@ -313,42 +313,6 @@ public class GuildController
                     request .onFailure(response);
             }
         };
-    }
-
-    /**
-     * The method calculates the amount of Members that would be pruned if {@link #prune(int)} was executed.
-     * Prunability is determined by a Member being offline for at least <i>days</i> days.
-     *
-     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The prune count cannot be fetched due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>We were removed from the Guild before finishing the task</li>
-     * </ul>
-     *
-     * @param  days
-     *         Minimum number of days since a member has been offline to get affected.
-     *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *         If the account doesn't have {@link net.dv8tion.jda.core.Permission#KICK_MEMBERS KICK_MEMBER} Permission.
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
-     * @throws IllegalArgumentException
-     *         If the provided days are less than {@code 1}
-     *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Integer
-     *         <br>The amount of Members that would be affected.
-     *
-     * @deprecated
-     *         Use {@link net.dv8tion.jda.core.entities.Guild#getPrunableMemberCount(int) Guild.getPrunableMemberCount(int)} instead
-     */
-    @Deprecated
-    public RestAction<Integer> getPrunableMemberCount(int days)
-    {
-        return getGuild().getPrunableMemberCount(days);
     }
 
     /**
@@ -393,19 +357,19 @@ public class GuildController
     public AuditableRestAction<Void> kick(Member member, String reason)
     {
         checkAvailable();
-        Args.notNull(member, "member");
+        Checks.notNull(member, "member");
         checkGuild(member.getGuild(), "member");
         checkPermission(Permission.KICK_MEMBERS);
         checkPosition(member);
 
         final String userId = member.getUser().getId();
         final String guildId = guild.getId();
-        final Route.CompiledRoute route;
+
+        Route.CompiledRoute route = Route.Guilds.KICK_MEMBER.compile(guildId, userId);
         if (reason != null && !reason.isEmpty())
-            route = Route.Guilds.KICK_MEMBER_REASON.compile(guildId, userId, MiscUtil.encodeUTF8(reason));
-        else
-            route = Route.Guilds.KICK_MEMBER.compile(guildId, userId);
-        return new AuditableRestAction<Void>(guild.getJDA(), route, null)
+            route = route.withQueryParams("reason", MiscUtil.encodeUTF8(reason));
+
+        return new AuditableRestAction<Void>(guild.getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -458,7 +422,7 @@ public class GuildController
      */
     public AuditableRestAction<Void> kick(String userId, String reason)
     {
-        Args.notBlank(userId, "userId");
+        Checks.notBlank(userId, "userId");
 
         Member member = guild.getMemberById(userId);
         if (member == null)
@@ -598,7 +562,7 @@ public class GuildController
     public AuditableRestAction<Void> ban(Member member, int delDays, String reason)
     {
         checkAvailable();
-        Args.notNull(member, "member");
+        Checks.notNull(member, "member");
         //Don't check if the provided member is from this guild. It doesn't matter if they are or aren't.
 
         return ban(member.getUser(), delDays, reason);
@@ -653,7 +617,7 @@ public class GuildController
     public AuditableRestAction<Void> ban(User user, int delDays, String reason)
     {
         checkAvailable();
-        Args.notNull(user, "User");
+        Checks.notNull(user, "user");
         checkPermission(Permission.BAN_MEMBERS);
 
         if (guild.isMember(user)) // If user is in guild. Check if we are able to ban.
@@ -663,28 +627,14 @@ public class GuildController
             throw new IllegalArgumentException("Provided delDays cannot be less that 0. How can you delete messages that are -1 days old?");
 
         final String userId = user.getId();
-        final boolean isReason = reason != null && !reason.isEmpty();
-        if (isReason)
-            reason = MiscUtil.encodeUTF8(reason);
 
-        final Route.CompiledRoute route;
+        Route.CompiledRoute route = Route.Guilds.BAN.compile(guild.getId(), userId);
+        if (reason != null && !reason.isEmpty())
+            route = route.withQueryParams("reason", MiscUtil.encodeUTF8(reason));
         if (delDays > 0)
-        {
-            final String days = Integer.toString(delDays);
-            if (isReason)
-                route = Route.Guilds.BAN_WITH_DELETE_REASON.compile(guild.getId(), userId, days, reason);
-            else
-                route = Route.Guilds.BAN_WITH_DELETE.compile(guild.getId(), userId, days);
-        }
-        else
-        {
-            if (isReason)
-                route = Route.Guilds.BAN_REASON.compile(guild.getId(), userId, reason);
-            else
-                route = Route.Guilds.BAN.compile(guild.getId(), userId);
-        }
+            route = route.withQueryParams("delete-message-days", Integer.toString(delDays));
 
-        return new AuditableRestAction<Void>(guild.getJDA(), route, null)
+        return new AuditableRestAction<Void>(guild.getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -743,7 +693,7 @@ public class GuildController
     public AuditableRestAction<Void> ban(String userId, int delDays, String reason)
     {
         checkAvailable();
-        Args.notBlank(userId, "UserId");
+        Checks.notBlank(userId, "userId");
         checkPermission(Permission.BAN_MEMBERS);
 
         User user = guild.getJDA().getUserById(userId);
@@ -752,29 +702,13 @@ public class GuildController
             return ban(user, delDays, reason);
         }
 
-        final boolean isReason = reason != null && !reason.isEmpty();
-        if (isReason)
-            reason = MiscUtil.encodeUTF8(reason);
-
-        final String guildId = guild.getId();
-        final Route.CompiledRoute route;
+        Route.CompiledRoute route = Route.Guilds.BAN.compile(guild.getId(), userId);
+        if (reason != null && !reason.isEmpty())
+            route = route.withQueryParams("reason", MiscUtil.encodeUTF8(reason));
         if (delDays > 0)
-        {
-            final String days = Integer.toString(delDays);
-            if (isReason)
-                route = Route.Guilds.BAN_WITH_DELETE_REASON.compile(guildId, userId, days, reason);
-            else
-                route = Route.Guilds.BAN_WITH_DELETE.compile(guildId, userId, days);
-        }
-        else
-        {
-            if (isReason)
-                route = Route.Guilds.BAN_REASON.compile(guildId, userId, reason);
-            else
-                route = Route.Guilds.BAN.compile(guildId, userId);
-        }
+            route = route.withQueryParams("delete-message-days", Integer.toString(delDays));
 
-        return new AuditableRestAction<Void>(guild.getJDA(), route, null)
+        return new AuditableRestAction<Void>(guild.getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -965,7 +899,7 @@ public class GuildController
      */
     public AuditableRestAction<Void> unban(User user)
     {
-        Args.notNull(user, "user");
+        Checks.notNull(user, "user");
 
         return unban(user.getId());
     }
@@ -1001,11 +935,12 @@ public class GuildController
     public AuditableRestAction<Void> unban(String userId)
     {
         checkAvailable();
-        Args.notBlank(userId, "userId");
+        Checks.notBlank(userId, "userId");
         checkPermission(Permission.BAN_MEMBERS);
 
         Route.CompiledRoute route = Route.Guilds.UNBAN.compile(guild.getId(), userId);
-        return new AuditableRestAction<Void>(guild.getJDA(), route, null)
+
+        return new AuditableRestAction<Void>(guild.getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -1060,7 +995,7 @@ public class GuildController
     public AuditableRestAction<Void> setDeafen(Member member, boolean deafen)
     {
         checkAvailable();
-        Args.notNull(member, "member");
+        Checks.notNull(member, "member");
         checkGuild(member.getGuild(), "member");
         checkPermission(Permission.VOICE_DEAF_OTHERS);
 
@@ -1127,7 +1062,7 @@ public class GuildController
     public AuditableRestAction<Void> setMute(Member member, boolean mute)
     {
         checkAvailable();
-        Args.notNull(member, "member");
+        Checks.notNull(member, "member");
         checkGuild(member.getGuild(), "member");
         checkPermission(Permission.VOICE_MUTE_OTHERS);
 
@@ -1152,38 +1087,6 @@ public class GuildController
                     request.onFailure(response);
             }
         };
-    }
-
-    /**
-     * Gets an unmodifiable list of the currently banned {@link net.dv8tion.jda.core.entities.User Users}.
-     * <br>If you wish to ban or unban a user, please {@link #ban(net.dv8tion.jda.core.entities.User, int)} or
-     * {@link #unban(net.dv8tion.jda.core.entities.User)}.
-     *
-     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The ban list cannot be fetched due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>We were removed from the Guild before finishing the task</li>
-     * </ul>
-     *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
-     *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@literal List<}{@link net.dv8tion.jda.core.entities.User User}{@literal >}
-     *         <br>An unmodifiable list of all users currently banned from this Guild
-     *
-     * @deprecated
-     *         Use {@link net.dv8tion.jda.core.entities.Guild#getBans() Guild.getBans()} instead
-     */
-    @Deprecated
-    public RestAction<List<User>> getBans()
-    {
-        return getGuild().getBans();
     }
 
     /**
@@ -1451,14 +1354,14 @@ public class GuildController
     public AuditableRestAction<Void> modifyMemberRoles(Member member, Collection<Role> rolesToAdd, Collection<Role> rolesToRemove)
     {
         checkAvailable();
-        Args.notNull(member, "member");
-        Args.notNull(rolesToAdd, "Collection containing roles to be added to the member");
-        Args.notNull(rolesToRemove, "Collection containing roles to be removed from the member");
+        Checks.notNull(member, "member");
+        Checks.notNull(rolesToAdd, "Collection containing roles to be added to the member");
+        Checks.notNull(rolesToRemove, "Collection containing roles to be removed from the member");
         checkGuild(member.getGuild(), "member");
         checkPermission(Permission.MANAGE_ROLES);
         rolesToAdd.forEach(role ->
         {
-            Args.notNull(role, "role in rolesToAdd");
+            Checks.notNull(role, "role in rolesToAdd");
             checkGuild(role.getGuild(), "role: " + role.toString());
             checkPosition(role);
             if (role.isManaged())
@@ -1466,7 +1369,7 @@ public class GuildController
         });
         rolesToRemove.forEach(role ->
         {
-            Args.notNull(role, "role in rolesToRemove");
+            Checks.notNull(role, "role in rolesToRemove");
             checkGuild(role.getGuild(), "role: " + role.toString());
             checkPosition(role);
             if (role.isManaged())
@@ -1599,12 +1502,12 @@ public class GuildController
     public AuditableRestAction<Void> modifyMemberRoles(Member member, Collection<Role> roles)
     {
         checkAvailable();
-        Args.notNull(member, "member");
-        Args.notNull(roles, "roles");
+        Checks.notNull(member, "member");
+        Checks.notNull(roles, "roles");
         checkGuild(member.getGuild(), "member");
         roles.forEach(role ->
         {
-            Args.notNull(role, "role in collection");
+            Checks.notNull(role, "role in collection");
             checkGuild(role.getGuild(), "role: " + role.toString());
             checkPosition(role);
         });
@@ -1679,7 +1582,7 @@ public class GuildController
     public AuditableRestAction<Void> transferOwnership(Member newOwner)
     {
         checkAvailable();
-        Args.notNull(newOwner, "newOwner member");
+        Checks.notNull(newOwner, "newOwner member");
         checkGuild(newOwner.getGuild(), "newOwner member");
         if (!guild.getOwner().equals(guild.getSelfMember()))
             throw new PermissionException("The logged in account must be the owner of this Guild to be able to transfer ownership");
@@ -1736,14 +1639,11 @@ public class GuildController
     {
         checkAvailable();
         checkPermission(Permission.MANAGE_CHANNEL);
-        Args.notNull(name, "name");
+        Checks.notNull(name, "name");
 
         if (name.length() < 2 || name.length() > 100)
             throw new IllegalArgumentException("Provided name must be 2 - 100 characters in length");
 
-        JSONObject body = new JSONObject()
-                .put("type", "text")
-                .put("name", name);
         Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(guild.getId());
         return new ChannelAction(route, name, guild, false);
     }
@@ -1779,14 +1679,11 @@ public class GuildController
     {
         checkAvailable();
         checkPermission(Permission.MANAGE_CHANNEL);
-        Args.notNull(name, "name");
+        Checks.notNull(name, "name");
 
         if (name.length() < 2 || name.length() > 100)
             throw new IllegalArgumentException("Provided name must be 2 to 100 characters in length");
 
-        JSONObject body = new JSONObject()
-                .put("type", "voice")
-                .put("name", name);
         Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(guild.getId());
         return new ChannelAction(route, name, guild, true);
     }
@@ -1833,7 +1730,7 @@ public class GuildController
      */
     public ChannelAction createCopyOfChannel(Channel channel)
     {
-        Args.notNull(channel, "Channel");
+        Checks.notNull(channel, "Channel");
         checkPermission(Permission.MANAGE_CHANNEL);
         boolean isVoice = channel instanceof VoiceChannel;
 
@@ -1896,8 +1793,8 @@ public class GuildController
      */
     public WebhookAction createWebhook(TextChannel channel, String name)
     {
-        Args.notNull(name, "Webhook name");
-        Args.notNull(channel, "TextChannel");
+        Checks.notNull(name, "Webhook name");
+        Checks.notNull(channel, "TextChannel");
         checkGuild(channel.getGuild(), "channel");
         if (!guild.getSelfMember().hasPermission(channel, Permission.MANAGE_WEBHOOKS))
             throw new PermissionException(Permission.MANAGE_WEBHOOKS);
@@ -1978,8 +1875,6 @@ public class GuildController
      */
     public RoleAction createCopyOfRole(Role role)
     {
-        Route.CompiledRoute route = Route.Roles.CREATE_ROLE.compile(guild.getId());
-
         return createRole()
                 .setColor(role.getColor())
                 .setPermissions(role.getPermissionsRaw())
@@ -2028,8 +1923,8 @@ public class GuildController
     {
         checkAvailable();
         checkPermission(Permission.MANAGE_EMOTES);
-        Args.notNull(name, "emote name");
-        Args.notNull(icon, "emote icon");
+        Checks.notNull(name, "emote name");
+        Checks.notNull(icon, "emote icon");
 
         if (getJDA().getAccountType() != AccountType.CLIENT)
             throw new AccountTypeException(AccountType.CLIENT);

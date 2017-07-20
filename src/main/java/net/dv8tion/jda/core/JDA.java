@@ -22,8 +22,7 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.requests.RestAction;
-import org.apache.http.HttpHost;
-
+import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import java.util.Collection;
 import java.util.List;
 import javax.annotation.CheckReturnValue;
@@ -167,6 +166,15 @@ public interface JDA
      * @return Immutable list of all cf-ray values for this session
      */
     List<String> getCloudflareRays();
+
+    /**
+     * Receives all valid {@code _trace} lines that have been sent to us
+     * in this session.
+     * <br>These values reset on every reconnect! (not resume)
+     *
+     * @return List of all websocket traces
+     */
+    List<String> getWebSocketTrace();
 
     /**
      * Changes the internal EventManager.
@@ -699,14 +707,6 @@ public interface JDA
     int getMaxReconnectDelay();
 
     /**
-     * The proxy settings used by all JDA instances.
-     *
-     * @return The proxy settings used by all JDA instances. If JDA currently isn't using a proxy,
-     *         {@link java.net.Proxy#NO_PROXY Proxy.NO_PROXY} is returned.
-     */
-    HttpHost getGlobalProxy();
-
-    /**
      * Sets whether or not JDA should try to automatically reconnect if a connection-error is encountered.
      * <br>This will use an incremental reconnect (timeouts are increased each time an attempt fails).
      *
@@ -745,35 +745,49 @@ public interface JDA
     boolean isBulkDeleteSplittingEnabled();
 
     /**
-     * Shuts down JDA, closing all its connections.
+     * Shuts down this JDA instance, closing all its connections.
+     * After this command is issued the JDA Instance can not be used anymore.
+     * Already enqueued {@link net.dv8tion.jda.core.requests.RestAction RestActions} are still going to be executed.
      *
-     * <p>This is the same as calling {@link #shutdown(boolean) shutdown(true)}.
+     * <p>If you want this instance to shutdown without executing, use {@link #shutdownNow() shutdownNow()}
+     *
+     * @see #shutdownNow()
      */
     void shutdown();
 
     /**
      * Shuts down JDA, closing all its connections.
      * After this command is issued the JDA Instance can not be used anymore.
-     *
-     * <p>Depending on the value of {@code free}, this will also close the background-thread used for requests by Unirest.
-     * <br>If the background-thread is closed, the system can exit properly, but no further JDA requests are possible (includes other JDA instances).
-     * If you want to create any new instances or if you have any other instances running in parallel, then {@code free}
-     * should be set to false.
+     * Already enqueued {@link net.dv8tion.jda.core.requests.RestAction RestActions} are still executed.
+     * 
+     * @deprecated
+     *         Use {@link #shutdown()} instead.
      *
      * @param  free If true, shuts down JDA's rest system permanently for all current and future instances.
      */
-    void shutdown(boolean free);
+    @Deprecated
+    default void shutdown(boolean free)
+    {
+        this.shutdown();
+    }
 
     /**
-     * Installs an auxiliary cable into your system.
+     * Shuts down this JDA instance instantly.
+     * This will also cancel all queued {@link net.dv8tion.jda.core.requests.RestAction RestActions}.
+     *
+     * @see #shutdown()
+     */
+    void shutdownNow();
+
+    /**
+     * Installs an auxiliary cable into the given port of your system.
      *
      * @param  port
-     *         the port to install to.
-     *
-     * @throws UnsupportedOperationException
-     *         when you don't read the docs
+     *         The port in which the cable should be installed.
+     *         
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}{@literal <}{@link Void}{@literal >}
      */
-    void installAuxiliaryCable(int port) throws UnsupportedOperationException;
+    AuditableRestAction<Void> installAuxiliaryCable(int port);
 
     /**
      * The {@link net.dv8tion.jda.core.AccountType} of the currently logged in account.

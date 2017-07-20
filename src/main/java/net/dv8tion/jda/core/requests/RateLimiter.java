@@ -16,9 +16,7 @@
 
 package net.dv8tion.jda.core.requests;
 
-import com.mashape.unirest.http.HttpResponse;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.requests.Route.CompiledRoute;
 import net.dv8tion.jda.core.requests.ratelimit.IBucket;
 
 import java.util.ArrayList;
@@ -32,28 +30,27 @@ public abstract class RateLimiter
     //Implementations of this class exist in the net.dv8tion.jda.core.requests.ratelimit package.
 
     protected final Requester requester;
-    protected final ScheduledExecutorService pool;
-    protected volatile boolean isShutdown;
+    protected final ScheduledThreadPoolExecutor pool;
+    protected volatile boolean isShutdown = false; 
     protected volatile ConcurrentHashMap<String, IBucket> buckets = new ConcurrentHashMap<>();
     protected volatile ConcurrentLinkedQueue<IBucket> submittedBuckets = new ConcurrentLinkedQueue<>();
 
     protected RateLimiter(Requester requester, int poolSize)
     {
         this.requester = requester;
-        this.isShutdown = false;
-        this.pool = Executors.newScheduledThreadPool(poolSize, new RateLimitThreadFactory(requester.getJDA()));
+        this.pool = new ScheduledThreadPoolExecutor(poolSize, new RateLimitThreadFactory(requester.getJDA()));
     }
 
 
     // -- Required Implementations --
-    public abstract Long getRateLimit(CompiledRoute route);
+    public abstract Long getRateLimit(Route.CompiledRoute route);
     protected abstract void queueRequest(Request request);
-    protected abstract Long handleResponse(CompiledRoute route, HttpResponse<String> response);
+    protected abstract Long handleResponse(Route.CompiledRoute route, okhttp3.Response response);
 
 
     // --- Default Implementations --
 
-    public boolean isRateLimited(CompiledRoute route)
+    public boolean isRateLimited(Route.CompiledRoute route)
     {
         return getRateLimit(route) != null;
     }
@@ -74,10 +71,16 @@ public abstract class RateLimiter
         }
     }
 
-    protected void shutdown()
+    protected void shutdown(long time, TimeUnit unit)
     {
         isShutdown = true;
 
+        pool.setKeepAliveTime(time, unit);
+        pool.allowCoreThreadTimeOut(true);
+    }
+
+    public void forceShutdown()
+    {
         pool.shutdownNow();
     }
 
