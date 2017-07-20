@@ -21,6 +21,8 @@ import net.dv8tion.jda.core.managers.WebhookManager;
 import net.dv8tion.jda.core.managers.WebhookManagerUpdatable;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
+import javax.annotation.CheckReturnValue;
+
 /**
  * An object representing Webhooks in Discord
  *
@@ -123,6 +125,7 @@ public interface Webhook extends ISnowflake
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>The rest action to delete this Webhook.
      */
+    @CheckReturnValue
     AuditableRestAction<Void> delete();
 
     /**

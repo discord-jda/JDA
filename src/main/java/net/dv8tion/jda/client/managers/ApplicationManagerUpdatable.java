@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
+import javax.annotation.CheckReturnValue;
 
 /**
  * An {@link #update() updatable} manager that allows
@@ -319,6 +320,7 @@ public class ApplicationManagerUpdatable
      *         <br>Updates all modified fields or does nothing if none of the {@link net.dv8tion.jda.core.managers.fields.Field Fields}
      *         have been modified. ({@link net.dv8tion.jda.core.requests.RestAction.EmptyRestAction EmptyRestAction})
      */
+    @CheckReturnValue
     public RestAction<Void> update()
     {
         if (!this.needsUpdate())

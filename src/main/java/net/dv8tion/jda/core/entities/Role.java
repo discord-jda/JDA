@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.managers.RoleManagerUpdatable;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
 import java.awt.Color;
+import javax.annotation.CheckReturnValue;
 
 /**
  * Represents a {@link net.dv8tion.jda.core.entities.Guild Guild}'s Role. Used to control permissions for Members.
@@ -166,6 +167,7 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: Void
      */
+    @CheckReturnValue
     AuditableRestAction<Void> delete();
 
     /**

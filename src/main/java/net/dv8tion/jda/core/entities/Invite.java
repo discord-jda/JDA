@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
 import java.time.OffsetDateTime;
+import javax.annotation.CheckReturnValue;
 
 /**
  * Representation of a Discord Invite.
@@ -65,7 +66,8 @@ public interface Invite
     *
     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
     */
-   AuditableRestAction<Void> delete();
+    @CheckReturnValue
+    AuditableRestAction<Void> delete();
 
     /**
      * Tries to retrieve a new expanded {@link net.dv8tion.jda.core.entities.Invite Invite} with more info.
@@ -82,6 +84,7 @@ public interface Invite
      *
      * @see    #isExpanded()
      */
+    @CheckReturnValue
     RestAction<Invite> expand();
 
     /**

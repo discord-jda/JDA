@@ -24,6 +24,7 @@ import net.dv8tion.jda.core.requests.restaction.InviteAction;
 import net.dv8tion.jda.core.requests.restaction.PermissionOverrideAction;
 
 import java.util.List;
+import javax.annotation.CheckReturnValue;
 
 /**
  * Represents a {@link net.dv8tion.jda.core.entities.Guild Guild} channel.
@@ -194,6 +195,7 @@ public interface Channel extends ISnowflake
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @CheckReturnValue
     AuditableRestAction<Void> delete();
 
     /**
@@ -224,6 +226,7 @@ public interface Channel extends ISnowflake
      *
      * @see    #createPermissionOverride(Role)
      */
+    @CheckReturnValue
     PermissionOverrideAction createPermissionOverride(Member member);
 
     /**
@@ -254,6 +257,7 @@ public interface Channel extends ISnowflake
      *
      * @see    #createPermissionOverride(Member)
      */
+    @CheckReturnValue
     PermissionOverrideAction createPermissionOverride(Role role);
 
     /**
@@ -268,6 +272,7 @@ public interface Channel extends ISnowflake
      * 
      * @see    net.dv8tion.jda.core.requests.restaction.InviteAction
      */
+    @CheckReturnValue
     InviteAction createInvite();
 
     /**
@@ -283,5 +288,6 @@ public interface Channel extends ISnowflake
      *
      * @see    net.dv8tion.jda.core.entities.Guild#getInvites()
      */
+    @CheckReturnValue
     RestAction<List<Invite>> getInvites();
 }

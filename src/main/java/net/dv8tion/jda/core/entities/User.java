@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.requests.RestAction;
 
 import java.util.List;
+import javax.annotation.CheckReturnValue;
 
 /**
  * Represents a Discord User.
@@ -135,6 +136,7 @@ public interface User extends ISnowflake, IMentionable, IFakeable
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}
      *         <br>The PrivateChannel to use to directly message this User.
      */
+    @CheckReturnValue
     RestAction<PrivateChannel> openPrivateChannel();
 
     /**
