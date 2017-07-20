@@ -25,6 +25,7 @@ import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
 
+import javax.annotation.CheckReturnValue;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -81,6 +82,7 @@ public class InviteAction extends AuditableRestAction<Invite>
      *
      * @return The current InviteAction for chaining.
      */
+    @CheckReturnValue
     public final InviteAction setMaxAge(final Integer maxAge)
     {
         if (maxAge != null)
@@ -104,6 +106,7 @@ public class InviteAction extends AuditableRestAction<Invite>
      *
      * @return The current InviteAction for chaining.
      */
+    @CheckReturnValue
     public final InviteAction setMaxAge(final Long maxAge, final TimeUnit timeUnit)
     {
         if (maxAge == null)
@@ -127,6 +130,7 @@ public class InviteAction extends AuditableRestAction<Invite>
      *
      * @return The current InviteAction for chaining.
      */
+    @CheckReturnValue
     public final InviteAction setMaxUses(final Integer maxUses)
     {
         if (maxUses != null)
@@ -144,6 +148,7 @@ public class InviteAction extends AuditableRestAction<Invite>
      *
      * @return The current InviteAction for chaining.
      */
+    @CheckReturnValue
     public final InviteAction setTemporary(final Boolean temporary)
     {
         this.temporary = temporary;
@@ -158,6 +163,7 @@ public class InviteAction extends AuditableRestAction<Invite>
      *
      * @return The current InviteAction for chaining.
      */
+    @CheckReturnValue
     public final InviteAction setUnique(final Boolean unique)
     {
         this.unique = unique;

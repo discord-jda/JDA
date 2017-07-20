@@ -28,6 +28,7 @@ import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
 
+import javax.annotation.CheckReturnValue;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -221,6 +222,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *
      * @return The current PermissionOverrideAction - for chaining convenience
      */
+    @CheckReturnValue
     public PermissionOverrideAction setAllow(long allowBits)
     {
         Checks.notNegative(allowBits, "Granted permissions value");
@@ -244,6 +246,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *
      * @return The current PermissionOverrideAction - for chaining convenience
      */
+    @CheckReturnValue
     public PermissionOverrideAction setAllow(Collection<Permission> permissions)
     {
         if (permissions == null || permissions.isEmpty())
@@ -267,6 +270,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *
      * @return The current PermissionOverrideAction - for chaining convenience
      */
+    @CheckReturnValue
     public PermissionOverrideAction setAllow(Permission... permissions)
     {
         if (permissions == null || permissions.length < 1)
@@ -292,6 +296,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *
      * @return The current PermissionOverrideAction - for chaining convenience
      */
+    @CheckReturnValue
     public PermissionOverrideAction setDeny(long denyBits)
     {
         Checks.notNegative(denyBits, "Denied permissions value");
@@ -315,6 +320,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *
      * @return The current PermissionOverrideAction - for chaining convenience
      */
+    @CheckReturnValue
     public PermissionOverrideAction setDeny(Collection<Permission> permissions)
     {
         if (permissions == null || permissions.isEmpty())
@@ -338,6 +344,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *
      * @return The current PermissionOverrideAction - for chaining convenience
      */
+    @CheckReturnValue
     public PermissionOverrideAction setDeny(Permission... permissions)
     {
         if (permissions == null || permissions.length < 1)
@@ -363,6 +370,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *
      * @return The current PermissionOverrideAction - for chaining convenience
      */
+    @CheckReturnValue
     public PermissionOverrideAction setPermissions(long allowBits, long denyBits)
     {
         setAllow(allowBits);
@@ -386,6 +394,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *
      * @return The current PermissionOverrideAction - for chaining convenience
      */
+    @CheckReturnValue
     public PermissionOverrideAction setPermissions(Collection<Permission> grantPermissions, Collection<Permission> denyPermissions)
     {
         setAllow(grantPermissions);

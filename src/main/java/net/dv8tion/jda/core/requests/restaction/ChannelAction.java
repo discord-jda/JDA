@@ -27,6 +27,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONString;
 
+import javax.annotation.CheckReturnValue;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -86,6 +87,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
      *
      * @return The current ChannelAction, for chaining convenience
      */
+    @CheckReturnValue
     public ChannelAction setName(String name)
     {
         Checks.notNull(name, "Channel name");
@@ -109,6 +111,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
      *
      * @return The current ChannelAction, for chaining convenience
      */
+    @CheckReturnValue
     public ChannelAction setTopic(String topic)
     {
         if (voice)
@@ -136,6 +139,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
      *
      * @return The current ChannelAction, for chaining convenience
      */
+    @CheckReturnValue
     public ChannelAction addPermissionOverride(Role role, Collection<Permission> allow, Collection<Permission> deny)
     {
         checkPermissions(allow);
@@ -163,6 +167,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
      *
      * @return The current ChannelAction, for chaining convenience
      */
+    @CheckReturnValue
     public ChannelAction addPermissionOverride(Member member, Collection<Permission> allow, Collection<Permission> deny)
     {
         checkPermissions(allow);
@@ -199,6 +204,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
      * @see    net.dv8tion.jda.core.Permission#getRaw(java.util.Collection)
      * @see    net.dv8tion.jda.core.Permission#getRaw(net.dv8tion.jda.core.Permission...)
      */
+    @CheckReturnValue
     public ChannelAction addPermissionOverride(Role role, long allow, long deny)
     {
         Checks.notNull(role, "Override Role");
@@ -239,6 +245,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
      * @see    net.dv8tion.jda.core.Permission#getRaw(java.util.Collection)
      * @see    net.dv8tion.jda.core.Permission#getRaw(net.dv8tion.jda.core.Permission...)
      */
+    @CheckReturnValue
     public ChannelAction addPermissionOverride(Member member, long allow, long deny)
     {
         Checks.notNull(member, "Override Member");
@@ -267,6 +274,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
      *
      * @return The current ChannelAction, for chaining convenience
      */
+    @CheckReturnValue
     public ChannelAction setBitrate(Integer bitrate)
     {
         if (!voice)
@@ -296,6 +304,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
      *
      * @return The current ChannelAction, for chaining convenience
      */
+    @CheckReturnValue
     public ChannelAction setUserlimit(Integer userlimit)
     {
         if (!voice)
