@@ -25,6 +25,7 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import java.util.Collection;
 import java.util.List;
+import javax.annotation.CheckReturnValue;
 
 /**
  * The core of JDA. Acts as a registry system of JDA. All parts of the the API can be accessed starting from this class.
@@ -316,6 +317,7 @@ public interface JDA
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.User User}
      *         <br>On request, gets the User with id matching provided id from Discord.
      */
+    @CheckReturnValue
     RestAction<User> retrieveUserById(String id);
 
     /**
@@ -339,6 +341,7 @@ public interface JDA
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.User User}
      *         <br>On request, gets the User with id matching provided id from Discord.
      */
+    @CheckReturnValue
     RestAction<User> retrieveUserById(long id);
 
     /**

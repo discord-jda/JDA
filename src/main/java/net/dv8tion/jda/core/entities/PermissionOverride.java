@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.managers.PermOverrideManagerUpdatable;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
 import java.util.List;
+import javax.annotation.CheckReturnValue;
 
 /**
  * Represents the specific {@link net.dv8tion.jda.core.entities.Member Member} or {@link net.dv8tion.jda.core.entities.Role Role}
@@ -178,5 +179,6 @@ public interface PermissionOverride
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @CheckReturnValue
     AuditableRestAction<Void> delete();
 }

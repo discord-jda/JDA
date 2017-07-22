@@ -24,6 +24,7 @@ import net.dv8tion.jda.core.entities.impl.EmoteImpl;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
 import java.util.Set;
+import javax.annotation.CheckReturnValue;
 
 /**
  * Decoration for a {@link net.dv8tion.jda.client.managers.EmoteManagerUpdatable EmoteManagerUpdatable} instance.
@@ -107,6 +108,7 @@ public class EmoteManager
      * @see    net.dv8tion.jda.client.managers.EmoteManagerUpdatable#getNameField()
      * @see    net.dv8tion.jda.client.managers.EmoteManagerUpdatable#update()
      */
+    @CheckReturnValue
     public AuditableRestAction<Void> setName(String name)
     {
         return updatable.getNameField().setValue(name).update();
@@ -137,6 +139,7 @@ public class EmoteManager
      *         This setting is only available to whitelisted accounts and <i>may</i> be removed in successive builds.
      */
     @Deprecated
+    @CheckReturnValue
     public AuditableRestAction<Void> setRoles(Set<Role> roles)
     {
         return updatable.getRolesField().setValue(roles).update();

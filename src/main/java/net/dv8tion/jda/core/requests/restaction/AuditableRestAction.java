@@ -22,6 +22,8 @@ import net.dv8tion.jda.core.utils.MiscUtil;
 import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.json.JSONObject;
+
+import javax.annotation.CheckReturnValue;
 import java.util.function.Consumer;
 
 public abstract class AuditableRestAction<T> extends RestAction<T>
@@ -63,6 +65,7 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
      *
      * @return The current AuditableRestAction instance for chaining convenience
      */
+    @CheckReturnValue
     public AuditableRestAction<T> reason(String reason)
     {
         this.reason = reason;

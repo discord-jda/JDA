@@ -27,6 +27,7 @@ import net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAct
 
 import java.util.Collection;
 import java.util.List;
+import javax.annotation.CheckReturnValue;
 
 /**
  * Represents a Discord {@link net.dv8tion.jda.core.entities.Guild Guild}.
@@ -521,6 +522,7 @@ public interface Guild extends ISnowflake
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@literal List<}{@link net.dv8tion.jda.core.entities.User User}{@literal >}
      *         <br>An unmodifiable list of all users currently banned from this Guild
      */
+    @CheckReturnValue
     RestAction<List<User>> getBans();
 
     /**
@@ -550,6 +552,7 @@ public interface Guild extends ISnowflake
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Integer
      *         <br>The amount of Members that would be affected.
      */
+    @CheckReturnValue
     RestAction<Integer> getPrunableMemberCount(int days);
 
     /**
@@ -629,6 +632,7 @@ public interface Guild extends ISnowflake
      * @see    net.dv8tion.jda.core.JDA#asClient()
      * @see    net.dv8tion.jda.client.JDAClient#getRecentMentions(Guild)
      */
+    @CheckReturnValue
     MentionPaginationAction getRecentMentions();
 
     /**
@@ -663,6 +667,7 @@ public interface Guild extends ISnowflake
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAction AuditLogPaginationAction}
      */
+    @CheckReturnValue
     AuditLogPaginationAction getAuditLogs();
 
     /**
@@ -675,6 +680,7 @@ public interface Guild extends ISnowflake
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
+    @CheckReturnValue
     RestAction<Void> leave();
 
     /**
@@ -688,6 +694,7 @@ public interface Guild extends ISnowflake
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: {@link java.lang.Void}
      */
+    @CheckReturnValue
     RestAction<Void> delete();
 
     /**
@@ -707,6 +714,7 @@ public interface Guild extends ISnowflake
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: {@link java.lang.Void}
      */
+    @CheckReturnValue
     RestAction<Void> delete(String mfaCode);
 
     /**
@@ -740,6 +748,7 @@ public interface Guild extends ISnowflake
      *
      * @see     net.dv8tion.jda.core.entities.Channel#getInvites()
      */
+    @CheckReturnValue
     RestAction<List<Invite>> getInvites();
 
     /**
@@ -757,6 +766,7 @@ public interface Guild extends ISnowflake
      *
      * @see     TextChannel#getWebhooks()
      */
+    @CheckReturnValue
     RestAction<List<Webhook>> getWebhooks();
 
     /**

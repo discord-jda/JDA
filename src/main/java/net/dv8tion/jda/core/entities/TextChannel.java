@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.FormattableFlags;
 import java.util.Formatter;
 import java.util.List;
+import javax.annotation.CheckReturnValue;
 
 /**
  * Represents a Discord Text Channel. See {@link net.dv8tion.jda.core.entities.Channel Channel} and
@@ -65,6 +66,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.core.entities.Webhook Webhook}{@literal >}
      *         <br>An immutable list of Webhook attached to this channel
      */
+    @CheckReturnValue
     RestAction<List<Webhook>> getWebhooks();
 
     /**
@@ -109,6 +111,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *
      * @see    #deleteMessagesByIds(Collection)
      */
+    @CheckReturnValue
     RestAction<Void> deleteMessages(Collection<Message> messages);
 
     /**
@@ -156,6 +159,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *
      * @see    #deleteMessages(Collection)
      */
+    @CheckReturnValue
     RestAction<Void> deleteMessagesByIds(Collection<String> messageIds);
 
     /**
@@ -190,6 +194,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @CheckReturnValue
     AuditableRestAction<Void> deleteWebhookById(String id);
 
     /**
@@ -223,6 +228,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @CheckReturnValue
     RestAction<Void> clearReactionsById(String messageId);
 
     /**
@@ -254,6 +260,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @CheckReturnValue
     default RestAction<Void> clearReactionsById(long messageId)
     {
         return clearReactionsById(Long.toUnsignedString(messageId));

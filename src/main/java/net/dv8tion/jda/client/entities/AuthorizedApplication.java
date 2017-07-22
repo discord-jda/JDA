@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.requests.RestAction;
 
 import java.util.List;
+import javax.annotation.CheckReturnValue;
 
 /**
  * Represents a Discord Application from the point of view of a client having authorized it.
@@ -48,6 +49,7 @@ public interface AuthorizedApplication extends ISnowflake
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link Void}
      *         <br>The RestAction to delete this authorisation
      */
+    @CheckReturnValue
     RestAction<Void> delete();
 
     /**

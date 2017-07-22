@@ -25,6 +25,7 @@ import net.dv8tion.jda.core.requests.RestAction;
 
 import java.util.Collection;
 import java.util.List;
+import javax.annotation.CheckReturnValue;
 
 /** 
  * Represents a Discord Application from its owning client point of view
@@ -57,6 +58,7 @@ public interface Application extends ISnowflake
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link Application.Bot}
      *         <br>The created bot account of this application. 
      */
+    @CheckReturnValue
     RestAction<Application.Bot> createBot();
 
     /**
@@ -73,6 +75,7 @@ public interface Application extends ISnowflake
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link Void}
      *         <br>The RestAction to delete this Application.
      */
+    @CheckReturnValue
     RestAction<Void> delete();
 
     /**
@@ -210,6 +213,7 @@ public interface Application extends ISnowflake
      *         Type: {@link Application}
      *         <br>This application with the updated secret.
      */
+    @CheckReturnValue
     RestAction<Application> resetSecret();
 
     /**
@@ -340,6 +344,7 @@ public interface Application extends ISnowflake
          * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link Application.Bot}
          *         <br>This bot with the updated token.
          */
+        @CheckReturnValue
         RestAction<Application.Bot> resetToken();
     }
 }

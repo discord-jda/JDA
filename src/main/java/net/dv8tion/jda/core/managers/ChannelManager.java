@@ -21,6 +21,8 @@ import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
+import javax.annotation.CheckReturnValue;
+
 /**
  * Facade for a {@link net.dv8tion.jda.core.managers.ChannelManagerUpdatable ChannelManagerUpdatable} instance.
  * <br>Simplifies managing flow for convenience.
@@ -103,6 +105,7 @@ public class ChannelManager
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getNameField()
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */
+    @CheckReturnValue
     public AuditableRestAction<Void> setName(String name)
     {
         return updatable.getNameField().setValue(name).update();
@@ -131,6 +134,7 @@ public class ChannelManager
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getTopicField()
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */
+    @CheckReturnValue
     public AuditableRestAction<Void> setTopic(String topic)
     {
         return updatable.getTopicField().setValue(topic).update();
@@ -159,6 +163,7 @@ public class ChannelManager
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getUserLimitField()
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */
+    @CheckReturnValue
     public AuditableRestAction<Void> setUserLimit(int userLimit)
     {
         return updatable.getUserLimitField().setValue(userLimit).update();
@@ -187,6 +192,7 @@ public class ChannelManager
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getBitrateField()
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */
+    @CheckReturnValue
     public AuditableRestAction<Void> setBitrate(int bitrate)
     {
         return updatable.getBitrateField().setValue(bitrate).update();

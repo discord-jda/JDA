@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 
 import java.util.List;
+import javax.annotation.CheckReturnValue;
 
 /**
  * Represents a Custom Emote. (Custom Emoji in official Discord API terminology)
@@ -105,6 +106,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         The RestAction to delete this Emote.
      */
+    @CheckReturnValue
     AuditableRestAction<Void> delete();
 
     /**

@@ -29,6 +29,7 @@ import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
+import javax.annotation.CheckReturnValue;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -123,6 +124,7 @@ public class PermOverrideManagerUpdatable
      *
      * @return The current Manager instance for chaining convenience
      */
+    @CheckReturnValue
     public PermOverrideManagerUpdatable grant(long permissions)
     {
         return grant(Permission.getPermissions(permissions));
@@ -142,6 +144,7 @@ public class PermOverrideManagerUpdatable
      *
      * @return The current Manager instance for chaining convenience
      */
+    @CheckReturnValue
     public PermOverrideManagerUpdatable grant(Permission... permissions)
     {
         return grant(Arrays.asList(permissions));
@@ -161,6 +164,7 @@ public class PermOverrideManagerUpdatable
      *
      * @return The current Manager instance for chaining convenience
      */
+    @CheckReturnValue
     public PermOverrideManagerUpdatable grant(Collection<Permission> permissions)
     {
         Checks.notNull(permissions, "Permission Collection");
@@ -190,6 +194,7 @@ public class PermOverrideManagerUpdatable
      *
      * @return The current Manager instance for chaining convenience
      */
+    @CheckReturnValue
     public PermOverrideManagerUpdatable deny(long permissions)
     {
         return deny(Permission.getPermissions(permissions));
@@ -209,6 +214,7 @@ public class PermOverrideManagerUpdatable
      *
      * @return The current Manager instance for chaining convenience
      */
+    @CheckReturnValue
     public PermOverrideManagerUpdatable deny(Permission... permissions)
     {
         return deny(Arrays.asList(permissions));
@@ -228,6 +234,7 @@ public class PermOverrideManagerUpdatable
      *
      * @return The current Manager instance for chaining convenience
      */
+    @CheckReturnValue
     public PermOverrideManagerUpdatable deny(Collection<Permission> permissions)
     {
         Checks.notNull(permissions, "Permission Collection");
@@ -258,6 +265,7 @@ public class PermOverrideManagerUpdatable
      *
      * @return The current Manager instance for chaining convenience
      */
+    @CheckReturnValue
     public PermOverrideManagerUpdatable clear(long permission)
     {
         return clear(Permission.getPermissions(permission));
@@ -278,6 +286,7 @@ public class PermOverrideManagerUpdatable
      *
      * @return The current Manager instance for chaining convenience
      */
+    @CheckReturnValue
     public PermOverrideManagerUpdatable clear(Permission... permissions)
     {
         return clear(Arrays.asList(permissions));
@@ -298,6 +307,7 @@ public class PermOverrideManagerUpdatable
      *
      * @return The current Manager instance for chaining convenience
      */
+    @CheckReturnValue
     public PermOverrideManagerUpdatable clear(Collection<Permission> permissions)
     {
         Checks.notNull(permissions, "Permission Collection");
@@ -424,6 +434,7 @@ public class PermOverrideManagerUpdatable
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Applies all changes that have been made in a single api-call.
      */
+    @CheckReturnValue
     public AuditableRestAction<Void> update()
     {
         checkPermission(Permission.MANAGE_PERMISSIONS);

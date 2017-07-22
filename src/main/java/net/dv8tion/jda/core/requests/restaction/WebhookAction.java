@@ -26,13 +26,14 @@ import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
 
+import javax.annotation.CheckReturnValue;
+
 /**
  * {@link net.dv8tion.jda.core.entities.Webhook Webhook} Builder system created as an extension of {@link net.dv8tion.jda.core.requests.RestAction}
  * <br>Provides an easy way to gather and deliver information to Discord to create {@link net.dv8tion.jda.core.entities.Webhook Webhooks}.
  */
 public class WebhookAction extends AuditableRestAction<Webhook>
 {
-
     protected String name;
     protected Icon avatar = null;
 
@@ -53,6 +54,7 @@ public class WebhookAction extends AuditableRestAction<Webhook>
      *
      * @return The current WebhookAction for chaining convenience.
      */
+    @CheckReturnValue
     public WebhookAction setName(String name)
     {
         Checks.notNull(name, "Webhook name");
@@ -72,6 +74,7 @@ public class WebhookAction extends AuditableRestAction<Webhook>
      *
      * @return The current WebhookAction for chaining convenience.
      */
+    @CheckReturnValue
     public WebhookAction setAvatar(Icon icon)
     {
         this.avatar = icon;
