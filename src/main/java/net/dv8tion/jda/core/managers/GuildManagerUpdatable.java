@@ -32,6 +32,8 @@ import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
+import javax.annotation.CheckReturnValue;
+
 /**
  * An {@link #update() updatable} manager that allows
  * to modify guild settings like the {@link #getNameField() name} or the {@link #getSplashField() splash}.
@@ -369,6 +371,7 @@ public class GuildManagerUpdatable
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Applies all changes that have been made in a single api-call.
      */
+    @CheckReturnValue
     public AuditableRestAction<Void> update()
     {
         checkAvailable();

@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -43,7 +44,6 @@ import java.util.stream.StreamSupport;
  */
 public abstract class PaginationAction<T, M extends PaginationAction<T, M>> extends RestAction<List<T>> implements Iterable<T>
 {
-
     protected final List<T> cached = new CopyOnWriteArrayList<>();
     protected final int maxLimit;
     protected final int minLimit;
@@ -270,6 +270,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>> exte
      *
      * @return new PaginationIterator
      */
+    @Nonnull
     @Override
     public PaginationIterator iterator()
     {

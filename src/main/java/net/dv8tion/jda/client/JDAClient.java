@@ -27,6 +27,8 @@ import net.dv8tion.jda.core.requests.RestAction;
 
 import java.util.List;
 
+import javax.annotation.CheckReturnValue;
+
 public interface JDAClient
 {
     JDA getJDA();
@@ -63,6 +65,7 @@ public interface JDAClient
      *
      * @return {@link net.dv8tion.jda.client.requests.restaction.pagination.MentionPaginationAction MentionPaginationAction}
      */
+    @CheckReturnValue
     MentionPaginationAction getRecentMentions();
 
     /**
@@ -84,6 +87,7 @@ public interface JDAClient
      *
      * @return {@link net.dv8tion.jda.client.requests.restaction.pagination.MentionPaginationAction MentionPaginationAction}
      */
+    @CheckReturnValue
     MentionPaginationAction getRecentMentions(Guild guild);
 
     UserSettings getSettings();
@@ -110,6 +114,7 @@ public interface JDAClient
      * @return A specific {@link net.dv8tion.jda.client.requests.restaction.ApplicationAction ApplicationAction}
      *         <br>This action allows to set fields for the new application before creating it
      */
+    @CheckReturnValue
     ApplicationAction createApplication(String name);
 
     /**
@@ -119,6 +124,7 @@ public interface JDAClient
      *         {@link java.util.List List}{@literal <}{@link net.dv8tion.jda.client.entities.Application Application}{@literal >}
      *         <br>A list of all Applications owned by this user account.
      */
+    @CheckReturnValue
     RestAction<List<Application>> getApplications();
 
     /**
@@ -139,6 +145,7 @@ public interface JDAClient
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.client.entities.Application Application}
      *         <br>The Application behind the provided id.
      */
+    @CheckReturnValue
     RestAction<Application> getApplicationById(String id);
 
     /**
@@ -148,6 +155,7 @@ public interface JDAClient
      *         List{@literal <}{@link net.dv8tion.jda.client.entities.AuthorizedApplication AuthorizedApplication}{@literal >}
      *         <br>A list of all AuthorizedApplications authorized by this user account.
      */
+    @CheckReturnValue
     RestAction<List<AuthorizedApplication>> getAuthorizedApplications();
 
     /**
@@ -168,5 +176,6 @@ public interface JDAClient
      *         {@link net.dv8tion.jda.client.entities.AuthorizedApplication AuthorizedApplication}
      *         <br>The Application behind the provided id.
      */
-    RestAction<AuthorizedApplication> getAuthorizedApplicationById(String id);    
+    @CheckReturnValue
+    RestAction<AuthorizedApplication> getAuthorizedApplicationById(String id);
 }

@@ -29,6 +29,7 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
+import javax.annotation.CheckReturnValue;
 import java.util.regex.Pattern;
 
 /**
@@ -222,6 +223,7 @@ public class AccountManagerUpdatable
      *         <br>Updates all modified fields or does nothing if none of the {@link net.dv8tion.jda.core.managers.fields.Field Fields}
      *         have been modified. ({@link net.dv8tion.jda.core.requests.RestAction.EmptyRestAction EmptyRestAction})
      */
+    @CheckReturnValue
     public RestAction<Void> update(String currentPassword)
     {
         if (isType(AccountType.CLIENT) && (currentPassword == null || currentPassword.isEmpty()))
@@ -289,6 +291,7 @@ public class AccountManagerUpdatable
      *         Updates all modified fields or does nothing if none of the {@link net.dv8tion.jda.core.managers.fields.Field Fields}
      *         have been modified. ({@link net.dv8tion.jda.core.requests.RestAction.EmptyRestAction EmptyRestAction})
      */
+    @CheckReturnValue
     public RestAction<Void> update()
     {
         if (getJDA().getAccountType() == AccountType.CLIENT)

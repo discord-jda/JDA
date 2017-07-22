@@ -27,6 +27,7 @@ import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.commons.collections4.map.ListOrderedMap;
 import org.json.JSONArray;
 
+import javax.annotation.CheckReturnValue;
 import java.util.*;
 
 /**
@@ -151,6 +152,7 @@ public class MessageHistory
      *         <br>Retrieved Messages are placed in a List and provided in order of most recent to oldest with most recent
      *         starting at index 0. If the list is empty, there were no more messages left to retrieve.
      */
+    @CheckReturnValue
     public RestAction<List<Message>> retrievePast(int amount)
     {
         if (amount > 100 || amount < 1)
@@ -229,6 +231,7 @@ public class MessageHistory
      *         <br>Retrieved Messages are placed in a List and provided in order of most recent to oldest with most recent
      *         starting at index 0. If the list is empty, there were no more messages left to retrieve.
      */
+    @CheckReturnValue
     public RestAction<List<Message>> retrieveFuture(int amount)
     {
         if (amount > 100 || amount < 1)

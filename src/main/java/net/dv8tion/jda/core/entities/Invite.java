@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
 import java.time.OffsetDateTime;
+import javax.annotation.CheckReturnValue;
 
 /**
  * Representation of a Discord Invite.
@@ -55,17 +56,18 @@ public interface Invite
         return InviteImpl.resolve(api, code);
     }
 
-   /**
-    * Deletes this invite.
-    * <br>Requires {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} in the invite's channel.
-    * Will throw a {@link net.dv8tion.jda.core.exceptions.PermissionException PermissionException} otherwise.
-    *
-    * @throws net.dv8tion.jda.core.exceptions.PermissionException
-    *         if the account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER MANAGE_SERVER} in the invite's channel
-    *
-    * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-    */
-   AuditableRestAction<Void> delete();
+    /**
+     * Deletes this invite.
+     * <br>Requires {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} in the invite's channel.
+     * Will throw a {@link net.dv8tion.jda.core.exceptions.PermissionException PermissionException} otherwise.
+     *
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         if the account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER MANAGE_SERVER} in the invite's channel
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     */
+    @CheckReturnValue
+    AuditableRestAction<Void> delete();
 
     /**
      * Tries to retrieve a new expanded {@link net.dv8tion.jda.core.entities.Invite Invite} with more info.
@@ -82,6 +84,7 @@ public interface Invite
      *
      * @see    #isExpanded()
      */
+    @CheckReturnValue
     RestAction<Invite> expand();
 
     /**
@@ -100,6 +103,17 @@ public interface Invite
      * @return the invite code
      */
     String getCode();
+
+    /**
+     * The invite URL for this invite in the format of:
+     * {@code "https://discord.gg/" + getCode()}
+     *
+     * @return Invite URL for this Invite
+     */
+    default String getURL()
+    {
+        return "https://discord.gg/" + getCode();
+    }
 
     /**
      * Returns creation date of this invite.

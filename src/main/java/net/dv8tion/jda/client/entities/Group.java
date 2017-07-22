@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.requests.RestAction;
 
 import java.util.List;
+import javax.annotation.CheckReturnValue;
 
 public interface Group extends MessageChannel, CallableChannel
 {
@@ -42,6 +43,6 @@ public interface Group extends MessageChannel, CallableChannel
 
     //getGroupManager()
 
-
+    @CheckReturnValue
     RestAction leaveGroup();
 }

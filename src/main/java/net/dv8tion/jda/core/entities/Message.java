@@ -30,6 +30,7 @@ import java.nio.file.Paths;
 import java.time.OffsetDateTime;
 import java.util.Formattable;
 import java.util.List;
+import javax.annotation.CheckReturnValue;
 
 /**
  * Represents a Text message received from Discord.
@@ -342,6 +343,7 @@ public interface Message extends ISnowflake, Formattable
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
      *     <br>The {@link net.dv8tion.jda.core.entities.Message Message} with the updated content
      */
+    @CheckReturnValue
     RestAction<Message> editMessage(String newContent);
 
     /**
@@ -374,6 +376,7 @@ public interface Message extends ISnowflake, Formattable
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
      *     <br>The {@link net.dv8tion.jda.core.entities.Message Message} with the updated content
      */
+    @CheckReturnValue
     RestAction<Message> editMessage(MessageEmbed newContent);
 
     /**
@@ -411,6 +414,7 @@ public interface Message extends ISnowflake, Formattable
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
      *     <br>The {@link net.dv8tion.jda.core.entities.Message Message} with the updated content
      */
+    @CheckReturnValue
     RestAction<Message> editMessageFormat(String format, Object... args);
 
     /**
@@ -445,6 +449,7 @@ public interface Message extends ISnowflake, Formattable
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
      *     <br>The {@link net.dv8tion.jda.core.entities.Message Message} with the updated content
      */
+    @CheckReturnValue
     RestAction<Message> editMessage(Message newContent);
 
     /**
@@ -481,6 +486,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @CheckReturnValue
     AuditableRestAction<Void> delete();
 
     /**
@@ -530,6 +536,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
+    @CheckReturnValue
     RestAction<Void> pin();
 
     /**
@@ -565,6 +572,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
+    @CheckReturnValue
     RestAction<Void> unpin();
 
     /**
@@ -614,6 +622,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
+    @CheckReturnValue
     RestAction<Void> addReaction(Emote emote);
 
     /**
@@ -660,6 +669,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
+    @CheckReturnValue
     RestAction<Void> addReaction(String unicode);
 
     /**
@@ -693,6 +703,7 @@ public interface Message extends ISnowflake, Formattable
      *         {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
+    @CheckReturnValue
     RestAction<Void> clearReactions();
 
     /**

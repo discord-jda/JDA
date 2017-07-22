@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.requests.RestAction;
 
 import java.util.Collection;
+import javax.annotation.CheckReturnValue;
 
 public interface JDABot
 {
@@ -40,6 +41,7 @@ public interface JDABot
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.bot.entities.ApplicationInfo ApplicationInfo}
      *         <br>The {@link net.dv8tion.jda.bot.entities.ApplicationInfo ApplicationInfo} of the bot's application.
      */
+    @CheckReturnValue
     RestAction<ApplicationInfo> getApplicationInfo();
 
     /**

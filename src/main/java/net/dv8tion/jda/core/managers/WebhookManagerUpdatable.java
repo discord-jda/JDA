@@ -28,6 +28,8 @@ import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
+import javax.annotation.CheckReturnValue;
+
 /**
  * An {@link #update() updatable} manager that allows
  * to modify webhook settings like the {@link #getNameField() default name} or the {@link #getAvatarField() default avatar}.
@@ -201,6 +203,7 @@ public class WebhookManagerUpdatable
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Applies all changes that have been made in a single api-call.
      */
+    @CheckReturnValue
     public AuditableRestAction<Void> update()
     {
         Member self = getGuild().getSelfMember();

@@ -27,6 +27,7 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
 
+import javax.annotation.CheckReturnValue;
 import java.util.Objects;
 
 /**
@@ -233,6 +234,7 @@ public class MessageReaction
      * @return {@link net.dv8tion.jda.core.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction}
      *         <br>Retrieves an immutable list of users that reacted with this Reaction.
      */
+    @CheckReturnValue
     public ReactionPaginationAction getUsers()
     {
         return getUsers(100);
@@ -264,6 +266,7 @@ public class MessageReaction
      * @return {@link net.dv8tion.jda.core.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction}
      *         <br>Retrieves an immutable list of users that reacted with this Reaction.
      */
+    @CheckReturnValue
     public ReactionPaginationAction getUsers(int amount)
     {
         return new ReactionPaginationAction(this).limit(amount);
@@ -289,6 +292,7 @@ public class MessageReaction
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
      *         Nothing is returned on success
      */
+    @CheckReturnValue
     public RestAction<Void> removeReaction()
     {
         return removeReaction(getJDA().getSelfUser());
@@ -326,6 +330,7 @@ public class MessageReaction
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
      *         Nothing is returned on success
      */
+    @CheckReturnValue
     public RestAction<Void> removeReaction(User user)
     {
         if (user == null)
