@@ -427,7 +427,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         return this;
     }
 
-    public TextChannelImpl setNsfw(boolean nsfw)
+    public TextChannelImpl setNSFW(boolean nsfw)
     {
         this.nsfw = nsfw;
         return this;

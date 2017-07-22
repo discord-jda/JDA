@@ -106,7 +106,7 @@ public class ChannelUpdateHandler extends SocketHandler
 
                 if (oldNsfw != nsfw)
                 {
-                    textChannel.setNsfw(nsfw);
+                    textChannel.setNSFW(nsfw);
                     api.getEventManager().handle(
                             new TextChannelUpdateNSFWEvent(
                                     api, responseNumber,
