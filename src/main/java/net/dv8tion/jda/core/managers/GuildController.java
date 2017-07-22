@@ -1152,7 +1152,7 @@ public class GuildController
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> addRoleToMember(Member member, Role role)
+    public AuditableRestAction<Void> addSingleRoleToMember(Member member, Role role)
     {
         Checks.notNull(member, "Member");
         Checks.notNull(role, "Role");
@@ -1222,7 +1222,7 @@ public class GuildController
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> removeRoleFromMember(Member member, Role role)
+    public AuditableRestAction<Void> removeSingleRoleFromMember(Member member, Role role)
     {
         Checks.notNull(member, "Member");
         Checks.notNull(role, "Role");
