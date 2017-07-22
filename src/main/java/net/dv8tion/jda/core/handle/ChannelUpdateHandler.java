@@ -59,7 +59,7 @@ public class ChannelUpdateHandler extends SocketHandler
         final long channelId = content.getLong("id");
         final int position = content.getInt("position");
         final String name = content.getString("name");
-        final boolean nsfw = content.optBoolean("nsfw", false); // missing defaults to false
+        final boolean nsfw = !content.isNull("nsfw") && content.getBoolean("nsfw");
         JSONArray permOverwrites = content.getJSONArray("permission_overwrites");
         switch (type)
         {

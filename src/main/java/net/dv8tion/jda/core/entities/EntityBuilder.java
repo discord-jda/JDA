@@ -599,7 +599,7 @@ public class EntityBuilder
                 .setName(json.getString("name"))
                 .setTopic(json.isNull("topic") ? "" : json.getString("topic"))
                 .setRawPosition(json.getInt("position"))
-                .setNsfw(json.optBoolean("nsfw", false)); // missing defaults to false
+                .setNsfw(!json.isNull("nsfw") && json.getBoolean("nsfw"));
     }
 
     public VoiceChannel createVoiceChannel(JSONObject json, long guildId)
