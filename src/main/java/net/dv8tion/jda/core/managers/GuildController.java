@@ -1137,6 +1137,18 @@ public class GuildController
      * @param  role
      *         The role which should be assigned atomically
      *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the specified member/role are not from the current Guild</li>
+     *             <li>Either member or role are {@code null}</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         <ul>
+     *             <li>If the provided role is above the highest role of the currently logged in account</li>
+     *             <li>If the currently logged in account does not have
+     *                 the permission {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}</li>
+     *         </ul>
+     *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @CheckReturnValue
@@ -1146,6 +1158,8 @@ public class GuildController
         Checks.notNull(role, "Role");
         checkGuild(member.getGuild(), "Member is not from the same Guild!");
         checkGuild(role.getGuild(), "Role is not from the same Guild!");
+        checkPermission(Permission.MANAGE_ROLES);
+        checkPosition(role);
 
         if (member.getRoles().contains(role))
             return new AuditableRestAction.EmptyRestAction<>(getJDA());
@@ -1198,6 +1212,12 @@ public class GuildController
      *             <li>If the specified member/role are not from the current Guild</li>
      *             <li>Either member or role are {@code null}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         <ul>
+     *             <li>If the provided role is above the highest role of the currently logged in account</li>
+     *             <li>If the currently logged in account does not have
+     *                 the permission {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}</li>
+     *         </ul>
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -1208,6 +1228,8 @@ public class GuildController
         Checks.notNull(role, "Role");
         checkGuild(member.getGuild(), "Member is not from the same Guild!");
         checkGuild(role.getGuild(), "Role is not from the same Guild!");
+        checkPermission(Permission.MANAGE_ROLES);
+        checkPosition(role);
 
         if (!member.getRoles().contains(role))
             return new AuditableRestAction.EmptyRestAction<>(getJDA());
