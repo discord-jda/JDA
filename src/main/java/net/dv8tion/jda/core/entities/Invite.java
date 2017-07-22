@@ -103,13 +103,13 @@ public interface Invite
 
     /**
      * The invite URL for this invite in the format of:
-     * {@code "discord.gg/" + getCode()}
+     * {@code "https://discord.gg/" + getCode()}
      *
      * @return Invite URL for this Invite
      */
     default String getURL()
     {
-        return "discord.gg/" + getCode();
+        return "https://discord.gg/" + getCode();
     }
 
     /**
