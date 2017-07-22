@@ -1108,6 +1108,146 @@ public class GuildController
     }
 
     /**
+     * Atomically assigns the provided {@link net.dv8tion.jda.core.entities.Role Role} to the specified {@link net.dv8tion.jda.core.entities.Member Member}.
+     * <br><b>This can be used together with other role modification methods as it does not require an updated cache!</b>
+     *
+     * <p>If multiple roles should be added/removed (efficiently) in one request
+     * you may use {@link #modifyMemberRoles(Member, Collection, Collection) modifyMemberRoles(Member, Collection, Collection)} or similar methods.
+     *
+     * <p>If the specified role is already present in the member's set of roles this does nothing.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The Members Roles could not be modified due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>We were removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
+     *     <br>The target Member was removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_ROLE UNKNOWN_ROLE}
+     *     <br>If the specified Role does not exist</li>
+     * </ul>
+     *
+     * @param  member
+     *         The target member who will receive the new role
+     * @param  role
+     *         The role which should be assigned atomically
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the specified member/role are not from the current Guild</li>
+     *             <li>Either member or role are {@code null}</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         <ul>
+     *             <li>If the provided role is above the highest role of the currently logged in account</li>
+     *             <li>If the currently logged in account does not have
+     *                 the permission {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}</li>
+     *         </ul>
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     */
+    @CheckReturnValue
+    public AuditableRestAction<Void> addSingleRoleToMember(Member member, Role role)
+    {
+        Checks.notNull(member, "Member");
+        Checks.notNull(role, "Role");
+        checkGuild(member.getGuild(), "Member is not from the same Guild!");
+        checkGuild(role.getGuild(), "Role is not from the same Guild!");
+        checkPermission(Permission.MANAGE_ROLES);
+        checkPosition(role);
+
+        if (member.getRoles().contains(role))
+            return new AuditableRestAction.EmptyRestAction<>(getJDA());
+        Route.CompiledRoute route = Route.Guilds.ADD_MEMBER_ROLE.compile(guild.getId(), member.getUser().getId(), role.getId());
+        return new AuditableRestAction<Void>(getJDA(), route)
+        {
+            @Override
+            protected void handleResponse(Response response, Request<Void> request)
+            {
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
+    }
+
+    /**
+     * Atomically removes the provided {@link net.dv8tion.jda.core.entities.Role Role} from the specified {@link net.dv8tion.jda.core.entities.Member Member}.
+     * <br><b>This can be used together with other role modification methods as it does not require an updated cache!</b>
+     *
+     * <p>If multiple roles should be added/removed (efficiently) in one request
+     * you may use {@link #modifyMemberRoles(Member, Collection, Collection) modifyMemberRoles(Member, Collection, Collection)} or similar methods.
+     *
+     * <p>If the specified role is not present in the member's set of roles this does nothing.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The Members Roles could not be modified due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>We were removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
+     *     <br>The target Member was removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_ROLE UNKNOWN_ROLE}
+     *     <br>If the specified Role does not exist</li>
+     * </ul>
+     *
+     * @param  member
+     *         The target member who will lose the specified role
+     * @param  role
+     *         The role which should be removed atomically
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the specified member/role are not from the current Guild</li>
+     *             <li>Either member or role are {@code null}</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         <ul>
+     *             <li>If the provided role is above the highest role of the currently logged in account</li>
+     *             <li>If the currently logged in account does not have
+     *                 the permission {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}</li>
+     *         </ul>
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     */
+    @CheckReturnValue
+    public AuditableRestAction<Void> removeSingleRoleFromMember(Member member, Role role)
+    {
+        Checks.notNull(member, "Member");
+        Checks.notNull(role, "Role");
+        checkGuild(member.getGuild(), "Member is not from the same Guild!");
+        checkGuild(role.getGuild(), "Role is not from the same Guild!");
+        checkPermission(Permission.MANAGE_ROLES);
+        checkPosition(role);
+
+        if (!member.getRoles().contains(role))
+            return new AuditableRestAction.EmptyRestAction<>(getJDA());
+        Route.CompiledRoute route = Route.Guilds.REMOVE_MEMBER_ROLE.compile(guild.getId(), member.getUser().getId(), role.getId());
+        return new AuditableRestAction<Void>(getJDA(), route)
+        {
+            @Override
+            protected void handleResponse(Response response, Request<Void> request)
+            {
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
+    }
+
+    /**
      * Adds all provided {@link net.dv8tion.jda.core.entities.Role Roles}
      * to the specified {@link net.dv8tion.jda.core.entities.Member Member}
      *

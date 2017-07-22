@@ -106,6 +106,11 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
     {
         protected final T content;
 
+        public EmptyRestAction(JDA api)
+        {
+            this(api, null);
+        }
+
         public EmptyRestAction(JDA api, T content)
         {
             super(api, null);
