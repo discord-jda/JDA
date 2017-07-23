@@ -1161,8 +1161,6 @@ public class GuildController
         checkPermission(Permission.MANAGE_ROLES);
         checkPosition(role);
 
-        if (member.getRoles().contains(role))
-            return new AuditableRestAction.EmptyRestAction<>(getJDA());
         Route.CompiledRoute route = Route.Guilds.ADD_MEMBER_ROLE.compile(guild.getId(), member.getUser().getId(), role.getId());
         return new AuditableRestAction<Void>(getJDA(), route)
         {
@@ -1231,8 +1229,6 @@ public class GuildController
         checkPermission(Permission.MANAGE_ROLES);
         checkPosition(role);
 
-        if (!member.getRoles().contains(role))
-            return new AuditableRestAction.EmptyRestAction<>(getJDA());
         Route.CompiledRoute route = Route.Guilds.REMOVE_MEMBER_ROLE.compile(guild.getId(), member.getUser().getId(), role.getId());
         return new AuditableRestAction<Void>(getJDA(), route)
         {
