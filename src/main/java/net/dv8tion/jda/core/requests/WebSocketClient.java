@@ -325,6 +325,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         socket.sendClose(1000);
     }
 
+    public void close(int code)
+    {
+        socket.sendClose(code);
+    }
+
     /*
         ### Start Internal methods ###
      */
@@ -591,9 +596,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         LOG.debug("Sending Identify-packet...");
         PresenceImpl presenceObj = (PresenceImpl) api.getPresence();
-        String token = api.getToken();
-        if (api.getAccountType() == AccountType.BOT)
-            token = token.substring("Bot ".length());
         JSONObject connectionProperties = new JSONObject()
             .put("$os", System.getProperty("os.name"))
             .put("$browser", "JDA")
@@ -602,7 +604,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             .put("$referrer", "");
         JSONObject payload = new JSONObject()
             .put("presence", presenceObj.getFullPresence())
-            .put("token", token)
+            .put("token", getToken())
             .put("properties", connectionProperties)
             .put("v", DISCORD_GATEWAY_VERSION)
             .put("large_threshold", 250)
@@ -630,7 +632,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             .put("op", WebSocketCode.RESUME)
             .put("d", new JSONObject()
                 .put("session_id", sessionId)
-                .put("token", api.getToken())
+                .put("token", getToken())
                 .put("seq", api.getResponseTotal())
             );
         send(resume.toString(), true);
@@ -721,6 +723,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         });
 
         api.getAudioManagerMap().valueCollection().removeIf(Objects::isNull);
+    }
+
+    protected String getToken()
+    {
+        if (api.getAccountType() == AccountType.BOT)
+            return api.getToken().substring("Bot ".length());
+        return api.getToken();
     }
 
     protected void handleEvent(JSONObject raw)
