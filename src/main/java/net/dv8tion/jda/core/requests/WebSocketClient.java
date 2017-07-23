@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
@@ -58,7 +59,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected final JDAImpl api;
     protected final JDA.ShardInfo shardInfo;
     protected final Map<String, SocketHandler> handlers = new HashMap<>();
-    protected final List<String> cfRays = new LinkedList<>();
+    protected final Set<String> cfRays = new HashSet<>();
+    protected final Set<String> traces = new HashSet<>();
 
     protected WebSocket socket;
     protected String gatewayUrl = null;
@@ -82,7 +84,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected final LinkedList<String> chunkSyncQueue = new LinkedList<>();
     protected final LinkedList<String> ratelimitQueue = new LinkedList<>();
-    protected final LinkedList<String> traces = new LinkedList<>();
     protected volatile Thread ratelimitThread = null;
     protected volatile long ratelimitResetTime;
     protected volatile int messagesSent;
@@ -101,14 +102,23 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         connect();
     }
 
-    public List<String> getCfRays()
+    public Set<String> getCfRays()
     {
         return cfRays;
     }
 
-    public List<String> getTraces()
+    public Set<String> getTraces()
     {
         return traces;
+    }
+
+    protected void updateTraces(JSONArray arr, String type, int opCode)
+    {
+        final String msg = String.format("Received a _trace for %s (OP: %d) with %s", type, opCode, arr);
+        WebSocketClient.LOG.debug(msg);
+        traces.clear();
+        for (Object o : arr)
+            traces.add(String.valueOf(o));
     }
 
     public void setAutoReconnect(boolean reconnect)
@@ -315,6 +325,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         socket.sendClose(1000);
     }
 
+    public void close(int code)
+    {
+        socket.sendClose(code);
+    }
+
     /*
         ### Start Internal methods ###
      */
@@ -511,20 +526,25 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 break;
             case WebSocketCode.INVALIDATE_SESSION:
                 LOG.debug("Got Invalidate request (OP 9). Invalidating...");
-                invalidate();
-                sendIdentify();
+                final boolean isResume = content.getBoolean("d");
+                if (isResume)
+                {
+                    LOG.debug("Session can be recovered... Waiting and sending new RESUME request");
+                    // When d: true we can wait a bit and then try to resume again
+                    api.pool.schedule(this::sendResume, 2, TimeUnit.SECONDS);
+                }
+                else
+                {
+                    invalidate();
+                    sendIdentify();
+                }
                 break;
             case WebSocketCode.HELLO:
                 LOG.debug("Got HELLO packet (OP 10). Initializing keep-alive.");
                 final JSONObject data = content.getJSONObject("d");
                 setupKeepAlive(data.getLong("heartbeat_interval"));
                 if (!data.isNull("_trace"))
-                {
-                    final JSONArray arr = data.getJSONArray("_trace");
-                    WebSocketClient.LOG.debug("Received a _trace for HELLO (OP: " + WebSocketCode.HELLO + ") with " + arr);
-                    for (Object o : arr)
-                        traces.add(String.valueOf(o));
-                }
+                    updateTraces(data.getJSONArray("_trace"), "HELLO", WebSocketCode.HELLO);
                 break;
             case WebSocketCode.HEARTBEAT_ACK:
                 LOG.trace("Got Heartbeat Ack (OP 11).");
@@ -578,27 +598,30 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         LOG.debug("Sending Identify-packet...");
         PresenceImpl presenceObj = (PresenceImpl) api.getPresence();
+        JSONObject connectionProperties = new JSONObject()
+            .put("$os", System.getProperty("os.name"))
+            .put("$browser", "JDA")
+            .put("$device", "JDA")
+            .put("$referring_domain", "")
+            .put("$referrer", "");
+        JSONObject payload = new JSONObject()
+            .put("presence", presenceObj.getFullPresence())
+            .put("token", getToken())
+            .put("properties", connectionProperties)
+            .put("v", DISCORD_GATEWAY_VERSION)
+            .put("large_threshold", 250)
+            //Used to make the READY event be given
+            // as compressed binary data when over a certain size. TY @ShadowLordAlpha
+            .put("compress", true);
         JSONObject identify = new JSONObject()
                 .put("op", WebSocketCode.IDENTIFY)
-                .put("d", new JSONObject()
-                        .put("presence", presenceObj.getFullPresence())
-                        .put("token", api.getToken())
-                        .put("properties", new JSONObject()
-                                .put("$os", System.getProperty("os.name"))
-                                .put("$browser", "JDA")
-                                .put("$device", "JDA")
-                                .put("$referring_domain", "")
-                                .put("$referrer", "")
-                        )
-                        .put("v", DISCORD_GATEWAY_VERSION)
-                        .put("large_threshold", 250)
-                        .put("compress", true));    //Used to make the READY event be given as compressed binary data when over a certain size. TY @ShadowLordAlpha
+                .put("d", payload);
         if (shardInfo != null)
         {
-            identify.getJSONObject("d")
-                    .put("shard", new JSONArray()
-                        .put(shardInfo.getShardId())
-                        .put(shardInfo.getShardTotal()));
+            payload
+                .put("shard", new JSONArray()
+                    .put(shardInfo.getShardId())
+                    .put(shardInfo.getShardTotal()));
         }
         send(identify.toString(), true);
         sentAuthInfo = true;
@@ -611,7 +634,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             .put("op", WebSocketCode.RESUME)
             .put("d", new JSONObject()
                 .put("session_id", sessionId)
-                .put("token", api.getToken())
+                .put("token", getToken())
                 .put("seq", api.getResponseTotal())
             );
         send(resume.toString(), true);
@@ -704,6 +727,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         api.getAudioManagerMap().valueCollection().removeIf(Objects::isNull);
     }
 
+    protected String getToken()
+    {
+        if (api.getAccountType() == AccountType.BOT)
+            return api.getToken().substring("Bot ".length());
+        return api.getToken();
+    }
+
     protected void handleEvent(JSONObject raw)
     {
         String type = raw.getString("t");
@@ -765,6 +795,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     //LOG.debug(String.format("%s -> %s", type, content.toString())); already logged on trace level
                     processingReady = true;
                     sessionId = content.getString("session_id");
+                    if (!content.isNull("_trace"))
+                        updateTraces(content.getJSONArray("_trace"), "READY", WebSocketCode.DISPATCH);
                     handlers.get("READY").handle(responseTotal, raw);
                     break;
                 case "RESUMED":
@@ -773,6 +805,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                         initiating = false;
                         ready();
                     }
+                    if (!content.isNull("_trace"))
+                        updateTraces(content.getJSONArray("_trace"), "RESUMED", WebSocketCode.DISPATCH);
                     break;
                 default:
                     SocketHandler handler = handlers.get(type);
