@@ -63,8 +63,8 @@ public interface User extends ISnowflake, IMentionable, IFakeable
 
     /**
      * <br>The discriminator of the {@link net.dv8tion.jda.core.entities.User User}. Used to differentiate between users with the same usernames.
-     * <br>This will be important when the friends list is released for human readable searching.
-     * Ex: DV8FromTheWorld#6297
+     * <br>This only contains the 4 digits after the username and the #.
+     * Ex: 6297
      *
      * @return Never-null String containing the {@link net.dv8tion.jda.core.entities.User User} discriminator.
      */
