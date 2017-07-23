@@ -52,8 +52,6 @@ public class ReadyHandler extends SocketHandler
     {
         EntityBuilder builder = api.getEntityBuilder();
 
-        if (!content.isNull("_trace"))
-            api.getClient().updateTraces(content.getJSONArray("_trace"), "Received a _trace for READY (OP: " + WebSocketCode.DISPATCH + ") with");
         //Core
         JSONArray guilds = content.getJSONArray("guilds");
         JSONObject selfJson = content.getJSONObject("user");
@@ -189,9 +187,8 @@ public class ReadyHandler extends SocketHandler
 
     public void guildSetupComplete(Guild guild)
     {
-        if (!incompleteGuilds.contains(guild.getIdLong()))
+        if (!incompleteGuilds.remove(guild.getIdLong()))
             WebSocketClient.LOG.fatal("Completed the setup for Guild: " + guild + " without matching id in ReadyHandler cache");
-        incompleteGuilds.remove(guild.getIdLong());
         if (incompleteGuilds.size() == unavailableGuilds.size())
             guildLoadComplete(allContent.getJSONObject("d"));
         else

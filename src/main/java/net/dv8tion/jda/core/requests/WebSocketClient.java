@@ -112,9 +112,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         return traces;
     }
 
-    public void updateTraces(JSONArray arr, String message)
+    protected void updateTraces(JSONArray arr, String type, int opCode)
     {
-        WebSocketClient.LOG.debug(message + ' ' + arr);
+        final String msg = String.format("Received a _trace for %s (OP: %d) with %s", type, opCode, arr);
+        WebSocketClient.LOG.debug(msg);
         traces.clear();
         for (Object o : arr)
             traces.add(String.valueOf(o));
@@ -536,7 +537,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 final JSONObject data = content.getJSONObject("d");
                 setupKeepAlive(data.getLong("heartbeat_interval"));
                 if (!data.isNull("_trace"))
-                    updateTraces(data.getJSONArray("_trace"), "Received a _trace for HELLO (OP: " + WebSocketCode.HELLO + ") with");
+                    updateTraces(data.getJSONArray("_trace"), "HELLO", WebSocketCode.HELLO);
                 break;
             case WebSocketCode.HEARTBEAT_ACK:
                 LOG.trace("Got Heartbeat Ack (OP 11).");
@@ -783,6 +784,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     //LOG.debug(String.format("%s -> %s", type, content.toString())); already logged on trace level
                     processingReady = true;
                     sessionId = content.getString("session_id");
+                    if (!content.isNull("_trace"))
+                        updateTraces(content.getJSONArray("_trace"), "READY", WebSocketCode.DISPATCH);
                     handlers.get("READY").handle(responseTotal, raw);
                     break;
                 case "RESUMED":
@@ -792,7 +795,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                         ready();
                     }
                     if (!content.isNull("_trace"))
-                        updateTraces(content.getJSONArray("_trace"), "Received a _trace for RESUMED (OP: " + WebSocketCode.DISPATCH + ") with");
+                        updateTraces(content.getJSONArray("_trace"), "RESUMED", WebSocketCode.DISPATCH);
                     break;
                 default:
                     SocketHandler handler = handlers.get(type);
