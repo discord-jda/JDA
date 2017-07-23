@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
@@ -517,8 +518,18 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 break;
             case WebSocketCode.INVALIDATE_SESSION:
                 LOG.debug("Got Invalidate request (OP 9). Invalidating...");
-                invalidate();
-                sendIdentify();
+                final boolean isResume = content.getBoolean("d");
+                if (isResume)
+                {
+                    LOG.debug("Session can be recovered... Waiting and sending new RESUME request");
+                    // When d: true we can wait a bit and then try to resume again
+                    api.pool.schedule(this::sendResume, 2, TimeUnit.SECONDS);
+                }
+                else
+                {
+                    invalidate();
+                    sendIdentify();
+                }
                 break;
             case WebSocketCode.HELLO:
                 LOG.debug("Got HELLO packet (OP 10). Initializing keep-alive.");
@@ -579,27 +590,33 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         LOG.debug("Sending Identify-packet...");
         PresenceImpl presenceObj = (PresenceImpl) api.getPresence();
+        String token = api.getToken();
+        if (api.getAccountType() == AccountType.BOT)
+            token = token.substring("Bot ".length());
+        JSONObject connectionProperties = new JSONObject()
+            .put("$os", System.getProperty("os.name"))
+            .put("$browser", "JDA")
+            .put("$device", "JDA")
+            .put("$referring_domain", "")
+            .put("$referrer", "");
+        JSONObject payload = new JSONObject()
+            .put("presence", presenceObj.getFullPresence())
+            .put("token", token)
+            .put("properties", connectionProperties)
+            .put("v", DISCORD_GATEWAY_VERSION)
+            .put("large_threshold", 250)
+            //Used to make the READY event be given
+            // as compressed binary data when over a certain size. TY @ShadowLordAlpha
+            .put("compress", true);
         JSONObject identify = new JSONObject()
                 .put("op", WebSocketCode.IDENTIFY)
-                .put("d", new JSONObject()
-                        .put("presence", presenceObj.getFullPresence())
-                        .put("token", api.getToken())
-                        .put("properties", new JSONObject()
-                                .put("$os", System.getProperty("os.name"))
-                                .put("$browser", "JDA")
-                                .put("$device", "JDA")
-                                .put("$referring_domain", "")
-                                .put("$referrer", "")
-                        )
-                        .put("v", DISCORD_GATEWAY_VERSION)
-                        .put("large_threshold", 250)
-                        .put("compress", true));    //Used to make the READY event be given as compressed binary data when over a certain size. TY @ShadowLordAlpha
+                .put("d", payload);
         if (shardInfo != null)
         {
-            identify.getJSONObject("d")
-                    .put("shard", new JSONArray()
-                        .put(shardInfo.getShardId())
-                        .put(shardInfo.getShardTotal()));
+            payload
+                .put("shard", new JSONArray()
+                    .put(shardInfo.getShardId())
+                    .put(shardInfo.getShardTotal()));
         }
         send(identify.toString(), true);
         sentAuthInfo = true;
