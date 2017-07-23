@@ -26,10 +26,7 @@ import net.dv8tion.jda.client.events.group.update.GroupUpdateNameEvent;
 import net.dv8tion.jda.client.events.group.update.GroupUpdateOwnerEvent;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.*;
-import net.dv8tion.jda.core.events.channel.text.update.TextChannelUpdateNameEvent;
-import net.dv8tion.jda.core.events.channel.text.update.TextChannelUpdatePermissionsEvent;
-import net.dv8tion.jda.core.events.channel.text.update.TextChannelUpdatePositionEvent;
-import net.dv8tion.jda.core.events.channel.text.update.TextChannelUpdateTopicEvent;
+import net.dv8tion.jda.core.events.channel.text.update.*;
 import net.dv8tion.jda.core.events.channel.voice.update.*;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
@@ -62,6 +59,7 @@ public class ChannelUpdateHandler extends SocketHandler
         final long channelId = content.getLong("id");
         final int position = content.getInt("position");
         final String name = content.getString("name");
+        final boolean nsfw = !content.isNull("nsfw") && content.getBoolean("nsfw");
         JSONArray permOverwrites = content.getJSONArray("permission_overwrites");
         switch (type)
         {
@@ -80,6 +78,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 final String oldName = textChannel.getName();
                 final String oldTopic = textChannel.getTopic();
                 final int oldPosition = textChannel.getPositionRaw();
+                final boolean oldNsfw = textChannel.isNSFW();
                 if (!StringUtils.equals(oldName, name))
                 {
                     textChannel.setName(name);
@@ -103,6 +102,15 @@ public class ChannelUpdateHandler extends SocketHandler
                             new TextChannelUpdatePositionEvent(
                                     api, responseNumber,
                                     textChannel, oldPosition));
+                }
+
+                if (oldNsfw != nsfw)
+                {
+                    textChannel.setNSFW(nsfw);
+                    api.getEventManager().handle(
+                            new TextChannelUpdateNSFWEvent(
+                                    api, responseNumber,
+                                    textChannel, nsfw));
                 }
 
                 applyPermissions(textChannel, content, permOverwrites, contained, changed);

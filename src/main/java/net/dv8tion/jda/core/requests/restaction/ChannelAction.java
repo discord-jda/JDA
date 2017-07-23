@@ -49,7 +49,10 @@ public class ChannelAction extends AuditableRestAction<Channel>
     protected final Guild guild;
     protected final boolean voice;
     protected String name;
+
+    // --text only--
     protected String topic = null;
+    protected Boolean nsfw = null;
 
     // --voice only--
     protected Integer bitrate = null;
@@ -119,6 +122,25 @@ public class ChannelAction extends AuditableRestAction<Channel>
         if (topic != null && topic.length() > 1024)
             throw new IllegalArgumentException("Channel Topic must not be greater than 1024 in length!");
         this.topic = topic;
+        return this;
+    }
+
+    /**
+     * Sets the NSFW flag for the new TextChannel
+     *
+     * @param  nsfw
+     *         The NSFW flag for the new Channel
+     *
+     * @throws UnsupportedOperationException
+     *         If this ChannelAction is for a VoiceChannel
+     *
+     * @return The current ChannelAction, for chaining convenience
+     */
+    public ChannelAction setNSFW(boolean nsfw)
+    {
+        if (voice)
+            throw new UnsupportedOperationException("Cannot set nsfw for a VoiceChannel!");
+        this.nsfw = nsfw;
         return this;
     }
 
@@ -333,6 +355,8 @@ public class ChannelAction extends AuditableRestAction<Channel>
         {
             if (topic != null && !topic.isEmpty())
                 object.put("topic", topic);
+            if (nsfw != null)
+                object.put("nsfw", nsfw);
         }
 
         return getRequestBody(object);

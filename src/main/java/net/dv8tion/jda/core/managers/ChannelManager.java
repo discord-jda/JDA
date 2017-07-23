@@ -141,6 +141,28 @@ public class ChannelManager
     }
 
     /**
+     * Sets the <b><u>nsfw flag</u></b> of the selected {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
+     *
+     * @param  nsfw
+     *         The new nsfw flag for the selected {@link net.dv8tion.jda.core.entities.TextChannel TextChannel},
+     *
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
+     * @throws UnsupportedOperationException
+     *         If the selected {@link net.dv8tion.jda.core.entities.Channel Channel}'s type is not {@link net.dv8tion.jda.core.entities.ChannelType#TEXT TEXT}
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     *         <br>Update RestAction from {@link ChannelManagerUpdatable#update() #update()}
+     *
+     * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getNSFWField()
+     * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
+     */
+    public AuditableRestAction<Void> setNSFW(boolean nsfw)
+    {
+        return updatable.getNSFWField().setValue(nsfw).update();
+    }
+
+    /**
      * Sets the <b><u>user-limit</u></b> of the selected {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}.
      * <br>Provide {@code 0} to reset the user-limit of the {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
      *

@@ -57,6 +57,7 @@ public class ChannelManagerUpdatable
     protected ChannelField<String> topic;
     protected ChannelField<Integer> userLimit;
     protected ChannelField<Integer> bitrate;
+    protected ChannelField<Boolean> nsfw;
 
     /**
      * Creates a new ChannelManagerUpdatable instance
@@ -175,6 +176,28 @@ public class ChannelManagerUpdatable
 
     /**
      * An {@link net.dv8tion.jda.core.managers.fields.ChannelField ChannelField}
+     * for the <b><u>nsfw flag</u></b> of the selected {@link net.dv8tion.jda.core.entities.Channel Channel}.
+     *
+     * <p>To set the value use {@link net.dv8tion.jda.core.managers.fields.Field#setValue(Object) setValue(Boolean)}
+     * on the returned {@link net.dv8tion.jda.core.managers.fields.ChannelField ChannelField} instance.
+     *
+     * <p><b>This is only available to {@link net.dv8tion.jda.core.entities.TextChannel TextChannels}</b>
+     *
+     * @throws UnsupportedOperationException
+     *         If the selected {@link net.dv8tion.jda.core.entities.Channel Channel}'s type is not {@link net.dv8tion.jda.core.entities.ChannelType#TEXT TEXT}
+     *
+     * @return {@link net.dv8tion.jda.core.managers.fields.ChannelField ChannelField} - Type: {@code boolean}
+     */
+    public ChannelField<Boolean> getNSFWField()
+    {
+        if (channel instanceof VoiceChannel)
+            throw new UnsupportedOperationException("Setting the nsfw flag on VoiceChannels is not allowed!");
+
+        return nsfw;
+    }
+
+    /**
+     * An {@link net.dv8tion.jda.core.managers.fields.ChannelField ChannelField}
      * for the <b><u>bitrate</u></b> of the selected {@link net.dv8tion.jda.core.entities.Channel Channel}.
      *
      * <p>To set the value use {@link net.dv8tion.jda.core.managers.fields.Field#setValue(Object) setValue(Integer)}
@@ -260,6 +283,8 @@ public class ChannelManagerUpdatable
             frame.put("name", name.getValue());
         if (topic != null && topic.shouldUpdate())
             frame.put("topic", topic.getValue() == null ? JSONObject.NULL : topic.getValue());
+        if (nsfw != null && nsfw.shouldUpdate())
+            frame.put("nsfw", nsfw.getValue());
         if (userLimit != null && userLimit.shouldUpdate())
             frame.put("user_limit", userLimit.getValue());
         if (bitrate != null && bitrate.shouldUpdate())
@@ -317,6 +342,16 @@ public class ChannelManagerUpdatable
                 {
                     if (value != null && value.length() > 1024)
                         throw new IllegalArgumentException("Provided topic must less than or equal to 1024 characters in length");
+                }
+            };
+
+            this.nsfw = new ChannelField<Boolean>(this, tc::isNSFW)
+            {
+                @Override
+                public void checkValue(Boolean value)
+                {
+                    if (value == null)
+                        throw new IllegalArgumentException("NSFW flag must not be null");
                 }
             };
         }
