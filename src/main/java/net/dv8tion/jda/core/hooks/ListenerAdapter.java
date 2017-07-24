@@ -166,6 +166,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onTextChannelUpdateTopic(TextChannelUpdateTopicEvent event) {}
     public void onTextChannelUpdatePosition(TextChannelUpdatePositionEvent event) {}
     public void onTextChannelUpdatePermissions(TextChannelUpdatePermissionsEvent event) {}
+    public void onTextChannelUpdateNSFW(TextChannelUpdateNSFWEvent event) {}
     public void onTextChannelCreate(TextChannelCreateEvent event) {}
 
     //VoiceChannel Events
@@ -438,6 +439,8 @@ public abstract class ListenerAdapter implements EventListener
             onTextChannelDelete((TextChannelDeleteEvent) event);
         else if (event instanceof TextChannelUpdatePermissionsEvent)
             onTextChannelUpdatePermissions((TextChannelUpdatePermissionsEvent) event);
+        else if (event instanceof TextChannelUpdateNSFWEvent)
+            onTextChannelUpdateNSFW((TextChannelUpdateNSFWEvent) event);
 
         //VoiceChannel Events
         else if (event instanceof VoiceChannelCreateEvent)
