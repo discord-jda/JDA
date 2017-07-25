@@ -28,17 +28,19 @@ public interface DisposingState<T extends DisposingState<T>>
     default T ifDisposed(Consumer<T> then)
     {
         Checks.notNull(then, "Consumer");
+        T self = (T) this;
         if (isDisposed())
-            then.accept((T) this);
-        return (T) this;
+            then.accept(self);
+        return self;
     }
 
     @SuppressWarnings("unchecked")
     default T ifNotDisposed(Consumer<T> then)
     {
         Checks.notNull(then, "Consumer");
+        T self = (T) this;
         if (!isDisposed())
-            then.accept((T) this);
-        return (T) this;
+            then.accept(self);
+        return self;
     }
 }
