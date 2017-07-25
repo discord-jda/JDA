@@ -29,7 +29,7 @@ public class GuildSyncHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject allContent, JSONObject content)
     {
         final long guildId = content.getLong("id");
         if (!api.getGuildMap().containsKey(guildId))

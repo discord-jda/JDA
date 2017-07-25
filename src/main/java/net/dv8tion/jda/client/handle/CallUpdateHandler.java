@@ -41,7 +41,7 @@ public class CallUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject allContent, JSONObject content)
     {
         final long channelId = content.getLong("channel_id");
         JSONArray ringing = content.getJSONArray("ringing");

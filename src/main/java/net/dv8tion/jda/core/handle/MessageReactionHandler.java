@@ -47,7 +47,7 @@ public class MessageReactionHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject allContent, JSONObject content)
     {
         JSONObject emoji = content.getJSONObject("emoji");
 

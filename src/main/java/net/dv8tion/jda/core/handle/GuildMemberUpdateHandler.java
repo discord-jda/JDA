@@ -40,7 +40,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject allContent, JSONObject content)
     {
         final long id = content.getLong("guild_id");
         if (api.getGuildLock().isLocked(id))
@@ -71,7 +71,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
         }
 
         Set<Role> currentRoles = member.getRoleSet();
-        List<Role> newRoles = toRolesList(guild, content.getJSONArray("roles"));
+        List<Role> newRoles = toRolesList(guild, allContent, content.getJSONArray("roles"));
 
         //If newRoles is null that means that we didn't find a role that was in the array and was cached this event
         if (newRoles == null)
@@ -128,7 +128,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
         return null;
     }
 
-    private List<Role> toRolesList(GuildImpl guild, JSONArray array)
+    private List<Role> toRolesList(GuildImpl guild, JSONObject allContent, JSONArray array)
     {
         LinkedList<Role> roles = new LinkedList<>();
         for(int i = 0; i < array.length(); i++)
@@ -142,9 +142,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
             else
             {
                 api.getEventCache().cache(EventCache.Type.ROLE, id, () ->
-                {
-                    handle(responseNumber, allContent);
-                });
+                    handle(responseNumber, allContent));
                 EventCache.LOG.debug("Got GuildMember update but one of the Roles for the Member is not yet cached.");
                 return null;
             }

@@ -47,20 +47,20 @@ public class VoiceStateUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject allContent, JSONObject content)
     {
         final Long guildId = content.has("guild_id") ? content.getLong("guild_id") : null;
         if (guildId != null && api.getGuildLock().isLocked(guildId))
             return guildId;
 
         if (guildId != null)
-            handleGuildVoiceState(content);
+            handleGuildVoiceState(allContent, content);
         else
-            handleCallVoiceState(content);
+            handleCallVoiceState(allContent, content);
         return null;
     }
 
-    private void handleGuildVoiceState(JSONObject content)
+    private void handleGuildVoiceState(JSONObject allContent, JSONObject content)
     {
         final long userId = content.getLong("user_id");
         final long guildId = content.getLong("guild_id");
@@ -184,7 +184,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
             api.getEventManager().handle(new GuildVoiceDeafenEvent(api, responseNumber, member));
     }
 
-    private void handleCallVoiceState(JSONObject content)
+    private void handleCallVoiceState(JSONObject allContent, JSONObject content)
     {
         final long userId = content.getLong("user_id");
         final Long channelId = !content.isNull("channel_id") ? content.getLong("channel_id") : null;

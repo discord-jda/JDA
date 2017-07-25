@@ -37,7 +37,7 @@ public class MessageDeleteHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject allContent, JSONObject content)
     {
         final long messageId = content.getLong("id");
         final long channelId = content.getLong("channel_id");

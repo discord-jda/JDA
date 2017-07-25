@@ -44,12 +44,12 @@ public class ChannelUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject allContent, JSONObject content)
     {
         ChannelType type = ChannelType.fromId(content.getInt("type"));
         if (type == ChannelType.GROUP)
         {
-            handleGroup(content);
+            handleGroup(allContent, content);
             return null;
         }
 
@@ -296,7 +296,7 @@ public class ChannelUpdateHandler extends SocketHandler
         containedPermHolders.add(permHolder);
     }
 
-    private void handleGroup(JSONObject content)
+    private void handleGroup(JSONObject allContent, JSONObject content)
     {
         final long groupId = content.getLong("id");
         final long ownerId = content.getLong("owner_id");

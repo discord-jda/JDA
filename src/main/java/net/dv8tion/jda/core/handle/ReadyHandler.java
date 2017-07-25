@@ -42,14 +42,17 @@ public class ReadyHandler extends SocketHandler
     private final TLongSet guildsRequiringChunking = new TLongHashSet();
     private final TLongSet guildsRequiringSyncing = new TLongHashSet();
 
+    public JSONObject content;
+
     public ReadyHandler(JDAImpl api)
     {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject allContent, JSONObject content)
     {
+        this.content = content;
         EntityBuilder builder = api.getEntityBuilder();
 
         //Core
@@ -134,9 +137,9 @@ public class ReadyHandler extends SocketHandler
 
             for (int i = 0; i < presences.length(); i++)
             {
-                JSONObject presence = presences.getJSONObject(i);
-                String userId = presence.getJSONObject("user").getString("id");
-                FriendImpl friend = (FriendImpl) api.asClient().getFriendById(userId);
+                final JSONObject presence = presences.getJSONObject(i);
+                final long userId = presence.getJSONObject("user").getLong("id");
+                final FriendImpl friend = (FriendImpl) api.asClient().getFriendById(userId);
                 if (friend == null)
                     WebSocketClient.LOG.warn("Received a presence in the Presences array in READY that did not correspond to a cached Friend! JSON: " + presence);
                 else
@@ -164,6 +167,7 @@ public class ReadyHandler extends SocketHandler
         }
 
         api.getClient().ready();
+        this.content = null;
     }
 
     public void acknowledgeGuild(Guild guild, boolean available, boolean requiresChunking, boolean requiresSync)
@@ -190,7 +194,7 @@ public class ReadyHandler extends SocketHandler
         if (!incompleteGuilds.remove(guild.getIdLong()))
             WebSocketClient.LOG.fatal("Completed the setup for Guild: " + guild + " without matching id in ReadyHandler cache");
         if (incompleteGuilds.size() == unavailableGuilds.size())
-            guildLoadComplete(allContent.getJSONObject("d"));
+            guildLoadComplete(content);
         else
             checkIfReadyToSendRequests();
     }

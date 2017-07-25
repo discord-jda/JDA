@@ -37,7 +37,7 @@ public class CallCreateHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject allContent, JSONObject content)
     {
         final long channelId = content.getLong("channel_id");
         final long messageId = content.getLong("message_id");

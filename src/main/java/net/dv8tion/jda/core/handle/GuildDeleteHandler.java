@@ -42,7 +42,7 @@ public class GuildDeleteHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject allContent, JSONObject content)
     {
         final long id = content.getLong("id");
         GuildImpl guild = api.getGuildMap().get(id);

@@ -34,7 +34,7 @@ public class PresenceUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject allContent, JSONObject content)
     {
         //Do a pre-check to see if this is for a Guild, and if it is, if the guild is currently locked.
         long guildId;

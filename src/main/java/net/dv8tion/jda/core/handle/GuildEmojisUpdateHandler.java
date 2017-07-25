@@ -40,7 +40,7 @@ public class GuildEmojisUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject allContent, JSONObject content)
     {
         final long guildId = content.getLong("guild_id");
         if (api.getGuildLock().isLocked(guildId))

@@ -237,13 +237,14 @@ public class EntityBuilder
         //If we actually -did- get all of the users needed, then we don't need to Chunk. Furthermore,
         // we don't need to use GUILD_SYNC because we always get presences with users thus we have all information
         // needed to guild the Guild. We will skip
-        if (guild.getJSONArray("members").length() != guild.getInt("member_count"))
+        final int memberCount = guild.getInt("member_count");
+        if (guild.getJSONArray("members").length() != memberCount)
         {
             cachedGuildJsons.put(id, guild);
             cachedGuildCallbacks.put(id, secondPassCallback);
 
             GuildMembersChunkHandler handler = api.getClient().getHandler("GUILD_MEMBERS_CHUNK");
-            handler.setExpectedGuildMembers(id, guild.getInt("member_count"));
+            handler.setExpectedGuildMembers(id, memberCount);
 
             //If we are already past READY / RESUME, then chunk at runtime. Otherwise, pass back to the ReadyHandler
             // and let it send a burst chunk request.

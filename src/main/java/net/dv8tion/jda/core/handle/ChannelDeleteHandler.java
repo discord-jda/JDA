@@ -36,7 +36,7 @@ public class ChannelDeleteHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject allContent, JSONObject content)
     {
         ChannelType type = ChannelType.fromId(content.getInt("type"));
 
