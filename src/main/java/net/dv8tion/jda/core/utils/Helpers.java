@@ -82,7 +82,7 @@ public final class Helpers
         if (input == null)
             return null;
         Checks.notNegative(maxWidth, "maxWidth");
-        if (input.length() == maxWidth)
+        if (input.length() <= maxWidth)
             return input;
         if (maxWidth == 0)
             return "";
