@@ -47,7 +47,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.time.OffsetDateTime;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
@@ -91,6 +90,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected boolean firstInit = true;
     protected boolean processingReady = true;
+    protected boolean sentIdentify = false;
 
     public WebSocketClient(JDAImpl api)
     {
@@ -423,6 +423,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer)
     {
         sentAuthInfo = false;
+        sentIdentify = false;
         connected = false;
         api.setStatus(JDA.Status.DISCONNECTED);
 
@@ -526,18 +527,22 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 break;
             case WebSocketCode.INVALIDATE_SESSION:
                 LOG.debug("Got Invalidate request (OP 9). Invalidating...");
-                final boolean isResume = content.getBoolean("d");
-                if (isResume)
+                if (sentIdentify) // we were rate limited, reconnect and wait
                 {
-                    LOG.debug("Session can be recovered... Waiting and sending new RESUME request");
-                    // When d: true we can wait a bit and then try to resume again
-                    api.pool.schedule(this::sendResume, 2, TimeUnit.SECONDS);
-                }
-                else
-                {
+                    LOG.warn("Gateway identify was rate limited... Closing and backing off");
                     invalidate();
-                    sendIdentify();
+                    break;
                 }
+                final boolean isResume = content.getBoolean("d");
+                // When d: true we can wait a bit and then try to resume again
+                //sending 4000 to not drop session
+                int closeCode = isResume ? 4000 : 1000;
+                if (isResume)
+                    LOG.debug("Session can be recovered... Closing and sending new RESUME request");
+                else
+                    invalidate();
+
+                close(closeCode);
                 break;
             case WebSocketCode.HELLO:
                 LOG.debug("Got HELLO packet (OP 10). Initializing keep-alive.");
@@ -624,6 +629,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     .put(shardInfo.getShardTotal()));
         }
         send(identify.toString(), true);
+        sentIdentify = true;
         sentAuthInfo = true;
     }
 
@@ -794,6 +800,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 case "READY":
                     //LOG.debug(String.format("%s -> %s", type, content.toString())); already logged on trace level
                     processingReady = true;
+                    sentIdentify = false;
                     sessionId = content.getString("session_id");
                     if (!content.isNull("_trace"))
                         updateTraces(content.getJSONArray("_trace"), "READY", WebSocketCode.DISPATCH);
