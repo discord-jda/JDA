@@ -29,10 +29,6 @@ package net.dv8tion.jda.core.utils.tuple;
  */
 public class MutablePair<L, R> extends Pair<L, R>
 {
-
-    /** Serialization version */
-    private static final long serialVersionUID = 4954918890077093841L;
-
     /** Left object */
     public L left;
     /** Right object */
@@ -73,10 +69,6 @@ public class MutablePair<L, R> extends Pair<L, R>
         this.right = right;
     }
 
-    //-----------------------------------------------------------------------
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public L getLeft() {
         return left;
@@ -91,9 +83,6 @@ public class MutablePair<L, R> extends Pair<L, R>
         this.left = left;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public R getRight() {
         return right;
@@ -107,20 +96,5 @@ public class MutablePair<L, R> extends Pair<L, R>
     public void setRight(final R right) {
         this.right = right;
     }
-
-    /**
-     * Sets the {@code Map.Entry} value.
-     * This sets the right element of the pair.
-     *
-     * @param value  the right value to set, not null
-     * @return the old value for the right element
-     */
-    @Override
-    public R setValue(final R value) {
-        final R result = getRight();
-        setRight(value);
-        return result;
-    }
-
 }
 

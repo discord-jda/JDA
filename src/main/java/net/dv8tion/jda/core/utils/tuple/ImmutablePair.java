@@ -34,10 +34,6 @@ package net.dv8tion.jda.core.utils.tuple;
  */
 public final class ImmutablePair<L, R> extends Pair<L, R>
 {
-
-    /** Serialization version */
-    private static final long serialVersionUID = 4954918890077093841L;
-
     /** Left object */
     public final L left;
     /** Right object */
@@ -71,35 +67,13 @@ public final class ImmutablePair<L, R> extends Pair<L, R>
         this.right = right;
     }
 
-    //-----------------------------------------------------------------------
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public L getLeft() {
         return left;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public R getRight() {
         return right;
     }
-
-    /**
-     * <p>Throws {@code UnsupportedOperationException}.</p>
-     *
-     * <p>This pair is immutable, so this operation is not supported.</p>
-     *
-     * @param value  the value to set
-     * @return never
-     * @throws UnsupportedOperationException as this operation is not supported
-     */
-    @Override
-    public R setValue(final R value) {
-        throw new UnsupportedOperationException();
-    }
-
 }
