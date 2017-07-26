@@ -82,7 +82,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 if (!StringUtils.equals(oldName, name))
                 {
                     textChannel.setName(name);
-                    api.getEventManager().handle(
+                    api.handle(
                             new TextChannelUpdateNameEvent(
                                     api, responseNumber,
                                     textChannel, oldName));
@@ -90,7 +90,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 if (!StringUtils.equals(oldTopic, topic))
                 {
                     textChannel.setTopic(topic);
-                    api.getEventManager().handle(
+                    api.handle(
                             new TextChannelUpdateTopicEvent(
                                     api, responseNumber,
                                     textChannel, oldTopic));
@@ -98,7 +98,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 if (oldPosition != position)
                 {
                     textChannel.setRawPosition(position);
-                    api.getEventManager().handle(
+                    api.handle(
                             new TextChannelUpdatePositionEvent(
                                     api, responseNumber,
                                     textChannel, oldPosition));
@@ -107,7 +107,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 if (oldNsfw != nsfw)
                 {
                     textChannel.setNSFW(nsfw);
-                    api.getEventManager().handle(
+                    api.handle(
                             new TextChannelUpdateNSFWEvent(
                                     api, responseNumber,
                                     textChannel, nsfw));
@@ -118,7 +118,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 //If this update modified permissions in any way.
                 if (!changed.isEmpty())
                 {
-                    api.getEventManager().handle(
+                    api.handle(
                             new TextChannelUpdatePermissionsEvent(
                                     api, responseNumber,
                                     textChannel, changed));
@@ -144,7 +144,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 if (!StringUtils.equals(oldName, name))
                 {
                     voiceChannel.setName(name);
-                    api.getEventManager().handle(
+                    api.handle(
                             new VoiceChannelUpdateNameEvent(
                                     api, responseNumber,
                                     voiceChannel, oldName));
@@ -152,7 +152,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 if (oldPosition != position)
                 {
                     voiceChannel.setRawPosition(position);
-                    api.getEventManager().handle(
+                    api.handle(
                             new VoiceChannelUpdatePositionEvent(
                                     api, responseNumber,
                                     voiceChannel, oldPosition));
@@ -160,7 +160,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 if (oldLimit != userLimit)
                 {
                     voiceChannel.setUserLimit(userLimit);
-                    api.getEventManager().handle(
+                    api.handle(
                             new VoiceChannelUpdateUserLimitEvent(
                                     api, responseNumber,
                                     voiceChannel, oldLimit));
@@ -168,7 +168,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 if (oldBitrate != bitrate)
                 {
                     voiceChannel.setBitrate(bitrate);
-                    api.getEventManager().handle(
+                    api.handle(
                             new VoiceChannelUpdateBitrateEvent(
                                     api, responseNumber,
                                     voiceChannel, oldBitrate));
@@ -179,7 +179,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 //If this update modified permissions in any way.
                 if (!changed.isEmpty())
                 {
-                    api.getEventManager().handle(
+                    api.handle(
                             new VoiceChannelUpdatePermissionsEvent(
                                     api, responseNumber,
                                     voiceChannel, changed));
@@ -325,7 +325,7 @@ public class ChannelUpdateHandler extends SocketHandler
             if (!Objects.equals(owner, oldOwner))
             {
                 group.setOwner(owner);
-                api.getEventManager().handle(
+                api.handle(
                         new GroupUpdateOwnerEvent(
                                 api, responseNumber,
                                 group, oldOwner));
@@ -335,7 +335,7 @@ public class ChannelUpdateHandler extends SocketHandler
         if (!Objects.equals(name, oldName))
         {
             group.setName(name);
-            api.getEventManager().handle(
+            api.handle(
                     new GroupUpdateNameEvent(
                             api, responseNumber,
                             group, oldName));
@@ -343,7 +343,7 @@ public class ChannelUpdateHandler extends SocketHandler
         if (!Objects.equals(iconId, oldIconId))
         {
             group.setIconId(iconId);
-            api.getEventManager().handle(
+            api.handle(
                     new GroupUpdateIconEvent(
                             api, responseNumber,
                             group, oldIconId));

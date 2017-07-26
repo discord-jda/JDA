@@ -69,7 +69,7 @@ public class CallUpdateHandler extends SocketHandler
         {
             Region oldRegion = call.getRegion();
             call.setRegion(region);
-            api.getEventManager().handle(
+            api.handle(
                     new CallUpdateRegionEvent(
                             api, responseNumber,
                             call, oldRegion));
@@ -108,7 +108,7 @@ public class CallUpdateHandler extends SocketHandler
 
             if (stoppedRingingUsers.size() > 0 || startedRingingUsers.size() > 0)
             {
-                api.getEventManager().handle(
+                api.handle(
                         new CallUpdateRingingUsersEvent(
                                 api, responseNumber,
                                 call, stoppedRingingUsers, startedRingingUsers));

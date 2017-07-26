@@ -116,7 +116,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
             if (oldChannel == null)
             {
                 channel.getConnectedMembersMap().put(userId, member);
-                api.getEventManager().handle(
+                api.handle(
                         new GuildVoiceJoinEvent(
                                 api, responseNumber,
                                 member));
@@ -124,7 +124,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
             else if (channel == null)
             {
                 oldChannel.getConnectedMembersMap().remove(userId);
-                api.getEventManager().handle(
+                api.handle(
                         new GuildVoiceLeaveEvent(
                                 api, responseNumber,
                                 member, oldChannel));
@@ -142,7 +142,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
 
                 channel.getConnectedMembersMap().put(userId, member);
                 oldChannel.getConnectedMembersMap().remove(userId);
-                api.getEventManager().handle(
+                api.handle(
                         new GuildVoiceMoveEvent(
                                 api, responseNumber,
                                 member, oldChannel));
@@ -155,32 +155,32 @@ public class VoiceStateUpdateHandler extends SocketHandler
         if (selfMuted != vState.isSelfMuted())
         {
             vState.setSelfMuted(selfMuted);
-            api.getEventManager().handle(new GuildVoiceSelfMuteEvent(api, responseNumber, member));
+            api.handle(new GuildVoiceSelfMuteEvent(api, responseNumber, member));
         }
         if (selfDeafened != vState.isSelfDeafened())
         {
             vState.setSelfDeafened(selfDeafened);
-            api.getEventManager().handle(new GuildVoiceSelfDeafenEvent(api, responseNumber, member));
+            api.handle(new GuildVoiceSelfDeafenEvent(api, responseNumber, member));
         }
         if (guildMuted != vState.isGuildMuted())
         {
             vState.setGuildMuted(guildMuted);
-            api.getEventManager().handle(new GuildVoiceGuildMuteEvent(api, responseNumber, member));
+            api.handle(new GuildVoiceGuildMuteEvent(api, responseNumber, member));
         }
         if (guildDeafened != vState.isGuildDeafened())
         {
             vState.setGuildDeafened(guildDeafened);
-            api.getEventManager().handle(new GuildVoiceGuildDeafenEvent(api, responseNumber, member));
+            api.handle(new GuildVoiceGuildDeafenEvent(api, responseNumber, member));
         }
         if (suppressed != vState.isSuppressed())
         {
             vState.setSuppressed(suppressed);
-            api.getEventManager().handle(new GuildVoiceSuppressEvent(api, responseNumber, member));
+            api.handle(new GuildVoiceSuppressEvent(api, responseNumber, member));
         }
         if (wasMute != vState.isMuted())
-            api.getEventManager().handle(new GuildVoiceMuteEvent(api, responseNumber, member));
+            api.handle(new GuildVoiceMuteEvent(api, responseNumber, member));
         if (wasDeaf != vState.isDeafened())
-            api.getEventManager().handle(new GuildVoiceDeafenEvent(api, responseNumber, member));
+            api.handle(new GuildVoiceDeafenEvent(api, responseNumber, member));
     }
 
     private void handleCallVoiceState(JSONObject content)
@@ -235,7 +235,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
             vState.setSessionId(sessionId);
             vState.setInCall(true);
 
-            api.getEventManager().handle(
+            api.handle(
                     new CallVoiceJoinEvent(
                             api, responseNumber,
                             cUser));
@@ -256,7 +256,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
             vState.setSessionId(sessionId);
             vState.setInCall(false);
 
-            api.getEventManager().handle(
+            api.handle(
                     new CallVoiceLeaveEvent(
                             api, responseNumber,
                             cUser));
@@ -266,12 +266,12 @@ public class VoiceStateUpdateHandler extends SocketHandler
         if (selfMuted != vState.isSelfMuted())
         {
             vState.setSelfMuted(selfMuted);
-            api.getEventManager().handle(new CallVoiceSelfMuteEvent(api, responseNumber, vState.getCallUser()));
+            api.handle(new CallVoiceSelfMuteEvent(api, responseNumber, vState.getCallUser()));
         }
         if (selfDeafened != vState.isSelfDeafened())
         {
             vState.setSelfDeafened(selfDeafened);
-            api.getEventManager().handle(new CallVoiceSelfDeafenEvent(api, responseNumber, vState.getCallUser()));
+            api.handle(new CallVoiceSelfDeafenEvent(api, responseNumber, vState.getCallUser()));
         }
     }
 }

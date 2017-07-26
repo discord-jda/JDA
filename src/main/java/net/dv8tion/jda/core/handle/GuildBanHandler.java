@@ -55,14 +55,14 @@ public class GuildBanHandler extends SocketHandler
 
         if (banned)
         {
-            api.getEventManager().handle(
+            api.handle(
                     new GuildBanEvent(
                             api, responseNumber,
                             guild, user));
         }
         else
         {
-            api.getEventManager().handle(
+            api.handle(
                     new GuildUnbanEvent(
                             api, responseNumber,
                             guild, user));

@@ -63,7 +63,7 @@ public class MessageBulkDeleteHandler extends SocketHandler
 
             LinkedList<String> msgIds = new LinkedList<>();
             content.getJSONArray("ids").forEach(id -> msgIds.add((String) id));
-            api.getEventManager().handle(
+            api.handle(
                     new MessageBulkDeleteEvent(
                             api, responseNumber,
                             channel, msgIds));

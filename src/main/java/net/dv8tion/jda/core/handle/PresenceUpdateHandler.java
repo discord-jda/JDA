@@ -67,7 +67,7 @@ public class PresenceUpdateHandler extends SocketHandler
                     String oldDiscriminator = user.getDiscriminator();
                     user.setName(name);
                     user.setDiscriminator(discriminator);
-                    api.getEventManager().handle(
+                    api.handle(
                             new UserNameUpdateEvent(
                                     api, responseNumber,
                                     user, oldUsername, oldDiscriminator));
@@ -77,7 +77,7 @@ public class PresenceUpdateHandler extends SocketHandler
                 {
                     String oldAvatarId = user.getAvatarId();
                     user.setAvatarId(avatarId);
-                    api.getEventManager().handle(
+                    api.handle(
                             new UserAvatarUpdateEvent(
                                     api, responseNumber,
                                     user, oldAvatarId));
@@ -138,7 +138,7 @@ public class PresenceUpdateHandler extends SocketHandler
                     {
                         OnlineStatus oldStatus = member.getOnlineStatus();
                         member.setOnlineStatus(status);
-                        api.getEventManager().handle(
+                        api.handle(
                                 new UserOnlineStatusUpdateEvent(
                                         api, responseNumber,
                                         user, guild, oldStatus));
@@ -147,7 +147,7 @@ public class PresenceUpdateHandler extends SocketHandler
                     {
                         Game oldGame = member.getGame();
                         member.setGame(nextGame);
-                        api.getEventManager().handle(
+                        api.handle(
                                 new UserGameUpdateEvent(
                                         api, responseNumber,
                                         user, guild, oldGame));

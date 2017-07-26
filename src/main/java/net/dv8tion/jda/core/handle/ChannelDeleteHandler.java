@@ -69,7 +69,7 @@ public class ChannelDeleteHandler extends SocketHandler
                 }
 
                 guild.getTextChannelsMap().remove(channel.getIdLong());
-                api.getEventManager().handle(
+                api.handle(
                         new TextChannelDeleteEvent(
                                 api, responseNumber,
                                 channel));
@@ -94,7 +94,7 @@ public class ChannelDeleteHandler extends SocketHandler
                     manager.closeAudioConnection(ConnectionStatus.DISCONNECTED_CHANNEL_DELETED);
                 }
                 guild.getVoiceChannelMap().remove(channel.getIdLong());
-                api.getEventManager().handle(
+                api.handle(
                         new VoiceChannelDeleteEvent(
                                 api, responseNumber,
                                 channel));
@@ -118,7 +118,7 @@ public class ChannelDeleteHandler extends SocketHandler
 
                 ((UserImpl) channel.getUser()).setPrivateChannel(null);
 
-                api.getEventManager().handle(
+                api.handle(
                         new PrivateChannelDeleteEvent(
                                 api, responseNumber,
                                 channel));
@@ -152,7 +152,7 @@ public class ChannelDeleteHandler extends SocketHandler
                     return true;
                 });
 
-                api.getEventManager().handle(
+                api.handle(
                         new GroupLeaveEvent(
                                 api, responseNumber,
                                 group));

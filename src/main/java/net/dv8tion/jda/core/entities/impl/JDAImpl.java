@@ -28,6 +28,7 @@ import net.dv8tion.jda.core.audio.AudioWebSocket;
 import net.dv8tion.jda.core.audio.factory.DefaultSendFactory;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.StatusChangeEvent;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
@@ -76,6 +77,8 @@ public class JDAImpl implements JDA
     protected final JDABot jdaBot;
     protected final int maxReconnectDelay;
     protected final Thread shutdownHook;
+    protected final Thread eventWorker;
+    protected final BlockingQueue<Event> eventQueue = new LinkedBlockingQueue<>();
     protected final EntityBuilder entityBuilder = new EntityBuilder(this);
     protected final EventCache eventCache = new EventCache();
     protected final GuildLock guildLock = new GuildLock(this);
@@ -105,6 +108,7 @@ public class JDAImpl implements JDA
         this.autoReconnect = autoReconnect;
         this.audioEnabled = audioEnabled;
         this.shutdownHook = useShutdownHook ? new Thread(this::shutdown, "JDA Shutdown Hook") : null;
+        this.eventWorker = new EventQueueWorker(this);
         this.bulkDeleteSplittingEnabled = bulkDeleteSplittingEnabled;
         this.pool = new ScheduledThreadPoolExecutor(corePoolSize, new JDAThreadFactory());
         this.maxReconnectDelay = maxReconnectDelay;
@@ -142,7 +146,7 @@ public class JDAImpl implements JDA
             Status oldStatus = this.status;
             this.status = status;
 
-            eventManager.handle(new StatusChangeEvent(this, status, oldStatus));
+            handle(new StatusChangeEvent(this, status, oldStatus));
         }
     }
 
@@ -249,6 +253,11 @@ public class JDAImpl implements JDA
             if (userResponse.has("bot") && userResponse.getBoolean("bot"))
                 throw new AccountTypeException(AccountType.CLIENT, "Attempted to login as a CLIENT with a BOT token!");
         }
+    }
+
+    public void handle(Event event)
+    {
+        eventQueue.add(event);
     }
 
     @Override

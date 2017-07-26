@@ -75,7 +75,7 @@ public class CallDeleteHandler extends SocketHandler
             ((JDAClientImpl) api.asClient()).getCallUserMap().remove(api.getSelfUser().getIdLong());
         }
 
-        api.getEventManager().handle(
+        api.handle(
                 new CallDeleteEvent(
                         api, responseNumber,
                         call));

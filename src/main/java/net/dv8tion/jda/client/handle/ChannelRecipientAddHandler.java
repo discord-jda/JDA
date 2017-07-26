@@ -57,7 +57,7 @@ public class ChannelRecipientAddHandler extends SocketHandler
             call.getCallUserMap().put(user.getIdLong(), new CallUserImpl(call, user));
         }
 
-        api.getEventManager().handle(
+        api.handle(
                 new GroupUserJoinEvent(
                         api, responseNumber,
                         group, user));

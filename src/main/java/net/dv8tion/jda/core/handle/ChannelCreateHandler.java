@@ -48,34 +48,34 @@ public class ChannelCreateHandler extends SocketHandler
         {
             case TEXT:
             {
-                api.getEventManager().handle(
-                        new TextChannelCreateEvent(
-                                api, responseNumber,
-                                api.getEntityBuilder().createTextChannel(content, guildId)));
+                api.handle(
+                    new TextChannelCreateEvent(
+                        api, responseNumber,
+                        api.getEntityBuilder().createTextChannel(content, guildId)));
                 break;
             }
             case VOICE:
             {
-                api.getEventManager().handle(
-                        new VoiceChannelCreateEvent(
-                                api, responseNumber,
-                                api.getEntityBuilder().createVoiceChannel(content, guildId)));
+                api.handle(
+                    new VoiceChannelCreateEvent(
+                        api, responseNumber,
+                        api.getEntityBuilder().createVoiceChannel(content, guildId)));
                 break;
             }
             case PRIVATE:
             {
-                api.getEventManager().handle(
-                        new PrivateChannelCreateEvent(
-                                api, responseNumber,
-                                api.getEntityBuilder().createPrivateChannel(content)));
+                api.handle(
+                    new PrivateChannelCreateEvent(
+                        api, responseNumber,
+                        api.getEntityBuilder().createPrivateChannel(content)));
                 break;
             }
             case GROUP:
             {
-                api.getEventManager().handle(
-                        new GroupJoinEvent(
-                                api, responseNumber,
-                                api.getEntityBuilder().createGroup(content)));
+                api.handle(
+                    new GroupJoinEvent(
+                        api, responseNumber,
+                        api.getEntityBuilder().createGroup(content)));
                 break;
             }
             default:

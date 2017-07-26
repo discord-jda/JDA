@@ -75,7 +75,7 @@ public class TypingStartHandler extends SocketHandler
                             // then we will just throw the event away.
 
         OffsetDateTime timestamp = Instant.ofEpochSecond(content.getInt("timestamp")).atOffset(ZoneOffset.UTC);
-        api.getEventManager().handle(
+        api.handle(
                 new UserTypingEvent(
                         api, responseNumber,
                         user, channel, timestamp));

@@ -70,7 +70,7 @@ public class ChannelRecipientRemoveHandler extends SocketHandler
         {
             api.getFakeUserMap().remove(userId);
         }
-        api.getEventManager().handle(
+        api.handle(
                 new GroupUserLeaveEvent(
                         api, responseNumber,
                         group, user));
