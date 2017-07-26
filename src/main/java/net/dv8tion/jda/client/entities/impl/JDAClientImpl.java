@@ -28,8 +28,6 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.MiscUtil;
@@ -258,29 +256,20 @@ public class JDAClientImpl implements JDAClient
     public RestAction<List<Application>> getApplications()
     {
         Route.CompiledRoute route = Route.Applications.GET_APPLICATIONS.compile();
-        return new RestAction<List<Application>>(api, route)
+
+        return new RestAction<List<Application>>(api, route, r ->
         {
-            @Override
-            protected void handleResponse(Response response, Request<List<Application>> request)
-            {
-                if (response.isOk())
-                {
-                    JSONArray array = response.getArray();
-                    List<Application> applications = new ArrayList<>(array.length());
-                    EntityBuilder entityBuilder = api.getEntityBuilder();
+            JSONArray array = r.getArray();
+            List<Application> applications = new ArrayList<>(array.length());
+            EntityBuilder entityBuilder = api.getEntityBuilder();
 
-                    for (int i = 0; i < array.length(); i++)
-                        applications.add(entityBuilder.createApplication(array.getJSONObject(i)));
+            for (int i = 0; i < array.length(); i++)
+                applications.add(entityBuilder.createApplication(array.getJSONObject(i)));
 
-                    request.onSuccess(Collections.unmodifiableList(applications));
-                }
-                else
-                {
-                    request.onFailure(response);
-                }
-            }
-        };
+            return Collections.unmodifiableList(applications);
+        });
     }
+
 
     @Override
     public RestAction<Application> getApplicationById(String id)
@@ -288,45 +277,26 @@ public class JDAClientImpl implements JDAClient
         Checks.notEmpty(id, "id");
 
         Route.CompiledRoute route = Route.Applications.GET_APPLICATION.compile(id);
-        return new RestAction<Application>(api, route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Application> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(api.getEntityBuilder().createApplication(response.getObject()));
-                else
-                    request.onFailure(response);
-            }
-        };
+
+        return new RestAction<Application>(api, route, response -> response.getJDA().getEntityBuilder().createApplication(response.getObject()));
     }
 
     @Override
     public RestAction<List<AuthorizedApplication>> getAuthorizedApplications()
     {
         Route.CompiledRoute route = Route.Applications.GET_AUTHORIZED_APPLICATIONS.compile();
-        return new RestAction<List<AuthorizedApplication>>(api, route)
+
+        return new RestAction<List<AuthorizedApplication>>(api, route, response ->
         {
-            @Override
-            protected void handleResponse(Response response, Request<List<AuthorizedApplication>> request)
-            {
-                if (response.isOk())
-                {
-                    JSONArray array = response.getArray();
-                    List<AuthorizedApplication> applications = new ArrayList<>(array.length());
-                    EntityBuilder entityBuilder = api.getEntityBuilder();
+            JSONArray array = response.getArray();
+            List<AuthorizedApplication> applications = new ArrayList<>(array.length());
+            EntityBuilder entityBuilder = api.getEntityBuilder();
 
-                    for (int i = 0; i < array.length(); i++)
-                        applications.add(entityBuilder.createAuthorizedApplication(array.getJSONObject(i)));
+            for (int i = 0; i < array.length(); i++)
+                applications.add(entityBuilder.createAuthorizedApplication(array.getJSONObject(i)));
 
-                    request.onSuccess(Collections.unmodifiableList(applications));
-                }
-                else
-                {
-                    request.onFailure(response);
-                }
-            }
-        };
+            return Collections.unmodifiableList(applications);
+        });
     }
 
     @Override
@@ -335,16 +305,6 @@ public class JDAClientImpl implements JDAClient
         Checks.notEmpty(id, "id");
 
         Route.CompiledRoute route = Route.Applications.GET_AUTHORIZED_APPLICATION.compile(id);
-        return new RestAction<AuthorizedApplication>(api, route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<AuthorizedApplication> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(api.getEntityBuilder().createAuthorizedApplication(response.getObject()));
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new RestAction<AuthorizedApplication>(api, route, response -> response.getJDA().getEntityBuilder().createAuthorizedApplication(response.getObject()));
     }
 }

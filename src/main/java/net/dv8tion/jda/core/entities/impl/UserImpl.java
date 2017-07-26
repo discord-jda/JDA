@@ -20,8 +20,6 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.MiscUtil;
@@ -92,7 +90,6 @@ public class UserImpl implements User
         return getAvatarUrl() == null ? getDefaultAvatarUrl() : getAvatarUrl();
     }
 
-
     @Override
     public boolean hasPrivateChannel()
     {
@@ -110,23 +107,7 @@ public class UserImpl implements User
 
         Route.CompiledRoute route = Route.Self.CREATE_PRIVATE_CHANNEL.compile();
         JSONObject body = new JSONObject().put("recipient_id", getId());
-        return new RestAction<PrivateChannel>(api, route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<PrivateChannel> request)
-            {
-                if (response.isOk())
-                {
-                    PrivateChannel priv = api.getEntityBuilder().createPrivateChannel(response.getObject());
-                    UserImpl.this.privateChannel = priv;
-                    request.onSuccess(priv);
-                }
-                else
-                {
-                    request.onFailure(response);
-                }
-            }
-        };
+        return new RestAction<PrivateChannel>(api, route, body, r -> (UserImpl.this.privateChannel = api.getEntityBuilder().createPrivateChannel(r.getObject())));
     }
 
     @Override

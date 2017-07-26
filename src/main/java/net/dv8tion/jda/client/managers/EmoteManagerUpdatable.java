@@ -27,8 +27,6 @@ import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.impl.EmoteImpl;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.Checks;
@@ -219,17 +217,7 @@ public class EmoteManagerUpdatable
 
         reset(); //reset because we built the JSONObject needed to update
         Route.CompiledRoute route = Route.Emotes.MODIFY_EMOTE.compile(getGuild().getId(), emote.getId());
-        return new AuditableRestAction<Void>(getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestAction<Void>(getJDA(), route, body);
     }
 
     protected boolean needsUpdate()

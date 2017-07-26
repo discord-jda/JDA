@@ -25,8 +25,9 @@ import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
-public abstract class AuditableRestAction<T> extends RestAction<T>
+public class AuditableRestAction<T> extends RestAction<T>
 {
 
     protected String reason = null;
@@ -44,6 +45,36 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
     public AuditableRestAction(JDA api, Route.CompiledRoute route, JSONObject data)
     {
         super(api, route, data);
+    }
+
+    public AuditableRestAction(JDA api, Route.CompiledRoute route, Function<Response, T> successTransformer)
+    {
+        super(api, route, successTransformer);
+    }
+
+    public AuditableRestAction(JDA api, Route.CompiledRoute route, RequestBody data, Function<Response, T> successTransformer)
+    {
+        super(api, route, data, successTransformer);
+    }
+
+    public AuditableRestAction(JDA api, Route.CompiledRoute route, JSONObject data, Function<Response, T> successTransformer)
+    {
+        super(api, route, data, successTransformer);
+    }
+
+    public AuditableRestAction(JDA api, Route.CompiledRoute route, Function<Response, T> successTransformer, Function<Response, Throwable> failureTransformer)
+    {
+        super(api, route, successTransformer, failureTransformer);
+    }
+
+    public AuditableRestAction(JDA api, Route.CompiledRoute route, JSONObject data, Function<Response, T> successTransformer, Function<Response, Throwable> failureTransformer)
+    {
+        super(api, route, data, successTransformer, failureTransformer);
+    }
+
+    public AuditableRestAction(JDA api, Route.CompiledRoute route, RequestBody data, Function<Response, T> successTransformer, Function<Response, Throwable> failureTransformer)
+    {
+        super(api, route, data, successTransformer, failureTransformer);
     }
 
     /**
@@ -129,9 +160,6 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
         {
             return new RestFuture<>(content);
         }
-
-        @Override
-        protected void handleResponse(Response response, Request<T> request) { }
     }
 
     /**
@@ -170,8 +198,5 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
         {
             throw new RuntimeException(throwable);
         }
-
-        @Override
-        protected void handleResponse(Response response, Request<T> request) {}
     }
 }

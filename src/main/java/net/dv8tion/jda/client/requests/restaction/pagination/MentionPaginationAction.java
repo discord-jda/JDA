@@ -20,7 +20,6 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction;
@@ -28,6 +27,7 @@ import org.json.JSONArray;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * {@link net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction PaginationAction}
@@ -45,11 +45,12 @@ import java.util.List;
  */
 public class MentionPaginationAction extends PaginationAction<Message, MentionPaginationAction>
 {
-
     protected final Guild guild;
 
     protected boolean isEveryone = true;
     protected boolean isRole = true;
+
+    protected final Function<Response, List<Message>> successTransformer;
 
     /**
      * Creates a new MentionPaginationAction
@@ -87,6 +88,23 @@ public class MentionPaginationAction extends PaginationAction<Message, MentionPa
         super(api, Route.Self.GET_RECENT_MENTIONS.compile(), 1, 100, 100);
 
         this.guild = guild;
+
+        this.successTransformer = response -> {
+
+            EntityBuilder builder = response.getJDA().getEntityBuilder();
+            List<Message> mentions = new LinkedList<>();
+            JSONArray arr = response.getArray();
+            for (int i = 0; i < arr.length(); i++)
+            {
+                final Message msg = builder.createMessage(arr.getJSONObject(i), false);
+                mentions.add(msg);
+                if (useCache)
+                    cached.add(msg);
+                last = msg;
+            }
+
+            return mentions;
+        };
     }
 
     /**
@@ -156,28 +174,8 @@ public class MentionPaginationAction extends PaginationAction<Message, MentionPa
         return route;
     }
 
-    @Override
-    protected void handleResponse(Response response, Request<List<Message>> request)
+    protected Function<Response, List<Message>> getSuccessTransformer()
     {
-        if(!response.isOk())
-        {
-            request.onFailure(response);
-            return;
-        }
-
-        EntityBuilder builder = api.getEntityBuilder();;
-        List<Message> mentions = new LinkedList<>();
-        JSONArray arr = response.getArray();
-        for (int i = 0; i < arr.length(); i++)
-        {
-            final Message msg = builder.createMessage(arr.getJSONObject(i), false);
-            mentions.add(msg);
-            if (useCache)
-                cached.add(msg);
-            last = msg;
-        }
-
-        request.onSuccess(mentions);
+        return this.successTransformer;
     }
-
 }

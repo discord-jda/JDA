@@ -17,11 +17,8 @@
 package net.dv8tion.jda.client.requests.restaction;
 
 import net.dv8tion.jda.client.entities.Application;
-import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import okhttp3.RequestBody;
@@ -43,7 +40,7 @@ public class ApplicationAction extends RestAction<Application>
 
     public ApplicationAction(final JDAImpl api, String name)
     {
-        super(api, Route.Applications.CREATE_APPLICATION.compile());
+        super(api, Route.Applications.CREATE_APPLICATION.compile(), response -> response.getJDA().getEntityBuilder().createApplication(response.getObject()));
 
        this.setName(name);
     }
@@ -61,17 +58,6 @@ public class ApplicationAction extends RestAction<Application>
             object.put("icon", this.icon.getEncoding());
 
         return getRequestBody(object);
-    }
-
-    @Override
-    protected void handleResponse(final Response response, final Request<Application> request)
-    {
-        if (response.isOk())
-        {
-            request.onSuccess(api.getEntityBuilder().createApplication(response.getObject()));
-        }
-        else
-            request.onFailure(response);
     }
 
     /**

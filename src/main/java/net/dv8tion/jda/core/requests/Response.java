@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.requests;
 
+import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -33,19 +34,21 @@ public class Response implements Closeable
     public final int code;
     public final String message;
     public final long retryAfter;
+    private final Request<?> request;
     private final Object object;
     private final okhttp3.Response rawResponse;
     private final Set<String> cfRays;
     private Exception exception;
 
-    protected Response(final okhttp3.Response response, final Exception exception, final Set<String> cfRays)
+    protected Response(Request<?> request, final okhttp3.Response response, final Exception exception, final Set<String> cfRays)
     {
-        this(response, response != null ? response.code() : ERROR_CODE, ERROR_MESSAGE, -1, cfRays);
+        this(request, response, response != null ? response.code() : ERROR_CODE, ERROR_MESSAGE, -1, cfRays);
         this.exception = exception;
     }
 
-    protected Response(final okhttp3.Response response, final int code, final String message, final long retryAfter, final Set<String> cfRays)
+    protected Response(Request<?> request, final okhttp3.Response response, final int code, final String message, final long retryAfter, final Set<String> cfRays)
     {
+        this.request = request;
         this.rawResponse = response;
         this.code = code;
         this.message = message;
@@ -98,14 +101,14 @@ public class Response implements Closeable
         }
     }
 
-    protected Response(final long retryAfter, final Set<String> cfRays)
+    protected Response(Request<?> request, final long retryAfter, final Set<String> cfRays)
     {
-        this(null, 429, "TOO MANY REQUESTS", retryAfter, cfRays);
+        this(request, null, 429, "TOO MANY REQUESTS", retryAfter, cfRays);
     }
 
-    protected Response(final okhttp3.Response response, final long retryAfter, final Set<String> cfRays)
+    protected Response(Request<?> request, final okhttp3.Response response, final long retryAfter, final Set<String> cfRays)
     {
-        this(response, response.code(), response.message(), retryAfter, cfRays);
+        this(request, response, response.code(), response.message(), retryAfter, cfRays);
     }
 
     public JSONArray getArray()
@@ -121,6 +124,11 @@ public class Response implements Closeable
     public String getString()
     {
         return Objects.toString(object);
+    }
+
+    public Request<?> getRequest()
+    {
+        return request;
     }
 
     public okhttp3.Response getRawResponse()
@@ -166,5 +174,10 @@ public class Response implements Closeable
     {
         if (rawResponse != null)
             rawResponse.close();
+    }
+
+    public JDAImpl getJDA()
+    {
+        return request.getJDA();
     }
 }

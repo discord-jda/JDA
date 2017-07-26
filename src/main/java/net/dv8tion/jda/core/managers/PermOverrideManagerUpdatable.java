@@ -22,8 +22,6 @@ import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.PermissionOverride;
 import net.dv8tion.jda.core.exceptions.PermissionException;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.Checks;
@@ -451,17 +449,7 @@ public class PermOverrideManagerUpdatable
 
         reset();
         Route.CompiledRoute route = Route.Channels.MODIFY_PERM_OVERRIDE.compile(override.getChannel().getId(), targetId);
-        return new AuditableRestAction<Void>(getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestAction<Void>(getJDA(), route, body);
     }
 
     protected boolean shouldUpdate()

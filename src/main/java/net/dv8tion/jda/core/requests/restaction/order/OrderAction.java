@@ -17,8 +17,6 @@
 package net.dv8tion.jda.core.requests.restaction.order;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
@@ -399,15 +397,6 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
 
         this.orderList.sort(comparator);
         return (M) this;
-    }
-
-    @Override
-    protected void handleResponse(Response response, Request<Void> request)
-    {
-        if (response.isOk())
-            request.onSuccess(null);
-        else
-            request.onFailure(response);
     }
 
     protected abstract void validateInput(T entity);

@@ -19,13 +19,13 @@ package net.dv8tion.jda.core.requests.restaction.pagination;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.PermissionException;
-import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * {@link net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction PaginationAction}
@@ -45,6 +45,8 @@ public class MessagePaginationAction extends PaginationAction<Message, MessagePa
 {
     private final MessageChannel channel;
 
+    protected final Function<Response, List<Message>> successTransformer;
+
     public MessagePaginationAction(MessageChannel channel)
     {
         super(channel.getJDA(), Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId()), 1, 100, 100);
@@ -57,6 +59,23 @@ public class MessagePaginationAction extends PaginationAction<Message, MessagePa
         }
 
         this.channel = channel;
+
+        this.successTransformer = response ->
+        {
+            JSONArray array = response.getArray();
+            List<Message> messages = new ArrayList<>(array.length());
+            EntityBuilder builder = api.getEntityBuilder();
+            for (int i = 0; i < array.length(); i++)
+            {
+                Message msg = builder.createMessage(array.getJSONObject(i), channel, false);
+                messages.add(msg);
+                if (useCache)
+                    cached.add(msg);
+                last = msg;
+            }
+
+            return messages;
+        };
     }
 
     /**
@@ -95,28 +114,10 @@ public class MessagePaginationAction extends PaginationAction<Message, MessagePa
 
         return route;
     }
-
+    
     @Override
-    protected void handleResponse(Response response, Request<List<Message>> request)
+    protected Function<Response, List<Message>> getSuccessTransformer()
     {
-        if (!response.isOk())
-        {
-            request.onFailure(response);
-            return;
-        }
-
-        JSONArray array = response.getArray();
-        List<Message> messages = new ArrayList<>(array.length());
-        EntityBuilder builder = api.getEntityBuilder();
-        for (int i = 0; i < array.length(); i++)
-        {
-            Message msg = builder.createMessage(array.getJSONObject(i), channel, false);
-            messages.add(msg);
-            if (useCache)
-                cached.add(msg);
-            last = msg;
-        }
-
-        request.onSuccess(messages);
+        return this.successTransformer;     
     }
 }

@@ -23,8 +23,6 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.managers.ChannelManager;
 import net.dv8tion.jda.core.managers.ChannelManagerUpdatable;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
@@ -158,17 +156,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         checkPermission(Permission.MANAGE_CHANNEL);
 
         Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(getId());
-        return new AuditableRestAction<Void>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestAction<Void>(getJDA(), route);
     }
 
     @Override
@@ -218,28 +206,17 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
 
         final Route.CompiledRoute route = Route.Invites.GET_CHANNEL_INVITES.compile(getId());
 
-        return new RestAction<List<Invite>>(getJDA(), route)
+        return new RestAction<List<Invite>>(getJDA(), route, r ->
         {
-            @Override
-            protected void handleResponse(final Response response, final Request<List<Invite>> request)
+            EntityBuilder entityBuilder = r.getJDA().getEntityBuilder();
+            JSONArray array = r.getArray();
+            List<Invite> invites = new ArrayList<>(array.length());
+            for (int i = 0; i < array.length(); i++)
             {
-                if (response.isOk())
-                {
-                    EntityBuilder entityBuilder = this.api.getEntityBuilder();
-                    JSONArray array = response.getArray();
-                    List<Invite> invites = new ArrayList<>(array.length());
-                    for (int i = 0; i < array.length(); i++)
-                    {
-                        invites.add(entityBuilder.createInvite(array.getJSONObject(i)));
-                    }
-                    request.onSuccess(invites);
-                }
-                else
-                {
-                    request.onFailure(response);
-                }
+                invites.add(entityBuilder.createInvite(array.getJSONObject(i)));
             }
-        };
+            return invites;
+        });
     }
 
     @Override

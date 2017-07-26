@@ -18,8 +18,6 @@ package net.dv8tion.jda.client.entities.impl;
 
 import net.dv8tion.jda.client.entities.AuthorizedApplication;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 
@@ -54,17 +52,7 @@ public class AuthorizedApplicationImpl implements AuthorizedApplication
     {
         Route.CompiledRoute route = Route.Applications.DELETE_AUTHORIZED_APPLICATION.compile(getAuthId());
 
-        return new RestAction<Void>(this.api, route)
-        {
-            @Override
-            protected void handleResponse(final Response response, final Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new RestAction<Void>(this.api, route);
     }
 
     @Override

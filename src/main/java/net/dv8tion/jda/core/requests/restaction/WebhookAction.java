@@ -19,8 +19,6 @@ package net.dv8tion.jda.core.requests.restaction;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.entities.Webhook;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.RequestBody;
@@ -39,7 +37,7 @@ public class WebhookAction extends AuditableRestAction<Webhook>
 
     public WebhookAction(JDA api, Route.CompiledRoute route, String name)
     {
-        super(api, route);
+        super(api, route, response -> response.getJDA().getEntityBuilder().createWebhook(response.getObject()));
         this.name = name;
     }
 
@@ -89,19 +87,5 @@ public class WebhookAction extends AuditableRestAction<Webhook>
         object.put("avatar", avatar != null ? avatar.getEncoding() : JSONObject.NULL);
 
         return getRequestBody(object);
-    }
-
-    @Override
-    protected void handleResponse(Response response, Request<Webhook> request)
-    {
-        if (!response.isOk())
-        {
-            request.onFailure(response);
-            return;
-        }
-        JSONObject json = response.getObject();
-        Webhook webhook = api.getEntityBuilder().createWebhook(json);
-
-        request.onSuccess(webhook);
     }
 }

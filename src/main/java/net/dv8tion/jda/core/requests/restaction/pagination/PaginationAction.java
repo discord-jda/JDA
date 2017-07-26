@@ -17,7 +17,6 @@
 package net.dv8tion.jda.core.requests.restaction.pagination;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
@@ -27,6 +26,7 @@ import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -82,13 +82,16 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>> exte
      * @param api
      *        The current JDA instance
      */
-    public PaginationAction(JDA api)
+    public PaginationAction(JDA api, Route.CompiledRoute route, Function<Response, List<T>> successTransformer)
     {
-        super(api, null);
+        super(api, route, successTransformer);
         this.maxLimit = 0;
         this.minLimit = 0;
         this.limit = new AtomicInteger(0);
     }
+
+    @Override
+    protected abstract Function<Response, List<T>> getSuccessTransformer();
 
     /**
      * The current amount of cached entities for this PaginationAction
@@ -303,8 +306,6 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>> exte
     {
         return StreamSupport.stream(spliterator(), true);
     }
-
-    protected abstract void handleResponse(Response response, Request<List<T>> request);
 
     /**
      * Iterator implementation for a {@link net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction PaginationAction}.

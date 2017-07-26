@@ -366,24 +366,24 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         try
         {
-            RestAction<String> gateway = new RestAction<String>(api, Route.Misc.GATEWAY.compile())
-            {
-                @Override
-                protected void handleResponse(Response response, Request<String> request)
-                {
-                    try
-                    {
-                        if (response.isOk())
-                            request.onSuccess(response.getObject().getString("url"));
-                        else
-                            request.onFailure(new Exception("Failed to get gateway url"));
-                    }
-                    catch (Exception e)
-                    {
-                        request.onFailure(e);
-                    }
-                }
-            };
+            RestAction<String> gateway = new RestAction<String>(api, Route.Misc.GATEWAY.compile(), r -> r.getObject().getString("url")); // TODO
+//            {
+//                @Override
+//                protected void handleResponse(Response response, Request<String> request)
+//                {
+//                    try
+//                    {
+//                        if (response.isOk())
+//                            return response.getObject().getString("url");
+//                        else
+//                            request.onFailure(new Exception("Failed to get gateway url"));
+//                    }
+//                    catch (Exception e)
+//                    {
+//                        request.onFailure(e);
+//                    }
+//                }
+//            };
 
             return gateway.complete(false) + "?encoding=json&v=" + DISCORD_GATEWAY_VERSION;
         }

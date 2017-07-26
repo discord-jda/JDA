@@ -22,8 +22,6 @@ import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.entities.SelfUser;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.managers.fields.AccountField;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
@@ -257,24 +255,12 @@ public class AccountManagerUpdatable
 
         reset();    //now that we've built our JSON object, reset the manager back to the non-modified state
         Route.CompiledRoute route = Route.Self.MODIFY_SELF.compile();
-        return new RestAction<Void>(getJDA(), route, body)
+        return new RestAction<Void>(getJDA(), route, body, response ->
         {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (!response.isOk())
-                {
-                    request.onFailure(response);
-                    return;
-                }
-
-                String newToken = response.getObject().getString("token");
-                newToken = newToken.replace("Bot ", "");
-
-                api.setToken(newToken);
-                request.onSuccess(null);
-            }
-        };
+            String newToken = response.getObject().getString("token").replace("Bot ", "");
+            response.getJDA().setToken(newToken);
+            return null;
+        });
     }
 
     /**

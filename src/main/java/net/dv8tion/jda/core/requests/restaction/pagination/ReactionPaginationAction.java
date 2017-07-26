@@ -19,7 +19,6 @@ package net.dv8tion.jda.core.requests.restaction.pagination;
 import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.MessageReaction;
 import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.MiscUtil;
@@ -27,6 +26,7 @@ import org.json.JSONArray;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * {@link net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction PaginationAction}
@@ -44,8 +44,9 @@ import java.util.List;
  */
 public class ReactionPaginationAction extends PaginationAction<User, ReactionPaginationAction>
 {
-
     protected final MessageReaction reaction;
+
+    protected final Function<Response, List<User>> successTransformer;
 
     /**
      * Creates a new PaginationAction instance
@@ -57,6 +58,23 @@ public class ReactionPaginationAction extends PaginationAction<User, ReactionPag
     {
         super(reaction.getJDA(), Route.Messages.GET_REACTION_USERS.compile(reaction.getChannel().getId(), reaction.getMessageId(), getCode(reaction)), 1, 100, 100);
         this.reaction = reaction;
+
+        this.successTransformer = response ->
+        {
+            final EntityBuilder builder = response.getJDA().getEntityBuilder();
+            final JSONArray array = response.getArray();
+            final List<User> users = new LinkedList<>();
+            for (int i = 0; i < array.length(); i++)
+            {
+                final User user = builder.createFakeUser(array.getJSONObject(i), false);
+                users.add(user);
+                if (useCache)
+                    cached.add(user);
+                last = user;
+            }
+
+            return users;
+        };
     }
 
     protected static String getCode(MessageReaction reaction)
@@ -98,27 +116,8 @@ public class ReactionPaginationAction extends PaginationAction<User, ReactionPag
     }
 
     @Override
-    protected void handleResponse(Response response, Request<List<User>> request)
+    protected Function<Response, List<User>> getSuccessTransformer()
     {
-        if (!response.isOk())
-        {
-            request.onFailure(response);
-            return;
-        }
-
-        final EntityBuilder builder = api.getEntityBuilder();;
-        final JSONArray array = response.getArray();
-        final List<User> users = new LinkedList<>();
-        for (int i = 0; i < array.length(); i++)
-        {
-            final User user = builder.createFakeUser(array.getJSONObject(i), false);
-            users.add(user);
-            if (useCache)
-                cached.add(user);
-            last = user;
-        }
-
-        request.onSuccess(users);
+        return this.successTransformer;     
     }
-
 }

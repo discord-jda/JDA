@@ -20,8 +20,6 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.impl.MessageImpl;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
@@ -35,7 +33,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.*;
 import javax.annotation.CheckReturnValue;
@@ -364,22 +361,7 @@ public interface MessageChannel extends ISnowflake, Formattable
 
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
         JSONObject json = ((MessageImpl) msg).toJSONObject();
-        return new RestAction<Message>(getJDA(), route, json)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Message> request)
-            {
-                if (response.isOk())
-                {
-                    Message m = api.getEntityBuilder().createMessage(response.getObject(), MessageChannel.this, false);
-                    request.onSuccess(m);
-                }
-                else
-                {
-                    request.onFailure(response);
-                }
-            }
-        };
+        return new RestAction<Message>(getJDA(), route, json, response -> response.getJDA().getEntityBuilder().createMessage(response.getObject(), MessageChannel.this, false));
     }
 
     /**
@@ -533,17 +515,7 @@ public interface MessageChannel extends ISnowflake, Formattable
             builder.addFormDataPart("payload_json", ((MessageImpl) message).toJSONObject().toString());
         }
 
-        return new RestAction<Message>(getJDA(), route, builder.build())
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Message> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(api.getEntityBuilder().createMessage(response.getObject(), MessageChannel.this, false));
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new RestAction<Message>(getJDA(), route, builder.build(), response -> response.getJDA().getEntityBuilder().createMessage(response.getObject(), MessageChannel.this, false));
     }
 
     /**
@@ -606,17 +578,7 @@ public interface MessageChannel extends ISnowflake, Formattable
             builder.addFormDataPart("payload_json", ((MessageImpl) message).toJSONObject().toString());
         }
 
-        return new RestAction<Message>(getJDA(), route, builder.build())
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Message> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(api.getEntityBuilder().createMessage(response.getObject(), MessageChannel.this, false));
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new RestAction<Message>(getJDA(), route, builder.build(), response -> response.getJDA().getEntityBuilder().createMessage(response.getObject(), MessageChannel.this, false));
     }
 
     /**
@@ -686,17 +648,7 @@ public interface MessageChannel extends ISnowflake, Formattable
             builder.addFormDataPart("payload_json", ((MessageImpl) message).toJSONObject().toString());
         }
 
-        return new RestAction<Message>(getJDA(), route, builder.build())
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Message> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(api.getEntityBuilder().createMessage(response.getObject(), MessageChannel.this, false));
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new RestAction<Message>(getJDA(), route, builder.build(), response -> response.getJDA().getEntityBuilder().createMessage(response.getObject(), MessageChannel.this, false));
     }
 
     /**
@@ -746,21 +698,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.notEmpty(messageId, "Provided messageId");
 
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE.compile(getId(), messageId);
-        return new RestAction<Message>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Message> request)
-            {
-                if (response.isOk())
-                {
-                    Message m = api.getEntityBuilder().createMessage(response.getObject(), MessageChannel.this, false);
-                    request.onSuccess(m);
-                }
-                else
-                    request.onFailure(response);
-
-            }
-        };
+        return new RestAction<Message>(getJDA(), route, response -> response.getJDA().getEntityBuilder().createMessage(response.getObject(), MessageChannel.this, false));
     }
 
     /**
@@ -850,16 +788,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.notEmpty(messageId, "messageId");
 
         Route.CompiledRoute route = Route.Messages.DELETE_MESSAGE.compile(getId(), messageId);
-        return new AuditableRestAction<Void>(getJDA(), route) {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestAction<Void>(getJDA(), route);
     }
 
     /**
@@ -1099,30 +1028,20 @@ public interface MessageChannel extends ISnowflake, Formattable
 
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY.compile(this.getId()).withQueryParams("limit", Integer.toString(limit), "around", messageId);
 
-        return new RestAction<MessageHistory>(getJDA(), route)
+        return new RestAction<MessageHistory>(getJDA(), route, response ->
         {
-            @Override
-            protected void handleResponse(Response response, Request<MessageHistory> request)
-            {
-                if (!response.isOk())
-                {
-                    request.onFailure(response);
-                    return;
-                }
+            MessageHistory mHistory = new MessageHistory(MessageChannel.this);
 
-                MessageHistory mHistory = new MessageHistory(MessageChannel.this);
+            EntityBuilder builder = response.getJDA().getEntityBuilder();;
+            LinkedList<Message> msgs = new LinkedList<>();
+            JSONArray historyJson = response.getArray();
 
-                EntityBuilder builder = api.getEntityBuilder();;
-                LinkedList<Message> msgs  = new LinkedList<>();
-                JSONArray historyJson = response.getArray();
+            for (int i = 0; i < historyJson.length(); i++)
+                msgs.add(builder.createMessage(historyJson.getJSONObject(i), MessageChannel.this, false));
 
-                for (int i = 0; i < historyJson.length(); i++)
-                    msgs.add(builder.createMessage(historyJson.getJSONObject(i), MessageChannel.this, false));
-
-                msgs.forEach(msg -> mHistory.history.put(msg.getIdLong(), msg));
-                request.onSuccess(mHistory);
-            }
-        };
+            msgs.forEach(msg -> mHistory.history.put(msg.getIdLong(), msg));
+            return mHistory;
+        });
     }
 
     /**
@@ -1222,17 +1141,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     default RestAction<Void> sendTyping()
     {
         Route.CompiledRoute route = Route.Channels.SEND_TYPING.compile(getId());
-        return new RestAction<Void>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new RestAction<Void>(getJDA(), route);
     }
 
     /**
@@ -1304,17 +1213,7 @@ public interface MessageChannel extends ISnowflake, Formattable
 
         String encoded = MiscUtil.encodeUTF8(unicode);
         Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, encoded);
-        return new RestAction<Void>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new RestAction<Void>(getJDA(), route);
     }
 
     /**
@@ -1444,17 +1343,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.notNull(emote, "Emote");
 
         Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, String.format("%s:%s", emote.getName(), emote.getId()));
-        return new RestAction<Void>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new RestAction<Void>(getJDA(), route);
     }
 
     /**
@@ -1563,17 +1452,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.notEmpty(messageId, "messageId");
 
         Route.CompiledRoute route = Route.Messages.ADD_PINNED_MESSAGE.compile(getId(), messageId);
-        return new RestAction<Void>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new RestAction<Void>(getJDA(), route);
     }
 
     /**
@@ -1664,17 +1543,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.notEmpty(messageId, "messageId");
 
         Route.CompiledRoute route = Route.Messages.REMOVE_PINNED_MESSAGE.compile(getId(), messageId);
-        return new RestAction<Void>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new RestAction<Void>(getJDA(), route);
     }
 
     /**
@@ -1748,30 +1617,19 @@ public interface MessageChannel extends ISnowflake, Formattable
     default RestAction<List<Message>> getPinnedMessages()
     {
         Route.CompiledRoute route = Route.Messages.GET_PINNED_MESSAGES.compile(getId());
-        return new RestAction<List<Message>>(getJDA(), route)
+        return new RestAction<List<Message>>(getJDA(), route, response ->
         {
-            @Override
-            protected void handleResponse(Response response, Request<List<Message>> request)
+            LinkedList<Message> pinnedMessages = new LinkedList<>();
+            EntityBuilder builder = response.getJDA().getEntityBuilder();
+            JSONArray pins = response.getArray();
+
+            for (int i = 0; i < pins.length(); i++)
             {
-                if (response.isOk())
-                {
-                    LinkedList<Message> pinnedMessages = new LinkedList<>();
-                    EntityBuilder builder = api.getEntityBuilder();
-                    JSONArray pins = response.getArray();
-
-                    for (int i = 0; i < pins.length(); i++)
-                    {
-                        pinnedMessages.add(builder.createMessage(pins.getJSONObject(i), MessageChannel.this, false));
-                    }
-
-                    request.onSuccess(Collections.unmodifiableList(pinnedMessages));
-                }
-                else
-                {
-                    request.onFailure(response);
-                }
+                pinnedMessages.add(builder.createMessage(pins.getJSONObject(i), MessageChannel.this, false));
             }
-        };
+
+            return Collections.unmodifiableList(pinnedMessages);
+        });
     }
 
     /**
@@ -1884,22 +1742,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         }
         JSONObject json = ((MessageImpl) newContent).toJSONObject();
         Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getId(), messageId);
-        return new RestAction<Message>(getJDA(), route, json)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Message> request)
-            {
-                if (response.isOk())
-                {
-                    Message m = api.getEntityBuilder().createMessage(response.getObject(), MessageChannel.this, false);
-                    request.onSuccess(m);
-                }
-                else
-                {
-                    request.onFailure(response);
-                }
-            }
-        };
+        return new RestAction<Message>(getJDA(), route, json, response -> response.getJDA().getEntityBuilder().createMessage(response.getObject(), MessageChannel.this, false));
     }
 
     /**

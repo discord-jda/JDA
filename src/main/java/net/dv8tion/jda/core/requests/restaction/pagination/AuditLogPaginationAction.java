@@ -26,7 +26,6 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.exceptions.PermissionException;
-import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import org.json.JSONArray;
@@ -34,6 +33,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * {@link net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction PaginationAction}
@@ -56,12 +56,44 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
     protected ActionType type = null;
     protected String userId = null;
 
+    protected final Function<Response, List<AuditLogEntry>> successTransformer;
+
     public AuditLogPaginationAction(Guild guild)
     {
         super(guild.getJDA(), Route.Guilds.GET_AUDIT_LOGS.compile(guild.getId()), 1, 100, 100);
+
         if (!guild.getSelfMember().hasPermission(Permission.VIEW_AUDIT_LOGS))
             throw new PermissionException(Permission.VIEW_AUDIT_LOGS);
         this.guild = guild;
+        
+        this.successTransformer = response ->
+        {
+            JSONObject obj = response.getObject();
+            JSONArray users = obj.getJSONArray("users");
+            JSONArray entries = obj.getJSONArray("audit_log_entries");
+
+            List<AuditLogEntry> list = new ArrayList<>(entries.length());
+            EntityBuilder builder = api.getEntityBuilder();
+
+            TLongObjectMap<JSONObject> userMap = new TLongObjectHashMap<>();
+            for (int i = 0; i < users.length(); i++)
+            {
+                JSONObject user = users.getJSONObject(i);
+                userMap.put(user.getLong("id"), user);
+            }
+            for (int i = 0; i < entries.length(); i++)
+            {
+                JSONObject entry = entries.getJSONObject(i);
+                JSONObject user = userMap.get(entry.getLong("user_id"));
+                AuditLogEntry result = builder.createAuditLogEntry((GuildImpl) guild, entry, user);
+                list.add(result);
+                if (useCache)
+                    cached.add(result);
+                last = result;
+            }
+
+            return list;
+        }; 
     }
 
     /**
@@ -155,39 +187,8 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
         return route;
     }
 
-    @Override
-    protected void handleResponse(Response response, Request<List<AuditLogEntry>> request)
+    protected Function<Response, List<AuditLogEntry>> getSuccessTransformer()
     {
-        if (!response.isOk())
-        {
-            request.onFailure(response);
-            return;
-        }
-
-        JSONObject obj = response.getObject();
-        JSONArray users = obj.getJSONArray("users");
-        JSONArray entries = obj.getJSONArray("audit_log_entries");
-
-        List<AuditLogEntry> list = new ArrayList<>(entries.length());
-        EntityBuilder builder = api.getEntityBuilder();
-
-        TLongObjectMap<JSONObject> userMap = new TLongObjectHashMap<>();
-        for (int i = 0; i < users.length(); i++)
-        {
-            JSONObject user = users.getJSONObject(i);
-            userMap.put(user.getLong("id"), user);
-        }
-        for (int i = 0; i < entries.length(); i++)
-        {
-            JSONObject entry = entries.getJSONObject(i);
-            JSONObject user  = userMap.get(entry.getLong("user_id"));
-            AuditLogEntry result = builder.createAuditLogEntry((GuildImpl) guild, entry, user);
-            list.add(result);
-            if (this.useCache)
-                this.cached.add(result);
-            this.last = result;
-        }
-
-        request.onSuccess(list);
+        return this.successTransformer;
     }
 }

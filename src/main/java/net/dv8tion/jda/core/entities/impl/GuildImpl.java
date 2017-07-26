@@ -30,8 +30,6 @@ import net.dv8tion.jda.core.managers.GuildController;
 import net.dv8tion.jda.core.managers.GuildManager;
 import net.dv8tion.jda.core.managers.GuildManagerUpdatable;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAction;
@@ -130,36 +128,26 @@ public class GuildImpl implements Guild
 
         Route.CompiledRoute route = Route.Guilds.GET_WEBHOOKS.compile(getId());
 
-        return new RestAction<List<Webhook>>(api, route)
+        return new RestAction<List<Webhook>>(api, route, r ->
         {
-            @Override
-            protected void handleResponse(Response response, Request<List<Webhook>> request)
+            List<Webhook> webhooks = new LinkedList<>();
+            JSONArray array = r.getArray();
+            EntityBuilder builder = api.getEntityBuilder();
+
+            for (Object object : array)
             {
-                if (!response.isOk())
+                try
                 {
-                    request.onFailure(response);
-                    return;
+                    webhooks.add(builder.createWebhook((JSONObject) object));
                 }
-
-                List<Webhook> webhooks = new LinkedList<>();
-                JSONArray array = response.getArray();
-                EntityBuilder builder = api.getEntityBuilder();
-
-                for (Object object : array)
+                catch (JSONException | NullPointerException e)
                 {
-                    try
-                    {
-                        webhooks.add(builder.createWebhook((JSONObject) object));
-                    }
-                    catch (JSONException | NullPointerException e)
-                    {
-                        JDAImpl.LOG.log(e);
-                    }
+                    JDAImpl.LOG.log(e);
                 }
-
-                request.onSuccess(webhooks);
             }
-        };
+
+            return webhooks;
+        });
     }
 
     @Override
@@ -410,29 +398,19 @@ public class GuildImpl implements Guild
             throw new PermissionException(Permission.BAN_MEMBERS);
 
         Route.CompiledRoute route = Route.Guilds.GET_BANS.compile(getId());
-        return new RestAction<List<User>>(getJDA(), route)
+        return new RestAction<List<User>>(getJDA(), route, r ->
         {
-            @Override
-            protected void handleResponse(Response response, Request<List<User>> request)
+            EntityBuilder builder = api.getEntityBuilder();
+            List<User> bans = new LinkedList<>();
+            JSONArray bannedArr = r.getArray();
+
+            for (int i = 0; i < bannedArr.length(); i++)
             {
-                if (!response.isOk())
-                {
-                    request.onFailure(response);
-                    return;
-                }
-
-                EntityBuilder builder = api.getEntityBuilder();
-                List<User> bans = new LinkedList<>();
-                JSONArray bannedArr = response.getArray();
-
-                for (int i = 0; i < bannedArr.length(); i++)
-                {
-                    JSONObject user = bannedArr.getJSONObject(i).getJSONObject("user");
-                    bans.add(builder.createFakeUser(user, false));
-                }
-                request.onSuccess(Collections.unmodifiableList(bans));
+                JSONObject user = bannedArr.getJSONObject(i).getJSONObject("user");
+                bans.add(builder.createFakeUser(user, false));
             }
-        };
+            return Collections.unmodifiableList(bans);
+        });
     }
 
     @Override
@@ -447,17 +425,8 @@ public class GuildImpl implements Guild
             throw new IllegalArgumentException("Days amount must be at minimum 1 day.");
 
         Route.CompiledRoute route = Route.Guilds.PRUNABLE_COUNT.compile(getId()).withQueryParams("days", Integer.toString(days));
-        return new RestAction<Integer>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Integer> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(response.getObject().getInt("pruned"));
-                else
-                    request .onFailure(response);
-            }
-        };
+
+        return new RestAction<Integer>(getJDA(), route, r -> r.getObject().getInt("pruned"));
     }
 
     @Override
@@ -541,17 +510,7 @@ public class GuildImpl implements Guild
             throw new IllegalStateException("Cannot leave a guild that you are the owner of! Transfer guild ownership first!");
 
         Route.CompiledRoute route = Route.Self.LEAVE_GUILD.compile(getId());
-        return new RestAction<Void>(api, route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new RestAction<Void>(api, route);
     }
 
     @Override
@@ -577,17 +536,7 @@ public class GuildImpl implements Guild
         }
 
         Route.CompiledRoute route = Route.Guilds.DELETE_GUILD.compile(getId());
-        return new RestAction<Void>(api, route, mfaBody)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new RestAction<Void>(api, route, mfaBody);
     }
 
     @Override
@@ -841,28 +790,17 @@ public class GuildImpl implements Guild
 
         final Route.CompiledRoute route = Route.Invites.GET_GUILD_INVITES.compile(getId());
 
-        return new RestAction<List<Invite>>(api, route)
+        return new RestAction<List<Invite>>(api, route, response ->
         {
-            @Override
-            protected void handleResponse(final Response response, final Request<List<Invite>> request)
+            EntityBuilder entityBuilder = this.api.getEntityBuilder();
+            JSONArray array = response.getArray();
+            List<Invite> invites = new ArrayList<>(array.length());
+            for (int i = 0; i < array.length(); i++)
             {
-                if (response.isOk())
-                {
-                    EntityBuilder entityBuilder = this.api.getEntityBuilder();
-                    JSONArray array = response.getArray();
-                    List<Invite> invites = new ArrayList<>(array.length());
-                    for (int i = 0; i < array.length(); i++)
-                    {
-                        invites.add(entityBuilder.createInvite(array.getJSONObject(i)));
-                    }
-                    request.onSuccess(invites);
-                }
-                else
-                {
-                    request.onFailure(response);
-                }
+                invites.add(entityBuilder.createInvite(array.getJSONObject(i)));
             }
-        };
+            return invites;
+        });
     }
 
 }

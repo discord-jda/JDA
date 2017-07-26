@@ -18,8 +18,6 @@ package net.dv8tion.jda.core.requests.restaction;
 
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.RequestBody;
@@ -73,7 +71,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
      */
     public ChannelAction(Route.CompiledRoute route, String name, Guild guild, boolean voice)
     {
-        super(guild.getJDA(), route);
+        super(guild.getJDA(), route, response -> voice ? response.getJDA().getEntityBuilder().createVoiceChannel(response.getObject(), guild.getIdLong()) : response.getJDA().getEntityBuilder().createTextChannel(response.getObject(), guild.getIdLong()));
         this.guild = guild;
         this.voice = voice;
         this.name = name;
@@ -360,23 +358,6 @@ public class ChannelAction extends AuditableRestAction<Channel>
         }
 
         return getRequestBody(object);
-    }
-
-    @Override
-    protected void handleResponse(Response response, Request<Channel> request)
-    {
-        if (!response.isOk())
-        {
-            request.onFailure(response);
-            return;
-        }
-
-        EntityBuilder builder = api.getEntityBuilder();;
-        Channel channel = voice
-                ? builder.createVoiceChannel(response.getObject(), guild.getIdLong())
-                : builder.createTextChannel(response.getObject(),  guild.getIdLong());
-
-        request.onSuccess(channel);
     }
 
     protected void checkPermissions(Permission... permissions)

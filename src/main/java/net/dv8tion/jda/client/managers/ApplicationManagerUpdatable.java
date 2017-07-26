@@ -21,8 +21,6 @@ import net.dv8tion.jda.client.entities.impl.ApplicationImpl;
 import net.dv8tion.jda.client.managers.fields.ApplicationField;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Icon;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
@@ -351,19 +349,10 @@ public class ApplicationManagerUpdatable
         reset();    //now that we've built our JSON object, reset the manager back to the non-modified state
 
         Route.CompiledRoute route = Route.Applications.MODIFY_APPLICATION.compile(this.application.getId());
-        return new RestAction<Void>(this.getJDA(), route, body)
+        return new RestAction<Void>(this.getJDA(), route, body, response ->
         {
-            @Override
-            protected void handleResponse(final Response response, final Request<Void> request)
-            {
-                if (response.isOk())
-                {
-                    ApplicationManagerUpdatable.this.application.updateFromJson(response.getObject());
-                    request.onSuccess(null);
-                }
-                else
-                    request.onFailure(response);
-            }
-        };
+            ApplicationManagerUpdatable.this.application.updateFromJson(response.getObject());
+            return null;
+        });
     }
 }

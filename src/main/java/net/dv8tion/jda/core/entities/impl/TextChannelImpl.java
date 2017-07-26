@@ -20,8 +20,6 @@ import net.dv8tion.jda.client.exceptions.VerificationLevelException;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.PermissionException;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
@@ -62,36 +60,26 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         checkPermission(Permission.MANAGE_WEBHOOKS);
 
         Route.CompiledRoute route = Route.Channels.GET_WEBHOOKS.compile(getId());
-        return new RestAction<List<Webhook>>(getJDA(), route)
+        return new RestAction<List<Webhook>>(getJDA(), route, response ->
         {
-            @Override
-            protected void handleResponse(Response response, Request<List<Webhook>> request)
+            List<Webhook> webhooks = new LinkedList<>();
+            JSONArray array = response.getArray();
+            EntityBuilder builder = response.getJDA().getEntityBuilder();
+
+            for (Object object : array)
             {
-                if (!response.isOk())
+                try
                 {
-                    request.onFailure(response);
-                    return;
+                    webhooks.add(builder.createWebhook((JSONObject) object));
                 }
-
-                List<Webhook> webhooks = new LinkedList<>();
-                JSONArray array = response.getArray();
-                EntityBuilder builder = api.getEntityBuilder();
-
-                for (Object object : array)
+                catch (JSONException | NullPointerException e)
                 {
-                    try
-                    {
-                        webhooks.add(builder.createWebhook((JSONObject) object));
-                    }
-                    catch (JSONException | NullPointerException e)
-                    {
-                        JDAImpl.LOG.log(e);
-                    }
+                    JDAImpl.LOG.log(e);
                 }
-
-                request.onSuccess(webhooks);
             }
-        };
+
+            return webhooks;
+        });
     }
 
     @Override
@@ -120,17 +108,8 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
 
         JSONObject body = new JSONObject().put("messages", messageIds);
         Route.CompiledRoute route = Route.Messages.DELETE_MESSAGES.compile(getId());
-        return new RestAction<Void>(getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+
+        return new RestAction<Void>(getJDA(), route, body);
     }
 
     @Override
@@ -142,17 +121,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
             throw new PermissionException(Permission.MANAGE_WEBHOOKS);
 
         Route.CompiledRoute route = Route.Webhooks.DELETE_WEBHOOK.compile(id);
-        return new AuditableRestAction<Void>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestAction<Void>(getJDA(), route);
     }
 
     @Override
@@ -349,17 +318,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
 
         checkPermission(Permission.MESSAGE_MANAGE);
         Route.CompiledRoute route = Route.Messages.REMOVE_ALL_REACTIONS.compile(getId(), messageId);
-        return new RestAction<Void>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new RestAction<Void>(getJDA(), route);
     }
 
     @Override

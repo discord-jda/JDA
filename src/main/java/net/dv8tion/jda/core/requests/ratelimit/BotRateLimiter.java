@@ -60,7 +60,7 @@ public class BotRateLimiter extends RateLimiter
     }
 
     @Override
-    protected void queueRequest(Request request)
+    protected void queueRequest(Request<?> request)
     {
         Bucket bucket = getBucket(request.getRoute());
         synchronized (bucket)
@@ -214,7 +214,7 @@ public class BotRateLimiter extends RateLimiter
         volatile long resetTime = 0;
         volatile int routeUsageRemaining = 1;    //These are default values to only allow 1 request until we have properly
         volatile int routeUsageLimit = 1;        // ratelimit information.
-        volatile ConcurrentLinkedQueue<Request> requests = new ConcurrentLinkedQueue<>();
+        volatile ConcurrentLinkedQueue<Request<?>> requests = new ConcurrentLinkedQueue<>();
 
         public Bucket(String route, RateLimit rateLimit)
         {
@@ -227,7 +227,7 @@ public class BotRateLimiter extends RateLimiter
             }
         }
 
-        void addToQueue(Request request)
+        void addToQueue(Request<?> request)
         {
             requests.add(request);
             submitForProcessing();
@@ -301,9 +301,9 @@ public class BotRateLimiter extends RateLimiter
             {
                 synchronized (requests)
                 {
-                    for (Iterator<Request> it = requests.iterator(); it.hasNext(); )
+                    for (Iterator<Request<?>> it = requests.iterator(); it.hasNext(); )
                     {
-                        Request request = null;
+                        Request<?> request = null;
                         try
                         {
                             request = it.next();
@@ -318,8 +318,9 @@ public class BotRateLimiter extends RateLimiter
                             Requester.LOG.fatal("Requester system encountered an internal error");
                             Requester.LOG.log(t);
                             it.remove();
-                            if (request != null)
-                                request.onFailure(t);
+                            // TODO: handle error
+                            // if (request != null)
+                            //     request.onFailure(t);
                         }
                     }
 
@@ -365,7 +366,7 @@ public class BotRateLimiter extends RateLimiter
         }
 
         @Override
-        public Queue<Request> getRequests()
+        public Queue<Request<?>> getRequests()
         {
             return requests;
         }

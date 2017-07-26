@@ -21,14 +21,15 @@ import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 
 public class RestFuture<T> extends CompletableFuture<T> implements RequestFuture<T>
 {
     final Request<T> request;
 
-    public RestFuture(final RestAction<T> restAction, final boolean shouldQueue, final RequestBody data, final Object rawData, final Route.CompiledRoute route, final CaseInsensitiveMap<String, String> headers)
+    public RestFuture(final RestAction<T> restAction, final boolean shouldQueue, final RequestBody data, final Object rawData, final Route.CompiledRoute route, final CaseInsensitiveMap<String, String> headers, Function<Response, T> successTransformer, Function<Response, Throwable> failureTransformer)
     {
-        this.request = new Request<>(restAction, this::complete, this::completeExceptionally, shouldQueue, data, rawData, route, headers);
+        this.request = new Request<>(restAction, r -> this.complete(successTransformer.apply(r)), r -> this.completeExceptionally(failureTransformer.apply(r)), shouldQueue, data, rawData, route, headers);
         ((JDAImpl) restAction.getJDA()).getRequester().request(this.request);
     }
 
