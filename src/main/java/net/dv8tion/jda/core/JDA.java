@@ -920,6 +920,15 @@ public interface JDA
     void setAutoReconnect(boolean reconnect);
 
     /**
+     * Whether the Requester should retry when
+     * a {@link java.net.SocketTimeoutException SocketTimeoutException} occurs.
+     *
+     * @param  retryOnTimeout
+     *         True, if the Request should retry once on a socket timeout
+     */
+    void setRequestTimeoutRetry(boolean retryOnTimeout);
+
+    /**
      * USed to determine whether or not autoReconnect is enabled for JDA.
      *
      * @return True if JDA will attempt to automatically reconnect when a connection-error is encountered.
