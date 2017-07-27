@@ -160,12 +160,17 @@ public class AudioWebSocket extends WebSocketAdapter
                         ));
                 send(object.toString());
 
+                stopKeepAlive(); // if already set by HELLO handling
                 setupKeepAlive(heartbeatInterval);
                 changeStatus(ConnectionStatus.CONNECTING_AWAITING_READY);
                 break;
             }
-            case VoiceCode.HEARTBEAT_INTERVAL:
+            case VoiceCode.HELLO:
             {
+                // this needs to be handled for cases where ready is slow or resume
+                final JSONObject payload = contentAll.getJSONObject("d");
+                final int interval = payload.getInt("heartbeat_interval");
+                setupKeepAlive(interval);
                 break;
             }
             case VoiceCode.HEARTBEAT:
@@ -237,8 +242,9 @@ public class AudioWebSocket extends WebSocketAdapter
             LOG.debug("Reason: " + serverCloseFrame.getCloseReason());
             LOG.debug("Close code: " + serverCloseFrame.getCloseCode());
             int code = serverCloseFrame.getCloseCode();
-            VoiceCode.CloseCode closeCode = VoiceCode.CloseCode.from(code);
-            switch (closeCode) {
+            VoiceCode.Close closeCode = VoiceCode.Close.from(code);
+            switch (closeCode)
+            {
                 case UNRESUMABLE:
                 case INVALID_SESSION:
                     this.close(ConnectionStatus.ERROR_CANNOT_RESUME);
@@ -362,6 +368,7 @@ public class AudioWebSocket extends WebSocketAdapter
         connected = false;
         ready = false;
         reconnecting = true;
+        stopKeepAlive();
         changeStatus(closeStatus);
         startConnection();
     }
@@ -386,11 +393,7 @@ public class AudioWebSocket extends WebSocketAdapter
                 );
             api.getClient().send(obj.toString());
         }
-        if (keepAliveHandle != null)
-        {
-            keepAliveHandle.cancel(false);
-            keepAliveHandle = null;
-        }
+        stopKeepAlive();
 
         if (audioConnection != null)
             audioConnection.shutdown();
@@ -527,6 +530,13 @@ public class AudioWebSocket extends WebSocketAdapter
         {
             return null;
         }
+    }
+
+    private void stopKeepAlive()
+    {
+        if (keepAliveHandle != null)
+            keepAliveHandle.cancel(true);
+        keepAliveHandle = null;
     }
 
     private void setupKeepAlive(final int keepAliveInterval)
