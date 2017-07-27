@@ -61,6 +61,7 @@ public class AudioWebSocket extends WebSocketAdapter
     private Future<?> keepAliveHandle;
     private String wssEndpoint;
     private boolean shouldReconnect;
+    private long heartbeatSent;
 
     private int ssrc;
     private byte[] secretKey;
@@ -93,6 +94,7 @@ public class AudioWebSocket extends WebSocketAdapter
 
     public void send(String message)
     {
+        LOG.trace("<- " + message);
         socket.sendText(message);
     }
 
@@ -128,6 +130,7 @@ public class AudioWebSocket extends WebSocketAdapter
         {
             case VoiceCode.READY:
             {
+                LOG.trace("-> READY " + contentAll);
                 JSONObject content = contentAll.getJSONObject("d");
                 ssrc = content.getInt("ssrc");
                 int port = content.getInt("port");
@@ -167,6 +170,7 @@ public class AudioWebSocket extends WebSocketAdapter
             }
             case VoiceCode.HELLO:
             {
+                LOG.trace("-> HELLO " + contentAll);
                 if (keepAliveHandle != null)
                     break; // don't start new interval if resuming
                 // this needs to be handled for cases where ready is slow or resume
@@ -177,13 +181,14 @@ public class AudioWebSocket extends WebSocketAdapter
             }
             case VoiceCode.HEARTBEAT:
             {
-                long timePingSent  = contentAll.getLong("d");
-                long ping = System.currentTimeMillis() - timePingSent;
+                LOG.trace("-> HEARTBEAT " + contentAll);
+                final long ping = System.currentTimeMillis() - heartbeatSent;
                 listener.onPing(ping);
                 break;
             }
             case VoiceCode.SESSION_DESCRIPTION:
             {
+                LOG.trace("-> SESSION_DESCRIPTION " + contentAll);
                 //secret_key is an array of 32 ints that are less than 256, so they are bytes.
                 JSONArray keyArray = contentAll.getJSONObject("d").getJSONArray("secret_key");
 
@@ -198,6 +203,7 @@ public class AudioWebSocket extends WebSocketAdapter
             }
             case VoiceCode.USER_SPEAKING_UPDATE:
             {
+                LOG.trace("-> USER_SPEAKING_UPDATE " + contentAll);
                 JSONObject content = contentAll.getJSONObject("d");
                 boolean speaking = content.getBoolean("speaking");
                 int ssrc = content.getInt("ssrc");
@@ -224,6 +230,7 @@ public class AudioWebSocket extends WebSocketAdapter
             }
             case VoiceCode.RESUMED:
             {
+                LOG.trace("-> RESUMED " + contentAll);
                 LOG.debug("Successfully resumed session!");
                 changeStatus(ConnectionStatus.CONNECTED);
                 ready = true;
@@ -552,6 +559,7 @@ public class AudioWebSocket extends WebSocketAdapter
                         .put("op", VoiceCode.HEARTBEAT)
                         .put("d", System.currentTimeMillis())
                         .toString());
+                heartbeatSent = System.currentTimeMillis();
 
                 long seq = 0;
                 try
@@ -561,7 +569,6 @@ public class AudioWebSocket extends WebSocketAdapter
                     buffer.putLong(seq);
                     DatagramPacket keepAlivePacket = new DatagramPacket(buffer.array(), buffer.array().length, address);
                     udpSocket.send(keepAlivePacket);
-
                 }
                 catch (NoRouteToHostException e)
                 {
