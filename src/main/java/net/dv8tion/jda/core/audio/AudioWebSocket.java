@@ -85,6 +85,8 @@ public class AudioWebSocket extends WebSocketAdapter
         //Append the Secure Websocket scheme so that our websocket library knows how to connect
         if (!endpoint.startsWith("wss://"))
             wssEndpoint = "wss://" + endpoint;
+        if (!endpoint.endsWith("?v=3"))
+            wssEndpoint += "?v=3";
 
         if (sessionId == null || sessionId.isEmpty())
             throw new IllegalArgumentException("Cannot create a voice connection using a null/empty sessionId!");
@@ -96,6 +98,14 @@ public class AudioWebSocket extends WebSocketAdapter
     {
         LOG.trace("<- " + message);
         socket.sendText(message);
+    }
+
+    public void send(int op, Object data)
+    {
+        send(new JSONObject()
+            .put("op", op)
+            .put("d", data == null ? JSONObject.NULL : data)
+            .toString());
     }
 
     @Override
@@ -153,15 +163,12 @@ public class AudioWebSocket extends WebSocketAdapter
                 } while (externalIpAndPort == null);
 
                 final JSONObject object = new JSONObject()
-                    .put("op", VoiceCode.SELECT_PROTOCOL)
-                    .put("d", new JSONObject()
                         .put("protocol", "udp")
                         .put("data", new JSONObject()
                             .put("address", externalIpAndPort.getHostString())
                             .put("port", externalIpAndPort.getPort())
-                            .put("mode", "xsalsa20_poly1305")   //Discord requires encryption
-                        ));
-                send(object.toString());
+                            .put("mode", "xsalsa20_poly1305"));   //Discord requires encryption
+                send(VoiceCode.SELECT_PROTOCOL, object);
 
                 stopKeepAlive(); // replace old interval from HELLO
                 setupKeepAlive(heartbeatInterval);
@@ -182,6 +189,12 @@ public class AudioWebSocket extends WebSocketAdapter
             case VoiceCode.HEARTBEAT:
             {
                 LOG.trace("-> HEARTBEAT " + contentAll);
+                send(VoiceCode.HEARTBEAT, heartbeatSent = System.currentTimeMillis());
+                break;
+            }
+            case VoiceCode.HEARTBEAT_ACK:
+            {
+                LOG.trace("-> HEARTBEAT_ACK " + contentAll);
                 final long ping = System.currentTimeMillis() - heartbeatSent;
                 listener.onPing(ping);
                 break;
@@ -327,25 +340,21 @@ public class AudioWebSocket extends WebSocketAdapter
     private void identify()
     {
         JSONObject connectObj = new JSONObject()
-            .put("op", VoiceCode.IDENTIFY)
-            .put("d", new JSONObject()
                 .put("server_id", guild.getId())
                 .put("user_id", api.getSelfUser().getId())
                 .put("session_id", sessionId)
-                .put("token", token));
-        send(connectObj.toString());
+                .put("token", token);
+        send(VoiceCode.IDENTIFY, connectObj);
     }
 
     private void resume()
     {
         LOG.debug("Sending resume payload...");
         JSONObject resumeObj = new JSONObject()
-            .put("op", VoiceCode.RESUME)
-            .put("d", new JSONObject()
                 .put("server_id", guild.getId())
                 .put("session_id", sessionId)
-                .put("token", token));
-        send(resumeObj.toString());
+                .put("token", token);
+        send(VoiceCode.RESUME, resumeObj);
     }
 
     public void startConnection()
@@ -555,11 +564,7 @@ public class AudioWebSocket extends WebSocketAdapter
         {
             if (socket.isOpen() && socket.isOpen() && !udpSocket.isClosed())
             {
-                send(new JSONObject()
-                        .put("op", VoiceCode.HEARTBEAT)
-                        .put("d", System.currentTimeMillis())
-                        .toString());
-                heartbeatSent = System.currentTimeMillis();
+                send(VoiceCode.HEARTBEAT, heartbeatSent = System.currentTimeMillis());
 
                 long seq = 0;
                 try
