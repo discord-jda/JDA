@@ -160,13 +160,15 @@ public class AudioWebSocket extends WebSocketAdapter
                         ));
                 send(object.toString());
 
-                stopKeepAlive(); // if already set by HELLO handling
+                stopKeepAlive(); // replace old interval from HELLO
                 setupKeepAlive(heartbeatInterval);
                 changeStatus(ConnectionStatus.CONNECTING_AWAITING_READY);
                 break;
             }
             case VoiceCode.HELLO:
             {
+                if (keepAliveHandle != null)
+                    break; // don't start new interval if resuming
                 // this needs to be handled for cases where ready is slow or resume
                 final JSONObject payload = contentAll.getJSONObject("d");
                 final int interval = payload.getInt("heartbeat_interval");
@@ -245,7 +247,6 @@ public class AudioWebSocket extends WebSocketAdapter
             VoiceCode.Close closeCode = VoiceCode.Close.from(code);
             switch (closeCode)
             {
-                case UNRESUMABLE:
                 case INVALID_SESSION:
                     this.close(ConnectionStatus.ERROR_CANNOT_RESUME);
                     break;
@@ -368,7 +369,6 @@ public class AudioWebSocket extends WebSocketAdapter
         connected = false;
         ready = false;
         reconnecting = true;
-        stopKeepAlive();
         changeStatus(closeStatus);
         startConnection();
     }

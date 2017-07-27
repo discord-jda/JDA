@@ -34,6 +34,7 @@ public final class VoiceCode
     // CLOSE
     public enum Close
     {
+        HEARTBEAT_TIMEOUT(1000, "We did not heartbeat in time"),
         UNKNOWN_OP_CODE(4001, "Sent an invalid op code"),
         NOT_AUTHENTICATED(4003, "Tried to send payload before authenticating session"),
         AUTHENTICATION_FAILED(4004, "The token sent in the identify payload is incorrect"),
@@ -45,8 +46,8 @@ public final class VoiceCode
         DISCONNECTED(4014, "The connection has been dropped normally"),
         SERVER_CRASH(4015, "The server we were connected to has crashed"),
         UNKNOWN_ENCRYPTION_MODE(4016, "The specified encryption method is not supported"),
-        HEARTBEAT_TIMEOUT(4800, "We did not heartbeat in time"),
-        UNRESUMABLE(4801, "Discord was unable to resume your connection"),
+//        HEARTBEAT_TIMEOUT(4800, "We did not heartbeat in time"),
+//        UNRESUMABLE(4801, "Discord was unable to resume your connection"),
 
         UNKNOWN(0, "Unknown code");
 
