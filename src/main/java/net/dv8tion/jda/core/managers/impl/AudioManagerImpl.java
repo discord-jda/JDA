@@ -79,6 +79,11 @@ public class AudioManagerImpl implements AudioManager
         this.guild = guild;
     }
 
+    public AudioConnection getAudioConnection()
+    {
+        return audioConnection;
+    }
+
     @Override
     public void openAudioConnection(VoiceChannel channel)
     {
