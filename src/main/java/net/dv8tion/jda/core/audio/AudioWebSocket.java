@@ -244,7 +244,6 @@ public class AudioWebSocket extends WebSocketAdapter
                     this.close(ConnectionStatus.ERROR_CANNOT_RESUME);
                     break;
                 case AUTHENTICATION_FAILED:
-                    LOG.fatal("Connection severed with authentication failure. Token is not valid!");
                     this.close(ConnectionStatus.DISCONNECTED_AUTHENTICATION_FAILURE);
                     break;
                 default:
@@ -427,7 +426,6 @@ public class AudioWebSocket extends WebSocketAdapter
 
         //decide if we reconnect.
         if (shouldReconnect
-                && closeStatus != ConnectionStatus.DISCONNECTED_AUTHENTICATION_FAILURE
                 && closeStatus != ConnectionStatus.NOT_CONNECTED    //indicated that the connection was purposely closed. don't reconnect.
                 && closeStatus != ConnectionStatus.DISCONNECTED_CHANNEL_DELETED
                 && closeStatus != ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD
