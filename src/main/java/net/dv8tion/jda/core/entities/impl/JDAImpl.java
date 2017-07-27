@@ -103,9 +103,8 @@ public class JDAImpl implements JDA
     protected long responseTotal;
     protected long ping = -1;
 
-    public JDAImpl(AccountType accountType, OkHttpClient.Builder httpClientBuilder, WebSocketFactory wsFactory, ShardedRateLimiter rateLimiter,
-                   boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled,
-                   int corePoolSize, int maxReconnectDelay)
+    public JDAImpl(AccountType accountType, OkHttpClient.Builder httpClientBuilder, WebSocketFactory wsFactory, ShardedRateLimiter rateLimiter,boolean autoReconnect, boolean audioEnabled,
+            boolean useShutdownHook, boolean bulkDeleteSplittingEnabled,boolean retryOnTimeout, int corePoolSize, int maxReconnectDelay)
     {
         this.accountType = accountType;
         this.httpClientBuilder = httpClientBuilder;
@@ -119,6 +118,7 @@ public class JDAImpl implements JDA
 
         this.presence = new PresenceImpl(this);
         this.requester = new Requester(this, rateLimiter);
+        this.requester.setRetryOnTimeout(retryOnTimeout);
 
         this.jdaClient = accountType == AccountType.CLIENT ? new JDAClientImpl(this) : null;
         this.jdaBot = accountType == AccountType.BOT ? new JDABotImpl(this) : null;
@@ -285,6 +285,12 @@ public class JDAImpl implements JDA
         {
             client.setAutoReconnect(autoReconnect);
         }
+    }
+
+    @Override
+    public void setRequestTimeoutRetry(boolean retryOnTimeout)
+    {
+        requester.setRetryOnTimeout(retryOnTimeout);
     }
 
     @Override
