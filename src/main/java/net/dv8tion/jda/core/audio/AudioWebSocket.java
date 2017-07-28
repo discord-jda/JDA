@@ -61,7 +61,6 @@ public class AudioWebSocket extends WebSocketAdapter
     private Future<?> keepAliveHandle;
     private String wssEndpoint;
     private boolean shouldReconnect;
-    private long heartbeatSent;
 
     private int ssrc;
     private byte[] secretKey;
@@ -85,8 +84,8 @@ public class AudioWebSocket extends WebSocketAdapter
         //Append the Secure Websocket scheme so that our websocket library knows how to connect
         if (!endpoint.startsWith("wss://"))
             wssEndpoint = "wss://" + endpoint;
-        if (!endpoint.endsWith("?v=3"))
-            wssEndpoint += "?v=3";
+        if (!endpoint.endsWith("/?v=3"))
+            wssEndpoint += "/?v=3";
 
         if (sessionId == null || sessionId.isEmpty())
             throw new IllegalArgumentException("Cannot create a voice connection using a null/empty sessionId!");
@@ -189,13 +188,13 @@ public class AudioWebSocket extends WebSocketAdapter
             case VoiceCode.HEARTBEAT:
             {
                 LOG.trace("-> HEARTBEAT " + contentAll);
-                send(VoiceCode.HEARTBEAT, heartbeatSent = System.currentTimeMillis());
+                send(VoiceCode.HEARTBEAT, System.currentTimeMillis());
                 break;
             }
             case VoiceCode.HEARTBEAT_ACK:
             {
                 LOG.trace("-> HEARTBEAT_ACK " + contentAll);
-                final long ping = System.currentTimeMillis() - heartbeatSent;
+                final long ping = System.currentTimeMillis() - contentAll.getLong("d");
                 listener.onPing(ping);
                 break;
             }
@@ -267,6 +266,8 @@ public class AudioWebSocket extends WebSocketAdapter
             VoiceCode.Close closeCode = VoiceCode.Close.from(code);
             switch (closeCode)
             {
+                case SERVER_NOT_FOUND:
+                case SERVER_CRASH:
                 case INVALID_SESSION:
                     this.close(ConnectionStatus.ERROR_CANNOT_RESUME);
                     break;
@@ -564,7 +565,7 @@ public class AudioWebSocket extends WebSocketAdapter
         {
             if (socket.isOpen() && socket.isOpen() && !udpSocket.isClosed())
             {
-                send(VoiceCode.HEARTBEAT, heartbeatSent = System.currentTimeMillis());
+                send(VoiceCode.HEARTBEAT, System.currentTimeMillis());
 
                 long seq = 0;
                 try

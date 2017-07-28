@@ -19,6 +19,7 @@ package net.dv8tion.jda.core.requests;
 import com.neovisionaries.ws.client.*;
 import gnu.trove.iterator.TLongObjectIterator;
 import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.client.handle.*;
 import net.dv8tion.jda.core.AccountType;
@@ -256,9 +257,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                         {
                             needRatelimit = !send(chunkOrSyncRequest, false);
                             if (!needRatelimit)
-                            {
                                 chunkSyncQueue.removeFirst();
-                            }
                             attemptedToSend = true;
                         }
                         else if (audioRequest != null)
@@ -266,13 +265,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                             VoiceChannel channel = audioRequest.getRight();
                             AudioManager audioManager = channel.getGuild().getAudioManager();
                             JSONObject audioConnectPacket = new JSONObject()
-                                    .put("op", 4)
-                                    .put("d", new JSONObject()
-                                            .put("guild_id", channel.getGuild().getId())
-                                            .put("channel_id", channel.getId())
-                                            .put("self_mute", audioManager.isSelfMuted())
-                                            .put("self_deaf", audioManager.isSelfDeafened())
-                                    );
+                                .put("op", WebSocketCode.VOICE_STATE)
+                                .put("d", new JSONObject()
+                                    .put("guild_id", channel.getGuild().getId())
+                                    .put("channel_id", channel.getId())
+                                    .put("self_mute", audioManager.isSelfMuted())
+                                    .put("self_deaf", audioManager.isSelfDeafened()));
                             needRatelimit = !send(audioConnectPacket.toString(), false);
                             if (!needRatelimit)
                             {
@@ -284,9 +282,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                                 // queuedAudioConnections in VoiceServerUpdateHandler because we won't receive
                                 // that event just for a move, so we remove it here after successfully sending.
                                 if (audioManager.isConnected())
-                                {
                                     queuedAudioConnections.remove(channel.getGuild().getIdLong());
-                                }
                             }
                             attemptedToSend = true;
                         }
@@ -297,17 +293,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                             {
                                 needRatelimit = !send(message, false);
                                 if (!needRatelimit)
-                                {
                                     ratelimitQueue.removeFirst();
-                                }
                                 attemptedToSend = true;
                             }
                         }
 
                         if (needRatelimit || !attemptedToSend)
-                        {
                             Thread.sleep(1000);
-                        }
                     }
                     catch (InterruptedException ignored)
                     {
@@ -672,59 +664,82 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected void updateAudioManagerReferences()
     {
-        if (api.getAudioManagerMap().size() > 0)
+        final TLongObjectMap<AudioManagerImpl> managerMap = api.getAudioManagerMap();
+        if (managerMap.size() > 0)
             LOG.trace("Updating AudioManager references");
 
-        api.getAudioManagerMap().transformValues(mng ->
+        synchronized (managerMap)
         {
-            final long guildId = mng.getGuild().getIdLong();
-            ConnectionListener listener = mng.getConnectionListener();
-
-            GuildImpl guild = (GuildImpl) api.getGuildById(guildId);
-            if (guild == null)
+            final TLongObjectMap<AudioManagerImpl> updatedManagers = new TLongObjectHashMap<>();
+            managerMap.retainEntries((guildId, mng) ->
             {
-                //We no longer have access to the guild that this audio manager was for. Set the value to null.
-                queuedAudioConnections.remove(guildId);
-                if (listener != null)
-                    listener.onStatusChange(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD);
-                return null;
-            }
-            else
-            {
-                AudioManagerImpl newMng = new AudioManagerImpl(guild);
-                newMng.setSelfMuted(mng.isSelfMuted());
-                newMng.setSelfDeafened(mng.isSelfDeafened());
-                newMng.setQueueTimeout(mng.getConnectTimeout());
-                newMng.setSendingHandler(mng.getSendingHandler());
-                newMng.setReceivingHandler(mng.getReceiveHandler());
-                newMng.setConnectionListener(mng.getConnectionListener());
-                newMng.setAutoReconnect(mng.isAutoReconnect());
+                ConnectionListener listener = mng.getConnectionListener();
 
-                if (mng.isConnected() || mng.isAttemptingToConnect())
+                GuildImpl guild = (GuildImpl) api.getGuildById(guildId);
+                if (guild == null)
                 {
-                    String channelId = mng.isConnected() ? mng.getConnectedChannel().getId() : mng.getQueuedAudioConnection().getId();
-                    VoiceChannel channel = api.getVoiceChannelById(channelId);
-                    if (channel != null)
+                    //We no longer have access to the guild that this audio manager was for. Set the value to null.
+                    queuedAudioConnections.remove(guildId);
+                    if (listener != null)
+                        listener.onStatusChange(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD);
+                    return false;
+                }
+                else
+                {
+                    final AudioManagerImpl newMng = new AudioManagerImpl(guild);
+                    newMng.setSelfMuted(mng.isSelfMuted());
+                    newMng.setSelfDeafened(mng.isSelfDeafened());
+                    newMng.setQueueTimeout(mng.getConnectTimeout());
+                    newMng.setSendingHandler(mng.getSendingHandler());
+                    newMng.setReceivingHandler(mng.getReceiveHandler());
+                    newMng.setConnectionListener(listener);
+                    newMng.setAutoReconnect(mng.isAutoReconnect());
+                    updatedManagers.put(guildId, newMng);
+
+                    if (mng.isConnected() || mng.isAttemptingToConnect())
                     {
-                        if (mng.isConnected())
-                            newMng.setConnectedChannel(channel);
+                        final long channelId = mng.isConnected()
+                            ? mng.getConnectedChannel().getIdLong()
+                            : mng.getQueuedAudioConnection().getIdLong();
+
+                        final VoiceChannel channel = api.getVoiceChannelById(channelId);
+                        if (channel != null)
+                        {
+                            if (mng.isConnected())
+                            {
+                                //sending new voice state update to inform the server
+                                // that we are not done with our connection yet!
+                                final JSONObject payload = new JSONObject()
+                                    .put("guild_id", guildId)
+                                    .put("channel_id", channelId)
+                                    .put("self_deaf", mng.isSelfDeafened())
+                                    .put("self_mute", mng.isSelfMuted());
+                                final JSONObject object = new JSONObject()
+                                    .put("op", WebSocketCode.VOICE_STATE)
+                                    .put("d", payload);
+                                send(object.toString());
+                                newMng.setConnectedChannel(channel);
+                            }
+                            else
+                            {
+                                newMng.setQueuedAudioConnection(channel);
+                            }
+                        }
                         else
-                            newMng.setQueuedAudioConnection(channel);
-                    }
-                    else
-                    {
-                        //The voice channel is not cached. It was probably deleted.
-                        queuedAudioConnections.remove(guildId);
-                        if (listener != null)
-                            listener.onStatusChange(ConnectionStatus.DISCONNECTED_CHANNEL_DELETED);
+                        {
+                            //The voice channel is not cached. It was probably deleted.
+                            queuedAudioConnections.remove(guildId);
+                            if (listener != null)
+                                listener.onStatusChange(ConnectionStatus.DISCONNECTED_CHANNEL_DELETED);
+                        }
                     }
                 }
-            }
 
-            return mng;
-        });
+                return true;
+            });
 
-        api.getAudioManagerMap().valueCollection().removeIf(Objects::isNull);
+            managerMap.putAll(updatedManagers);
+        }
     }
 
     protected String getToken()
