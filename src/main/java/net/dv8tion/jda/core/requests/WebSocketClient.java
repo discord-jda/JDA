@@ -47,7 +47,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.time.OffsetDateTime;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
@@ -527,17 +526,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             case WebSocketCode.INVALIDATE_SESSION:
                 LOG.debug("Got Invalidate request (OP 9). Invalidating...");
                 final boolean isResume = content.getBoolean("d");
+                // When d: true we can wait a bit and then try to resume again
+                //sending 4000 to not drop session
+                int closeCode = isResume ? 4000 : 1000;
                 if (isResume)
-                {
-                    LOG.debug("Session can be recovered... Waiting and sending new RESUME request");
-                    // When d: true we can wait a bit and then try to resume again
-                    api.pool.schedule(this::sendResume, 2, TimeUnit.SECONDS);
-                }
-                else
-                {
+                    LOG.debug("Session can be recovered... Closing and sending new RESUME request");
+                else // this can also mean we got rate limited in IDENTIFY
                     invalidate();
-                    sendIdentify();
-                }
+
+                close(closeCode);
                 break;
             case WebSocketCode.HELLO:
                 LOG.debug("Got HELLO packet (OP 10). Initializing keep-alive.");
