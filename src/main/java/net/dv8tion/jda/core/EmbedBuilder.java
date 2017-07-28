@@ -17,8 +17,9 @@ package net.dv8tion.jda.core;
 
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.impl.MessageEmbedImpl;
-import org.apache.commons.lang3.StringUtils;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.Helpers;
+
 import java.awt.Color;
 import java.time.*;
 import java.time.temporal.TemporalAccessor;
@@ -188,7 +189,7 @@ public class EmbedBuilder
                 throw new IllegalArgumentException("Title cannot be empty!");
             if (title.length() > MessageEmbed.TITLE_MAX_LENGTH)
                 throw new IllegalArgumentException("Title cannot be longer than " + MessageEmbed.TITLE_MAX_LENGTH + " characters.");
-            if (StringUtils.isBlank(url))
+            if (Helpers.isBlank(url))
                 url = null;
             urlCheck(url);
 

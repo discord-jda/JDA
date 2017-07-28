@@ -36,8 +36,8 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAction;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.Helpers;
 import net.dv8tion.jda.core.utils.MiscUtil;
-import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -423,8 +423,8 @@ public class GuildImpl implements Guild, Disposable
         return Collections.unmodifiableList(emotes.valueCollection().parallelStream()
                 .filter(e ->
                         ignoreCase
-                        ? StringUtils.equalsIgnoreCase(e.getName(), name)
-                        : StringUtils.equals(e.getName(), name))
+                        ? Helpers.equalsIgnoreCase(e.getName(), name)
+                        : Objects.equals(e.getName(), name))
                 .collect(Collectors.toList()));
     }
 
