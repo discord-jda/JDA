@@ -395,7 +395,7 @@ public class EntityBuilder
             }
             else
             {
-                throw new RuntimeException("Got permission_override for unknown channel with id: " + channel.getString("id"));
+                WebSocketClient.LOG.fatal("Got permission_override for unknown channel with id: " + channel.getString("id"));
             }
         }
     }
