@@ -379,7 +379,7 @@ public class AudioWebSocket extends WebSocketAdapter
         }
     }
 
-    public void reconnect(ConnectionStatus closeStatus)
+    public synchronized void reconnect(ConnectionStatus closeStatus)
     {
         if (shutdown)
             return;
@@ -390,7 +390,7 @@ public class AudioWebSocket extends WebSocketAdapter
         startConnection();
     }
 
-    public void close(ConnectionStatus closeStatus)
+    public synchronized void close(ConnectionStatus closeStatus)
     {
         //Makes sure we don't run this method again after the socket.close(1000) call fires onDisconnect
         if (shutdown)
@@ -406,8 +406,7 @@ public class AudioWebSocket extends WebSocketAdapter
                     .put("guild_id", guild.getId())
                     .put("channel_id", JSONObject.NULL)
                     .put("self_mute", false)
-                    .put("self_deaf", false)
-                );
+                    .put("self_deaf", false));
             api.getClient().send(obj.toString());
         }
         stopKeepAlive();

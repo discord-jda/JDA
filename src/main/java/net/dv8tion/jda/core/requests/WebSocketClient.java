@@ -706,24 +706,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                         if (channel != null)
                         {
                             if (mng.isConnected())
-                            {
-                                //sending new voice state update to inform the server
-                                // that we are not done with our connection yet!
-                                final JSONObject payload = new JSONObject()
-                                    .put("guild_id", guildId)
-                                    .put("channel_id", channelId)
-                                    .put("self_deaf", mng.isSelfDeafened())
-                                    .put("self_mute", mng.isSelfMuted());
-                                final JSONObject object = new JSONObject()
-                                    .put("op", WebSocketCode.VOICE_STATE)
-                                    .put("d", payload);
-                                send(object.toString());
-                                newMng.setConnectedChannel(channel);
-                            }
-                            else
-                            {
-                                newMng.setQueuedAudioConnection(channel);
-                            }
+                                mng.getAudioConnection().close(ConnectionStatus.ERROR_LOST_CONNECTION);
+                            //closing old connection in order to reconnect later
+                            newMng.setQueuedAudioConnection(channel);
                         }
                         else
                         {
