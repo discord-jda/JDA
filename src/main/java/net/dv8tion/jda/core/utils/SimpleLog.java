@@ -15,8 +15,6 @@
  */
 package net.dv8tion.jda.core.utils;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
-
 import javax.swing.JOptionPane;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -330,7 +328,7 @@ public class SimpleLog
             }
         }
         log(Level.FATAL, "Encountered an exception:");
-        log(Level.FATAL, ExceptionUtils.getStackTrace(ex));
+        log(Level.FATAL, Helpers.getStackTrace(ex));
     }
 
     /**

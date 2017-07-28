@@ -17,7 +17,7 @@
 package net.dv8tion.jda.core.requests;
 
 import net.dv8tion.jda.core.utils.Checks;
-import org.apache.commons.lang3.StringUtils;
+import net.dv8tion.jda.core.utils.Helpers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -246,9 +246,9 @@ public class Route
         this.method = method;
         this.ratelimit = rateLimit;
         this.route = route;
-        this.paramCount = StringUtils.countMatches(route, '{'); //All parameters start with {
+        this.paramCount = Helpers.countMatches(route, '{'); //All parameters start with {
 
-        if (paramCount != StringUtils.countMatches(route, '}'))
+        if (paramCount != Helpers.countMatches(route, '}'))
             throw new IllegalArgumentException("An argument does not have both {}'s for route: " + method + "  " + route);
 
         //Create a String.format compilable route for parameter compiling.

@@ -38,7 +38,7 @@ import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.SimpleLog;
-import org.apache.commons.lang3.tuple.MutablePair;
+import net.dv8tion.jda.core.utils.tuple.MutablePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
