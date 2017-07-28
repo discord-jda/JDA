@@ -235,29 +235,6 @@ public class AudioWebSocket extends WebSocketAdapter
             case VoiceCode.USER_DISCONNECT:
             {
                 LOG.trace("-> USER_DISCONNECT " + contentAll);
-                final JSONObject payload = contentAll.getJSONObject("d");
-                final long userId = payload.getLong("user_id");
-                audioConnection.removeUserSSRC(userId);
-                break;
-            }
-            case VoiceCode.USER_CONNECT:
-            {
-                LOG.trace("-> USER_CONNECT " + contentAll);
-                final JSONObject payload = contentAll.getJSONObject("d");
-                final long userId = payload.getLong("user_id");
-                final User user = getUser(userId);
-                if (user == null)
-                {
-                    //Possibly a user that just joined the guild
-                    // update once that user starts speaking
-                    LOG.warn("Got an Audio USER_CONNECT for a non-existent User. JSON: " + contentAll);
-                    break;
-                }
-                final int ssrc = payload.getInt("audio_ssrc");
-                if (ssrc != 0)
-                    audioConnection.updateUserSSRC(ssrc, userId, false);
-                else
-                    LOG.debug("Received USER_CONNECT with no audio_ssrc set! " + contentAll);
                 break;
             }
             case VoiceCode.RESUMED:
@@ -266,6 +243,11 @@ public class AudioWebSocket extends WebSocketAdapter
                 LOG.debug("Successfully resumed session!");
                 changeStatus(ConnectionStatus.CONNECTED);
                 ready = true;
+                break;
+            }
+            case 12:
+            {
+                // ignore op 12 for now
                 break;
             }
             default:

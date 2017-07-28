@@ -29,7 +29,7 @@ public final class VoiceCode
     public static final int RESUME = 7;
     public static final int HELLO = 8;
     public static final int RESUMED = 9;
-    public static final int USER_CONNECT = 12;
+//    public static final int USER_CONNECT = 12;
     public static final int USER_DISCONNECT = 13;
 
     // CLOSE
