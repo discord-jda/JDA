@@ -48,6 +48,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class AudioConnection
 {
@@ -175,7 +176,24 @@ public class AudioConnection
         return channel.getGuild();
     }
 
-    public void updateUserSSRC(int ssrc, long userId, boolean talking)
+    protected void removeUserSSRC(long userId)
+    {
+        final AtomicInteger ssrcRef = new AtomicInteger(0);
+        final boolean modified = ssrcMap.retainEntries((ssrc, id) ->
+        {
+            boolean isEntry = id != userId;
+            if (isEntry)
+                ssrcRef.set(ssrc);
+            return isEntry;
+        });
+        if (!modified)
+            return;
+        final Decoder decoder = opusDecoders.remove(ssrcRef.get());
+        if (decoder != null) // cleanup decoder
+            decoder.close();
+    }
+
+    protected void updateUserSSRC(int ssrc, long userId, boolean talking)
     {
         if (ssrcMap.containsKey(ssrc))
         {
@@ -332,8 +350,7 @@ public class AudioConnection
                                 }
                                 if (decoder == null)
                                 {
-                                    decoder = new Decoder(ssrc);
-                                    opusDecoders.put(ssrc, decoder);
+                                    opusDecoders.put(ssrc, decoder = new Decoder(ssrc));
                                 }
                                 if (!decoder.isInOrder(decryptedPacket.getSequence()))
                                 {
@@ -343,39 +360,37 @@ public class AudioConnection
 
                                 User user = getJDA().getUserById(userId);
                                 if (user == null)
-                                    LOG.warn("Received audio data with a known SSRC, but the userId associate with the SSRC is unknown to JDA!");
-                                else
                                 {
-//                                    if (decoder.wasPacketLost(decryptedPacket.getSequence()))
-//                                    {
-//                                        LOG.debug("Packet(s) missed. Using Opus packetloss-compensation.");
-//                                        short[] decodedAudio = decoder.decodeFromOpus(null);
-//                                        receiveHandler.handleUserAudio(new UserAudio(user, decodedAudio));
-//                                    }
-                                    short[] decodedAudio = decoder.decodeFromOpus(decryptedPacket);
+                                    LOG.warn("Received audio data with a known SSRC, but the userId associate with the SSRC is unknown to JDA!");
+                                    continue;
+                                }
+//                              if (decoder.wasPacketLost(decryptedPacket.getSequence()))
+//                              {
+//                                  LOG.debug("Packet(s) missed. Using Opus packetloss-compensation.");
+//                                  short[] decodedAudio = decoder.decodeFromOpus(null);
+//                                  receiveHandler.handleUserAudio(new UserAudio(user, decodedAudio));
+//                              }
+                                short[] decodedAudio = decoder.decodeFromOpus(decryptedPacket);
 
-                                    //If decodedAudio is null, then the Opus decode failed, so throw away the packet.
-                                    if (decodedAudio == null)
+                                //If decodedAudio is null, then the Opus decode failed, so throw away the packet.
+                                if (decodedAudio == null)
+                                {
+                                    LOG.trace("Received audio data but Opus failed to properly decode, instead it returned an error");
+                                    continue;
+                                }
+                                if (receiveHandler.canReceiveUser())
+                                {
+                                    receiveHandler.handleUserAudio(new UserAudio(user, decodedAudio));
+                                }
+                                if (receiveHandler.canReceiveCombined())
+                                {
+                                    Queue<Pair<Long, short[]>> queue = combinedQueue.get(user);
+                                    if (queue == null)
                                     {
-                                        LOG.trace("Received audio data but Opus failed to properly decode, instead it returned an error");
+                                        queue = new ConcurrentLinkedQueue<>();
+                                        combinedQueue.put(user, queue);
                                     }
-                                    else
-                                    {
-                                        if (receiveHandler.canReceiveUser())
-                                        {
-                                            receiveHandler.handleUserAudio(new UserAudio(user, decodedAudio));
-                                        }
-                                        if (receiveHandler.canReceiveCombined())
-                                        {
-                                            Queue<Pair<Long, short[]>> queue = combinedQueue.get(user);
-                                            if (queue == null)
-                                            {
-                                                queue = new ConcurrentLinkedQueue<>();
-                                                combinedQueue.put(user, queue);
-                                            }
-                                            queue.add(Pair.<Long, short[]>of(System.currentTimeMillis(), decodedAudio));
-                                        }
-                                    }
+                                    queue.add(Pair.of(System.currentTimeMillis(), decodedAudio));
                                 }
                             }
                             else if (couldReceive)

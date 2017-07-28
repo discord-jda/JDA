@@ -216,28 +216,48 @@ public class AudioWebSocket extends WebSocketAdapter
             case VoiceCode.USER_SPEAKING_UPDATE:
             {
                 LOG.trace("-> USER_SPEAKING_UPDATE " + contentAll);
-                JSONObject content = contentAll.getJSONObject("d");
-                boolean speaking = content.getBoolean("speaking");
-                int ssrc = content.getInt("ssrc");
+                final JSONObject content = contentAll.getJSONObject("d");
+                final boolean speaking = content.getBoolean("speaking");
+                final int ssrc = content.getInt("ssrc");
                 final long userId = content.getLong("user_id");
 
-                User user;
-                if (!api.getUserMap().containsKey(userId))
+                final User user = getUser(userId);
+                if (user == null)
                 {
-                    if (!api.getFakeUserMap().containsKey(userId))
-                    {
-                        LOG.warn("Got an Audio USER_SPEAKING_UPDATE for a non-existent User. JSON: " + contentAll);
-                        return;
-                    }
-                    user = api.getFakeUserMap().get(userId);
-                }
-                else
-                {
-                    user = api.getUserById(userId);
+                    LOG.warn("Got an Audio USER_SPEAKING_UPDATE for a non-existent User. JSON: " + contentAll);
+                    break;
                 }
 
                 audioConnection.updateUserSSRC(ssrc, userId, speaking);
                 listener.onUserSpeaking(user, speaking);
+                break;
+            }
+            case VoiceCode.USER_DISCONNECT:
+            {
+                LOG.trace("-> USER_DISCONNECT " + contentAll);
+                final JSONObject payload = contentAll.getJSONObject("d");
+                final long userId = payload.getLong("user_id");
+                audioConnection.removeUserSSRC(userId);
+                break;
+            }
+            case VoiceCode.USER_CONNECT:
+            {
+                LOG.trace("-> USER_CONNECT " + contentAll);
+                final JSONObject payload = contentAll.getJSONObject("d");
+                final long userId = payload.getLong("user_id");
+                final User user = getUser(userId);
+                if (user == null)
+                {
+                    //Possibly a user that just joined the guild
+                    // update once that user starts speaking
+                    LOG.warn("Got an Audio USER_CONNECT for a non-existent User. JSON: " + contentAll);
+                    break;
+                }
+                final int ssrc = payload.getInt("audio_ssrc");
+                if (ssrc != 0)
+                    audioConnection.updateUserSSRC(ssrc, userId, false);
+                else
+                    LOG.debug("Received USER_CONNECT with no audio_ssrc set! " + contentAll);
                 break;
             }
             case VoiceCode.RESUMED:
@@ -601,6 +621,14 @@ public class AudioWebSocket extends WebSocketAdapter
     {
         connectionStatus = newStatus;
         listener.onStatusChange(newStatus);
+    }
+
+    private User getUser(final long userId)
+    {
+        User user = api.getUserById(userId);
+        if (user != null)
+            return user;
+        return api.getFakeUserMap().get(userId);
     }
 
     public ConnectionStatus getConnectionStatus()

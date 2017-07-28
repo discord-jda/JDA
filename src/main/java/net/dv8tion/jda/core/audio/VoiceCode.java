@@ -29,6 +29,7 @@ public final class VoiceCode
     public static final int RESUME = 7;
     public static final int HELLO = 8;
     public static final int RESUMED = 9;
+    public static final int USER_CONNECT = 12;
     public static final int USER_DISCONNECT = 13;
 
     // CLOSE
@@ -46,8 +47,6 @@ public final class VoiceCode
         DISCONNECTED(4014, "The connection has been dropped normally"),
         SERVER_CRASH(4015, "The server we were connected to has crashed"),
         UNKNOWN_ENCRYPTION_MODE(4016, "The specified encryption method is not supported"),
-//        HEARTBEAT_TIMEOUT(4800, "We did not heartbeat in time"),
-//        UNRESUMABLE(4801, "Discord was unable to resume your connection"),
 
         UNKNOWN(0, "Unknown code");
 
