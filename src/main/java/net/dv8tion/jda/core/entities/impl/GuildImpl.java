@@ -908,12 +908,6 @@ public class GuildImpl implements Guild, Disposable
         emotes.forEachValue(Disposable::dispose);
         if (publicRole != null) // just in case
             publicRole.dispose();
-        synchronized (getJDA().getAudioManagerMap())
-        {
-            AudioManagerImpl audioManager = getJDA().getAudioManagerMap().remove(id);
-            if (audioManager != null)
-                audioManager.dispose();
-        }
 
         textChannels.clear();
         voiceChannels.clear();

@@ -25,6 +25,7 @@ import net.dv8tion.jda.client.entities.Relationship;
 import net.dv8tion.jda.client.entities.RelationshipType;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.core.AccountType;
+import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
@@ -32,6 +33,7 @@ import net.dv8tion.jda.core.entities.impl.PrivateChannelImpl;
 import net.dv8tion.jda.core.entities.impl.UserImpl;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.guild.GuildUnavailableEvent;
+import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import org.json.JSONObject;
 
 public class GuildDeleteHandler extends SocketHandler
@@ -73,10 +75,10 @@ public class GuildDeleteHandler extends SocketHandler
             return null;
         }
 
-//        final TLongObjectMap<AudioManagerImpl> audioManagerMap = api.getAudioManagerMap();
-//        final AudioManagerImpl manager = audioManagerMap.remove(id); // remove manager from central map to avoid old guild references
-//        if (manager != null) // close existing audio connection if needed
-//            manager.closeAudioConnection(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD); //moved into GuildImpl#dispose()
+        final TLongObjectMap<AudioManagerImpl> audioManagerMap = api.getAudioManagerMap();
+        final AudioManagerImpl manager = audioManagerMap.remove(id); // remove manager from central map to avoid old guild references
+        if (manager != null) // close existing audio connection if needed
+            manager.closeAudioConnection(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD);
 
         //cleaning up all users that we do not share a guild with anymore
         // Anything left in memberIds will be removed from the main userMap

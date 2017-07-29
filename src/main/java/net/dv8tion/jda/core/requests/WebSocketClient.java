@@ -691,7 +691,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         api.getAudioManagerMap().transformValues(mng ->
         {
-            final long guildId = mng.getGuild().getIdLong();
+            final long guildId = mng.getGuildIdLong();
             ConnectionListener listener = mng.getConnectionListener();
 
             GuildImpl guild = (GuildImpl) api.getGuildById(guildId);
@@ -713,6 +713,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 newMng.setReceivingHandler(mng.getReceiveHandler());
                 newMng.setConnectionListener(mng.getConnectionListener());
                 newMng.setAutoReconnect(mng.isAutoReconnect());
+                //TODO: make sure to dispose old manager once this changes
 
                 if (mng.isConnected() || mng.isAttemptingToConnect())
                 {

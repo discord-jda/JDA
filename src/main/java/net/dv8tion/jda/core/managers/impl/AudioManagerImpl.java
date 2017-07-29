@@ -25,7 +25,6 @@ import net.dv8tion.jda.core.audio.AudioSendHandler;
 import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.audio.hooks.ListenerProxy;
-import net.dv8tion.jda.core.entities.impl.Disposable;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.VoiceChannel;
@@ -33,14 +32,14 @@ import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.managers.AudioManager;
+import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.NativeUtil;
 import net.dv8tion.jda.core.utils.PermissionUtil;
-import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
 import java.io.IOException;
 
-public class AudioManagerImpl implements AudioManager, Disposable
+public class AudioManagerImpl implements AudioManager
 {
     public static final ThreadGroup AUDIO_THREADS = new ThreadGroup("jda-audio");
     //These values are set at the bottom of this file.
@@ -60,7 +59,6 @@ public class AudioManagerImpl implements AudioManager, Disposable
     protected ListenerProxy connectionListener = new ListenerProxy();
     protected long queueTimeout = 100;
     protected boolean shouldReconnect = true;
-    protected boolean disposed = false;
 
     protected boolean selfMuted = false;
     protected boolean selfDeafened = false;
@@ -136,7 +134,6 @@ public class AudioManagerImpl implements AudioManager, Disposable
     {
         synchronized (CONNECTION_LOCK)
         {
-            checkDisposed();
             guild.getJDA().getClient().getQueuedAudioConnectionMap().remove(guild.getIdLong());
             this.queuedAudioConnection = null;
             if (audioConnection == null)
@@ -155,8 +152,13 @@ public class AudioManagerImpl implements AudioManager, Disposable
     @Override
     public Guild getGuild()
     {
-        checkDisposed();
+        guild.checkDisposed();
         return guild;
+    }
+
+    public long getGuildIdLong()
+    {
+        return guild.getIdLong();
     }
 
     @Override
@@ -198,7 +200,6 @@ public class AudioManagerImpl implements AudioManager, Disposable
     @Override
     public void setSendingHandler(AudioSendHandler handler)
     {
-        checkDisposed();
         sendHandler = handler;
         if (audioConnection != null)
             audioConnection.setSendingHandler(handler);
@@ -213,7 +214,6 @@ public class AudioManagerImpl implements AudioManager, Disposable
     @Override
     public void setReceivingHandler(AudioReceiveHandler handler)
     {
-        checkDisposed();
         receiveHandler = handler;
         if (audioConnection != null)
             audioConnection.setReceivingHandler(handler);
@@ -300,8 +300,6 @@ public class AudioManagerImpl implements AudioManager, Disposable
 
     public void setAudioConnection(AudioConnection audioConnection)
     {
-        if (disposed)
-            return;
         this.audioConnection = audioConnection;
         if (audioConnection == null)
             return;
@@ -339,8 +337,6 @@ public class AudioManagerImpl implements AudioManager, Disposable
 
     protected void updateVoiceState()
     {
-        if (disposed)
-            return;
         if (isConnected() || isAttemptingToConnect())
         {
             VoiceChannel channel = isConnected() ? getConnectedChannel() : getQueuedAudioConnection();
@@ -359,20 +355,9 @@ public class AudioManagerImpl implements AudioManager, Disposable
     }
 
     @Override
-    public boolean dispose()
-    {
-        synchronized (CONNECTION_LOCK)
-        {
-            closeAudioConnection(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD);
-            guild = null;
-            return disposed = true;
-        }
-    }
-
-    @Override
     public boolean isDisposed()
     {
-        return disposed;
+        return guild.isDisposed();
     }
 
     //Load the Opus library.
