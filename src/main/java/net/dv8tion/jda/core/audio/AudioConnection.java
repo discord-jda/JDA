@@ -32,7 +32,7 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.utils.SimpleLog;
-import org.apache.commons.lang3.tuple.Pair;
+import net.dv8tion.jda.core.utils.tuple.Pair;
 import org.json.JSONObject;
 import tomp2p.opuswrapper.Opus;
 

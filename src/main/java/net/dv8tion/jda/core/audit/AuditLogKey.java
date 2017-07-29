@@ -155,7 +155,7 @@ public enum AuditLogKey
     CHANNEL_USER_LIMIT("user_limit"),
 
     /**
-     * Change of the {@link net.dv8tion.jda.core.entities.TextChannel#getNSFW() TextChannel.getNSFW()} value.
+     * Change of the {@link net.dv8tion.jda.core.entities.TextChannel#isNSFW() TextChannel.isNSFW()} value.
      * <br>Only for {@link net.dv8tion.jda.core.entities.ChannelType#TEXT ChannelType.TEXT}
      *
      * <p>Expected type: <b>Boolean</b>
