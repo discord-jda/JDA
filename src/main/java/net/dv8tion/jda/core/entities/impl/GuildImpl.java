@@ -612,7 +612,6 @@ public class GuildImpl implements Guild
             }
         }
         // set guild again to make sure the manager references this instance! Avoiding invalid member cache
-        mng.setGuild(this);
         return mng;
     }
 
