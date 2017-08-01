@@ -204,9 +204,7 @@ public class EntityBuilder
                 ChannelType type = ChannelType.fromId(channel.getInt("type"));
                 if (type == ChannelType.TEXT)
                 {
-                    TextChannel newChannel = createTextChannel(channel, guildObj.getIdLong(), false);
-                    if (newChannel.getIdLong() == guildObj.getIdLong())
-                        guildObj.setPublicChannel(newChannel);
+                    createTextChannel(channel, guildObj.getIdLong(), false);
                 }
                 else if (type == ChannelType.VOICE)
                 {

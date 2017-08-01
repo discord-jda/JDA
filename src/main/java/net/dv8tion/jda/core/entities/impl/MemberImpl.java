@@ -246,4 +246,14 @@ public class MemberImpl implements Member
     {
         return nickname == null ? user.getAsMention() : "<@!" + user.getIdLong() + '>';
     }
+
+    @Override
+    public TextChannel getDefaultChannel()
+    {
+        return guild.getTextChannelsMap().valueCollection().stream()
+                .filter(c -> hasPermission(c, Permission.MESSAGE_READ))
+                .sorted((c1, c2) -> c2.compareTo(c1))
+                .findFirst()
+                .orElse(null);
+    }
 }

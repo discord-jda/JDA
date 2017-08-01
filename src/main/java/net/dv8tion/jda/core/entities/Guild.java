@@ -572,9 +572,18 @@ public interface Guild extends ISnowflake
      * either on first load or when accepting an invite.
      * <br>This channel cannot be deleted and the {@link #getPublicRole() Public Role} always has the ability to
      * {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ} this channel.
+     * 
+     * @deprecated
+     *         As the concept of a public channel has been removed from discord this method may return null for newer guild.
+     *         <br>The default channel is now different for each user and depends on their permissions, see
+     *         {@link net.dv8tion.jda.core.entities.Member#getDefaultChannel() Member#getDefaultChannel()} for more details.
+     *         <br>If you want to get the default channel of old guilds you can use {@code guild.getTextChannelById(guild.getIdLong())}.  
      *
      * @return The {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} representing the public channel for this guild.
+     *
+     * @see net.dv8tion.jda.core.entities.Member#getDefaultChannel()
      */
+    @Deprecated
     TextChannel getPublicChannel();
 
     /**
