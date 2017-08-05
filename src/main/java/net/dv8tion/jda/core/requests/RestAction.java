@@ -150,7 +150,7 @@ public class RestAction<T>
 {
     public static final SimpleLog LOG = SimpleLog.getLog("RestAction");
 
-    private static final Function<Response, Throwable> DEFAULT_FAILURE_TRANSFORMER = response ->
+    protected static final Function<Response, Throwable> DEFAULT_FAILURE_TRANSFORMER = response ->
     {
         if (response.code == 429)
             return new RateLimitedException(response.getRequest().getRoute(), response.retryAfter);
@@ -274,7 +274,7 @@ public class RestAction<T>
      */
     public RestAction(JDA api, Route.CompiledRoute route, RequestBody data, Function<Response, T> successTransformer)
     {
-        this(api, route, data, successTransformer, DEFAULT_FAILURE_TRANSFORMER);
+        this(api, route, data, successTransformer, null);
     }
 
     /**
@@ -332,7 +332,7 @@ public class RestAction<T>
         this.route = route;
         this.data = data;
         this.successTransformer = successTransformer;
-        this.failureTransformer = r -> Optional.ofNullable(failureTransformer.apply(r)).orElse(DEFAULT_FAILURE_TRANSFORMER.apply(r));
+        this.failureTransformer = failureTransformer == null ? DEFAULT_FAILURE_TRANSFORMER : r -> Optional.ofNullable(failureTransformer.apply(r)).orElse(DEFAULT_FAILURE_TRANSFORMER.apply(r));
     }
 
     /**
