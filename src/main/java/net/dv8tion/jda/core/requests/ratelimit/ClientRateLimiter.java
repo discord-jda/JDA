@@ -18,16 +18,14 @@ package net.dv8tion.jda.core.requests.ratelimit;
 
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.ExceptionEvent;
-import net.dv8tion.jda.core.requests.RateLimiter;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Requester;
-import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.requests.Route.RateLimit;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -214,9 +212,9 @@ public class ClientRateLimiter extends RateLimiter
                             Requester.LOG.fatal("Requester system encountered an internal error");
                             Requester.LOG.log(t);
                             it.remove();
-                            // TODO: handle errors
-                            // if (request != null)
-                            //     request.onFailure(t);c
+
+                            if (request != null)
+                                request.handleResponse(new Response(request, null, t, Collections.emptySet()));
                         }
                     }
 

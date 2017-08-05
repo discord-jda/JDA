@@ -51,46 +51,6 @@ public class Request<T>
         this.api = (JDAImpl) restAction.getJDA();
     }
 
-    // TODO: reimplement asyncnes in another place
-//    public void onSuccess(T successObj)
-//    {
-//        api.pool.execute(() ->
-//        {
-//            try
-//            {
-//                onSuccess.accept(successObj);
-//            }
-//            catch (Throwable t)
-//            {
-//                RestAction.LOG.fatal("Encountered error while processing success consumer");
-//                RestAction.LOG.log(t);
-//                if (t instanceof Error)
-//                    api.getEventManager().handle(new ExceptionEvent(api, t, true));
-//            }
-//        });
-//    }
-//
-//
-//    public void onFailure(Throwable failException)
-//    {
-//        api.pool.execute(() ->
-//        {
-//            try
-//            {
-//                onFailure.accept(failException);
-//                if (failException instanceof Error)
-//                    api.getEventManager().handle(new ExceptionEvent(api, failException, false));
-//            }
-//            catch (Throwable t)
-//            {
-//                RestAction.LOG.fatal("Encountered error while processing failure consumer");
-//                RestAction.LOG.log(t);
-//                if (t instanceof Error)
-//                    api.getEventManager().handle(new ExceptionEvent(api, t, true));
-//            }
-//        });
-//    }
-
     public JDAImpl getJDA()
     {
         return api;
@@ -100,16 +60,6 @@ public class Request<T>
     {
         return restAction;
     }
-
-//    public Consumer<T> getOnSuccess()
-//    {
-//        return onSuccess;
-//    }
-//
-//    public Consumer<Throwable> getOnFailure()
-//    {
-//        return onFailure;
-//    }
 
     public CaseInsensitiveMap<String, String> getHeaders()
     {
@@ -148,15 +98,18 @@ public class Request<T>
 
     public void handleResponse(Response response)
     {
-        api.getEventManager().handle(new HttpRequestEvent(this, response));
-        
-        if (response.isOk())
+        api.pool.execute(() ->
         {
-            onSuccess.accept(response);
-        }
-        else
-        {
-            onFailure.accept(response);
-        }
+            api.getEventManager().handle(new HttpRequestEvent(this, response));
+
+            if (response.isOk())
+            {
+                onSuccess.accept(response);
+            }
+            else
+            {
+                onFailure.accept(response);
+            }
+        });
     }
 }

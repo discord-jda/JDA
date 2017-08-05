@@ -38,21 +38,21 @@ public class Response implements Closeable
     private final Object object;
     private final okhttp3.Response rawResponse;
     private final Set<String> cfRays;
-    private Exception exception;
+    private Throwable throwable;
 
-    protected Response(Request<?> request, final okhttp3.Response response, final Exception exception, final Set<String> cfRays)
+    public Response(Request<?> request, final okhttp3.Response response, final Throwable throwable, final Set<String> cfRays)
     {
         this(request, response, response != null ? response.code() : ERROR_CODE, ERROR_MESSAGE, -1, cfRays);
-        this.exception = exception;
+        this.throwable = throwable;
     }
 
-    protected Response(Request<?> request, final okhttp3.Response response, final int code, final String message, final long retryAfter, final Set<String> cfRays)
+    public Response(Request<?> request, final okhttp3.Response response, final int code, final String message, final long retryAfter, final Set<String> cfRays)
     {
         this.request = request;
         this.rawResponse = response;
         this.code = code;
         this.message = message;
-        this.exception = null;
+        this.throwable = null;
         this.retryAfter = retryAfter;
         this.cfRays = cfRays;
 
@@ -101,12 +101,12 @@ public class Response implements Closeable
         }
     }
 
-    protected Response(Request<?> request, final long retryAfter, final Set<String> cfRays)
+    public Response(Request<?> request, final long retryAfter, final Set<String> cfRays)
     {
         this(request, null, 429, "TOO MANY REQUESTS", retryAfter, cfRays);
     }
 
-    protected Response(Request<?> request, final okhttp3.Response response, final long retryAfter, final Set<String> cfRays)
+    public Response(Request<?> request, final okhttp3.Response response, final long retryAfter, final Set<String> cfRays)
     {
         this(request, response, response.code(), response.message(), retryAfter, cfRays);
     }
@@ -141,9 +141,9 @@ public class Response implements Closeable
         return cfRays;
     }
 
-    public Exception getException()
+    public Throwable getThrowable()
     {
-        return exception;
+        return throwable;
     }
 
     public boolean isError()
@@ -164,9 +164,9 @@ public class Response implements Closeable
     @Override
     public String toString()
     {
-        return this.exception == null
+        return this.throwable == null
                 ? "HTTPResponse[" + this.code + (this.object == null ? "" : ", " + this.object.toString()) + ']'
-                : "HTTPException[" + this.exception.getMessage() + ']';
+                : "HTTPException[" + this.throwable.getMessage() + ']';
     }
 
     @Override

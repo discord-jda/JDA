@@ -18,10 +18,7 @@ package net.dv8tion.jda.core.requests.ratelimit;
 
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.ExceptionEvent;
-import net.dv8tion.jda.core.requests.RateLimiter;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Requester;
-import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.requests.Route.RateLimit;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import okhttp3.Headers;
@@ -32,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -318,9 +316,9 @@ public class BotRateLimiter extends RateLimiter
                             Requester.LOG.fatal("Requester system encountered an internal error");
                             Requester.LOG.log(t);
                             it.remove();
-                            // TODO: handle error
-                            // if (request != null)
-                            //     request.onFailure(t);
+
+                            if (request != null)
+                                request.handleResponse(new Response(request, null, t, Collections.emptySet()));
                         }
                     }
 
