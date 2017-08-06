@@ -34,6 +34,9 @@ public class SelfUserImpl extends UserImpl implements SelfUser
 
     //Client only
     private String email;
+    private String phoneNumber;
+    private boolean mobile;
+    private boolean premium;
 
     public SelfUserImpl(long id, JDAImpl api)
     {
@@ -79,6 +82,30 @@ public class SelfUserImpl extends UserImpl implements SelfUser
     }
 
     @Override
+    public String getPhoneNumber()
+    {
+        if (api.getAccountType() != AccountType.CLIENT)
+            throw new AccountTypeException(AccountType.CLIENT, "Phone number retrieval can only be done on CLIENT accounts!");
+        return this.phoneNumber;
+    }
+
+    @Override
+    public boolean isMobile()
+    {
+        if (api.getAccountType() != AccountType.CLIENT)
+            throw new AccountTypeException(AccountType.CLIENT, "Mobile app retrieval can only be done on CLIENT accounts!");
+        return this.mobile;
+    }
+
+    @Override
+    public boolean isPremium()
+    {
+        if (api.getAccountType() != AccountType.CLIENT)
+            throw new AccountTypeException(AccountType.CLIENT, "Nitro status retrieval can only be done on CLIENT accounts!");
+        return this.premium;
+    }
+
+    @Override
     public AccountManager getManager()
     {
         AccountManager mng = manager;
@@ -110,12 +137,6 @@ public class SelfUserImpl extends UserImpl implements SelfUser
         return mng;
     }
 
-//    @Override
-//    public String getAuthUrl(Permission... perms)
-//    {
-//        return ApplicationUtil.getAuthInvite(getJDA(), perms);
-//    }
-
     public SelfUserImpl setVerified(boolean verified)
     {
         this.verified = verified;
@@ -131,6 +152,24 @@ public class SelfUserImpl extends UserImpl implements SelfUser
     public SelfUserImpl setEmail(String email)
     {
         this.email = email;
+        return this;
+    }
+
+    public SelfUserImpl setPhoneNumber(String phoneNumber)
+    {
+        this.phoneNumber = phoneNumber;
+        return this;
+    }
+
+    public SelfUserImpl setMobile(boolean mobile)
+    {
+        this.mobile = mobile;
+        return this;
+    }
+
+    public SelfUserImpl setPremium(boolean premium)
+    {
+        this.premium = premium;
         return this;
     }
 }

@@ -54,6 +54,43 @@ public interface SelfUser extends User
      */
     String getEmail() throws AccountTypeException;
 
+    // TODO: find out if this is the real meaning of the field or if it has another purpose
+    /**
+     * Shows whether there has ever been a mobile app connected to this account.
+     * <br><b>NOTE:</b> this is a {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT} method only!
+     *
+     * @throws AccountTypeException
+     *         If this method is called when {@link net.dv8tion.jda.core.JDA#getAccountType() JDA#getAccountType()} does not return
+     *         {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}. E.g: If the logged in account isn't a Client account!
+     *
+     * @return {@code true} if the account is linked with a mobile app, otherwise {@code false}
+     */
+    boolean isMobile() throws AccountTypeException;
+
+    /**
+     * The Discord Nitro status of this account.
+     * <br><b>NOTE:</b> this is a {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT} method only!
+     *
+     * @throws AccountTypeException
+     *         If this method is called when {@link net.dv8tion.jda.core.JDA#getAccountType() JDA#getAccountType()} does not return
+     *         {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}. E.g: If the logged in account isn't a Client account!
+     *
+     * @return The Discord Nitro status of the currently logged in account.
+     */
+    boolean isPremium() throws AccountTypeException;
+
+    /**
+     * Used to get the phone number of the currently logged in account if a phone number has been attached to it.
+     * <br><b>NOTE:</b> this is a {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT} method only!
+     *
+     * @throws AccountTypeException
+     *         If this method is called when {@link net.dv8tion.jda.core.JDA#getAccountType() JDA#getAccountType()} does not return
+     *         {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}. E.g: If the logged in account isn't a Client account!
+     *
+     * @return The phone of the currently logged in account or null if there's no number associated
+     */
+    String getPhoneNumber() throws AccountTypeException;
+
     /**
      * The {@link net.dv8tion.jda.core.managers.AccountManager AccountManager}
      * for the currently logged in account.
@@ -73,16 +110,4 @@ public interface SelfUser extends User
      * @return An AccountManagerUpdatable instance for the current account
      */
     AccountManagerUpdatable getManagerUpdatable();
-
-//    /**
-//     * Creates a OAuth invite-link used to invite bot-accounts.<br>
-//     * This is literally just a shortcut to
-//     * {@link net.dv8tion.jda.utils.ApplicationUtil#getAuthInvite(net.dv8tion.jda.JDA, net.dv8tion.jda.Permission...) ApplicationUtil.getAuthInvite(JDA, Permission...)}
-//     *
-//     * @param perms
-//     *      Possibly empty list of Permissions that should be requested via invite
-//     * @return
-//     *      The link used to invite the bot
-//     */
-//    String getAuthUrl(Permission... perms);
 }

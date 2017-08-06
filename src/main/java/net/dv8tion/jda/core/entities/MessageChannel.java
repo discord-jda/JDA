@@ -402,7 +402,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>Provided {@code file} is null.</li>
      *             <li>Provided {@code file} does not exist.</li>
      *             <li>Provided {@code file} is unreadable.</li>
-     *             <li>Provided {@code file} is greater than 8MB.</li>
+     *             <li>Provided {@code file} is greater than 8 MiB on a normal or 50 MiB on a nitro account.</li>
      *             <li>Provided {@link net.dv8tion.jda.core.entities.Message Message} is not {@code null} <b>and</b>
      *                 contains a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} which
      *                 is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
@@ -482,7 +482,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>Provided {@code file} is null.</li>
      *             <li>Provided {@code file} does not exist.</li>
      *             <li>Provided {@code file} is unreadable.</li>
-     *             <li>Provided {@code file} is greater than 8MB.</li>
+     *             <li>Provided {@code file} is greater than 8 MiB on a normal or 50 MiB on a nitro account.</li>
      *             <li>Provided {@link net.dv8tion.jda.core.entities.Message Message} is not {@code null} <b>and</b>
      *                 contains a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} which
      *                 is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
@@ -507,8 +507,8 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.notNull(file, "file");
         Checks.check(file.exists() && file.canRead(),
             "Provided file is either null, doesn't exist or is not readable!");
-        Checks.check(file.length() <= Message.MAX_FILE_SIZE,// TODO: deal with Discord Nitro allowing 50MB files.
-            "File is to big! Max file-size is 8MB");
+        Checks.check(file.length() <= (getJDA().getSelfUser().isPremium() ? Message.MAX_FILE_SIZE_NITRO : Message.MAX_FILE_SIZE),
+            "File is to big! Max file-size is 8 MiB for normal and 50 MiB for nitro users");
 
         Checks.notNull(fileName, "fileName");
 
@@ -638,7 +638,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
-     *             <li>If the provided filename is {@code null} or {@code empty} or the provided data is larger than 8MB.</li>
+     *             <li>If the provided filename is {@code null} or {@code empty} or the provided data is larger than 8 MiB on a normal or 50 MiB on a nitro account.</li>
      *             <li>If the provided {@link net.dv8tion.jda.core.entities.Message Message}
      *                 contains an {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed}
      *                 that is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
@@ -660,11 +660,11 @@ public interface MessageChannel extends ISnowflake, Formattable
     @CheckReturnValue
     default RestAction<Message> sendFile(byte[] data, String fileName, Message message)
     {
-        Checks.notNull(data, "file data[]");
+        Checks.notNull(data, "data");
         Checks.notNull(fileName, "fileName");
 
-        Checks.check(data.length <= Message.MAX_FILE_SIZE,   //8MB
-                "Provided data is too large! Max file-size is 8MB (%d)", Message.MAX_FILE_SIZE);
+        Checks.check(data.length <= (getJDA().getSelfUser().isPremium() ? Message.MAX_FILE_SIZE_NITRO : Message.MAX_FILE_SIZE),
+                "Provided data is too large! Max file-size is 8 MiB for normal and 50 MiB for nitro users");
 
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
         MultipartBody.Builder builder = new okhttp3.MultipartBody.Builder()
