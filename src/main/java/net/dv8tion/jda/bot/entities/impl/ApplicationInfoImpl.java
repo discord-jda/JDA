@@ -88,19 +88,7 @@ public class ApplicationInfoImpl implements ApplicationInfo
     }
 
     @Override
-    public String getInviteUrl(final Collection<Permission> permissions)
-    {
-        return this.getInviteUrl(null, permissions);
-    }
-
-    @Override
-    public String getInviteUrl(final Permission... permissions)
-    {
-        return this.getInviteUrl(null, permissions);
-    }
-
-    @Override
-    public String getInviteUrl(final long guildId, final Collection<Permission> permissions)
+    public String getInviteUrl(final String guildId, final Collection<Permission> permissions)
     {
         StringBuilder builder = new StringBuilder("https://discordapp.com/oauth2/authorize?client_id=");
         builder.append(this.getId());
@@ -110,18 +98,12 @@ public class ApplicationInfoImpl implements ApplicationInfo
             builder.append("&permissions=");
             builder.append(Permission.getRaw(permissions));
         }
-        if (guildId > 0)
+        if (guildId != null)
         {
             builder.append("&guild_id=");
             builder.append(guildId);
         }
         return builder.toString();
-    }
-
-    @Override
-    public String getInviteUrl(final long guildId, final Permission... permissions)
-    {
-        return this.getInviteUrl(guildId, permissions == null ? null : Arrays.asList(permissions));
     }
 
     @Override

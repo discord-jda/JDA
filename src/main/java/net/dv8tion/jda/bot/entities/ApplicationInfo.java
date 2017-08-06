@@ -21,7 +21,7 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.utils.MiscUtil;
-
+import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -81,7 +81,10 @@ public interface ApplicationInfo extends ISnowflake
      * 
      * @return The link used to invite the bot
      */
-    String getInviteUrl(Collection<Permission> permissions);
+    default String getInviteUrl(Collection<Permission> permissions)
+    {
+        return getInviteUrl(null, permissions);
+    }
 
     /**
      * Creates a OAuth invite-link used to invite the bot.
@@ -95,7 +98,10 @@ public interface ApplicationInfo extends ISnowflake
      * 
      * @return The link used to invite the bot
      */
-    String getInviteUrl(Permission... permissions);
+    default String getInviteUrl(Permission... permissions)
+    {
+        return getInviteUrl(null, permissions);
+    }
 
     /**
      * Creates a OAuth invite-link used to invite the bot.
@@ -115,10 +121,7 @@ public interface ApplicationInfo extends ISnowflake
      * 
      * @return The link used to invite the bot
      */
-    default String getInviteUrl(String guildId, Collection<Permission> permissions)
-    {
-        return getInviteUrl(MiscUtil.parseSnowflake(guildId), permissions);
-    }
+    String getInviteUrl(String guildId, Collection<Permission> permissions);
 
     /**
      * Creates a OAuth invite-link used to invite the bot.
@@ -135,7 +138,10 @@ public interface ApplicationInfo extends ISnowflake
      *
      * @return The link used to invite the bot
      */
-    String getInviteUrl(long guildId, Collection<Permission> permissions);
+    default String getInviteUrl(long guildId, Collection<Permission> permissions)
+    {
+        return getInviteUrl(Long.toUnsignedString(guildId), permissions);
+    }
 
     /**
      * Creates a OAuth invite-link used to invite the bot.
@@ -157,7 +163,7 @@ public interface ApplicationInfo extends ISnowflake
      */
     default String getInviteUrl(String guildId, Permission... permissions)
     {
-        return getInviteUrl(MiscUtil.parseSnowflake(guildId), permissions);
+        return getInviteUrl(guildId, Arrays.asList(permissions));
     }
 
     /**
@@ -175,7 +181,10 @@ public interface ApplicationInfo extends ISnowflake
      *
      * @return The link used to invite the bot
      */
-    String getInviteUrl(long guildId, Permission... permissions);
+    default String getInviteUrl(long guildId, Permission... permissions)
+    {
+        return getInviteUrl(Long.toUnsignedString(guildId), permissions);
+    }
 
     /**
      * The {@link net.dv8tion.jda.core.JDA JDA} instance of this ApplicationInfo
