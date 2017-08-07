@@ -82,7 +82,7 @@ public class SelfUserImpl extends UserImpl implements SelfUser
     }
 
     @Override
-    public String getPhoneNumber()
+    public String getPhoneNumber() throws AccountTypeException
     {
         if (api.getAccountType() != AccountType.CLIENT)
             throw new AccountTypeException(AccountType.CLIENT, "Phone number retrieval can only be done on CLIENT accounts!");
@@ -90,7 +90,7 @@ public class SelfUserImpl extends UserImpl implements SelfUser
     }
 
     @Override
-    public boolean isMobile()
+    public boolean isMobile() throws AccountTypeException
     {
         if (api.getAccountType() != AccountType.CLIENT)
             throw new AccountTypeException(AccountType.CLIENT, "Mobile app retrieval can only be done on CLIENT accounts!");
@@ -98,7 +98,7 @@ public class SelfUserImpl extends UserImpl implements SelfUser
     }
 
     @Override
-    public boolean isPremium()
+    public boolean isPremium() throws AccountTypeException
     {
         if (api.getAccountType() != AccountType.CLIENT)
             throw new AccountTypeException(AccountType.CLIENT, "Nitro status retrieval can only be done on CLIENT accounts!");
