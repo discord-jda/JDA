@@ -17,6 +17,7 @@
 package net.dv8tion.jda.core.managers;
 
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.audio.AudioPacketInterceptor;
 import net.dv8tion.jda.core.audio.AudioReceiveHandler;
 import net.dv8tion.jda.core.audio.AudioSendHandler;
 import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
@@ -199,6 +200,32 @@ public interface AudioManager
      */
     AudioReceiveHandler getReceiveHandler();
 
+    /**
+     * Sets the {@link net.dv8tion.jda.core.audio.AudioPacketInterceptor AudioPacketInterceptor}
+     * that the manager will pass decrypted audio packets before further processing.
+     *
+     * <p>The interceptor provided here will persist between audio connection connect and disconnects.
+     * Furthermore, you don't need to have an audio connection to set an interceptor, but it is highly
+     * recommended to set this before the connection is established. (See note)
+     * When JDA sets up a new audio connection it will use the interceptor provided here.
+     * <br>Setting this to null will remove the interceptor.
+     *
+     * Note that if you wish to entirely suppress creation of OPUS decoders by JDA, you will have to
+     * register your interceptor <b>before</b> the connection is established!
+     *
+     * @param packetInterceptor
+     *        The {@link net.dv8tion.jda.core.audio.AudioPacketInterceptor AudioPacketInterceptor}
+     */
+    void setPacketInterceptor(AudioPacketInterceptor packetInterceptor);
+    
+    /**
+     * The currently set {@link net.dv8tion.jda.core.audio.AudioPacketInterceptor AudioPacketInterceptor}.
+     * If there is no interceptor currently set, this method will return {@code null}.
+     *
+     * @return The currently active {@link net.dv8tion.jda.core.audio.AudioPacketInterceptor AudioPacketInterceptor} or {@code null}.
+     */
+    AudioPacketInterceptor getPacketInterceptor();
+    
     /**
      * Sets the {@link net.dv8tion.jda.core.audio.hooks.ConnectionListener ConnectionListener} for this AudioManager.
      * It will be informed about meta data of any audio connection established through this AudioManager.

@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.WebSocketCode;
 import net.dv8tion.jda.core.audio.AudioConnection;
+import net.dv8tion.jda.core.audio.AudioPacketInterceptor;
 import net.dv8tion.jda.core.audio.AudioReceiveHandler;
 import net.dv8tion.jda.core.audio.AudioSendHandler;
 import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
@@ -58,6 +59,8 @@ public class AudioManagerImpl implements AudioManager
 
     protected AudioSendHandler sendHandler;
     protected AudioReceiveHandler receiveHandler;
+    protected AudioPacketInterceptor packetInterceptor;
+    
     protected ListenerProxy connectionListener = new ListenerProxy();
     protected long queueTimeout = 100;
     protected boolean shouldReconnect = true;
@@ -223,6 +226,21 @@ public class AudioManagerImpl implements AudioManager
     }
 
     @Override
+    public void setPacketInterceptor(AudioPacketInterceptor packetInterceptor) 
+    {
+        this.packetInterceptor = packetInterceptor;
+        if (audioConnection != null)
+            audioConnection.setPacketInterceptor(packetInterceptor);
+    }
+    
+    @Override
+    public AudioPacketInterceptor getPacketInterceptor() 
+    {
+        return packetInterceptor;
+    }
+    
+    
+    @Override
     public void setConnectionListener(ConnectionListener listener)
     {
         this.connectionListener.setListener(listener);
@@ -304,6 +322,7 @@ public class AudioManagerImpl implements AudioManager
         this.queuedAudioConnection = null;
         audioConnection.setSendingHandler(sendHandler);
         audioConnection.setReceivingHandler(receiveHandler);
+        audioConnection.setPacketInterceptor(packetInterceptor);
         audioConnection.setQueueTimeout(queueTimeout);
     }
 
