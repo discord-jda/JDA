@@ -268,13 +268,13 @@ public class AudioConnection
     {
         boolean hasConsumer = packetInterceptor != null || receiveHandler != null;
         
-        if (hasConsumer) {
-            if (udpSocket == null || udpSocket.isClosed())
-                return;
-            
+        if (hasConsumer && udpSocket != null && !udpSocket.isClosed()) 
+        {
             // UDP connection open, and we are expecting packets
             setupReceiveThread();
-        } else {
+        }
+        else
+        {
             // Cleanup existing threads
             if (receiveThread != null) 
             {
@@ -289,7 +289,8 @@ public class AudioConnection
         if (combinedAudioExecutor != null) 
         {
             // If the handler is gone/unable to receive combined audio, cleanup the thread
-            if (receiveHandler == null || !receiveHandler.canReceiveCombined()) {
+            if (receiveHandler == null || !receiveHandler.canReceiveCombined())
+            {
                 combinedAudioExecutor.shutdownNow();
                 combinedAudioExecutor = null;
             }
