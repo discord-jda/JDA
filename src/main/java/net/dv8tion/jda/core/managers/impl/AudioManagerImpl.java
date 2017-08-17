@@ -48,7 +48,8 @@ public class AudioManagerImpl implements AudioManager
     public static String OPUS_LIB_NAME;
     protected static boolean initialized = false;
 
-    static {
+    static
+    {
         AUDIO_THREADS = new ThreadGroup("jda-audio");
         AUDIO_THREADS.setDaemon(true);
     }
