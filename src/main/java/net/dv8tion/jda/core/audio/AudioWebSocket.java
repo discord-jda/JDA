@@ -143,7 +143,6 @@ public class AudioWebSocket extends WebSocketAdapter
                 JSONObject content = contentAll.getJSONObject("d");
                 ssrc = content.getInt("ssrc");
                 int port = content.getInt("port");
-                int heartbeatInterval = content.getInt("heartbeat_interval");
 
                 //Find our external IP and Port using Discord
                 InetSocketAddress externalIpAndPort;
@@ -168,20 +167,15 @@ public class AudioWebSocket extends WebSocketAdapter
                             .put("port", externalIpAndPort.getPort())
                             .put("mode", "xsalsa20_poly1305"));   //Discord requires encryption
                 send(VoiceCode.SELECT_PROTOCOL, object);
-
-                stopKeepAlive(); // replace old interval from HELLO
-                setupKeepAlive(heartbeatInterval);
                 changeStatus(ConnectionStatus.CONNECTING_AWAITING_READY);
                 break;
             }
             case VoiceCode.HELLO:
             {
                 LOG.trace("-> HELLO " + contentAll);
-                if (keepAliveHandle != null)
-                    break; // don't start new interval if resuming
-                // this needs to be handled for cases where ready is slow or resume
                 final JSONObject payload = contentAll.getJSONObject("d");
                 final int interval = payload.getInt("heartbeat_interval");
+                stopKeepAlive();
                 setupKeepAlive(interval);
                 break;
             }
@@ -235,6 +229,9 @@ public class AudioWebSocket extends WebSocketAdapter
             case VoiceCode.USER_DISCONNECT:
             {
                 LOG.trace("-> USER_DISCONNECT " + contentAll);
+                final JSONObject payload = contentAll.getJSONObject("d");
+                final long userId = payload.getLong("user_id");
+                audioConnection.removeUserSSRC(userId);
                 break;
             }
             case VoiceCode.RESUMED:

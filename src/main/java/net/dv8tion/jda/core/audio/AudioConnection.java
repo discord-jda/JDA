@@ -48,6 +48,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class AudioConnection
 {
@@ -168,6 +169,24 @@ public class AudioConnection
     public Guild getGuild()
     {
         return channel.getGuild();
+    }
+
+    public void removeUserSSRC(long userId)
+    {
+        final AtomicInteger ssrcRef = new AtomicInteger(0);
+        final boolean modified = ssrcMap.retainEntries((ssrc, id) ->
+        {
+            final boolean isEntry = id != userId;
+            if (isEntry)
+                ssrcRef.set(ssrc);
+            // if isEntry == true we don't want to retain it
+            return !isEntry;
+        });
+        if (!modified)
+            return;
+        final Decoder decoder = opusDecoders.remove(ssrcRef.get());
+        if (decoder != null) // cleanup decoder
+            decoder.close();
     }
 
     protected void updateUserSSRC(int ssrc, long userId)
@@ -418,17 +437,17 @@ public class AudioConnection
                         {
                             User user = entry.getKey();
                             Queue<Pair<Long, short[]>> queue = entry.getValue();
-            
+
                             if (queue.isEmpty())
                                 continue;
-            
+
                             Pair<Long, short[]> audioData = queue.poll();
                             //Make sure the audio packet is younger than 100ms
                             while (audioData != null && currentTime - audioData.getLeft() > queueTimeout)
                             {
                                 audioData = queue.poll();
                             }
-            
+
                             //If none of the audio packets were younger than 100ms, then there is nothing to add.
                             if (audioData == null)
                             {
@@ -437,7 +456,7 @@ public class AudioConnection
                             users.add(user);
                             audioParts.add(audioData.getRight());
                         }
-            
+
                         if (!audioParts.isEmpty())
                         {
                             int audioLength = audioParts.get(0).length;
