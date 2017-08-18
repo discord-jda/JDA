@@ -78,12 +78,47 @@ public class Decoder
         }
 
         //If we get a result that is less than 0, then there was an error. Return null as a signifier.
-        if (result < 0)
+        if (result < Opus.OPUS_OK)
+        {
+            handleDecodeError(result);
             return null;
+        }
 
         short[] audio = new short[result * 2];
         decoded.get(audio);
         return audio;
+    }
+
+    private void handleDecodeError(int result)
+    {
+        StringBuilder b = new StringBuilder("Decoder failed to decode audio from user with code ");
+        switch (result)
+        {
+            case Opus.OPUS_BAD_ARG: //-1
+                b.append("OPUS_BAD_ARG");
+                break;
+            case Opus.OPUS_BUFFER_TOO_SMALL: //-2
+                b.append("OPUS_BUFFER_TOO_SMALL");
+                break;
+            case Opus.OPUS_INTERNAL_ERROR: //-3
+                b.append("OPUS_INTERNAL_ERROR");
+                break;
+            case Opus.OPUS_INVALID_PACKET: //-4
+                b.append("OPUS_INVALID_PACKET");
+                break;
+            case Opus.OPUS_UNIMPLEMENTED: //-5
+                b.append("OPUS_UNIMPLEMENTED");
+                break;
+            case Opus.OPUS_INVALID_STATE: //-6
+                b.append("OPUS_INVALID_STATE");
+                break;
+            case Opus.OPUS_ALLOC_FAIL: //-7
+                b.append("OPUS_ALLOC_FAIL");
+                break;
+            default:
+                b.append(result);
+        }
+        AudioConnection.LOG.debug(b.toString());
     }
 
     protected synchronized void close()

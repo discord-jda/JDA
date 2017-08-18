@@ -368,7 +368,7 @@ public class AudioConnection
                             //If decodedAudio is null, then the Opus decode failed, so throw away the packet.
                             if (decodedAudio == null)
                             {
-                                LOG.trace("Received audio data but Opus failed to properly decode, instead it returned an error");
+                                LOG.debug("Received audio data but Opus failed to properly decode, instead it returned an error");
                                 continue;
                             }
                             if (receiveHandler.canReceiveUser())
