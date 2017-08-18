@@ -22,11 +22,16 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.FailedFuture;
+import net.dv8tion.jda.core.utils.Procedure;
 
 import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -42,7 +47,8 @@ import java.util.stream.StreamSupport;
  * @since  3.1
  * @author Florian Spieß
  */
-public abstract class PaginationAction<T, M extends PaginationAction<T, M>> extends RestAction<List<T>> implements Iterable<T>
+public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
+    extends RestAction<List<T>> implements Iterable<T>
 {
     protected final List<T> cached = new CopyOnWriteArrayList<>();
     protected final int maxLimit;
@@ -184,7 +190,10 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>> exte
         Checks.check(maxLimit == 0 || limit <= maxLimit, "Limit must not exceed %d!", maxLimit);
         Checks.check(minLimit == 0 || limit >= minLimit, "Limit must be greater or equal to %d", minLimit);
 
-        this.limit.set(limit);
+        synchronized (this.limit)
+        {
+            this.limit.set(limit);
+        }
         return (M) this;
     }
 
@@ -277,6 +286,142 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>> exte
         return new PaginationIterator();
     }
 
+    /**
+     * Iterates over all entities until the provided action returns {@code false}!
+     * <br>This operation is different from {@link #forEach(Consumer)} as it
+     * uses successive {@link #queue()} tasks to iterate each entity in callback threads instead of
+     * the calling active thread.
+     * This means that this method fully works on different threads to retrieve new entities.
+     *
+     * <h1>Example</h1>
+     * <pre>{@code
+     * //deletes messages until it finds a user that is still in guild
+     * public void cleanupMessages(MessagePaginationAction action)
+     * {
+     *     action.forEachAsync( (message) ->
+     *     {
+     *         Guild guild = message.getGuild();
+     *         if (!guild.isMember(message.getAuthor()))
+     *             message.delete().queue();
+     *         else
+     *             return false;
+     *         return true;
+     *     });
+     * }
+     * }</pre>
+     *
+     * @param  action
+     *         {@link net.dv8tion.jda.core.utils.Procedure Procedure} returning {@code true} if iteration should continue!
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided Procedure is {@code null}
+     *
+     * @return {@link java.util.concurrent.Future Future} that can be cancelled to stop iteration from outside!
+     */
+    public Future<?> forEachAsync(Procedure<T> action)
+    {
+        Checks.notNull(action, "Procedure");
+        try
+        {
+            for (T it : cached)
+            {
+                if (!action.execute(it))
+                    return CompletableFuture.completedFuture(null);
+            }
+        }
+        catch (Exception ex)
+        {
+            if (RestAction.DEFAULT_FAILURE != null)
+                RestAction.DEFAULT_FAILURE.accept(ex);
+            return new FailedFuture<>(ex);
+        }
+
+        final CompletableFuture<?> task = new CompletableFuture<>();
+        final Consumer<Throwable> failure = (throwable) ->
+        {
+            task.completeExceptionally(throwable);
+            if (RestAction.DEFAULT_FAILURE != null)
+                RestAction.DEFAULT_FAILURE.accept(throwable);
+        };
+        final Consumer<List<T>> acceptor = new ChainedConsumer(task, action, failure);
+        synchronized (limit)
+        {
+            final int currentLimit = limit.getAndSet(maxLimit);
+            queue(acceptor, failure);
+            limit.set(currentLimit);
+        }
+        return task;
+    }
+
+    /**
+     * Iterates over all entities until the provided action returns {@code false}!
+     * <br>This operation is different from {@link #forEach(Consumer)} as it
+     * uses successive {@link #queue()} tasks to iterate each entity in callback threads instead of
+     * the calling active thread.
+     * This means that this method fully works on different threads to retrieve new entities.
+     *
+     * <h1>Example</h1>
+     * <pre>{@code
+     * //deletes messages until it finds a user that is still in guild
+     * public void cleanupMessages(MessagePaginationAction action)
+     * {
+     *     action.forEachAsync( (message) ->
+     *     {
+     *         Guild guild = message.getGuild();
+     *         if (!guild.isMember(message.getAuthor()))
+     *             message.delete().queue();
+     *         else
+     *             return false;
+     *         return true;
+     *     }, Throwable::printStackTrace);
+     * }
+     * }</pre>
+     *
+     * @param  action
+     *         {@link net.dv8tion.jda.core.utils.Procedure Procedure} returning {@code true} if iteration should continue!
+     * @param  failure
+     *         {@link java.util.function.Consumer Consumer} that should handle any throwables from the action
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided Procedure or the failure Consumer is {@code null}
+     *
+     * @return {@link java.util.concurrent.Future Future} that can be cancelled to stop iteration from outside!
+     */
+    public Future<?> forEachAsync(Procedure<T> action, Consumer<Throwable> failure)
+    {
+        Checks.notNull(action, "Procedure");
+        Checks.notNull(failure, "Failure Consumer");
+        try
+        {
+            for (T it : cached)
+            {
+                if (!action.execute(it))
+                    return CompletableFuture.completedFuture(null);
+            }
+        }
+        catch (Exception ex)
+        {
+            failure.accept(ex);
+            return new FailedFuture<>(ex);
+        }
+
+        final CompletableFuture<?> task = new CompletableFuture<>();
+        final Consumer<Throwable> throwableConsumer = (throwable) ->
+        {
+            task.completeExceptionally(throwable);
+            failure.accept(throwable);
+        };
+
+        final Consumer<List<T>> acceptor = new ChainedConsumer(task, action, throwableConsumer);
+        synchronized (limit)
+        {
+            final int currentLimit = limit.getAndSet(maxLimit);
+            queue(acceptor, throwableConsumer);
+            limit.set(currentLimit);
+        }
+        return task;
+    }
+
     @Override
     public Spliterator<T> spliterator()
     {
@@ -357,4 +502,39 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>> exte
 
     }
 
+    protected class ChainedConsumer implements Consumer<List<T>>
+    {
+        protected final CompletableFuture<?> task;
+        protected final Procedure<T> action;
+        protected final Consumer<Throwable> throwableConsumer;
+
+        protected ChainedConsumer(CompletableFuture<?> task, Procedure<T> action, Consumer<Throwable> throwableConsumer)
+        {
+            this.task = task;
+            this.action = action;
+            this.throwableConsumer = throwableConsumer;
+        }
+
+        @Override
+        public void accept(List<T> list)
+        {
+            if (list.isEmpty())
+            {
+                task.complete(null);
+                return;
+            }
+
+            for (T it : list)
+            {
+                if (task.isCancelled() || !action.execute(it))
+                    return;
+            }
+            synchronized (limit)
+            {
+                final int currentLimit = limit.getAndSet(maxLimit);
+                queue(this, throwableConsumer);
+                limit.set(currentLimit);
+            }
+        }
+    }
 }
