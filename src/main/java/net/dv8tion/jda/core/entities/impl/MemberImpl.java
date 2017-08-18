@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 import net.dv8tion.jda.core.utils.Checks;
 
+import javax.annotation.Nullable;
 import java.awt.Color;
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -247,13 +248,13 @@ public class MemberImpl implements Member
         return nickname == null ? user.getAsMention() : "<@!" + user.getIdLong() + '>';
     }
 
+    @Nullable
     @Override
     public TextChannel getDefaultChannel()
     {
         return guild.getTextChannelsMap().valueCollection().stream()
+                .sorted(Comparator.reverseOrder())
                 .filter(c -> hasPermission(c, Permission.MESSAGE_READ))
-                .sorted((c1, c2) -> c2.compareTo(c1))
-                .findFirst()
-                .orElse(null);
+                .findFirst().orElse(null);
     }
 }

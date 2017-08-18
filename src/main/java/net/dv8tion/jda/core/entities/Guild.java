@@ -26,6 +26,7 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAction;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 
@@ -572,19 +573,32 @@ public interface Guild extends ISnowflake
      * either on first load or when accepting an invite.
      * <br>This channel cannot be deleted and the {@link #getPublicRole() Public Role} always has the ability to
      * {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ} this channel.
-     * 
+     *
      * @deprecated
      *         As the concept of a public channel has been removed from discord this method may return null for newer guild.
      *         <br>The default channel is now different for each user and depends on their permissions, see
      *         {@link net.dv8tion.jda.core.entities.Member#getDefaultChannel() Member#getDefaultChannel()} for more details.
-     *         <br>If you want to get the default channel of old guilds you can use {@code guild.getTextChannelById(guild.getIdLong())}.  
+     *         <br>If you want to get the default channel of old guilds you can use {@code guild.getTextChannelById(guild.getIdLong())}.
+     *         <br><b>This will be removed in a future version!</b>
      *
      * @return The {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} representing the public channel for this guild.
      *
-     * @see net.dv8tion.jda.core.entities.Member#getDefaultChannel()
+     * @see    net.dv8tion.jda.core.entities.Member#getDefaultChannel()
      */
     @Deprecated
     TextChannel getPublicChannel();
+
+    /**
+     * The default {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} for a {@link net.dv8tion.jda.core.entities.Guild Guild}.
+     * <br>This is the channel that the Discord client will default to opening when a Guild is opened for the first time when accepting an invite.
+     *
+     * <p>Note: This channel is the first channel in the guild (ordered by position) that the {@link #getPublicRole()}
+     * has the {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ} in.
+     *
+     * @return The {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} representing the default channel for this guild
+     */
+    @Nullable
+    TextChannel getDefaultChannel();
 
     /**
      * Returns the {@link net.dv8tion.jda.core.managers.GuildManager GuildManager} for this Guild, used to modify

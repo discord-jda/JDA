@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.Permission;
 
+import javax.annotation.Nullable;
 import java.awt.Color;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -212,5 +213,6 @@ public interface Member extends IMentionable, IPermissionHolder
      * @return The {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} representing the default channel for this member
      *         or null if no such channel exists.
      */
+    @Nullable
     TextChannel getDefaultChannel();
 }

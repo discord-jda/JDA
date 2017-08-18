@@ -43,6 +43,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -470,6 +471,17 @@ public class GuildImpl implements Guild
     public TextChannel getPublicChannel()
     {
         return textChannels.get(id);
+    }
+
+    @Nullable
+    @Override
+    public TextChannel getDefaultChannel()
+    {
+        final Role role = getPublicRole();
+        return getTextChannelsMap().valueCollection().stream()
+                .sorted(Comparator.reverseOrder())
+                .filter(c -> role.hasPermission(c, Permission.MESSAGE_READ))
+                .findFirst().orElse(null);
     }
 
     @Override
