@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Icon;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
@@ -59,6 +60,7 @@ public class GuildManagerUpdatable
     protected GuildField<Icon> splash;
     protected GuildField<Region> region;
     protected GuildField<VoiceChannel> afkChannel;
+    protected GuildField<TextChannel> systemChannel;
     protected GuildField<Guild.VerificationLevel> verificationLevel;
     protected GuildField<Guild.NotificationLevel> defaultNotificationLevel;
     protected GuildField<Guild.MFALevel> mfaLevel;
@@ -210,6 +212,30 @@ public class GuildManagerUpdatable
 
     /**
      * An {@link net.dv8tion.jda.core.managers.fields.GuildField GuildField}
+     * for the <b><u>system {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}</u></b> of the selected {@link net.dv8tion.jda.core.entities.Guild Guild}.
+     * <br>To reset the channel of a Guild provide {@code null} to {@link net.dv8tion.jda.core.managers.fields.Field#setValue(Object) setValue(VoiceChannel)}.
+     *
+     * <p>To set the value use {@link net.dv8tion.jda.core.managers.fields.Field#setValue(Object) setValue(VoiceChannel)}
+     * on the returned {@link net.dv8tion.jda.core.managers.fields.GuildField GuildField} instance.
+     *
+     * <p>A guild system channel <b>must</b> be from this Guild!
+     * <br>Otherwise {@link net.dv8tion.jda.core.managers.fields.Field#setValue(Object) Field.setValue(...)} will
+     * throw an {@link IllegalArgumentException IllegalArgumentException}.
+     *
+     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
+     *         If the Guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
+     *
+     * @return {@link net.dv8tion.jda.core.managers.fields.GuildField GuildField} - Type: {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
+     */
+    public GuildField<TextChannel> getSystemChannelField()
+    {
+        checkAvailable();
+
+        return systemChannel;
+    }
+
+    /**
+     * An {@link net.dv8tion.jda.core.managers.fields.GuildField GuildField}
      * for the <b><u>AFK {@link net.dv8tion.jda.core.entities.Guild.Timeout Timeout}</u></b> of the selected {@link net.dv8tion.jda.core.entities.Guild Guild}.
      * <br>Valid timeouts (in seconds) are 60, 300, 900, 1800, 3600. Default value is {@code 300} (5 minutes)
      *
@@ -338,6 +364,7 @@ public class GuildManagerUpdatable
         this.icon.reset();
         this.splash.reset();
         this.afkChannel.reset();
+        this.systemChannel.reset();
         this.verificationLevel.reset();
         this.defaultNotificationLevel.reset();
         this.mfaLevel.reset();
@@ -393,6 +420,8 @@ public class GuildManagerUpdatable
             body.put("splash", splash.getValue() == null ? JSONObject.NULL : splash.getValue().getEncoding());
         if (afkChannel.shouldUpdate())
             body.put("afk_channel_id", afkChannel.getValue() == null ? JSONObject.NULL : afkChannel.getValue().getId());
+        if (systemChannel.shouldUpdate())
+            body.put("system_channel_id", systemChannel.getValue() == null ? JSONObject.NULL : systemChannel.getValue().getId());
         if (verificationLevel.shouldUpdate())
             body.put("verification_level", verificationLevel.getValue().getKey());
         if (defaultNotificationLevel.shouldUpdate())
@@ -425,6 +454,7 @@ public class GuildManagerUpdatable
                 || icon.shouldUpdate()
                 || splash.shouldUpdate()
                 || afkChannel.shouldUpdate()
+                || systemChannel.shouldUpdate()
                 || verificationLevel.shouldUpdate()
                 || defaultNotificationLevel.shouldUpdate()
                 || mfaLevel.shouldUpdate()
@@ -519,6 +549,16 @@ public class GuildManagerUpdatable
             {
                 if (value != null && !guild.equals(value.getGuild()))
                     throw new IllegalArgumentException("Provided AFK Channel is not from this Guild!");
+            }
+        };
+
+        this.systemChannel = new GuildField<TextChannel>(this, guild::getSystemChannel)
+        {
+            @Override
+            public void checkValue(TextChannel value)
+            {
+                if (value != null && !guild.equals(value.getGuild()))
+                    throw new IllegalArgumentException("Provided system channel is not from this Guild!");
             }
         };
 

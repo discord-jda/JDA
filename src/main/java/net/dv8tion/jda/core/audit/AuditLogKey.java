@@ -68,12 +68,19 @@ public enum AuditLogKey
 
     /**
      * Change of the {@link net.dv8tion.jda.core.entities.Guild#getAfkChannel() Guild.getAfkChannel()} value represented by a VoiceChannel ID.
-     * <br>Use with {@link net.dv8tion.jda.core.entities.Guild#getVoiceChannelById(String)
-     * Guild.getVoiceChannelById(String)}
+     * <br>Use with {@link net.dv8tion.jda.core.entities.Guild#getVoiceChannelById(String) Guild.getVoiceChannelById(String)}
      *
      * <p>Expected type: <b>String</b>
      */
     GUILD_AFK_CHANNEL("afk_channel_id"),
+
+    /**
+     * Change of the {@link net.dv8tion.jda.core.entities.Guild#getSystemChannel() Guild.getSystemChannel()} value represented by a TextChannel ID.
+     * <br>Use with {@link net.dv8tion.jda.core.entities.Guild#getTextChannelById(String) Guild.getTextChannelById(String)}
+     *
+     * <p>Expected type: <b>String</b>
+     */
+    GUILD_SYSTEM_CHANNEL("system_channel_id"),
 
     /**
      * Change of the {@link net.dv8tion.jda.core.entities.Guild#getExplicitContentLevel() Guild.getExplicitContentLevel()} of a Guild.

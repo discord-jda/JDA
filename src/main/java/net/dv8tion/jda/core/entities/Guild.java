@@ -107,6 +107,18 @@ public interface Guild extends ISnowflake
     VoiceChannel getAfkChannel();
 
     /**
+     * Provides the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} that has been set as the channel
+     * which newly joined {@link net.dv8tion.jda.core.entities.Member Members} will be announced.
+     * <br>If no channel has been set as the system channel, this returns {@code null}.
+     * <p>
+     * This value can be modified using {@link net.dv8tion.jda.core.managers.GuildManager#setSystemChannel(TextChannel)}
+     * or {@link net.dv8tion.jda.core.managers.GuildManagerUpdatable#getSystemChannelField()}.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} that is the system Channel.
+     */
+    TextChannel getSystemChannel();
+
+    /**
      * The {@link net.dv8tion.jda.core.entities.Member Member} object of the owner of this {@link net.dv8tion.jda.core.entities.Guild Guild}.
      * <p>
      * Ownership can be transferred using {@link GuildController#transferOwnership(Member)}.

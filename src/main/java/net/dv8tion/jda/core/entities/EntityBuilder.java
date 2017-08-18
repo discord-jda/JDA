@@ -207,12 +207,13 @@ public class EntityBuilder
                     TextChannel newChannel = createTextChannel(channel, guildObj.getIdLong(), false);
                     if (newChannel.getIdLong() == guildObj.getIdLong())
                         guildObj.setPublicChannel(newChannel);
+                    if (!guild.isNull("system_channel_id") && newChannel.getId().equals(guild.getString("system_channel_id")))
+                        guildObj.setSystemChannel(newChannel);
                 }
                 else if (type == ChannelType.VOICE)
                 {
                     VoiceChannel newChannel = createVoiceChannel(channel, guildObj.getIdLong(), false);
-                    if (!guild.isNull("afk_channel_id")
-                            && newChannel.getId().equals(guild.getString("afk_channel_id")))
+                    if (!guild.isNull("afk_channel_id") && newChannel.getId().equals(guild.getString("afk_channel_id")))
                         guildObj.setAfkChannel(newChannel);
                 }
                 else

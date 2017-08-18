@@ -71,6 +71,7 @@ public class GuildImpl implements Guild
     private Region region;
     private TextChannel publicChannel;
     private VoiceChannel afkChannel;
+    private TextChannel systemChannel;
     private Role publicRole;
     private VerificationLevel verificationLevel;
     private NotificationLevel defaultNotificationLevel;
@@ -120,6 +121,12 @@ public class GuildImpl implements Guild
     public VoiceChannel getAfkChannel()
     {
         return afkChannel;
+    }
+
+    @Override
+    public TextChannel getSystemChannel()
+    {
+        return systemChannel;
     }
 
     @Override
@@ -737,6 +744,12 @@ public class GuildImpl implements Guild
     public GuildImpl setAfkChannel(VoiceChannel afkChannel)
     {
         this.afkChannel = afkChannel;
+        return this;
+    }
+
+    public GuildImpl setSystemChannel(TextChannel systemChannel)
+    {
+        this.systemChannel = systemChannel;
         return this;
     }
 
