@@ -108,7 +108,7 @@ public interface Guild extends ISnowflake
 
     /**
      * Provides the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} that has been set as the channel
-     * which newly joined {@link net.dv8tion.jda.core.entities.Member Members} will be announced.
+     * which newly joined {@link net.dv8tion.jda.core.entities.Member Members} will be announced in.
      * <br>If no channel has been set as the system channel, this returns {@code null}.
      * <p>
      * This value can be modified using {@link net.dv8tion.jda.core.managers.GuildManager#setSystemChannel(TextChannel)}
