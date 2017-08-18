@@ -447,7 +447,7 @@ public class AudioWebSocket extends WebSocketAdapter
             // the last 2 bytes. Not sure why these exist.  The last 2 bytes are the port. More info below.
             String ourIP = new String(receivedPacket.getData());//Puts the entire byte array in. nulls are converted to spaces.
             ourIP = ourIP.substring(0, ourIP.length() - 2); //Removes the port that is stuck on the end of this string. (last 2 bytes are the port)
-            ourIP = ourIP.trim();                           //Removes the extra whitespace(nulls) attached to both sides of the IP
+            ourIP = ourIP.substring(4, ourIP.length()).trim();  //Removes the SSRC of the answer package and the extra whitespace(nulls) attached to both sides of the IP
 
             //The port exists as the last 2 bytes in the packet data, and is encoded as an UNSIGNED short.
             //Furthermore, it is stored in Little Endian instead of normal Big Endian.
