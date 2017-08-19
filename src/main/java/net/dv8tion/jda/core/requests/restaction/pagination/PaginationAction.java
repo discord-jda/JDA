@@ -142,7 +142,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      */
     public T getLast()
     {
-        T last = this.last;
+        final T last = this.last;
         if (last == null)
             throw new NoSuchElementException("No entities have been retrieved yet.");
         return last;
@@ -185,7 +185,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return The current PaginationAction implementation instance
      */
-    public M limit(int limit)
+    public M limit(final int limit)
     {
         Checks.check(maxLimit == 0 || limit <= maxLimit, "Limit must not exceed %d!", maxLimit);
         Checks.check(minLimit == 0 || limit >= minLimit, "Limit must be greater or equal to %d", minLimit);
@@ -211,7 +211,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return The current PaginationAction implementation instance
      */
-    public M cache(boolean enableCache)
+    public M cache(final boolean enableCache)
     {
         this.useCache = enableCache;
         return (M) this;
@@ -318,39 +318,14 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return {@link java.util.concurrent.Future Future} that can be cancelled to stop iteration from outside!
      */
-    public Future<?> forEachAsync(Procedure<T> action)
+    public Future<?> forEachAsync(final Procedure<T> action)
     {
-        Checks.notNull(action, "Procedure");
-        try
+        final Consumer<Throwable> consumer = (throwable) ->
         {
-            for (T it : cached)
-            {
-                if (!action.execute(it))
-                    return CompletableFuture.completedFuture(null);
-            }
-        }
-        catch (Exception ex)
-        {
-            if (RestAction.DEFAULT_FAILURE != null)
-                RestAction.DEFAULT_FAILURE.accept(ex);
-            return new FailedFuture<>(ex);
-        }
-
-        final CompletableFuture<?> task = new CompletableFuture<>();
-        final Consumer<Throwable> failure = (throwable) ->
-        {
-            task.completeExceptionally(throwable);
             if (RestAction.DEFAULT_FAILURE != null)
                 RestAction.DEFAULT_FAILURE.accept(throwable);
         };
-        final Consumer<List<T>> acceptor = new ChainedConsumer(task, action, failure);
-        synchronized (limit)
-        {
-            final int currentLimit = limit.getAndSet(maxLimit);
-            queue(acceptor, failure);
-            limit.set(currentLimit);
-        }
-        return task;
+        return forEachAsync(action,  consumer);
     }
 
     /**
@@ -387,7 +362,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return {@link java.util.concurrent.Future Future} that can be cancelled to stop iteration from outside!
      */
-    public Future<?> forEachAsync(Procedure<T> action, Consumer<Throwable> failure)
+    public Future<?> forEachAsync(final Procedure<T> action, final Consumer<Throwable> failure)
     {
         Checks.notNull(action, "Procedure");
         Checks.notNull(failure, "Failure Consumer");
@@ -508,7 +483,8 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
         protected final Procedure<T> action;
         protected final Consumer<Throwable> throwableConsumer;
 
-        protected ChainedConsumer(CompletableFuture<?> task, Procedure<T> action, Consumer<Throwable> throwableConsumer)
+        protected ChainedConsumer(final CompletableFuture<?> task, final Procedure<T> action,
+                                  final Consumer<Throwable> throwableConsumer)
         {
             this.task = task;
             this.action = action;
@@ -516,7 +492,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
         }
 
         @Override
-        public void accept(List<T> list)
+        public void accept(final List<T> list)
         {
             if (list.isEmpty())
             {
@@ -526,8 +502,12 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
 
             for (T it : list)
             {
-                if (task.isCancelled() || !action.execute(it))
+                if (task.isCancelled())
                     return;
+                if (action.execute(it))
+                    continue;
+                task.complete(null);
+                return;
             }
             synchronized (limit)
             {

@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.utils;
 
+@FunctionalInterface
 public interface Procedure<T>
 {
     boolean execute(T value);
