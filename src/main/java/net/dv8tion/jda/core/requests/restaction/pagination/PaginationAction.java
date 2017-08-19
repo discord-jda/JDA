@@ -472,6 +472,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
         protected final CompletableFuture<?> task;
         protected final Procedure<T> action;
         protected final Consumer<Throwable> throwableConsumer;
+        protected boolean initial = true;
 
         protected ChainedConsumer(final CompletableFuture<?> task, final Procedure<T> action,
                                   final Consumer<Throwable> throwableConsumer)
@@ -484,11 +485,12 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
         @Override
         public void accept(final List<T> list)
         {
-            if (list.isEmpty())
+            if (list.isEmpty() && !initial)
             {
                 task.complete(null);
                 return;
             }
+            initial = false;
 
             for (T it : list)
             {
