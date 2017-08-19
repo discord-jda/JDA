@@ -366,19 +366,6 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
     {
         Checks.notNull(action, "Procedure");
         Checks.notNull(failure, "Failure Consumer");
-        try
-        {
-            for (T it : cached)
-            {
-                if (!action.execute(it))
-                    return CompletableFuture.completedFuture(null);
-            }
-        }
-        catch (Exception ex)
-        {
-            failure.accept(ex);
-            return new FailedFuture<>(ex);
-        }
 
         final CompletableFuture<?> task = new CompletableFuture<>();
         final Consumer<Throwable> throwableConsumer = (throwable) ->
@@ -388,11 +375,14 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
         };
 
         final Consumer<List<T>> acceptor = new ChainedConsumer(task, action, throwableConsumer);
-        synchronized (limit)
+        try
         {
-            final int currentLimit = limit.getAndSet(maxLimit);
-            queue(acceptor, throwableConsumer);
-            limit.set(currentLimit);
+            acceptor.accept(cached);
+        }
+        catch (Exception ex)
+        {
+            failure.accept(ex);
+            return new FailedFuture<>(ex);
         }
         return task;
     }
