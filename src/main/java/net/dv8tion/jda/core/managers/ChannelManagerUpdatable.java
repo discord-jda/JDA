@@ -310,7 +310,8 @@ public class ChannelManagerUpdatable
         return name.shouldUpdate()
                 || (topic != null && topic.shouldUpdate())
                 || (userLimit != null && userLimit.shouldUpdate())
-                || (bitrate != null && bitrate.shouldUpdate());
+                || (bitrate != null && bitrate.shouldUpdate())
+                || (nsfw != null && nsfw.shouldUpdate());
     }
 
     protected void checkPermission(Permission perm)
