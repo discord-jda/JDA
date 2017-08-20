@@ -86,6 +86,11 @@ public class EntityBuilder
                 .setBot(self.has("bot") && self.getBoolean("bot"));
     }
 
+    public Game createGameInternal(String name, String url, Game.GameType type)
+    {
+        return new Game(name, url, type);
+    }
+
     public void createGuildFirstPass(JSONObject guild, Consumer<Guild> secondPassCallback)
     {
         final long id = guild.getLong("id");
@@ -544,7 +549,7 @@ public class EntityBuilder
                 gameType = Game.GameType.DEFAULT;
             }
 
-            game = new GameImpl(gameName, url, gameType);
+            game = createGameInternal(gameName, url, gameType);
         }
         if (memberOrFriend instanceof Member)
         {

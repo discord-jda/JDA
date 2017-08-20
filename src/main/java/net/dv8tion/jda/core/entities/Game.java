@@ -15,8 +15,9 @@
  */
 package net.dv8tion.jda.core.entities;
 
-import net.dv8tion.jda.core.entities.impl.GameImpl;
 import net.dv8tion.jda.core.utils.Checks;
+
+import java.util.Objects;
 
 /**
  * Represents a Discord {@link net.dv8tion.jda.core.entities.Game Game}.
@@ -25,15 +26,38 @@ import net.dv8tion.jda.core.utils.Checks;
  * @since  2.1
  * @author John A. Grosh
  */
-public interface Game
+public class Game
 {
+    protected final String name;
+    protected final String url;
+    protected final Game.GameType type;
+
+    protected Game(String name)
+    {
+        this(name, null, GameType.DEFAULT);
+    }
+
+    protected Game(String name, String url)
+    {
+        this(name, url, GameType.TWITCH);
+    }
+
+    protected Game(String name, String url, GameType type)
+    {
+        this.name = name;
+        this.url = url;
+        this.type = type;
+    }
 
     /**
      * The displayed name of the {@link net.dv8tion.jda.core.entities.Game Game}. If no name has been set, this returns null.
      *
      * @return Possibly-null String containing the Game's name.
      */
-    String getName();
+    public String getName()
+    {
+        return name;
+    }
 
     /**
      * The URL of the {@link net.dv8tion.jda.core.entities.Game Game} if the game is actually a Stream.
@@ -41,14 +65,49 @@ public interface Game
      *
      * @return Possibly-null String containing the Game's URL.
      */
-    String getUrl();
+    public String getUrl()
+    {
+        return url;
+    }
 
     /**
      * The type of {@link net.dv8tion.jda.core.entities.Game Game}.
      *
      * @return Never-null {@link net.dv8tion.jda.core.entities.Game.GameType GameType} representing the type of Game
      */
-    GameType getType();
+    public GameType getType()
+    {
+        return type;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof Game))
+            return false;
+
+        Game oGame = (Game) o;
+        if (oGame.getType() != type)
+            return false;
+        return type == oGame.getType()
+            && ((name == null && oGame.getName() == null) || (name != null && name.equals(oGame.getName())))
+            && ((url == null && oGame.getUrl() == null) || (url != null && url.equals(oGame.getUrl())));
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(name, type, url);
+    }
+
+    @Override
+    public String toString()
+    {
+        if (url != null)
+            return String.format("Game(%s | %s)", name, url);
+        else
+            return String.format("Game(%s)", name);
+    }
 
     /**
      * Creates a new Game instance with the specified name.
@@ -61,7 +120,7 @@ public interface Game
      *
      * @return A valid Game instance with the provided name with {@link GameType#DEFAULT}
      */
-    static Game of(String name)
+    public static Game of(String name)
     {
         return of(name, null);
     }
@@ -81,7 +140,7 @@ public interface Game
      *
      * @see    #isValidStreamingUrl(String)
      */
-    static Game of(String name, String url)
+    public static Game of(String name, String url)
     {
         Checks.notEmpty(name, "Provided game name");
         GameType type;
@@ -89,7 +148,7 @@ public interface Game
             type = GameType.TWITCH;
         else
             type = GameType.DEFAULT;
-        return new GameImpl(name, url, type);
+        return new Game(name, url, type);
     }
 
     /**
@@ -100,15 +159,15 @@ public interface Game
      *
      * @return True if the provided url is valid for triggering Discord's streaming status
      */
-    static boolean isValidStreamingUrl(String url)
+    public static boolean isValidStreamingUrl(String url)
     {
-        return url != null && url.matches("^https?:\\/\\/(www\\.)?twitch\\.tv\\/.+");
+        return url != null && url.matches("^https?://(www\\.)?twitch\\.tv/.+");
     }
 
     /**
      * The type game being played, differentiating between a game and stream types.
      */
-    enum GameType
+    public enum GameType
     {
         /**
          * The GameType used to represent a normal {@link net.dv8tion.jda.core.entities.Game Game} status.

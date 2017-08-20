@@ -17,63 +17,11 @@ package net.dv8tion.jda.core.entities.impl;
 
 import net.dv8tion.jda.core.entities.Game;
 
-public class GameImpl implements Game
+@Deprecated
+public class GameImpl extends Game
 {
-    private final String name;
-    private final String url;
-    private final Game.GameType type;
-
     public GameImpl(String name, String url, GameType type)
     {
-        this.name = name;
-        this.url = url;
-        this.type = type;
-    }
-
-    @Override
-    public String getName()
-    {
-        return name;
-    }
-
-    @Override
-    public String getUrl()
-    {
-        return url;
-    }
-
-    @Override
-    public GameType getType()
-    {
-        return type;
-    }
-
-    @Override
-    public boolean equals(Object o)
-    {
-        if (!(o instanceof GameImpl))
-            return false;
-
-        Game oGame = (Game) o;
-        if (oGame.getType() != type)
-            return false;
-        return type == oGame.getType()
-                && ((name == null && oGame.getName() == null) || (name != null && name.equals(oGame.getName())))
-                && ((url == null && oGame.getUrl() == null) || (url != null && url.equals(oGame.getUrl())));
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return (name + type + url).hashCode();
-    }
-
-    @Override
-    public String toString()
-    {
-        if (url != null)
-            return String.format("Game(%s | %s)", name, url);
-        else
-            return String.format("Game(%s)", name);
+       super(name, url, type);
     }
 }
