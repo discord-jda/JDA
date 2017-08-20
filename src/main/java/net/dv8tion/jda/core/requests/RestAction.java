@@ -337,7 +337,7 @@ public abstract class RestAction<T>
             //This is so beyond impossible, but on the off chance that the laws of nature are rewritten
             // after the writing of this code, I'm placing this here.
             //Better safe than sorry?
-            throw new RuntimeException(ignored);
+            throw new AssertionError(ignored);
         }
     }
 

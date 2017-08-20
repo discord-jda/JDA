@@ -43,6 +43,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOError;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.time.OffsetDateTime;
@@ -360,7 +361,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         catch (IOException | WebSocketException e)
         {
             //Completely fail here. We couldn't make the connection.
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 

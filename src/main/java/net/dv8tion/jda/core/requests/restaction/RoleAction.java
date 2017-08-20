@@ -19,7 +19,7 @@ package net.dv8tion.jda.core.requests.restaction;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
@@ -149,7 +149,7 @@ public class RoleAction extends AuditableRestAction<Role>
      * @param  permissions
      *         The varargs {@link net.dv8tion.jda.core.Permission Permissions} for the new role
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not hold one of the specified permissions
      * @throws IllegalArgumentException
      *         If any of the provided permissions is {@code null}
@@ -180,7 +180,7 @@ public class RoleAction extends AuditableRestAction<Role>
      * @param  permissions
      *         A {@link java.util.Collection Collection} of {@link net.dv8tion.jda.core.Permission Permissions} for the new role
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not hold one of the specified permissions
      * @throws IllegalArgumentException
      *         If any of the provided permissions is {@code null}
@@ -214,7 +214,7 @@ public class RoleAction extends AuditableRestAction<Role>
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided permission value is invalid
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not hold one of the specified permissions
      *
      * @return The current RoleAction, for chaining convenience
@@ -264,6 +264,6 @@ public class RoleAction extends AuditableRestAction<Role>
     private void checkPermission(Permission permission)
     {
         if (!guild.getSelfMember().hasPermission(permission))
-            throw new PermissionException(permission);
+            throw new InsufficientPermissionException(permission);
     }
 }

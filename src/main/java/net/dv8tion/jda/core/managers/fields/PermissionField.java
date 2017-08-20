@@ -18,7 +18,7 @@ package net.dv8tion.jda.core.managers.fields;
 
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.RoleManagerUpdatable;
 import net.dv8tion.jda.core.utils.Checks;
 
@@ -88,7 +88,7 @@ public class PermissionField extends RoleField<Long>
      * @throws IllegalArgumentException
      *         If the provided permission collection or any of the permissions within
      *         it are null
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the permissions provided require other permissions
      *         to be available
      *
@@ -111,7 +111,7 @@ public class PermissionField extends RoleField<Long>
      * @throws IllegalArgumentException
      *         If the provided permission collection or any of the permissions within
      *         it are null
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the permissions provided require other permissions
      *         to be available
      *
@@ -122,9 +122,7 @@ public class PermissionField extends RoleField<Long>
     {
         Checks.notNull(permissions, "permissions Collection");
         permissions.forEach(p ->
-        {
-            Checks.notNull(p, "Permission in the Collection");
-        });
+            Checks.notNull(p, "Permission in the Collection"));
 
         return setValue(Permission.getRaw(permissions));
     }
@@ -300,6 +298,6 @@ public class PermissionField extends RoleField<Long>
     protected void checkPermission(Permission perm)
     {
         if (!manager.getGuild().getSelfMember().hasPermission(perm))
-            throw new PermissionException(perm, "Cannot give / revoke the permission because the logged in account does not have access to it! Permission: " + perm);
+            throw new InsufficientPermissionException(perm, "Cannot give / revoke the permission because the logged in account does not have access to it! Permission: " + perm);
     }
 }

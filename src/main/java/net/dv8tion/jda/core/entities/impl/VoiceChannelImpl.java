@@ -71,7 +71,7 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannelImpl> impl
             if (channels.get(i) == this)
                 return i;
         }
-        throw new RuntimeException("Somehow when determining position we never found the VoiceChannel in the Guild's channels? wtf?");
+        throw new AssertionError("Somehow when determining position we never found the VoiceChannel in the Guild's channels? wtf?");
     }
 
     @Override

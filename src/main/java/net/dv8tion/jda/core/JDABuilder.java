@@ -472,8 +472,8 @@ public class JDABuilder
     {
         if (accountType != AccountType.BOT)
             throw new AccountTypeException(AccountType.BOT);
-        if (shardId < 0 || shardTotal < 1 || shardId >= shardTotal)
-            throw new RuntimeException("This configuration of shardId and shardTotal is not allowed! 0 <= shardId < shardTotal with shardTotal > 0");
+        Checks.check(shardId >= 0 && shardTotal > 0 && shardId < shardTotal,
+            "This configuration of shardId and shardTotal is not allowed! 0 <= shardId < shardTotal with shardTotal > 0");
         shardInfo = new JDA.ShardInfo(shardId, shardTotal);
         return this;
     }

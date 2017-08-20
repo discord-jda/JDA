@@ -219,7 +219,7 @@ public class WidgetUtil
                     }
                     catch (IOException e)
                     {
-                        throw new RuntimeException(e);
+                        throw new IllegalStateException(e);
                     }
                 }
                 case 400: // not valid snowflake
@@ -241,12 +241,12 @@ public class WidgetUtil
                     throw new RateLimitedException(WIDGET_URL, retryAfter);
                 }
                 default:
-                    throw new RuntimeException("An unknown status was returned: " + code + " " + response.message());
+                    throw new IllegalStateException("An unknown status was returned: " + code + " " + response.message());
             }
         }
         catch (IOException e)
         {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
     
