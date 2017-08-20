@@ -176,7 +176,8 @@ public class AudioWebSocket extends WebSocketAdapter
                 final JSONObject payload = contentAll.getJSONObject("d");
                 final int interval = payload.getInt("heartbeat_interval");
                 stopKeepAlive();
-                setupKeepAlive(interval);
+                setupKeepAlive(interval / 2);
+                //FIXME: discord will rollout a working interval once that is done we need to use it properly
                 break;
             }
             case VoiceCode.HEARTBEAT:
@@ -244,6 +245,7 @@ public class AudioWebSocket extends WebSocketAdapter
             }
             case 12:
             {
+                LOG.trace("-> OP 12 " + contentAll);
                 // ignore op 12 for now
                 break;
             }
@@ -565,10 +567,10 @@ public class AudioWebSocket extends WebSocketAdapter
 
         Runnable keepAliveRunnable = () ->
         {
-            if (socket.isOpen() && socket.isOpen() && !udpSocket.isClosed())
-            {
+            if (socket != null && socket.isOpen())
                 send(VoiceCode.HEARTBEAT, System.currentTimeMillis());
-
+            if (udpSocket != null && !udpSocket.isClosed())
+            {
                 long seq = 0;
                 try
                 {

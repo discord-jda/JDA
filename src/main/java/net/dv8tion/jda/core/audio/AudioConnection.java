@@ -326,6 +326,8 @@ public class AudioConnection
                                 sendSilentPackets();
                             }
                             AudioPacket decryptedPacket = AudioPacket.decryptAudioPacket(receivedPacket, webSocket.getSecretKey());
+                            if (decryptedPacket == null)
+                                continue;
 
                             int ssrc = decryptedPacket.getSSRC();
                             final long userId = ssrcMap.get(ssrc);
@@ -368,7 +370,7 @@ public class AudioConnection
                             //If decodedAudio is null, then the Opus decode failed, so throw away the packet.
                             if (decodedAudio == null)
                             {
-                                LOG.debug("Received audio data but Opus failed to properly decode, instead it returned an error");
+                                //decoder error logged in method
                                 continue;
                             }
                             if (receiveHandler.canReceiveUser())
