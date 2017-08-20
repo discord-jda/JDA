@@ -703,6 +703,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      * the same id as the id provided.
      * <br>Note: when retrieving a Message, you must retrieve it from the channel it was sent in!
      *
+     * <p><b>Only bots can use this endpoint! A similar behaviour can be simulated using {@link #getHistoryAround(long, int)}!</b>
+     *
      * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
@@ -725,6 +727,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @param  messageId
      *         The id of the sought after Message
      *
+     * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
+     *         If the currently logged in account is not from {@link net.dv8tion.jda.core.AccountType#BOT AccountType.BOT}
      * @throws IllegalArgumentException
      *         if the provided {@code messageId} is null or empty.
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
@@ -767,6 +771,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      * the same id as the id provided.
      * <br>Note: when retrieving a Message, you must retrieve it from the channel it was sent in!
      *
+     * <p><b>Only bots can use this endpoint! A similar behaviour can be simulated using {@link #getHistoryAround(long, int)}!</b>
+     *
      * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
@@ -789,6 +795,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @param  messageId
      *         The id of the sought after Message
      *
+     * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
+     *         If the currently logged in account is not from {@link net.dv8tion.jda.core.AccountType#BOT AccountType.BOT}
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
      *         <ul>
