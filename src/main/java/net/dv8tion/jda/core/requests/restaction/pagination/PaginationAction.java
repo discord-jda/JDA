@@ -292,6 +292,8 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      * uses successive {@link #queue()} tasks to iterate each entity in callback threads instead of
      * the calling active thread.
      * This means that this method fully works on different threads to retrieve new entities.
+     * <p><b>This iteration will include already cached entities, in order to exclude cached
+     * entities use {@link #forEachRemainingAsync(Procedure)}</b>
      *
      * <h1>Example</h1>
      * <pre>{@code
@@ -320,12 +322,11 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      */
     public Future<?> forEachAsync(final Procedure<T> action)
     {
-        final Consumer<Throwable> consumer = (throwable) ->
+        return forEachAsync(action, (throwable) ->
         {
             if (RestAction.DEFAULT_FAILURE != null)
                 RestAction.DEFAULT_FAILURE.accept(throwable);
-        };
-        return forEachAsync(action,  consumer);
+        });
     }
 
     /**
@@ -334,6 +335,9 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      * uses successive {@link #queue()} tasks to iterate each entity in callback threads instead of
      * the calling active thread.
      * This means that this method fully works on different threads to retrieve new entities.
+     *
+     * <p><b>This iteration will include already cached entities, in order to exclude cached
+     * entities use {@link #forEachRemainingAsync(Procedure, Consumer)}</b>
      *
      * <h1>Example</h1>
      * <pre>{@code
@@ -368,13 +372,11 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
         Checks.notNull(failure, "Failure Consumer");
 
         final CompletableFuture<?> task = new CompletableFuture<>();
-        final Consumer<Throwable> throwableConsumer = (throwable) ->
+        final Consumer<List<T>> acceptor = new ChainedConsumer(task, action, (throwable) ->
         {
             task.completeExceptionally(throwable);
             failure.accept(throwable);
-        };
-
-        final Consumer<List<T>> acceptor = new ChainedConsumer(task, action, throwableConsumer);
+        });
         try
         {
             acceptor.accept(cached);
@@ -385,6 +387,135 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
             return new FailedFuture<>(ex);
         }
         return task;
+    }
+
+    /**
+     * Iterates over all remaining entities until the provided action returns {@code false}!
+     * <br>This operation is different from {@link #forEachRemaining(Procedure)} as it
+     * uses successive {@link #queue()} tasks to iterate each entity in callback threads instead of
+     * the calling active thread.
+     * This means that this method fully works on different threads to retrieve new entities.
+     *
+     * <p><b>This iteration will exclude already cached entities, in order to include cached
+     * entities use {@link #forEachAsync(Procedure)}</b>
+     *
+     * <h1>Example</h1>
+     * <pre>{@code
+     * //deletes messages until it finds a user that is still in guild
+     * public void cleanupMessages(MessagePaginationAction action)
+     * {
+     *     action.forEachRemainingAsync( (message) ->
+     *     {
+     *         Guild guild = message.getGuild();
+     *         if (!guild.isMember(message.getAuthor()))
+     *             message.delete().queue();
+     *         else
+     *             return false;
+     *         return true;
+     *     });
+     * }
+     * }</pre>
+     *
+     * @param  action
+     *         {@link net.dv8tion.jda.core.utils.Procedure Procedure} returning {@code true} if iteration should continue!
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided Procedure is {@code null}
+     *
+     * @return {@link java.util.concurrent.Future Future} that can be cancelled to stop iteration from outside!
+     */
+    public Future<?> forEachRemainingAsync(final Procedure<T> action)
+    {
+        return forEachRemainingAsync(action, (throwable) ->
+        {
+            if (RestAction.DEFAULT_FAILURE != null)
+                RestAction.DEFAULT_FAILURE.accept(throwable);
+        });
+    }
+
+    /**
+     * Iterates over all remaining entities until the provided action returns {@code false}!
+     * <br>This operation is different from {@link #forEachRemaining(Procedure)} as it
+     * uses successive {@link #queue()} tasks to iterate each entity in callback threads instead of
+     * the calling active thread.
+     * This means that this method fully works on different threads to retrieve new entities.
+     *
+     * <p><b>This iteration will exclude already cached entities, in order to include cached
+     * entities use {@link #forEachAsync(Procedure, Consumer)}</b>
+     *
+     * <h1>Example</h1>
+     * <pre>{@code
+     * //deletes messages until it finds a user that is still in guild
+     * public void cleanupMessages(MessagePaginationAction action)
+     * {
+     *     action.forEachRemainingAsync( (message) ->
+     *     {
+     *         Guild guild = message.getGuild();
+     *         if (!guild.isMember(message.getAuthor()))
+     *             message.delete().queue();
+     *         else
+     *             return false;
+     *         return true;
+     *     }, Throwable::printStackTrace);
+     * }
+     * }</pre>
+     *
+     * @param  action
+     *         {@link net.dv8tion.jda.core.utils.Procedure Procedure} returning {@code true} if iteration should continue!
+     * @param  failure
+     *         {@link java.util.function.Consumer Consumer} that should handle any throwables from the action
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided Procedure or the failure Consumer is {@code null}
+     *
+     * @return {@link java.util.concurrent.Future Future} that can be cancelled to stop iteration from outside!
+     */
+    public Future<?> forEachRemainingAsync(final Procedure<T> action, final Consumer<Throwable> failure)
+    {
+        Checks.notNull(action, "Procedure");
+        Checks.notNull(failure, "Failure Consumer");
+
+        final CompletableFuture<?> task = new CompletableFuture<>();
+        final Consumer<List<T>> acceptor = new ChainedConsumer(task, action, (throwable) ->
+        {
+            task.completeExceptionally(throwable);
+            failure.accept(throwable);
+        });
+        try
+        {
+            //not starting with cache here unlike forEachAsync
+            acceptor.accept(Collections.emptyList());
+        }
+        catch (Exception ex)
+        {
+            failure.accept(ex);
+            return new FailedFuture<>(ex);
+        }
+        return task;
+    }
+
+    /**
+     * Iterates over all remaining entities until the provided action returns {@code false}!
+     * <br>Skipping past already cached entities to iterate all remaining entities of this PaginationAction.
+     *
+     * <p><b>This is a blocking operation that might take a while to complete</b>
+     *
+     * @param  action
+     *         The {@link net.dv8tion.jda.core.utils.Procedure Procedure}
+     *         which should return {@code true} to continue iterating
+     */
+    public void forEachRemaining(final Procedure<T> action)
+    {
+        Checks.notNull(action, "Procedure");
+        Queue<T> queue = new LinkedList<>();
+        while (queue.addAll(getNextChunk()))
+        {
+            while (!queue.isEmpty())
+            {
+                if (!action.execute(queue.poll()))
+                    return;
+            }
+        }
     }
 
     @Override
@@ -416,6 +547,18 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
 
     protected abstract void handleResponse(Response response, Request<List<T>> request);
 
+    private List<T> getNextChunk()
+    {
+        List<T> items;
+        synchronized (limit)
+        {
+            final int current = limit.getAndSet(getMaxLimit());
+            items = complete();
+            limit.set(current);
+        }
+        return items;
+    }
+
     /**
      * Iterator implementation for a {@link net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction PaginationAction}.
      * <br>This iterator will first iterate over all currently cached entities and continue to retrieve new entities
@@ -437,14 +580,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
             if (!hitEnd())
                 return true;
 
-            synchronized (limit)
-            {
-                final int tmp = limit.getAndSet(maxLimit);
-                items.addAll(complete());
-                limit.set(tmp);
-            }
-
-            if (!hitEnd())
+            if (items.addAll(getNextChunk()))
                 return true;
 
             // null indicates that the real end has been reached
