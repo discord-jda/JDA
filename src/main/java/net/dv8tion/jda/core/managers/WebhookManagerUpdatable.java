@@ -283,7 +283,7 @@ public class WebhookManagerUpdatable
             public void checkValue(TextChannel value)
             {
                 Checks.notNull(value, "channel");
-                Checks.check(value.equals(getChannel()), "Channel is not from the same Guild!");
+                Checks.check(value.getGuild().equals(getGuild()), "Channel is not from the same Guild!");
             }
         };
     }

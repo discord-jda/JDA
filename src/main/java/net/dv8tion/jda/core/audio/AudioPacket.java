@@ -75,9 +75,28 @@ public class AudioPacket
         this.timestamp = buffer.getInt(TIMESTAMP_INDEX);
         this.ssrc = buffer.getInt(SSRC_INDEX);
 
-        byte[] audio = new byte[buffer.array().length - RTP_HEADER_BYTE_LENGTH];
-        System.arraycopy(buffer.array(), RTP_HEADER_BYTE_LENGTH, audio, 0, audio.length);
-        this.encodedAudio = audio;
+        final byte versionPad = buffer.get(0);
+        final byte[] data = buffer.array();
+        if ((versionPad & 0b0001_0000) != 0
+            && data[RTP_HEADER_BYTE_LENGTH] == (byte) 0xBE && data[RTP_HEADER_BYTE_LENGTH + 1] == (byte) 0xDE)
+        {
+            final short headerLength = (short) (data[RTP_HEADER_BYTE_LENGTH + 2] << 8 | data[RTP_HEADER_BYTE_LENGTH + 3]);
+            int i = RTP_HEADER_BYTE_LENGTH + 4;
+            for (; i < headerLength + RTP_HEADER_BYTE_LENGTH + 4; i++)
+            {
+                byte len = (byte) ((data[i] & 0x0F) + 1);
+                i += len;
+            }
+            while (data[i] == 0)
+                i++;
+            this.encodedAudio = new byte[data.length - i];
+            System.arraycopy(data, i, encodedAudio, 0, encodedAudio.length);
+        }
+        else
+        {
+            this.encodedAudio = new byte[buffer.array().length - RTP_HEADER_BYTE_LENGTH];
+            System.arraycopy(buffer.array(), RTP_HEADER_BYTE_LENGTH, this.encodedAudio, 0, this.encodedAudio.length);
+        }
     }
 
     public AudioPacket(char seq, int timestamp, int ssrc, byte[] encodedAudio)
