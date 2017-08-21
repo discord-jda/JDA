@@ -32,6 +32,9 @@ import net.dv8tion.jda.core.entities.impl.MessageEmbedImpl;
  */
 public interface MessageEmbed
 {
+    /**
+     * Static object that removes existing embeds.
+     */
     MessageEmbed REMOVE = new MessageEmbedImpl.Remove();
     
     int TITLE_MAX_LENGTH = 256;
