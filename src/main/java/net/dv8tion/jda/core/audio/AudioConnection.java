@@ -176,7 +176,7 @@ public class AudioConnection
         final AtomicInteger ssrcRef = new AtomicInteger(0);
         final boolean modified = ssrcMap.retainEntries((ssrc, id) ->
         {
-            final boolean isEntry = id != userId;
+            final boolean isEntry = id == userId;
             if (isEntry)
                 ssrcRef.set(ssrc);
             // if isEntry == true we don't want to retain it
