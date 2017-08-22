@@ -508,7 +508,7 @@ public class EmbedBuilder
      *         <ul>
      *             <li>If only {@code name} or {@code value} is set. Both must be set.</li>
      *             <li>If the length of {@code name} is greater than {@link net.dv8tion.jda.core.entities.MessageEmbed#TITLE_MAX_LENGTH}.</li>
-     *             <li>If the length of {@code value} is greater than {@link net.dv8tion.jda.core.entities.MessageEmbed#TEXT_MAX_LENGTH}.</li>
+     *             <li>If the length of {@code value} is greater than {@link net.dv8tion.jda.core.entities.MessageEmbed#VALUE_MAX_LENGTH}.</li>
      *         </ul>
      *
      * @return the builder after the field has been added
