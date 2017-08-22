@@ -219,7 +219,8 @@ public class AudioWebSocket extends WebSocketAdapter
                 final User user = getUser(userId);
                 if (user == null)
                 {
-                    LOG.warn("Got an Audio USER_SPEAKING_UPDATE for a non-existent User. JSON: " + contentAll);
+                    //more relevant for audio connection
+                    AudioConnection.LOG.trace("Got an Audio USER_SPEAKING_UPDATE for a non-existent User. JSON: " + contentAll);
                     break;
                 }
 
