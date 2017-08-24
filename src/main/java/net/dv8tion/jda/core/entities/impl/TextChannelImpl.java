@@ -25,8 +25,8 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.MiscUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -205,6 +205,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     @Override
     public List<Member> getMembers()
     {
+        guild.checkDisposed();
         return Collections.unmodifiableList(guild.getMembersMap().valueCollection().stream()
                 .filter(m -> m.hasPermission(this, Permission.MESSAGE_READ))
                 .collect(Collectors.toList()));
@@ -411,6 +412,13 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         // discord deals with hierarchy. The more recent a channel was created, the lower its hierarchy ranking when
         // it shares the same position as another channel.
         return chanTime.compareTo(thisTime);
+    }
+
+    @Override
+    public boolean dispose()
+    {
+        guild.getJDA().getTextChannelMap().remove(id);
+        return super.dispose();
     }
 
     // -- Setters --

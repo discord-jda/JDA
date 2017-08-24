@@ -20,7 +20,6 @@ import net.dv8tion.jda.client.events.message.group.GroupMessageDeleteEvent;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.PrivateChannel;
-import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.entities.impl.PrivateChannelImpl;
 import net.dv8tion.jda.core.entities.impl.TextChannelImpl;
@@ -38,7 +37,7 @@ public class MessageDeleteHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject allContent, JSONObject content)
     {
         final long messageId = content.getLong("id");
         final long channelId = content.getLong("channel_id");
@@ -58,12 +57,14 @@ public class MessageDeleteHandler extends SocketHandler
         }
         if (channel == null)
         {
-            api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
-            EventCache.LOG.debug("Got message delete for a channel/group that is not yet cached. ChannelId: " + channelId);
+//            api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+//            EventCache.LOG.debug("Got message delete for a channel/group that is not yet cached. ChannelId: " + channelId);
+            // Don't cache message events for channels unless they are MESSAGE_CREATE
+            //see: https://github.com/hammerandchisel/discord-api-docs/issues/184#issuecomment-312962153
             return null;
         }
 
-        if (channel instanceof TextChannel)
+        if (channel instanceof TextChannelImpl)
         {
             TextChannelImpl tChan = (TextChannelImpl) channel;
             if (api.getGuildLock().isLocked(tChan.getGuild().getIdLong()))

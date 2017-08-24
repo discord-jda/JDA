@@ -18,6 +18,7 @@ package net.dv8tion.jda.core.entities;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.utils.Checks;
+
 import java.awt.Color;
 import java.time.OffsetDateTime;
 import java.util.List;

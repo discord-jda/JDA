@@ -38,7 +38,6 @@ public class MessageImpl implements Message
 {
     private static final Pattern EMOTE_PATTERN = Pattern.compile("<:([^:]+):([0-9]+)>");
 
-    private final JDAImpl api;
     private final long id;
     private final MessageType type;
     private final MessageChannel channel;
@@ -69,7 +68,6 @@ public class MessageImpl implements Message
     {
         this.id = id;
         this.channel = channel;
-        this.api = (channel != null) ? (JDAImpl) channel.getJDA() : null;
         this.fromWebhook = fromWebhook;
         this.type = type;
     }
@@ -77,7 +75,7 @@ public class MessageImpl implements Message
     @Override
     public JDA getJDA()
     {
-        return api;
+        return channel != null ? channel.getJDA() : null;
     }
 
     @Override
@@ -110,7 +108,7 @@ public class MessageImpl implements Message
         if (reaction == null)
         {
             checkFake(emote, "Emote");
-            if (!emote.canInteract(api.getSelfUser(), channel))
+            if (!emote.canInteract(getJDA().getSelfUser(), channel))
                 throw new IllegalArgumentException("Cannot react with the provided emote because it is not available in the current channel.");
         }
         else if (reaction.isSelf())
@@ -403,9 +401,9 @@ public class MessageImpl implements Message
                 final String emoteIdString = matcher.group(2);
                 final long emoteId = Long.parseLong(emoteIdString);
                 String emoteName = matcher.group(1);
-                Emote emote = api.getEmoteById(emoteIdString);
+                Emote emote = getJDA().getEmoteById(emoteIdString);
                 if (emote == null)
-                    emote = new EmoteImpl(emoteId, api).setName(emoteName);
+                    emote = new EmoteImpl(emoteId, (JDAImpl) getJDA()).setName(emoteName);
                 emotes.add(emote);
             }
             emotes = Collections.unmodifiableList(emotes);
@@ -453,7 +451,7 @@ public class MessageImpl implements Message
     @Override
     public RestAction<Message> editMessage(Message newContent)
     {
-        if (!api.getSelfUser().equals(getAuthor()))
+        if (!getJDA().getSelfUser().equals(getAuthor()))
             throw new IllegalStateException("Attempted to update message that was not sent by this account. You cannot modify other User's messages!");
 
         return getChannel().editMessageById(getIdLong(), newContent);

@@ -18,11 +18,12 @@ package net.dv8tion.jda.client.entities;
 
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.AudioChannel;
+import net.dv8tion.jda.core.entities.DisposingState;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 
 import java.util.List;
 
-public interface Call extends AudioChannel
+public interface Call extends AudioChannel, DisposingState<Call>
 {
     Region getRegion();
     boolean isGroupCall();

@@ -15,7 +15,6 @@
  */
 package net.dv8tion.jda.core.handle;
 
-import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.VoiceChannel;
@@ -35,24 +34,24 @@ public class GuildUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject allContent, JSONObject content)
     {
         final long id = content.getLong("id");
         if (api.getGuildLock().isLocked(id))
             return id;
 
-        GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
-        Member owner = guild.getMembersMap().get(content.getLong("owner_id"));
-        String name = content.getString("name");
-        String iconId = !content.isNull("icon") ? content.getString("icon") : null;
-        String splashId = !content.isNull("splash") ? content.getString("splash") : null;
-        Region region = Region.fromKey(content.getString("region"));
-        Guild.VerificationLevel verificationLevel = Guild.VerificationLevel.fromKey(content.getInt("verification_level"));
-        Guild.NotificationLevel notificationLevel = Guild.NotificationLevel.fromKey(content.getInt("default_message_notifications"));
-        Guild.MFALevel mfaLevel = Guild.MFALevel.fromKey(content.getInt("mfa_level"));
-        Guild.ExplicitContentLevel explicitContentLevel = Guild.ExplicitContentLevel.fromKey(content.getInt("explicit_content_filter"));
-        Guild.Timeout afkTimeout = Guild.Timeout.fromKey(content.getInt("afk_timeout"));
-        VoiceChannel afkChannel = !content.isNull("afk_channel_id")
+        final GuildImpl guild = api.getGuildMap().get(id);
+        final Member owner = guild.getMembersMap().get(content.getLong("owner_id"));
+        final String name = content.getString("name");
+        final String iconId = !content.isNull("icon") ? content.getString("icon") : null;
+        final String splashId = !content.isNull("splash") ? content.getString("splash") : null;
+        final String region = content.getString("region");
+        final Guild.VerificationLevel verificationLevel = Guild.VerificationLevel.fromKey(content.getInt("verification_level"));
+        final Guild.NotificationLevel notificationLevel = Guild.NotificationLevel.fromKey(content.getInt("default_message_notifications"));
+        final Guild.MFALevel mfaLevel = Guild.MFALevel.fromKey(content.getInt("mfa_level"));
+        final Guild.ExplicitContentLevel explicitContentLevel = Guild.ExplicitContentLevel.fromKey(content.getInt("explicit_content_filter"));
+        final Guild.Timeout afkTimeout = Guild.Timeout.fromKey(content.getInt("afk_timeout"));
+        final VoiceChannel afkChannel = !content.isNull("afk_channel_id")
                 ? guild.getVoiceChannelMap().get(content.getLong("afk_channel_id"))
                 : null;
 
@@ -92,9 +91,9 @@ public class GuildUpdateHandler extends SocketHandler
                             api, responseNumber,
                             guild, oldSplashId));
         }
-        if (!Objects.equals(region, guild.getRegion()))
+        if (!Objects.equals(region, guild.getRegionRaw()))
         {
-            Region oldRegion = guild.getRegion();
+            String oldRegion = guild.getRegionRaw();
             guild.setRegion(region);
             api.getEventManager().handle(
                     new GuildUpdateRegionEvent(

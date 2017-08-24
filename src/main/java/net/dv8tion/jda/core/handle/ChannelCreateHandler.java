@@ -32,7 +32,7 @@ public class ChannelCreateHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject allContent, JSONObject content)
     {
         ChannelType type = ChannelType.fromId(content.getInt("type"));
 
@@ -49,33 +49,43 @@ public class ChannelCreateHandler extends SocketHandler
             case TEXT:
             {
                 api.getEventManager().handle(
-                        new TextChannelCreateEvent(
-                                api, responseNumber,
-                                api.getEntityBuilder().createTextChannel(content, guildId)));
+                    new TextChannelCreateEvent(
+                        api, responseNumber,
+                        api.getEntityBuilder().createTextChannel(content, guildId)));
                 break;
             }
             case VOICE:
             {
                 api.getEventManager().handle(
-                        new VoiceChannelCreateEvent(
-                                api, responseNumber,
-                                api.getEntityBuilder().createVoiceChannel(content, guildId)));
+                    new VoiceChannelCreateEvent(
+                        api, responseNumber,
+                        api.getEntityBuilder().createVoiceChannel(content, guildId)));
                 break;
             }
             case PRIVATE:
             {
+                // When a bot receives a message from a PrivateChannel
+                //the channel will first be sent using a CHANNEL_CREATE due to changes made on June 4th 2017
+                //see: https://github.com/hammerandchisel/discord-api-docs/issues/184#issuecomment-312960055
+                //in this case we now add a check for existing private channels to stop from re-creating channels over and over
+                //when the channel already exists we don't have to deal with event cache replay due to it already existing we know
+                //that no events can be cached here in the first place
+                if (api.getPrivateChannelById(content.getLong("id")) != null)
+                    return null;
                 api.getEventManager().handle(
-                        new PrivateChannelCreateEvent(
-                                api, responseNumber,
-                                api.getEntityBuilder().createPrivateChannel(content)));
+                    new PrivateChannelCreateEvent(
+                        api, responseNumber,
+                        api.getEntityBuilder().createPrivateChannel(content)));
                 break;
             }
             case GROUP:
             {
+                if (api.getPrivateChannelById(content.getLong("id")) != null)
+                    return null;
                 api.getEventManager().handle(
-                        new GroupJoinEvent(
-                                api, responseNumber,
-                                api.getEntityBuilder().createGroup(content)));
+                    new GroupJoinEvent(
+                        api, responseNumber,
+                        api.getEntityBuilder().createGroup(content)));
                 break;
             }
             default:

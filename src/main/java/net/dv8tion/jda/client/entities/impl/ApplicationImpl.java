@@ -21,6 +21,7 @@ import net.dv8tion.jda.client.managers.ApplicationManager;
 import net.dv8tion.jda.client.managers.ApplicationManagerUpdatable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.impl.Disposable;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
@@ -30,29 +31,30 @@ import org.json.JSONObject;
 
 import java.util.*;
 
-public class ApplicationImpl implements Application
+public class ApplicationImpl implements Application, Disposable
 {
+    private final JDAClientImpl clientAPI;
 
-    private final JDA api;
     private final Object mngLock = new Object();
-    private ApplicationManager manager;
-    private ApplicationManagerUpdatable managerUpdatable;
+    private volatile ApplicationManager manager;
+    private volatile ApplicationManagerUpdatable managerUpdatable;
 
     private BotImpl bot;
-    private String description;
-    private boolean doesBotRequireCodeGrant;
     private int flags;
-    private String iconId;
-    private long id;
-    private boolean isBotPublic;
-    private String name;
-    private List<String> redirectUris;
     private int rpcApplicationState;
+    private long id;
+    private boolean doesBotRequireCodeGrant;
+    private boolean isBotPublic;
+    private boolean disposed = false;
+    private String description;
+    private String iconId;
+    private String name;
     private String secret;
+    private List<String> redirectUris;
 
-    public ApplicationImpl(final JDA api, final JSONObject object)
+    public ApplicationImpl(final JDAClientImpl api, final JSONObject object)
     {
-        this.api = api;
+        this.clientAPI = api;
 
         this.updateFromJson(object);
     }
@@ -63,7 +65,7 @@ public class ApplicationImpl implements Application
         if (this.hasBot())
             return new RestAction.EmptyRestAction<>(getJDA(), this.bot);
 
-        return new RestAction<Application.Bot>(this.api, Route.Applications.CREATE_BOT.compile(getId()))
+        return new RestAction<Application.Bot>(getJDA(), Route.Applications.CREATE_BOT.compile(getId()))
         {
             @Override
             protected void handleResponse(final Response response, final Request<Application.Bot> request)
@@ -79,7 +81,7 @@ public class ApplicationImpl implements Application
     @Override
     public RestAction<Void> delete()
     {
-        return new RestAction<Void>(this.api, Route.Applications.DELETE_APPLICATION.compile(getId()))
+        return new RestAction<Void>(getJDA(), Route.Applications.DELETE_APPLICATION.compile(getId()))
         {
             @Override
             protected void handleResponse(final Response response, final Request<Void> request)
@@ -144,7 +146,8 @@ public class ApplicationImpl implements Application
     @Override
     public JDA getJDA()
     {
-        return this.api;
+        checkDisposed();
+        return clientAPI.getJDA();
     }
 
     @Override
@@ -219,7 +222,7 @@ public class ApplicationImpl implements Application
     public RestAction<Application> resetSecret()
     {
         Route.CompiledRoute route = Route.Applications.RESET_BOT_TOKEN.compile(getId());
-        return new RestAction<Application>(this.api, route)
+        return new RestAction<Application>(getJDA(), route)
         {
             @Override
             protected void handleResponse(final Response response, final Request<Application> request)
@@ -230,6 +233,23 @@ public class ApplicationImpl implements Application
                     request.onFailure(response);
             }
         };
+    }
+
+    @Override
+    public boolean dispose()
+    {
+        synchronized (mngLock)
+        {
+            manager = null;
+            managerUpdatable = null;
+            return disposed = true;
+        }
+    }
+
+    @Override
+    public boolean isDisposed()
+    {
+        return disposed;
     }
 
     @Override

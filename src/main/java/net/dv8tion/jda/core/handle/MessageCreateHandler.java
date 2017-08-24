@@ -31,29 +31,27 @@ import org.json.JSONObject;
 
 public class MessageCreateHandler extends SocketHandler
 {
-    //private static final Pattern invitePattern = Pattern.compile("\\bhttps://(?:www\\.)?discord(?:\\.gg|app\\.com/invite)/([a-zA-Z0-9-]+)\\b");
-
     public MessageCreateHandler(JDAImpl api)
     {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject allContent, JSONObject content)
     {
         MessageType type = MessageType.fromId(content.getInt("type"));
 
         switch (type)
         {
             case DEFAULT:
-                return handleDefaultMessage(content);
+                return handleDefaultMessage(allContent, content);
             default:
                 WebSocketClient.LOG.debug("JDA received a message of unknown type. Type: " + type + "  JSON: " + content);
         }
         return null;
     }
 
-    private Long handleDefaultMessage(JSONObject content)
+    private Long handleDefaultMessage(JSONObject allContent, JSONObject content)
     {
         Message message;
         try

@@ -28,7 +28,7 @@ import java.util.List;
 
 public class AuthorizedApplicationImpl implements AuthorizedApplication
 {
-    private final JDA api;
+    private final JDAClientImpl clientAPI;
 
     private final long id;
     private final long authId;
@@ -37,10 +37,10 @@ public class AuthorizedApplicationImpl implements AuthorizedApplication
     private final String name;
     private final List<String> scopes;
 
-    public AuthorizedApplicationImpl(final JDA api, final long authId, final String description, final String iconId,
+    public AuthorizedApplicationImpl(final JDAClientImpl api, final long authId, final String description, final String iconId,
             final long id, final String name, final List<String> scopes)
     {
-        this.api = api;
+        this.clientAPI = api;
         this.authId = authId;
         this.description = description;
         this.iconId = iconId;
@@ -54,7 +54,7 @@ public class AuthorizedApplicationImpl implements AuthorizedApplication
     {
         Route.CompiledRoute route = Route.Applications.DELETE_AUTHORIZED_APPLICATION.compile(getAuthId());
 
-        return new RestAction<Void>(this.api, route)
+        return new RestAction<Void>(getJDA(), route)
         {
             @Override
             protected void handleResponse(final Response response, final Request<Void> request)
@@ -107,7 +107,7 @@ public class AuthorizedApplicationImpl implements AuthorizedApplication
     @Override
     public JDA getJDA()
     {
-        return this.api;
+        return clientAPI.getJDA();
     }
 
     @Override

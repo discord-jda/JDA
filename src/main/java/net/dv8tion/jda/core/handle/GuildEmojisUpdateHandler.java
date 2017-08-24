@@ -40,13 +40,13 @@ public class GuildEmojisUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject allContent, JSONObject content)
     {
         final long guildId = content.getLong("guild_id");
         if (api.getGuildLock().isLocked(guildId))
             return guildId;
 
-        GuildImpl guild = (GuildImpl) api.getGuildMap().get(guildId);
+        GuildImpl guild =  api.getGuildMap().get(guildId);
         if (guild == null)
         {
             api.getEventCache().cache(EventCache.Type.GUILD, guildId, () ->
@@ -55,14 +55,14 @@ public class GuildEmojisUpdateHandler extends SocketHandler
         }
 
         JSONArray array = content.getJSONArray("emojis");
-        TLongObjectMap<Emote> emoteMap = guild.getEmoteMap();
-        List<Emote> oldEmotes = new ArrayList<>(emoteMap.valueCollection()); //snapshot of emote cache
-        List<Emote> newEmotes = new ArrayList<>();
+        TLongObjectMap<EmoteImpl> emoteMap = guild.getEmoteMap();
+        List<EmoteImpl> oldEmotes = new ArrayList<>(emoteMap.valueCollection()); //snapshot of emote cache
+        List<EmoteImpl> newEmotes = new ArrayList<>();
         for (int i = 0; i < array.length(); i++)
         {
             JSONObject current = array.getJSONObject(i);
             final long emoteId = current.getLong("id");
-            EmoteImpl emote = (EmoteImpl) emoteMap.get(emoteId);
+            EmoteImpl emote = emoteMap.get(emoteId);
             EmoteImpl oldEmote = null;
 
             if (emote == null)
@@ -103,13 +103,14 @@ public class GuildEmojisUpdateHandler extends SocketHandler
             handleReplace(oldEmote, emote);
         }
         //cleanup old emotes that don't exist anymore
-        for (Emote e : oldEmotes)
+        for (EmoteImpl e : oldEmotes)
         {
             emoteMap.remove(e.getIdLong());
             api.getEventManager().handle(
                 new EmoteRemovedEvent(
                     api, responseNumber,
                     e));
+            e.dispose();
         }
 
         for (Emote e : newEmotes)

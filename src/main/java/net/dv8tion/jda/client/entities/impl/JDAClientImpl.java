@@ -36,6 +36,7 @@ import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONArray;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -43,22 +44,22 @@ import java.util.stream.Collectors;
 
 public class JDAClientImpl implements JDAClient
 {
-    protected final JDAImpl api;
-    protected final TLongObjectMap<Group> groups = MiscUtil.newLongMap();
+    protected final WeakReference<JDAImpl> apiRef;
+    protected final TLongObjectMap<GroupImpl> groups = MiscUtil.newLongMap();
     protected final TLongObjectMap<Relationship> relationships = MiscUtil.newLongMap();
-    protected final TLongObjectMap<CallUser> callUsers = MiscUtil.newLongMap();
+    protected final TLongObjectMap<CallUserImpl> callUsers = MiscUtil.newLongMap();
     protected UserSettingsImpl userSettings;
 
     public JDAClientImpl(JDAImpl api)
     {
-        this.api = api;
-        this.userSettings = new UserSettingsImpl(api);
+        this.apiRef = new WeakReference<>(api);
+        this.userSettings = new UserSettingsImpl(this);
     }
 
     @Override
     public JDA getJDA()
     {
-        return api;
+        return apiRef.get();
     }
 
     @Override
@@ -233,7 +234,7 @@ public class JDAClientImpl implements JDAClient
         return userSettings;
     }
 
-    public TLongObjectMap<Group> getGroupMap()
+    public TLongObjectMap<GroupImpl> getGroupMap()
     {
         return groups;
     }
@@ -243,7 +244,7 @@ public class JDAClientImpl implements JDAClient
         return relationships;
     }
 
-    public TLongObjectMap<CallUser> getCallUserMap()
+    public TLongObjectMap<CallUserImpl> getCallUserMap()
     {
         return callUsers;
     }
@@ -251,14 +252,14 @@ public class JDAClientImpl implements JDAClient
     @Override
     public ApplicationAction createApplication(String name)
     {
-        return new ApplicationAction(api, name);
+        return new ApplicationAction(apiRef.get(), name);
     }
 
     @Override
     public RestAction<List<Application>> getApplications()
     {
         Route.CompiledRoute route = Route.Applications.GET_APPLICATIONS.compile();
-        return new RestAction<List<Application>>(api, route)
+        return new RestAction<List<Application>>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<List<Application>> request)
@@ -288,7 +289,7 @@ public class JDAClientImpl implements JDAClient
         Checks.notEmpty(id, "id");
 
         Route.CompiledRoute route = Route.Applications.GET_APPLICATION.compile(id);
-        return new RestAction<Application>(api, route)
+        return new RestAction<Application>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Application> request)
@@ -305,7 +306,7 @@ public class JDAClientImpl implements JDAClient
     public RestAction<List<AuthorizedApplication>> getAuthorizedApplications()
     {
         Route.CompiledRoute route = Route.Applications.GET_AUTHORIZED_APPLICATIONS.compile();
-        return new RestAction<List<AuthorizedApplication>>(api, route)
+        return new RestAction<List<AuthorizedApplication>>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<List<AuthorizedApplication>> request)
@@ -335,7 +336,7 @@ public class JDAClientImpl implements JDAClient
         Checks.notEmpty(id, "id");
 
         Route.CompiledRoute route = Route.Applications.GET_AUTHORIZED_APPLICATION.compile(id);
-        return new RestAction<AuthorizedApplication>(api, route)
+        return new RestAction<AuthorizedApplication>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<AuthorizedApplication> request)

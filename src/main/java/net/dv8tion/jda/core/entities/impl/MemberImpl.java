@@ -20,24 +20,25 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.utils.PermissionUtil;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.PermissionUtil;
 
 import java.awt.Color;
 import java.time.OffsetDateTime;
 import java.util.*;
 
-public class MemberImpl implements Member
+public class MemberImpl implements Member, Disposable
 {
     private final GuildImpl guild;
     private final User user;
     private final HashSet<Role> roles = new HashSet<>();
-    private final GuildVoiceState voiceState;
+    private final GuildVoiceStateImpl voiceState;
 
     private String nickname;
     private OffsetDateTime joinDate;
     private Game game;
     private OnlineStatus onlineStatus = OnlineStatus.OFFLINE;
+    private boolean disposed = false;
 
     public MemberImpl(GuildImpl guild, User user)
     {
@@ -245,5 +246,18 @@ public class MemberImpl implements Member
     public String getAsMention()
     {
         return nickname == null ? user.getAsMention() : "<@!" + user.getIdLong() + '>';
+    }
+
+    @Override
+    public boolean dispose()
+    {
+        roles.clear();
+        return disposed = true;
+    }
+
+    @Override
+    public boolean isDisposed()
+    {
+        return disposed;
     }
 }

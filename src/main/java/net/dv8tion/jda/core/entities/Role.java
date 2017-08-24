@@ -26,7 +26,7 @@ import javax.annotation.CheckReturnValue;
 /**
  * Represents a {@link net.dv8tion.jda.core.entities.Guild Guild}'s Role. Used to control permissions for Members.
  */
-public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Comparable<Role>
+public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Comparable<Role>, DisposingState<Role>
 {
     /**
      * The hierarchical position of this {@link net.dv8tion.jda.core.entities.Role Role}
@@ -131,6 +131,9 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      * The {@link net.dv8tion.jda.core.managers.RoleManager RoleManager} for this Role.
      * In the RoleManager, you can modify all its values.
      *
+     * @throws net.dv8tion.jda.core.exceptions.DisposedException
+     *         If this Role was disposed from JDA cache invalidation
+     *
      * @return The RoleManager of this Role
      */
     RoleManager getManager();
@@ -141,6 +144,9 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      *
      * <p>This can be used to bulk update role properties.
      * It requires to call an {@code update()} method.
+     *
+     * @throws net.dv8tion.jda.core.exceptions.DisposedException
+     *         If this Role was disposed from JDA cache invalidation
      *
      * @return The {@link net.dv8tion.jda.core.managers.RoleManagerUpdatable RoleManagerUpdatable} for this Role
      */
@@ -164,6 +170,8 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      *
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         if we don't have the permission to {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES}
+     * @throws net.dv8tion.jda.core.exceptions.DisposedException
+     *         If this Role was disposed from JDA cache invalidation
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: Void
      */
@@ -172,6 +180,9 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
 
     /**
      * Returns the {@link net.dv8tion.jda.core.JDA JDA} instance of this Role
+     *
+     * @throws net.dv8tion.jda.core.exceptions.DisposedException
+     *         If the Guild was disposed from JDA cache invalidation
      *
      * @return the corresponding JDA instance
      */

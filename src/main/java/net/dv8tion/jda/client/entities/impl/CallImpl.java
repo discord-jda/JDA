@@ -22,6 +22,7 @@ import net.dv8tion.jda.client.entities.CallUser;
 import net.dv8tion.jda.client.entities.CallableChannel;
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.Region;
+import net.dv8tion.jda.core.entities.impl.Disposable;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.utils.MiscUtil;
 
@@ -30,15 +31,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class CallImpl implements Call
+public class CallImpl implements Call, Disposable
 {
     private final CallableChannel callableChannel;
     private final long messageId;
 
-    private final TLongObjectMap<CallUser> callUsers = MiscUtil.newLongMap();
-    private final TLongObjectMap<CallUser> callUserHistory = MiscUtil.newLongMap();
+    private final TLongObjectMap<CallUserImpl> callUsers = MiscUtil.newLongMap();
+    private final TLongObjectMap<CallUserImpl> callUserHistory = MiscUtil.newLongMap();
 
     private Region region;
+    private boolean disposed = false;
 
     public CallImpl(CallableChannel callableChannel, long messageId)
     {
@@ -146,18 +148,34 @@ public class CallImpl implements Call
         return ("Call " + getId()).hashCode();
     }
 
+    @Override
+    public boolean dispose()
+    {
+        callUserHistory.forEachValue(Disposable::dispose);
+        callUsers.forEachValue(Disposable::dispose);
+        callUserHistory.clear();
+        callUsers.clear();
+        return disposed = true;
+    }
+
+    @Override
+    public boolean isDisposed()
+    {
+        return disposed;
+    }
+
     public CallImpl setRegion(Region region)
     {
         this.region = region;
         return this;
     }
 
-    public TLongObjectMap<CallUser> getCallUserMap()
+    public TLongObjectMap<CallUserImpl> getCallUserMap()
     {
         return callUsers;
     }
 
-    public TLongObjectMap<CallUser> getCallUserHistoryMap()
+    public TLongObjectMap<CallUserImpl> getCallUserHistoryMap()
     {
         return callUserHistory;
     }

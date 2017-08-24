@@ -24,7 +24,7 @@ import javax.annotation.CheckReturnValue;
 /**
  * Represents the connection used for direct messaging.
  */
-public interface PrivateChannel extends MessageChannel, CallableChannel, IFakeable
+public interface PrivateChannel extends MessageChannel, CallableChannel, IFakeable, DisposingState<PrivateChannel>
 {
     /**
      * The {@link net.dv8tion.jda.core.entities.User User} that this {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} communicates with.

@@ -21,7 +21,6 @@ import net.dv8tion.jda.client.events.relationship.FriendAddedEvent;
 import net.dv8tion.jda.client.events.relationship.FriendRequestReceivedEvent;
 import net.dv8tion.jda.client.events.relationship.FriendRequestSentEvent;
 import net.dv8tion.jda.client.events.relationship.UserBlockedEvent;
-import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.handle.EventCache;
 import net.dv8tion.jda.core.handle.SocketHandler;
@@ -36,7 +35,7 @@ public class RelationshipAddHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject allContent, JSONObject content)
     {
         Relationship relationship = api.getEntityBuilder().createRelationship(content);
         if (relationship == null)

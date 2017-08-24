@@ -19,15 +19,17 @@ package net.dv8tion.jda.client.entities.impl;
 import net.dv8tion.jda.client.entities.Call;
 import net.dv8tion.jda.client.entities.CallUser;
 import net.dv8tion.jda.client.entities.CallVoiceState;
+import net.dv8tion.jda.core.entities.impl.Disposable;
 import net.dv8tion.jda.core.entities.User;
 
-public class CallUserImpl implements CallUser
+public class CallUserImpl implements CallUser, Disposable
 {
     protected final Call call;
     protected final User user;
     protected final CallVoiceState voiceState;
 
     protected boolean ringing;
+    protected boolean disposed = false;
 
     public CallUserImpl(Call call, User user)
     {
@@ -87,5 +89,17 @@ public class CallUserImpl implements CallUser
     {
         this.ringing = ringing;
         return this;
+    }
+
+    @Override
+    public boolean dispose()
+    {
+        return disposed = true;
+    }
+
+    @Override
+    public boolean isDisposed()
+    {
+        return disposed;
     }
 }

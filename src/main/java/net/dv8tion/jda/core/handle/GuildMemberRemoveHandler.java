@@ -33,13 +33,13 @@ public class GuildMemberRemoveHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject allContent, JSONObject content)
     {
         final long id = content.getLong("guild_id");
         if (api.getGuildLock().isLocked(id))
             return id;
 
-        GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
+        GuildImpl guild = api.getGuildMap().get(id);
         if(guild == null)
         {
             //We probably just left the guild and this event is trying to remove us from the guild, therefore ignore
@@ -47,7 +47,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
         }
 
         final long userId = content.getJSONObject("user").getLong("id");
-        MemberImpl member = (MemberImpl) guild.getMembersMap().remove(userId);
+        MemberImpl member = guild.getMembersMap().remove(userId);
 
         if (member == null)
         {
@@ -61,7 +61,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
             GuildVoiceStateImpl vState = (GuildVoiceStateImpl) member.getVoiceState();
             VoiceChannel channel = vState.getChannel();
             vState.setConnectedChannel(null);
-            ((VoiceChannelImpl) channel).getConnectedMembersMap().remove(member.getUser().getIdLong());
+            ((VoiceChannelImpl) channel).getConnectedMembersMap().remove(userId);
             api.getEventManager().handle(
                     new GuildVoiceLeaveEvent(
                             api, responseNumber,
@@ -70,18 +70,19 @@ public class GuildMemberRemoveHandler extends SocketHandler
 
         //The user is not in a different guild that we share
         // The user also is not a friend of this account in the case that the logged in account is a client account.
-        if (userId != api.getSelfUser().getIdLong() // don't remove selfUser from cache
-            && api.getGuildMap().valueCollection().stream().noneMatch(g -> ((GuildImpl) g).getMembersMap().containsKey(userId))
+        userCheck: if (userId != api.getSelfUser().getIdLong() // don't remove selfUser from cache
+            && api.getGuildMap().valueCollection().stream().noneMatch(g -> g.getMembersMap().containsKey(userId))
             && !(api.getAccountType() == AccountType.CLIENT && api.asClient().getFriendById(userId) != null))
         {
-            UserImpl user = (UserImpl) api.getUserMap().remove(userId);
+            UserImpl user = api.getUserMap().remove(userId);
             if (user.hasPrivateChannel())
             {
-                PrivateChannelImpl priv = (PrivateChannelImpl) user.getPrivateChannel();
+                PrivateChannelImpl priv = user.getPrivateChannel();
                 user.setFake(true);
                 priv.setFake(true);
                 api.getFakeUserMap().put(user.getIdLong(), user);
                 api.getFakePrivateChannelMap().put(priv.getIdLong(), priv);
+                break userCheck; //Breaks from check, cancel dispose
             }
             else if (api.getAccountType() == AccountType.CLIENT)
             {
@@ -94,15 +95,18 @@ public class GuildMemberRemoveHandler extends SocketHandler
                     {
                         user.setFake(true);
                         api.getFakeUserMap().put(user.getIdLong(), user);
-                        break; //Breaks from groups loop
+                        break userCheck; //Breaks from check, cancel dispose
                     }
                 }
             }
+            // no references left for this user, disposing...
+            user.dispose();
         }
         api.getEventManager().handle(
-                new GuildMemberLeaveEvent(
-                        api, responseNumber,
-                        guild, member));
+            new GuildMemberLeaveEvent(
+                api, responseNumber,
+                guild, member));
+        member.dispose();
         return null;
     }
 }

@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.client.entities;
+package net.dv8tion.jda.core.exceptions;
 
-import net.dv8tion.jda.core.entities.DisposingState;
-import net.dv8tion.jda.core.entities.User;
-
-public interface CallUser extends DisposingState<CallUser>
+public class DisposedException extends IllegalStateException
 {
-    User getUser();
-    Call getCall();
-    CallVoiceState getVoiceState();
-    boolean isRinging();
+    public DisposedException()
+    {
+        super("Cannot use this operation on a disposed/untracked entity. Please remove references for this object.");
+    }
 }

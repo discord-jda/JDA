@@ -29,7 +29,7 @@ public class GuildSyncHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject allContent, JSONObject content)
     {
         final long guildId = content.getLong("id");
         if (!api.getGuildMap().containsKey(guildId))
@@ -38,7 +38,7 @@ public class GuildSyncHandler extends SocketHandler
             return null;
         }
 
-        GuildImpl guild = (GuildImpl) api.getGuildMap().get(guildId);
+        GuildImpl guild = api.getGuildMap().get(guildId);
         JSONArray members = content.getJSONArray("members");
         JSONArray presences = content.getJSONArray("presences");
         api.getEntityBuilder().handleGuildSync(guild, members, presences);

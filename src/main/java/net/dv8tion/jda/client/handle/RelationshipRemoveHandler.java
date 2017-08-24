@@ -25,7 +25,6 @@ import net.dv8tion.jda.client.events.relationship.FriendRequestCanceledEvent;
 import net.dv8tion.jda.client.events.relationship.FriendRequestIgnoredEvent;
 import net.dv8tion.jda.client.events.relationship.UserUnblockedEvent;
 import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.entities.impl.PrivateChannelImpl;
 import net.dv8tion.jda.core.entities.impl.UserImpl;
@@ -42,7 +41,7 @@ public class RelationshipRemoveHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject allContent, JSONObject content)
     {
         final long userId = content.getLong("id");
         RelationshipType type = RelationshipType.fromKey(content.getInt("type"));
@@ -66,12 +65,12 @@ public class RelationshipRemoveHandler extends SocketHandler
         if (relationship.getType() == RelationshipType.FRIEND)
         {
             //The user is not in a different guild that we share
-            if (api.getGuildMap().valueCollection().stream().noneMatch(g -> ((GuildImpl) g).getMembersMap().containsKey(userId)))
+            if (api.getGuildMap().valueCollection().stream().noneMatch(g -> g.getMembersMap().containsKey(userId)))
             {
-                UserImpl user = (UserImpl) api.getUserMap().remove(userId);
+                UserImpl user = api.getUserMap().remove(userId);
                 if (user.hasPrivateChannel())
                 {
-                    PrivateChannelImpl priv = (PrivateChannelImpl) user.getPrivateChannel();
+                    PrivateChannelImpl priv = user.getPrivateChannel();
                     user.setFake(true);
                     priv.setFake(true);
                     api.getFakeUserMap().put(user.getIdLong(), user);

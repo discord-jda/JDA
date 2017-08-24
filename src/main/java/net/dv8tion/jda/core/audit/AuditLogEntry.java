@@ -36,7 +36,6 @@ import java.util.Map;
  */
 public class AuditLogEntry implements ISnowflake
 {
-
     protected final long id;
     protected final long targetId;
     protected final GuildImpl guild;

@@ -14,29 +14,33 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.events.guild.update;
+package net.dv8tion.jda.core.entities;
 
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.Region;
-import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.utils.Checks;
 
-public class GuildUpdateRegionEvent extends GenericGuildUpdateEvent
+import java.util.function.Consumer;
+
+public interface DisposingState<T extends DisposingState<T>>
 {
-    private final String oldRegion;
+    boolean isDisposed();
 
-    public GuildUpdateRegionEvent(JDA api, long responseNumber, Guild guild, String oldRegion)
+    @SuppressWarnings("unchecked")
+    default T ifDisposed(Consumer<T> then)
     {
-        super(api, responseNumber, guild);
-        this.oldRegion = oldRegion;
+        Checks.notNull(then, "Consumer");
+        T self = (T) this;
+        if (isDisposed())
+            then.accept(self);
+        return self;
     }
 
-    public Region getOldRegion()
+    @SuppressWarnings("unchecked")
+    default T ifNotDisposed(Consumer<T> then)
     {
-        return Region.fromKey(oldRegion);
-    }
-
-    public String getOldRegionRaw()
-    {
-        return oldRegion;
+        Checks.notNull(then, "Consumer");
+        T self = (T) this;
+        if (!isDisposed())
+            then.accept(self);
+        return self;
     }
 }

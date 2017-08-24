@@ -42,20 +42,21 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class GuildImpl implements Guild
+public class GuildImpl implements Guild, Disposable
 {
     private final long id;
-    private final JDAImpl api;
-    private final TLongObjectMap<TextChannel> textChannels = MiscUtil.newLongMap();
-    private final TLongObjectMap<VoiceChannel> voiceChannels = MiscUtil.newLongMap();
-    private final TLongObjectMap<Member> members = MiscUtil.newLongMap();
-    private final TLongObjectMap<Role> roles = MiscUtil.newLongMap();
-    private final TLongObjectMap<Emote> emotes = MiscUtil.newLongMap();
+    private final WeakReference<JDAImpl> apiRef; // using WeakReference to properly dispose
+    private final TLongObjectMap<TextChannelImpl> textChannels = MiscUtil.newLongMap();
+    private final TLongObjectMap<VoiceChannelImpl> voiceChannels = MiscUtil.newLongMap();
+    private final TLongObjectMap<MemberImpl> members = MiscUtil.newLongMap();
+    private final TLongObjectMap<RoleImpl> roles = MiscUtil.newLongMap();
+    private final TLongObjectMap<EmoteImpl> emotes = MiscUtil.newLongMap();
 
     private final TLongObjectMap<JSONObject> cachedPresences = MiscUtil.newLongMap();
 
@@ -68,10 +69,10 @@ public class GuildImpl implements Guild
     private String name;
     private String iconId;
     private String splashId;
-    private Region region;
+    private String region;
     private TextChannel publicChannel;
     private VoiceChannel afkChannel;
-    private Role publicRole;
+    private RoleImpl publicRole;
     private VerificationLevel verificationLevel;
     private NotificationLevel defaultNotificationLevel;
     private MFALevel mfaLevel;
@@ -79,11 +80,12 @@ public class GuildImpl implements Guild
     private Timeout afkTimeout;
     private boolean available;
     private boolean canSendVerification = false;
+    private boolean disposed = false;
 
     public GuildImpl(JDAImpl api, long id)
     {
         this.id = id;
-        this.api = api;
+        this.apiRef = new WeakReference<>(api);
     }
 
     @Override
@@ -130,7 +132,7 @@ public class GuildImpl implements Guild
 
         Route.CompiledRoute route = Route.Guilds.GET_WEBHOOKS.compile(getId());
 
-        return new RestAction<List<Webhook>>(api, route)
+        return new RestAction<List<Webhook>>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<List<Webhook>> request)
@@ -177,12 +179,19 @@ public class GuildImpl implements Guild
     @Override
     public Region getRegion()
     {
+        return Region.fromKey(region);
+    }
+
+    @Override
+    public String getRegionRaw()
+    {
         return region;
     }
 
     @Override
     public boolean isMember(User user)
     {
+        checkDisposed();
         return members.containsKey(user.getIdLong());
     }
 
@@ -201,24 +210,27 @@ public class GuildImpl implements Guild
     @Override
     public Member getMemberById(String userId)
     {
-        return members.get(MiscUtil.parseSnowflake(userId));
+        return getMemberById(MiscUtil.parseSnowflake(userId));
     }
 
     @Override
     public Member getMemberById(long userId)
     {
+        checkDisposed();
         return members.get(userId);
     }
 
     @Override
     public List<Member> getMembers()
     {
+        checkDisposed();
         return Collections.unmodifiableList(new ArrayList<>(members.valueCollection()));
     }
 
     @Override
     public List<Member> getMembersByName(String name, boolean ignoreCase)
     {
+        checkDisposed();
         Checks.notNull(name, "name");
         return Collections.unmodifiableList(members.valueCollection().stream()
                 .filter(m ->
@@ -231,6 +243,7 @@ public class GuildImpl implements Guild
     @Override
     public List<Member> getMembersByNickname(String nickname, boolean ignoreCase)
     {
+        checkDisposed();
         Checks.notNull(nickname, "nickname");
         return Collections.unmodifiableList(members.valueCollection().stream()
                 .filter(m ->
@@ -243,6 +256,7 @@ public class GuildImpl implements Guild
     @Override
     public List<Member> getMembersByEffectiveName(String name, boolean ignoreCase)
     {
+        checkDisposed();
         Checks.notNull(name, "name");
         return Collections.unmodifiableList(members.valueCollection().stream()
                 .filter(m ->
@@ -262,6 +276,7 @@ public class GuildImpl implements Guild
     @Override
     public List<Member> getMembersWithRoles(Collection<Role> roles)
     {
+        checkDisposed();
         Checks.notNull(roles, "roles");
         for (Role r : roles)
         {
@@ -278,18 +293,20 @@ public class GuildImpl implements Guild
     @Override
     public TextChannel getTextChannelById(String id)
     {
-        return textChannels.get(MiscUtil.parseSnowflake(id));
+        return getTextChannelById(MiscUtil.parseSnowflake(id));
     }
 
     @Override
     public TextChannel getTextChannelById(long id)
     {
+        checkDisposed();
         return textChannels.get(id);
     }
 
     @Override
     public List<TextChannel> getTextChannelsByName(String name, boolean ignoreCase)
     {
+        checkDisposed();
         Checks.notNull(name, "name");
         return Collections.unmodifiableList(textChannels.valueCollection().stream()
                 .filter(tc ->
@@ -302,6 +319,7 @@ public class GuildImpl implements Guild
     @Override
     public List<TextChannel> getTextChannels()
     {
+        checkDisposed();
         ArrayList<TextChannel> channels = new ArrayList<>(textChannels.valueCollection());
         channels.sort(Comparator.reverseOrder());
         return Collections.unmodifiableList(channels);
@@ -310,18 +328,20 @@ public class GuildImpl implements Guild
     @Override
     public VoiceChannel getVoiceChannelById(String id)
     {
-        return voiceChannels.get(MiscUtil.parseSnowflake(id));
+        return getVoiceChannelById(MiscUtil.parseSnowflake(id));
     }
 
     @Override
     public VoiceChannel getVoiceChannelById(long id)
     {
+        checkDisposed();
         return voiceChannels.get(id);
     }
 
     @Override
     public List<VoiceChannel> getVoiceChannelsByName(String name, boolean ignoreCase)
     {
+        checkDisposed();
         Checks.notNull(name, "name");
         return Collections.unmodifiableList(voiceChannels.valueCollection().stream()
             .filter(vc ->
@@ -334,6 +354,7 @@ public class GuildImpl implements Guild
     @Override
     public List<VoiceChannel> getVoiceChannels()
     {
+        checkDisposed();
         List<VoiceChannel> channels = new ArrayList<>(voiceChannels.valueCollection());
         channels.sort(Comparator.reverseOrder());
         return Collections.unmodifiableList(channels);
@@ -342,18 +363,20 @@ public class GuildImpl implements Guild
     @Override
     public Role getRoleById(String id)
     {
-        return roles.get(MiscUtil.parseSnowflake(id));
+        return getRoleById(MiscUtil.parseSnowflake(id));
     }
 
     @Override
     public Role getRoleById(long id)
     {
+        checkDisposed();
         return roles.get(id);
     }
 
     @Override
     public List<Role> getRoles()
     {
+        checkDisposed();
         List<Role> list = new ArrayList<>(roles.valueCollection());
         list.sort(Comparator.reverseOrder());
         return Collections.unmodifiableList(list);
@@ -362,6 +385,7 @@ public class GuildImpl implements Guild
     @Override
     public List<Role> getRolesByName(String name, boolean ignoreCase)
     {
+        checkDisposed();
         Checks.notNull(name, "name");
         return Collections.unmodifiableList(roles.valueCollection().stream()
                 .filter(r ->
@@ -374,24 +398,27 @@ public class GuildImpl implements Guild
     @Override
     public Emote getEmoteById(String id)
     {
-        return emotes.get(MiscUtil.parseSnowflake(id));
+        return getEmoteById(MiscUtil.parseSnowflake(id));
     }
 
     @Override
     public Emote getEmoteById(long id)
     {
+        checkDisposed();
         return emotes.get(id);
     }
 
     @Override
     public List<Emote> getEmotes()
     {
+        checkDisposed();
         return Collections.unmodifiableList(new LinkedList<>(emotes.valueCollection()));
     }
 
     @Override
     public List<Emote> getEmotesByName(String name, boolean ignoreCase)
     {
+        checkDisposed();
         Checks.notNull(name, "name");
         return Collections.unmodifiableList(emotes.valueCollection().parallelStream()
                 .filter(e ->
@@ -480,6 +507,7 @@ public class GuildImpl implements Guild
         {
             synchronized (mngLock)
             {
+                checkDisposed();
                 mng = manager;
                 if (mng == null)
                     mng = manager = new GuildManager(this);
@@ -496,6 +524,7 @@ public class GuildImpl implements Guild
         {
             synchronized (mngLock)
             {
+                checkDisposed();
                 mng = managerUpdatable;
                 if (mng == null)
                     mng = managerUpdatable = new GuildManagerUpdatable(this);
@@ -512,6 +541,7 @@ public class GuildImpl implements Guild
         {
             synchronized (mngLock)
             {
+                checkDisposed();
                 ctrl = controller;
                 if (ctrl == null)
                     ctrl = controller = new GuildController(this);
@@ -541,7 +571,7 @@ public class GuildImpl implements Guild
             throw new IllegalStateException("Cannot leave a guild that you are the owner of! Transfer guild ownership first!");
 
         Route.CompiledRoute route = Route.Self.LEAVE_GUILD.compile(getId());
-        return new RestAction<Void>(api, route)
+        return new RestAction<Void>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -557,7 +587,7 @@ public class GuildImpl implements Guild
     @Override
     public RestAction<Void> delete()
     {
-        if (api.getSelfUser().isMfaEnabled())
+        if (getJDA().getSelfUser().isMfaEnabled())
             throw new IllegalStateException("Cannot delete a guild without providing MFA code. Use Guild#delete(String)");
 
         return delete(null);
@@ -570,14 +600,14 @@ public class GuildImpl implements Guild
             throw new PermissionException("Cannot delete a guild that you do not own!");
 
         JSONObject mfaBody = null;
-        if (api.getSelfUser().isMfaEnabled())
+        if (getJDA().getSelfUser().isMfaEnabled())
         {
             Checks.notEmpty(mfaCode, "Provided MultiFactor Auth code");
             mfaBody = new JSONObject().put("code", mfaCode);
         }
 
         Route.CompiledRoute route = Route.Guilds.DELETE_GUILD.compile(getId());
-        return new RestAction<Void>(api, route, mfaBody)
+        return new RestAction<Void>(getJDA(), route, mfaBody)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -593,16 +623,17 @@ public class GuildImpl implements Guild
     @Override
     public AudioManager getAudioManager()
     {
-        if (!api.isAudioEnabled())
+        if (!getJDA().isAudioEnabled())
             throw new IllegalStateException("Audio is disabled. Cannot retrieve an AudioManager while audio is disabled.");
 
-        final TLongObjectMap<AudioManagerImpl> managerMap = api.getAudioManagerMap();
+        final TLongObjectMap<AudioManagerImpl> managerMap = getJDA().getAudioManagerMap();
         AudioManagerImpl mng = managerMap.get(id);
         if (mng == null)
         {
             // No previous manager found -> create one
             synchronized (managerMap)
             {
+                checkDisposed();
                 mng = managerMap.get(id);
                 if (mng == null)
                 {
@@ -619,12 +650,14 @@ public class GuildImpl implements Guild
     @Override
     public JDAImpl getJDA()
     {
-        return api;
+        checkDisposed();
+        return apiRef.get();
     }
 
     @Override
     public List<GuildVoiceState> getVoiceStates()
     {
+        checkDisposed();
         return Collections.unmodifiableList(
                 members.valueCollection().stream().map(Member::getVoiceState).collect(Collectors.toList()));
     }
@@ -656,7 +689,7 @@ public class GuildImpl implements Guild
     @Override
     public boolean checkVerification()
     {
-        if (api.getAccountType() == AccountType.BOT)
+        if (getJDA().getAccountType() == AccountType.BOT)
             return true;
         if(canSendVerification)
             return true;
@@ -666,10 +699,10 @@ public class GuildImpl implements Guild
                 if(ChronoUnit.MINUTES.between(getSelfMember().getJoinDate(), OffsetDateTime.now()) < 10)
                     break;
             case MEDIUM:
-                if(ChronoUnit.MINUTES.between(MiscUtil.getCreationTime(api.getSelfUser()), OffsetDateTime.now()) < 5)
+                if(ChronoUnit.MINUTES.between(MiscUtil.getCreationTime(getJDA().getSelfUser()), OffsetDateTime.now()) < 5)
                     break;
             case LOW:
-                if(!api.getSelfUser().isVerified())
+                if(!getJDA().getSelfUser().isVerified())
                     break;
             case NONE:
                 canSendVerification = true;
@@ -722,7 +755,7 @@ public class GuildImpl implements Guild
         return this;
     }
 
-    public GuildImpl setRegion(Region region)
+    public GuildImpl setRegion(String region)
     {
         this.region = region;
         return this;
@@ -740,7 +773,7 @@ public class GuildImpl implements Guild
         return this;
     }
 
-    public GuildImpl setPublicRole(Role publicRole)
+    public GuildImpl setPublicRole(RoleImpl publicRole)
     {
         this.publicRole = publicRole;
         return this;
@@ -779,34 +812,34 @@ public class GuildImpl implements Guild
 
     // -- Map getters --
 
-    public TLongObjectMap<TextChannel> getTextChannelsMap()
+    public TLongObjectMap<TextChannelImpl> getTextChannelMap()
     {
         return textChannels;
     }
 
-    public TLongObjectMap<VoiceChannel> getVoiceChannelMap()
+    public TLongObjectMap<VoiceChannelImpl> getVoiceChannelMap()
     {
         return voiceChannels;
     }
 
-    public TLongObjectMap<Member> getMembersMap()
+    public TLongObjectMap<MemberImpl> getMembersMap()
     {
         return members;
     }
 
-    public TLongObjectMap<Role> getRolesMap()
+    public TLongObjectMap<RoleImpl> getRolesMap()
     {
         return roles;
+    }
+
+    public TLongObjectMap<EmoteImpl> getEmoteMap()
+    {
+        return emotes;
     }
 
     public TLongObjectMap<JSONObject> getCachedPresenceMap()
     {
         return cachedPresences;
-    }
-
-    public TLongObjectMap<Emote> getEmoteMap()
-    {
-        return emotes;
     }
 
 
@@ -836,12 +869,12 @@ public class GuildImpl implements Guild
     @Override
     public RestAction<List<Invite>> getInvites()
     {
-        if (!this.getSelfMember().hasPermission(Permission.MANAGE_SERVER))
+        if (!getSelfMember().hasPermission(Permission.MANAGE_SERVER))
             throw new PermissionException(Permission.MANAGE_SERVER);
 
         final Route.CompiledRoute route = Route.Invites.GET_GUILD_INVITES.compile(getId());
 
-        return new RestAction<List<Invite>>(api, route)
+        return new RestAction<List<Invite>>(getJDA(), route)
         {
             @Override
             protected void handleResponse(final Response response, final Request<List<Invite>> request)
@@ -865,4 +898,34 @@ public class GuildImpl implements Guild
         };
     }
 
+    @Override
+    public boolean dispose()
+    {
+        textChannels.forEachValue(Disposable::dispose);
+        voiceChannels.forEachValue(Disposable::dispose);
+        members.forEachValue(Disposable::dispose);
+        roles.forEachValue(Disposable::dispose);
+        emotes.forEachValue(Disposable::dispose);
+        if (publicRole != null) // just in case
+            publicRole.dispose();
+
+        textChannels.clear();
+        voiceChannels.clear();
+        members.clear();
+        roles.clear();
+        emotes.clear();
+        synchronized (mngLock)
+        {
+            manager = null;
+            managerUpdatable = null;
+            controller = null;
+            return disposed = true;
+        }
+    }
+
+    @Override
+    public boolean isDisposed()
+    {
+        return disposed;
+    }
 }

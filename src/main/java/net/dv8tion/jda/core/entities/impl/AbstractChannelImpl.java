@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.handle.EventCache;
 import net.dv8tion.jda.core.managers.ChannelManager;
 import net.dv8tion.jda.core.managers.ChannelManagerUpdatable;
 import net.dv8tion.jda.core.requests.Request;
@@ -30,8 +31,8 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.InviteAction;
 import net.dv8tion.jda.core.requests.restaction.PermissionOverrideAction;
-import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.MiscUtil;
 import org.json.JSONArray;
 
 import java.util.ArrayList;
@@ -40,9 +41,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> implements Channel
+public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> implements Channel, Disposable
 {
-
     protected final long id;
     protected final GuildImpl guild;
 
@@ -54,6 +54,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
 
     protected String name;
     protected int rawPosition;
+    protected boolean disposed = false;
 
     public AbstractChannelImpl(long id, GuildImpl guild)
     {
@@ -88,18 +89,21 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     @Override
     public PermissionOverride getPermissionOverride(Member member)
     {
+        checkDisposed();
         return member != null ? overrides.get(member.getUser().getIdLong()) : null;
     }
 
     @Override
     public PermissionOverride getPermissionOverride(Role role)
     {
+        checkDisposed();
         return role != null ? overrides.get(role.getIdLong()) : null;
     }
 
     @Override
     public List<PermissionOverride> getPermissionOverrides()
     {
+        checkDisposed();
         // already unmodifiable!
         return Arrays.asList(overrides.values(new PermissionOverride[overrides.size()]));
     }
@@ -128,6 +132,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         {
             synchronized (mngLock)
             {
+                checkDisposed();
                 mng = manager;
                 if (mng == null)
                     mng = manager = new ChannelManager(this);
@@ -144,6 +149,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         {
             synchronized (mngLock)
             {
+                checkDisposed();
                 mng = managerUpdatable;
                 if (mng == null)
                     mng = managerUpdatable = new ChannelManagerUpdatable(this);
@@ -182,7 +188,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         if (overrides.containsKey(member.getUser().getIdLong()))
             throw new IllegalStateException("Provided member already has a PermissionOverride in this channel!");
 
-        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(getId(), member.getUser().getId());
+        Route.CompiledRoute route = Route.Channels.PUT_PERM_OVERRIDE.compile(getId(), member.getUser().getId());
         return new PermissionOverrideAction(getJDA(), route, this, member);
     }
 
@@ -197,7 +203,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         if (overrides.containsKey(role.getIdLong()))
             throw new IllegalStateException("Provided role already has a PermissionOverride in this channel!");
 
-        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(getId(), role.getId());
+        Route.CompiledRoute route = Route.Channels.PUT_PERM_OVERRIDE.compile(getId(), role.getId());
         return new PermissionOverrideAction(getJDA(), route, this, role);
     }
 
@@ -273,9 +279,31 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         return (T) this;
     }
 
+    @Override
+    public boolean dispose()
+    {
+        JDAImpl api = guild.getJDA();
+        if (api != null)
+            api.getEventCache().clear(id, EventCache.Type.CHANNEL);
+        overrides.clear();
+        synchronized (mngLock)
+        {
+            manager = null;
+            managerUpdatable = null;
+            return disposed = true;
+        }
+    }
+
+    @Override
+    public boolean isDisposed()
+    {
+        return disposed;
+    }
+
     protected void checkPermission(Permission permission) {checkPermission(permission, null);}
     protected void checkPermission(Permission permission, String message)
     {
+        checkDisposed();
         if (!guild.getSelfMember().hasPermission(this, permission))
         {
             if (message != null)

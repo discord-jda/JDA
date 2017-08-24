@@ -450,7 +450,7 @@ public class PermOverrideManagerUpdatable
                 .put("deny", getDenyBits());
 
         reset();
-        Route.CompiledRoute route = Route.Channels.MODIFY_PERM_OVERRIDE.compile(override.getChannel().getId(), targetId);
+        Route.CompiledRoute route = Route.Channels.PUT_PERM_OVERRIDE.compile(override.getChannel().getId(), targetId);
         return new AuditableRestAction<Void>(getJDA(), route, body)
         {
             @Override

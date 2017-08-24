@@ -22,7 +22,6 @@ public abstract class SocketHandler
 {
     protected final JDAImpl api;
     protected long responseNumber;
-    protected JSONObject allContent;
 
     public SocketHandler(JDAImpl api)
     {
@@ -32,9 +31,8 @@ public abstract class SocketHandler
 
     public final void handle(long responseTotal, JSONObject o)
     {
-        this.allContent = o;
         this.responseNumber = responseTotal;
-        final Long guildId = handleInternally(o.getJSONObject("d"));
+        final Long guildId = handleInternally(o, o.getJSONObject("d"));
         if (guildId != null)
             api.getGuildLock().queue(guildId, o);
     }
@@ -46,5 +44,22 @@ public abstract class SocketHandler
      * @return
      *      Guild-id if that guild has a lock, or null if successful
      */
-    protected abstract Long handleInternally(JSONObject content);
+    protected abstract Long handleInternally(JSONObject allContent, JSONObject content);
+
+    /**
+     * Nop implementation of SocketHandler for unsupported features
+     */
+    public static class Empty extends SocketHandler
+    {
+        public Empty(JDAImpl api)
+        {
+            super(api);
+        }
+
+        @Override
+        protected Long handleInternally(JSONObject allContent, JSONObject content)
+        {
+            return null;
+        }
+    }
 }

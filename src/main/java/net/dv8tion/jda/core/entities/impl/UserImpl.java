@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.handle.EventCache;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
@@ -27,26 +28,28 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
 import java.util.FormattableFlags;
 import java.util.Formatter;
 import java.util.List;
 
-public class UserImpl implements User
+public class UserImpl implements User, Disposable
 {
     protected final long id;
-    protected final JDAImpl api;
+    protected final WeakReference<JDAImpl> apiRef;
 
     protected short discriminator;
     protected String name;
     protected String avatarId;
-    protected PrivateChannel privateChannel;
+    protected PrivateChannelImpl privateChannel;
     protected boolean bot;
     protected boolean fake = false;
+    protected boolean disposed = false;
 
     public UserImpl(long id, JDAImpl api)
     {
         this.id = id;
-        this.api = api;
+        this.apiRef = new WeakReference<>(api);
     }
 
     @Override
@@ -102,6 +105,7 @@ public class UserImpl implements User
     @Override
     public RestAction<PrivateChannel> openPrivateChannel()
     {
+        checkDisposed();
         if (privateChannel != null)
             return new RestAction.EmptyRestAction<>(getJDA(), privateChannel);
 
@@ -110,14 +114,14 @@ public class UserImpl implements User
 
         Route.CompiledRoute route = Route.Self.CREATE_PRIVATE_CHANNEL.compile();
         JSONObject body = new JSONObject().put("recipient_id", getId());
-        return new RestAction<PrivateChannel>(api, route, body)
+        return new RestAction<PrivateChannel>(getJDA(), route, body)
         {
             @Override
             protected void handleResponse(Response response, Request<PrivateChannel> request)
             {
                 if (response.isOk())
                 {
-                    PrivateChannel priv = api.getEntityBuilder().createPrivateChannel(response.getObject());
+                    PrivateChannelImpl priv = api.getEntityBuilder().createPrivateChannel(response.getObject());
                     UserImpl.this.privateChannel = priv;
                     request.onSuccess(priv);
                 }
@@ -135,7 +139,7 @@ public class UserImpl implements User
         return getJDA().getMutualGuilds(this);
     }
 
-    public PrivateChannel getPrivateChannel()
+    public PrivateChannelImpl getPrivateChannel()
     {
         if (!hasPrivateChannel())
             throw new IllegalStateException("There is no PrivateChannel for this user yet! Use User#openPrivateChannel() first!");
@@ -152,7 +156,8 @@ public class UserImpl implements User
     @Override
     public JDA getJDA()
     {
-        return api;
+        checkDisposed();
+        return apiRef.get();
     }
 
     @Override
@@ -194,6 +199,21 @@ public class UserImpl implements User
         return "U:" + getName() + '(' + id + ')';
     }
 
+    @Override
+    public boolean dispose()
+    {
+        JDAImpl api = apiRef.get();
+        if (api != null)
+            api.getEventCache().clear(id, EventCache.Type.USER);
+        return disposed = privateChannel == null || privateChannel.dispose();
+    }
+
+    @Override
+    public boolean isDisposed()
+    {
+        return disposed;
+    }
+
     // -- Setters --
 
     public UserImpl setName(String name)
@@ -214,7 +234,7 @@ public class UserImpl implements User
         return this;
     }
 
-    public UserImpl setPrivateChannel(PrivateChannel privateChannel)
+    public UserImpl setPrivateChannel(PrivateChannelImpl privateChannel)
     {
         this.privateChannel = privateChannel;
         return this;

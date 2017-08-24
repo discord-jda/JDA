@@ -33,7 +33,7 @@ public class ChannelRecipientRemoveHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject allContent, JSONObject content)
     {
         final long groupId = content.getLong("channel_id");
         final long userId = content.getJSONObject("user").getLong("id");

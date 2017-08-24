@@ -26,20 +26,19 @@ import java.util.Locale;
 
 public class UserSettingsImpl implements UserSettings
 {
-
-    private final JDA api;
+    private final JDAClientImpl clientAPI;
 
     private OnlineStatus status = OnlineStatus.UNKNOWN;
 
-    public UserSettingsImpl(JDA api)
+    public UserSettingsImpl(JDAClientImpl clientAPI)
     {
-        this.api = api;
+        this.clientAPI = clientAPI;
     }
 
     @Override
     public JDA getJDA()
     {
-        return api;
+        return clientAPI.getJDA();
     }
 
 

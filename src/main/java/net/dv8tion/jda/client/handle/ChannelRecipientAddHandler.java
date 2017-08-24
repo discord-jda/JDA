@@ -20,9 +20,8 @@ import net.dv8tion.jda.client.entities.impl.CallImpl;
 import net.dv8tion.jda.client.entities.impl.CallUserImpl;
 import net.dv8tion.jda.client.entities.impl.GroupImpl;
 import net.dv8tion.jda.client.events.group.GroupUserJoinEvent;
-import net.dv8tion.jda.core.entities.EntityBuilder;
-import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.entities.impl.UserImpl;
 import net.dv8tion.jda.core.handle.EventCache;
 import net.dv8tion.jda.core.handle.SocketHandler;
 import org.json.JSONObject;
@@ -35,7 +34,7 @@ public class ChannelRecipientAddHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject allContent, JSONObject content)
     {
         final long groupId = content.getLong("channel_id");
         JSONObject userJson = content.getJSONObject("user");
@@ -48,7 +47,7 @@ public class ChannelRecipientAddHandler extends SocketHandler
             return null;
         }
 
-        User user = api.getEntityBuilder().createFakeUser(userJson, true);
+        UserImpl user = api.getEntityBuilder().createFakeUser(userJson, true);
         group.getUserMap().put(user.getIdLong(), user);
 
         CallImpl call = (CallImpl) group.getCurrentCall();

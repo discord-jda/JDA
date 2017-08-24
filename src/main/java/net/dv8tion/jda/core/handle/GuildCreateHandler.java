@@ -31,17 +31,18 @@ public class GuildCreateHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject allContent, JSONObject content)
     {
         Guild g = api.getGuildById(content.getLong("id"));
         Boolean wasAvail = (g == null || g.getName() == null) ? null : g.isAvailable();
         api.getEntityBuilder().createGuildFirstPass(content, guild ->
         {
+            final ReadyHandler readyHandler = api.getClient().getHandler("READY");
             if (guild.isAvailable())
             {
                 if (!api.getClient().isReady())
                 {
-                    api.getClient().<ReadyHandler>getHandler("READY").guildSetupComplete(guild);
+                    readyHandler.guildSetupComplete(guild);
                 }
                 else
                 {
@@ -70,7 +71,7 @@ public class GuildCreateHandler extends SocketHandler
             {
                 if (!api.getClient().isReady())
                 {
-                    api.getClient().<ReadyHandler>getHandler("READY").acknowledgeGuild(guild, false, false, false);
+                    readyHandler.acknowledgeGuild(guild, false, false, false);
                 }
                 else
                 {

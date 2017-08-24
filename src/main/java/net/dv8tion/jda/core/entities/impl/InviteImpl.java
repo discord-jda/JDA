@@ -36,14 +36,14 @@ public class InviteImpl implements Invite
     private final JDAImpl api;
     private final Channel channel;
     private final String code;
-    private final boolean expanded;
     private final Guild guild;
     private final User inviter;
-    private final int maxAge;
-    private final int maxUses;
-    private final boolean temporary;
     private final OffsetDateTime timeCreated;
     private final int uses;
+    private final int maxAge;
+    private final int maxUses;
+    private final boolean expanded;
+    private final boolean temporary;
 
     public InviteImpl(final JDAImpl api, final String code, final boolean expanded, final User inviter,
             final int maxAge, final int maxUses, final boolean temporary, final OffsetDateTime timeCreated,

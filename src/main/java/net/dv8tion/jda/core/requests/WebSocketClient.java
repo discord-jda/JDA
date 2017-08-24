@@ -19,6 +19,7 @@ package net.dv8tion.jda.core.requests;
 import com.neovisionaries.ws.client.*;
 import gnu.trove.iterator.TLongObjectIterator;
 import gnu.trove.map.TLongObjectMap;
+import net.dv8tion.jda.client.entities.impl.GroupImpl;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.client.handle.*;
 import net.dv8tion.jda.core.AccountType;
@@ -27,10 +28,10 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.WebSocketCode;
 import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
+import net.dv8tion.jda.core.entities.impl.Disposable;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
-import net.dv8tion.jda.core.entities.impl.GuildImpl;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.entities.impl.*;
 import net.dv8tion.jda.core.events.*;
 import net.dv8tion.jda.core.handle.*;
 import net.dv8tion.jda.core.managers.AudioManager;
@@ -465,6 +466,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
             api.setStatus(JDA.Status.SHUTDOWN);
             api.getEventManager().handle(new ShutdownEvent(api, OffsetDateTime.now(), rawCloseCode));
+            invalidate();
         }
         else
         {
@@ -658,13 +660,25 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         chunkingAndSyncing = false;
         sentAuthInfo = false;
 
-        api.getTextChannelMap().clear();
-        api.getVoiceChannelMap().clear();
-        api.getGuildMap().clear();
-        api.getUserMap().clear();
-        api.getPrivateChannelMap().clear();
-        api.getFakeUserMap().clear();
-        api.getFakePrivateChannelMap().clear();
+        TLongObjectMap<TextChannelImpl> textChannels = api.getTextChannelMap();
+        TLongObjectMap<VoiceChannelImpl> voiceChannels = api.getVoiceChannelMap();
+        TLongObjectMap<GuildImpl> guilds = api.getGuildMap();
+        TLongObjectMap<UserImpl> users = api.getUserMap();
+        TLongObjectMap<PrivateChannelImpl> privateChannels = api.getPrivateChannelMap();
+        TLongObjectMap<UserImpl> fakeUsers = api.getFakeUserMap();
+        TLongObjectMap<PrivateChannelImpl> fakePrivateChannels = api.getFakePrivateChannelMap();
+
+        guilds.forEachValue(Disposable::dispose);
+        users.forEachValue(Disposable::dispose);
+        fakeUsers.forEachValue(Disposable::dispose);
+
+        textChannels.clear();
+        voiceChannels.clear();
+        guilds.clear();
+        users.clear();
+        privateChannels.clear();
+        fakeUsers.clear();
+        fakePrivateChannels.clear();
         api.getEntityBuilder().clearCache();
         api.getEventCache().clear();
         api.getGuildLock().clear();
@@ -675,8 +689,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             JDAClientImpl client = (JDAClientImpl) api.asClient();
 
+            TLongObjectMap<GroupImpl> groups = client.getGroupMap();
+            groups.forEachValue(Disposable::dispose);
+
+            groups.clear();
             client.getRelationshipMap().clear();
-            client.getGroupMap().clear();
             client.getCallUserMap().clear();
         }
     }
@@ -688,7 +705,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         api.getAudioManagerMap().transformValues(mng ->
         {
-            final long guildId = mng.getGuild().getIdLong();
+            final long guildId = mng.getGuildIdLong();
             ConnectionListener listener = mng.getConnectionListener();
 
             GuildImpl guild = (GuildImpl) api.getGuildById(guildId);
@@ -710,6 +727,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 newMng.setReceivingHandler(mng.getReceiveHandler());
                 newMng.setConnectionListener(mng.getConnectionListener());
                 newMng.setAutoReconnect(mng.isAutoReconnect());
+                //TODO: make sure to dispose old manager once this changes
 
                 if (mng.isConnected() || mng.isAttemptingToConnect())
                 {
@@ -1017,14 +1035,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             handlers.put("RELATIONSHIP_ADD",         new RelationshipAddHandler(api));
             handlers.put("RELATIONSHIP_REMOVE",      new RelationshipRemoveHandler(api));
 
-            handlers.put("MESSAGE_ACK", new SocketHandler(api)
-            {
-                @Override
-                protected Long handleInternally(JSONObject content)
-                {
-                    return null;
-                }
-            });
+            handlers.put("MESSAGE_ACK", new SocketHandler.Empty(api));
         }
     }
 

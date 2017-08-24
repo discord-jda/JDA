@@ -37,7 +37,7 @@ public class MessageReactionBulkRemoveHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject allContent, JSONObject content)
     {
         final long messageId = content.getLong("message_id");
         final long channelId = content.getLong("channel_id");
@@ -56,8 +56,9 @@ public class MessageReactionBulkRemoveHandler extends SocketHandler
         }
         if (channel == null)
         {
-            api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
-            EventCache.LOG.debug("Received a reaction for a channel that JDA does not currently have cached");
+//            api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+//            EventCache.LOG.debug("Received a reaction for a channel that JDA does not currently have cached");
+            // Don't cache message events from unless they are MESSAGE_CREATE
             return null;
         }
         IEventManager manager = api.getEventManager();

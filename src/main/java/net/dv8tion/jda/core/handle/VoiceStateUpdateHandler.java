@@ -20,6 +20,7 @@ import net.dv8tion.jda.client.entities.Call;
 import net.dv8tion.jda.client.entities.CallUser;
 import net.dv8tion.jda.client.entities.CallableChannel;
 import net.dv8tion.jda.client.entities.impl.CallImpl;
+import net.dv8tion.jda.client.entities.impl.CallUserImpl;
 import net.dv8tion.jda.client.entities.impl.CallVoiceStateImpl;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.client.events.call.voice.CallVoiceJoinEvent;
@@ -46,20 +47,20 @@ public class VoiceStateUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject allContent, JSONObject content)
     {
         final Long guildId = content.has("guild_id") ? content.getLong("guild_id") : null;
         if (guildId != null && api.getGuildLock().isLocked(guildId))
             return guildId;
 
         if (guildId != null)
-            handleGuildVoiceState(content);
+            handleGuildVoiceState(allContent, content);
         else
-            handleCallVoiceState(content);
+            handleCallVoiceState(allContent, content);
         return null;
     }
 
-    private void handleGuildVoiceState(JSONObject content)
+    private void handleGuildVoiceState(JSONObject allContent, JSONObject content)
     {
         final long userId = content.getLong("user_id");
         final long guildId = content.getLong("guild_id");
@@ -183,7 +184,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
             api.getEventManager().handle(new GuildVoiceDeafenEvent(api, responseNumber, member));
     }
 
-    private void handleCallVoiceState(JSONObject content)
+    private void handleCallVoiceState(JSONObject allContent, JSONObject content)
     {
         final long userId = content.getLong("user_id");
         final Long channelId = !content.isNull("channel_id") ? content.getLong("channel_id") : null;
@@ -215,7 +216,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
                 return;
             }
 
-            CallUser cUser = ((JDAClientImpl) api.asClient()).getCallUserMap().get(userId);
+            CallUserImpl cUser = ((JDAClientImpl) api.asClient()).getCallUserMap().get(userId);
             if (cUser != null && channelId != cUser.getCall().getCallableChannel().getIdLong())
             {
                 WebSocketClient.LOG.fatal("Received a VOICE_STATE_UPDATE for a user joining a call, but the user was already in a different call! Big error! JSON: " + content);

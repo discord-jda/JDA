@@ -21,12 +21,7 @@ import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.client.events.group.GroupLeaveEvent;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.entities.PrivateChannel;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.VoiceChannel;
-import net.dv8tion.jda.core.entities.impl.GuildImpl;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.entities.impl.UserImpl;
+import net.dv8tion.jda.core.entities.impl.*;
 import net.dv8tion.jda.core.events.channel.priv.PrivateChannelDeleteEvent;
 import net.dv8tion.jda.core.events.channel.text.TextChannelDeleteEvent;
 import net.dv8tion.jda.core.events.channel.voice.VoiceChannelDeleteEvent;
@@ -41,7 +36,7 @@ public class ChannelDeleteHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject allContent, JSONObject content)
     {
         ChannelType type = ChannelType.fromId(content.getInt("type"));
 
@@ -59,8 +54,8 @@ public class ChannelDeleteHandler extends SocketHandler
         {
             case TEXT:
             {
-                GuildImpl guild = (GuildImpl) api.getGuildMap().get(guildId);
-                TextChannel channel = api.getTextChannelMap().remove(channelId);
+                GuildImpl guild = api.getGuildMap().get(guildId);
+                TextChannelImpl channel = api.getTextChannelMap().remove(channelId);
                 if (channel == null)
                 {
                     api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
@@ -68,17 +63,18 @@ public class ChannelDeleteHandler extends SocketHandler
                     return null;
                 }
 
-                guild.getTextChannelsMap().remove(channel.getIdLong());
+                guild.getTextChannelMap().remove(channel.getIdLong());
                 api.getEventManager().handle(
-                        new TextChannelDeleteEvent(
-                                api, responseNumber,
-                                channel));
+                    new TextChannelDeleteEvent(
+                        api, responseNumber,
+                        channel));
+                channel.dispose();
                 break;
             }
             case VOICE:
             {
-                GuildImpl guild = (GuildImpl) api.getGuildMap().get(guildId);
-                VoiceChannel channel = guild.getVoiceChannelMap().remove(channelId);
+                GuildImpl guild = api.getGuildMap().get(guildId);
+                VoiceChannelImpl channel = guild.getVoiceChannelMap().remove(channelId);
                 if (channel == null)
                 {
                     api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
@@ -89,20 +85,20 @@ public class ChannelDeleteHandler extends SocketHandler
                 //We use this instead of getAudioManager(Guild) so we don't create a new instance. Efficiency!
                 AudioManagerImpl manager = api.getAudioManagerMap().get(guild.getIdLong());
                 if (manager != null && manager.isConnected()
-                        && manager.getConnectedChannel().getIdLong() == channel.getIdLong())
-                {
+                        && manager.getConnectedChannel().getIdLong() == channelId)
                     manager.closeAudioConnection(ConnectionStatus.DISCONNECTED_CHANNEL_DELETED);
-                }
+
                 guild.getVoiceChannelMap().remove(channel.getIdLong());
                 api.getEventManager().handle(
-                        new VoiceChannelDeleteEvent(
-                                api, responseNumber,
-                                channel));
+                    new VoiceChannelDeleteEvent(
+                        api, responseNumber,
+                        channel));
+                channel.dispose();
                 break;
             }
             case PRIVATE:
             {
-                PrivateChannel channel = api.getPrivateChannelMap().remove(channelId);
+                PrivateChannelImpl channel = api.getPrivateChannelMap().remove(channelId);
 
                 if (channel == null)
                     channel = api.getFakePrivateChannelMap().remove(channelId);
@@ -119,16 +115,17 @@ public class ChannelDeleteHandler extends SocketHandler
                 ((UserImpl) channel.getUser()).setPrivateChannel(null);
 
                 api.getEventManager().handle(
-                        new PrivateChannelDeleteEvent(
-                                api, responseNumber,
-                                channel));
+                    new PrivateChannelDeleteEvent(
+                        api, responseNumber,
+                        channel));
+                channel.dispose();
                 break;
             }
             case GROUP:
             {
                 //TODO: close call on group leave (kill audio manager)
                 final long groupId = content.getLong("id");
-                GroupImpl group = (GroupImpl) ((JDAClientImpl) api.asClient()).getGroupMap().remove(groupId);
+                GroupImpl group = ((JDAClientImpl) api.asClient()).getGroupMap().remove(groupId);
                 if (group == null)
                 {
                     api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
@@ -147,15 +144,17 @@ public class ChannelDeleteHandler extends SocketHandler
                             && api.asClient().getGroups().stream().noneMatch(g -> g.getUsers().contains(user)))
                     {
                         api.getFakeUserMap().remove(userId);
+                        user.dispose(); // dispose fake user before removing it entirely
                     }
 
                     return true;
                 });
 
                 api.getEventManager().handle(
-                        new GroupLeaveEvent(
-                                api, responseNumber,
-                                group));
+                    new GroupLeaveEvent(
+                        api, responseNumber,
+                        group));
+                group.dispose();
                 break;
             }
             default:

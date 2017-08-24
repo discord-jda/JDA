@@ -22,14 +22,15 @@ import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.handle.EventCache;
 import net.dv8tion.jda.core.managers.RoleManager;
 import net.dv8tion.jda.core.managers.RoleManagerUpdatable;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.core.utils.PermissionUtil;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.PermissionUtil;
 
 import java.awt.Color;
 import java.time.OffsetDateTime;
@@ -37,10 +38,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class RoleImpl implements Role
+public class RoleImpl implements Role, Disposable
 {
     private final long id;
-    private final Guild guild;
+    private final GuildImpl guild;
 
     private final Object mngLock = new Object();
     private volatile RoleManager manager;
@@ -51,10 +52,11 @@ public class RoleImpl implements Role
     private boolean managed;
     private boolean hoisted;
     private boolean mentionable;
+    private boolean disposed = false;
     private long rawPermissions;
     private int rawPosition;
 
-    public RoleImpl(long id, Guild guild)
+    public RoleImpl(long id, GuildImpl guild)
     {
         this.id = id;
         this.guild = guild;
@@ -194,6 +196,7 @@ public class RoleImpl implements Role
         {
             synchronized (mngLock)
             {
+                checkDisposed();
                 mng = manager;
                 if (mng == null)
                     mng = manager = new RoleManager(this);
@@ -210,6 +213,7 @@ public class RoleImpl implements Role
         {
             synchronized (mngLock)
             {
+                checkDisposed();
                 mng = managerUpdatable;
                 if (mng == null)
                     mng = managerUpdatable = new RoleManagerUpdatable(this);
@@ -300,6 +304,26 @@ public class RoleImpl implements Role
         // discord deals with hierarchy. The more recent a role was created, the lower its hierarchy ranking when
         // it shares the same position as another role.
         return rTime.compareTo(thisTime);
+    }
+
+    @Override
+    public boolean dispose()
+    {
+        JDAImpl api = guild.getJDA();
+        if (api != null)
+            api.getEventCache().clear(id, EventCache.Type.ROLE);
+        synchronized (mngLock)
+        {
+            manager = null;
+            managerUpdatable = null;
+            return disposed = true;
+        }
+    }
+
+    @Override
+    public boolean isDisposed()
+    {
+        return disposed;
     }
 
     // -- Setters --

@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.client.entities;
+package net.dv8tion.jda.core.entities.impl;
 
-import net.dv8tion.jda.core.entities.DisposingState;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.exceptions.DisposedException;
 
-public interface CallUser extends DisposingState<CallUser>
+public interface Disposable
 {
-    User getUser();
-    Call getCall();
-    CallVoiceState getVoiceState();
-    boolean isRinging();
+    boolean dispose();
+    boolean isDisposed();
+    default void checkDisposed()
+    {
+        if (isDisposed())
+            throw new DisposedException();
+    }
 }

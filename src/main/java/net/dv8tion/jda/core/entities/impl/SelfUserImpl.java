@@ -47,7 +47,7 @@ public class SelfUserImpl extends UserImpl implements SelfUser
     }
 
     @Override
-    public PrivateChannel getPrivateChannel()
+    public PrivateChannelImpl getPrivateChannel()
     {
         throw new UnsupportedOperationException("You cannot get a PrivateChannel with yourself (SelfUser)");
     }
@@ -73,7 +73,7 @@ public class SelfUserImpl extends UserImpl implements SelfUser
     @Override
     public String getEmail() throws AccountTypeException
     {
-        if (api.getAccountType() != AccountType.CLIENT)
+        if (getJDA().getAccountType() != AccountType.CLIENT)
             throw new AccountTypeException(AccountType.CLIENT, "Email retrieval can only be done on CLIENT accounts!");
         return email;
     }
@@ -110,7 +110,18 @@ public class SelfUserImpl extends UserImpl implements SelfUser
         return mng;
     }
 
-//    @Override
+    @Override
+    public boolean dispose()
+    {
+        synchronized (mngLock)
+        {
+            manager = null;
+            managerUpdatable = null;
+        }
+        return super.dispose();
+    }
+
+    //    @Override
 //    public String getAuthUrl(Permission... perms)
 //    {
 //        return ApplicationUtil.getAuthInvite(getJDA(), perms);

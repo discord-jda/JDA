@@ -29,13 +29,12 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.managers.AudioManager;
+import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.NativeUtil;
 import net.dv8tion.jda.core.utils.PermissionUtil;
-import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -51,7 +50,6 @@ public class AudioManagerImpl implements AudioManager
 
     public final Object CONNECTION_LOCK = new Object();
 
-    protected final JDAImpl api;
     protected GuildImpl guild;
     protected AudioConnection audioConnection = null;
     protected VoiceChannel queuedAudioConnection = null;
@@ -70,7 +68,6 @@ public class AudioManagerImpl implements AudioManager
     public AudioManagerImpl(GuildImpl guild)
     {
         this.guild = guild;
-        this.api = this.guild.getJDA();
         init(); //Just to make sure that the audio libs have been initialized.
     }
 
@@ -86,7 +83,7 @@ public class AudioManagerImpl implements AudioManager
 
         if (!AUDIO_SUPPORTED)
             throw new UnsupportedOperationException("Sorry! Audio is disabled due to an internal JDA error! Contact Dev!");
-        if (!guild.equals(channel.getGuild()))
+        if (!channel.getGuild().equals(getGuild()))
             throw new IllegalArgumentException("The provided VoiceChannel is not a part of the Guild that this AudioManager handles." +
                     "Please provide a VoiceChannel from the proper Guild");
         if (!guild.isAvailable())
@@ -100,7 +97,7 @@ public class AudioManagerImpl implements AudioManager
         {
             //Start establishing connection, joining provided channel
             queuedAudioConnection = channel;
-            api.getClient().queueAudioConnect(channel);
+            guild.getJDA().getClient().queueAudioConnect(channel);
         }
         else
         {
@@ -122,7 +119,7 @@ public class AudioManagerImpl implements AudioManager
                             "Unable to connect to VoiceChannel due to userlimit! Requires permission VOICE_MOVE_OTHERS to bypass");
             }
 
-            api.getClient().queueAudioConnect(channel);
+            guild.getJDA().getClient().queueAudioConnect(channel);
             audioConnection.setChannel(channel);
         }
     }
@@ -137,7 +134,7 @@ public class AudioManagerImpl implements AudioManager
     {
         synchronized (CONNECTION_LOCK)
         {
-            api.getClient().getQueuedAudioConnectionMap().remove(guild.getIdLong());
+            guild.getJDA().getClient().getQueuedAudioConnectionMap().remove(guild.getIdLong());
             this.queuedAudioConnection = null;
             if (audioConnection == null)
                 return;
@@ -149,13 +146,19 @@ public class AudioManagerImpl implements AudioManager
     @Override
     public JDA getJDA()
     {
-        return api;
+        return getGuild().getJDA();
     }
 
     @Override
     public Guild getGuild()
     {
+        guild.checkDisposed();
         return guild;
+    }
+
+    public long getGuildIdLong()
+    {
+        return guild.getIdLong();
     }
 
     @Override
@@ -347,8 +350,14 @@ public class AudioManagerImpl implements AudioManager
                             .put("self_mute", isSelfMuted())
                             .put("self_deaf", isSelfDeafened())
                     );
-            api.getClient().send(voiceStateChange.toString());
+            guild.getJDA().getClient().send(voiceStateChange.toString());
         }
+    }
+
+    @Override
+    public boolean isDisposed()
+    {
+        return guild.isDisposed();
     }
 
     //Load the Opus library.

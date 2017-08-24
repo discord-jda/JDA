@@ -40,7 +40,6 @@ import java.util.Objects;
  */
 public class MessageReaction
 {
-
     private final MessageChannel channel;
     private final ReactionEmote emote;
     private final long messageId;

@@ -35,19 +35,23 @@ public class PresenceUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject allContent, JSONObject content)
     {
         //Do a pre-check to see if this is for a Guild, and if it is, if the guild is currently locked.
+        long guildId;
         if (content.has("guild_id"))
         {
-            final long guildId = content.getLong("guild_id");
-            if (api.getGuildLock().isLocked(guildId))
+            if (api.getGuildLock().isLocked(guildId = content.getLong("guild_id")))
                 return guildId;
+        }
+        else
+        {
+            guildId = 0;
         }
 
         JSONObject jsonUser = content.getJSONObject("user");
         final long userId = jsonUser.getLong("id");
-        UserImpl user = (UserImpl) api.getUserMap().get(userId);
+        UserImpl user = api.getUserMap().get(userId);
 
         //If we do know about the user, lets update the user's specific info.
         // Afterwards, we will see if we already have them cached in the specific guild
@@ -114,8 +118,15 @@ public class PresenceUpdateHandler extends SocketHandler
             // If we aren't we'll be dealing with the Relation system.
             if (content.has("guild_id"))
             {
-                GuildImpl guild = (GuildImpl) api.getGuildById(content.getLong("guild_id"));
-                MemberImpl member = (MemberImpl) guild.getMember(user);
+                GuildImpl guild = (GuildImpl) api.getGuildById(guildId);
+                if (guild == null)
+                {
+                    EventCache.LOG.debug("Received a PRESENCE_UPDATE for a Guild that isn't cached yet. ID: " + guildId);
+                    api.getEventCache().cache(EventCache.Type.GUILD, guildId, () -> handle(responseNumber, allContent));
+                    return null;
+                }
+
+                MemberImpl member = guild.getMembersMap().get(user.getIdLong());
 
                 //If the Member is null, then User isn't in the Guild.
                 //This is either because this PRESENCE_UPDATE was received before the GUILD_MEMBER_ADD event
@@ -157,7 +168,7 @@ public class PresenceUpdateHandler extends SocketHandler
             }
             else
             {
-                //In this case, this PRESENCE_UPDATE is for a Relation.
+                //In this case, this PRESENCE_UPDATE is for a Relationship.
 
             }
         }
@@ -179,7 +190,14 @@ public class PresenceUpdateHandler extends SocketHandler
             //If this was for a Guild, cache it in the Guild for later use in GUILD_MEMBER_ADD
             if (content.has("guild_id"))
             {
-                GuildImpl guild = (GuildImpl) api.getGuildById(content.getLong("guild_id"));
+                GuildImpl guild = api.getGuildMap().get(guildId);
+                if (guild == null)
+                {
+                    EventCache.LOG.debug("Received a PRESENCE_UPDATE for a Guild that isn't cached yet. ID: " + guildId);
+                    api.getEventCache().cache(EventCache.Type.GUILD, guildId, () -> handle(responseNumber, allContent));
+                    return null;
+                }
+
                 guild.getCachedPresenceMap().put(userId, content);
             }
             else

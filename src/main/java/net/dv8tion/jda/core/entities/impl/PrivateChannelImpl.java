@@ -17,6 +17,7 @@
 package net.dv8tion.jda.core.entities.impl;
 
 import net.dv8tion.jda.client.entities.Call;
+import net.dv8tion.jda.client.entities.impl.CallImpl;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.ChannelType;
@@ -30,16 +31,17 @@ import net.dv8tion.jda.core.requests.Route;
 
 import java.io.InputStream;
 
-public class PrivateChannelImpl implements PrivateChannel
+public class PrivateChannelImpl implements PrivateChannel, Disposable
 {
     private final long id;
-    private final User user;
+    private final UserImpl user;
 
     private long lastMessageId;
-    private Call currentCall = null;
+    private CallImpl currentCall = null;
     private boolean fake = false;
+    private boolean disposed = false;
 
-    public PrivateChannelImpl(long id, User user)
+    public PrivateChannelImpl(long id, UserImpl user)
     {
         this.id = id;
         this.user = user;
@@ -152,7 +154,7 @@ public class PrivateChannelImpl implements PrivateChannel
         return this;
     }
 
-    public PrivateChannelImpl setCurrentCall(Call currentCall)
+    public PrivateChannelImpl setCurrentCall(CallImpl currentCall)
     {
         this.currentCall = currentCall;
         return this;
@@ -186,10 +188,24 @@ public class PrivateChannelImpl implements PrivateChannel
         return "PC:" + getUser().getName() + '(' + id + ')';
     }
 
+    @Override
+    public boolean dispose()
+    {
+//        user.api.privateChannels.remove(id); removed from outside
+        user.privateChannel = null;
+        return disposed = currentCall == null || currentCall.dispose();
+    }
+
+    @Override
+    public boolean isDisposed()
+    {
+        return disposed;
+    }
+
     private void checkNull(Object obj, String name)
     {
         if (obj == null)
-            throw new NullPointerException("Provided " + name + " was null!");
+            throw new IllegalArgumentException("Provided " + name + " was null!");
     }
 
     private void checkBot()

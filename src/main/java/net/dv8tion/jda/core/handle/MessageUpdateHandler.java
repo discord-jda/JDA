@@ -42,7 +42,7 @@ public class MessageUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(JSONObject allContent, JSONObject content)
     {
         if (content.has("author"))
         {
@@ -52,7 +52,7 @@ public class MessageUpdateHandler extends SocketHandler
                 switch (type)
                 {
                     case DEFAULT:
-                        return handleDefaultMessage(content);
+                        return handleDefaultMessage(allContent, content);
                     default:
                         WebSocketClient.LOG.debug("JDA received a message of unknown type. Type: " + type + "  JSON: " + content);
                         return null;
@@ -72,10 +72,10 @@ public class MessageUpdateHandler extends SocketHandler
             return null;
         }
         else
-            return handleMessageEmbed(content);
+            return handleMessageEmbed(allContent, content);
     }
 
-    private Long handleDefaultMessage(JSONObject content)
+    private Long handleDefaultMessage(JSONObject allContent, JSONObject content)
     {
         Message message;
         try
@@ -149,7 +149,7 @@ public class MessageUpdateHandler extends SocketHandler
         return null;
     }
 
-    private Long handleMessageEmbed(JSONObject content)
+    private Long handleMessageEmbed(JSONObject allContent, JSONObject content)
     {
         EntityBuilder builder = api.getEntityBuilder();
         final long messageId = content.getLong("id");
