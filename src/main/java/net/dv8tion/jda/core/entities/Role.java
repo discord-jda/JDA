@@ -163,6 +163,7 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      * @return {@link net.dv8tion.jda.core.requests.restaction.RoleAction RoleAction}
      *         <br>RoleAction with already copied values from the specified {@link net.dv8tion.jda.core.entities.Role Role}
      */
+    @CheckReturnValue
     RoleAction createCopy(Guild guild);
 
     /**
@@ -195,6 +196,7 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      * @return {@link net.dv8tion.jda.core.requests.restaction.RoleAction RoleAction}
      *         <br>RoleAction with already copied values from the specified {@link net.dv8tion.jda.core.entities.Role Role}
      */
+    @CheckReturnValue
     default RoleAction createCopy()
     {
         return createCopy(getGuild());

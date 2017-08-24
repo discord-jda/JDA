@@ -186,6 +186,7 @@ public interface Channel extends ISnowflake
      * @return A specific {@link net.dv8tion.jda.core.requests.restaction.ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new Channel before creating it!
      */
+    @CheckReturnValue
     ChannelAction createCopy(Guild guild);
 
     /**
@@ -215,6 +216,7 @@ public interface Channel extends ISnowflake
      * @return A specific {@link net.dv8tion.jda.core.requests.restaction.ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new Channel before creating it!
      */
+    @CheckReturnValue
     default ChannelAction createCopy()
     {
         return createCopy(getGuild());
