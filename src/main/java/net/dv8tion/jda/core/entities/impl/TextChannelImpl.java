@@ -25,6 +25,8 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.core.requests.restaction.ChannelAction;
+import net.dv8tion.jda.core.requests.restaction.WebhookAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONArray;
@@ -92,6 +94,16 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
                 request.onSuccess(webhooks);
             }
         };
+    }
+
+    @Override
+    public WebhookAction createWebhook(String name)
+    {
+        Checks.notBlank(name, "Webhook name");
+        checkPermission(Permission.MANAGE_WEBHOOKS);
+
+        Route.CompiledRoute route = Route.Channels.CREATE_WEBHOOK.compile(getId());
+        return new WebhookAction(getJDA(), route, name);
     }
 
     @Override
@@ -222,6 +234,21 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
                 return i;
         }
         throw new RuntimeException("Somehow when determining position we never found the TextChannel in the Guild's channels? wtf?");
+    }
+
+    @Override
+    public ChannelAction createCopy(Guild guild)
+    {
+        Checks.notNull(guild, "Guild");
+        ChannelAction action = guild.getController().createTextChannel(name).setNSFW(nsfw).setTopic(topic);
+        for (PermissionOverride o : overrides.valueCollection())
+        {
+            if (o.isMemberOverride())
+                action.addPermissionOverride(o.getMember(), o.getAllowedRaw(), o.getDeniedRaw());
+            else
+                action.addPermissionOverride(o.getRole(), o.getAllowedRaw(), o.getDeniedRaw());
+        }
+        return action;
     }
 
     @Override

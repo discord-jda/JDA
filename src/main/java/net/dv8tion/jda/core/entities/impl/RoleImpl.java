@@ -28,6 +28,7 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.core.requests.restaction.RoleAction;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 import net.dv8tion.jda.core.utils.Checks;
 
@@ -184,6 +185,18 @@ public class RoleImpl implements Role
     public Guild getGuild()
     {
         return guild;
+    }
+
+    @Override
+    public RoleAction createCopy(Guild guild)
+    {
+        Checks.notNull(guild, "Guild");
+        return guild.getController().createRole()
+                    .setColor(color)
+                    .setHoisted(hoisted)
+                    .setMentionable(mentionable)
+                    .setName(name)
+                    .setPermissions(rawPermissions);
     }
 
     @Override

@@ -1857,11 +1857,11 @@ public class GuildController
      * in this {@link net.dv8tion.jda.core.entities.Guild Guild}.
      * <br>The provided channel need not be in the same Guild for this to work!
      *
-     * This copies the following elements:
+     * <p>This copies the following elements:
      * <ol>
      *     <li>Name</li>
      *     <li>Voice Elements (Bitrate, Userlimit)</li>
-     *     <li>Text Elements (Topic)</li>
+     *     <li>Text Elements (Topic, NSFW)</li>
      *     <li>All permission overrides for Members/Roles</li>
      * </ol>
      *
@@ -1896,33 +1896,7 @@ public class GuildController
     public ChannelAction createCopyOfChannel(Channel channel)
     {
         Checks.notNull(channel, "Channel");
-        checkPermission(Permission.MANAGE_CHANNEL);
-        boolean isVoice = channel instanceof VoiceChannel;
-
-        Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(guild.getId());
-        final ChannelAction action = new ChannelAction(route, channel.getName(), guild, isVoice);
-
-        if (isVoice)
-        {
-            VoiceChannel voice = (VoiceChannel) channel;
-            action.setBitrate(voice.getBitrate())
-                  .setUserlimit(voice.getUserLimit());
-        }
-        else
-        {
-            TextChannel text = (TextChannel) channel;
-            action.setTopic(text.getTopic());
-        }
-
-        for (PermissionOverride o : channel.getPermissionOverrides())
-        {
-            if (o.isMemberOverride())
-                action.addPermissionOverride(o.getMember(), o.getAllowedRaw(), o.getDeniedRaw());
-            else
-                action.addPermissionOverride(o.getRole(), o.getAllowedRaw(), o.getDeniedRaw());
-        }
-
-        return action;
+        return channel.createCopy(guild);
     }
 
     /**
@@ -1955,18 +1929,16 @@ public class GuildController
      *
      * @return A specific {@link net.dv8tion.jda.core.requests.restaction.WebhookAction WebhookAction}
      *         <br>This action allows to set fields for the new webhook before creating it
+     *
+     * @deprecated
+     *         Use {@link net.dv8tion.jda.core.entities.TextChannel#createWebhook(String) TextChannel.createWebhook(String)} instead
      */
+    @Deprecated
     @CheckReturnValue
     public WebhookAction createWebhook(TextChannel channel, String name)
     {
-        Checks.notNull(name, "Webhook name");
-        Checks.notNull(channel, "TextChannel");
         checkGuild(channel.getGuild(), "channel");
-        if (!guild.getSelfMember().hasPermission(channel, Permission.MANAGE_WEBHOOKS))
-            throw new PermissionException(Permission.MANAGE_WEBHOOKS);
-
-        Route.CompiledRoute route = Route.Channels.CREATE_WEBHOOK.compile(channel.getId());
-        return new WebhookAction(getJDA(), route, name);
+        return channel.createWebhook(name);
     }
 
     /**
@@ -2043,12 +2015,7 @@ public class GuildController
     @CheckReturnValue
     public RoleAction createCopyOfRole(Role role)
     {
-        return createRole()
-                .setColor(role.getColor())
-                .setPermissions(role.getPermissionsRaw())
-                .setName(role.getName())
-                .setHoisted(role.isHoisted())
-                .setMentionable(role.isMentionable());
+        return role.createCopy(guild);
     }
 
     /**
