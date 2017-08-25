@@ -47,6 +47,7 @@ public class WebhookClientBuilder
      */
     public WebhookClientBuilder(long id, String token)
     {
+        Checks.noWhitespace(token, "Token");
         this.id = id;
         this.token = token;
     }

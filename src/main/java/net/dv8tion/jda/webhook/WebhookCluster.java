@@ -201,6 +201,32 @@ public class WebhookCluster implements Closeable
     }
 
     /**
+     * Creates new {@link net.dv8tion.jda.webhook.WebhookClient WebhookClients} and adds them
+     * to this cluster.
+     * <br>The {@link net.dv8tion.jda.webhook.WebhookClientBuilder WebhookClientBuilders}
+     * will be supplied with the default settings of this cluster.
+     *
+     * @param  id
+     *         The id for the webhook
+     * @param  token
+     *         The token for the webhook
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided webhooks token is {@code null} or contains whitespace
+     *
+     * @return The current WebhookCluster for chaining convenience
+     */
+    public WebhookCluster buildWebhook(long id, String token)
+    {
+        WebhookClientBuilder builder = new WebhookClientBuilder(id, token);
+        builder.setExecutorService(defaultPool).setHttpClient(defaultHttpClient);
+        if (defaultHttpClientBuilder != null)
+            builder.setHttpClientBuilder(defaultHttpClientBuilder);
+        this.webhooks.add(builder.build());
+        return this;
+    }
+
+    /**
      * Adds the specified {@link net.dv8tion.jda.webhook.WebhookClient WebhookClients}
      * to this cluster's list of receivers.
      * <br>Duplicate clients are supported and will not be filtered automatically.

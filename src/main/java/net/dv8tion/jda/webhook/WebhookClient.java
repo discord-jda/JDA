@@ -141,8 +141,7 @@ public class WebhookClient implements Closeable
      */
     public Future<?> send(File file)
     {
-        Checks.notNull(file, "File");
-        return send(file, file.getName());
+        return send(new WebhookMessageBuilder().setFile(file).build());
     }
 
     /**
@@ -188,9 +187,7 @@ public class WebhookClient implements Closeable
      */
     public Future<?> send(byte[] data, String fileName)
     {
-        Checks.notNull(data, "Data");
-        Checks.check(data.length <= Message.MAX_FILE_SIZE, "Provided data exceeds the maximum size of 8MB!");
-        return send(new ByteArrayInputStream(data), fileName);
+        return send(new WebhookMessageBuilder().setFile(data, fileName).build());
     }
 
     /**
