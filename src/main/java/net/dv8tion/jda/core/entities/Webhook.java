@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.managers.WebhookManager;
 import net.dv8tion.jda.core.managers.WebhookManagerUpdatable;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.webhook.WebhookClientBuilder;
 
 import javax.annotation.CheckReturnValue;
 
@@ -149,4 +150,6 @@ public interface Webhook extends ISnowflake
      *         for this Webhook
      */
     WebhookManagerUpdatable getManagerUpdatable();
+
+    WebhookClientBuilder newClient();
 }
