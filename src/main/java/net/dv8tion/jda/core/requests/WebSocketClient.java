@@ -94,12 +94,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected boolean processingReady = true;
     protected boolean handleIdentifyRateLimit = false;
 
-    public WebSocketClient(JDAImpl api, Queue<WebSocketClient> reconnectQueue)
+    public WebSocketClient(JDAImpl api, SessionReconnectQueue reconnectQueue)
     {
         this.api = api;
         this.shardInfo = api.getShardInfo();
         this.shouldReconnect = api.isAutoReconnect();
-        this.reconnectQueue = reconnectQueue != null ? new SessionReconnectQueue(reconnectQueue) : null;
+        this.reconnectQueue = reconnectQueue;
         setupHandlers();
         setupSendingThread();
         connect();

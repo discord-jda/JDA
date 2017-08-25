@@ -24,13 +24,15 @@ import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
-import net.dv8tion.jda.core.requests.WebSocketClient;
-import okhttp3.OkHttpClient;
+import net.dv8tion.jda.core.requests.SessionReconnectQueue;
 import net.dv8tion.jda.core.utils.Checks;
+import okhttp3.OkHttpClient;
 
 import javax.security.auth.login.LoginException;
-import java.util.*;
-import java.util.concurrent.BlockingQueue;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Used to create new {@link net.dv8tion.jda.core.JDA} instances. This is also useful for making sure all of
@@ -47,7 +49,7 @@ public class JDABuilder
 {
     protected final List<Object> listeners;
 
-    protected BlockingQueue<WebSocketClient> reconnectQueue = null;
+    protected SessionReconnectQueue reconnectQueue = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
     protected WebSocketFactory wsFactory = null;
     protected AccountType accountType;
@@ -137,7 +139,7 @@ public class JDABuilder
      *
      * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
      */
-    public JDABuilder setReconnectQueue(BlockingQueue<WebSocketClient> queue)
+    public JDABuilder setReconnectQueue(SessionReconnectQueue queue)
     {
         this.reconnectQueue = queue;
         return this;

@@ -16,20 +16,20 @@
 
 package net.dv8tion.jda.core.requests;
 
-import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 
-class SessionReconnectQueue
+public class SessionReconnectQueue
 {
-    private final Object lock = new Object();
-    private final Queue<WebSocketClient> reconnectQueue;
-    private volatile Thread reconnectThread;
+    protected final Object lock = new Object();
+    protected final BlockingQueue<WebSocketClient> reconnectQueue;
+    protected volatile Thread reconnectThread;
 
-    SessionReconnectQueue(final Queue<WebSocketClient> reconnectQueue)
+    public SessionReconnectQueue(final BlockingQueue<WebSocketClient> reconnectQueue)
     {
         this.reconnectQueue = reconnectQueue;
     }
 
-    void appendSession(final WebSocketClient client)
+    protected void appendSession(final WebSocketClient client)
     {
         reconnectQueue.add(client);
         synchronized (lock)
@@ -40,9 +40,9 @@ class SessionReconnectQueue
         }
     }
 
-    final class ReconnectThread extends Thread
+    protected final class ReconnectThread extends Thread
     {
-        ReconnectThread()
+        protected ReconnectThread()
         {
             super("JDA-ReconnectThread");
             start();
