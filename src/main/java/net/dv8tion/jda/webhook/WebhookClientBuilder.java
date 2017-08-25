@@ -25,7 +25,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public class WebhookClientBuilder
 {
-    public static final OkHttpClient.Builder DEFAULT_BUILDER = new OkHttpClient.Builder();
+    public static final OkHttpClient.Builder DEFAULT_HTTP_BUILDER = new OkHttpClient.Builder();
 
     protected final long id;
     protected final String token;
@@ -69,7 +69,7 @@ public class WebhookClientBuilder
         if (client == null)
         {
             if (builder == null)
-                builder = DEFAULT_BUILDER;
+                builder = DEFAULT_HTTP_BUILDER;
             client = builder.build();
         }
         if (pool == null)

@@ -18,7 +18,9 @@ package net.dv8tion.jda.webhook;
 
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
+import net.dv8tion.jda.core.entities.Webhook;
 import net.dv8tion.jda.core.utils.Checks;
+import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
 
@@ -31,13 +33,65 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Predicate;
 
 public class WebhookCluster implements Closeable
 {
     protected final List<WebhookClient> webhooks = new ArrayList<>();
+    protected OkHttpClient.Builder defaultHttpClientBuilder;
+    protected OkHttpClient defaultHttpClient;
+    protected ScheduledExecutorService defaultPool;
 
-    public WebhookCluster addWebhook(WebhookClient... clients)
+    public WebhookCluster setDefaultHttpClientBuilder(OkHttpClient.Builder builder)
+    {
+        this.defaultHttpClientBuilder = builder;
+        return this;
+    }
+
+    public WebhookCluster setDefaultHttpClient(OkHttpClient defaultHttpClient)
+    {
+        this.defaultHttpClient = defaultHttpClient;
+        return this;
+    }
+
+    public WebhookCluster setDefaultExecutorService(ScheduledExecutorService defaultPool)
+    {
+        this.defaultPool = defaultPool;
+        return this;
+    }
+
+    public WebhookCluster buildWebhooks(Webhook... webhooks)
+    {
+        Checks.notNull(webhooks, "Webhooks");
+        for (Webhook webhook : webhooks)
+        {
+            Checks.notNull(webhook, "Webhook");
+            WebhookClientBuilder builder = new WebhookClientBuilder(webhook);
+            builder.setExecutorService(defaultPool).setHttpClient(defaultHttpClient);
+            if (defaultHttpClientBuilder != null)
+                builder.setHttpClientBuilder(defaultHttpClientBuilder);
+            this.webhooks.add(builder.build());
+        }
+        return this;
+    }
+
+    public WebhookCluster buildWebhooks(Collection<Webhook> webhooks)
+    {
+        Checks.notNull(webhooks, "Webhooks");
+        for (Webhook webhook : webhooks)
+        {
+            Checks.notNull(webhook, "Webhook");
+            WebhookClientBuilder builder = new WebhookClientBuilder(webhook);
+            builder.setExecutorService(defaultPool).setHttpClient(defaultHttpClient);
+            if (defaultHttpClientBuilder != null)
+                builder.setHttpClientBuilder(defaultHttpClientBuilder);
+            this.webhooks.add(builder.build());
+        }
+        return this;
+    }
+
+    public WebhookCluster addWebhooks(WebhookClient... clients)
     {
         Checks.notNull(clients, "Clients");
         for (WebhookClient client : clients)
@@ -48,7 +102,26 @@ public class WebhookCluster implements Closeable
         return this;
     }
 
-    public WebhookCluster removeWebhook(WebhookClient... clients)
+    public WebhookCluster addWebhooks(Collection<WebhookClient> clients)
+    {
+        Checks.notNull(clients, "Clients");
+        for (WebhookClient client : clients)
+        {
+            Checks.notNull(client, "Client");
+            webhooks.add(client);
+        }
+        return this;
+    }
+
+    public WebhookCluster removeWebhooks(WebhookClient... clients)
+    {
+        Checks.notNull(clients, "Clients");
+        for (WebhookClient client : clients)
+            webhooks.remove(client);
+        return this;
+    }
+
+    public WebhookCluster removeWebhooks(Collection<WebhookClient> clients)
     {
         Checks.notNull(clients, "Clients");
         for (WebhookClient client : clients)
