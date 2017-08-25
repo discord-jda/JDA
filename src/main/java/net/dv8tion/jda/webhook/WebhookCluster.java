@@ -149,6 +149,10 @@ public class WebhookCluster implements Closeable
      * @param  webhooks
      *         Webhooks to target (duplicates will not be filtered)
      *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided array or any of the contained
+     *         webhooks is {@code null}
+     *
      * @return The current WebhookCluster for chaining convenience
      */
     public WebhookCluster buildWebhooks(Webhook... webhooks)
@@ -175,6 +179,10 @@ public class WebhookCluster implements Closeable
      * @param  webhooks
      *         Webhooks to target (duplicates will not be filtered)
      *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided collection or any of the contained
+     *         webhooks is {@code null}
+     *
      * @return The current WebhookCluster for chaining convenience
      */
     public WebhookCluster buildWebhooks(Collection<Webhook> webhooks)
@@ -200,6 +208,10 @@ public class WebhookCluster implements Closeable
      * @param  clients
      *         WebhookClients to add
      *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided array or any of the contained
+     *         clients is {@code null}
+     *
      * @return The current WebhookCluster for chaining convenience
      */
     public WebhookCluster addWebhooks(WebhookClient... clients)
@@ -223,6 +235,10 @@ public class WebhookCluster implements Closeable
      * @param  clients
      *         WebhookClients to add
      *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided collection or any of the contained
+     *         clients is {@code null}
+     *
      * @return The current WebhookCluster for chaining convenience
      */
     public WebhookCluster addWebhooks(Collection<WebhookClient> clients)
@@ -243,8 +259,13 @@ public class WebhookCluster implements Closeable
      * from this cluster's list of receivers.
      * <br>It does not matter whether any of the provided clients is actually in the list of receivers.
      *
+     * <p><b>Note that the removed clients are not closed by this operation!</b>
+     *
      * @param  clients
      *         WebhookClients to remove
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided array is {@code null}
      *
      * @return The current WebhookCluster for chaining convenience
      */
@@ -261,8 +282,13 @@ public class WebhookCluster implements Closeable
      * from this cluster's list of receivers.
      * <br>It does not matter whether any of the provided clients is actually in the list of receivers.
      *
+     * <p><b>Note that the removed clients are not closed by this operation!</b>
+     *
      * @param  clients
      *         WebhookClients to remove
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided collection is {@code null}
      *
      * @return The current WebhookCluster for chaining convenience
      */
@@ -279,16 +305,28 @@ public class WebhookCluster implements Closeable
      * from this cluster's list of receivers under the conditions of the provided filter.
      * <br>The filter should return {@code true} to remove provided clients and {@code false} to retain them.
      *
+     * <p><b>Note that the removed clients are not closed by this operation!</b>
+     *
      * @param  predicate
      *         The filter
      *
-     * @return The current WebhookCluster for chaining convenience
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided filter is {@code null}
+     *
+     * @return List of removed clients
      */
-    public WebhookCluster removeIf(Predicate<WebhookClient> predicate)
+    public List<WebhookClient> removeIf(Predicate<WebhookClient> predicate)
     {
         Checks.notNull(predicate, "Predicate");
-        webhooks.removeIf(predicate);
-        return this;
+        List<WebhookClient> clients = new ArrayList<>();
+        for (WebhookClient client : webhooks)
+        {
+            if (!predicate.test(client))
+               continue;
+            clients.add(client);
+        }
+        removeWebhooks(clients);
+        return clients;
     }
 
     /**
@@ -300,6 +338,33 @@ public class WebhookCluster implements Closeable
     public List<WebhookClient> getWebhooks()
     {
         return Collections.unmodifiableList(new ArrayList<>(webhooks));
+    }
+
+    /**
+     * Closes all {@link net.dv8tion.jda.webhook.WebhookClient WebhookClients} that meet
+     * the specified filter.
+     * <br>The filter may return {@code true} for all clients that should be <b>removed and closed</b>.
+     *
+     * @param  predicate
+     *         The filter to decide which clients to remove
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided filter is {@code null}
+     *
+     * @return List of removed and closed clients
+     */
+    public List<WebhookClient> closeIf(Predicate<WebhookClient> predicate)
+    {
+        Checks.notNull(predicate, "Filter");
+        List<WebhookClient> clients = new ArrayList<>();
+        for (WebhookClient client : webhooks)
+        {
+            if (predicate.test(client))
+                clients.add(client);
+        }
+        removeWebhooks(clients);
+        clients.forEach(WebhookClient::close);
+        return clients;
     }
 
     /**
@@ -320,6 +385,8 @@ public class WebhookCluster implements Closeable
      *         If any of the provided arguments is {@code null}
      * @throws java.util.concurrent.RejectedExecutionException
      *         If any of the receivers has been shutdown
+     * @throws net.dv8tion.jda.core.exceptions.HttpException
+     *         If the HTTP request fails
      *
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
@@ -352,6 +419,8 @@ public class WebhookCluster implements Closeable
      *         If any of the provided arguments is {@code null}
      * @throws java.util.concurrent.RejectedExecutionException
      *         If any of the receivers has been shutdown
+     * @throws net.dv8tion.jda.core.exceptions.HttpException
+     *         If the HTTP request fails
      *
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
@@ -380,6 +449,8 @@ public class WebhookCluster implements Closeable
      *         If the provided message is {@code null}
      * @throws java.util.concurrent.RejectedExecutionException
      *         If any of the receivers has been shutdown
+     * @throws net.dv8tion.jda.core.exceptions.HttpException
+     *         If the HTTP request fails
      *
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
@@ -403,6 +474,8 @@ public class WebhookCluster implements Closeable
      *         If any of the provided arguments is {@code null}
      * @throws java.util.concurrent.RejectedExecutionException
      *         If any of the receivers has been shutdown
+     * @throws net.dv8tion.jda.core.exceptions.HttpException
+     *         If the HTTP request fails
      *
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
@@ -426,6 +499,8 @@ public class WebhookCluster implements Closeable
      *         If any of the provided arguments is {@code null}
      * @throws java.util.concurrent.RejectedExecutionException
      *         If any of the receivers has been shutdown
+     * @throws net.dv8tion.jda.core.exceptions.HttpException
+     *         If the HTTP request fails
      *
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
@@ -446,6 +521,8 @@ public class WebhookCluster implements Closeable
      *         If the provided content is {@code null} or blank
      * @throws java.util.concurrent.RejectedExecutionException
      *         If any of the receivers has been shutdown
+     * @throws net.dv8tion.jda.core.exceptions.HttpException
+     *         If the HTTP request fails
      *
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
@@ -474,6 +551,8 @@ public class WebhookCluster implements Closeable
      *         If the provided file is {@code null}, does not exist or ist not readable
      * @throws java.util.concurrent.RejectedExecutionException
      *         If any of the receivers has been shutdown
+     * @throws net.dv8tion.jda.core.exceptions.HttpException
+     *         If the HTTP request fails
      *
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
@@ -499,6 +578,8 @@ public class WebhookCluster implements Closeable
      *         If the provided file is {@code null}, does not exist or ist not readable
      * @throws java.util.concurrent.RejectedExecutionException
      *         If any of the receivers has been shutdown
+     * @throws net.dv8tion.jda.core.exceptions.HttpException
+     *         If the HTTP request fails
      *
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
@@ -525,6 +606,8 @@ public class WebhookCluster implements Closeable
      *         If the provided data is {@code null}
      * @throws java.util.concurrent.RejectedExecutionException
      *         If any of the receivers has been shutdown
+     * @throws net.dv8tion.jda.core.exceptions.HttpException
+     *         If the HTTP request fails
      *
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
@@ -549,6 +632,8 @@ public class WebhookCluster implements Closeable
      *         If the provided data is {@code null}
      * @throws java.util.concurrent.RejectedExecutionException
      *         If any of the receivers has been shutdown
+     * @throws net.dv8tion.jda.core.exceptions.HttpException
+     *         If the HTTP request fails
      *
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.

@@ -18,6 +18,7 @@ package net.dv8tion.jda.webhook;
 
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
+import net.dv8tion.jda.core.exceptions.HttpException;
 import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.IOUtil;
@@ -110,6 +111,9 @@ public class WebhookClient implements Closeable
      * @param  message
      *         The message to send
      *
+     * @throws net.dv8tion.jda.core.exceptions.HttpException
+     *         If the HTTP request fails
+     *
      * @return {@link java.util.concurrent.Future Future} representing the execution task,
      *         this will be completed if the message was sent without ratelimits.
      */
@@ -129,6 +133,8 @@ public class WebhookClient implements Closeable
      *         If the provided file is {@code null}, does not exist or is not readable
      * @throws java.util.concurrent.RejectedExecutionException
      *         If this client was closed
+     * @throws net.dv8tion.jda.core.exceptions.HttpException
+     *         If the HTTP request fails
      *
      * @return {@link java.util.concurrent.Future Future} representing the execution task,
      *         this will be completed if the message was sent without ratelimits.
@@ -151,6 +157,8 @@ public class WebhookClient implements Closeable
      *         If the provided file is {@code null}, does not exist or is not readable
      * @throws java.util.concurrent.RejectedExecutionException
      *         If this client was closed
+     * @throws net.dv8tion.jda.core.exceptions.HttpException
+     *         If the HTTP request fails
      *
      * @return {@link java.util.concurrent.Future Future} representing the execution task,
      *         this will be completed if the message was sent without ratelimits.
@@ -172,6 +180,8 @@ public class WebhookClient implements Closeable
      *         If the provided data is {@code null} or exceeds the limit of 8MB
      * @throws java.util.concurrent.RejectedExecutionException
      *         If this client was closed
+     * @throws net.dv8tion.jda.core.exceptions.HttpException
+     *         If the HTTP request fails
      *
      * @return {@link java.util.concurrent.Future Future} representing the execution task,
      *         this will be completed if the message was sent without ratelimits.
@@ -195,6 +205,8 @@ public class WebhookClient implements Closeable
      *         If the provided data is {@code null}
      * @throws java.util.concurrent.RejectedExecutionException
      *         If this client was closed
+     * @throws net.dv8tion.jda.core.exceptions.HttpException
+     *         If the HTTP request fails
      *
      * @return {@link java.util.concurrent.Future Future} representing the execution task,
      *         this will be completed if the message was sent without ratelimits.
@@ -213,6 +225,9 @@ public class WebhookClient implements Closeable
      *
      * @param  message
      *         The message to send
+     *
+     * @throws net.dv8tion.jda.core.exceptions.HttpException
+     *         If the HTTP request fails
      *
      * @return {@link java.util.concurrent.Future Future} representing the execution task,
      *         this will be completed if the message was sent without ratelimits.
@@ -236,6 +251,8 @@ public class WebhookClient implements Closeable
      *         If any of the provided embeds is {@code null}
      * @throws java.util.concurrent.RejectedExecutionException
      *         If this client was closed
+     * @throws net.dv8tion.jda.core.exceptions.HttpException
+     *         If the HTTP request fails
      *
      * @return {@link java.util.concurrent.Future Future} representing the execution task,
      *         this will be completed if the message was sent without ratelimits.
@@ -259,6 +276,8 @@ public class WebhookClient implements Closeable
      *         If any of the provided embeds is {@code null}
      * @throws java.util.concurrent.RejectedExecutionException
      *         If this client was closed
+     * @throws net.dv8tion.jda.core.exceptions.HttpException
+     *         If the HTTP request fails
      *
      * @return {@link java.util.concurrent.Future Future} representing the execution task,
      *         this will be completed if the message was sent without ratelimits.
@@ -278,6 +297,8 @@ public class WebhookClient implements Closeable
      *         If any of the provided message is {@code null}, blank or exceeds 2000 characters in length
      * @throws java.util.concurrent.RejectedExecutionException
      *         If this client was closed
+     * @throws net.dv8tion.jda.core.exceptions.HttpException
+     *         If the HTTP request fails
      *
      * @return {@link java.util.concurrent.Future Future} representing the execution task,
      *         this will be completed if the message was sent without ratelimits.
@@ -319,13 +340,22 @@ public class WebhookClient implements Closeable
             bucket.update(response);
             if (response.code() == Bucket.RATE_LIMIT_CODE)
                 return queueRequest(body);
+            if (!response.isSuccessful())
+                throw failure(response);
             return CompletableFuture.completedFuture(null);
         }
         catch (IOException e)
         {
             LOG.log(e);
-            return null;//FIXME: return new FailedFuture(e);
+            throw new IllegalStateException(e);//FIXME: return new FailedFuture(e);
         }
+    }
+
+    protected static HttpException failure(Response response) throws IOException
+    {
+        final InputStream stream = Requester.getBody(response);
+        final String responseBody = new String(IOUtil.readFully(stream));
+        return new HttpException("Request returned failure " + response.code() + ": " + responseBody);
     }
 
     protected Future<?> queueRequest(RequestBody body)
@@ -345,7 +375,6 @@ public class WebhookClient implements Closeable
                 .url(url)
                 .method("POST", body)
                 .header("accept-encoding", "gzip")
-                .header("content-type", "application/json")
                 .build();
     }
 
@@ -354,7 +383,7 @@ public class WebhookClient implements Closeable
     {
         while (!queue.isEmpty())
         {
-            Request request = newRequest(queue.peek().getLeft());
+            final Request request = newRequest(queue.peek().getLeft());
             try (Response response = client.newCall(request).execute())
             {
                 bucket.update(response);
@@ -363,11 +392,19 @@ public class WebhookClient implements Closeable
                     pool.schedule(this::drainQueue, bucket.retryAfter(), TimeUnit.MILLISECONDS);
                     return;
                 }
+                else if (!response.isSuccessful())
+                {
+                    final HttpException exception = failure(response);
+                    LOG.log(exception);
+                    queue.poll().getRight().completeExceptionally(exception);
+                    continue;
+                }
                 queue.poll().getRight().complete(null);
             }
             catch (IOException e)
             {
                 LOG.log(e);
+                queue.poll().getRight().completeExceptionally(e);
             }
         }
         isQueued = false;
@@ -414,12 +451,11 @@ public class WebhookClient implements Closeable
             if (response.code() == RATE_LIMIT_CODE)
             {
                 handleRatelimit(response, current);
-                return;
             }
-            if (!response.isSuccessful())
+            else if (!response.isSuccessful())
             {
-                LOG.fatal("Received unsuccessful response with code: " + response.code() + " and body: ");
-                LOG.fatal(new String(IOUtil.readFully(Requester.getBody(response))));
+                LOG.debug("Failed to update buckets due to unsuccessful response with code: " + response.code() + " and body: ");
+                LOG.debug(new String(IOUtil.readFully(Requester.getBody(response))));
                 return;
             }
             final long reset = Long.parseLong(response.header("X-RateLimit-Reset")); //not millis
