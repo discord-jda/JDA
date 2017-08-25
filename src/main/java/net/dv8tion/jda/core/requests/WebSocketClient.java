@@ -84,6 +84,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected final LinkedList<String> chunkSyncQueue = new LinkedList<>();
     protected final LinkedList<String> ratelimitQueue = new LinkedList<>();
+    protected final SessionReconnectQueue reconnectQueue;
     protected volatile Thread ratelimitThread = null;
     protected volatile long ratelimitResetTime;
     protected volatile int messagesSent;
@@ -93,11 +94,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected boolean processingReady = true;
     protected boolean handleIdentifyRateLimit = false;
 
-    public WebSocketClient(JDAImpl api)
+    public WebSocketClient(JDAImpl api, Queue<WebSocketClient> reconnectQueue)
     {
         this.api = api;
         this.shardInfo = api.getShardInfo();
         this.shouldReconnect = api.isAutoReconnect();
+        this.reconnectQueue = reconnectQueue != null ? new SessionReconnectQueue(reconnectQueue) : null;
         setupHandlers();
         setupSendingThread();
         connect();
@@ -130,6 +132,14 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public boolean isConnected()
     {
         return connected;
+    }
+
+    public void init()
+    {
+        if (sessionId == null)
+            sendIdentify();
+        else
+            sendResume();
     }
 
     public void ready()
@@ -414,10 +424,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         reconnectTimeoutS = 2;
         messagesSent = 0;
         ratelimitResetTime = System.currentTimeMillis() + 60000;
-        if (sessionId == null)
-            sendIdentify();
+        if (!firstInit && reconnectQueue != null)
+            reconnectQueue.appendSession(this);
         else
-            sendResume();
+            init();
     }
 
     @Override

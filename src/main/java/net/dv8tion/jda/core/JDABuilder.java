@@ -24,14 +24,13 @@ import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
+import net.dv8tion.jda.core.requests.WebSocketClient;
 import okhttp3.OkHttpClient;
 import net.dv8tion.jda.core.utils.Checks;
 
 import javax.security.auth.login.LoginException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * Used to create new {@link net.dv8tion.jda.core.JDA} instances. This is also useful for making sure all of
@@ -48,6 +47,7 @@ public class JDABuilder
 {
     protected final List<Object> listeners;
 
+    protected BlockingQueue<WebSocketClient> reconnectQueue = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
     protected WebSocketFactory wsFactory = null;
     protected AccountType accountType;
@@ -125,6 +125,21 @@ public class JDABuilder
     @Deprecated
     public JDABuilder setWebSocketTimeout(int websocketTimeout)
     {
+        return this;
+    }
+
+    /**
+     * Sets the queue that will be used to reconnect sessions.
+     * <br>This will ensure that sessions do not reconnect at the same time!
+     *
+     * @param  queue
+     *         {@link java.util.concurrent.BlockingQueue BlockingQueue} to use
+     *
+     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public JDABuilder setReconnectQueue(BlockingQueue<WebSocketClient> queue)
+    {
+        this.reconnectQueue = queue;
         return this;
     }
 
@@ -521,7 +536,7 @@ public class JDABuilder
                 .setCacheGame(game)
                 .setCacheIdle(idle)
                 .setCacheStatus(status);
-        jda.login(token, shardInfo);
+        jda.login(token, shardInfo, reconnectQueue);
         return jda;
     }
 
