@@ -738,7 +738,7 @@ public class MessageBuilder implements Appendable
                     continue messageLoop;
                 }
             }
-            throw new RuntimeException("failed to split the messages");
+            throw new IllegalStateException("Failed to split the messages");
         }
 
         if (currentBeginIndex < builder.length() - 1)
@@ -834,7 +834,7 @@ public class MessageBuilder implements Appendable
          *
          * @return the end Index of the next {@link net.dv8tion.jda.core.entities.Message Message}
          * 
-         * @throws java.lang.RuntimeException when splitting fails
+         * @throws java.lang.IllegalStateException when splitting fails
          * 
          */
         int nextMessage(int currentBeginIndex, MessageBuilder builder);

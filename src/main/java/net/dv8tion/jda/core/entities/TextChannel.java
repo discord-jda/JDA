@@ -132,8 +132,8 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *
      * @throws IllegalArgumentException
      *         If the size of the list less than 2 or more than 100 messages.
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *         If this account does not have MANAGE_MESSAGES
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If this account does not have {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *
@@ -180,8 +180,8 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *         If the size of the list less than 2 or more than 100 messages.
      * @throws java.lang.NumberFormatException
      *         If any of the provided ids cannot be parsed by {@link Long#parseLong(String)}
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *         If this account does not have MANAGE_MESSAGES
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If this account does not have {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *
@@ -216,7 +216,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided {@code id} is {@code null} or empty.
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MANAGE_WEBHOOKS Permission.MANAGE_WEBHOOKS} in this channel.
      *
@@ -248,7 +248,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * @param  messageId
      *         The not-empty valid message id
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in this channel.
      * @throws java.lang.IllegalArgumentException
@@ -282,7 +282,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * @param  messageId
      *         The message id
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in this channel.
      *

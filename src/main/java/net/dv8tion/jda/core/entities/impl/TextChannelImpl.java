@@ -19,7 +19,7 @@ package net.dv8tion.jda.core.entities.impl;
 import net.dv8tion.jda.client.exceptions.VerificationLevelException;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
@@ -27,8 +27,8 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.ChannelAction;
 import net.dv8tion.jda.core.requests.restaction.WebhookAction;
-import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.MiscUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -151,7 +151,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         Checks.notEmpty(id, "webhook id");
 
         if (!guild.getSelfMember().hasPermission(this, Permission.MANAGE_WEBHOOKS))
-            throw new PermissionException(Permission.MANAGE_WEBHOOKS);
+            throw new InsufficientPermissionException(Permission.MANAGE_WEBHOOKS);
 
         Route.CompiledRoute route = Route.Webhooks.DELETE_WEBHOOK.compile(id);
         return new AuditableRestAction<Void>(getJDA(), route)
@@ -233,7 +233,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
             if (channels.get(i) == this)
                 return i;
         }
-        throw new RuntimeException("Somehow when determining position we never found the TextChannel in the Guild's channels? wtf?");
+        throw new AssertionError("Somehow when determining position we never found the TextChannel in the Guild's channels? wtf?");
     }
 
     @Override

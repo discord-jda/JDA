@@ -28,23 +28,23 @@ public class PermissionException extends RuntimeException
     /**
      * Creates a new PermissionException instance
      *
-     * @param permission
-     *        The required {@link net.dv8tion.jda.core.Permission Permission}
-     */
-    public PermissionException(Permission permission)
-    {
-        this(permission, "Cannot perform action due to a lack of Permission. Missing permission: " + permission.toString());
-    }
-
-    /**
-     * Creates a new PermissionException instance
-     *
      * @param reason
      *        The reason for this Exception
      */
     public PermissionException(String reason)
     {
         this(Permission.UNKNOWN, reason);
+    }
+
+    /**
+     * Creates a new PermissionException instance
+     *
+     * @param permission
+     *        The required {@link net.dv8tion.jda.core.Permission Permission}
+     */
+    protected PermissionException(Permission permission)
+    {
+        this(permission, "Cannot perform action due to a lack of Permission. Missing permission: " + permission.toString());
     }
 
     /**
@@ -55,7 +55,7 @@ public class PermissionException extends RuntimeException
      * @param reason
      *        The reason for this Exception
      */
-    public PermissionException(Permission permission, String reason)
+    protected PermissionException(Permission permission, String reason)
     {
         super(reason);
         this.permission = permission;
@@ -63,6 +63,9 @@ public class PermissionException extends RuntimeException
 
     /**
      * The {@link net.dv8tion.jda.core.Permission Permission} that is required for the operation
+     *
+     * <p><b>If this is a {@link net.dv8tion.jda.core.exceptions.HierarchyException HierarchyException}
+     * this will always be {@link net.dv8tion.jda.core.Permission#UNKNOWN Permission.UNKNOWN}!</b>
      *
      * @return The required {@link net.dv8tion.jda.core.Permission Permission}
      */

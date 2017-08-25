@@ -23,6 +23,8 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import okhttp3.Request;
 import okhttp3.Response;
+
+import javax.annotation.CheckReturnValue;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -30,7 +32,6 @@ import java.nio.file.Paths;
 import java.time.OffsetDateTime;
 import java.util.Formattable;
 import java.util.List;
-import javax.annotation.CheckReturnValue;
 
 /**
  * Represents a Text message received from Discord.
@@ -475,7 +476,7 @@ public interface Message extends ISnowflake, Formattable
      *         The pin was attempted after the Message had been deleted.</li>
      * </ul>
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this Message was not sent by the currently logged in account, the Message was sent in a
      *         {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}, and the currently logged in account
      *         does not have {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in
@@ -525,7 +526,7 @@ public interface Message extends ISnowflake, Formattable
      *         The pin request was attempted after the Message had been deleted.</li>
      * </ul>
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this Message is from a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and:
      *         <br><ul>
      *             <li>Missing {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}.
@@ -561,7 +562,7 @@ public interface Message extends ISnowflake, Formattable
      *         The unpin request was attempted after the Message had been deleted.</li>
      * </ul>
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this Message is from a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and:
      *         <br><ul>
      *             <li>Missing {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}.
@@ -605,7 +606,7 @@ public interface Message extends ISnowflake, Formattable
      * @param emote
      *        The {@link net.dv8tion.jda.core.entities.Emote Emote} to add as a reaction to this Message.
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      *         and the logged in account does not have
      *         <ul>
@@ -655,7 +656,7 @@ public interface Message extends ISnowflake, Formattable
      * @param unicode
      *        The UTF8 emoji to add as a reaction to this Message.
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      *         and the logged in account does not have
      *         <ul>
@@ -694,7 +695,7 @@ public interface Message extends ISnowflake, Formattable
      *         The clear-reactions request was attempted after the Message had been deleted.</li>
      * </ul>
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      *         and the currently logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in the channel.
