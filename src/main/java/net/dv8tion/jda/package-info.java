@@ -29,6 +29,9 @@
  *     <li>{@link net.dv8tion.jda.client Client Features}
  *     <br>Package which includes functionalities that are only available for accounts of {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType CLIENT}
  *     <br>Such as {@link net.dv8tion.jda.client.entities.Relationship Relationships}</li>
+ *
+ *     <li>{@link net.dv8tion.jda.webhook Webhook Features}
+ *     <br>Functionality to send/execute webhooks without a bound JDA instance</li>
  * </ul>
  */
 package net.dv8tion.jda;
