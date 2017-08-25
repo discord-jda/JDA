@@ -111,6 +111,8 @@ public class Game
 
     /**
      * Creates a new Game instance with the specified name.
+     * <br>In order to appear as "streaming" in the official client you must
+     * provide a valid (see documentation of method) streaming URL in {@link #of(String, String) Game.of(String, String)}.
      *
      * @param  name
      *         The not-null name of the newly created game
@@ -127,11 +129,13 @@ public class Game
 
     /**
      * Creates a new Game instance with the specified name and url.
+     * <br>The specified URL must be valid according to discord standards in order to display as "streaming" in the official client.
+     * A valid streaming URL must be derived from {@code https://twitch.tv/} and can be verified using {@link #isValidStreamingUrl(String)}. (see documentation)
      *
      * @param  name
      *         The not-null name of the newly created game
      * @param  url
-     *         The streaming url to use, invalid for {@link GameType#DEFAULT GameType#DEFAULT}
+     *         The streaming url to use, required to display as "streaming"
      *
      * @throws IllegalArgumentException
      *         if the specified name is null or empty
@@ -174,7 +178,7 @@ public class Game
          */
         DEFAULT(0),
         /**
-         * Used to indicate that the {@link net.dv8tion.jda.core.entities.Game Game} is a stream, specifically for
+         * Used to indicate that the {@link net.dv8tion.jda.core.entities.Game Game} is a stream
          * <br>This type is displayed as "Streaming" in the discord client.
          */
         STREAMING(1),
@@ -183,7 +187,7 @@ public class Game
          * <a href="https://www.twitch.tv">https://www.twitch.tv</a>.
          * <br>This type is displayed as "Streaming" in the discord client.
          *
-         * @deprecated This might be removed when discord introduces more streaming methods. Use {@link #STREAMING} instead.
+         * @deprecated This might be removed when discord introduces more activity types. Use {@link #STREAMING} instead.
          */
         @Deprecated
         TWITCH(1);
@@ -218,7 +222,7 @@ public class Game
         {
             for (GameType level : GameType.values())
             {
-                if(level.getKey() == key)
+                if (level.getKey() == key)
                     return level;
             }
             return DEFAULT;
