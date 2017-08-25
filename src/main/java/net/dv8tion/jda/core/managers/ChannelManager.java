@@ -94,7 +94,7 @@ public class ChannelManager
      * @param  name
      *         The new name for the selected {@link net.dv8tion.jda.core.entities.Channel Channel}
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
      * @throws IllegalArgumentException
      *         If the provided name is {@code null} or not between 2-100 characters long
@@ -121,7 +121,7 @@ public class ChannelManager
      *         The new topic for the selected {@link net.dv8tion.jda.core.entities.TextChannel TextChannel},
      *         {@code null} or empty String to reset
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
      * @throws UnsupportedOperationException
      *         If the selected {@link net.dv8tion.jda.core.entities.Channel Channel}'s type is not {@link net.dv8tion.jda.core.entities.ChannelType#TEXT TEXT}
@@ -146,7 +146,7 @@ public class ChannelManager
      * @param  nsfw
      *         The new nsfw flag for the selected {@link net.dv8tion.jda.core.entities.TextChannel TextChannel},
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
      * @throws UnsupportedOperationException
      *         If the selected {@link net.dv8tion.jda.core.entities.Channel Channel}'s type is not {@link net.dv8tion.jda.core.entities.ChannelType#TEXT TEXT}
@@ -172,7 +172,7 @@ public class ChannelManager
      * @param  userLimit
      *         The new user-limit for the selected {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
      * @throws UnsupportedOperationException
      *         If the selected {@link net.dv8tion.jda.core.entities.Channel Channel}'s type is not {@link net.dv8tion.jda.core.entities.ChannelType#TEXT TEXT}
@@ -201,7 +201,7 @@ public class ChannelManager
      * @param  bitrate
      *         The new bitrate for the selected {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
      * @throws UnsupportedOperationException
      *         If the selected {@link net.dv8tion.jda.core.entities.Channel Channel}'s type is not {@link net.dv8tion.jda.core.entities.ChannelType#VOICE VOICE}

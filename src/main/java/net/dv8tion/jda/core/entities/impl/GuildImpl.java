@@ -24,6 +24,7 @@ import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.GuildController;
@@ -126,7 +127,7 @@ public class GuildImpl implements Guild
     public RestAction<List<Webhook>> getWebhooks()
     {
         if (!getSelfMember().hasPermission(Permission.MANAGE_WEBHOOKS))
-            throw new PermissionException(Permission.MANAGE_WEBHOOKS);
+            throw new InsufficientPermissionException(Permission.MANAGE_WEBHOOKS);
 
         Route.CompiledRoute route = Route.Guilds.GET_WEBHOOKS.compile(getId());
 
@@ -407,7 +408,7 @@ public class GuildImpl implements Guild
         if (!isAvailable())
             throw new GuildUnavailableException();
         if (!getSelfMember().hasPermission(Permission.BAN_MEMBERS))
-            throw new PermissionException(Permission.BAN_MEMBERS);
+            throw new InsufficientPermissionException(Permission.BAN_MEMBERS);
 
         Route.CompiledRoute route = Route.Guilds.GET_BANS.compile(getId());
         return new RestAction<List<User>>(getJDA(), route)
@@ -441,7 +442,7 @@ public class GuildImpl implements Guild
         if (!isAvailable())
             throw new GuildUnavailableException();
         if (!getSelfMember().hasPermission(Permission.KICK_MEMBERS))
-            throw new PermissionException(Permission.KICK_MEMBERS);
+            throw new InsufficientPermissionException(Permission.KICK_MEMBERS);
 
         if (days < 1)
             throw new IllegalArgumentException("Days amount must be at minimum 1 day.");
@@ -837,7 +838,7 @@ public class GuildImpl implements Guild
     public RestAction<List<Invite>> getInvites()
     {
         if (!this.getSelfMember().hasPermission(Permission.MANAGE_SERVER))
-            throw new PermissionException(Permission.MANAGE_SERVER);
+            throw new InsufficientPermissionException(Permission.MANAGE_SERVER);
 
         final Route.CompiledRoute route = Route.Invites.GET_GUILD_INVITES.compile(getId());
 

@@ -180,7 +180,7 @@ public abstract class Field<T, M>
      *
      * @throws IllegalArgumentException
      *         If the specified value does not pass the specified checks
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this value requires specific {@link net.dv8tion.jda.core.Permission Permissions}
      *         that are not fulfilled
      */
