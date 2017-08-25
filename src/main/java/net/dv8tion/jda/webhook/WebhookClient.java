@@ -132,6 +132,7 @@ public class WebhookClient implements Closeable
         return execute(newBody(new JSONObject().put("content", content).toString()));
     }
 
+    @Override
     public void close()
     {
         pool.shutdown();

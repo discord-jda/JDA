@@ -26,7 +26,6 @@ import org.json.JSONObject;
 
 import java.io.Closeable;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -211,7 +210,7 @@ public class WebhookCluster implements Closeable
     }
 
     @Override
-    public void close() throws IOException
+    public void close()
     {
         webhooks.forEach(WebhookClient::close);
     }
