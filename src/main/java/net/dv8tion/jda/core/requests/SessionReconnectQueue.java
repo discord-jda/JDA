@@ -54,7 +54,7 @@ public class SessionReconnectQueue
             while (!reconnectQueue.isEmpty())
             {
                 final WebSocketClient client = reconnectQueue.poll();
-                client.init();
+                client.sendIdentify();
                 try
                 {
                     if (!reconnectQueue.isEmpty())

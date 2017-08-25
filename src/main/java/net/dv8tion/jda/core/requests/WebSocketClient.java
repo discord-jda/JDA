@@ -134,14 +134,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         return connected;
     }
 
-    public void init()
-    {
-        if (sessionId == null)
-            sendIdentify();
-        else
-            sendResume();
-    }
-
     public void ready()
     {
         if (initiating)
@@ -424,10 +416,17 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         reconnectTimeoutS = 2;
         messagesSent = 0;
         ratelimitResetTime = System.currentTimeMillis() + 60000;
-        if (!firstInit && reconnectQueue != null)
-            reconnectQueue.appendSession(this);
+        if (sessionId == null)
+        {
+            if (!firstInit && reconnectQueue != null)
+                reconnectQueue.appendSession(this);
+            else
+                sendIdentify();
+        }
         else
-            init();
+        {
+            sendResume();
+        }
     }
 
     @Override
