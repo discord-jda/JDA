@@ -37,9 +37,14 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.concurrent.*;
 
+/**
+ * WebhookClient representing an executable {@link net.dv8tion.jda.core.entities.Webhook Webhook}
+ * <br>This client allows to send messages to a Discord Webhook without reliance on a JDA instance/Webhook entity.
+ *
+ * <p>Instances of this class can be retrieved using {@link net.dv8tion.jda.webhook.WebhookClientBuilder WebhookClientBuilders}
+ */
 public class WebhookClient implements Closeable
 {
     public static final String WEBHOOK_URL = "https://discordapp.com/api/v6/webhooks/%s/%s";
@@ -52,6 +57,7 @@ public class WebhookClient implements Closeable
     protected final Bucket bucket;
     protected final BlockingQueue<Pair<RequestBody, CompletableFuture<?>>> queue;
     protected volatile boolean isQueued;
+    protected boolean isShutdown;
 
     protected WebhookClient(final long id, final String token, final OkHttpClient client, final ScheduledExecutorService pool)
     {
@@ -64,78 +70,236 @@ public class WebhookClient implements Closeable
         this.isQueued = false;
     }
 
+    /**
+     * The snowflake id of the target Webhook
+     *
+     * @return id of the target Webhook
+     */
     public long getIdLong()
     {
         return id;
     }
 
+    /**
+     * The snowflake id of the target Webhook
+     *
+     * @return id of the target Webhook
+     */
     public String getId()
     {
         return Long.toUnsignedString(id);
     }
 
+    /**
+     * The URL of this WebhookClient
+     *
+     * @return The URL of this client
+     */
     public String getUrl()
     {
         return url;
     }
 
+    /**
+     * Sends the provided {@link net.dv8tion.jda.webhook.WebhookMessage WebhookMessage}
+     * to this webhook.
+     *
+     * <p>Hint: Use {@link net.dv8tion.jda.webhook.WebhookMessageBuilder WebhookMessageBuilder} to
+     * create a {@link net.dv8tion.jda.webhook.WebhookMessage WebhookMessage} instance!
+     *
+     * @param  message
+     *         The message to send
+     *
+     * @return {@link java.util.concurrent.Future Future} representing the execution task,
+     *         this will be completed if the message was sent without ratelimits.
+     */
     public Future<?> send(WebhookMessage message)
     {
         Checks.notNull(message, "WebhookMessage");
         return execute(message.getBody());
     }
 
+    /**
+     * Sends the provided {@link java.io.File File} to this webhook.
+     *
+     * @param  file
+     *         The file to send
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided file is {@code null}, does not exist or is not readable
+     * @throws java.util.concurrent.RejectedExecutionException
+     *         If this client was closed
+     *
+     * @return {@link java.util.concurrent.Future Future} representing the execution task,
+     *         this will be completed if the message was sent without ratelimits.
+     */
     public Future<?> send(File file)
     {
         Checks.notNull(file, "File");
         return send(file, file.getName());
     }
 
+    /**
+     * Sends the provided {@link java.io.File File} to this webhook.
+     *
+     * @param  file
+     *         The file to send
+     * @param  fileName
+     *         The name that should be used for this file
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided file is {@code null}, does not exist or is not readable
+     * @throws java.util.concurrent.RejectedExecutionException
+     *         If this client was closed
+     *
+     * @return {@link java.util.concurrent.Future Future} representing the execution task,
+     *         this will be completed if the message was sent without ratelimits.
+     */
     public Future<?> send(File file, String fileName)
     {
         return send(new WebhookMessageBuilder().setFile(file, fileName).build());
     }
 
+    /**
+     * Sends the provided {@code byte[]} data to this webhook.
+     *
+     * @param  data
+     *         The file data to send
+     * @param  fileName
+     *         The name that should be used for this file
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided data is {@code null} or exceeds the limit of 8MB
+     * @throws java.util.concurrent.RejectedExecutionException
+     *         If this client was closed
+     *
+     * @return {@link java.util.concurrent.Future Future} representing the execution task,
+     *         this will be completed if the message was sent without ratelimits.
+     */
     public Future<?> send(byte[] data, String fileName)
     {
         Checks.notNull(data, "Data");
+        Checks.check(data.length <= Message.MAX_FILE_SIZE, "Provided data exceeds the maximum size of 8MB!");
         return send(new ByteArrayInputStream(data), fileName);
     }
 
+    /**
+     * Sends the provided {@link java.io.InputStream InputStream} data to this webhook.
+     *
+     * @param  data
+     *         The file data to send
+     * @param  fileName
+     *         The name that should be used for this file
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided data is {@code null}
+     * @throws java.util.concurrent.RejectedExecutionException
+     *         If this client was closed
+     *
+     * @return {@link java.util.concurrent.Future Future} representing the execution task,
+     *         this will be completed if the message was sent without ratelimits.
+     */
     public Future<?> send(InputStream data, String fileName)
     {
         return send(new WebhookMessageBuilder().setFile(data, fileName).build());
     }
 
+    /**
+     * Sends the provided {@link net.dv8tion.jda.core.entities.Message Message}
+     * to this webhook.
+     *
+     * <p>Hint: Use {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} to
+     * create a {@link net.dv8tion.jda.core.entities.Message Message} instance!
+     *
+     * @param  message
+     *         The message to send
+     *
+     * @return {@link java.util.concurrent.Future Future} representing the execution task,
+     *         this will be completed if the message was sent without ratelimits.
+     */
     public Future<?> send(Message message)
     {
         return send(WebhookMessage.from(message));
     }
 
-    public Future<?> send(MessageEmbed embed)
-    {
-        return send(Collections.singleton(embed));
-    }
-
+    /**
+     * Sends the provided {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbeds}
+     * to this webhook.
+     *
+     * <p>Hint: Use {@link net.dv8tion.jda.core.EmbedBuilder EmbedBuilder} to
+     * create a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} instance!
+     *
+     * @param  embeds
+     *         The embeds to send
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If any of the provided embeds is {@code null}
+     * @throws java.util.concurrent.RejectedExecutionException
+     *         If this client was closed
+     *
+     * @return {@link java.util.concurrent.Future Future} representing the execution task,
+     *         this will be completed if the message was sent without ratelimits.
+     */
     public Future<?> send(MessageEmbed... embeds)
     {
         return send(WebhookMessage.of(embeds));
     }
 
+    /**
+     * Sends the provided {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbeds}
+     * to this webhook.
+     *
+     * <p>Hint: Use {@link net.dv8tion.jda.core.EmbedBuilder EmbedBuilder} to
+     * create a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} instance!
+     *
+     * @param  embeds
+     *         The embeds to send
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If any of the provided embeds is {@code null}
+     * @throws java.util.concurrent.RejectedExecutionException
+     *         If this client was closed
+     *
+     * @return {@link java.util.concurrent.Future Future} representing the execution task,
+     *         this will be completed if the message was sent without ratelimits.
+     */
     public Future<?> send(Collection<MessageEmbed> embeds)
     {
         return send(WebhookMessage.of(embeds));
     }
 
+    /**
+     * Sends the provided text message to this webhook.
+     *
+     * @param  content
+     *         The text message to send
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If any of the provided message is {@code null}, blank or exceeds 2000 characters in length
+     * @throws java.util.concurrent.RejectedExecutionException
+     *         If this client was closed
+     *
+     * @return {@link java.util.concurrent.Future Future} representing the execution task,
+     *         this will be completed if the message was sent without ratelimits.
+     */
     public Future<?> send(String content)
     {
+        Checks.notBlank(content, "Content");
+        Checks.check(content.length() <= 2000, "Content may not exceed 2000 characters!");
         return execute(newBody(new JSONObject().put("content", content).toString()));
     }
 
     @Override
     public void close()
     {
+        isShutdown = true;
         pool.shutdown();
+    }
+
+    protected void checkShutdown()
+    {
+        if (isShutdown)
+            throw new RejectedExecutionException("Cannot send to closed client!");
     }
 
     protected static RequestBody newBody(String object)
@@ -145,6 +309,7 @@ public class WebhookClient implements Closeable
 
     protected Future<?> execute(RequestBody body)
     {
+        checkShutdown();
         if (isQueued || bucket.isRateLimit())
             return queueRequest(body);
 

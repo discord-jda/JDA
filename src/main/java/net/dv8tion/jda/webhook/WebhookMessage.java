@@ -32,6 +32,13 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * A special Message that can only be sent to a {@link net.dv8tion.jda.webhook.WebhookClient WebhookClient}.
+ * <br>This message provides special attributes called {@code username} and {@code avatar_url} which override
+ * the default username and avatar of a Webhook message.
+ *
+ * <p>This message can send multiple embeds at once!
+ */
 public class WebhookMessage
 {
     protected static final MediaType OCTET = MediaType.parse("application/octet-stream");
@@ -53,16 +60,52 @@ public class WebhookMessage
         this.fileName = fileName;
     }
 
+    /**
+     * Creates a new WebhookMessage instance with the provided {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbeds}
+     *
+     * @param  embeds
+     *         The embeds to use for this message
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If any of the provided embeds is {@code null}
+     *         or exceeds the maximum total character count of {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}
+     *
+     * @return The resulting WebhookMessage instance
+     */
     public static WebhookMessage of(MessageEmbed... embeds)
     {
         return new WebhookMessageBuilder().addEmbeds(embeds).build();
     }
 
+    /**
+     * Creates a new WebhookMessage instance with the provided {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbeds}
+     *
+     * @param  embeds
+     *         The embeds to use for this message
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If any of the provided embeds is {@code null}
+     *         or exceeds the maximum total character count of {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}
+     *
+     * @return The resulting WebhookMessage instance
+     */
     public static WebhookMessage of(Collection<MessageEmbed> embeds)
     {
         return new WebhookMessageBuilder().addEmbeds(embeds).build();
     }
 
+    /**
+     * Creates a new WebhookMessage instance with the provided {@link net.dv8tion.jda.core.entities.Message Message}
+     * <br><b>This does not copy the attachments of the provided message!</b>
+     *
+     * @param  message
+     *         The message to use for this message
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided message is {@code null}
+     *
+     * @return The resulting WebhookMessage instance
+     */
     public static WebhookMessage from(Message message)
     {
         Checks.notNull(message, "Message");
@@ -72,6 +115,11 @@ public class WebhookMessage
         return new WebhookMessage(null, null, content, embeds, isTTS, null, null);
     }
 
+    /**
+     * Whether this message contains an attachment
+     *
+     * @return True, if this message contains an attachment
+     */
     public boolean isFile()
     {
         return file != null;

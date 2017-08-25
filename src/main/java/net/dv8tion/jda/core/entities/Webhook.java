@@ -151,5 +151,13 @@ public interface Webhook extends ISnowflake
      */
     WebhookManagerUpdatable getManagerUpdatable();
 
+    /**
+     * Creates a new {@link net.dv8tion.jda.webhook.WebhookClientBuilder WebhookClientBuilder} instance
+     * for this Webhook instance.
+     *
+     * <p><b><u>Remember to close the WebhookClient once you don't need it anymore to free resources!</u></b>
+     *
+     * @return The new WebhookClientBuilder
+     */
     WebhookClientBuilder newClient();
 }
