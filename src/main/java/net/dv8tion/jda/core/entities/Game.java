@@ -39,7 +39,7 @@ public class Game
 
     protected Game(String name, String url)
     {
-        this(name, url, GameType.TWITCH);
+        this(name, url, GameType.STREAMING);
     }
 
     protected Game(String name, String url, GameType type)
@@ -85,13 +85,13 @@ public class Game
     {
         if (!(o instanceof Game))
             return false;
+        if (o == this)
+            return true;
 
         Game oGame = (Game) o;
-        if (oGame.getType() != type)
-            return false;
-        return type == oGame.getType()
-            && ((name == null && oGame.getName() == null) || (name != null && name.equals(oGame.getName())))
-            && ((url == null && oGame.getUrl() == null) || (url != null && url.equals(oGame.getUrl())));
+        return oGame.getType() == type
+            && Objects.equals(name, oGame.getName())
+            && Objects.equals(url, oGame.getUrl());
     }
 
     @Override
@@ -145,7 +145,7 @@ public class Game
         Checks.notEmpty(name, "Provided game name");
         GameType type;
         if (isValidStreamingUrl(url))
-            type = GameType.TWITCH;
+            type = GameType.STREAMING;
         else
             type = GameType.DEFAULT;
         return new Game(name, url, type);
@@ -161,7 +161,7 @@ public class Game
      */
     public static boolean isValidStreamingUrl(String url)
     {
-        return url != null && url.matches("^https?://(www\\.)?twitch\\.tv/.+");
+        return url != null && url.matches("https?://(www\\.)?twitch\\.tv/.+");
     }
 
     /**
@@ -175,9 +175,17 @@ public class Game
         DEFAULT(0),
         /**
          * Used to indicate that the {@link net.dv8tion.jda.core.entities.Game Game} is a stream, specifically for
-         * <a href="https://www.twitch.tv">https://www.twitch.tv</a>.
          * <br>This type is displayed as "Streaming" in the discord client.
          */
+        STREAMING(1),
+        /**
+         * Used to indicate that the {@link net.dv8tion.jda.core.entities.Game Game} is a stream, specifically for
+         * <a href="https://www.twitch.tv">https://www.twitch.tv</a>.
+         * <br>This type is displayed as "Streaming" in the discord client.
+         *
+         * @deprecated This might be removed when discord introduces more streaming methods. Use {@link #STREAMING} instead.
+         */
+        @Deprecated
         TWITCH(1);
 
         private final int key;

@@ -86,7 +86,7 @@ public class EntityBuilder
                 .setBot(self.has("bot") && self.getBoolean("bot"));
     }
 
-    public Game createGameInternal(String name, String url, Game.GameType type)
+    public Game createGame(String name, String url, Game.GameType type)
     {
         return new Game(name, url, type);
     }
@@ -549,7 +549,7 @@ public class EntityBuilder
                 gameType = Game.GameType.DEFAULT;
             }
 
-            game = createGameInternal(gameName, url, gameType);
+            game = createGame(gameName, url, gameType);
         }
         if (memberOrFriend instanceof Member)
         {
