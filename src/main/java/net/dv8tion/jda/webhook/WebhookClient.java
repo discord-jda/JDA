@@ -19,7 +19,7 @@ package net.dv8tion.jda.webhook;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.requests.Requester;
-import net.dv8tion.jda.core.utils.CompletedFuture;
+import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.IOUtil;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import net.dv8tion.jda.core.utils.tuple.ImmutablePair;
@@ -28,12 +28,10 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import java.io.Closeable;
-import java.io.IOException;
+import java.io.*;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -48,15 +46,17 @@ public class WebhookClient implements Closeable
     public static final SimpleLog LOG = SimpleLog.getLog("WebhookClient");
 
     protected final String url;
+    protected final long id;
     protected final OkHttpClient client;
     protected final ScheduledExecutorService pool;
     protected final Bucket bucket;
-    protected final BlockingQueue<Pair<JSONObject, CompletableFuture<?>>> queue;
+    protected final BlockingQueue<Pair<RequestBody, CompletableFuture<?>>> queue;
     protected volatile boolean isQueued;
 
     protected WebhookClient(final long id, final String token, final OkHttpClient client, final ScheduledExecutorService pool)
     {
         this.client = client;
+        this.id = id;
         this.url = String.format(WEBHOOK_URL, Long.toUnsignedString(id), token);
         this.pool = pool;
         this.bucket = new Bucket();
@@ -64,29 +64,72 @@ public class WebhookClient implements Closeable
         this.isQueued = false;
     }
 
-    public Future<?> execute(Message message)
+    public long getIdLong()
     {
-        final JSONObject object = new JSONObject();
-        if (!message.getRawContent().isEmpty())
-            object.put("content", message.getRawContent());
-        if (!message.getEmbeds().isEmpty())
-            object.put("embeds", new JSONArray(message.getEmbeds()));
-        return execute(object);
+        return id;
     }
 
-    public Future<?> execute(MessageEmbed embed)
+    public String getId()
     {
-        return execute(Collections.singleton(embed));
+        return Long.toUnsignedString(id);
     }
 
-    public Future<?> execute(Collection<MessageEmbed> embeds)
+    public String getUrl()
     {
-        return execute(new JSONObject().put("embeds", new JSONArray(embeds)));
+        return url;
     }
 
-    public Future<?> execute(String content)
+    public Future<?> send(WebhookMessage message)
     {
-        return execute(new JSONObject().put("content", content));
+        Checks.notNull(message, "WebhookMessage");
+        return execute(message.getBody());
+    }
+
+    public Future<?> send(File file)
+    {
+        Checks.notNull(file, "File");
+        return send(file, file.getName());
+    }
+
+    public Future<?> send(File file, String fileName)
+    {
+        return send(new WebhookMessageBuilder().setFile(file, fileName).build());
+    }
+
+    public Future<?> send(byte[] data, String fileName)
+    {
+        Checks.notNull(data, "Data");
+        return send(new ByteArrayInputStream(data), fileName);
+    }
+
+    public Future<?> send(InputStream data, String fileName)
+    {
+        return send(new WebhookMessageBuilder().setFile(data, fileName).build());
+    }
+
+    public Future<?> send(Message message)
+    {
+        return send(WebhookMessage.from(message));
+    }
+
+    public Future<?> send(MessageEmbed embed)
+    {
+        return send(Collections.singleton(embed));
+    }
+
+    public Future<?> send(MessageEmbed... embeds)
+    {
+        return send(WebhookMessage.of(embeds));
+    }
+
+    public Future<?> send(Collection<MessageEmbed> embeds)
+    {
+        return send(WebhookMessage.of(embeds));
+    }
+
+    public Future<?> send(String content)
+    {
+        return execute(newBody(new JSONObject().put("content", content).toString()));
     }
 
     public void close()
@@ -94,18 +137,23 @@ public class WebhookClient implements Closeable
         pool.shutdown();
     }
 
-    protected Future<?> execute(JSONObject object)
+    protected static RequestBody newBody(String object)
+    {
+        return RequestBody.create(Requester.MEDIA_TYPE_JSON, object);
+    }
+
+    protected Future<?> execute(RequestBody body)
     {
         if (isQueued || bucket.isRateLimit())
-            return queueRequest(object);
+            return queueRequest(body);
 
-        Request request = newRequest(object);
+        Request request = newRequest(body);
         try (Response response = client.newCall(request).execute())
         {
             bucket.update(response);
             if (response.code() == Bucket.RATE_LIMIT_CODE)
-                return queueRequest(object);
-            return new CompletedFuture<>(null);
+                return queueRequest(body);
+            return CompletableFuture.completedFuture(null);
         }
         catch (IOException e)
         {
@@ -114,22 +162,22 @@ public class WebhookClient implements Closeable
         }
     }
 
-    private Future<?> queueRequest(JSONObject object)
+    protected Future<?> queueRequest(RequestBody body)
     {
         final boolean wasQueued = isQueued;
         isQueued = true;
         CompletableFuture<?> callback = new CompletableFuture<>();
-        queue.add(ImmutablePair.of(object, callback));
+        queue.add(ImmutablePair.of(body, callback));
         if (!wasQueued)
             pool.schedule(this::drainQueue, bucket.retryAfter(), TimeUnit.MILLISECONDS);
         return callback;
     }
 
-    protected Request newRequest(JSONObject object)
+    protected Request newRequest(RequestBody body)
     {
         return new Request.Builder()
                 .url(url)
-                .method("POST", RequestBody.create(Requester.MEDIA_TYPE_JSON, object.toString()))
+                .method("POST", body)
                 .header("accept-encoding", "gzip")
                 .header("content-type", "application/json")
                 .build();
