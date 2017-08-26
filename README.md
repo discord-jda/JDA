@@ -113,9 +113,8 @@ public static void main(String[] args) throws Exception
     //register your listeners here using shardBuilder.addEventListener(...)
     for (int i = 0; i < 10; i++)
     {
-        new JDABuilder(AccountType.BOT)
-            .useSharding(i, 10)
-            .buildAsync();
+        shardBuilder.useSharding(i, 10)
+                    .buildAsync();
         Thread.sleep(5000); //sleep 5 seconds between each login
     }
 }
