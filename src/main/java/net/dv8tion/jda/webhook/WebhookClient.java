@@ -456,7 +456,8 @@ public class WebhookClient implements Closeable
         private void update0(Response response) throws IOException
         {
             final long current = System.currentTimeMillis();
-            if (response.code() == RATE_LIMIT_CODE)
+            final boolean is429 = response.code() == RATE_LIMIT_CODE;
+            if (is429)
             {
                 handleRatelimit(response, current);
             }
@@ -466,13 +467,13 @@ public class WebhookClient implements Closeable
                 LOG.debug(new String(IOUtil.readFully(Requester.getBody(response))));
                 return;
             }
-            final long reset = Long.parseLong(response.header("X-RateLimit-Reset")); //not millis
             remainingUses = Integer.parseInt(response.header("X-RateLimit-Remaining"));
             limit = Integer.parseInt(response.header("X-RateLimit-Limit"));
             final String date = response.header("Date");
 
-            if (date != null)
+            if (date != null && !is429)
             {
+                final long reset = Long.parseLong(response.header("X-RateLimit-Reset")); //not millis
                 OffsetDateTime tDate = OffsetDateTime.parse(date, DateTimeFormatter.RFC_1123_DATE_TIME);
                 final long delay = tDate.toInstant().until(Instant.ofEpochSecond(reset), ChronoUnit.MILLIS);
                 resetTime = current + delay;
