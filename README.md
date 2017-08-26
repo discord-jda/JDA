@@ -90,6 +90,37 @@ public class MessageListener extends ListenerAdapter
 > **Note**: In these examples we override methods from the inheriting class `ListenerAdapter`.<br>
 > The usage of the `@Override` annotation is recommended to validate methods.
 
+### Sharding a Bot
+
+Discord allows Bot-accounts to share load across sessions by limiting them to a fraction of the total connected Guilds/Servers of the bot.
+<br>This can be done using **sharding** which will limit JDA to only a certain amount of Guilds/Servers including events and entities.
+Sharding will limit the amount of Guilds/Channels/Users visible to the JDA session so it is recommended to have some kind of elevated management to
+access information of other shards.
+
+To use sharding in JDA you will need to use `JDABuilder.useSharding(int shardId, int shardTotal)`. The **shardId** is 0-based which means the first shard
+has the ID 0. The **shardTotal** is the total amount of shards (not 0-based) which can be seen similar to the length of an array, the last shard has the ID of 
+`shardTotal - 1`.
+
+When using sharding it is also recommended to use a `SessionReconnectQueue` instance for all shards. This allows JDA to properly
+handle reconnecting multiple shards without violating Discord limitations (not using this might cause an IP ban on bad days).
+
+#### Example Sharding
+
+```java
+public static void main(String[] args) throws Exception
+{
+    JDABuilder shardBuilder = new JDABuilder(AccountType.BOT).setToken(args[0]).setReconnectQueue(new SessionReconnectQueue());
+    //register your listeners here using shardBuilder.addEventListener(...)
+    for (int i = 0; i < 10; i++)
+    {
+        new JDABuilder(AccountType.BOT)
+            .useSharding(i, 10)
+            .buildAsync();
+        Thread.sleep(5000); //sleep 5 seconds between each login
+    }
+}
+```
+
 ## More Examples
 We provide a small set of Examples in the [Example Directory](https://github.com/DV8FromTheWorld/JDA/tree/master/src/examples/java).
 
