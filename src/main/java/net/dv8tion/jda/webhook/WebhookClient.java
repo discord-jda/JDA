@@ -314,6 +314,13 @@ public class WebhookClient implements Closeable
         pool.shutdown();
     }
 
+    @Override
+    protected void finalize() throws Throwable
+    {
+        if (!isShutdown)
+            LOG.warn("Detected unclosed WebhookClient! Did you forget to close it?");
+    }
+
     protected void checkShutdown()
     {
         if (isShutdown)

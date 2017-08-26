@@ -27,10 +27,7 @@ import org.json.JSONObject;
 import java.io.Closeable;
 import java.io.File;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Predicate;
@@ -161,11 +158,7 @@ public class WebhookCluster implements Closeable
         for (Webhook webhook : webhooks)
         {
             Checks.notNull(webhook, "Webhook");
-            WebhookClientBuilder builder = new WebhookClientBuilder(webhook);
-            builder.setExecutorService(defaultPool).setHttpClient(defaultHttpClient);
-            if (defaultHttpClientBuilder != null)
-                builder.setHttpClientBuilder(defaultHttpClientBuilder);
-            this.webhooks.add(builder.build());
+            buildWebhook(webhook.getIdLong(), webhook.getToken());
         }
         return this;
     }
@@ -191,11 +184,7 @@ public class WebhookCluster implements Closeable
         for (Webhook webhook : webhooks)
         {
             Checks.notNull(webhook, "Webhook");
-            WebhookClientBuilder builder = new WebhookClientBuilder(webhook);
-            builder.setExecutorService(defaultPool).setHttpClient(defaultHttpClient);
-            if (defaultHttpClientBuilder != null)
-                builder.setHttpClientBuilder(defaultHttpClientBuilder);
-            this.webhooks.add(builder.build());
+            buildWebhook(webhook.getIdLong(), webhook.getToken());
         }
         return this;
     }
@@ -298,8 +287,7 @@ public class WebhookCluster implements Closeable
     public WebhookCluster removeWebhooks(WebhookClient... clients)
     {
         Checks.notNull(clients, "Clients");
-        for (WebhookClient client : clients)
-            webhooks.remove(client);
+        webhooks.removeAll(Arrays.asList(clients));
         return this;
     }
 
@@ -321,8 +309,7 @@ public class WebhookCluster implements Closeable
     public WebhookCluster removeWebhooks(Collection<WebhookClient> clients)
     {
         Checks.notNull(clients, "Clients");
-        for (WebhookClient client : clients)
-            webhooks.remove(client);
+        webhooks.removeAll(clients);
         return this;
     }
 
@@ -347,9 +334,8 @@ public class WebhookCluster implements Closeable
         List<WebhookClient> clients = new ArrayList<>();
         for (WebhookClient client : webhooks)
         {
-            if (!predicate.test(client))
-               continue;
-            clients.add(client);
+            if (predicate.test(client))
+                clients.add(client);
         }
         removeWebhooks(clients);
         return clients;
@@ -456,8 +442,8 @@ public class WebhookCluster implements Closeable
         Checks.notNull(message, "Message");
         final RequestBody body = message.getBody();
         final List<Future<?>> callbacks = new ArrayList<>(webhooks.size());
-        for (int i = 0; i < webhooks.size(); i++)
-            callbacks.add(webhooks.get(i).execute(body));
+        for (WebhookClient webhook : webhooks)
+            callbacks.add(webhook.execute(body));
         return callbacks;
     }
 
@@ -559,8 +545,8 @@ public class WebhookCluster implements Closeable
         Checks.check(content.length() <= 2000, "Content may not exceed 2000 characters!");
         final RequestBody body = WebhookClient.newBody(new JSONObject().put("content", content).toString());
         final List<Future<?>> callbacks = new ArrayList<>(webhooks.size());
-        for (int i = 0; i < webhooks.size(); i++)
-            callbacks.add(webhooks.get(i).execute(body));
+        for (WebhookClient webhook : webhooks)
+            callbacks.add(webhook.execute(body));
         return callbacks;
     }
 
