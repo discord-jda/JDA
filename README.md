@@ -104,6 +104,14 @@ has the ID 0. The **shardTotal** is the total amount of shards (not 0-based) whi
 When using sharding it is also recommended to use a `SessionReconnectQueue` instance for all shards. This allows JDA to properly
 handle reconnecting multiple shards without violating Discord limitations (not using this might cause an IP ban on bad days).
 
+**Logins between shards _must_ happen with a minimum of _5 SECONDS_ of backoff time. JDA will inform you if the backoff is too short
+with a log message:**
+
+```
+Encountered IDENTIFY (OP 2) Rate Limit! Waiting 5 seconds before trying again!
+```
+> Note: Failing to backoff properly will cause JDA to wait 5 seconds after failing to connect. Respect the 5 second login rate limit!
+
 #### Example Sharding
 
 ```java
