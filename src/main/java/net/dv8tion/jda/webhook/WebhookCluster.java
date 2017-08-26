@@ -524,6 +524,8 @@ public class WebhookCluster implements Closeable
      * Sends the provided {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbeds}
      * to all registered {@link net.dv8tion.jda.webhook.WebhookClient WebhookClients}.
      *
+     * <p><b>You can send up to 10 embeds per message! If more are sent they will not be displayed.</b>
+     *
      * <p>Hint: Use {@link net.dv8tion.jda.core.EmbedBuilder EmbedBuilder} to
      * create a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbeds} instance!
      *
@@ -548,6 +550,8 @@ public class WebhookCluster implements Closeable
     /**
      * Sends the provided {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbeds}
      * to all registered {@link net.dv8tion.jda.webhook.WebhookClient WebhookClients}.
+     *
+     * <p><b>You can send up to 10 embeds per message! If more are sent they will not be displayed.</b>
      *
      * <p>Hint: Use {@link net.dv8tion.jda.core.EmbedBuilder EmbedBuilder} to
      * create a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbeds} instance!

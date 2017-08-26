@@ -238,6 +238,8 @@ public class WebhookClient implements Closeable
      * Sends the provided {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbeds}
      * to this webhook.
      *
+     * <p><b>You can send up to 10 embeds per message! If more are sent they will not be displayed.</b>
+     *
      * <p>Hint: Use {@link net.dv8tion.jda.core.EmbedBuilder EmbedBuilder} to
      * create a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} instance!
      *
@@ -262,6 +264,8 @@ public class WebhookClient implements Closeable
     /**
      * Sends the provided {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbeds}
      * to this webhook.
+     *
+     * <p><b>You can send up to 10 embeds per message! If more are sent they will not be displayed.</b>
      *
      * <p>Hint: Use {@link net.dv8tion.jda.core.EmbedBuilder EmbedBuilder} to
      * create a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} instance!

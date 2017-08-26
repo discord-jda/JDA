@@ -93,6 +93,8 @@ public class WebhookMessageBuilder
      * Adds the provided {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbeds}
      * to this builder.
      *
+     * <p><b>You can send up to 10 embeds per message! If more are sent they will not be displayed.</b>
+     *
      * @param  embeds
      *         The embeds to add
      *
@@ -118,6 +120,8 @@ public class WebhookMessageBuilder
     /**
      * Adds the provided {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbeds}
      * to this builder.
+     *
+     * <p><b>You can send up to 10 embeds per message! If more are sent they will not be displayed.</b>
      *
      * @param  embeds
      *         The embeds to add
