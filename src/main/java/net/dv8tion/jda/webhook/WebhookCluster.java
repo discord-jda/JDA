@@ -151,6 +151,9 @@ public class WebhookCluster implements Closeable
      *         webhooks is {@code null}
      *
      * @return The current WebhookCluster for chaining convenience
+     *
+     * @see    #buildWebhooks(Webhook...)
+     * @see    #newBuilder(Webhook)
      */
     public WebhookCluster buildWebhooks(Webhook... webhooks)
     {
@@ -177,6 +180,9 @@ public class WebhookCluster implements Closeable
      *         webhooks is {@code null}
      *
      * @return The current WebhookCluster for chaining convenience
+     *
+     * @see    #buildWebhooks(Webhook...)
+     * @see    #newBuilder(Webhook)
      */
     public WebhookCluster buildWebhooks(Collection<Webhook> webhooks)
     {
@@ -204,15 +210,57 @@ public class WebhookCluster implements Closeable
      *         If the provided webhooks token is {@code null} or contains whitespace
      *
      * @return The current WebhookCluster for chaining convenience
+     *
+     * @see    #newBuilder(long, String)
      */
     public WebhookCluster buildWebhook(long id, String token)
+    {
+        this.webhooks.add(newBuilder(id, token).build());
+        return this;
+    }
+
+    /**
+     * Creates a new {@link net.dv8tion.jda.webhook.WebhookClientBuilder WebhookClientBuilder}
+     * with the defined default settings of this cluster.
+     *
+     * @param  id
+     *         The webhook id
+     * @param  token
+     *         The webhook token
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the token is {@code null}, empty or contains blanks
+     *
+     * @return The WebhookClientBuilder with default settings
+     *
+     * @see    net.dv8tion.jda.webhook.WebhookClientBuilder#WebhookClientBuilder(long, String) new WebhookClientBuilder(long, String)
+     */
+    public WebhookClientBuilder newBuilder(long id, String token)
     {
         WebhookClientBuilder builder = new WebhookClientBuilder(id, token);
         builder.setExecutorService(defaultPool).setHttpClient(defaultHttpClient);
         if (defaultHttpClientBuilder != null)
             builder.setHttpClientBuilder(defaultHttpClientBuilder);
-        this.webhooks.add(builder.build());
-        return this;
+        return builder;
+    }
+
+    /**
+     * Creates a new {@link net.dv8tion.jda.webhook.WebhookClientBuilder WebhookClientBuilder}
+     * with the defined default settings of this cluster.
+     *
+     * @param  webhook
+     *         The target webhook
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the webhook is {@code null}
+     *
+     * @return The WebhookClientBuilder with default settings
+     *
+     * @see    net.dv8tion.jda.webhook.WebhookClientBuilder#WebhookClientBuilder(Webhook) new WebhookClientBuilder(Webhook)
+     */
+    public WebhookClientBuilder newBuilder(Webhook webhook)
+    {
+        return newBuilder(webhook.getIdLong(), webhook.getToken());
     }
 
     /**
