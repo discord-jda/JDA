@@ -417,16 +417,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         messagesSent = 0;
         ratelimitResetTime = System.currentTimeMillis() + 60000;
         if (sessionId == null)
-        {
-            if (!firstInit && reconnectQueue != null)
-                reconnectQueue.appendSession(this);
-            else
-                sendIdentify();
-        }
+            sendIdentify();
         else
-        {
             sendResume();
-        }
     }
 
     @Override
@@ -480,22 +473,44 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             if (rawCloseCode == 1000)
                 invalidate(); // 1000 means our session is dropped so we cannot resume
             api.getEventManager().handle(new DisconnectEvent(api, serverCloseFrame, clientCloseFrame, closedByServer, OffsetDateTime.now()));
-            reconnect();
+            if (sessionId == null && reconnectQueue != null)
+                queueReconnect();
+            else
+                reconnect();
         }
+    }
+
+    protected void queueReconnect()
+    {
+        if (!handleIdentifyRateLimit)
+            LOG.warn("Got disconnected from WebSocket (Internet?!)... Appending session to reconnect queue");
+        reconnectQueue.appendSession(this);
     }
 
     protected void reconnect()
     {
+        reconnect(false, true);
+    }
+
+    //callFromQueue - whether this was in SessionReconnectQueue and got polled
+    //shouldHandleIdentify - whether SessionReconnectQueue already handled an IDENTIFY rate limit for this session
+    protected void reconnect(boolean callFromQueue, boolean shouldHandleIdentify)
+    {
         if (!handleIdentifyRateLimit)
-            LOG.warn("Got disconnected from WebSocket (Internet?!)... Attempting to reconnect in " + reconnectTimeoutS + "s");
+        {
+            if (callFromQueue)
+                LOG.warn("Queue is attempting to reconnect a shard..." + (shardInfo != null ? " Shard: " + shardInfo.getShardString() : ""));
+            else
+                LOG.warn("Got disconnected from WebSocket (Internet?!)...");
+            LOG.warn("Attempting to reconnect in " + reconnectTimeoutS + "s");
+        }
         while(shouldReconnect)
         {
             try
             {
                 api.setStatus(JDA.Status.WAITING_TO_RECONNECT);
-                if (handleIdentifyRateLimit)
+                if (handleIdentifyRateLimit && shouldHandleIdentify)
                 {
-                    handleIdentifyRateLimit = false;
                     LOG.fatal("Encountered IDENTIFY (OP " + WebSocketCode.IDENTIFY + ") Rate Limit! " +
                         "Waiting " + IDENTIFY_DELAY + " seconds before trying again!");
                     Thread.sleep(IDENTIFY_DELAY * 1000);
@@ -504,6 +519,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 {
                     Thread.sleep(reconnectTimeoutS * 1000);
                 }
+                handleIdentifyRateLimit = false;
                 api.setStatus(JDA.Status.ATTEMPTING_TO_RECONNECT);
             }
             catch(InterruptedException ignored) {}

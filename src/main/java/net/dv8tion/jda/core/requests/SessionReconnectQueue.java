@@ -17,12 +17,20 @@
 package net.dv8tion.jda.core.requests;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class SessionReconnectQueue
 {
+    //200 ms buffer for actually sending identify payload here
+    private static final int RECONNECT_DELAY = (WebSocketClient.IDENTIFY_DELAY * 1000) + 200;
     protected final Object lock = new Object();
     protected final BlockingQueue<WebSocketClient> reconnectQueue;
     protected volatile Thread reconnectThread;
+
+    public SessionReconnectQueue()
+    {
+        this(new LinkedBlockingQueue<>());
+    }
 
     public SessionReconnectQueue(final BlockingQueue<WebSocketClient> reconnectQueue)
     {
@@ -51,14 +59,17 @@ public class SessionReconnectQueue
         @Override
         public final void run()
         {
+            boolean isFirst = true;
             while (!reconnectQueue.isEmpty())
             {
-                final WebSocketClient client = reconnectQueue.poll();
-                client.sendIdentify();
                 try
                 {
+                    final WebSocketClient client = reconnectQueue.poll();
+                    client.reconnect(true, isFirst);
+                    isFirst = false;
+
                     if (!reconnectQueue.isEmpty())
-                        Thread.sleep(WebSocketClient.IDENTIFY_DELAY);
+                        Thread.sleep(RECONNECT_DELAY);
                 }
                 catch (InterruptedException ex)
                 {
