@@ -31,11 +31,11 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
-import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.AudioManager;
+import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.NativeUtil;
 import net.dv8tion.jda.core.utils.PermissionUtil;
-import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -94,7 +94,7 @@ public class AudioManagerImpl implements AudioManager
                     "Please wait until this Guild is available to open a connection.");
         final Member self = guild.getSelfMember();
         if (!self.hasPermission(channel, Permission.VOICE_CONNECT) && !self.hasPermission(channel, Permission.VOICE_MOVE_OTHERS))
-            throw new PermissionException(Permission.VOICE_CONNECT);
+            throw new InsufficientPermissionException(Permission.VOICE_CONNECT);
 
         if (audioConnection == null)
         {
@@ -118,7 +118,7 @@ public class AudioManagerImpl implements AudioManager
                 if (userLimit > 0                                               // If there is a userlimit
                     && userLimit <= channel.getMembers().size()                 // if that userlimit is reached
                     && (perms & voicePerm) != voicePerm)                        // If we don't have voice move others permissions
-                    throw new PermissionException(Permission.VOICE_MOVE_OTHERS, // then throw exception!
+                    throw new InsufficientPermissionException(Permission.VOICE_MOVE_OTHERS, // then throw exception!
                             "Unable to connect to VoiceChannel due to userlimit! Requires permission VOICE_MOVE_OTHERS to bypass");
             }
 

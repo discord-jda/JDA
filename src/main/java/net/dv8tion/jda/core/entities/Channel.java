@@ -23,8 +23,8 @@ import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.InviteAction;
 import net.dv8tion.jda.core.requests.restaction.PermissionOverrideAction;
 
-import java.util.List;
 import javax.annotation.CheckReturnValue;
+import java.util.List;
 
 /**
  * Represents a {@link net.dv8tion.jda.core.entities.Guild Guild} channel.
@@ -189,7 +189,7 @@ public interface Channel extends ISnowflake
      *     <br>If we were removed from the Guild</li>
      * </ul>
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         if the currently logged in account doesn't have {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
      *         for the channel.
      *
@@ -214,7 +214,7 @@ public interface Channel extends ISnowflake
      * @param  member
      *         The Member to create an override for
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         if we don't have the permission to {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS}
      * @throws IllegalArgumentException
      *         if the specified Member is null or the Member is not from {@link #getGuild()}
@@ -245,7 +245,7 @@ public interface Channel extends ISnowflake
      * @param  role
      *         The Role to create an override for
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         if we don't have the permission to {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS}
      * @throws IllegalArgumentException
      *         if the specified Role is null or the Role is not from {@link #getGuild()}
@@ -265,7 +265,7 @@ public interface Channel extends ISnowflake
      * new {@link net.dv8tion.jda.core.entities.Invite Invite}. 
      * <br>Requires {@link net.dv8tion.jda.core.Permission#CREATE_INSTANT_INVITE CREATE_INSTANT_INVITE} in this channel.
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         if the account does not have {@link net.dv8tion.jda.core.Permission#CREATE_INSTANT_INVITE CREATE_INSTANT_INVITE} in this channel
      *
      * @return A new {@link net.dv8tion.jda.core.requests.restaction.InviteAction InviteAction}
@@ -278,9 +278,9 @@ public interface Channel extends ISnowflake
     /**
      * Returns all invites for this channel.
      * <br>Requires {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} in this channel.
-     * Will throw a {@link net.dv8tion.jda.core.exceptions.PermissionException PermissionException} otherwise.
+     * Will throw a {@link net.dv8tion.jda.core.exceptions.InsufficientPermissionException InsufficientPermissionException} otherwise.
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         if the account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} in this channel
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.core.entities.Invite Invite}{@literal >}

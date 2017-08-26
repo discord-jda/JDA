@@ -22,8 +22,8 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 
-import java.util.List;
 import javax.annotation.CheckReturnValue;
+import java.util.List;
 
 /**
  * Represents a Custom Emote. (Custom Emoji in official Discord API terminology)
@@ -98,7 +98,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      *         if this Emote is fake ({@link #isFake()})
      * @throws java.lang.UnsupportedOperationException
      *         If this emote is managed by discord ({@link #isManaged()})
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         if the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES MANAGE_EMOTES} is not given
      * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
      *         if the current account is not from {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType#CLIENT}
