@@ -333,6 +333,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         socket.sendClose(code);
     }
 
+    public void close(int code, String reason)
+    {
+        socket.sendClose(code, reason);
+    }
+
     /*
         ### Start Internal methods ###
      */
@@ -572,7 +577,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 else if (!handleIdentifyRateLimit) // this can also mean we got rate limited in IDENTIFY (no need to invalidate then)
                     invalidate();
 
-                close(closeCode);
+                close(closeCode, "INVALIDATE_SESSION");
                 break;
             case WebSocketCode.HELLO:
                 LOG.debug("Got HELLO packet (OP 10). Initializing keep-alive.");
