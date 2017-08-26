@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.webhook;
 
+import net.dv8tion.jda.core.JDAInfo;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.exceptions.HttpException;
@@ -49,6 +50,7 @@ import java.util.concurrent.*;
 public class WebhookClient implements Closeable
 {
     public static final String WEBHOOK_URL = "https://discordapp.com/api/v6/webhooks/%s/%s";
+    public static final String USER_AGENT = "JDA Webhook(https://github.com/DV8FromTheWorld/JDA | " + JDAInfo.VERSION + ")";
     public static final SimpleLog LOG = SimpleLog.getLog("WebhookClient");
 
     protected final String url;
@@ -383,9 +385,9 @@ public class WebhookClient implements Closeable
                 .url(url)
                 .method("POST", body)
                 .header("accept-encoding", "gzip")
+                .header("user-agent", USER_AGENT)
                 .build();
     }
-
 
     protected void drainQueue()
     {
