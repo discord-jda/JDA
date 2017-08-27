@@ -43,12 +43,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.zip.DataFormatException;
-import java.util.zip.Inflater;
+import java.util.zip.InflaterOutputStream;
 
 public class WebSocketClient extends WebSocketAdapter implements WebSocketListener
 {
@@ -843,21 +844,20 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     @Override
     public void onBinaryMessage(WebSocket websocket, byte[] binary) throws UnsupportedEncodingException, DataFormatException
     {
-        //Thanks to ShadowLordAlpha for code and debugging.
+        //Thanks to ShadowLordAlpha and Shredder121 for code and debugging.
         //Get the compressed message and inflate it
-        StringBuilder builder = new StringBuilder();
-        Inflater decompresser = new Inflater();
-        decompresser.setInput(binary, 0, binary.length);
-        byte[] result = new byte[128];
-        while(!decompresser.finished())
+        ByteArrayOutputStream out = new ByteArrayOutputStream(binary.length * 2);
+        try (InflaterOutputStream decompressor = new InflaterOutputStream(out))
         {
-            int resultLength = decompresser.inflate(result);
-            builder.append(new String(result, 0, resultLength, "UTF-8"));
+            decompressor.write(binary);
         }
-        decompresser.end();
+        catch (IOException e)
+        {
+            throw (DataFormatException) new DataFormatException("Malformed").initCause(e);
+        }
 
         // send the inflated message to the TextMessage method
-        onTextMessage(websocket, builder.toString());
+        onTextMessage(websocket, out.toString("UTF-8"));
     }
 
     @Override
