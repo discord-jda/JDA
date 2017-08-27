@@ -33,7 +33,10 @@ import okhttp3.Response;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import java.io.*;
+import java.io.Closeable;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -375,7 +378,7 @@ public class WebhookClient implements Closeable
         CompletableFuture<?> callback = new CompletableFuture<>();
         queue.add(ImmutablePair.of(body, callback));
         if (!wasQueued)
-            pool.schedule(this::drainQueue, bucket.retryAfter(), TimeUnit.MILLISECONDS);
+            backoffQueue();
         return callback;
     }
 
@@ -389,6 +392,11 @@ public class WebhookClient implements Closeable
                 .build();
     }
 
+    protected void backoffQueue()
+    {
+        pool.schedule(this::drainQueue, bucket.retryAfter(), TimeUnit.MILLISECONDS);
+    }
+
     protected void drainQueue()
     {
         while (!queue.isEmpty())
@@ -399,7 +407,7 @@ public class WebhookClient implements Closeable
                 bucket.update(response);
                 if (response.code() == Bucket.RATE_LIMIT_CODE)
                 {
-                    pool.schedule(this::drainQueue, bucket.retryAfter(), TimeUnit.MILLISECONDS);
+                    backoffQueue();
                     return;
                 }
                 else if (!response.isSuccessful())
@@ -410,6 +418,11 @@ public class WebhookClient implements Closeable
                     continue;
                 }
                 queue.poll().getRight().complete(null);
+                if (bucket.isRateLimit())
+                {
+                    backoffQueue();
+                    return;
+                }
             }
             catch (IOException e)
             {
@@ -424,22 +437,22 @@ public class WebhookClient implements Closeable
     {
         public static final int RATE_LIMIT_CODE = 429;
         public long resetTime;
-        public int remainingUses = Integer.MAX_VALUE;
+        public int remainingUses;
         public int limit = Integer.MAX_VALUE;
 
-        public boolean isRateLimit()
+        public synchronized boolean isRateLimit()
         {
-            if (remainingUses < 1 && retryAfter() <= 0)
+            if (retryAfter() <= 0)
                 remainingUses = limit;
-            return remainingUses < 1;
+            return remainingUses <= 0;
         }
 
-        public long retryAfter()
+        public synchronized long retryAfter()
         {
             return resetTime - System.currentTimeMillis();
         }
 
-        private void handleRatelimit(Response response, long current) throws IOException
+        private synchronized void handleRatelimit(Response response, long current) throws IOException
         {
             final String retryAfter = response.header("Retry-After");
             long delay;
@@ -455,7 +468,7 @@ public class WebhookClient implements Closeable
             resetTime = current + delay;
         }
 
-        private void update0(Response response) throws IOException
+        private synchronized void update0(Response response) throws IOException
         {
             final long current = System.currentTimeMillis();
             final boolean is429 = response.code() == RATE_LIMIT_CODE;
@@ -475,7 +488,7 @@ public class WebhookClient implements Closeable
 
             if (date != null && !is429)
             {
-                final long reset = Long.parseLong(response.header("X-RateLimit-Reset")); //not millis
+                final long reset = Long.parseLong(response.header("X-RateLimit-Reset")); //epoch seconds
                 OffsetDateTime tDate = OffsetDateTime.parse(date, DateTimeFormatter.RFC_1123_DATE_TIME);
                 final long delay = tDate.toInstant().until(Instant.ofEpochSecond(reset), ChronoUnit.MILLIS);
                 resetTime = current + delay;
