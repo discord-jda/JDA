@@ -344,24 +344,7 @@ public class WebhookClient implements Closeable
     protected Future<?> execute(RequestBody body)
     {
         checkShutdown();
-        if (isQueued || bucket.isRateLimit())
-            return queueRequest(body);
-
-        Request request = newRequest(body);
-        try (Response response = client.newCall(request).execute())
-        {
-            bucket.update(response);
-            if (response.code() == Bucket.RATE_LIMIT_CODE)
-                return queueRequest(body);
-            if (!response.isSuccessful())
-                throw failure(response);
-            return CompletableFuture.completedFuture(null);
-        }
-        catch (IOException e)
-        {
-            LOG.log(e);
-            throw new IllegalStateException(e);//FIXME: return new FailedFuture(e);
-        }
+        return queueRequest(body);
     }
 
     protected static HttpException failure(Response response) throws IOException
