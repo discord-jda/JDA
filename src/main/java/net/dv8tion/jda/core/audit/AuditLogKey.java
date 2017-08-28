@@ -162,6 +162,21 @@ public enum AuditLogKey
      */
     CHANNEL_NSFW("nsfw"),
 
+    /**
+     * The integer type of this channel.
+     * <br>Use with {@link net.dv8tion.jda.core.entities.ChannelType#fromId(int) ChannelType.fromId(int)}.
+     *
+     * <p>Expected type: <b>int</b>
+     */
+    CHANNEL_TYPE("type"),
+
+    /**
+     * The overrides for this channel.
+     *
+     * <p>Expected type: <b>List{@literal <Map<String, Object>>}</b>
+     */
+    CHANNEL_OVERRIDES("permission_overwrites"),
+
 
     // MEMBER
     /**
@@ -212,7 +227,7 @@ public enum AuditLogKey
      * <br>Similar to the value returned by {@link net.dv8tion.jda.core.entities.PermissionOverride#getDeniedRaw() PermissionOverride.getDeniedRaw()}
      * <br>Use with {@link net.dv8tion.jda.core.Permission#getPermissions(long) Permission.getPermissions(long)}
      *
-     * <p>Expected type: <b>Long</b>
+     * <p>Expected type: <b>long</b>
      */
     OVERRIDE_DENY("deny"),
 
@@ -221,9 +236,17 @@ public enum AuditLogKey
      * <br>Similar to the value returned by {@link net.dv8tion.jda.core.entities.PermissionOverride#getAllowedRaw() PermissionOverride.getAllowedRaw()}
      * <br>Use with {@link net.dv8tion.jda.core.Permission#getPermissions(long) Permission.getPermissions(long)}
      *
-     * <p>Expected type: <b>Long</b>
+     * <p>Expected type: <b>long</b>
      */
     OVERRIDE_ALLOW("allow"),
+
+    /**
+     * The string type of this override.
+     * <br>{@code "role"} or {@code "member"}.
+     *
+     * <p>Expected type: <b>String</b>
+     */
+    OVERRIDE_TYPE("type"),
 
 
     // ROLE
@@ -315,7 +338,70 @@ public enum AuditLogKey
      *
      * <p>Expected type: <b>String</b>
      */
-    WEBHOOK_CHANNEL("channel_id");
+    WEBHOOK_CHANNEL("channel_id"),
+
+
+    // INVITE
+    /**
+     * Change of the {@link net.dv8tion.jda.core.entities.Invite#getCode() Invite.getCode()} for
+     * the target {@link net.dv8tion.jda.core.entities.Invite Invite}
+     * <br>Use with {@link net.dv8tion.jda.core.entities.Invite#resolve(net.dv8tion.jda.core.JDA, String)} Invite.resolve(JDA, String)}
+     *
+     * <p>Expected type: <b>String</b>
+     */
+    INVITE_CODE("code"),
+
+    /**
+     * Change of the {@link net.dv8tion.jda.core.entities.Invite#getMaxAge() Invite.getMaxAge()} for
+     * the target {@link net.dv8tion.jda.core.entities.Invite Invite}
+     *
+     * <p>Expected type: <b>int</b>
+     */
+    INVITE_MAX_AGE("max_age"),
+
+    /**
+     * Change of the {@link net.dv8tion.jda.core.entities.Invite#isTemporary() Invite.isTemporary()} for
+     * the target {@link net.dv8tion.jda.core.entities.Invite Invite}
+     *
+     * <p>Expected type: <b>boolean</b>
+     */
+    INVITE_TEMPORARY("temporary"),
+
+    /**
+     * Change of the {@link net.dv8tion.jda.core.entities.Invite#getInviter() Invite.getInviter()} ID for
+     * the target {@link net.dv8tion.jda.core.entities.Invite Invite}
+     * <br>Use with {@link net.dv8tion.jda.core.JDA#getUserById(String) JDA.getUserById(String)}
+     *
+     * <p>Expected type: <b>String</b>
+     */
+    INVITE_INVITER("inviter"),
+
+    /**
+     * Change of the {@link net.dv8tion.jda.core.entities.Invite#getChannel() Invite.getChannel()} ID for
+     * the target {@link net.dv8tion.jda.core.entities.Invite Invite}
+     * <br>Use with {@link net.dv8tion.jda.core.JDA#getTextChannelById(String) JDA.getTextChannelById(String)}
+     * or {@link net.dv8tion.jda.core.JDA#getVoiceChannelById(String) JDA.getVoiceChannelById(String)}
+     *
+     * <p>Expected type: <b>String</b>
+     */
+    INVITE_CHANNEL("channel_id"),
+
+    /**
+     * Change of the {@link net.dv8tion.jda.core.entities.Invite#getUses() Invite.getUses()} for
+     * the target {@link net.dv8tion.jda.core.entities.Invite Invite}
+     *
+     * <p>Expected type: <b>int</b>
+     */
+    INVITE_USES("uses"),
+
+    /**
+     * Change of the {@link net.dv8tion.jda.core.entities.Invite#getMaxUses() Invite.getMaxUses()} for
+     * the target {@link net.dv8tion.jda.core.entities.Invite Invite}
+     *
+     * <p>Expected type: <b>int</b>
+     */
+    INVITE_MAX_USES("max_uses");
+
 
     private final String key;
 

@@ -77,7 +77,23 @@ public enum AuditLogOption
      *
      * <p>Expected type: <b>String</b>
      */
-    ID("id");
+    ID("id"),
+
+    /**
+     * Possible option of {@link net.dv8tion.jda.core.audit.ActionType#PRUNE ActionType.PRUNE}
+     * describing the period of inactivity for that prune.
+     *
+     * <p>Expected type: <b>int</b>
+     */
+    DELETE_MEMBER_DAYS("delete_member_days"),
+
+    /**
+     * Possible option of {@link net.dv8tion.jda.core.audit.ActionType#PRUNE ActionType.PRUNE}
+     * describing the amount of kicked members for that prune.
+     *
+     * <p>Expected type: <b>int</b>
+     */
+    MEMBERS_REMOVED("members_removed");
 
     private final String key;
 
