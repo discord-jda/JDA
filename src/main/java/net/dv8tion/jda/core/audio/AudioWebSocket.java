@@ -363,7 +363,7 @@ public class AudioWebSocket extends WebSocketAdapter
     public void startConnection()
     {
         if (!reconnecting && socket != null)
-            throw new RuntimeException("Somehow, someway, this AudioWebSocket has already attempted to start a connection!");
+            throw new IllegalStateException("Somehow, someway, this AudioWebSocket has already attempted to start a connection!");
 
         try
         {

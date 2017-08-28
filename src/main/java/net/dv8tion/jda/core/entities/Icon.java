@@ -120,7 +120,7 @@ public class Icon
         }
         catch (UnsupportedEncodingException e)
         {
-            throw new RuntimeException(e); // thanks JDK 1.4
+            throw new AssertionError(e); // thanks JDK 1.4
         }
     }
 }

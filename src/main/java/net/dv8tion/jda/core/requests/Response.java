@@ -86,7 +86,7 @@ public class Response implements Closeable
         }
         catch (final Exception e)
         {
-            throw new RuntimeException("An error occurred while parsing the response for a RestAction", e);
+            throw new IllegalStateException("An error occurred while parsing the response for a RestAction", e);
         }
         finally
         {

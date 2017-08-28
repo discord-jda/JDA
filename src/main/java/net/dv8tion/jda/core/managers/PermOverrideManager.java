@@ -100,7 +100,7 @@ public class PermOverrideManager
      * @param  permissions
      *         The permissions to grant to the selected {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
@@ -123,7 +123,7 @@ public class PermOverrideManager
      * @param  permissions
      *         The permissions to grant to the selected {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS}
      * @throws IllegalArgumentException
      *         If any of the provided Permissions is {@code null}
@@ -148,7 +148,7 @@ public class PermOverrideManager
      * @param  permissions
      *         The permissions to grant to the selected {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS}
      * @throws IllegalArgumentException
      *         If any of the provided Permissions is {@code null}
@@ -173,7 +173,7 @@ public class PermOverrideManager
      * @param  permissions
      *         The permissions to deny from the selected {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
@@ -196,7 +196,7 @@ public class PermOverrideManager
      * @param  permissions
      *         The permissions to deny from the selected {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS}
      * @throws IllegalArgumentException
      *         If any of the provided Permissions is {@code null}
@@ -221,7 +221,7 @@ public class PermOverrideManager
      * @param  permissions
      *         The permissions to deny from the selected {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS}
      * @throws IllegalArgumentException
      *         If any of the provided Permissions is {@code null}
@@ -247,7 +247,7 @@ public class PermOverrideManager
      * @param  permissions
      *         The permissions to clear from the selected {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
@@ -271,7 +271,7 @@ public class PermOverrideManager
      * @param  permissions
      *         The permissions to clear from the selected {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS}
      * @throws IllegalArgumentException
      *         If any of the provided Permissions is {@code null}
@@ -297,7 +297,7 @@ public class PermOverrideManager
      * @param  permissions
      *         The permissions to clear from the selected {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS}
      * @throws IllegalArgumentException
      *         If any of the provided Permissions is {@code null}

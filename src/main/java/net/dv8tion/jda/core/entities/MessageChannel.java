@@ -34,11 +34,10 @@ import okhttp3.RequestBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.annotation.CheckReturnValue;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.*;
-import javax.annotation.CheckReturnValue;
 
 /**
  * Represents a Discord channel that can have {@link net.dv8tion.jda.core.entities.Message Messages} and files sent to it.
@@ -163,7 +162,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @param  text
      *         the text to build into a Message to send to the MessageChannel.
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does
      *         not have
      *         <ul>
@@ -213,7 +212,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @param  args
      *         The arguments for your format
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does
      *         not have
      *         <ul>
@@ -257,7 +256,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @param  embed
      *         the {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} to send
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does
      *         not have
      *         <ul>
@@ -323,7 +322,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @param  msg
      *         the {@link net.dv8tion.jda.core.entities.Message Message} to send
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does
      *         not have
      *         <ul>
@@ -408,7 +407,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *                 contains a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} which
      *                 is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
      *         </ul>
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
@@ -488,7 +487,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *                 contains a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} which
      *                 is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
      *         </ul>
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
@@ -566,7 +565,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided filename is {@code null} or {@code empty}.
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
@@ -644,7 +643,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *                 contains an {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed}
      *                 that is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
      *         </ul>
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
@@ -704,6 +703,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      * the same id as the id provided.
      * <br>Note: when retrieving a Message, you must retrieve it from the channel it was sent in!
      *
+     * <p><b>Only bots can use this endpoint! A similar behaviour can be simulated using {@link #getHistoryAround(long, int)}!</b>
+     *
      * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
@@ -726,9 +727,11 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @param  messageId
      *         The id of the sought after Message
      *
+     * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
+     *         If the currently logged in account is not from {@link net.dv8tion.jda.core.AccountType#BOT AccountType.BOT}
      * @throws IllegalArgumentException
      *         if the provided {@code messageId} is null or empty.
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
@@ -768,6 +771,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      * the same id as the id provided.
      * <br>Note: when retrieving a Message, you must retrieve it from the channel it was sent in!
      *
+     * <p><b>Only bots can use this endpoint! A similar behaviour can be simulated using {@link #getHistoryAround(long, int)}!</b>
+     *
      * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
@@ -790,7 +795,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @param  messageId
      *         The id of the sought after Message
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
+     *         If the currently logged in account is not from {@link net.dv8tion.jda.core.AccountType#BOT AccountType.BOT}
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
@@ -838,7 +845,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @throws IllegalArgumentException
      *         if the provided messageId is null
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}.
      *
@@ -894,7 +901,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @throws IllegalArgumentException
      *         if the provided messageId is not positive
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}.
      *
@@ -910,7 +917,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * Creates a new {@link MessageHistory MessageHistory} object for each call of this method.
      * <br>MessageHistory is <b>NOT</b> an internal message cache, but rather it queries the Discord servers for previously sent messages.
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      *         and the currently logged in account does not have the permission {@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY MESSAGE_HISTORY}
      *
@@ -953,7 +960,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * }
      * </code></pre>
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      *         and the currently logged in account does not have the permission {@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY MESSAGE_HISTORY}
      *
@@ -1014,7 +1021,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>Provided {@code message} is not from this MessageChannel.</li>
      *             <li>Provided {@code limit} is less than {@code 1} or greater than {@code 100}.</li>
      *         </ul>
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
@@ -1081,7 +1088,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>Provided {@code messageId} is {@code null} or empty.</li>
      *             <li>Provided {@code limit} is less than {@code 1} or greater than {@code 100}.</li>
      *         </ul>
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
@@ -1173,7 +1180,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>Provided {@code messageId} is not positive.</li>
      *             <li>Provided {@code limit} is less than {@code 1} or greater than {@code 100}.</li>
      *         </ul>
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
@@ -1209,7 +1216,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
@@ -1285,7 +1292,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         <ul>
      *             <li>If provided {@code messageId} is {@code null} or empty.</li>
      *         </ul>
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      *         and the logged in account does not have
      *         <ul>
@@ -1367,7 +1374,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         <ul>
      *             <li>If provided {@code messageId} is not positive.</li>
      *         </ul>
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      *         and the logged in account does not have
      *         <ul>
@@ -1427,7 +1434,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>If provided {@code messageId} is {@code null} or empty.</li>
      *             <li>If provided {@code emote} is {@code null}</li>
      *         </ul>
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      *         and the logged in account does not have
      *         <ul>
@@ -1503,7 +1510,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>If provided {@code messageId} is not positive.</li>
      *             <li>If provided {@code emote} is {@code null}</li>
      *         </ul>
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      *         and the logged in account does not have
      *         <ul>
@@ -1548,7 +1555,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @throws IllegalArgumentException
      *         if the provided messageId is {@code null} or empty.
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
@@ -1605,7 +1612,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @throws IllegalArgumentException
      *         if the provided messageId is not positive.
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
@@ -1649,7 +1656,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @throws IllegalArgumentException
      *         if the provided messageId is {@code null} or empty.
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
@@ -1706,7 +1713,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @throws IllegalArgumentException
      *         if the provided messageId is not positive.
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
@@ -1737,7 +1744,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a TextChannel and this account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *
@@ -1809,7 +1816,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>If provided {@code newContent} is {@code null} or empty.</li>
      *             <li>If provided {@code newContent} length is greater than {@code 2000} characters.</li>
      *         </ul>
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a TextChannel and this account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *
@@ -1861,7 +1868,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *                 contains a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} which
      *                 is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
      *         </ul>
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a TextChannel and this account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *
@@ -1940,7 +1947,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         </ul>
      * @throws IllegalStateException
      *         If the resulting message is either empty or too long to be sent
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a TextChannel and this account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *
@@ -1992,7 +1999,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         </ul>
      * @throws IllegalStateException
      *         If the resulting message is either empty or too long to be sent
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a TextChannel and this account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *
@@ -2042,7 +2049,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *                 contains a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} which
      *                 is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
      *         </ul>
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a TextChannel and this account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *
@@ -2091,7 +2098,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         </ul>
      * @throws IllegalStateException
      *         If the provided MessageEmbed is {@code null}
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a TextChannel and this account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         or {@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}
@@ -2141,7 +2148,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         </ul>
      * @throws IllegalStateException
      *         If the provided MessageEmbed is {@code null}
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a TextChannel and this account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         or {@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}

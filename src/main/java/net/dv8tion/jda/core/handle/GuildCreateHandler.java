@@ -62,7 +62,7 @@ public class GuildCreateHandler extends SocketHandler
                     }
                     else
                     {
-                        throw new RuntimeException("Got a GuildCreateEvent for a guild that already existed! Json: " + content.toString());
+                        throw new IllegalStateException("Got a GuildCreateEvent for a guild that already existed! Json: " + content.toString());
                     }
                 }
             }
