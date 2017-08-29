@@ -24,6 +24,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.InputStream;
@@ -85,12 +86,27 @@ import java.util.function.Predicate;
  */
 public class WebhookCluster implements AutoCloseable
 {
-    protected final List<WebhookClient> webhooks = new ArrayList<>();
+    protected final List<WebhookClient> webhooks;
     protected OkHttpClient.Builder defaultHttpClientBuilder;
     protected OkHttpClient defaultHttpClient;
     protected ScheduledExecutorService defaultPool;
     protected ThreadFactory threadFactory;
     protected boolean isDaemon;
+
+    public WebhookCluster(@Nonnull Collection<? extends WebhookClient> initialClients)
+    {
+        webhooks = new ArrayList<>(initialClients);
+    }
+
+    public WebhookCluster(int initialCapacity)
+    {
+        webhooks = new ArrayList<>(initialCapacity);
+    }
+
+    public WebhookCluster()
+    {
+        webhooks = new ArrayList<>();
+    }
 
     // Default builder values
 
