@@ -20,8 +20,11 @@ import net.dv8tion.jda.core.entities.Webhook;
 import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.OkHttpClient;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 
 /**
  * Builder that creates a new {@link net.dv8tion.jda.webhook.WebhookClient WebhookClient} instance
@@ -35,6 +38,8 @@ public class WebhookClientBuilder
     protected ScheduledExecutorService pool;
     protected OkHttpClient.Builder builder;
     protected OkHttpClient client;
+    protected ThreadFactory threadFactory;
+    protected boolean isDaemon;
 
     /**
      * Creates a new WebhookClientBuilder with the provided id and token
@@ -61,7 +66,7 @@ public class WebhookClientBuilder
      * @throws java.lang.NullPointerException
      *         If the provided {@link net.dv8tion.jda.core.entities.Webhook Webhook} is {@code null}
      */
-    public WebhookClientBuilder(Webhook webhook)
+    public WebhookClientBuilder(@Nonnull Webhook webhook)
     {
         this(webhook.getIdLong(), webhook.getToken());
     }
@@ -79,7 +84,7 @@ public class WebhookClientBuilder
      *
      * @return The current WebhookClientBuilder for chaining convenience
      */
-    public WebhookClientBuilder setExecutorService(ScheduledExecutorService executorService)
+    public WebhookClientBuilder setExecutorService(@Nullable ScheduledExecutorService executorService)
     {
         this.pool = executorService;
         return this;
@@ -97,7 +102,7 @@ public class WebhookClientBuilder
      *
      * @return The current WebhookClientBuilder for chaining convenience
      */
-    public WebhookClientBuilder setHttpClient(OkHttpClient client)
+    public WebhookClientBuilder setHttpClient(@Nullable OkHttpClient client)
     {
         this.client = client;
         return this;
@@ -115,12 +120,49 @@ public class WebhookClientBuilder
      *
      * @return The current WebhookClientBuilder for chaining convenience
      */
-    public WebhookClientBuilder setHttpClientBuilder(OkHttpClient.Builder builder)
+    public WebhookClientBuilder setHttpClientBuilder(@Nullable OkHttpClient.Builder builder)
     {
         Checks.notNull(builder, "Builder");
         this.builder = builder;
         return this;
     }
+
+    /**
+     * Factory that should be used by the default {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService}
+     * to create Threads for rate limitation handling of the created {@link net.dv8tion.jda.webhook.WebhookClient WebhookClient}!
+     * <br>This allows changing thread information such as name without having to create your own executor.
+     *
+     * @param  factory
+     *         The {@link java.util.concurrent.ThreadFactory ThreadFactory} that will
+     *         be used when no {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService}
+     *         has been set via {@link #setExecutorService(ScheduledExecutorService)}
+     *
+     * @return The current WebhookClientBuilder for chaining convenience
+     */
+    public WebhookClientBuilder setThreadFactory(@Nullable ThreadFactory factory)
+    {
+        this.threadFactory = factory;
+        return this;
+    }
+
+    /**
+     * Whether rate limit threads of the created {@link net.dv8tion.jda.webhook.WebhookClient WebhookClient}
+     * should be treated as {@link Thread#isDaemon()} or not.
+     * <br><b>Default: false</b>
+     *
+     * <p>This will not be used when the default thread pool has been set via {@link #setExecutorService(ScheduledExecutorService)}!
+     *
+     * @param  isDaemon
+     *         True, if the threads should be daemon
+     *
+     * @return The current WebhookClientBuilder for chaining convenience
+     */
+    public WebhookClientBuilder setDaemon(boolean isDaemon)
+    {
+        this.isDaemon = isDaemon;
+        return this;
+    }
+
 
     /**
      * Builds a new {@link net.dv8tion.jda.webhook.WebhookClient WebhookClient} instance
@@ -140,7 +182,22 @@ public class WebhookClientBuilder
             client = builder.build();
         }
         if (pool == null)
-            pool = Executors.newScheduledThreadPool(1);
+        {
+            if (threadFactory == null)
+                threadFactory = new DefaultWebhookThreadFactory();
+            pool = Executors.newSingleThreadScheduledExecutor(threadFactory);
+        }
         return new WebhookClient(id, token, client, pool);
+    }
+
+    public final class DefaultWebhookThreadFactory implements ThreadFactory
+    {
+        @Override
+        public Thread newThread(Runnable r)
+        {
+            final Thread thread = new Thread(r, "Webhook-RateLimit Thread WebhookID: " + id);
+            thread.setDaemon(isDaemon);
+            return thread;
+        }
     }
 }

@@ -24,12 +24,13 @@ import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
 
-import java.io.Closeable;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 import java.util.function.Predicate;
 
 /**
@@ -82,12 +83,16 @@ import java.util.function.Predicate;
  * Calling close on the cluster means it will <i><b>remove and close</b></i> all currently registered webhooks.
  * <br>The cluster may still be used after closing.
  */
-public class WebhookCluster implements Closeable
+public class WebhookCluster implements AutoCloseable
 {
     protected final List<WebhookClient> webhooks = new ArrayList<>();
     protected OkHttpClient.Builder defaultHttpClientBuilder;
     protected OkHttpClient defaultHttpClient;
     protected ScheduledExecutorService defaultPool;
+    protected ThreadFactory threadFactory;
+    protected boolean isDaemon;
+
+    // Default builder values
 
     /**
      * Sets the default {@link okhttp3.OkHttpClient.Builder OkHttpClient.Builder} that should be
@@ -99,7 +104,7 @@ public class WebhookCluster implements Closeable
      *
      * @return The current WebhookCluster for chaining convenience
      */
-    public WebhookCluster setDefaultHttpClientBuilder(OkHttpClient.Builder builder)
+    public WebhookCluster setDefaultHttpClientBuilder(@Nullable OkHttpClient.Builder builder)
     {
         this.defaultHttpClientBuilder = builder;
         return this;
@@ -115,7 +120,7 @@ public class WebhookCluster implements Closeable
      *
      * @return The current WebhookCluster for chaining convenience
      */
-    public WebhookCluster setDefaultHttpClient(OkHttpClient defaultHttpClient)
+    public WebhookCluster setDefaultHttpClient(@Nullable OkHttpClient defaultHttpClient)
     {
         this.defaultHttpClient = defaultHttpClient;
         return this;
@@ -131,11 +136,49 @@ public class WebhookCluster implements Closeable
      *
      * @return The current WebhookCluster for chaining convenience
      */
-    public WebhookCluster setDefaultExecutorService(ScheduledExecutorService executorService)
+    public WebhookCluster setDefaultExecutorService(@Nullable ScheduledExecutorService executorService)
     {
         this.defaultPool = executorService;
         return this;
     }
+
+    /**
+     * Factory that should be used by the default {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService}
+     * to create Threads for rate limitation handling of the created {@link net.dv8tion.jda.webhook.WebhookClient WebhookClient}!
+     * <br>This allows changing thread information such as name without having to create your own executor.
+     *
+     * @param  factory
+     *         The {@link java.util.concurrent.ThreadFactory ThreadFactory} that will
+     *         be used when no {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService}
+     *         has been set via {@link #setDefaultExecutorService(ScheduledExecutorService)}
+     *
+     * @return The current WebhookCluster for chaining convenience
+     */
+    public WebhookCluster setDefaultThreadFactory(@Nullable ThreadFactory factory)
+    {
+        this.threadFactory = factory;
+        return this;
+    }
+
+    /**
+     * Whether rate limit threads of created {@link net.dv8tion.jda.webhook.WebhookClient WebhookClients}
+     * should be treated as {@link Thread#isDaemon()} or not.
+     * <br><b>Default: false</b>
+     *
+     * <p>This will not be used when the default thread pool has been set via {@link #setDefaultExecutorService(ScheduledExecutorService)}!
+     *
+     * @param  isDaemon
+     *         True, if the threads should be daemon
+     *
+     * @return The current WebhookCluster for chaining convenience
+     */
+    public WebhookCluster setDefaultDaemon(boolean isDaemon)
+    {
+        this.isDaemon = isDaemon;
+        return this;
+    }
+
+    // Webhook creation/add/remove
 
     /**
      * Creates new {@link net.dv8tion.jda.webhook.WebhookClient WebhookClients} and adds them
@@ -238,7 +281,10 @@ public class WebhookCluster implements Closeable
     public WebhookClientBuilder newBuilder(long id, String token)
     {
         WebhookClientBuilder builder = new WebhookClientBuilder(id, token);
-        builder.setExecutorService(defaultPool).setHttpClient(defaultHttpClient);
+        builder.setExecutorService(defaultPool)
+               .setHttpClient(defaultHttpClient)
+               .setThreadFactory(threadFactory)
+               .setDaemon(isDaemon);
         if (defaultHttpClientBuilder != null)
             builder.setHttpClientBuilder(defaultHttpClientBuilder);
         return builder;
@@ -260,6 +306,7 @@ public class WebhookCluster implements Closeable
      */
     public WebhookClientBuilder newBuilder(Webhook webhook)
     {
+        Checks.notNull(webhook, "Webhook");
         return newBuilder(webhook.getIdLong(), webhook.getToken());
     }
 
@@ -390,17 +437,6 @@ public class WebhookCluster implements Closeable
     }
 
     /**
-     * The current list of receivers for this WebhookCluster instance.
-     * <br>The provided list is an immutable copy of the actual stored list of {@link net.dv8tion.jda.webhook.WebhookClient WebhookClients}.
-     *
-     * @return Immutable list of registered receivers
-     */
-    public List<WebhookClient> getWebhooks()
-    {
-        return Collections.unmodifiableList(new ArrayList<>(webhooks));
-    }
-
-    /**
      * Closes all {@link net.dv8tion.jda.webhook.WebhookClient WebhookClients} that meet
      * the specified filter.
      * <br>The filter may return {@code true} for all clients that should be <b>removed and closed</b>.
@@ -426,6 +462,19 @@ public class WebhookCluster implements Closeable
         clients.forEach(WebhookClient::close);
         return clients;
     }
+
+    /**
+     * The current list of receivers for this WebhookCluster instance.
+     * <br>The provided list is an immutable copy of the actual stored list of {@link net.dv8tion.jda.webhook.WebhookClient WebhookClients}.
+     *
+     * @return Immutable list of registered receivers
+     */
+    public List<WebhookClient> getWebhooks()
+    {
+        return Collections.unmodifiableList(new ArrayList<>(webhooks));
+    }
+
+    // Broadcasting / Multicasting
 
     /**
      * Sends the provided {@link net.dv8tion.jda.webhook.WebhookMessage WebhookMessage}

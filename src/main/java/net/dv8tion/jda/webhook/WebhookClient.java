@@ -33,7 +33,6 @@ import okhttp3.Response;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,7 +49,7 @@ import java.util.concurrent.*;
  *
  * <p>Instances of this class can be retrieved using {@link net.dv8tion.jda.webhook.WebhookClientBuilder WebhookClientBuilders}
  */
-public class WebhookClient implements Closeable
+public class WebhookClient implements AutoCloseable
 {
     public static final String WEBHOOK_URL = "https://discordapp.com/api/v6/webhooks/%s/%s";
     public static final String USER_AGENT = "JDA Webhook(https://github.com/DV8FromTheWorld/JDA | " + JDAInfo.VERSION + ")";
