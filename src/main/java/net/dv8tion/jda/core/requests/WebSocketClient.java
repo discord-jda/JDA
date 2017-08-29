@@ -81,7 +81,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected long heartbeatStartTime;
 
     //GuildId, <TimeOfNextAttempt, AudioConnection>
-    protected final TLongObjectMap<MutableTriple<Long, Boolean, VoiceChannel>> queuedAudioConnections = MiscUtil.newLongMap();
+    protected final TLongObjectMap<MutableTriple<Long, Boolean, VoiceChannel>> queuedAudioConnections = MiscUtil.newLongMap(new Object());
 
     protected final LinkedList<String> chunkSyncQueue = new LinkedList<>();
     protected final LinkedList<String> ratelimitQueue = new LinkedList<>();
