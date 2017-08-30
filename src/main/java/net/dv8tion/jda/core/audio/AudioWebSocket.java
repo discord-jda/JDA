@@ -43,6 +43,7 @@ public class AudioWebSocket extends WebSocketAdapter
 {
     public static final SimpleLog LOG = SimpleLog.getLog("JDAAudioSocket");
     public static final int DISCORD_SECRET_KEY_LENGTH = 32;
+    public static final int AUDIO_GATEWAY_VERSION = 3;
 
     protected final ConnectionListener listener;
     protected final ScheduledThreadPoolExecutor keepAlivePool;
@@ -82,10 +83,7 @@ public class AudioWebSocket extends WebSocketAdapter
         keepAlivePool = api.getAudioKeepAlivePool();
 
         //Append the Secure Websocket scheme so that our websocket library knows how to connect
-        if (!endpoint.startsWith("wss://"))
-            wssEndpoint = "wss://" + endpoint;
-        if (!endpoint.endsWith("/?v=3"))
-            wssEndpoint += "/?v=3";
+        wssEndpoint = String.format("wss://%s/?v=%d", endpoint, AUDIO_GATEWAY_VERSION);
 
         if (sessionId == null || sessionId.isEmpty())
             throw new IllegalArgumentException("Cannot create a voice connection using a null/empty sessionId!");
@@ -93,13 +91,13 @@ public class AudioWebSocket extends WebSocketAdapter
             throw new IllegalArgumentException("Cannot create a voice connection using a null/empty token!");
     }
 
-    public void send(String message)
+    protected void send(String message)
     {
         LOG.trace("<- " + message);
         socket.sendText(message);
     }
 
-    public void send(int op, Object data)
+    protected void send(int op, Object data)
     {
         send(new JSONObject()
             .put("op", op)
@@ -137,6 +135,16 @@ public class AudioWebSocket extends WebSocketAdapter
 
         switch(opCode)
         {
+            case VoiceCode.HELLO:
+            {
+                LOG.trace("-> HELLO " + contentAll);
+                final JSONObject payload = contentAll.getJSONObject("d");
+                final int interval = payload.getInt("heartbeat_interval");
+                stopKeepAlive();
+                setupKeepAlive(interval / 2);
+                //FIXME: discord will rollout a working interval once that is done we need to use it properly
+                break;
+            }
             case VoiceCode.READY:
             {
                 LOG.trace("-> READY " + contentAll);
@@ -170,27 +178,12 @@ public class AudioWebSocket extends WebSocketAdapter
                 changeStatus(ConnectionStatus.CONNECTING_AWAITING_READY);
                 break;
             }
-            case VoiceCode.HELLO:
+            case VoiceCode.RESUMED:
             {
-                LOG.trace("-> HELLO " + contentAll);
-                final JSONObject payload = contentAll.getJSONObject("d");
-                final int interval = payload.getInt("heartbeat_interval");
-                stopKeepAlive();
-                setupKeepAlive(interval / 2);
-                //FIXME: discord will rollout a working interval once that is done we need to use it properly
-                break;
-            }
-            case VoiceCode.HEARTBEAT:
-            {
-                LOG.trace("-> HEARTBEAT " + contentAll);
-                send(VoiceCode.HEARTBEAT, System.currentTimeMillis());
-                break;
-            }
-            case VoiceCode.HEARTBEAT_ACK:
-            {
-                LOG.trace("-> HEARTBEAT_ACK " + contentAll);
-                final long ping = System.currentTimeMillis() - contentAll.getLong("d");
-                listener.onPing(ping);
+                LOG.trace("-> RESUMED " + contentAll);
+                LOG.debug("Successfully resumed session!");
+                changeStatus(ConnectionStatus.CONNECTED);
+                ready = true;
                 break;
             }
             case VoiceCode.SESSION_DESCRIPTION:
@@ -206,6 +199,19 @@ public class AudioWebSocket extends WebSocketAdapter
                 LOG.trace("Audio connection has finished connecting!");
                 ready = true;
                 changeStatus(ConnectionStatus.CONNECTED);
+                break;
+            }
+            case VoiceCode.HEARTBEAT:
+            {
+                LOG.trace("-> HEARTBEAT " + contentAll);
+                send(VoiceCode.HEARTBEAT, System.currentTimeMillis());
+                break;
+            }
+            case VoiceCode.HEARTBEAT_ACK:
+            {
+                LOG.trace("-> HEARTBEAT_ACK " + contentAll);
+                final long ping = System.currentTimeMillis() - contentAll.getLong("d");
+                listener.onPing(ping);
                 break;
             }
             case VoiceCode.USER_SPEAKING_UPDATE:
@@ -234,14 +240,6 @@ public class AudioWebSocket extends WebSocketAdapter
                 final JSONObject payload = contentAll.getJSONObject("d");
                 final long userId = payload.getLong("user_id");
                 audioConnection.removeUserSSRC(userId);
-                break;
-            }
-            case VoiceCode.RESUMED:
-            {
-                LOG.trace("-> RESUMED " + contentAll);
-                LOG.debug("Successfully resumed session!");
-                changeStatus(ConnectionStatus.CONNECTED);
-                ready = true;
                 break;
             }
             case 12:

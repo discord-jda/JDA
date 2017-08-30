@@ -42,7 +42,7 @@ import java.io.IOException;
 
 public class AudioManagerImpl implements AudioManager
 {
-    public static final ThreadGroup AUDIO_THREADS ;
+    public static final ThreadGroup AUDIO_THREADS;
     //These values are set at the bottom of this file.
     public static boolean AUDIO_SUPPORTED;
     public static String OPUS_LIB_NAME;

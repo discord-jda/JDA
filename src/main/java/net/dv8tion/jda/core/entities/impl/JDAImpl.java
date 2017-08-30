@@ -66,7 +66,7 @@ public class JDAImpl implements JDA
     protected final TLongObjectMap<User> fakeUsers = MiscUtil.newLongMap();
     protected final TLongObjectMap<PrivateChannel> fakePrivateChannels = MiscUtil.newLongMap();
 
-    protected final TLongObjectMap<AudioManagerImpl> audioManagers = MiscUtil.newLongMap(new Object());
+    protected final TLongObjectMap<AudioManagerImpl> audioManagers = MiscUtil.newLongMap();
 
     protected final OkHttpClient.Builder httpClientBuilder;
     protected final WebSocketFactory wsFactory;

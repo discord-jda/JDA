@@ -19,7 +19,6 @@ package net.dv8tion.jda.core.requests;
 import com.neovisionaries.ws.client.*;
 import gnu.trove.iterator.TLongObjectIterator;
 import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.client.handle.*;
 import net.dv8tion.jda.core.AccountType;
@@ -80,8 +79,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected int reconnectTimeoutS = 2;
     protected long heartbeatStartTime;
 
-    //GuildId, <TimeOfNextAttempt, AudioConnection>
-    protected final TLongObjectMap<MutableTriple<Long, Boolean, VoiceChannel>> queuedAudioConnections = MiscUtil.newLongMap(new Object());
+    //GuildId, <TimeOfNextAttempt, isReconnect, AudioConnection>
+    protected final TLongObjectMap<MutableTriple<Long, Boolean, VoiceChannel>> queuedAudioConnections = MiscUtil.newLongMap();
 
     protected final LinkedList<String> chunkSyncQueue = new LinkedList<>();
     protected final LinkedList<String> ratelimitQueue = new LinkedList<>();
@@ -693,9 +692,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         synchronized (managerMap)
         {
-            final TLongObjectMap<AudioManagerImpl> updatedManagers = new TLongObjectHashMap<>();
-            managerMap.retainEntries((guildId, mng) ->
+            for (TLongObjectIterator<AudioManagerImpl> it = managerMap.iterator(); it.hasNext(); )
             {
+                it.advance();
+                final long guildId = it.key();
+                final AudioManagerImpl mng = it.value();
                 ConnectionListener listener = mng.getConnectionListener();
 
                 GuildImpl guild = (GuildImpl) api.getGuildById(guildId);
@@ -705,7 +706,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     queuedAudioConnections.remove(guildId);
                     if (listener != null)
                         listener.onStatusChange(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD);
-                    return false;
+                    it.remove();
                 }
                 else
                 {
@@ -717,7 +718,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     newMng.setReceivingHandler(mng.getReceiveHandler());
                     newMng.setConnectionListener(listener);
                     newMng.setAutoReconnect(mng.isAutoReconnect());
-                    updatedManagers.put(guildId, newMng);
+                    it.setValue(newMng);
 
                     if (mng.isConnected() || mng.isAttemptingToConnect())
                     {
@@ -742,11 +743,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                         }
                     }
                 }
-
-                return true;
-            });
-
-            managerMap.putAll(updatedManagers);
+            }
         }
     }
 
