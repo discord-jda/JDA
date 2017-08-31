@@ -93,16 +93,42 @@ public class WebhookCluster implements AutoCloseable
     protected ThreadFactory threadFactory;
     protected boolean isDaemon;
 
+    /**
+     * Creates a new WebhookCluster with the provided
+     * {@link net.dv8tion.jda.webhook.WebhookClient WebhookClients} as initial client cache.
+     *
+     * @param  initialClients
+     *         Collection of WebhookClients that should be added
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If any of the provided clients is {@code null} or closed
+     */
     public WebhookCluster(@Nonnull Collection<? extends WebhookClient> initialClients)
     {
-        webhooks = new ArrayList<>(initialClients);
+        webhooks = new ArrayList<>(initialClients.size());
+        for (WebhookClient client : initialClients)
+            addWebhooks(client);
     }
 
+    /**
+     * Creates a new WebhookCluster with the specified initial capacity.
+     * <br>For more information about this see {@link java.util.ArrayList ArrayList}.
+     *
+     * @param  initialCapacity
+     *         The initial capacity for this cluster
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided capacity is negative
+     */
     public WebhookCluster(int initialCapacity)
     {
         webhooks = new ArrayList<>(initialCapacity);
     }
 
+    /**
+     * Creates a new WebhookCluster with default initial capacity
+     * and no registered {@link net.dv8tion.jda.webhook.WebhookClient WebhookClients}
+     */
     public WebhookCluster()
     {
         webhooks = new ArrayList<>();
@@ -336,7 +362,7 @@ public class WebhookCluster implements AutoCloseable
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided array or any of the contained
-     *         clients is {@code null}
+     *         clients is {@code null} or closed
      *
      * @return The current WebhookCluster for chaining convenience
      */
@@ -363,7 +389,7 @@ public class WebhookCluster implements AutoCloseable
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided collection or any of the contained
-     *         clients is {@code null}
+     *         clients is {@code null} or closed
      *
      * @return The current WebhookCluster for chaining convenience
      */

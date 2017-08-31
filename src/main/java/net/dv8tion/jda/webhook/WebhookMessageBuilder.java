@@ -38,6 +38,16 @@ public class WebhookMessageBuilder
     protected InputStream file;
     protected boolean isTTS;
 
+    /**
+     * Creates a new WebhookMessageBuilder and applies
+     * the information of the provided {@link net.dv8tion.jda.core.entities.Message Message}
+     * as preset values.
+     * <br>This will not copy any attachments!
+     *
+     * @param  message
+     *         The {@link net.dv8tion.jda.core.entities.Message Message} used
+     *         to set initial values of the builder
+     */
     public WebhookMessageBuilder(Message message)
     {
         if (message != null)
@@ -48,6 +58,9 @@ public class WebhookMessageBuilder
         }
     }
 
+    /**
+     * Creates a new empty WebhookMessageBuilder
+     */
     public WebhookMessageBuilder() {}
 
     /**

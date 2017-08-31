@@ -44,13 +44,17 @@ public class WebhookClientBuilder
     /**
      * Creates a new WebhookClientBuilder with the provided id and token
      *
-     * @param id
-     *        The snowflake id of the target webhook
-     * @param token
-     *        The authorization token of the target webhook
-     *        <br><b>This is not a bot/client token!</b>
+     * @param  id
+     *         The snowflake id of the target webhook
+     * @param  token
+     *         The authorization token of the target webhook
+     *         <br><b>This is not a bot/client token!</b>
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided token is {@code null}
+     *         or contains any whitespace!
      */
-    public WebhookClientBuilder(long id, String token)
+    public WebhookClientBuilder(final long id, final String token)
     {
         Checks.noWhitespace(token, "Token");
         this.id = id;
@@ -60,8 +64,8 @@ public class WebhookClientBuilder
     /**
      * Creates a new WebhookClientBuilder with the provided id and token
      *
-     * @param webhook
-     *        The target {@link net.dv8tion.jda.core.entities.Webhook Webhook}
+     * @param  webhook
+     *         The target {@link net.dv8tion.jda.core.entities.Webhook Webhook}
      *
      * @throws java.lang.NullPointerException
      *         If the provided {@link net.dv8tion.jda.core.entities.Webhook Webhook} is {@code null}
