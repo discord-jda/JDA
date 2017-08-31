@@ -40,11 +40,15 @@ public class SessionReconnectQueue
     protected void appendSession(final WebSocketClient client)
     {
         reconnectQueue.add(client);
+        runWorker();
+    }
+
+    protected void runWorker()
+    {
         synchronized (lock)
         {
-            if (reconnectThread != null)
-                return;
-            reconnectThread = new ReconnectThread();
+            if (reconnectThread == null)
+                reconnectThread = new ReconnectThread();
         }
     }
 
@@ -79,6 +83,8 @@ public class SessionReconnectQueue
             synchronized (lock)
             {
                 reconnectThread = null;
+                if (!reconnectQueue.isEmpty())
+                    runWorker(); // eliminate highly unlikely race condition
             }
         }
     }
