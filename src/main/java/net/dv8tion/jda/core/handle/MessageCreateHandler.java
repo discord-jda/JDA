@@ -93,7 +93,7 @@ public class MessageCreateHandler extends SocketHandler
                     return channel.getGuild().getIdLong();
                 }
                 channel.setLastMessageId(message.getIdLong());
-                api.getEventManager().handle(
+                api.handle(
                         new GuildMessageReceivedEvent(
                                 api, responseNumber,
                                 message));
@@ -103,7 +103,7 @@ public class MessageCreateHandler extends SocketHandler
             {
                 PrivateChannelImpl channel = (PrivateChannelImpl) message.getPrivateChannel();
                 channel.setLastMessageId(message.getIdLong());
-                api.getEventManager().handle(
+                api.handle(
                         new PrivateMessageReceivedEvent(
                                 api, responseNumber,
                                 message));
@@ -113,7 +113,7 @@ public class MessageCreateHandler extends SocketHandler
             {
                 GroupImpl channel = (GroupImpl) message.getGroup();
                 channel.setLastMessageId(message.getIdLong());
-                api.getEventManager().handle(
+                api.handle(
                         new GroupMessageReceivedEvent(
                                 api, responseNumber,
                                 message));
@@ -125,7 +125,7 @@ public class MessageCreateHandler extends SocketHandler
         }
 
         //Combo event
-        api.getEventManager().handle(
+        api.handle(
                 new MessageReceivedEvent(
                         api, responseNumber,
                         message));
@@ -137,7 +137,7 @@ public class MessageCreateHandler extends SocketHandler
 //            InviteUtil.Invite invite = InviteUtil.resolve(matcher.group(1));
 //            if (invite != null)
 //            {
-//                api.getEventManager().handle(
+//                api.handle(
 //                        new InviteReceivedEvent(
 //                                api, responseNumber,
 //                                message,invite));

@@ -60,100 +60,100 @@ public class GuildUpdateHandler extends SocketHandler
         {
             Member oldOwner = guild.getOwner();
             guild.setOwner(owner);
-            api.getEventManager().handle(
-                    new GuildUpdateOwnerEvent(
-                        api, responseNumber,
-                        guild, oldOwner));
+            api.handle(
+                new GuildUpdateOwnerEvent(
+                    api, responseNumber,
+                    guild, oldOwner));
         }
         if (!Objects.equals(name, guild.getName()))
         {
             String oldName = guild.getName();
             guild.setName(name);
-            api.getEventManager().handle(
-                    new GuildUpdateNameEvent(
-                            api, responseNumber,
-                            guild, oldName));
+            api.handle(
+                new GuildUpdateNameEvent(
+                    api, responseNumber,
+                    guild, oldName));
         }
         if (!Objects.equals(iconId, guild.getIconId()))
         {
             String oldIconId = guild.getIconId();
             guild.setIconId(iconId);
-            api.getEventManager().handle(
-                    new GuildUpdateIconEvent(
-                            api, responseNumber,
-                            guild, oldIconId));
+            api.handle(
+                new GuildUpdateIconEvent(
+                    api, responseNumber,
+                    guild, oldIconId));
         }
         if (!Objects.equals(splashId, guild.getSplashId()))
         {
             String oldSplashId = guild.getSplashId();
             guild.setSplashId(splashId);
-            api.getEventManager().handle(
-                    new GuildUpdateSplashEvent(
-                            api, responseNumber,
-                            guild, oldSplashId));
+            api.handle(
+                new GuildUpdateSplashEvent(
+                    api, responseNumber,
+                    guild, oldSplashId));
         }
         if (!Objects.equals(region, guild.getRegion()))
         {
             Region oldRegion = guild.getRegion();
             guild.setRegion(region);
-            api.getEventManager().handle(
-                    new GuildUpdateRegionEvent(
-                            api, responseNumber,
-                            guild, oldRegion));
+            api.handle(
+                new GuildUpdateRegionEvent(
+                    api, responseNumber,
+                    guild, oldRegion));
         }
         if (!Objects.equals(verificationLevel, guild.getVerificationLevel()))
         {
             Guild.VerificationLevel oldVerificationLevel = guild.getVerificationLevel();
             guild.setVerificationLevel(verificationLevel);
-            api.getEventManager().handle(
-                    new GuildUpdateVerificationLevelEvent(
-                            api, responseNumber,
-                            guild, oldVerificationLevel));
+            api.handle(
+                new GuildUpdateVerificationLevelEvent(
+                    api, responseNumber,
+                    guild, oldVerificationLevel));
         }
         if (!Objects.equals(notificationLevel, guild.getDefaultNotificationLevel()))
         {
             Guild.NotificationLevel oldNotificationLevel = guild.getDefaultNotificationLevel();
             guild.setDefaultNotificationLevel(notificationLevel);
-            api.getEventManager().handle(
-                    new GuildUpdateNotificationLevelEvent(
-                            api, responseNumber,
-                            guild, oldNotificationLevel));
+            api.handle(
+                new GuildUpdateNotificationLevelEvent(
+                    api, responseNumber,
+                    guild, oldNotificationLevel));
         }
         if (!Objects.equals(mfaLevel, guild.getRequiredMFALevel()))
         {
             Guild.MFALevel oldMfaLevel = guild.getRequiredMFALevel();
             guild.setRequiredMFALevel(mfaLevel);
-            api.getEventManager().handle(
-                    new GuildUpdateMFALevelEvent(
-                            api, responseNumber,
-                            guild, oldMfaLevel));
+            api.handle(
+                new GuildUpdateMFALevelEvent(
+                    api, responseNumber,
+                    guild, oldMfaLevel));
         }
         if (!Objects.equals(explicitContentLevel, guild.getExplicitContentLevel()))
         {
             Guild.ExplicitContentLevel oldExplicitContentLevel = guild.getExplicitContentLevel();
             guild.setExplicitContentLevel(explicitContentLevel);
-            api.getEventManager().handle(
-                    new GuildUpdateExplicitContentLevelEvent(
-                            api, responseNumber,
-                            guild, oldExplicitContentLevel));
+            api.handle(
+                new GuildUpdateExplicitContentLevelEvent(
+                    api, responseNumber,
+                    guild, oldExplicitContentLevel));
         }
         if (!Objects.equals(afkTimeout, guild.getAfkTimeout()))
         {
             Guild.Timeout oldAfkTimeout = guild.getAfkTimeout();
             guild.setAfkTimeout(afkTimeout);
-            api.getEventManager().handle(
-                    new GuildUpdateAfkTimeoutEvent(
-                            api, responseNumber,
-                            guild, oldAfkTimeout));
+            api.handle(
+                new GuildUpdateAfkTimeoutEvent(
+                    api, responseNumber,
+                    guild, oldAfkTimeout));
         }
         if (!Objects.equals(afkChannel, guild.getAfkChannel()))
         {
             VoiceChannel oldAfkChannel = guild.getAfkChannel();
             guild.setAfkChannel(afkChannel);
-            api.getEventManager().handle(
-                    new GuildUpdateAfkChannelEvent(
-                            api, responseNumber,
-                            guild, oldAfkChannel));
+            api.handle(
+                new GuildUpdateAfkChannelEvent(
+                    api, responseNumber,
+                    guild, oldAfkChannel));
         }
         return null;
     }

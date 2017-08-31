@@ -96,14 +96,14 @@ public class GuildMemberUpdateHandler extends SocketHandler
 
         if (removedRoles.size() > 0)
         {
-            api.getEventManager().handle(
+            api.handle(
                     new GuildMemberRoleRemoveEvent(
                             api, responseNumber,
                             guild, member, removedRoles));
         }
         if (newRoles.size() > 0)
         {
-            api.getEventManager().handle(
+            api.handle(
                     new GuildMemberRoleAddEvent(
                             api, responseNumber,
                             guild, member, newRoles));
@@ -115,7 +115,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
             if (!Objects.equals(prevNick, newNick))
             {
                 member.setNickname(newNick);
-                api.getEventManager().handle(
+                api.handle(
                         new GuildMemberNickChangeEvent(
                                 api, responseNumber,
                                 guild, member, prevNick, newNick));

@@ -111,25 +111,25 @@ public class RelationshipRemoveHandler extends SocketHandler
         switch (type)
         {
             case FRIEND:
-                api.getEventManager().handle(
+                api.handle(
                         new FriendRemovedEvent(
                                 api, responseNumber,
                                 relationship));
                 break;
             case BLOCKED:
-                api.getEventManager().handle(
+                api.handle(
                         new UserUnblockedEvent(
                                 api, responseNumber,
                                 relationship));
                 break;
             case INCOMING_FRIEND_REQUEST:
-                api.getEventManager().handle(
+                api.handle(
                         new FriendRequestIgnoredEvent(
                                 api, responseNumber,
                                 relationship));
                 break;
             case OUTGOING_FRIEND_REQUEST:
-                api.getEventManager().handle(
+                api.handle(
                         new FriendRequestCanceledEvent(
                                 api, responseNumber,
                                 relationship));

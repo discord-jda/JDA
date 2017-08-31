@@ -47,7 +47,7 @@ public class GuildMemberAddHandler extends SocketHandler
         }
 
         Member member = api.getEntityBuilder().createMember(guild, content);
-        api.getEventManager().handle(
+        api.handle(
                 new GuildMemberJoinEvent(
                         api, responseNumber,
                         guild, member));

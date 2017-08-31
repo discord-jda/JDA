@@ -60,7 +60,7 @@ public class GuildDeleteHandler extends SocketHandler
         if (content.has("unavailable") && content.getBoolean("unavailable"))
         {
             guild.setAvailable(false);
-            api.getEventManager().handle(
+            api.handle(
                     new GuildUnavailableEvent(
                             api, responseNumber,
                             guild)
@@ -140,7 +140,7 @@ public class GuildDeleteHandler extends SocketHandler
         api.getGuildMap().remove(guild.getIdLong());
         guild.getTextChannels().forEach(chan -> api.getTextChannelMap().remove(chan.getIdLong()));
         guild.getVoiceChannels().forEach(chan -> api.getVoiceChannelMap().remove(chan.getIdLong()));
-        api.getEventManager().handle(
+        api.handle(
                 new GuildLeaveEvent(
                         api, responseNumber,
                         guild));

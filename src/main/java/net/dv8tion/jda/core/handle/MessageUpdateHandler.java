@@ -114,7 +114,7 @@ public class MessageUpdateHandler extends SocketHandler
                 {
                     return channel.getGuild().getIdLong();
                 }
-                api.getEventManager().handle(
+                api.handle(
                         new GuildMessageUpdateEvent(
                                 api, responseNumber,
                                 message));
@@ -122,14 +122,14 @@ public class MessageUpdateHandler extends SocketHandler
             }
             case PRIVATE:
             {
-                api.getEventManager().handle(
+                api.handle(
                         new PrivateMessageUpdateEvent(
                                 api, responseNumber,
                                 message));
             }
             case GROUP:
             {
-                api.getEventManager().handle(
+                api.handle(
                         new GroupMessageUpdateEvent(
                                 api, responseNumber,
                                 message));
@@ -142,7 +142,7 @@ public class MessageUpdateHandler extends SocketHandler
         }
 
         //Combo event
-        api.getEventManager().handle(
+        api.handle(
                 new MessageUpdateEvent(
                         api, responseNumber,
                         message));
@@ -185,27 +185,27 @@ public class MessageUpdateHandler extends SocketHandler
             {
                 return tChannel.getGuild().getIdLong();
             }
-            api.getEventManager().handle(
+            api.handle(
                     new GuildMessageEmbedEvent(
                             api, responseNumber,
                             messageId, tChannel, embeds));
         }
         else if (channel instanceof PrivateChannel)
         {
-            api.getEventManager().handle(
+            api.handle(
                     new PrivateMessageEmbedEvent(
                             api, responseNumber,
                             messageId, (PrivateChannel) channel, embeds));
         }
         else
         {
-            api.getEventManager().handle(
+            api.handle(
                     new GroupMessageEmbedEvent(
                             api, responseNumber,
                             messageId, (Group) channel, embeds));
         }
         //Combo event
-        api.getEventManager().handle(
+        api.handle(
                 new MessageEmbedEvent(
                         api, responseNumber,
                         messageId, channel, embeds));

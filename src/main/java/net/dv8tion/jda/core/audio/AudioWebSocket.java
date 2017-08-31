@@ -263,7 +263,7 @@ public class AudioWebSocket extends WebSocketAdapter
     public void handleCallbackError(WebSocket websocket, Throwable cause)
     {
         LOG.log(cause);
-        api.getEventManager().handle(new ExceptionEvent(api, cause, true));
+        api.handle(new ExceptionEvent(api, cause, true));
     }
 
     @Override

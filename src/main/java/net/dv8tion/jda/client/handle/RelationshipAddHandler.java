@@ -47,25 +47,25 @@ public class RelationshipAddHandler extends SocketHandler
         switch (relationship.getType())
         {
             case FRIEND:
-                api.getEventManager().handle(
+                api.handle(
                         new FriendAddedEvent(
                                 api, responseNumber,
                                 relationship));
                 break;
             case BLOCKED:
-                api.getEventManager().handle(
+                api.handle(
                         new UserBlockedEvent(
                                 api, responseNumber,
                                 relationship));
                 break;
             case INCOMING_FRIEND_REQUEST:
-                api.getEventManager().handle(
+                api.handle(
                         new FriendRequestReceivedEvent(
                                 api, responseNumber,
                                 relationship));
                 break;
             case OUTGOING_FRIEND_REQUEST:
-                api.getEventManager().handle(
+                api.handle(
                         new FriendRequestSentEvent(
                                 api, responseNumber,
                                 relationship));

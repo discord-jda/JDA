@@ -106,7 +106,7 @@ public class GuildEmojisUpdateHandler extends SocketHandler
         for (Emote e : oldEmotes)
         {
             emoteMap.remove(e.getIdLong());
-            api.getEventManager().handle(
+            api.handle(
                 new EmoteRemovedEvent(
                     api, responseNumber,
                     e));
@@ -114,7 +114,7 @@ public class GuildEmojisUpdateHandler extends SocketHandler
 
         for (Emote e : newEmotes)
         {
-            api.getEventManager().handle(
+            api.handle(
                 new EmoteAddedEvent(
                     api, responseNumber,
                     e));
@@ -129,7 +129,7 @@ public class GuildEmojisUpdateHandler extends SocketHandler
 
         if (!Objects.equals(oldEmote.getName(), newEmote.getName()))
         {
-            api.getEventManager().handle(
+            api.handle(
                 new EmoteUpdateNameEvent(
                     api, responseNumber,
                     newEmote, oldEmote.getName()));
@@ -137,7 +137,7 @@ public class GuildEmojisUpdateHandler extends SocketHandler
 
         if (!CollectionUtils.isEqualCollection(oldEmote.getRoles(), newEmote.getRoles()))
         {
-            api.getEventManager().handle(
+            api.handle(
                 new EmoteUpdateRolesEvent(
                     api, responseNumber,
                     newEmote, oldEmote.getRoles()));

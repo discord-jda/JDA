@@ -47,7 +47,7 @@ public class GuildCreateHandler extends SocketHandler
                 {
                     if(wasAvail == null)                    //didn't exist
                     {
-                        api.getEventManager().handle(
+                        api.handle(
                                 new GuildJoinEvent(
                                         api, responseNumber,
                                         guild));
@@ -55,7 +55,7 @@ public class GuildCreateHandler extends SocketHandler
                     }
                     else if (!wasAvail)                     //was previously unavailable
                     {
-                        api.getEventManager().handle(
+                        api.handle(
                                 new GuildAvailableEvent(
                                         api, responseNumber,
                                         guild));
@@ -75,7 +75,7 @@ public class GuildCreateHandler extends SocketHandler
                 else
                 {
                     //Proper GuildJoinedEvent is fired when guild was populated
-                    api.getEventManager().handle(
+                    api.handle(
                             new UnavailableGuildJoinedEvent(
                                     api, responseNumber,
                                     guild.getIdLong()));

@@ -31,7 +31,6 @@ import net.dv8tion.jda.core.events.message.priv.react.PrivateMessageReactionAddE
 import net.dv8tion.jda.core.events.message.priv.react.PrivateMessageReactionRemoveEvent;
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent;
-import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.requests.WebSocketClient;
 import org.json.JSONObject;
 
@@ -127,29 +126,28 @@ public class MessageReactionHandler extends SocketHandler
 
     private void onAdd(MessageReaction reaction, User user)
     {
-        IEventManager manager = api.getEventManager();
         switch (reaction.getChannelType())
         {
             case TEXT:
-                manager.handle(
+                api.handle(
                     new GuildMessageReactionAddEvent(
                             api, responseNumber,
                             user, reaction));
                 break;
             case GROUP:
-                manager.handle(
+                api.handle(
                     new GroupMessageReactionAddEvent(
                             api, responseNumber,
                             user, reaction));
                 break;
             case PRIVATE:
-                manager.handle(
+                api.handle(
                     new PrivateMessageReactionAddEvent(
                             api, responseNumber,
                             user, reaction));
         }
 
-        manager.handle(
+        api.handle(
             new MessageReactionAddEvent(
                     api, responseNumber,
                     user, reaction));
@@ -157,29 +155,28 @@ public class MessageReactionHandler extends SocketHandler
 
     private void onRemove(MessageReaction reaction, User user)
     {
-        IEventManager manager = api.getEventManager();
         switch (reaction.getChannelType())
         {
             case TEXT:
-                manager.handle(
+                api.handle(
                     new GuildMessageReactionRemoveEvent(
                             api, responseNumber,
                             user, reaction));
                 break;
             case GROUP:
-                manager.handle(
+                api.handle(
                     new GroupMessageReactionRemoveEvent(
                             api, responseNumber,
                             user, reaction));
                 break;
             case PRIVATE:
-                manager.handle(
+                api.handle(
                     new PrivateMessageReactionRemoveEvent(
                             api, responseNumber,
                             user, reaction));
         }
 
-        manager.handle(
+        api.handle(
             new MessageReactionRemoveEvent(
                     api, responseNumber,
                     user, reaction));

@@ -61,7 +61,7 @@ public class GuildRoleDeleteHandler extends SocketHandler
             MemberImpl member = (MemberImpl) m;
             member.getRoleSet().remove(removedRole);
         }
-        api.getEventManager().handle(
+        api.handle(
                 new RoleDeleteEvent(
                         api, responseNumber,
                         removedRole));

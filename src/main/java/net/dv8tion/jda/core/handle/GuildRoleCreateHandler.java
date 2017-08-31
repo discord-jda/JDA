@@ -50,7 +50,7 @@ public class GuildRoleCreateHandler extends SocketHandler
         }
 
         Role newRole = api.getEntityBuilder().createRole(content.getJSONObject("role"), guild.getIdLong());
-        api.getEventManager().handle(
+        api.handle(
                 new RoleCreateEvent(
                         api, responseNumber,
                         newRole));

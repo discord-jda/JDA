@@ -51,7 +51,7 @@ public class UserUpdateHandler extends SocketHandler
             String oldDiscriminator = self.getDiscriminator();
             self.setName(name);
             self.setDiscriminator(discriminator);
-            api.getEventManager().handle(
+            api.handle(
                     new SelfUpdateNameEvent(
                             api, responseNumber,
                             oldName, oldDiscriminator));
@@ -60,7 +60,7 @@ public class UserUpdateHandler extends SocketHandler
         {
             String oldAvatarId = self.getAvatarId();
             self.setAvatarId(avatarId);
-            api.getEventManager().handle(
+            api.handle(
                     new SelfUpdateAvatarEvent(
                             api, responseNumber,
                             oldAvatarId));
@@ -69,7 +69,7 @@ public class UserUpdateHandler extends SocketHandler
         {
             boolean wasVerified = self.isVerified();
             self.setVerified(verified);
-            api.getEventManager().handle(
+            api.handle(
                     new SelfUpdateVerifiedEvent(
                             api, responseNumber,
                             wasVerified));
@@ -78,7 +78,7 @@ public class UserUpdateHandler extends SocketHandler
         {
             boolean wasMfaEnabled = self.isMfaEnabled();
             self.setMfaEnabled(mfaEnabled);
-            api.getEventManager().handle(
+            api.handle(
                     new SelfUpdateMFAEvent(
                             api, responseNumber,
                             wasMfaEnabled));
@@ -87,7 +87,7 @@ public class UserUpdateHandler extends SocketHandler
         {
             String oldEmail = self.getEmail();
             self.setEmail(email);
-            api.getEventManager().handle(
+            api.handle(
                     new SelfUpdateEmailEvent(
                             api, responseNumber,
                             oldEmail));

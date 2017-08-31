@@ -68,57 +68,57 @@ public class GuildRoleUpdateHandler extends SocketHandler
         {
             String oldName = role.getName();
             role.setName(name);
-            api.getEventManager().handle(
-                    new RoleUpdateNameEvent(
-                            api, responseNumber,
-                            role, oldName));
+            api.handle(
+                new RoleUpdateNameEvent(
+                    api, responseNumber,
+                    role, oldName));
         }
         if (!Objects.equals(color, role.getColor()))
         {
             Color oldColor = role.getColor();
             role.setColor(color);
-            api.getEventManager().handle(
-                    new RoleUpdateColorEvent(
-                            api, responseNumber,
-                            role, oldColor));
+            api.handle(
+                new RoleUpdateColorEvent(
+                    api, responseNumber,
+                    role, oldColor));
         }
         if (!Objects.equals(position, role.getPositionRaw()))
         {
             int oldPosition = role.getPosition();
             int oldPositionRaw = role.getPositionRaw();
             role.setRawPosition(position);
-            api.getEventManager().handle(
-                    new RoleUpdatePositionEvent(
-                            api, responseNumber,
-                            role, oldPosition, oldPositionRaw));
+            api.handle(
+                new RoleUpdatePositionEvent(
+                    api, responseNumber,
+                    role, oldPosition, oldPositionRaw));
         }
         if (!Objects.equals(permissions, role.getPermissionsRaw()))
         {
             long oldPermissionsRaw = role.getPermissionsRaw();
             role.setRawPermissions(permissions);
-            api.getEventManager().handle(
-                    new RoleUpdatePermissionsEvent(
-                            api, responseNumber,
-                            role, oldPermissionsRaw));
+            api.handle(
+                new RoleUpdatePermissionsEvent(
+                    api, responseNumber,
+                    role, oldPermissionsRaw));
         }
 
         if (hoisted != role.isHoisted())
         {
             boolean wasHoisted = role.isHoisted();
             role.setHoisted(hoisted);
-            api.getEventManager().handle(
-                    new RoleUpdateHoistedEvent(
-                            api, responseNumber,
-                            role, wasHoisted));
+            api.handle(
+                new RoleUpdateHoistedEvent(
+                    api, responseNumber,
+                    role, wasHoisted));
         }
         if (mentionable != role.isMentionable())
         {
             boolean wasMentionable = role.isMentionable();
             role.setMentionable(mentionable);
-            api.getEventManager().handle(
-                    new RoleUpdateMentionableEvent(
-                            api, responseNumber,
-                            role, wasMentionable));
+            api.handle(
+                new RoleUpdateMentionableEvent(
+                    api, responseNumber,
+                    role, wasMentionable));
         }
         return null;
     }

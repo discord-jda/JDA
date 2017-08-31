@@ -154,19 +154,19 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     JDAImpl.LOG.warn("connection might not work as expected.");
                     JDAImpl.LOG.warn("For more info see https://git.io/vrFWP");
                 }
-                api.getEventManager().handle(new ReadyEvent(api, api.getResponseTotal()));
+                api.handle(new ReadyEvent(api, api.getResponseTotal()));
             }
             else
             {
                 updateAudioManagerReferences();
                 JDAImpl.LOG.info("Finished (Re)Loading!");
-                api.getEventManager().handle(new ReconnectedEvent(api, api.getResponseTotal()));
+                api.handle(new ReconnectedEvent(api, api.getResponseTotal()));
             }
         }
         else
         {
             JDAImpl.LOG.info("Successfully resumed Session!");
-            api.getEventManager().handle(new ResumedEvent(api, api.getResponseTotal()));
+            api.handle(new ResumedEvent(api, api.getResponseTotal()));
         }
         api.setStatus(JDA.Status.CONNECTED);
         LOG.debug("Resending " + cachedEvents.size() + " cached events...");
@@ -464,13 +464,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             }
 
             api.setStatus(JDA.Status.SHUTDOWN);
-            api.getEventManager().handle(new ShutdownEvent(api, OffsetDateTime.now(), rawCloseCode));
+            api.handle(new ShutdownEvent(api, OffsetDateTime.now(), rawCloseCode));
         }
         else
         {
             if (rawCloseCode == 1000)
                 invalidate(); // 1000 means our session is dropped so we cannot resume
-            api.getEventManager().handle(new DisconnectEvent(api, serverCloseFrame, clientCloseFrame, closedByServer, OffsetDateTime.now()));
+            api.handle(new DisconnectEvent(api, serverCloseFrame, clientCloseFrame, closedByServer, OffsetDateTime.now()));
             reconnect();
         }
     }
@@ -869,7 +869,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     @Override
     public void handleCallbackError(WebSocket websocket, Throwable cause)
     {
-        api.getEventManager().handle(new ExceptionEvent(api, cause, false));
+        LOG.log(cause);
+        api.handle(new ExceptionEvent(api, cause, true));
     }
 
     @Override
