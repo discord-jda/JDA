@@ -13,25 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.core.requests;
+
+package net.dv8tion.jda.core.utils;
+
+import net.dv8tion.jda.core.requests.RequestFuture;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.Future;
 
-/**
- * Future allowing for use of continuations.
- *
- * @param <T>
- *        The completion type for this Future
- */
-public interface RequestFuture<T> extends Future<T>, CompletionStage<T>
+public class Promise<T> extends CompletableFuture<T> implements RequestFuture<T>
 {
-    /**
-     * <b>This method is unsupported by the current implementation!</b>
-     *
-     * <p>{@inheritDoc}
-     */
+    public Promise() {}
+
+    public Promise(final Throwable t)
+    {
+        this.completeExceptionally(t);
+    }
+
+    public Promise(final T t)
+    {
+        this.complete(t);
+    }
+
     @Override
-    CompletableFuture<T> toCompletableFuture();
+    public CompletableFuture<T> toCompletableFuture()
+    {
+        throw new UnsupportedOperationException("Access to the CompletableFuture is not supported to secure JDA integrity.");
+    }
 }

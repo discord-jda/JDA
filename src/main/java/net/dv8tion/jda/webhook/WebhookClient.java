@@ -20,9 +20,11 @@ import net.dv8tion.jda.core.JDAInfo;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.exceptions.HttpException;
+import net.dv8tion.jda.core.requests.RequestFuture;
 import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.IOUtil;
+import net.dv8tion.jda.core.utils.Promise;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import net.dv8tion.jda.core.utils.tuple.ImmutablePair;
 import net.dv8tion.jda.core.utils.tuple.Pair;
@@ -118,10 +120,10 @@ public class WebhookClient implements AutoCloseable
      * @throws net.dv8tion.jda.core.exceptions.HttpException
      *         If the HTTP request fails
      *
-     * @return {@link java.util.concurrent.Future Future} representing the execution task,
-     *         this will be completed if the message was sent without ratelimits.
+     * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
+     *         this will be completed once the message was sent.
      */
-    public Future<?> send(WebhookMessage message)
+    public RequestFuture<?> send(WebhookMessage message)
     {
         Checks.notNull(message, "WebhookMessage");
         return execute(message.getBody());
@@ -140,10 +142,10 @@ public class WebhookClient implements AutoCloseable
      * @throws net.dv8tion.jda.core.exceptions.HttpException
      *         If the HTTP request fails
      *
-     * @return {@link java.util.concurrent.Future Future} representing the execution task,
-     *         this will be completed if the message was sent without ratelimits.
+     * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
+     *         this will be completed once the message was sent.
      */
-    public Future<?> send(File file)
+    public RequestFuture<?> send(File file)
     {
         return send(new WebhookMessageBuilder().setFile(file).build());
     }
@@ -163,10 +165,10 @@ public class WebhookClient implements AutoCloseable
      * @throws net.dv8tion.jda.core.exceptions.HttpException
      *         If the HTTP request fails
      *
-     * @return {@link java.util.concurrent.Future Future} representing the execution task,
-     *         this will be completed if the message was sent without ratelimits.
+     * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
+     *         this will be completed once the message was sent.
      */
-    public Future<?> send(File file, String fileName)
+    public RequestFuture<?> send(File file, String fileName)
     {
         return send(new WebhookMessageBuilder().setFile(file, fileName).build());
     }
@@ -186,10 +188,10 @@ public class WebhookClient implements AutoCloseable
      * @throws net.dv8tion.jda.core.exceptions.HttpException
      *         If the HTTP request fails
      *
-     * @return {@link java.util.concurrent.Future Future} representing the execution task,
-     *         this will be completed if the message was sent without ratelimits.
+     * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
+     *         this will be completed once the message was sent.
      */
-    public Future<?> send(byte[] data, String fileName)
+    public RequestFuture<?> send(byte[] data, String fileName)
     {
         return send(new WebhookMessageBuilder().setFile(data, fileName).build());
     }
@@ -209,10 +211,10 @@ public class WebhookClient implements AutoCloseable
      * @throws net.dv8tion.jda.core.exceptions.HttpException
      *         If the HTTP request fails
      *
-     * @return {@link java.util.concurrent.Future Future} representing the execution task,
-     *         this will be completed if the message was sent without ratelimits.
+     * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
+     *         this will be completed once the message was sent.
      */
-    public Future<?> send(InputStream data, String fileName)
+    public RequestFuture<?> send(InputStream data, String fileName)
     {
         return send(new WebhookMessageBuilder().setFile(data, fileName).build());
     }
@@ -230,10 +232,10 @@ public class WebhookClient implements AutoCloseable
      * @throws net.dv8tion.jda.core.exceptions.HttpException
      *         If the HTTP request fails
      *
-     * @return {@link java.util.concurrent.Future Future} representing the execution task,
-     *         this will be completed if the message was sent without ratelimits.
+     * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
+     *         this will be completed once the message was sent.
      */
-    public Future<?> send(Message message)
+    public RequestFuture<?> send(Message message)
     {
         return send(WebhookMessage.from(message));
     }
@@ -257,10 +259,10 @@ public class WebhookClient implements AutoCloseable
      * @throws net.dv8tion.jda.core.exceptions.HttpException
      *         If the HTTP request fails
      *
-     * @return {@link java.util.concurrent.Future Future} representing the execution task,
-     *         this will be completed if the message was sent without ratelimits.
+     * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
+     *         this will be completed once the message was sent.
      */
-    public Future<?> send(MessageEmbed... embeds)
+    public RequestFuture<?> send(MessageEmbed... embeds)
     {
         return send(WebhookMessage.of(embeds));
     }
@@ -284,10 +286,10 @@ public class WebhookClient implements AutoCloseable
      * @throws net.dv8tion.jda.core.exceptions.HttpException
      *         If the HTTP request fails
      *
-     * @return {@link java.util.concurrent.Future Future} representing the execution task,
-     *         this will be completed if the message was sent without ratelimits.
+     * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
+     *         this will be completed once the message was sent.
      */
-    public Future<?> send(Collection<MessageEmbed> embeds)
+    public RequestFuture<?> send(Collection<MessageEmbed> embeds)
     {
         return send(WebhookMessage.of(embeds));
     }
@@ -305,10 +307,10 @@ public class WebhookClient implements AutoCloseable
      * @throws net.dv8tion.jda.core.exceptions.HttpException
      *         If the HTTP request fails
      *
-     * @return {@link java.util.concurrent.Future Future} representing the execution task,
-     *         this will be completed if the message was sent without ratelimits.
+     * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
+     *         this will be completed once the message was sent.
      */
-    public Future<?> send(String content)
+    public RequestFuture<?> send(String content)
     {
         Checks.notBlank(content, "Content");
         Checks.check(content.length() <= 2000, "Content may not exceed 2000 characters!");
@@ -340,7 +342,7 @@ public class WebhookClient implements AutoCloseable
         return RequestBody.create(Requester.MEDIA_TYPE_JSON, object);
     }
 
-    protected Future<?> execute(RequestBody body)
+    protected RequestFuture<?> execute(RequestBody body)
     {
         checkShutdown();
         return queueRequest(body);
@@ -353,11 +355,11 @@ public class WebhookClient implements AutoCloseable
         return new HttpException("Request returned failure " + response.code() + ": " + responseBody);
     }
 
-    protected Future<?> queueRequest(RequestBody body)
+    protected RequestFuture<?> queueRequest(RequestBody body)
     {
         final boolean wasQueued = isQueued;
         isQueued = true;
-        CompletableFuture<?> callback = new CompletableFuture<>();
+        Promise<?> callback = new Promise<>();
         queue.add(ImmutablePair.of(body, callback));
         if (!wasQueued)
             backoffQueue();
@@ -383,7 +385,14 @@ public class WebhookClient implements AutoCloseable
     {
         while (!queue.isEmpty())
         {
-            final Request request = newRequest(queue.peek().getLeft());
+            final Pair<RequestBody, CompletableFuture<?>> pair = queue.peek();
+            if (pair.getRight().isCancelled())
+            {
+                queue.poll();
+                continue;
+            }
+
+            final Request request = newRequest(pair.getLeft());
             try (Response response = client.newCall(request).execute())
             {
                 bucket.update(response);
