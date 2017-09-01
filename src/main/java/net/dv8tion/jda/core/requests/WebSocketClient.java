@@ -84,6 +84,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected final LinkedList<String> chunkSyncQueue = new LinkedList<>();
     protected final LinkedList<String> ratelimitQueue = new LinkedList<>();
+    protected final SessionReconnectQueue reconnectQueue;
     protected volatile Thread ratelimitThread = null;
     protected volatile long ratelimitResetTime;
     protected volatile int messagesSent;
@@ -93,11 +94,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected boolean processingReady = true;
     protected boolean handleIdentifyRateLimit = false;
 
-    public WebSocketClient(JDAImpl api)
+    public WebSocketClient(JDAImpl api, SessionReconnectQueue reconnectQueue)
     {
         this.api = api;
         this.shardInfo = api.getShardInfo();
         this.shouldReconnect = api.isAutoReconnect();
+        this.reconnectQueue = reconnectQueue;
         setupHandlers();
         setupSendingThread();
         connect();
@@ -331,6 +333,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         socket.sendClose(code);
     }
 
+    public void close(int code, String reason)
+    {
+        socket.sendClose(code, reason);
+    }
+
     /*
         ### Start Internal methods ###
      */
@@ -471,22 +478,44 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             if (rawCloseCode == 1000)
                 invalidate(); // 1000 means our session is dropped so we cannot resume
             api.getEventManager().handle(new DisconnectEvent(api, serverCloseFrame, clientCloseFrame, closedByServer, OffsetDateTime.now()));
-            reconnect();
+            if (sessionId == null && reconnectQueue != null)
+                queueReconnect();
+            else
+                reconnect();
         }
+    }
+
+    protected void queueReconnect()
+    {
+        if (!handleIdentifyRateLimit)
+            LOG.warn("Got disconnected from WebSocket (Internet?!)... Appending session to reconnect queue");
+        reconnectQueue.appendSession(this);
     }
 
     protected void reconnect()
     {
+        reconnect(false, true);
+    }
+
+    //callFromQueue - whether this was in SessionReconnectQueue and got polled
+    //shouldHandleIdentify - whether SessionReconnectQueue already handled an IDENTIFY rate limit for this session
+    protected void reconnect(boolean callFromQueue, boolean shouldHandleIdentify)
+    {
         if (!handleIdentifyRateLimit)
-            LOG.warn("Got disconnected from WebSocket (Internet?!)... Attempting to reconnect in " + reconnectTimeoutS + "s");
+        {
+            if (callFromQueue)
+                LOG.warn("Queue is attempting to reconnect a shard..." + (shardInfo != null ? " Shard: " + shardInfo.getShardString() : ""));
+            else
+                LOG.warn("Got disconnected from WebSocket (Internet?!)...");
+            LOG.warn("Attempting to reconnect in " + reconnectTimeoutS + "s");
+        }
         while(shouldReconnect)
         {
             try
             {
                 api.setStatus(JDA.Status.WAITING_TO_RECONNECT);
-                if (handleIdentifyRateLimit)
+                if (handleIdentifyRateLimit && shouldHandleIdentify)
                 {
-                    handleIdentifyRateLimit = false;
                     LOG.fatal("Encountered IDENTIFY (OP " + WebSocketCode.IDENTIFY + ") Rate Limit! " +
                         "Waiting " + IDENTIFY_DELAY + " seconds before trying again!");
                     Thread.sleep(IDENTIFY_DELAY * 1000);
@@ -495,6 +524,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 {
                     Thread.sleep(reconnectTimeoutS * 1000);
                 }
+                handleIdentifyRateLimit = false;
                 api.setStatus(JDA.Status.ATTEMPTING_TO_RECONNECT);
             }
             catch(InterruptedException ignored) {}
@@ -547,7 +577,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 else if (!handleIdentifyRateLimit) // this can also mean we got rate limited in IDENTIFY (no need to invalidate then)
                     invalidate();
 
-                close(closeCode);
+                close(closeCode, "INVALIDATE_SESSION");
                 break;
             case WebSocketCode.HELLO:
                 LOG.debug("Got HELLO packet (OP 10). Initializing keep-alive.");

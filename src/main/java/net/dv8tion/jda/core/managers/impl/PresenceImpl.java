@@ -231,7 +231,7 @@ public class PresenceImpl implements Presence
         JSONObject gameObj = new JSONObject();
         gameObj.put("name", game.getName());
         gameObj.put("type", game.getType().getKey());
-        if (game.getType() == Game.GameType.TWITCH && game.getUrl() != null)
+        if (game.getUrl() != null)
             gameObj.put("url", game.getUrl());
 
         return gameObj;
