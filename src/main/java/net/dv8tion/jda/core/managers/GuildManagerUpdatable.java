@@ -215,7 +215,7 @@ public class GuildManagerUpdatable
      * for the <b><u>system {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}</u></b> of the selected {@link net.dv8tion.jda.core.entities.Guild Guild}.
      * <br>To reset the channel of a Guild provide {@code null} to {@link net.dv8tion.jda.core.managers.fields.Field#setValue(Object) setValue(VoiceChannel)}.
      *
-     * <p>To set the value use {@link net.dv8tion.jda.core.managers.fields.Field#setValue(Object) setValue(VoiceChannel)}
+     * <p>To set the value use {@link net.dv8tion.jda.core.managers.fields.Field#setValue(Object) setValue(TextChannel)}
      * on the returned {@link net.dv8tion.jda.core.managers.fields.GuildField GuildField} instance.
      *
      * <p>A guild system channel <b>must</b> be from this Guild!
