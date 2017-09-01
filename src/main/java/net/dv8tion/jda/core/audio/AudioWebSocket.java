@@ -413,7 +413,7 @@ public class AudioWebSocket extends WebSocketAdapter
             if (audioConnection != null)
                 audioConnection.shutdown();
 
-            if (manager.isConnected())
+            if (manager.getConnectedChannel() != null)
                 disconnectedChannel = manager.getConnectedChannel();
             else
                 disconnectedChannel = manager.getQueuedAudioConnection();
