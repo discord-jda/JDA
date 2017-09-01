@@ -748,7 +748,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     newMng.setReceivingHandler(mng.getReceiveHandler());
                     newMng.setConnectionListener(listener);
                     newMng.setAutoReconnect(mng.isAutoReconnect());
-                    it.setValue(newMng);
 
                     if (mng.isConnected() || mng.isAttemptingToConnect())
                     {
@@ -772,6 +771,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                                 listener.onStatusChange(ConnectionStatus.DISCONNECTED_CHANNEL_DELETED);
                         }
                     }
+                    it.setValue(newMng);
                 }
             }
         }
