@@ -25,7 +25,9 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import javax.annotation.CheckReturnValue;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -817,6 +819,52 @@ public interface Message extends ISnowflake, Formattable
                 }
             }
             return false;
+        }
+
+        /**
+         * Downloads this attachment and buffers it into a byte array.
+         *
+         * @throws IOException
+         *         If retrieving or buffering the file fails.
+         *
+         * @return byte array of this attachment.
+         */
+        public byte[] download() throws IOException
+        {
+            Exception cause;
+            InputStream in = null;
+            try
+            {
+                Request request = new Request.Builder().addHeader("user-agent", Requester.USER_AGENT).url(getUrl()).build();
+                Response response = jda.getRequester().getHttpClient().newCall(request).execute();
+                in = response.body().byteStream();
+                ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+                int nRead;
+                byte[] data = new byte[8192];
+
+                while ((nRead = in.read(data, 0, data.length)) != -1)
+                {
+                    buffer.write(data, 0, nRead);
+                }
+
+                buffer.flush();
+
+                return buffer.toByteArray();
+            }
+            catch (Exception e)
+            {
+                JDAImpl.LOG.log(e);
+                cause = e;
+            }
+            finally
+            {
+                if (in != null)
+                {
+                    try {in.close();} catch(Exception ignored) {}
+                }
+            }
+            throw new IOException("Failed to retrieve or buffer the file.", cause);
         }
 
         /**
