@@ -108,9 +108,6 @@ public class MiscUtil
      * @param  chars
      *         The characters to encode
      *
-     * @throws java.lang.RuntimeException
-     *         If somehow the encoding fails
-     *
      * @return The encoded String
      */
     public static String encodeUTF8(String chars)
@@ -121,7 +118,7 @@ public class MiscUtil
         }
         catch (UnsupportedEncodingException e)
         {
-            throw new RuntimeException(e); // thanks JDK 1.4
+            throw new AssertionError(e); // thanks JDK 1.4
         }
     }
 

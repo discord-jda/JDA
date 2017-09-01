@@ -24,7 +24,7 @@ import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
-import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.fields.GuildField;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
@@ -389,7 +389,7 @@ public class GuildManagerUpdatable
      *          before finishing the task</li>
      * </ul>
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER MANAGE_SERVER}
      *         in the underlying {@link net.dv8tion.jda.core.entities.Guild Guild}
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
@@ -470,7 +470,7 @@ public class GuildManagerUpdatable
     protected void checkPermission(Permission perm)
     {
         if (!guild.getSelfMember().hasPermission(perm))
-            throw new PermissionException(perm);
+            throw new InsufficientPermissionException(perm);
     }
 
     protected void setupFields()

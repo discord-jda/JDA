@@ -19,6 +19,7 @@ package net.dv8tion.jda.core.entities;
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
@@ -322,7 +323,7 @@ public class MessageReaction
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided {@code user} is null.
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         if the provided User is not us and we do not have permission to
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE manage messages}
      *         in the channel this reaction was used in
@@ -341,7 +342,7 @@ public class MessageReaction
             {
                 Channel channel = (Channel) this.channel;
                 if (!channel.getGuild().getSelfMember().hasPermission(channel, Permission.MESSAGE_MANAGE))
-                    throw new PermissionException(Permission.MESSAGE_MANAGE);
+                    throw new InsufficientPermissionException(Permission.MESSAGE_MANAGE);
             }
             else
             {

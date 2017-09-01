@@ -13,25 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.core.requests;
-
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.Future;
 
 /**
- * Future allowing for use of continuations.
+ * Webhook services that can be used to send messages without a discord account.
+ * <br>This API branch can be used with or without the {@link net.dv8tion.jda.core.entities.Webhook Webhook} entity.
  *
- * @param <T>
- *        The completion type for this Future
+ * @author Florian Spieß
  */
-public interface RequestFuture<T> extends Future<T>, CompletionStage<T>
-{
-    /**
-     * <b>This method is unsupported by the current implementation!</b>
-     *
-     * <p>{@inheritDoc}
-     */
-    @Override
-    CompletableFuture<T> toCompletableFuture();
-}
+package net.dv8tion.jda.webhook;

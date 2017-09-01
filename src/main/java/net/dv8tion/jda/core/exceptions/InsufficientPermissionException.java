@@ -13,25 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.core.requests;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.Future;
+package net.dv8tion.jda.core.exceptions;
 
-/**
- * Future allowing for use of continuations.
- *
- * @param <T>
- *        The completion type for this Future
- */
-public interface RequestFuture<T> extends Future<T>, CompletionStage<T>
+import net.dv8tion.jda.core.Permission;
+
+public class InsufficientPermissionException extends PermissionException
 {
-    /**
-     * <b>This method is unsupported by the current implementation!</b>
-     *
-     * <p>{@inheritDoc}
-     */
-    @Override
-    CompletableFuture<T> toCompletableFuture();
+    public InsufficientPermissionException(Permission permission)
+    {
+        super(permission, "Cannot perform action due to a lack of Permission. Missing permission: " + permission.toString());
+    }
+
+    public InsufficientPermissionException(Permission permission, String reason)
+    {
+        super(permission, reason);
+    }
 }

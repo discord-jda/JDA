@@ -13,25 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.core.requests;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.Future;
+package net.dv8tion.jda.core.exceptions;
 
-/**
- * Future allowing for use of continuations.
- *
- * @param <T>
- *        The completion type for this Future
- */
-public interface RequestFuture<T> extends Future<T>, CompletionStage<T>
+public class HttpException extends RuntimeException
 {
-    /**
-     * <b>This method is unsupported by the current implementation!</b>
-     *
-     * <p>{@inheritDoc}
-     */
-    @Override
-    CompletableFuture<T> toCompletableFuture();
+    public HttpException(String message)
+    {
+        super(message);
+    }
+
+    public HttpException(String message, Throwable cause)
+    {
+        super(message, cause);
+    }
 }

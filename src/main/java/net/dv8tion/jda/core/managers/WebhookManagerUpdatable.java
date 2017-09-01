@@ -19,7 +19,7 @@ package net.dv8tion.jda.core.managers;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.fields.WebhookField;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
@@ -196,7 +196,7 @@ public class WebhookManagerUpdatable
      *      <br>If the currently logged in account loses the {@link net.dv8tion.jda.core.Permission#MANAGE_WEBHOOKS MANAGE_WEBHOOKS Permission}</li>
      * </ul>
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_WEBHOOKS MANAGE_WEBHOOKS}
      *         in either the current or selected new TextChannel.
      *
@@ -208,9 +208,9 @@ public class WebhookManagerUpdatable
     {
         Member self = getGuild().getSelfMember();
         if (!self.hasPermission(webhook.getChannel(), Permission.MANAGE_WEBHOOKS))
-            throw new PermissionException(Permission.MANAGE_WEBHOOKS);
+            throw new InsufficientPermissionException(Permission.MANAGE_WEBHOOKS);
         if (channel.isSet() && !self.hasPermission(channel.getValue(), Permission.MANAGE_WEBHOOKS))
-            throw new PermissionException(Permission.MANAGE_WEBHOOKS, "Permission not available in selected new channel");
+            throw new InsufficientPermissionException(Permission.MANAGE_WEBHOOKS, "Permission not available in selected new channel");
         if (!shouldUpdate())
             return new AuditableRestAction.EmptyRestAction<>(getJDA(), null);
 
@@ -283,7 +283,7 @@ public class WebhookManagerUpdatable
             public void checkValue(TextChannel value)
             {
                 Checks.notNull(value, "channel");
-                Checks.check(value.equals(getChannel()), "Channel is not from the same Guild!");
+                Checks.check(value.getGuild().equals(getGuild()), "Channel is not from the same Guild!");
             }
         };
     }
