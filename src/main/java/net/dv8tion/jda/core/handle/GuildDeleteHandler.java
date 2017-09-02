@@ -69,9 +69,14 @@ public class GuildDeleteHandler extends SocketHandler
         }
 
         final TLongObjectMap<AudioManagerImpl> audioManagerMap = api.getAudioManagerMap();
-        final AudioManagerImpl manager = audioManagerMap.remove(id); // remove manager from central map to avoid old guild references
-        if (manager != null) // close existing audio connection if needed
-            manager.closeAudioConnection(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD);
+        synchronized (audioManagerMap)
+        {
+            final AudioManagerImpl manager = audioManagerMap.get(id);
+            if (manager != null) // close existing audio connection if needed
+                manager.closeAudioConnection(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD);
+            // remove manager from central map to avoid old guild references
+            audioManagerMap.remove(id);
+        }
 
         //cleaning up all users that we do not share a guild with anymore
         // Anything left in memberIds will be removed from the main userMap
@@ -85,7 +90,6 @@ public class GuildDeleteHandler extends SocketHandler
 
             for (TLongIterator it = memberIds.iterator(); it.hasNext();)
             {
-
                 if (g.getMembersMap().containsKey(it.next()))
                     it.remove();
             }
