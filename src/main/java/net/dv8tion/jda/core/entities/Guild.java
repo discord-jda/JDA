@@ -602,7 +602,8 @@ public interface Guild extends ISnowflake
 
     /**
      * The default {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} for a {@link net.dv8tion.jda.core.entities.Guild Guild}.
-     * <br>This is the channel that the Discord client will default to opening when a Guild is opened for the first time when accepting an invite.
+     * <br>This is the channel that the Discord client will default to opening when a Guild is opened for the first time when accepting an invite
+     * that is not directed at a specific {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
      *
      * <p>Note: This channel is the first channel in the guild (ordered by position) that the {@link #getPublicRole()}
      * has the {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ} in.

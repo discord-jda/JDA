@@ -24,7 +24,7 @@ import net.dv8tion.jda.core.entities.TextChannel;
  * <b><u>GuildUpdateSystemChannelEvent</u></b><br>
  * Fired if the {@link net.dv8tion.jda.core.entities.Guild#getSystemChannel() system channel} of a {@link net.dv8tion.jda.core.entities.Guild Guild} has been changed.<br>
  * <br>
- * Use: Retrieve the {@link #getOldSystemChannel() previous system channel} after a change.<p>
+ * Use: Retrieve the {@link #getOldSystemChannel() previous system channel} after a change.
  */
 public class GuildUpdateSystemChannelEvent extends GenericGuildUpdateEvent
 {
