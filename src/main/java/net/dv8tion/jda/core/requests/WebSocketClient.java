@@ -489,7 +489,18 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         if (!handleIdentifyRateLimit)
             LOG.warn("Got disconnected from WebSocket (Internet?!)... Appending session to reconnect queue");
-        reconnectQueue.appendSession(this);
+        try
+        {
+            api.setStatus(JDA.Status.RECONNECT_QUEUED);
+            reconnectQueue.appendSession(this);
+        }
+        catch (IllegalStateException ex)
+        {
+            LOG.fatal("Reconnect queue rejected session. Shutting down...");
+            api.setStatus(JDA.Status.SHUTDOWN);
+            api.getEventManager().handle(
+                new ShutdownEvent(api, OffsetDateTime.now(), 1006));
+        }
     }
 
     protected void reconnect()
