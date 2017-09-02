@@ -18,6 +18,7 @@ package net.dv8tion.jda.core.handle;
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
@@ -54,6 +55,9 @@ public class GuildUpdateHandler extends SocketHandler
         Guild.Timeout afkTimeout = Guild.Timeout.fromKey(content.getInt("afk_timeout"));
         VoiceChannel afkChannel = !content.isNull("afk_channel_id")
                 ? guild.getVoiceChannelMap().get(content.getLong("afk_channel_id"))
+                : null;
+        TextChannel systemChannel = !content.isNull("system_channel_id")
+                ? guild.getTextChannelsMap().get(content.getLong("system_channel_id"))
                 : null;
 
         if (!Objects.equals(owner, guild.getOwner()))
@@ -154,6 +158,15 @@ public class GuildUpdateHandler extends SocketHandler
                     new GuildUpdateAfkChannelEvent(
                             api, responseNumber,
                             guild, oldAfkChannel));
+        }
+        if (!Objects.equals(systemChannel, guild.getSystemChannel()))
+        {
+            TextChannel oldSystemChannel = guild.getSystemChannel();
+            guild.setSystemChannel(systemChannel);
+            api.getEventManager().handle(
+                    new GuildUpdateSystemChannelEvent(
+                            api, responseNumber,
+                            guild, oldSystemChannel));
         }
         return null;
     }
