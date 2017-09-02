@@ -39,7 +39,8 @@ public class SessionReconnectQueue
 
     protected void appendSession(final WebSocketClient client)
     {
-        reconnectQueue.add(client);
+        if (!reconnectQueue.offer(client))
+            throw new IllegalStateException("Queue rejected session");
         runWorker();
     }
 
