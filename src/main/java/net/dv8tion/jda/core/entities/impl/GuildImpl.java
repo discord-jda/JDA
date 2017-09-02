@@ -43,6 +43,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -70,7 +71,6 @@ public class GuildImpl implements Guild
     private String iconId;
     private String splashId;
     private Region region;
-    private TextChannel publicChannel;
     private VoiceChannel afkChannel;
     private TextChannel systemChannel;
     private Role publicRole;
@@ -477,7 +477,18 @@ public class GuildImpl implements Guild
     @Override
     public TextChannel getPublicChannel()
     {
-        return publicChannel;
+        return textChannels.get(id);
+    }
+
+    @Nullable
+    @Override
+    public TextChannel getDefaultChannel()
+    {
+        final Role role = getPublicRole();
+        return getTextChannelsMap().valueCollection().stream()
+                .sorted(Comparator.reverseOrder())
+                .filter(c -> role.hasPermission(c, Permission.MESSAGE_READ))
+                .findFirst().orElse(null);
     }
 
     @Override
@@ -731,12 +742,6 @@ public class GuildImpl implements Guild
     public GuildImpl setRegion(Region region)
     {
         this.region = region;
-        return this;
-    }
-
-    public GuildImpl setPublicChannel(TextChannel publicChannel)
-    {
-        this.publicChannel = publicChannel;
         return this;
     }
 
