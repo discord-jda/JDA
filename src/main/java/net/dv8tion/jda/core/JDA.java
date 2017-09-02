@@ -760,22 +760,6 @@ public interface JDA
     void shutdown();
 
     /**
-     * Shuts down JDA, closing all its connections.
-     * After this command is issued the JDA Instance can not be used anymore.
-     * Already enqueued {@link net.dv8tion.jda.core.requests.RestAction RestActions} are still executed.
-     * 
-     * @deprecated
-     *         Use {@link #shutdown()} instead.
-     *
-     * @param  free If true, shuts down JDA's rest system permanently for all current and future instances.
-     */
-    @Deprecated
-    default void shutdown(boolean free)
-    {
-        this.shutdown();
-    }
-
-    /**
      * Shuts down this JDA instance instantly.
      * This will also cancel all queued {@link net.dv8tion.jda.core.requests.RestAction RestActions}.
      *
