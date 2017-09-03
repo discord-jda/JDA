@@ -331,7 +331,6 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     @Override
     public RestAction<Void> addReactionById(String messageId, String unicode)
     {
-        checkPermission(Permission.MESSAGE_ADD_REACTION);
         checkPermission(Permission.MESSAGE_HISTORY);
 
         //Call MessageChannel's default method
@@ -341,7 +340,6 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     @Override
     public RestAction<Void> addReactionById(String messageId, Emote emote)
     {
-        checkPermission(Permission.MESSAGE_ADD_REACTION);
         checkPermission(Permission.MESSAGE_HISTORY);
 
         //Call MessageChannel's default method
@@ -354,7 +352,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         Checks.notEmpty(messageId, "Message ID");
 
         checkPermission(Permission.MESSAGE_MANAGE);
-        Route.CompiledRoute route = Route.Messages.REMOVE_ALL_REACTIONS.compile(getId(), messageId);
+        final Route.CompiledRoute route = Route.Messages.REMOVE_ALL_REACTIONS.compile(getId(), messageId);
         return new RestAction<Void>(getJDA(), route)
         {
             @Override
@@ -364,6 +362,29 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
                     request.onSuccess(null);
                 else
                     request.onFailure(response);
+            }
+        };
+    }
+
+    @Override
+    public RestAction<Void> removeReactionById(String messageId, String unicode, User user)
+    {
+        Checks.noWhitespace(messageId, "Message ID");
+        Checks.noWhitespace(unicode, "Unicode emoji");
+        Checks.notNull(user, "User");
+        if (!getJDA().getSelfUser().equals(user))
+            checkPermission(Permission.MESSAGE_MANAGE);
+        final String code = MiscUtil.encodeUTF8(unicode);
+        final Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, code, user.getId());
+        return new RestAction<Void>(getJDA(), route)
+        {
+            @Override
+            protected void handleResponse(Response response, Request<Void> request)
+            {
+                if (!response.isOk())
+                    request.onFailure(response);
+                else
+                    request.onSuccess(null);
             }
         };
     }
