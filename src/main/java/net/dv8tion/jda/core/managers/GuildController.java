@@ -2120,12 +2120,10 @@ public class GuildController
                     JSONArray rolesArr = obj.getJSONArray("roles");
                     Set<Role> roleSet = emote.getRoleSet();
                     for (int i = 0; i < rolesArr.length(); i++)
-                    {
                         roleSet.add(guild.getRoleById(rolesArr.getString(i)));
-                    }
 
                     // put emote into cache
-                    ((GuildImpl) guild).getEmoteMap().put(id, emote);
+                    guild.getEmoteMap().put(id, emote);
 
                     request.onSuccess(emote);
                 }

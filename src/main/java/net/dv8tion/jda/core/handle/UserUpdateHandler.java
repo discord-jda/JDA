@@ -42,9 +42,6 @@ public class UserUpdateHandler extends SocketHandler
         Boolean verified = content.has("verified") ? content.getBoolean("verified") : null;
         Boolean mfaEnabled = content.has("mfa_enabled") ? content.getBoolean("mfa_enabled") : null;
 
-        //Client only
-        String email = !content.isNull("email") ? content.getString("email") : null;
-
         if (!Objects.equals(name, self.getName()) || !Objects.equals(discriminator, self.getDiscriminator()))
         {
             String oldName = self.getName();
@@ -83,8 +80,12 @@ public class UserUpdateHandler extends SocketHandler
                             api, responseNumber,
                             wasMfaEnabled));
         }
-        if (api.getAccountType() == AccountType.CLIENT && !Objects.equals(email, self.getEmail()))
+        if (api.getAccountType() == AccountType.CLIENT)
         {
+            //Client only
+            String email = content.isNull("email") ? null : content.getString("email");
+            if (Objects.equals(email, self.getEmail()))
+                return null;
             String oldEmail = self.getEmail();
             self.setEmail(email);
             api.getEventManager().handle(

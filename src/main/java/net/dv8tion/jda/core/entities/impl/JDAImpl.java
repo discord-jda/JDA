@@ -274,9 +274,7 @@ public class JDAImpl implements JDA
     {
         this.autoReconnect = autoReconnect;
         if (client != null)
-        {
             client.setAutoReconnect(autoReconnect);
-        }
     }
 
     @Override
@@ -339,9 +337,7 @@ public class JDAImpl implements JDA
     {
         Checks.notNull(users, "users");
         for(User u : users)
-        {
             Checks.notNull(u, "All users");
-        }
         return Collections.unmodifiableList(getGuilds().stream()
                 .filter(guild -> users.stream().allMatch(guild::isMember))
                 .collect(Collectors.toList()));
@@ -350,11 +346,11 @@ public class JDAImpl implements JDA
     @Override
     public List<User> getUsersByName(String name, boolean ignoreCase)
     {
-        return users.valueCollection().stream().filter(u ->
-            ignoreCase
-            ? name.equalsIgnoreCase(u.getName())
-            : name.equals(u.getName()))
-        .collect(Collectors.toList());
+        return Collections.unmodifiableList(users.valueCollection().stream()
+                .filter(u -> ignoreCase
+                    ? name.equalsIgnoreCase(u.getName())
+                    : name.equals(u.getName()))
+                .collect(Collectors.toList()));
     }
 
     @Override
@@ -412,19 +408,19 @@ public class JDAImpl implements JDA
     @Override
     public List<Guild> getGuildsByName(String name, boolean ignoreCase)
     {
-        return guilds.valueCollection().stream().filter(g ->
-                ignoreCase
-                        ? name.equalsIgnoreCase(g.getName())
-                        : name.equals(g.getName()))
-                .collect(Collectors.toList());
+        return Collections.unmodifiableList(guilds.valueCollection().stream()
+                .filter(g -> ignoreCase
+                    ? name.equalsIgnoreCase(g.getName())
+                    : name.equals(g.getName()))
+                .collect(Collectors.toList()));
     }
 
     @Override
     public List<Role> getRoles()
     {
-        return guilds.valueCollection().stream()
+        return Collections.unmodifiableList(guilds.valueCollection().stream()
                 .flatMap(guild -> guild.getRoles().stream())
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
     }
 
     @Override
@@ -448,9 +444,9 @@ public class JDAImpl implements JDA
     @Override
     public List<Role> getRolesByName(String name, boolean ignoreCase)
     {
-        return guilds.valueCollection().stream()
+        return Collections.unmodifiableList(guilds.valueCollection().stream()
                 .flatMap(guild -> guild.getRolesByName(name, ignoreCase).stream())
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
     }
 
     @Override
@@ -474,11 +470,11 @@ public class JDAImpl implements JDA
     @Override
     public List<TextChannel> getTextChannelsByName(String name, boolean ignoreCase)
     {
-        return textChannels.valueCollection().stream().filter(tc ->
-                ignoreCase
-                        ? name.equalsIgnoreCase(tc.getName())
-                        : name.equals(tc.getName()))
-                .collect(Collectors.toList());
+        return Collections.unmodifiableList(textChannels.valueCollection().stream()
+                .filter(tc -> ignoreCase
+                    ? name.equalsIgnoreCase(tc.getName())
+                    : name.equals(tc.getName()))
+                .collect(Collectors.toList()));
     }
 
     @Override
@@ -502,11 +498,11 @@ public class JDAImpl implements JDA
     @Override
     public List<VoiceChannel> getVoiceChannelByName(String name, boolean ignoreCase)
     {
-        return voiceChannels.valueCollection().stream().filter(vc ->
-                ignoreCase
-                        ? name.equalsIgnoreCase(vc.getName())
-                        : name.equals(vc.getName()))
-                .collect(Collectors.toList());
+        return Collections.unmodifiableList(voiceChannels.valueCollection().stream()
+                .filter(vc -> ignoreCase
+                    ? name.equalsIgnoreCase(vc.getName())
+                    : name.equals(vc.getName()))
+                .collect(Collectors.toList()));
     }
 
     @Override
@@ -530,17 +526,17 @@ public class JDAImpl implements JDA
     @Override
     public List<Emote> getEmotes()
     {
-        return guilds.valueCollection().stream()
+        return Collections.unmodifiableList(guilds.valueCollection().stream()
                 .flatMap(guild -> guild.getEmotes().stream())
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
     }
 
     @Override
     public List<Emote> getEmotesByName(String name, boolean ignoreCase)
     {
-        return guilds.valueCollection().stream()
+        return Collections.unmodifiableList(guilds.valueCollection().stream()
                 .flatMap(guild -> guild.getEmotesByName(name, ignoreCase).stream())
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
     }
 
     @Override

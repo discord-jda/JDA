@@ -18,9 +18,13 @@ package net.dv8tion.jda.core.entities;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.utils.Checks;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.awt.Color;
 import java.time.OffsetDateTime;
-import java.util.List;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 /**
  * Represents an embed displayed by Discord.
@@ -28,21 +32,64 @@ import java.util.List;
  * <a href="http://imgur.com/a/yOb5n" target="_blank">http://imgur.com/a/yOb5n</a>
  * <br>This class has many possibilities for null values, so be careful!
  */
-public interface MessageEmbed
+public class MessageEmbed
 {
-    int TITLE_MAX_LENGTH = 256;
-    int VALUE_MAX_LENGTH = 1024;
-    int TEXT_MAX_LENGTH = 2048;
-    int URL_MAX_LENGTH = 2000;
-    int EMBED_MAX_LENGTH_BOT = 4000;
-    int EMBED_MAX_LENGTH_CLIENT = 2000;
+    public static final int TITLE_MAX_LENGTH = 256;
+    public static final int VALUE_MAX_LENGTH = 1024;
+    public static final int TEXT_MAX_LENGTH = 2048;
+    public static final int URL_MAX_LENGTH = 2000;
+    public static final int EMBED_MAX_LENGTH_BOT = 6000;
+    public static final int EMBED_MAX_LENGTH_CLIENT = 2000;
+
+    protected final Object mutex = new Object();
+
+    protected final String url;
+    protected final String title;
+    protected final String description;
+    protected final EmbedType type;
+    protected final OffsetDateTime timestamp;
+    protected final Color color;
+    protected final Thumbnail thumbnail;
+    protected final Provider siteProvider;
+    protected final AuthorInfo author;
+    protected final VideoInfo videoInfo;
+    protected final Footer footer;
+    protected final ImageInfo image;
+    protected final List<Field> fields;
+
+    protected volatile int length = -1;
+    protected volatile JSONObject json = null;
+
+    protected MessageEmbed(
+        String url, String title, String description, EmbedType type, OffsetDateTime timestamp,
+        Color color, Thumbnail thumbnail, Provider siteProvider, AuthorInfo author,
+        VideoInfo videoInfo, Footer footer, ImageInfo image, List<Field> fields)
+    {
+        this.url = url;
+        this.title = title;
+        this.description = description;
+        this.type = type;
+        this.timestamp = timestamp;
+        this.color = color;
+        this.thumbnail = thumbnail;
+        this.siteProvider = siteProvider;
+        this.author = author;
+        this.videoInfo = videoInfo;
+        this.footer = footer;
+        this.image = image;
+        this.fields = fields != null && !fields.isEmpty()
+            ? Collections.unmodifiableList(fields) : Collections.emptyList();
+    }
 
     /**
      * The that was originally placed into chat that spawned this embed.
      *
      * @return Never-null String containing the original message url.
      */
-    String getUrl();
+    public String getUrl()
+    {
+        return url;
+    }
 
     /**
      * The title of the embed. Typically this will be the html title of the webpage that is being embedded.<br>
@@ -51,7 +98,10 @@ public interface MessageEmbed
      *
      * @return Possibly-null String containing the title of the embedded resource.
      */
-    String getTitle();
+    public String getTitle()
+    {
+        return title;
+    }
 
     /**
      * The description of the embedded resource.
@@ -60,14 +110,20 @@ public interface MessageEmbed
      *
      * @return Possibly-null String containing a description of the embedded resource.
      */
-    String getDescription();
+    public String getDescription()
+    {
+        return description;
+    }
 
     /**
      * The {@link net.dv8tion.jda.core.entities.EmbedType EmbedType} of this embed.
      *
      * @return The {@link net.dv8tion.jda.core.entities.EmbedType EmbedType} of this embed.
      */
-    EmbedType getType();
+    public EmbedType getType()
+    {
+        return type;
+    }
 
     /**
      * The information about the {@link net.dv8tion.jda.core.entities.MessageEmbed.Thumbnail Thumbnail} image to be displayed with the embed.
@@ -76,7 +132,10 @@ public interface MessageEmbed
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.MessageEmbed.Thumbnail Thumbnail} instance
      *         containing general information on the displayable thumbnail.
      */
-    Thumbnail getThumbnail();
+    public Thumbnail getThumbnail()
+    {
+        return thumbnail;
+    }
 
     /**
      * The information on site from which the embed was generated from.
@@ -85,7 +144,10 @@ public interface MessageEmbed
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.MessageEmbed.Provider Provider}
      *         containing site information.
      */
-    Provider getSiteProvider();
+    public Provider getSiteProvider()
+    {
+        return siteProvider;
+    }
 
     /**
      * The information on the creator of the embedded content.
@@ -94,7 +156,10 @@ public interface MessageEmbed
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.MessageEmbed.AuthorInfo AuthorInfo}
      *         containing author information.
      */
-    AuthorInfo getAuthor();
+    public AuthorInfo getAuthor()
+    {
+        return author;
+    }
 
     /**
      * The information about the video which should be displayed as an embed.
@@ -105,7 +170,10 @@ public interface MessageEmbed
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.MessageEmbed.VideoInfo VideoInfo}
      *         containing the information about the video which should be embedded.
      */
-    VideoInfo getVideoInfo();
+    public VideoInfo getVideoInfo()
+    {
+        return videoInfo;
+    }
     
     /**
      * The footer (bottom) of the embedded content.
@@ -114,7 +182,10 @@ public interface MessageEmbed
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.MessageEmbed.Footer Footer}
      *         containing the embed footer content.
      */
-    Footer getFooter();
+    public Footer getFooter()
+    {
+        return footer;
+    }
     
     /**
      * The information about the image in the message embed
@@ -122,7 +193,10 @@ public interface MessageEmbed
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.MessageEmbed.ImageInfo ImageInfo}
      *         containing image information.
      */
-    ImageInfo getImage();
+    public ImageInfo getImage()
+    {
+        return image;
+    }
     
     /**
      * The fields in a message embed.
@@ -133,7 +207,10 @@ public interface MessageEmbed
      * @return Never-null (but possibly empty) List of {@link net.dv8tion.jda.core.entities.MessageEmbed.Field Field} objects
      *         containing field information.
      */
-    List<Field> getFields();
+    public List<Field> getFields()
+    {
+        return fields;
+    }
     
     /**
      * The color of the stripe on the side of the embed.
@@ -141,14 +218,20 @@ public interface MessageEmbed
      *
      * @return Possibly-null Color.
      */
-    Color getColor();
+    public Color getColor()
+    {
+        return color;
+    }
     
     /**
      * The timestamp of the embed.
      *
      * @return Possibly-null OffsetDateTime object representing the timestamp.
      */
-    OffsetDateTime getTimestamp();
+    public OffsetDateTime getTimestamp()
+    {
+        return timestamp;
+    }
 
     /**
      * The total amount of characters that is displayed when this embed is displayed by the Discord client.
@@ -161,7 +244,33 @@ public interface MessageEmbed
      *
      * @return A never-negative sum of all displayed text characters.
      */
-    int getLength();
+    public int getLength()
+    {
+        if (length > -1)
+            return length;
+        synchronized (mutex)
+        {
+            if (length > -1)
+                return length;
+            length = 0;
+
+            if (title != null)
+                length += title.length();
+            if (description != null)
+                length += description.length();
+            if (author != null)
+                length += author.getName().length();
+            if (footer != null)
+                length += footer.getText().length();
+            if (fields != null)
+            {
+                for (Field f : fields)
+                    length += f.getName().length() + f.getValue().length();
+            }
+
+            return length;
+        }
+    }
 
     /**
      * Whether this MessageEmbed can be used in a message.
@@ -183,7 +292,7 @@ public interface MessageEmbed
      *
      * @see    #getLength()
      */
-    default boolean isSendable(AccountType type)
+    public boolean isSendable(AccountType type)
     {
         Checks.notNull(type, "AccountType");
         final int length = getLength();
@@ -196,11 +305,134 @@ public interface MessageEmbed
         }
     }
 
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (!(obj instanceof MessageEmbed))
+            return false;
+        if (obj == this)
+            return true;
+        MessageEmbed other = (MessageEmbed) obj;
+        return Objects.equals(url, other.url)
+            && Objects.equals(title, other.title)
+            && Objects.equals(description, other.description)
+            && Objects.equals(type, other.type)
+            && Objects.equals(thumbnail, other.thumbnail)
+            && Objects.equals(siteProvider, other.siteProvider)
+            && Objects.equals(author, other.author)
+            && Objects.equals(videoInfo, other.videoInfo)
+            && Objects.equals(footer, other.footer)
+            && Objects.equals(image, other.image)
+            && Objects.equals(color, other.color)
+            && Objects.equals(timestamp, other.timestamp)
+            && deepEquals(fields, other.fields);
+    }
+
+    private static <T> boolean deepEquals(Collection<T> first, Collection<T> second)
+    {
+        if (first != null)
+        {
+            if (second == null)
+                return false;
+            if (first.size() != second.size())
+                return false;
+            for (Iterator<T> itFirst = first.iterator(), itSecond = second.iterator(); itFirst.hasNext(); )
+            {
+                T elementFirst = itFirst.next();
+                T elementSecond = itSecond.next();
+                if (!Objects.equals(elementFirst, elementSecond))
+                    return false;
+            }
+        }
+        else if (second != null)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Creates a new {@link org.json.JSONObject JSONObject}
+     * used for sending.
+     *
+     * @return JSONObject for this embed
+     */
+    public JSONObject toJSONObject()
+    {
+        if (json != null)
+            return json;
+        synchronized (mutex)
+        {
+            if (json != null)
+                return json;
+            JSONObject obj = new JSONObject();
+            if (url != null)
+                obj.put("url", url);
+            if (title != null)
+                obj.put("title", title);
+            if (description != null)
+                obj.put("description", description);
+            if (timestamp != null)
+                obj.put("timestamp", timestamp.format(DateTimeFormatter.ISO_INSTANT));
+            if (color != null)
+                obj.put("color", color.getRGB() & 0xFFFFFF);
+            if (thumbnail != null)
+                obj.put("thumbnail", new JSONObject().put("url", thumbnail.getUrl()));
+            if (siteProvider != null)
+            {
+                JSONObject siteProviderObj = new JSONObject();
+                if (siteProvider.getName() != null)
+                    siteProviderObj.put("name", siteProvider.getName());
+                if (siteProvider.getUrl() != null)
+                    siteProviderObj.put("url", siteProvider.getUrl());
+                obj.put("provider", siteProviderObj);
+            }
+            if (author != null)
+            {
+                JSONObject authorObj = new JSONObject();
+                if (author.getName() != null)
+                    authorObj.put("name", author.getName());
+                if (author.getUrl() != null)
+                    authorObj.put("url", author.getUrl());
+                if (author.getIconUrl() != null)
+                    authorObj.put("icon_url", author.getIconUrl());
+                obj.put("author", authorObj);
+            }
+            if (videoInfo != null)
+                obj.put("video", new JSONObject().put("url", videoInfo.getUrl()));
+            if (footer != null)
+            {
+                JSONObject footerObj = new JSONObject();
+                if (footer.getText() != null)
+                    footerObj.put("text", footer.getText());
+                if (footer.getIconUrl() != null)
+                    footerObj.put("icon_url", footer.getIconUrl());
+                obj.put("footer", footerObj);
+            }
+            if (image != null)
+                obj.put("image", new JSONObject().put("url", image.getUrl()));
+            if (!fields.isEmpty())
+            {
+                JSONArray fieldsArray = new JSONArray();
+                for (Field field : fields)
+                {
+                    fieldsArray
+                        .put(new JSONObject()
+                            .put("name", field.getName())
+                            .put("value", field.getValue())
+                            .put("inline", field.isInline()));
+                }
+                obj.put("fields", fieldsArray);
+            }
+            return json = obj;
+        }
+    }
+
     /**
      * Represents the information Discord provided about a thumbnail image that should be
      * displayed with an embed message.
      */
-    class Thumbnail
+    public static class Thumbnail
     {
         protected final String url;
         protected final String proxyUrl;
@@ -255,13 +487,25 @@ public interface MessageEmbed
         {
             return height;
         }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (!(obj instanceof Thumbnail))
+                return false;
+            Thumbnail thumbnail = (Thumbnail) obj;
+            return thumbnail == this || (Objects.equals(thumbnail.url, url)
+                && Objects.equals(thumbnail.proxyUrl, proxyUrl)
+                && thumbnail.width == width
+                && thumbnail.height == height);
+        }
     }
 
     /**
      * Multipurpose class that represents a provider of content,
      * whether directly through creation or indirectly through hosting.
      */
-    class Provider
+    public static class Provider
     {
         protected final String name;
         protected final String url;
@@ -293,6 +537,16 @@ public interface MessageEmbed
         {
             return url;
         }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (!(obj instanceof Provider))
+                return false;
+            Provider provider = (Provider) obj;
+            return provider == this || (Objects.equals(provider.name, name)
+                && Objects.equals(provider.url, url));
+        }
     }
 
     /**
@@ -300,7 +554,7 @@ public interface MessageEmbed
      * <br>The videos represented are expected to be played using an HTML5 player from the
      * site which the url belongs to.
      */
-    class VideoInfo
+    public static class VideoInfo
     {
         protected final String url;
         protected final int width;
@@ -349,12 +603,23 @@ public interface MessageEmbed
         {
             return height;
         }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (!(obj instanceof VideoInfo))
+                return false;
+            VideoInfo video = (VideoInfo) obj;
+            return video == this || (Objects.equals(video.url, url)
+                && video.width == width
+                && video.height == height);
+        }
     }
     
     /**
      * Represents the information provided to embed an image.
      */
-    class ImageInfo
+    public static class ImageInfo
     {
         protected final String url;
         protected final String proxyUrl;
@@ -409,13 +674,25 @@ public interface MessageEmbed
         {
             return height;
         }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (!(obj instanceof ImageInfo))
+                return false;
+            ImageInfo image = (ImageInfo) obj;
+            return image == this || (Objects.equals(image.url, url)
+                && Objects.equals(image.proxyUrl, proxyUrl)
+                && image.width == width
+                && image.height == height);
+        }
     }
     
     /**
      * Class that represents the author of content, possibly including an icon
      * that Discord proxies.
      */
-    class AuthorInfo
+    public static class AuthorInfo
     {
         protected final String name;
         protected final String url;
@@ -471,12 +748,24 @@ public interface MessageEmbed
         {
             return proxyIconUrl;
         }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (!(obj instanceof AuthorInfo))
+                return false;
+            AuthorInfo author = (AuthorInfo) obj;
+            return author == this || (Objects.equals(author.name, name)
+                && Objects.equals(author.url, url)
+                && Objects.equals(author.iconUrl, iconUrl)
+                && Objects.equals(author.proxyIconUrl, proxyIconUrl));
+        }
     }
     
     /**
      * Class that represents a footer at the bottom of an embed
      */
-    class Footer
+    public static class Footer
     {
         protected final String text;
         protected final String iconUrl;
@@ -519,6 +808,17 @@ public interface MessageEmbed
         {
             return proxyIconUrl;
         }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (!(obj instanceof Footer))
+                return false;
+            Footer footer = (Footer) obj;
+            return footer == this || (Objects.equals(footer.text, text)
+                && Objects.equals(footer.iconUrl, iconUrl)
+                && Objects.equals(footer.proxyIconUrl, proxyIconUrl));
+        }
     }
     
     /**
@@ -530,7 +830,7 @@ public interface MessageEmbed
      * @since  3.0
      * @author John A. Grosh
      */
-    class Field
+    public static class Field
     {
         protected final String name;
         protected final String value;
@@ -597,6 +897,17 @@ public interface MessageEmbed
         public boolean isInline()
         {
             return inline;
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (!(obj instanceof Field))
+                return false;
+            final Field field = (Field) obj;
+            return field == this || (field.inline == inline
+                && Objects.equals(field.name, name)
+                && Objects.equals(field.value, value));
         }
     }
 }

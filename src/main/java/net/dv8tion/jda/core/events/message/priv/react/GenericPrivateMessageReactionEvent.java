@@ -20,24 +20,18 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.MessageReaction;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.message.GenericMessageEvent;
+import net.dv8tion.jda.core.events.message.priv.GenericPrivateMessageEvent;
 
-public class GenericPrivateMessageReactionEvent extends GenericMessageEvent
+public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEvent
 {
-    protected User issuer;
-    protected MessageReaction reaction;
+    protected final User issuer;
+    protected final MessageReaction reaction;
 
     public GenericPrivateMessageReactionEvent(JDA api, long responseNumber, User user, MessageReaction reaction)
     {
-        super(api, responseNumber, reaction.getMessageIdLong(), reaction.getChannel());
+        super(api, responseNumber, reaction.getMessageIdLong(), (PrivateChannel) reaction.getChannel());
         this.issuer = user;
         this.reaction = reaction;
-    }
-
-    @Override
-    public PrivateChannel getChannel()
-    {
-        return (PrivateChannel) channel;
     }
 
     public User getUser()

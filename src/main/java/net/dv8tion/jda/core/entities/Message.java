@@ -21,17 +21,26 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.core.requests.restaction.MessageAction;
+import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.IOConsumer;
+import net.dv8tion.jda.core.utils.IOUtil;
+import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
 import javax.annotation.CheckReturnValue;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.OffsetDateTime;
 import java.util.Formattable;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Pattern;
 
 /**
  * Represents a Text message received from Discord.
@@ -42,12 +51,12 @@ import java.util.List;
  * such as used by {@link String#format(String, Object...) String.format(String, Object...)}
  * or {@link java.io.PrintStream#printf(String, Object...) PrintStream.printf(String, Object...)}.
  *
- * <p>This will use {@link #getContent()} rather than {@link Object#toString()}!
+ * <p>This will use {@link #getContentDisplay()} rather than {@link Object#toString()}!
  * <br>Supported Features:
  * <ul>
  *     <li><b>Alternative</b>
- *     <br>   - Using {@link #getRawContent()}
- *              (Example: {@code %#s} - uses {@link #getContent()})</li>
+ *     <br>   - Using {@link #getContentRaw()}
+ *              (Example: {@code %#s} - uses {@link #getContentDisplay()})</li>
  *
  *     <li><b>Width/Left-Justification</b>
  *     <br>   - Ensures the size of a format
@@ -64,47 +73,109 @@ import java.util.List;
 public interface Message extends ISnowflake, Formattable
 {
     int MAX_FILE_SIZE = 8 << 20; // 8mb
+    int MAX_FILE_AMOUNT = 10;
+    int MAX_CONTENT_LENGTH = 2000;
+    Pattern INVITE_PATTERN = Pattern.compile("(?:https?://)?discord(?:app\\.com/invite|\\.gg)/(\\S+)", Pattern.CASE_INSENSITIVE);
+
     /**
-     * A immutable list of all mentioned users. if no user was mentioned, this list is empty.
-     * <br>In {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel's}, this always returns an empty List
+     * An immutable list of all mentioned {@link net.dv8tion.jda.core.entities.User Users}.
+     * <br>If no user was mentioned, this list is empty.
      *
      * @return immutable list of mentioned users
      */
     List<User> getMentionedUsers();
 
     /**
-     * Checks if given user was mentioned in this message in any way (@User, @everyone, @here).
+     * A immutable list of all mentioned {@link net.dv8tion.jda.core.entities.TextChannel TextChannels}.
+     * <br>If none were mentioned, this list is empty.
      *
-     * @param  user
-     *         The user to check on.
-     *
-     * @return True if the given user was mentioned in this message.
-     */
-    boolean isMentioned(User user);
-
-    /**
-     * A immutable list of all mentioned {@link net.dv8tion.jda.core.entities.TextChannel TextChannels}. If none were mentioned, this list is empty.
-     * <br>In {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannels} and {@link net.dv8tion.jda.client.entities.Group Groups},
-     * this always returns an empty List.
+     * <p><b>This may include TextChannels from other {@link net.dv8tion.jda.core.entities.Guild Guilds}</b>
      *
      * @return immutable list of mentioned TextChannels
      */
     List<TextChannel> getMentionedChannels();
 
     /**
-     * A immutable list of all mentioned {@link net.dv8tion.jda.core.entities.Role Roles}. If none were mentioned, this list is empty.
-     * <br>In {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannels} and {@link net.dv8tion.jda.client.entities.Group Groups},
-     * this always returns an empty List.
+     * A immutable list of all mentioned {@link net.dv8tion.jda.core.entities.Role Roles}.
+     * <br>If none were mentioned, this list is empty.
+     *
+     * <p><b>This may include Roles from other {@link net.dv8tion.jda.core.entities.Guild Guilds}</b>
      *
      * @return immutable list of mentioned Roles
      */
     List<Role> getMentionedRoles();
 
     /**
-     * Indicates if this Message mentions everyone using @everyone or @here.
-     * In {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel's}, this always returns false.
+     * Creates an immutable list of {@link net.dv8tion.jda.core.entities.Member Members}
+     * representing the users of {@link #getMentionedUsers()} in the specified
+     * {@link net.dv8tion.jda.core.entities.Guild Guild}.
+     * <br>This is only a convenience method and will skip all users that are not in the specified
+     * Guild.
      *
-     * @return True if message is mentioning everyone
+     * @param  guild
+     *         Non-null {@link net.dv8tion.jda.core.entities.Guild Guild}
+     *         that will be used to retrieve Members.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the specified Guild is {@code null}
+     *
+     * @return Immutable list of mentioned Members
+     */
+    List<Member> getMentionedMembers(Guild guild);
+
+    /**
+     * Creates an immutable list of {@link net.dv8tion.jda.core.entities.Member Members}
+     * representing the users of {@link #getMentionedUsers()} in the
+     * {@link net.dv8tion.jda.core.entities.Guild Guild} this Message was sent in.
+     * <br>This is only a convenience method and will skip all users that are not in the specified Guild.
+     * <br>It will provide the {@link #getGuild()} output Guild to {@link #getMentionedMembers(Guild)}.
+     *
+     *
+     * @throws java.lang.IllegalStateException
+     *         If this message was not sent in a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
+     *
+     * @return Immutable list of mentioned Members
+     */
+    List<Member> getMentionedMembers();
+
+    /**
+     * Combines all instances of {@link net.dv8tion.jda.core.entities.IMentionable IMentionable}
+     * filtered by the specified {@link net.dv8tion.jda.core.entities.Message.MentionType MentionType} values.
+     * <br>This does not include {@link #getMentionedMembers()} to avoid duplicates.
+     *
+     * <p>If no MentionType values are given this will fallback to all types.
+     *
+     * @param  types
+     *         Amount of {@link net.dv8tion.jda.core.entities.Message.MentionType MentionTypes}
+     *         to include in the list of mentions
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If provided with {@code null}
+     *
+     * @return Immutable list of filtered {@link net.dv8tion.jda.core.entities.IMentionable IMentionable} instances
+     */
+    List<IMentionable> getMentions(MentionType... types);
+
+    /**
+     * Checks if given {@link net.dv8tion.jda.core.entities.IMentionable IMentionable}
+     * was mentioned in this message in any way (@User, @everyone, @here, @Role).
+     * <br>If no filtering {@link net.dv8tion.jda.core.entities.Message.MentionType MentionTypes} are
+     * specified this will fallback to all mention types.
+     *
+     * @param  mentionable
+     *         The mentionable entity to check on.
+     * @param  types
+     *         The types to include when checking whether this type was mentioned.
+     *         This will be used with {@link #getMentions(Message.MentionType...) getMentions(MentionType...)}
+     *
+     * @return True, if the given mentionable was mentioned in this message
+     */
+    boolean isMentioned(IMentionable mentionable, MentionType... types);
+
+    /**
+     * Indicates if this Message mentions everyone using @everyone or @here.
+     *
+     * @return True, if message is mentioning everyone
      */
     boolean mentionsEveryone();
 
@@ -154,30 +225,117 @@ public interface Message extends ISnowflake, Formattable
      * <br>{@link net.dv8tion.jda.core.entities.Role Roles} to their @RoleName format
      * <br>{@link net.dv8tion.jda.core.entities.Emote Emotes} (not emojis!) to their {@code :name:} format.
      *
-     * <p>If you want the actual Content (mentions as {@literal <@id>}), use {@link #getRawContent()} instead
+     * <p>If you want the actual Content (mentions as {@literal <@id>}), use {@link #getContentRaw()} instead
      *
      * @return The textual content of the message with mentions resolved to be visually like the Discord client.
      */
-    String getContent();
+    String getContentDisplay();
+
+    /**
+     * The textual content of this message in the format that would be shown to the Discord client. All
+     * {@link net.dv8tion.jda.core.entities.IMentionable IMentionable} entities will be resolved to the format
+     * shown by the Discord client instead of the {@literal <id>} format.
+     *
+     * <p>This includes resolving:
+     * <br>{@link net.dv8tion.jda.core.entities.User Users} / {@link net.dv8tion.jda.core.entities.Member Members}
+     * to their @Username/@Nickname format,
+     * <br>{@link net.dv8tion.jda.core.entities.TextChannel TextChannels} to their #ChannelName format,
+     * <br>{@link net.dv8tion.jda.core.entities.Role Roles} to their @RoleName format
+     * <br>{@link net.dv8tion.jda.core.entities.Emote Emotes} (not emojis!) to their {@code :name:} format.
+     *
+     * <p>If you want the actual Content (mentions as {@literal <@id>}), use {@link #getContentRaw()} instead
+     *
+     * @return Output of {@link #getContentDisplay()}
+     *
+     * @deprecated
+     *         You may use {@link #getContentDisplay()} instead.
+     *         <br>This method will be removed due to ambiguous meanings and major confusion for newer users.
+     */
+    @Deprecated
+    default String getContent()
+    {
+        return getContentDisplay();
+    }
 
     /**
      * The raw textual content of this message. Does not resolve {@link net.dv8tion.jda.core.entities.IMentionable IMentionable}
-     * entities like {@link #getContent()} does. This means that this is the completely raw textual content of the message
+     * entities like {@link #getContentDisplay()} does. This means that this is the completely raw textual content of the message
      * received from Discord and can contain mentions specified by
      * <a href="https://discordapp.com/developers/docs/resources/channel#message-formatting" target="_blank">Discord's Message Formatting</a>.
      *
      * @return The raw textual content of the message, containing unresolved Discord message formatting.
      */
-    String getRawContent();
+    String getContentRaw();
 
     /**
-     * Gets the textual content of this message using {@link #getContent()} and then strips it of all markdown characters
+     * The raw textual content of this message. Does not resolve {@link net.dv8tion.jda.core.entities.IMentionable IMentionable}
+     * entities like {@link #getContentDisplay()} does. This means that this is the completely raw textual content of the message
+     * received from Discord and can contain mentions specified by
+     * <a href="https://discordapp.com/developers/docs/resources/channel#message-formatting" target="_blank">Discord's Message Formatting</a>.
+     *
+     * @return The raw textual content of the message, containing unresolved Discord message formatting.
+     *
+     * @deprecated
+     *         You may use {@link #getContentRaw()} instead.
+     *         <br>This method will be removed due to ambiguous meanings and major confusion for newer users.
+     */
+    @Deprecated
+    default String getRawContent()
+    {
+        return getContentRaw();
+    }
+
+    /**
+     * Gets the textual content of this message using {@link #getContentDisplay()} and then strips it of all markdown characters
      * like {@literal *, **, __, ~~} that provide text formatting. Any characters that match these but are not being used
      * for formatting are escaped to prevent possible formatting.
      *
-     * @return The textual content from {@link #getContent()} with all text formatting characters removed or escaped.
+     * @return The textual content from {@link #getContentDisplay()} with all text formatting characters removed or escaped.
      */
-    String getStrippedContent();
+    String getContentStripped();
+
+    /**
+     * Gets the textual content of this message using {@link #getContentDisplay()} and then strips it of all markdown characters
+     * like {@literal *, **, __, ~~} that provide text formatting. Any characters that match these but are not being used
+     * for formatting are escaped to prevent possible formatting.
+     *
+     * @return The textual content from {@link #getContentDisplay()} with all text formatting characters removed or escaped.
+     *
+     * @deprecated
+     *         You may use {@link #getContentStripped()} instead.
+     *         <br>This method will be removed due to ambiguous meanings and major confusion for newer users.
+     */
+    @Deprecated
+    default String getStrippedContent()
+    {
+        return getContentStripped();
+    }
+
+    /**
+     * Creates an immutable List of {@link net.dv8tion.jda.core.entities.Invite Invite} codes
+     * that are included in this Message.
+     * <br>This will use the {@link java.util.regex.Pattern Pattern} provided
+     * under {@link #INVITE_PATTERN} to construct a {@link java.util.regex.Matcher Matcher} that will
+     * parse the {@link #getContentRaw()} output and include all codes it finds in a list.
+     *
+     * <p>You can use the codes to retrieve/validate invites via
+     * {@link net.dv8tion.jda.core.entities.Invite#resolve(JDA, String) Invite.resolve(JDA, Strign)}
+     *
+     * @return Immutable list of invite codes
+     */
+    List<String> getInvites();
+
+    /**
+     * Validation <a href="https://en.wikipedia.org/wiki/Cryptographic_nonce" target="_blank" >nonce</a> for this Message
+     * <br>This can be used to validate that a Message was properly sent to the Discord Service.
+     * <br>To set a nonce before sending you may use {@link net.dv8tion.jda.core.MessageBuilder#setNonce(String) MessageBuilder.setNonce(String)}!
+     *
+     * @return The validation nonce
+     *
+     * @see    net.dv8tion.jda.core.MessageBuilder#setNonce(String)
+     * @see    <a href="https://en.wikipedia.org/wiki/Cryptographic_nonce" target="_blank">Cryptographic Nonce - Wikipedia</a>
+     */
+    String getNonce();
 
     /**
      * Used to determine if this Message was received from a {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}
@@ -341,11 +499,11 @@ public interface Message extends ISnowflake, Formattable
      *         If the message attempting to be edited was not created by the currently logged in account, or if
      *         {@code newContent}'s length is 0 or greater than 2000.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
-     *     <br>The {@link net.dv8tion.jda.core.entities.Message Message} with the updated content
+     * @return {@link net.dv8tion.jda.core.requests.restaction.MessageAction MessageAction}
+     *         <br>The {@link net.dv8tion.jda.core.entities.Message Message} with the updated content
      */
     @CheckReturnValue
-    RestAction<Message> editMessage(String newContent);
+    MessageAction editMessage(CharSequence newContent);
 
     /**
      * Edits this Message's content to the provided {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed}.
@@ -374,14 +532,14 @@ public interface Message extends ISnowflake, Formattable
      *         if the passed-in embed is {@code null}
      *         or not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
-     *     <br>The {@link net.dv8tion.jda.core.entities.Message Message} with the updated content
+     * @return {@link net.dv8tion.jda.core.requests.restaction.MessageAction MessageAction}
+     *         <br>The {@link net.dv8tion.jda.core.entities.Message Message} with the updated content
      */
     @CheckReturnValue
-    RestAction<Message> editMessage(MessageEmbed newContent);
+    MessageAction editMessage(MessageEmbed newContent);
 
     /**
-     * Edits this Message's content to the provided {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed}.
+     * Edits this Message's content to the provided format.
      * <br>Shortcut for {@link net.dv8tion.jda.core.MessageBuilder#appendFormat(String, Object...)}.
      * <br><b>Messages can only be edited by the account that sent them!</b>.
      *
@@ -409,14 +567,21 @@ public interface Message extends ISnowflake, Formattable
      * @throws IllegalArgumentException
      *         If the provided format String is {@code null} or blank, or if
      *         the created message exceeds the 2000 character limit
+     * @throws java.util.IllegalFormatException
+     *         If a format string contains an illegal syntax,
+     *         a format specifier that is incompatible with the given arguments,
+     *         insufficient arguments given the format string, or other illegal conditions.
+     *         For specification of all possible formatting errors,
+     *         see the <a href="../util/Formatter.html#detail">Details</a>
+     *         section of the formatter class specification.
      * @throws IllegalStateException
      *         If the message attempting to be edited was not created by the currently logged in account
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
-     *     <br>The {@link net.dv8tion.jda.core.entities.Message Message} with the updated content
+     * @return {@link net.dv8tion.jda.core.requests.restaction.MessageAction MessageAction}
+     *         <br>The {@link net.dv8tion.jda.core.entities.Message Message} with the updated content
      */
     @CheckReturnValue
-    RestAction<Message> editMessageFormat(String format, Object... args);
+    MessageAction editMessageFormat(String format, Object... args);
 
     /**
      * Edits this Message's content to the provided {@link net.dv8tion.jda.core.entities.Message Message}.
@@ -447,11 +612,11 @@ public interface Message extends ISnowflake, Formattable
      *                 {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
-     *     <br>The {@link net.dv8tion.jda.core.entities.Message Message} with the updated content
+     * @return {@link net.dv8tion.jda.core.requests.restaction.MessageAction MessageAction}
+     *         <br>The {@link net.dv8tion.jda.core.entities.Message Message} with the updated content
      */
     @CheckReturnValue
-    RestAction<Message> editMessage(Message newContent);
+    MessageAction editMessage(Message newContent);
 
     /**
      * Deletes this Message from Discord.
@@ -603,8 +768,8 @@ public interface Message extends ISnowflake, Formattable
      *         The reaction request was attempted after the Message had been deleted.</li>
      * </ul>
      *
-     * @param emote
-     *        The {@link net.dv8tion.jda.core.entities.Emote Emote} to add as a reaction to this Message.
+     * @param  emote
+     *         The {@link net.dv8tion.jda.core.entities.Emote Emote} to add as a reaction to this Message.
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
@@ -653,8 +818,8 @@ public interface Message extends ISnowflake, Formattable
      *         The reaction request was attempted after the Message had been deleted.</li>
      * </ul>
      *
-     * @param unicode
-     *        The UTF8 emoji to add as a reaction to this Message.
+     * @param  unicode
+     *         The UTF8 emoji to add as a reaction to this Message.
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
@@ -663,8 +828,6 @@ public interface Message extends ISnowflake, Formattable
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION}</li>
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
-     *
-     *         {@link net.dv8tion.jda.core.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION} in the channel.
      * @throws java.lang.IllegalArgumentException
      *         If the provided unicode emoji is null or empty.
      *
@@ -721,18 +884,41 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Represents a {@link net.dv8tion.jda.core.entities.Message Message} file attachment.
      */
-    class Attachment
+    enum MentionType
     {
-        private final String id;
+        USER("<@!?(\\d+)>"),
+        ROLE("<@&(\\d+)>"),
+        CHANNEL("<#(\\d+)>"),
+        EMOTE("<:([a-zA-Z0-9_]+):([0-9]+)>"),
+        HERE("@here"),
+        EVERYONE("@everyone");
+
+        private final Pattern pattern;
+
+        MentionType(String regex)
+        {
+            this.pattern = Pattern.compile(regex);
+        }
+
+        public Pattern getPattern()
+        {
+            return pattern;
+        }
+    }
+
+    class Attachment implements ISnowflake
+    {
+        private final long id;
         private final String url;
         private final String proxyUrl;
         private final String fileName;
         private final int size;
         private final int height;
         private final int width;
+
         private final JDAImpl jda;
 
-        public Attachment(String id, String url, String proxyUrl, String fileName, int size, int height, int width, JDA jda)
+        public Attachment(long id, String url, String proxyUrl, String fileName, int size, int height, int width, JDAImpl jda)
         {
             this.id = id;
             this.url = url;
@@ -741,15 +927,21 @@ public interface Message extends ISnowflake, Formattable
             this.size = size;
             this.height = height;
             this.width = width;
-            this.jda = (JDAImpl) jda;
+            this.jda = jda;
         }
 
         /**
-         * The id of the attachment. This is not the id of the message that the attachment was attached to.
+         * The corresponding JDA instance for this Attachment
          *
-         * @return Non-null String containing the Attachment ID.
+         * @return The corresponding JDA instance for this Attachment
          */
-        public String getId()
+        public JDA getJDA()
+        {
+            return jda;
+        }
+
+        @Override
+        public long getIdLong()
         {
             return id;
         }
@@ -787,6 +979,32 @@ public interface Message extends ISnowflake, Formattable
         }
 
         /**
+         * Creates an {@link net.dv8tion.jda.core.entities.Icon Icon} instance for
+         * this attachment if {@link #isImage() isImage()} is {@code true}!
+         * <br>This is a convenience method that can be used to retrieve an Icon from an attachment image link which
+         * requires a set user-agent to be loaded.
+         *
+         * <p>When a global proxy was specified via {@link net.dv8tion.jda.core.JDABuilder JDABuilder} this will use the
+         * specified proxy to create an {@link java.io.InputStream InputStream} otherwise it will use a normal {@link java.net.URLConnection URLConnection}
+         * with the User-Agent for the currently logged in account.
+         *
+         * @throws IOException
+         *         If an IOError occurs while reading the image
+         * @throws java.lang.IllegalStateException
+         *         If this is not an image attachment
+         *
+         * @return {@link net.dv8tion.jda.core.entities.Icon Icon} for this image attachment
+         */
+        public Icon getAsIcon() throws IOException
+        {
+            if (!isImage())
+                throw new IllegalStateException("Cannot create an Icon out of this attachment. This is not an image.");
+            AtomicReference<Icon> icon = new AtomicReference<>();
+            withInputStream((in) -> icon.set(Icon.from(in)));
+            return icon.get();
+        }
+
+        /**
          * Downloads this attachment to given File
          *
          * @param  file
@@ -796,27 +1014,72 @@ public interface Message extends ISnowflake, Formattable
          */
         public boolean download(File file)
         {
-            InputStream in = null;
             try
             {
-                Request request = new Request.Builder().addHeader("user-agent", Requester.USER_AGENT).url(getUrl()).build();
-                Response response = jda.getRequester().getHttpClient().newCall(request).execute();
-                in = response.body().byteStream();
-                Files.copy(in, Paths.get(file.getAbsolutePath()));
+                withInputStream((in) -> Files.copy(in, Paths.get(file.getAbsolutePath())));
                 return true;
             }
             catch (Exception e)
             {
                 JDAImpl.LOG.log(e);
             }
-            finally
-            {
-                if (in != null)
-                {
-                    try {in.close();} catch(Exception ignored) {}
-                }
-            }
             return false;
+        }
+
+        /**
+         * Creates a copy of the {@link java.io.InputStream InputStream} that is created using an {@link okhttp3.OkHttpClient OkHttpClient}.
+         *
+         * <p>You can access the input stream directly using {@link #withInputStream(net.dv8tion.jda.core.utils.IOConsumer) withInputStream(IOConsumer)}
+         * which will have an open input stream available within the consumer scope. The stream will be closed once that method returns.
+         *
+         * @throws java.io.IOException
+         *         If an IO error occurs trying to read from the opened HTTP channel
+         *
+         * @return InputStream copy of the response body for this Attachment
+         */
+        public InputStream getInputStream() throws IOException
+        {
+            try (Response response = openConnection())
+            {
+                // creates a copy in order to properly close the response
+                InputStream in = Requester.getBody(response);
+                return new ByteArrayInputStream(IOUtil.readFully(in));
+            }
+        }
+
+        /**
+         * Allows to access the InputStream that is available from the HTTP {@link okhttp3.Response Response}
+         * to be used without having to copy it.
+         * <br>Unlike {@link #getInputStream()} this does not return a full copy of the input stream.
+         * Instead this method will provide the InputStream data in the specified consumer in which it is still accessible.
+         *
+         * <p><b>When this method returns the InputStream will be closed accordingly!</b>
+         *
+         * @param  then
+         *         Not-null {@link net.dv8tion.jda.core.utils.IOConsumer IOConsumer} to accept the InputStream
+         *
+         * @throws java.lang.IllegalArgumentException
+         *         If the provided IOConsumer is {@code null}
+         * @throws IOException
+         *         If an IOException occurs within the IOConsumer or while opening an HTTP channel
+         */
+        public void withInputStream(IOConsumer<InputStream> then) throws IOException
+        {
+            Checks.notNull(then, "Consumer");
+            try (Response response = openConnection())
+            {
+                then.accept(Requester.getBody(response));
+            }
+        }
+
+        protected Response openConnection() throws IOException
+        {
+            final OkHttpClient client = jda.getRequester().getHttpClient();
+            final Request request = new Request.Builder().url(getUrl())
+                        .addHeader("user-agent", Requester.USER_AGENT)
+                        .addHeader("accept-encoding", "gzip")
+                        .build();
+            return client.newCall(request).execute();
         }
 
         /**

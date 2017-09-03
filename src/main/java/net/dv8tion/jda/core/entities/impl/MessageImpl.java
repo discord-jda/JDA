@@ -24,6 +24,9 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.core.requests.restaction.MessageAction;
+import net.dv8tion.jda.core.utils.MiscUtil;
+import org.apache.commons.collections4.CollectionUtils;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.Helpers;
 import org.json.JSONObject;
@@ -36,42 +39,53 @@ import java.util.regex.Pattern;
 
 public class MessageImpl implements Message
 {
-    private static final Pattern EMOTE_PATTERN = Pattern.compile("<:([^:]+):([0-9]+)>");
+    private final Object mutex = new Object();
 
-    private final JDAImpl api;
-    private final long id;
-    private final MessageType type;
-    private final MessageChannel channel;
-    private final boolean fromWebhook;
-    private boolean mentionsEveryone = false;
-    private boolean isTTS = false;
-    private boolean pinned;
-    private String content;
-    private String subContent = null;
-    private String strippedContent = null;
-    private User author;
-    private OffsetDateTime time;
-    private OffsetDateTime editedTime = null;
-    private List<User> mentionedUsers = new LinkedList<>();
-    private List<TextChannel> mentionedChannels = new LinkedList<>();
-    private List<Role> mentionedRoles = new LinkedList<>();
-    private List<Attachment> attachments = new LinkedList<>();
-    private List<MessageEmbed> embeds = new LinkedList<>();
-    private List<Emote> emotes = null;
-    private List<MessageReaction> reactions = new LinkedList<>();
+    protected final JDAImpl api;
+    protected final long id;
+    protected final MessageType type;
+    protected final MessageChannel channel;
+    protected final boolean fromWebhook;
+    protected final boolean mentionsEveryone;
+    protected final boolean isTTS;
+    protected final boolean pinned;
+    protected final String content, nonce;
+    protected final User author;
+    protected final OffsetDateTime editedTime;
+    protected final List<MessageReaction> reactions;
+    protected final List<Attachment> attachments;
+    protected final List<MessageEmbed> embeds;
 
-    public MessageImpl(long id, MessageChannel channel, boolean fromWebhook)
-    {
-        this(id, channel, fromWebhook, MessageType.DEFAULT);
-    }
+    // LAZY EVALUATED
+    protected String altContent = null;
+    protected String strippedContent = null;
 
-    public MessageImpl(long id, MessageChannel channel, boolean fromWebhook, MessageType type)
+    protected List<User> userMentions = null;
+    protected List<Emote> emoteMentions = null;
+    protected List<Role> roleMentions = null;
+    protected List<TextChannel> channelMentions = null;
+    protected List<String> invites = null;
+
+    public MessageImpl(long id, MessageChannel channel, MessageType type,
+           boolean fromWebhook, boolean mentionsEveryone, boolean tts, boolean pinned,
+           String content, String nonce, User author, OffsetDateTime editTime,
+           List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds)
     {
         this.id = id;
         this.channel = channel;
+        this.type = type;
         this.api = (channel != null) ? (JDAImpl) channel.getJDA() : null;
         this.fromWebhook = fromWebhook;
-        this.type = type;
+        this.mentionsEveryone = mentionsEveryone || (content != null && content.contains("@everyone"));
+        this.isTTS = tts;
+        this.pinned = pinned;
+        this.content = content;
+        this.nonce = nonce;
+        this.author = author;
+        this.editedTime = editTime;
+        this.reactions = Collections.unmodifiableList(reactions);
+        this.attachments = Collections.unmodifiableList(attachments);
+        this.embeds = Collections.unmodifiableList(embeds);
     }
 
     @Override
@@ -157,27 +171,249 @@ public class MessageImpl implements Message
     }
 
     @Override
-    public List<User> getMentionedUsers()
+    public synchronized List<User> getMentionedUsers()
     {
-        return Collections.unmodifiableList(mentionedUsers);
+        if (userMentions == null)
+        {
+            userMentions = new ArrayList<>();
+            Matcher matcher = MentionType.USER.getPattern().matcher(content);
+            while (matcher.find())
+            {
+                try
+                {
+                    long id = MiscUtil.parseSnowflake(matcher.group(1));
+                    User user = api.getUserById(id);
+                    if (user == null)
+                        user = api.getFakeUserMap().get(id);
+                    if (user != null)
+                        userMentions.add(user);
+                } catch (NumberFormatException ignored) {}
+            }
+            userMentions = Collections.unmodifiableList(userMentions);
+        }
+
+        return userMentions;
     }
 
     @Override
-    public boolean isMentioned(User user)
+    public synchronized List<TextChannel> getMentionedChannels()
     {
-        return mentionsEveryone() || mentionedUsers.contains(user);
+        if (channelMentions == null)
+        {
+            channelMentions = new ArrayList<>();
+            Matcher matcher = MentionType.CHANNEL.getPattern().matcher(content);
+            while (matcher.find())
+            {
+                try
+                {
+                    String id = matcher.group(1);
+                    TextChannel channel = api.getTextChannelById(id);
+                    if (channel != null)
+                        channelMentions.add(channel);
+                }
+                catch (NumberFormatException ignored) {}
+            }
+            channelMentions = Collections.unmodifiableList(channelMentions);
+        }
+
+        return channelMentions;
     }
 
     @Override
-    public List<TextChannel> getMentionedChannels()
+    public synchronized List<Role> getMentionedRoles()
     {
-        return Collections.unmodifiableList(mentionedChannels);
+        if (roleMentions == null)
+        {
+            roleMentions = new ArrayList<>();
+            Matcher matcher = MentionType.ROLE.getPattern().matcher(content);
+            while (matcher.find())
+            {
+                try
+                {
+                    long id = MiscUtil.parseSnowflake(matcher.group(1));
+                    Role role = null;
+                    if (isFromType(ChannelType.TEXT)) // role lookup is faster if its in the same guild (no global map)
+                        role = getGuild().getRoleById(id);
+                    if (role == null)
+                        role = api.getRoleById(id);
+                    if (role != null)
+                        roleMentions.add(role);
+                }
+                catch (NumberFormatException ignored) {}
+            }
+            roleMentions = Collections.unmodifiableList(roleMentions);
+        }
+
+        return roleMentions;
     }
 
     @Override
-    public List<Role> getMentionedRoles()
+    public List<Member> getMentionedMembers(Guild guild)
     {
-        return Collections.unmodifiableList(mentionedRoles);
+        Checks.notNull(guild, "Guild");
+        List<User> mentionedUsers = getMentionedUsers();
+        List<Member> members = new ArrayList<>();
+        for (User user : mentionedUsers)
+        {
+            Member member = guild.getMember(user);
+            if (member != null)
+                members.add(member);
+        }
+
+        return Collections.unmodifiableList(members);
+    }
+
+    @Override
+    public List<Member> getMentionedMembers()
+    {
+        if (isFromType(ChannelType.TEXT))
+            return getMentionedMembers(getGuild());
+        else
+            throw new IllegalStateException("You must specify a Guild for Messages which are not sent from a TextChannel!");
+    }
+
+    @Override
+    public List<IMentionable> getMentions(MentionType... types)
+    {
+        if (types == null || types.length == 0)
+            return getMentions(MentionType.values());
+        List<IMentionable> mentions = new ArrayList<>();
+        // boolean duplicate checks
+        // not using Set because channel and role might have the same ID
+        boolean channel = false;
+        boolean role = false;
+        boolean user = false;
+        boolean emote = false;
+        for (MentionType type : types)
+        {
+            switch (type)
+            {
+                case EVERYONE:
+                case HERE:
+                default: continue;
+                case CHANNEL:
+                    if (!channel)
+                        mentions.addAll(getMentionedChannels());
+                    channel = true;
+                    break;
+                case USER:
+                    if (!user)
+                        mentions.addAll(getMentionedUsers());
+                    user = true;
+                    break;
+                case ROLE:
+                    if (!role)
+                        mentions.addAll(getMentionedRoles());
+                    role = true;
+                    break;
+                case EMOTE:
+                    if (!emote)
+                        mentions.addAll(getEmotes());
+                    emote = true;
+            }
+        }
+        return Arrays.asList(mentions.toArray(new IMentionable[mentions.size()]));
+    }
+
+    @Override
+    public boolean isMentioned(IMentionable mentionable, MentionType... types)
+    {
+        Checks.notNull(types, "Mention Types");
+        if (types.length == 0)
+            return isMentioned(mentionable, MentionType.values());
+        for (MentionType type : types)
+        {
+            switch (type)
+            {
+                case HERE:
+                {
+                    if (isMass("@here"))
+                        return true;
+                    break;
+                }
+                case EVERYONE:
+                {
+                    if (isMass("@everyone"))
+                        return true;
+                    break;
+                }
+                case USER:
+                {
+                    if (isUserMentioned(mentionable))
+                        return true;
+                    break;
+                }
+                case ROLE:
+                {
+                    if (isRoleMentioning(mentionable))
+                        return true;
+                    break;
+                }
+                case CHANNEL:
+                {
+                    if (mentionable instanceof TextChannel)
+                    {
+                        if (getMentionedChannels().contains(mentionable))
+                            return true;
+                    }
+                    break;
+                }
+                case EMOTE:
+                {
+                    if (mentionable instanceof Emote)
+                    {
+                        if (getEmotes().contains(mentionable))
+                            return true;
+                    }
+                    break;
+                }
+//              default: continue;
+            }
+        }
+        return false;
+    }
+
+    private boolean isUserMentioned(IMentionable mentionable)
+    {
+        if (mentionable instanceof User)
+        {
+            if (getMentionedUsers().contains(mentionable))
+                return true;
+        }
+        else if (mentionable instanceof Member)
+        {
+            final Member member = (Member) mentionable;
+            if (getMentionedUsers().contains(member.getUser()))
+                return true;
+        }
+        return false;
+    }
+
+    private boolean isRoleMentioning(IMentionable mentionable)
+    {
+        if (mentionable instanceof Role)
+        {
+            if (getMentionedRoles().contains(mentionable))
+                return true;
+        }
+        else if (mentionable instanceof Member)
+        {
+            final Member member = (Member) mentionable;
+            if (CollectionUtils.containsAny(getMentionedRoles(), member.getRoles()))
+                return true;
+        }
+        else if (isFromType(ChannelType.TEXT) && mentionable instanceof User)
+        {
+            final Member member = getGuild().getMember((User) mentionable);
+            if (CollectionUtils.containsAny(getMentionedRoles(), member.getRoles()))
+                return true;
+        }
+        return false;
+    }
+
+    private boolean isMass(String s)
+    {
+        return hasPermission(Permission.MESSAGE_MENTION_EVERYONE) && content.contains(s);
     }
 
     @Override
@@ -211,32 +447,36 @@ public class MessageImpl implements Message
     }
 
     @Override
-    public synchronized String getStrippedContent()
+    public String getContentStripped()
     {
-        if (strippedContent == null)
+        if (strippedContent != null)
+            return strippedContent;
+        synchronized (mutex)
         {
-            String tmp = getContent();
+            if (strippedContent != null)
+                return strippedContent;
+            String tmp = getContentDisplay();
             //all the formatting keys to keep track of
-            String[] keys = new String[] {"*", "_", "`", "~~"};
+            String[] keys = new String[]{ "*", "_", "`", "~~" };
 
             //find all tokens (formatting strings described above)
-            TreeSet<FormatToken> tokens = new TreeSet<>((t1, t2) -> Integer.compare(t1.start, t2.start));
+            TreeSet<FormatToken> tokens = new TreeSet<>(Comparator.comparingInt(t -> t.start));
             for (String key : keys)
             {
                 Matcher matcher = Pattern.compile(Pattern.quote(key)).matcher(tmp);
                 while (matcher.find())
-                {
                     tokens.add(new FormatToken(key, matcher.start()));
-                }
             }
 
             //iterate over all tokens, find all matching pairs, and add them to the list toRemove
-            Stack<FormatToken> stack = new Stack<>();
+            Deque<FormatToken> stack = new ArrayDeque<>();
             List<FormatToken> toRemove = new ArrayList<>();
             boolean inBlock = false;
             for (FormatToken token : tokens)
             {
-                if (stack.empty() || !stack.peek().format.equals(token.format) || stack.peek().start + token.format.length() == token.start)
+                if (stack.isEmpty() || !stack.peek().format.equals(token.format) || stack.peek().start + token
+                        .format.length() == token.start)
+
                 {
                     //we are at opening tag
                     if (!inBlock)
@@ -256,48 +496,46 @@ public class MessageImpl implements Message
                         stack.push(token);
                     }
                 }
-                else if (!stack.empty())
+                else if (!stack.isEmpty())
                 {
                     //we found a matching close-tag
                     toRemove.add(stack.pop());
                     toRemove.add(token);
-                    if (token.format.equals("`") && stack.empty())
-                    {
+                    if (token.format.equals("`") && stack.isEmpty())
                         //close tag closed the block
                         inBlock = false;
-                    }
                 }
             }
 
             //sort tags to remove by their start-index and iteratively build the remaining string
-            Collections.sort(toRemove, (t1, t2) -> Integer.compare(t1.start, t2.start));
+            toRemove.sort(Comparator.comparingInt(t -> t.start));
             StringBuilder out = new StringBuilder();
             int currIndex = 0;
             for (FormatToken formatToken : toRemove)
             {
                 if (currIndex < formatToken.start)
-                {
                     out.append(tmp.substring(currIndex, formatToken.start));
-                }
                 currIndex = formatToken.start + formatToken.format.length();
             }
             if (currIndex < tmp.length())
-            {
                 out.append(tmp.substring(currIndex));
-            }
-            //return the stripped text, escape all remaining formatting characters (did not have matching open/close before or were left/right of block
-            strippedContent = out.toString().replace("*", "\\*").replace("_", "\\_").replace("~", "\\~");
+            //return the stripped text, escape all remaining formatting characters (did not have matching
+            // open/close before or were left/right of block
+            return strippedContent = out.toString().replace("*", "\\*").replace("_", "\\_").replace("~", "\\~");
         }
-        return strippedContent;
     }
 
     @Override
-    public synchronized String getContent()
+    public String getContentDisplay()
     {
-        if (subContent == null)
+        if (altContent != null)
+            return altContent;
+        synchronized (mutex)
         {
+            if (altContent != null)
+                return altContent;
             String tmp = content;
-            for (User user : mentionedUsers)
+            for (User user : getMentionedUsers())
             {
                 if (isFromType(ChannelType.PRIVATE) || isFromType(ChannelType.GROUP))
                 {
@@ -318,23 +556,45 @@ public class MessageImpl implements Message
             {
                 tmp = tmp.replace(emote.getAsMention(), ":" + emote.getName() + ":");
             }
-            for (TextChannel mentionedChannel : mentionedChannels)
+            for (TextChannel mentionedChannel : getMentionedChannels())
             {
                 tmp = tmp.replace("<#" + mentionedChannel.getId() + '>', '#' + mentionedChannel.getName());
             }
-            for (Role mentionedRole : mentionedRoles)
+            for (Role mentionedRole : getMentionedRoles())
             {
                 tmp = tmp.replace("<@&" + mentionedRole.getId() + '>', '@' + mentionedRole.getName());
             }
-            subContent = tmp;
+            return altContent = tmp;
         }
-        return subContent;
     }
 
     @Override
-    public String getRawContent()
+    public String getContentRaw()
     {
         return content;
+    }
+
+    @Override
+    public List<String> getInvites()
+    {
+        if (invites != null)
+            return invites;
+        synchronized (mutex)
+        {
+            if (invites != null)
+                return invites;
+            invites = new ArrayList<>();
+            Matcher m = INVITE_PATTERN.matcher(getContentRaw());
+            while (m.find())
+                invites.add(m.group(1));
+            return invites = Collections.unmodifiableList(invites);
+        }
+    }
+
+    @Override
+    public String getNonce()
+    {
+        return nonce;
     }
 
     @Override
@@ -382,41 +642,45 @@ public class MessageImpl implements Message
     @Override
     public List<Attachment> getAttachments()
     {
-        return Collections.unmodifiableList(attachments);
+        return attachments;
     }
 
     @Override
     public List<MessageEmbed> getEmbeds()
     {
-        return Collections.unmodifiableList(embeds);
+        return embeds;
     }
 
     @Override
     public synchronized List<Emote> getEmotes()
     {
-        if (this.emotes == null)
+        if (this.emoteMentions == null)
         {
-            emotes = new LinkedList<>();
-            Matcher matcher = EMOTE_PATTERN.matcher(getRawContent());
+            emoteMentions = new ArrayList<>();
+            Matcher matcher = MentionType.EMOTE.getPattern().matcher(getContentRaw());
             while (matcher.find())
             {
-                final String emoteIdString = matcher.group(2);
-                final long emoteId = Long.parseLong(emoteIdString);
-                String emoteName = matcher.group(1);
-                Emote emote = api.getEmoteById(emoteIdString);
-                if (emote == null)
-                    emote = new EmoteImpl(emoteId, api).setName(emoteName);
-                emotes.add(emote);
+                try
+                {
+                    final long emoteId = MiscUtil.parseSnowflake(matcher.group(2));
+                    final String emoteName = matcher.group(1);
+
+                    Emote emote = api.getEmoteById(emoteId);
+                    if (emote == null)
+                        emote = new EmoteImpl(emoteId, api).setName(emoteName);
+                    emoteMentions.add(emote);
+                }
+                catch (NumberFormatException ignored) {}
             }
-            emotes = Collections.unmodifiableList(emotes);
+            emoteMentions = Collections.unmodifiableList(emoteMentions);
         }
-        return emotes;
+        return emoteMentions;
     }
 
     @Override
     public List<MessageReaction> getReactions()
     {
-        return Collections.unmodifiableList(new LinkedList<>(reactions));
+        return reactions;
     }
 
     @Override
@@ -432,26 +696,26 @@ public class MessageImpl implements Message
     }
 
     @Override
-    public RestAction<Message> editMessage(String newContent)
+    public MessageAction editMessage(CharSequence newContent)
     {
         return editMessage(new MessageBuilder().append(newContent).build());
     }
 
     @Override
-    public RestAction<Message> editMessage(MessageEmbed newContent)
+    public MessageAction editMessage(MessageEmbed newContent)
     {
         return editMessage(new MessageBuilder().setEmbed(newContent).build());
     }
 
     @Override
-    public RestAction<Message> editMessageFormat(String format, Object... args)
+    public MessageAction editMessageFormat(String format, Object... args)
     {
         Checks.notBlank(format, "Format String");
         return editMessage(new MessageBuilder().appendFormat(format, args).build());
     }
 
     @Override
-    public RestAction<Message> editMessage(Message newContent)
+    public MessageAction editMessage(Message newContent)
     {
         if (!api.getSelfUser().equals(getAuthor()))
             throw new IllegalStateException("Attempted to update message that was not sent by this account. You cannot modify other User's messages!");
@@ -471,84 +735,6 @@ public class MessageImpl implements Message
                 throw new InsufficientPermissionException(Permission.MESSAGE_MANAGE);
         }
         return channel.deleteMessageById(getIdLong());
-    }
-
-    public MessageImpl setPinned(boolean pinned)
-    {
-        this.pinned = pinned;
-        return this;
-    }
-
-    public MessageImpl setMentionedUsers(List<User> mentionedUsers)
-    {
-        this.mentionedUsers = mentionedUsers;
-        return this;
-    }
-
-    public MessageImpl setMentionedChannels(List<TextChannel> mentionedChannels)
-    {
-        this.mentionedChannels = mentionedChannels;
-        return this;
-    }
-
-    public MessageImpl setMentionedRoles(List<Role> mentionedRoles)
-    {
-        this.mentionedRoles = mentionedRoles;
-        return this;
-    }
-
-    public MessageImpl setMentionsEveryone(boolean mentionsEveryone)
-    {
-        this.mentionsEveryone = mentionsEveryone;
-        return this;
-    }
-
-    public MessageImpl setTTS(boolean TTS)
-    {
-        isTTS = TTS;
-        return this;
-    }
-
-    public MessageImpl setTime(OffsetDateTime time)
-    {
-        this.time = time;
-        return this;
-    }
-
-    public MessageImpl setEditedTime(OffsetDateTime editedTime)
-    {
-        this.editedTime = editedTime;
-        return this;
-    }
-
-    public MessageImpl setAuthor(User author)
-    {
-        this.author = author;
-        return this;
-    }
-
-    public MessageImpl setContent(String content)
-    {
-        this.content = content;
-        return this;
-    }
-
-    public MessageImpl setAttachments(List<Attachment> attachments)
-    {
-        this.attachments = attachments;
-        return this;
-    }
-
-    public MessageImpl setEmbeds(List<MessageEmbed> embeds)
-    {
-        this.embeds = embeds;
-        return this;
-    }
-
-    public MessageImpl setReactions(List<MessageReaction> reactions)
-    {
-        this.reactions = reactions;
-        return this;
     }
 
     @Override
@@ -580,8 +766,21 @@ public class MessageImpl implements Message
         obj.put("content", content);
         obj.put("tts",     isTTS);
         if (!embeds.isEmpty())
-            obj.put("embed", ((MessageEmbedImpl) embeds.get(0)).toJSONObject());
+            obj.put("embed", embeds.get(0).toJSONObject());
+        //we don't attach nonce here because this was a received message
+        // and nonce should be 100% unique for each message sent
         return obj;
+    }
+
+    private boolean hasPermission(Permission permission)
+    {
+        switch (channel.getType())
+        {
+            case TEXT:
+                return getMember().hasPermission(getTextChannel(), permission);
+            default:
+                return true;
+        }
     }
 
     private void checkPermission(Permission permission)
@@ -607,7 +806,7 @@ public class MessageImpl implements Message
         boolean leftJustified = (flags & FormattableFlags.LEFT_JUSTIFY) == FormattableFlags.LEFT_JUSTIFY;
         boolean alt = (flags & FormattableFlags.ALTERNATE) == FormattableFlags.ALTERNATE;
 
-        String out = alt ? getRawContent() : getContent();
+        String out = alt ? getContentRaw() : getContentDisplay();
 
         if (upper)
             out = out.toUpperCase(formatter.locale());
@@ -632,11 +831,13 @@ public class MessageImpl implements Message
         }
     }
 
-    private static class FormatToken {
+    private static class FormatToken
+    {
         public final String format;
         public final int start;
 
-        public FormatToken(String format, int start) {
+        public FormatToken(String format, int start)
+        {
             this.format = format;
             this.start = start;
         }

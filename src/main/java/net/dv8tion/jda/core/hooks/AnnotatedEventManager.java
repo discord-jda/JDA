@@ -36,7 +36,7 @@ import java.util.*;
  *        {@literal @SubscribeEvent}
  *         public void onMsg(MessageReceivedEvent event)
  *         {
- *             System.out.printf("%s: %s\n", event.getAuthor().getName(), event.getMessage().getContent());
+ *             System.out.printf("%s: %s\n", event.getAuthor().getName(), event.getMessage().getContentDisplay());
  *         }
  *     }
  * </code></pre>

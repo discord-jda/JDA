@@ -45,17 +45,16 @@ public class GuildUpdateHandler extends SocketHandler
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
         Member owner = guild.getMembersMap().get(content.getLong("owner_id"));
         String name = content.getString("name");
-        String iconId = !content.isNull("icon") ? content.getString("icon") : null;
-        String splashId = !content.isNull("splash") ? content.getString("splash") : null;
+        String iconId = content.isNull("icon") ? null : content.getString("icon");
+        String splashId = content.isNull("splash") ? null : content.getString("splash");
         Region region = Region.fromKey(content.getString("region"));
         Guild.VerificationLevel verificationLevel = Guild.VerificationLevel.fromKey(content.getInt("verification_level"));
         Guild.NotificationLevel notificationLevel = Guild.NotificationLevel.fromKey(content.getInt("default_message_notifications"));
         Guild.MFALevel mfaLevel = Guild.MFALevel.fromKey(content.getInt("mfa_level"));
         Guild.ExplicitContentLevel explicitContentLevel = Guild.ExplicitContentLevel.fromKey(content.getInt("explicit_content_filter"));
         Guild.Timeout afkTimeout = Guild.Timeout.fromKey(content.getInt("afk_timeout"));
-        VoiceChannel afkChannel = !content.isNull("afk_channel_id")
-                ? guild.getVoiceChannelMap().get(content.getLong("afk_channel_id"))
-                : null;
+        VoiceChannel afkChannel = content.isNull("afk_channel_id")
+                ? null : guild.getVoiceChannelMap().get(content.getLong("afk_channel_id"));
         TextChannel systemChannel = !content.isNull("system_channel_id")
                 ? guild.getTextChannelsMap().get(content.getLong("system_channel_id"))
                 : null;

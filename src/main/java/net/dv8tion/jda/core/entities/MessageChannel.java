@@ -17,26 +17,20 @@ package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.entities.impl.MessageImpl;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.core.requests.restaction.MessageAction;
 import net.dv8tion.jda.core.requests.restaction.pagination.MessagePaginationAction;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
-import java.io.File;
-import java.io.InputStream;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -79,7 +73,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>This value is updated on each {@link net.dv8tion.jda.core.events.message.MessageReceivedEvent MessageReceivedEvent}
      * and <u><b>will be reset to {@code null} if the message associated with this ID gets deleted</b></u>
      *
-     * @throws java.lang.IllegalStateException
+     * @throws java.util.NoSuchElementException
      *         If no message id is available
      *
      * @return The most recent message's id
@@ -97,7 +91,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>This value is updated on each {@link net.dv8tion.jda.core.events.message.MessageReceivedEvent MessageReceivedEvent}
      * and <u><b>will be reset to {@code null} if the message associated with this ID gets deleted</b></u>
      *
-     * @throws java.lang.IllegalStateException
+     * @throws java.util.NoSuchElementException
      *         If no message id is available
      *
      * @return The most recent message's id
@@ -110,7 +104,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * <p>This does not directly mean that {@link #getHistory()} will be unable to retrieve past messages,
      * it merely means that the latest message is untracked by our internal cache meaning that
-     * if this returns {@code false} the {@link #getLatestMessageId()} method will throw an {@link java.lang.IllegalStateException IllegalStateException}
+     * if this returns {@code false} the {@link #getLatestMessageId()}
+     * method will throw an {@link java.util.NoSuchElementException NoSuchElementException}
      *
      * @return True, if a latest message id is available for retrieval by {@link #getLatestMessageId()}
      *
@@ -179,18 +174,22 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.MessageAction MessageAction}
      *         <br>The newly created Message after it has been sent to Discord.
      *
      * @see net.dv8tion.jda.core.MessageBuilder
      */
     @CheckReturnValue
-    default RestAction<Message> sendMessage(String text)
+    default MessageAction sendMessage(CharSequence text)
     {
         Checks.notEmpty(text, "Provided text for message");
         Checks.check(text.length() <= 2000, "Provided text for message must be less than 2000 characters in length");
 
-        return sendMessage(new MessageBuilder().append(text).build());
+        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
+        if (text instanceof StringBuilder)
+            return new MessageAction(getJDA(), route, this, (StringBuilder) text);
+        else
+            return new MessageAction(getJDA(), route, this).append(text);
     }
 
     /**
@@ -228,15 +227,22 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @throws java.lang.UnsupportedOperationException
      *         If this is a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
+     * @throws java.util.IllegalFormatException
+     *         If a format string contains an illegal syntax,
+     *         a format specifier that is incompatible with the given arguments,
+     *         insufficient arguments given the format string, or other illegal conditions.
+     *         For specification of all possible formatting errors,
+     *         see the <a href="../util/Formatter.html#detail">Details</a>
+     *         section of the formatter class specification.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.MessageAction MessageAction}
      *         <br>The newly created Message after it has been sent to Discord.
      */
     @CheckReturnValue
-    default RestAction<Message> sendMessageFormat(String format, Object... args)
+    default MessageAction sendMessageFormat(String format, Object... args)
     {
         Checks.notEmpty(format, "Format");
-        return sendMessage(new MessageBuilder().appendFormat(format, args).build());
+        return sendMessage(String.format(format, args));
     }
 
     /**
@@ -275,18 +281,19 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.MessageAction MessageAction}
      *         <br>The newly created Message after it has been sent to Discord.
      *
      * @see    net.dv8tion.jda.core.MessageBuilder
      * @see    net.dv8tion.jda.core.EmbedBuilder
      */
     @CheckReturnValue
-    default RestAction<Message> sendMessage(MessageEmbed embed)
+    default MessageAction sendMessage(MessageEmbed embed)
     {
         Checks.notNull(embed, "Provided embed");
 
-        return sendMessage(new MessageBuilder().setEmbed(embed).build());
+        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
+        return new MessageAction(getJDA(), route, this).embed(embed);
     }
 
     /**
@@ -342,43 +349,198 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.MessageAction MessageAction}
      *         <br>The newly created Message after it has been sent to Discord.
      *
      * @see    net.dv8tion.jda.core.MessageBuilder
      */
     @CheckReturnValue
-    default RestAction<Message> sendMessage(Message msg)
+    default MessageAction sendMessage(Message msg)
     {
         Checks.notNull(msg, "Message");
 
-        if (!msg.getEmbeds().isEmpty())
-        {
-            AccountType type = getJDA().getAccountType();
-            MessageEmbed embed = msg.getEmbeds().get(0);
-            Checks.check(embed.isSendable(type),
-                "Provided Message contains an embed with a length greater than %d characters, which is the max for %s accounts!",
-                    type == AccountType.BOT ? MessageEmbed.EMBED_MAX_LENGTH_BOT : MessageEmbed.EMBED_MAX_LENGTH_CLIENT, type);
-        }
-
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
-        JSONObject json = ((MessageImpl) msg).toJSONObject();
-        return new RestAction<Message>(getJDA(), route, json)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Message> request)
-            {
-                if (response.isOk())
-                {
-                    Message m = api.getEntityBuilder().createMessage(response.getObject(), MessageChannel.this, false);
-                    request.onSuccess(m);
-                }
-                else
-                {
-                    request.onFailure(response);
-                }
-            }
-        };
+        return new MessageAction(getJDA(), route, this).apply(msg);
+    }
+
+    /**
+     * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.
+     * Sends the provided {@link net.dv8tion.jda.core.entities.Message Message} with the uploaded file.
+     * <br>If you do not wish to send a Message with the uploaded file, you can provide {@code null} for
+     * the {@code message} parameter.
+     *
+     * <p>This is a shortcut to {@link #sendFile(java.io.File, String, Message)} by way of using {@link java.io.File#getName()}.
+     * <pre>sendFile(file, file.getName(), message)</pre>
+     *
+     * <p>For {@link net.dv8tion.jda.core.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String, Message)}.
+     *
+     * @param  file
+     *         The file to upload to the {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>Provided {@code file} is null.</li>
+     *             <li>Provided {@code file} does not exist.</li>
+     *             <li>Provided {@code file} is unreadable.</li>
+     *             <li>Provided {@code file} is greater than 8MB.</li>
+     *             <li>Provided {@link net.dv8tion.jda.core.entities.Message Message} is not {@code null} <b>and</b>
+     *                 contains a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} which
+     *                 is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}</li>
+     *         </ul>
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}
+     *         and both the currently logged in account and the target user are bots.
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.MessageAction MessageAction}
+     *         <br>The {@link net.dv8tion.jda.core.entities.Message Message} created from this upload.
+     */
+    @CheckReturnValue
+    default MessageAction sendFile(File file)
+    {
+        return sendFile(file, (Message) null);
+    }
+
+    /**
+     * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.
+     * Sends the provided {@link net.dv8tion.jda.core.entities.Message Message} with the uploaded file.
+     * <br>If you do not wish to send a Message with the uploaded file, you can provide {@code null} for
+     * the {@code message} parameter.
+     *
+     * <p>The {@code fileName} parameter is used to inform Discord about what the file should be called. This is 2 fold:
+     * <ol>
+     *     <li>The file name provided is the name that is found in {@link net.dv8tion.jda.core.entities.Message.Attachment#getFileName()}
+     *          after upload and it is the name that will show up in the client when the upload is displayed.
+     *     <br>Note: The fileName does not show up on the Desktop client for images. It does on mobile however.</li>
+     *     <li>The extension of the provided fileName also determines who Discord will treat the file. Discord currently only
+     *         has special handling for image file types, but the fileName's extension must indicate that it is an image file.
+     *         This means it has to end in something like .png, .jpg, .jpeg, .gif, etc. As a note, you can also not provide
+     *         a full name for the file and instead ONLY provide the extension like "png" or "gif" and Discord will generate
+     *         a name for the upload and append the fileName as the extension.</li>
+     * </ol>
+     *
+     * <p>For {@link net.dv8tion.jda.core.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String, Message)}.
+     *
+     * @param  file
+     *         The file to upload to the {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.
+     * @param  fileName
+     *         The name that should be sent to discord
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>Provided {@code file} is null.</li>
+     *             <li>Provided {@code file} does not exist.</li>
+     *             <li>Provided {@code file} is unreadable.</li>
+     *             <li>Provided {@code file} is greater than 8MB.</li>
+     *             <li>Provided {@link net.dv8tion.jda.core.entities.Message Message} is not {@code null} <b>and</b>
+     *                 contains a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} which
+     *                 is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}</li>
+     *         </ul>
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}
+     *         and both the currently logged in account and the target user are bots.
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.MessageAction MessageAction}
+     *         <br>The {@link net.dv8tion.jda.core.entities.Message Message} created from this upload.
+     */
+    @CheckReturnValue
+    default MessageAction sendFile(File file, String fileName)
+    {
+        return sendFile(file, fileName, null);
+    }
+
+    /**
+     * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.
+     * Sends the provided {@link net.dv8tion.jda.core.entities.Message Message} with the uploaded file.
+     * <br>If you do not wish to send a Message with the uploaded file, you can provide {@code null} for
+     * the {@code message} parameter.
+     * <br>This allows you to send an {@link java.io.InputStream InputStream} as substitute to a file.
+     *
+     * <p>For information about the {@code fileName} parameter, Refer to the documentation for {@link #sendFile(java.io.File, String, Message)}.
+     * <br>For {@link net.dv8tion.jda.core.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String, Message)}.
+     *
+     * @param  data
+     *         The InputStream data to upload to the {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.
+     * @param  fileName
+     *         The name that should be sent to discord
+     *         <br>Refer to the documentation for {@link #sendFile(java.io.File, String, Message)} for information about this parameter.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided filename is {@code null} or {@code empty}.
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}</li>
+     *         </ul>
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}
+     *         and both the currently logged in account and the target user are bots.
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.MessageAction MessageAction}
+     *         <br>The {@link net.dv8tion.jda.core.entities.Message Message} created from this upload.
+     */
+    @CheckReturnValue
+    default MessageAction sendFile(InputStream data, String fileName)
+    {
+        return sendFile(data, fileName, null);
+    }
+
+    /**
+     * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.
+     * Sends the provided {@link net.dv8tion.jda.core.entities.Message Message} with the uploaded file.
+     * <br>If you do not wish to send a Message with the uploaded file, you can provide {@code null} for
+     * the {@code message} parameter.
+     * <br>This allows you to send an {@code byte[]} as substitute to a file.
+     *
+     * <p>For information about the {@code fileName} parameter, Refer to the documentation for {@link #sendFile(java.io.File, String, Message)}.
+     * <br>For {@link net.dv8tion.jda.core.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String, Message)}.
+     *
+     * @param  data
+     *         The {@code byte[]} data to upload to the {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.
+     * @param  fileName
+     *         The name that should be sent to discord.
+     *         <br>Refer to the documentation for {@link #sendFile(java.io.File, String, Message)} for information about this parameter.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the provided filename is {@code null} or {@code empty} or the provided data is larger than 8MB.</li>
+     *             <li>If the provided {@link net.dv8tion.jda.core.entities.Message Message}
+     *                 contains an {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed}
+     *                 that is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}</li>
+     *         </ul>
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}
+     *         and both the currently logged in account and the target user are bots.
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.MessageAction MessageAction}
+     *         <br>The {@link net.dv8tion.jda.core.entities.Message Message} created from this upload.
+     */
+    @CheckReturnValue
+    default MessageAction sendFile(byte[] data, String fileName)
+    {
+        return sendFile(data, fileName, null);
     }
 
     /**
@@ -418,11 +580,11 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.core.entities.Message Message} created from this upload.
      */
     @CheckReturnValue
-    default RestAction<Message> sendFile(File file, Message message)
+    default MessageAction sendFile(File file, Message message)
     {
         Checks.notNull(file, "file");
 
@@ -498,51 +660,27 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.core.entities.Message Message} created from this upload.
      */
     @CheckReturnValue
-    default RestAction<Message> sendFile(File file, String fileName, Message message)
+    default MessageAction sendFile(File file, String fileName, Message message)
     {
         Checks.notNull(file, "file");
         Checks.check(file.exists() && file.canRead(),
             "Provided file is either null, doesn't exist or is not readable!");
         Checks.check(file.length() <= Message.MAX_FILE_SIZE,// TODO: deal with Discord Nitro allowing 50MB files.
             "File is to big! Max file-size is 8MB");
-
         Checks.notNull(fileName, "fileName");
 
-        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
-        MultipartBody.Builder builder = new okhttp3.MultipartBody.Builder()
-                .setType(MultipartBody.FORM);
-
-        builder.addFormDataPart("file", fileName, RequestBody.create(MediaType.parse("application/octet-stream"), file));
-
-        if (message != null)
+        try
         {
-            if (!message.getEmbeds().isEmpty())
-            {
-                AccountType type = getJDA().getAccountType();
-                MessageEmbed embed = message.getEmbeds().get(0);
-                Checks.check(embed.isSendable(type),
-                        "Provided Message contains an embed with a length greater than %d characters, which is the max for %s accounts!",
-                        type == AccountType.BOT ? MessageEmbed.EMBED_MAX_LENGTH_BOT : MessageEmbed.EMBED_MAX_LENGTH_CLIENT, type);
-            }
-
-            builder.addFormDataPart("payload_json", ((MessageImpl) message).toJSONObject().toString());
+            return sendFile(new FileInputStream(file), fileName, message);
         }
-
-        return new RestAction<Message>(getJDA(), route, builder.build())
+        catch (FileNotFoundException ex)
         {
-            @Override
-            protected void handleResponse(Response response, Request<Message> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(api.getEntityBuilder().createMessage(response.getObject(), MessageChannel.this, false));
-                else
-                    request.onFailure(response);
-            }
-        };
+            throw new IllegalArgumentException(ex);
+        }
     }
 
     /**
@@ -576,46 +714,17 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.core.entities.Message Message} created from this upload.
      */
     @CheckReturnValue
-    default RestAction<Message> sendFile(InputStream data, String fileName, Message message)
+    default MessageAction sendFile(InputStream data, String fileName, Message message)
     {
         Checks.notNull(data, "data InputStream");
         Checks.notNull(fileName, "fileName");
 
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
-        MultipartBody.Builder builder = new okhttp3.MultipartBody.Builder()
-                .setType(MultipartBody.FORM);
-
-        builder.addFormDataPart("file", fileName, MiscUtil.createRequestBody(MediaType.parse("application/octet-stream"), data));
-
-        if (message != null)
-        {
-            if (!message.getEmbeds().isEmpty())
-            {
-                AccountType type = getJDA().getAccountType();
-                MessageEmbed embed = message.getEmbeds().get(0);
-                Checks.check(embed.isSendable(type),
-                        "Provided Message contains an embed with a length greater than %d characters, which is the max for %s accounts!",
-                        type == AccountType.BOT ? MessageEmbed.EMBED_MAX_LENGTH_BOT : MessageEmbed.EMBED_MAX_LENGTH_CLIENT, type);
-            }
-
-            builder.addFormDataPart("payload_json", ((MessageImpl) message).toJSONObject().toString());
-        }
-
-        return new RestAction<Message>(getJDA(), route, builder.build())
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Message> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(api.getEntityBuilder().createMessage(response.getObject(), MessageChannel.this, false));
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new MessageAction(getJDA(), route, this).addFile(data, fileName).apply(message);
     }
 
     /**
@@ -654,48 +763,17 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.core.entities.Message Message} created from this upload.
      */
     @CheckReturnValue
-    default RestAction<Message> sendFile(byte[] data, String fileName, Message message)
+    default MessageAction sendFile(byte[] data, String fileName, Message message)
     {
         Checks.notNull(data, "file data[]");
         Checks.notNull(fileName, "fileName");
-
-        Checks.check(data.length <= Message.MAX_FILE_SIZE,   //8MB
-                "Provided data is too large! Max file-size is 8MB (%d)", Message.MAX_FILE_SIZE);
-
-        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
-        MultipartBody.Builder builder = new okhttp3.MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("file", fileName, RequestBody.create(MediaType.parse("application/octet-stream"), data));
-
-        if (message != null)
-        {
-            if (!message.getEmbeds().isEmpty())
-            {
-                AccountType type = getJDA().getAccountType();
-                MessageEmbed embed = message.getEmbeds().get(0);
-                Checks.check(embed.isSendable(type),
-                        "Provided Message contains an embed with a length greater than %d characters, which is the max for %s accounts!",
-                        type == AccountType.BOT ? MessageEmbed.EMBED_MAX_LENGTH_BOT : MessageEmbed.EMBED_MAX_LENGTH_CLIENT, type);
-            }
-
-            builder.addFormDataPart("payload_json", ((MessageImpl) message).toJSONObject().toString());
-        }
-
-        return new RestAction<Message>(getJDA(), route, builder.build())
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Message> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(api.getEntityBuilder().createMessage(response.getObject(), MessageChannel.this, false));
-                else
-                    request.onFailure(response);
-            }
-        };
+        Checks.check(data.length <= Message.MAX_FILE_SIZE,
+            "File is to big! Max file-size is 8MB");
+        return sendFile(new ByteArrayInputStream(data), fileName, message);
     }
 
     /**
@@ -944,7 +1022,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * {
      *     for (Message message : channel.<u>getIterableHistory()</u>)
      *     {
-     *         if (message.getRawContent().equals(content))
+     *         if (message.getContentRaw().equals(content))
      *             return true;
      *         if (checkAmount--{@literal <=} 0) break;
      *     }
@@ -1105,7 +1183,6 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.check(limit >= 1 && limit <= 100, "Provided limit was out of bounds. Minimum: 1, Max: 100. Provided: %d", limit);
 
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY.compile(this.getId()).withQueryParams("limit", Integer.toString(limit), "around", messageId);
-
         return new RestAction<MessageHistory>(getJDA(), route)
         {
             @Override
@@ -1820,201 +1897,26 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a TextChannel and this account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message}
+     * @return {@link net.dv8tion.jda.core.requests.restaction.MessageAction MessageAction}
      *         <br>The modified Message after it has been sent to Discord.
      */
     @CheckReturnValue
-    default RestAction<Message> editMessageById(String messageId, String newContent)
+    default MessageAction editMessageById(String messageId, CharSequence newContent)
     {
+        Checks.noWhitespace(messageId, "MessageId");
         Checks.notEmpty(newContent, "Provided message content");
         Checks.check(newContent.length() <= 2000, "Provided newContent length must be 2000 or less characters.");
 
-        return editMessageById(messageId, new MessageBuilder().append(newContent).build());
-    }
-
-    /**
-     * Attempts to edit a message by its id in this MessageChannel.
-     *
-     * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
-     *     <br>Attempted to edit a message that was not sent by the currently logged in account.
-     *         Discord does not allow editing of other users' Messages!</li>
-     *
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.core.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
-     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
-     *         was revoked in the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}</li>
-     *
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
-     *         the message it referred to has already been deleted.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
-     *     <br>The request was attempted after the channel was deleted.</li>
-     * </ul>
-     *
-     * @param  messageId
-     *         The id referencing the Message that should be edited
-     * @param  newContent
-     *         The new content for the edited message
-     *
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If provided {@code messageId} is {@code null} or empty.</li>
-     *             <li>If provided {@code newContent} is {@code null}.</li>
-     *             <li>If provided {@link net.dv8tion.jda.core.entities.Message Message}
-     *                 contains a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} which
-     *                 is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
-     *         </ul>
-     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
-     *         If this is a TextChannel and this account does not have
-     *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
-     *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message}
-     *         <br>The modified Message
-     */
-    @CheckReturnValue
-    default RestAction<Message> editMessageById(String messageId, Message newContent)
-    {
-        Checks.notEmpty(messageId, "messageId");
-        Checks.notNull(newContent, "message");
-
-        if (!newContent.getEmbeds().isEmpty())
-        {
-            AccountType type = getJDA().getAccountType();
-            MessageEmbed embed = newContent.getEmbeds().get(0);
-            Checks.check(embed.isSendable(type),
-                    "Provided Message contains an embed with a length greater than %d characters, which is the max for %s accounts!",
-                    type == AccountType.BOT ? MessageEmbed.EMBED_MAX_LENGTH_BOT : MessageEmbed.EMBED_MAX_LENGTH_CLIENT, type);
-        }
-        JSONObject json = ((MessageImpl) newContent).toJSONObject();
         Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getId(), messageId);
-        return new RestAction<Message>(getJDA(), route, json)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Message> request)
-            {
-                if (response.isOk())
-                {
-                    Message m = api.getEntityBuilder().createMessage(response.getObject(), MessageChannel.this, false);
-                    request.onSuccess(m);
-                }
-                else
-                {
-                    request.onFailure(response);
-                }
-            }
-        };
+        if (newContent instanceof StringBuilder)
+            return new MessageAction(getJDA(), route, this, (StringBuilder) newContent);
+        else
+            return new MessageAction(getJDA(), route, this).append(newContent);
     }
 
     /**
-     * Attempts to edit a message by its id in this MessageChannel.
-     * <br>Shortcut for {@link net.dv8tion.jda.core.MessageBuilder#appendFormat(String, Object...)}.
-     *
-     * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
-     *     <br>Attempted to edit a message that was not sent by the currently logged in account.
-     *         Discord does not allow editing of other users' Messages!</li>
-     *
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.core.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
-     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
-     *         was revoked in the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}</li>
-     *
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
-     *         the message it referred to has already been deleted.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
-     *     <br>The request was attempted after the channel was deleted.</li>
-     * </ul>
-     *
-     * @param  messageId
-     *         The id referencing the Message that should be edited
-     * @param  format
-     *         Format String used to generate new Content
-     * @param  args
-     *         The arguments which should be used to format the given format String
-     *
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If provided {@code messageId} is {@code null} or empty.</li>
-     *             <li>If provided {@code format} is {@code null} or blank.</li>
-     *         </ul>
-     * @throws IllegalStateException
-     *         If the resulting message is either empty or too long to be sent
-     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
-     *         If this is a TextChannel and this account does not have
-     *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
-     *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message}
-     *         <br>The modified Message
-     */
-    @CheckReturnValue
-    default RestAction<Message> editMessageFormatById(String messageId, String format, Object... args)
-    {
-        Checks.notBlank(format, "Format String");
-        return editMessageById(messageId, new MessageBuilder().appendFormat(format, args).build());
-    }
-
-    /**
-     * Attempts to edit a message by its id in this MessageChannel.
-     * <br>Shortcut for {@link net.dv8tion.jda.core.MessageBuilder#appendFormat(String, Object...)}.
-     *
-     * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
-     *     <br>Attempted to edit a message that was not sent by the currently logged in account.
-     *         Discord does not allow editing of other users' Messages!</li>
-     *
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.core.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
-     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
-     *         was revoked in the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}</li>
-     *
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
-     *         the message it referred to has already been deleted.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
-     *     <br>The request was attempted after the channel was deleted.</li>
-     * </ul>
-     *
-     * @param  messageId
-     *         The id referencing the Message that should be edited
-     * @param  format
-     *         Format String used to generate new Content
-     * @param  args
-     *         The arguments which should be used to format the given format String
-     *
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If provided {@code messageId} is not positive.</li>
-     *             <li>If provided {@code format} is {@code null} or blank.</li>
-     *         </ul>
-     * @throws IllegalStateException
-     *         If the resulting message is either empty or too long to be sent
-     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
-     *         If this is a TextChannel and this account does not have
-     *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
-     *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message}
-     *         <br>The modified Message
-     */
-    @CheckReturnValue
-    default RestAction<Message> editMessageFormatById(long messageId, String format, Object... args)
-    {
-        Checks.notBlank(format, "Format String");
-        return editMessageById(messageId, new MessageBuilder().appendFormat(format, args).build());
-    }
-
-    /**
-     * Attempts to edit a message by its id in this MessageChannel.
+     * Attempts to edit a message by its id in this MessageChannel. The string provided as {@code newContent} must
+     * have a length that is greater than 0 and less-than or equal to 2000. This is a Discord message length limitation.
      *
      * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -2043,21 +1945,19 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If provided {@code messageId} is not positive.</li>
-     *             <li>If provided {@code newContent} is {@code null}.</li>
-     *             <li>If provided {@link net.dv8tion.jda.core.entities.Message Message}
-     *                 contains a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} which
-     *                 is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
+     *             <li>If provided {@code messageId} is {@code null} or empty.</li>
+     *             <li>If provided {@code newContent} is {@code null} or empty.</li>
+     *             <li>If provided {@code newContent} length is greater than {@code 2000} characters.</li>
      *         </ul>
-     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         If this is a TextChannel and this account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message}
-     *         <br>The modified Message
+     * @return {@link net.dv8tion.jda.core.requests.restaction.MessageAction MessageAction}
+     *         <br>The modified Message after it has been sent to Discord.
      */
     @CheckReturnValue
-    default RestAction<Message> editMessageById(long messageId, Message newContent)
+    default MessageAction editMessageById(long messageId, CharSequence newContent)
     {
         return editMessageById(Long.toUnsignedString(messageId), newContent);
     }
@@ -2087,6 +1987,226 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @param  messageId
      *         The id referencing the Message that should be edited
+     * @param  newContent
+     *         The new content for the edited message
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If provided {@code messageId} is {@code null} or empty.</li>
+     *             <li>If provided {@code newContent} is {@code null}.</li>
+     *             <li>If provided {@link net.dv8tion.jda.core.entities.Message Message}
+     *                 contains a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} which
+     *                 is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If this is a TextChannel and this account does not have
+     *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.MessageAction MessageAction}
+     *         <br>The modified Message after it has been sent to discord
+     */
+    @CheckReturnValue
+    default MessageAction editMessageById(String messageId, Message newContent)
+    {
+        Checks.noWhitespace(messageId, "messageId");
+        Checks.notNull(newContent, "message");
+
+        Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getId(), messageId);
+        return new MessageAction(getJDA(), route, this).apply(newContent);
+    }
+
+    /**
+     * Attempts to edit a message by its id in this MessageChannel.
+     *
+     * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
+     *     <br>Attempted to edit a message that was not sent by the currently logged in account.
+     *         Discord does not allow editing of other users' Messages!</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the
+     *         {@link net.dv8tion.jda.core.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     *         was revoked in the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * @param  messageId
+     *         The id referencing the Message that should be edited
+     * @param  newContent
+     *         The new content for the edited message
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If provided {@code messageId} is not positive.</li>
+     *             <li>If provided {@code newContent} is {@code null}.</li>
+     *             <li>If provided {@link net.dv8tion.jda.core.entities.Message Message}
+     *                 contains a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} which
+     *                 is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If this is a TextChannel and this account does not have
+     *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.MessageAction MessageAction}
+     *         <br>The modified Message after it has been sent to discord
+     */
+    @CheckReturnValue
+    default MessageAction editMessageById(long messageId, Message newContent)
+    {
+        return editMessageById(Long.toUnsignedString(messageId), newContent);
+    }
+
+    /**
+     * Attempts to edit a message by its id in this MessageChannel.
+     * <br>Shortcut for {@link net.dv8tion.jda.core.MessageBuilder#appendFormat(String, Object...)}.
+     *
+     * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
+     *     <br>Attempted to edit a message that was not sent by the currently logged in account.
+     *         Discord does not allow editing of other users' Messages!</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the
+     *         {@link net.dv8tion.jda.core.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     *         was revoked in the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * @param  messageId
+     *         The id referencing the Message that should be edited
+     * @param  format
+     *         Format String used to generate new Content
+     * @param  args
+     *         The arguments which should be used to format the given format String
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If provided {@code messageId} is {@code null} or empty.</li>
+     *             <li>If provided {@code format} is {@code null} or blank.</li>
+     *         </ul>
+     * @throws IllegalStateException
+     *         If the resulting message is either empty or too long to be sent
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If this is a TextChannel and this account does not have
+     *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     * @throws java.util.IllegalFormatException
+     *         If a format string contains an illegal syntax,
+     *         a format specifier that is incompatible with the given arguments,
+     *         insufficient arguments given the format string, or other illegal conditions.
+     *         For specification of all possible formatting errors,
+     *         see the <a href="../util/Formatter.html#detail">Details</a>
+     *         section of the formatter class specification.
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.MessageAction MessageAction}
+     *         <br>The modified Message after it has been sent to discord
+     */
+    @CheckReturnValue
+    default MessageAction editMessageFormatById(String messageId, String format, Object... args)
+    {
+        Checks.notBlank(format, "Format String");
+        return editMessageById(messageId, String.format(format, args));
+    }
+
+    /**
+     * Attempts to edit a message by its id in this MessageChannel.
+     * <br>Shortcut for {@link net.dv8tion.jda.core.MessageBuilder#appendFormat(String, Object...)}.
+     *
+     * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
+     *     <br>Attempted to edit a message that was not sent by the currently logged in account.
+     *         Discord does not allow editing of other users' Messages!</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the
+     *         {@link net.dv8tion.jda.core.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     *         was revoked in the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * @param  messageId
+     *         The id referencing the Message that should be edited
+     * @param  format
+     *         Format String used to generate new Content
+     * @param  args
+     *         The arguments which should be used to format the given format String
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If provided {@code messageId} is not positive.</li>
+     *             <li>If provided {@code format} is {@code null} or blank.</li>
+     *         </ul>
+     * @throws IllegalStateException
+     *         If the resulting message is either empty or too long to be sent
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If this is a TextChannel and this account does not have
+     *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     * @throws java.util.IllegalFormatException
+     *         If a format string contains an illegal syntax,
+     *         a format specifier that is incompatible with the given arguments,
+     *         insufficient arguments given the format string, or other illegal conditions.
+     *         For specification of all possible formatting errors,
+     *         see the <a href="../util/Formatter.html#detail">Details</a>
+     *         section of the formatter class specification.
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.MessageAction MessageAction}
+     *         <br>The modified Message after it has been sent to discord
+     */
+    @CheckReturnValue
+    default MessageAction editMessageFormatById(long messageId, String format, Object... args)
+    {
+        Checks.notBlank(format, "Format String");
+        return editMessageById(messageId, String.format(format, args));
+    }
+
+    /**
+     * Attempts to edit a message by its id in this MessageChannel.
+     *
+     * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
+     *     <br>Attempted to edit a message that was not sent by the currently logged in account.
+     *         Discord does not allow editing of other users' Messages!</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the
+     *         {@link net.dv8tion.jda.core.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     *         was revoked in the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * @param  messageId
+     *         The id referencing the Message that should be edited
      * @param  newEmbed
      *         The new {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} for the edited message
      *
@@ -2103,13 +2223,17 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         or {@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message}
-     *         <br>The modified Message
+     * @return {@link net.dv8tion.jda.core.requests.restaction.MessageAction MessageAction}
+     *         <br>The modified Message after it has been sent to discord
      */
     @CheckReturnValue
-    default RestAction<Message> editMessageById(String messageId, MessageEmbed newEmbed)
+    default MessageAction editMessageById(String messageId, MessageEmbed newEmbed)
     {
-        return editMessageById(messageId, new MessageBuilder().setEmbed(newEmbed).build());
+        Checks.noWhitespace(messageId, "Message ID");
+        Checks.notNull(newEmbed, "MessageEmbed");
+
+        Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getId(), messageId);
+        return new MessageAction(getJDA(), route, this).embed(newEmbed);
     }
 
     /**
@@ -2153,11 +2277,11 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         or {@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message}
-     *         <br>The modified Message
+     * @return {@link net.dv8tion.jda.core.requests.restaction.MessageAction MessageAction}
+     *         <br>The modified Message after it has been sent to discord
      */
     @CheckReturnValue
-    default RestAction<Message> editMessageById(long messageId, MessageEmbed newEmbed)
+    default MessageAction editMessageById(long messageId, MessageEmbed newEmbed)
     {
         return editMessageById(Long.toUnsignedString(messageId), newEmbed);
     }

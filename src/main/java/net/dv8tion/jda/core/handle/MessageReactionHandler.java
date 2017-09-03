@@ -79,13 +79,13 @@ public class MessageReactionHandler extends SocketHandler
         {
             channel = api.getPrivateChannelById(channelId);
         }
-        if (channel == null && api.getAccountType() == AccountType.CLIENT)
-        {
-            channel = api.asClient().getGroupById(channelId);
-        }
         if (channel == null)
         {
             channel = api.getFakePrivateChannelMap().get(channelId);
+        }
+        if (channel == null && api.getAccountType() == AccountType.CLIENT)
+        {
+            channel = api.asClient().getGroupById(channelId);
         }
         if (channel == null)
         {

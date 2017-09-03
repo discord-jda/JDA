@@ -18,13 +18,10 @@ package net.dv8tion.jda.core.handle;
 
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.client.events.message.group.react.GroupMessageReactionRemoveAllEvent;
-import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionRemoveAllEvent;
-import net.dv8tion.jda.core.events.message.priv.react.PrivateMessageReactionRemoveAllEvent;
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveAllEvent;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import org.json.JSONObject;
@@ -44,20 +41,9 @@ public class MessageReactionBulkRemoveHandler extends SocketHandler
         MessageChannel channel = api.getTextChannelById(channelId);
         if (channel == null)
         {
-            channel = api.getPrivateChannelById(channelId);
-        }
-        if (channel == null && api.getAccountType() == AccountType.CLIENT)
-        {
-            channel = api.asClient().getGroupById(channelId);
-        }
-        if (channel == null)
-        {
-            channel = api.getFakePrivateChannelMap().get(channelId);
-        }
-        if (channel == null)
-        {
             api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
-            EventCache.LOG.debug("Received a reaction for a channel that JDA does not currently have cached");
+            EventCache.LOG.debug("Received a reaction for a channel that JDA does not currently have cached " +
+                "channel_id: " + channelId + " message_id: " + messageId);
             return null;
         }
         IEventManager manager = api.getEventManager();
@@ -75,12 +61,12 @@ public class MessageReactionBulkRemoveHandler extends SocketHandler
                     new GroupMessageReactionRemoveAllEvent(
                             api, responseNumber,
                             messageId, (Group) channel));
-                break;
-            case PRIVATE:
-                manager.handle(
-                    new PrivateMessageReactionRemoveAllEvent(
-                            api, responseNumber,
-                            messageId, (PrivateChannel) channel));
+//                break;
+//            case PRIVATE:
+//                manager.handle(
+//                    new PrivateMessageReactionRemoveAllEvent(
+//                            api, responseNumber,
+//                            messageId, (PrivateChannel) channel));
         }
 
         manager.handle(

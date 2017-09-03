@@ -18,7 +18,6 @@ package net.dv8tion.jda.webhook;
 
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.entities.impl.MessageEmbedImpl;
 import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
@@ -134,7 +133,7 @@ public class WebhookMessage
         {
             final JSONArray array = new JSONArray();
             for (MessageEmbed embed : embeds)
-                array.put(((MessageEmbedImpl) embed).toJSONObject());
+                array.put(embed.toJSONObject());
             payload.put("embeds", array);
         }
         if (avatarUrl != null)

@@ -16,14 +16,17 @@
 package net.dv8tion.jda.core;
 
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.entities.impl.MessageImpl;
+import net.dv8tion.jda.core.entities.message.DataMessage;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.restaction.MessageAction;
 import net.dv8tion.jda.core.utils.Checks;
 
-import java.util.Collections;
+import javax.annotation.CheckReturnValue;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Builder system used to build {@link net.dv8tion.jda.core.entities.Message Messages}.
@@ -37,16 +40,53 @@ import java.util.regex.Pattern;
  */
 public class MessageBuilder implements Appendable
 {
-    protected static final Pattern USER_MENTION_PATTERN = Pattern.compile("<@!?([0-9]+)>");
-    protected static final Pattern CHANNEL_MENTION_PATTERN = Pattern.compile("<#!?([0-9]+)>");
-    protected static final Pattern ROLE_MENTION_PATTERN = Pattern.compile("<@&!?([0-9]+)>");
-
     protected final StringBuilder builder = new StringBuilder();
 
     protected boolean isTTS = false;
+    protected String nonce;
     protected MessageEmbed embed;
 
     public MessageBuilder() {}
+
+    public MessageBuilder(CharSequence content)
+    {
+        if (content != null)
+            builder.append(content);
+    }
+
+    public MessageBuilder(Message message)
+    {
+        if (message != null)
+        {
+            isTTS = message.isTTS();
+            builder.append(message.getContentRaw());
+            List<MessageEmbed> embeds = message.getEmbeds();
+            if (embeds != null && !embeds.isEmpty())
+                embed = embeds.get(0);
+        }
+    }
+
+    public MessageBuilder(MessageBuilder builder)
+    {
+        if (builder != null)
+        {
+            this.isTTS = builder.isTTS;
+            this.builder.append(builder.builder);
+            this.nonce = builder.nonce;
+            this.embed = builder.embed;
+        }
+    }
+
+    public MessageBuilder(EmbedBuilder builder)
+    {
+        if (builder != null)
+            this.embed = builder.build();
+    }
+
+    public MessageBuilder(MessageEmbed embed)
+    {
+        this.embed = embed;
+    }
 
     /**
      * Makes the created Message a TTS message.
@@ -56,7 +96,7 @@ public class MessageBuilder implements Appendable
      * @param  tts
      *         whether the created Message should be a tts message
      *
-     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
+     * @return The {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
      */
     public MessageBuilder setTTS(boolean tts)
     {
@@ -71,7 +111,7 @@ public class MessageBuilder implements Appendable
      * @param  embed
      *         the embed to add, or null to remove
      *
-     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
+     * @return The {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
      */
     public MessageBuilder setEmbed(MessageEmbed embed)
     {
@@ -80,13 +120,26 @@ public class MessageBuilder implements Appendable
     }
 
     /**
-     * Appends a String to the Message.
+     * Sets the <a href="https://en.wikipedia.org/wiki/Cryptographic_nonce" target="_blank">nonce</a>
+     * of the built message(s). It is recommended to have only 100% unique strings to validate messages via this nonce.
+     * <br>The nonce will be available from the resulting message via {@link net.dv8tion.jda.core.entities.Message#getNonce() Message.getNonce()}
+     * in message received by events and RestAction responses.
+     * <br>When {@code null} is provided no nonce will be used.
      *
-     * @param  text
-     *         the text to append
+     * @param  nonce
+     *         Validation nonce string
      *
-     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
+     * @return The {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
+     *
+     * @see    net.dv8tion.jda.core.entities.Message#getNonce()
+     * @see    <a href="https://en.wikipedia.org/wiki/Cryptographic_nonce" target="_blank">Cryptographic Nonce - Wikipedia</a>
      */
+    public MessageBuilder setNonce(String nonce)
+    {
+        this.nonce = nonce;
+        return this;
+    }
+
     @Override
     public MessageBuilder append(CharSequence text)
     {
@@ -188,8 +241,8 @@ public class MessageBuilder implements Appendable
      *     <br>All message channels format to {@code "#" + getName()} by default, TextChannel has special handling
      *         and uses the getAsMention output by default and the MessageChannel output as alternative ({@code #} flag).</li>
      *     <li>{@link net.dv8tion.jda.core.entities.Message Message}
-     *     <br>Messages by default output their {@link net.dv8tion.jda.core.entities.Message#getContent() getContent()} value and
-     *         as alternative use the {@link net.dv8tion.jda.core.entities.Message#getRawContent() getRawContent()} value</li>
+     *     <br>Messages by default output their {@link net.dv8tion.jda.core.entities.Message#getContentDisplay() getContentDisplay()} value and
+     *         as alternative use the {@link net.dv8tion.jda.core.entities.Message#getContentRaw() getContentRaw()} value</li>
      * </ul>
      *
      * <p>Example:
@@ -216,6 +269,13 @@ public class MessageBuilder implements Appendable
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided format string is {@code null} or empty
+     * @throws java.util.IllegalFormatException
+     *         If a format string contains an illegal syntax,
+     *         a format specifier that is incompatible with the given arguments,
+     *         insufficient arguments given the format string, or other illegal conditions.
+     *         For specification of all possible formatting errors,
+     *         see the <a href="../util/Formatter.html#detail">Details</a>
+     *         section of the formatter class specification.
      *
      * @return The {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
      */
@@ -291,11 +351,10 @@ public class MessageBuilder implements Appendable
         String message = builder.toString();
         if (this.isEmpty())
             throw new IllegalStateException("Cannot build a Message with no content. (You never added any content to the message)");
-        if (message.length() > 2000)
+        if (message.length() > Message.MAX_CONTENT_LENGTH)
             throw new IllegalStateException("Cannot build a Message with more than 2000 characters. Please limit your input.");
 
-        return new MessageImpl(-1, null, false).setContent(message).setTTS(isTTS)
-                .setEmbeds(embed == null ? new LinkedList<>() : Collections.singletonList(embed));
+        return new DataMessage(isTTS, message, nonce, embed);
     }
 
     /**
@@ -375,7 +434,7 @@ public class MessageBuilder implements Appendable
     {
         // Note: Users can rename to "everyone" or "here", so those
         // should be stripped after the USER mention is stripped.
-        return this.stripMentions(jda, (Guild) null, MentionType.CHANNEL, MentionType.ROLE, MentionType.USER, MentionType.EVERYONE, MentionType.HERE);
+        return this.stripMentions(jda, null, Message.MentionType.values());
     }
 
     /**
@@ -394,7 +453,7 @@ public class MessageBuilder implements Appendable
     {
         // Note: Users can rename to "everyone" or "here", so those
         // should be stripped after the USER mention is stripped.
-        return this.stripMentions(guild.getJDA(), guild, MentionType.CHANNEL, MentionType.ROLE, MentionType.USER, MentionType.EVERYONE, MentionType.HERE);
+        return this.stripMentions(guild.getJDA(), guild, Message.MentionType.values());
     }
 
     /**
@@ -411,9 +470,19 @@ public class MessageBuilder implements Appendable
      *
      * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
      */
-    public MessageBuilder stripMentions(Guild guild, MentionType... types)
+    public MessageBuilder stripMentions(Guild guild, Message.MentionType... types)
     {
         return this.stripMentions(guild.getJDA(), guild, types);
+    }
+
+    @Deprecated
+    public MessageBuilder stripMentions(Guild guild, MentionType... types)
+    {
+        if (types == null) return this;
+        Message.MentionType[] mentionTypes = new Message.MentionType[types.length];
+        for (int i = 0; i < mentionTypes.length; i++)
+            mentionTypes[i] = convertNewType(types[i]);
+        return stripMentions(guild, mentionTypes);
     }
 
     /**
@@ -429,19 +498,29 @@ public class MessageBuilder implements Appendable
      *
      * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
      */
-    public MessageBuilder stripMentions(JDA jda, MentionType... types)
+    public MessageBuilder stripMentions(JDA jda, Message.MentionType... types)
     {
         return this.stripMentions(jda, null, types);
     }
 
-    private MessageBuilder stripMentions(JDA jda, Guild guild, MentionType... types)
+    @Deprecated
+    public MessageBuilder stripMentions(JDA jda, MentionType... types)
+    {
+        if (types == null) return this;
+        Message.MentionType[] mentionTypes = new Message.MentionType[types.length];
+        for (int i = 0; i < mentionTypes.length; i++)
+            mentionTypes[i] = convertNewType(types[i]);
+        return stripMentions(jda, mentionTypes);
+    }
+
+    private MessageBuilder stripMentions(JDA jda, Guild guild, Message.MentionType... types)
     {
         if (types == null)
             return this;
 
         String string = null;
 
-        for (MentionType mention : types)
+        for (Message.MentionType mention : types)
         {
             if (mention != null)
             {
@@ -460,7 +539,7 @@ public class MessageBuilder implements Appendable
                             string = builder.toString();
                         }
                         
-                        Matcher matcher = CHANNEL_MENTION_PATTERN.matcher(string);
+                        Matcher matcher = Message.MentionType.CHANNEL.getPattern().matcher(string);
                         while (matcher.find())
                         {
                             TextChannel channel = jda.getTextChannelById(matcher.group(1));
@@ -478,7 +557,7 @@ public class MessageBuilder implements Appendable
                             string = builder.toString();
                         }
 
-                        Matcher matcher = ROLE_MENTION_PATTERN.matcher(string);
+                        Matcher matcher = Message.MentionType.ROLE.getPattern().matcher(string);
                         while (matcher.find())
                         {
                             for (Guild g : jda.getGuilds())
@@ -500,11 +579,11 @@ public class MessageBuilder implements Appendable
                             string = builder.toString();
                         }
 
-                        Matcher matcher = USER_MENTION_PATTERN.matcher(string);
+                        Matcher matcher = Message.MentionType.USER.getPattern().matcher(string);
                         while (matcher.find())
                         {
                             User user = jda.getUserById(matcher.group(1));
-                            String replacement = null;
+                            String replacement;
 
                             if (user == null)
                                 continue;
@@ -536,7 +615,7 @@ public class MessageBuilder implements Appendable
     {
         return this.builder;
     }
-    
+
     /**
      * Clears the current builder. Useful for mass message creation.
      *
@@ -691,6 +770,45 @@ public class MessageBuilder implements Appendable
     }
 
     /**
+     * Creates a {@link net.dv8tion.jda.core.requests.restaction.MessageAction MessageAction}
+     * with the current settings without building a {@link net.dv8tion.jda.core.entities.Message Message} instance first.
+     *
+     * @param  channel
+     *         The not-null target {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided channel is {@code null}
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If the currently logged in account does not have permission to send or read messages in this channel,
+     *         or if this is a PrivateChannel and both users (sender and receiver) are bots.
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.MessageAction MessageAction}
+     */
+    @CheckReturnValue
+    public MessageAction sendTo(MessageChannel channel)
+    {
+        Checks.notNull(channel, "Target Channel");
+        switch (channel.getType())
+        {
+            case TEXT:
+                final TextChannel text = (TextChannel) channel;
+                final Member self = text.getGuild().getSelfMember();
+                if (!self.hasPermission(text, Permission.MESSAGE_READ))
+                    throw new InsufficientPermissionException(Permission.MESSAGE_READ);
+                if (!self.hasPermission(text, Permission.MESSAGE_WRITE))
+                    throw new InsufficientPermissionException(Permission.MESSAGE_WRITE);
+                break;
+            case PRIVATE:
+                final PrivateChannel priv = (PrivateChannel) channel;
+                if (priv.getUser().isBot() && channel.getJDA().getAccountType() == AccountType.BOT)
+                    throw new UnsupportedOperationException("Cannot send a private message between bots.");
+        }
+        final Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(channel.getId());
+        final MessageAction action = new MessageAction(channel.getJDA(), route, channel, builder);
+        return action.tts(isTTS).embed(embed).nonce(nonce);
+    }
+
+    /**
      * Creates a {@link java.util.Queue Queue} of {@link net.dv8tion.jda.core.entities.Message Message} objects from this MessageBuilder.
      *
      * <p>This method splits the content if it exceeds 2000 chars. The splitting behaviour can be customized using {@link SplitPolicy SplitPolicies}.
@@ -703,7 +821,7 @@ public class MessageBuilder implements Appendable
      * @param  policy
      *         The {@link net.dv8tion.jda.core.MessageBuilder.SplitPolicy} defining how to split the text in the
      *         MessageBuilder into different, individual messages.
-     * 
+     *
      * @return the created {@link net.dv8tion.jda.core.entities.Message Messages}
      */
     public Queue<Message> buildAll(SplitPolicy... policy)
@@ -711,7 +829,7 @@ public class MessageBuilder implements Appendable
         if (this.isEmpty())
             throw new UnsupportedOperationException("Cannot build a Message with no content. (You never added any content to the message)");
 
-        LinkedList<Message> messages = new LinkedList<Message>();
+        LinkedList<Message> messages = new LinkedList<>();
 
         if (builder.length() <= 2000) {
             messages.add(this.build());
@@ -748,15 +866,15 @@ public class MessageBuilder implements Appendable
 
         if (this.embed != null)
         {
-            ((MessageImpl) messages.get(messages.size() - 1)).setEmbeds(Collections.singletonList(embed));
+            ((DataMessage) messages.get(messages.size() - 1)).setEmbed(embed);
         }
 
         return messages;
     }
 
-    protected Message build(int beginIndex, int endIndex)
+    protected DataMessage build(int beginIndex, int endIndex)
     {
-        return new MessageImpl(-1, null, false).setContent(builder.substring(beginIndex, endIndex)).setTTS(isTTS);
+        return new DataMessage(isTTS, builder.substring(beginIndex, endIndex), null, null);
     }
 
     /**
@@ -843,7 +961,10 @@ public class MessageBuilder implements Appendable
     /**
      * Holds the strippable mention types used in {@link MessageBuilder#stripMentions(JDA, MentionType...)}
      * and {@link MessageBuilder#stripMentions(Guild, MentionType...)}
+     *
+     * @deprecated Getting replaced by {@link net.dv8tion.jda.core.entities.Message.MentionType Message.MentionType}
      */
+    @Deprecated
     public enum MentionType {
         /**
          * <b>@everyone</b> mentions 
@@ -865,6 +986,20 @@ public class MessageBuilder implements Appendable
          * <b>@Role</b> mentions
          */
         ROLE
+    }
+
+    @Deprecated
+    private Message.MentionType convertNewType(MentionType oldType)
+    {
+        switch (oldType)
+        {
+            case HERE: return Message.MentionType.HERE;
+            case EVERYONE: return Message.MentionType.EVERYONE;
+            case ROLE: return Message.MentionType.ROLE;
+            case USER: return Message.MentionType.USER;
+            case CHANNEL: return Message.MentionType.CHANNEL;
+            default: return null;
+        }
     }
 
     /**

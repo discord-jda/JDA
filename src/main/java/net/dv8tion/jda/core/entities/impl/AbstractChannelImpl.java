@@ -42,7 +42,6 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> implements Channel
 {
-
     protected final long id;
     protected final GuildImpl guild;
 
@@ -229,10 +228,8 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
                     JSONArray array = response.getArray();
                     List<Invite> invites = new ArrayList<>(array.length());
                     for (int i = 0; i < array.length(); i++)
-                    {
                         invites.add(entityBuilder.createInvite(array.getJSONObject(i)));
-                    }
-                    request.onSuccess(invites);
+                    request.onSuccess(Collections.unmodifiableList(invites));
                 }
                 else
                 {
