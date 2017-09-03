@@ -23,9 +23,10 @@ import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+
+import javax.annotation.CheckReturnValue;
 import java.util.Collection;
 import java.util.List;
-import javax.annotation.CheckReturnValue;
 
 /**
  * The core of JDA. Acts as a registry system of JDA. All parts of the the API can be accessed starting from this class.
@@ -54,6 +55,9 @@ public interface JDA
         /**JDA's main websocket has been disconnected. This <b>DOES NOT</b> mean JDA has shutdown permanently.
          * This is an in-between status. Most likely ATTEMPTING_TO_RECONNECT or SHUTTING_DOWN/SHUTDOWN will soon follow.*/
         DISCONNECTED,
+        /** JDA session has been added to {@link net.dv8tion.jda.core.requests.SessionReconnectQueue SessionReconnectQueue}
+         * and is awaiting to be dequeued for reconnecting.*/
+        RECONNECT_QUEUED,
         /**When trying to reconnect to Discord JDA encountered an issue, most likely related to a lack of internet connection,
          * and is waiting to try reconnecting again.*/
         WAITING_TO_RECONNECT,
@@ -721,22 +725,6 @@ public interface JDA
      * @see #shutdownNow()
      */
     void shutdown();
-
-    /**
-     * Shuts down JDA, closing all its connections.
-     * After this command is issued the JDA Instance can not be used anymore.
-     * Already enqueued {@link net.dv8tion.jda.core.requests.RestAction RestActions} are still executed.
-     * 
-     * @deprecated
-     *         Use {@link #shutdown()} instead.
-     *
-     * @param  free If true, shuts down JDA's rest system permanently for all current and future instances.
-     */
-    @Deprecated
-    default void shutdown(boolean free)
-    {
-        this.shutdown();
-    }
 
     /**
      * Shuts down this JDA instance instantly.

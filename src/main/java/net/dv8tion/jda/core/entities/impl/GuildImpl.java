@@ -43,6 +43,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -70,8 +71,8 @@ public class GuildImpl implements Guild
     private String iconId;
     private String splashId;
     private Region region;
-    private TextChannel publicChannel;
     private VoiceChannel afkChannel;
+    private TextChannel systemChannel;
     private Role publicRole;
     private VerificationLevel verificationLevel;
     private NotificationLevel defaultNotificationLevel;
@@ -121,6 +122,12 @@ public class GuildImpl implements Guild
     public VoiceChannel getAfkChannel()
     {
         return afkChannel;
+    }
+
+    @Override
+    public TextChannel getSystemChannel()
+    {
+        return systemChannel;
     }
 
     @Override
@@ -470,7 +477,18 @@ public class GuildImpl implements Guild
     @Override
     public TextChannel getPublicChannel()
     {
-        return publicChannel;
+        return textChannels.get(id);
+    }
+
+    @Nullable
+    @Override
+    public TextChannel getDefaultChannel()
+    {
+        final Role role = getPublicRole();
+        return getTextChannelsMap().valueCollection().stream()
+                .sorted(Comparator.reverseOrder())
+                .filter(c -> role.hasPermission(c, Permission.MESSAGE_READ))
+                .findFirst().orElse(null);
     }
 
     @Override
@@ -612,8 +630,6 @@ public class GuildImpl implements Guild
                 }
             }
         }
-        // set guild again to make sure the manager references this instance! Avoiding invalid member cache
-        mng.setGuild(this);
         return mng;
     }
 
@@ -729,15 +745,15 @@ public class GuildImpl implements Guild
         return this;
     }
 
-    public GuildImpl setPublicChannel(TextChannel publicChannel)
-    {
-        this.publicChannel = publicChannel;
-        return this;
-    }
-
     public GuildImpl setAfkChannel(VoiceChannel afkChannel)
     {
         this.afkChannel = afkChannel;
+        return this;
+    }
+
+    public GuildImpl setSystemChannel(TextChannel systemChannel)
+    {
+        this.systemChannel = systemChannel;
         return this;
     }
 

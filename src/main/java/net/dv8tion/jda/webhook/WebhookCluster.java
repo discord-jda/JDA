@@ -19,6 +19,7 @@ package net.dv8tion.jda.webhook;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.Webhook;
+import net.dv8tion.jda.core.requests.RequestFuture;
 import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
@@ -29,7 +30,6 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.InputStream;
 import java.util.*;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.function.Predicate;
@@ -39,7 +39,7 @@ import java.util.function.Predicate;
  * which allows to broadcast ({@link #broadcast(WebhookMessage)}) or multicast ({@link #multicast(Predicate, WebhookMessage)})
  * to all registered clients (receivers).
  *
- * <h3>Registering existing WebhookClients</h3>
+ * <h2>Registering existing WebhookClients</h2>
  * To register an existing WebhookClient instance (that is not currently shutdown)
  * you either use {@link #addWebhooks(WebhookClient...)} or {@link #addWebhooks(java.util.Collection) addWebhooks(Collection&lt;WebhookClient&gt;)}.
  * <br>These methods allow to register multiple clients in one call
@@ -47,14 +47,14 @@ import java.util.function.Predicate;
  *
  * <p><i><b>Note that you should always remove a WebhookClient from this cluster when you close it directly!</b></i>
  *
- * <h3>Removing already registered WebhookClients</h3>
+ * <h2>Removing already registered WebhookClients</h2>
  * The cluster allows to remove existing clients in batch via {@link #removeWebhooks(WebhookClient...)}, {@link #removeWebhooks(Collection) removeWebhooks(Collection&lt;WebhookClient&gt;)}
  * and {@link #removeIf(java.util.function.Predicate) removeIf(Predicate&lt;WebhookClient&gt;)}.
  * It does not matter if the specified clients are actually registered to this cluster when using these methods.
  *
  * <p><i><b>Note that removing a WebhookClient from the cluster does not close it!</b></i>
  *
- * <h3>Building WebhookClients from the Cluster</h3>
+ * <h2>Building WebhookClients from the Cluster</h2>
  * This class allows to set default values that will be provided to {@link net.dv8tion.jda.webhook.WebhookClientBuilder WebhookClientBuilder}
  * when building via {@link #buildWebhooks(Webhook...)} and {@link #buildWebhooks(Collection) buildWebhooks(Collection&lt;Webhook&gt;)}.
  * <br>The following settings can be used:
@@ -62,13 +62,15 @@ import java.util.function.Predicate;
  *     <li>{@link #setDefaultExecutorService(ScheduledExecutorService)}</li>
  *     <li>{@link #setDefaultHttpClientBuilder(OkHttpClient.Builder)}</li>
  *     <li>{@link #setDefaultHttpClient(OkHttpClient)}</li>
+ *     <li>{@link #setDefaultThreadFactory(ThreadFactory)}</li>
+ *     <li>{@link #setDefaultDaemon(boolean)}</li>
  * </ul>
  *
  * <p>Note that when you provide your own {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} you are able to shut it down
  * outside of the clients which will cause them to fail.
  * <br><i><b>Do not shutdown the pool before closing all clients!</b></i>
  *
- * <h3>Sending to multiple Webhooks at once</h3>
+ * <h2>Sending to multiple Webhooks at once</h2>
  * This cluster allows to both broadcast and multicast to registered clients.
  * <br>When broadcasting a message is created before iterating each client to save performance which makes the broadcast
  * method superior to direct for-loops.
@@ -77,7 +79,7 @@ import java.util.function.Predicate;
  * The filter is specified using a {@link java.util.function.Predicate Predicate} which is provided to {@link #multicast(Predicate, WebhookMessage)}.
  * <br>The predicate decides whether the client should receive the message (returning true) or should be ignored (returning false).
  *
- * <h3>Closing all connections</h3>
+ * <h2>Closing all connections</h2>
  * Each {@link net.dv8tion.jda.webhook.WebhookClient WebhookClient} is a {@link java.io.Closeable Closable} resource which means
  * it must be closed to free resources and enhance performance of the JVM.
  * <br>The WebhookCluster allows to close all registered clients using {@link #close()}.
@@ -542,12 +544,12 @@ public class WebhookCluster implements AutoCloseable
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
      */
-    public List<Future<?>> multicast(Predicate<WebhookClient> filter, WebhookMessage message)
+    public List<RequestFuture<?>> multicast(Predicate<WebhookClient> filter, WebhookMessage message)
     {
         Checks.notNull(filter, "Filter");
         Checks.notNull(message, "Message");
         final RequestBody body = message.getBody();
-        final List<Future<?>> callbacks = new ArrayList<>();
+        final List<RequestFuture<?>> callbacks = new ArrayList<>();
         for (WebhookClient client : webhooks)
         {
             if (filter.test(client))
@@ -576,11 +578,11 @@ public class WebhookCluster implements AutoCloseable
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
      */
-    public List<Future<?>> broadcast(WebhookMessage message)
+    public List<RequestFuture<?>> broadcast(WebhookMessage message)
     {
         Checks.notNull(message, "Message");
         final RequestBody body = message.getBody();
-        final List<Future<?>> callbacks = new ArrayList<>(webhooks.size());
+        final List<RequestFuture<?>> callbacks = new ArrayList<>(webhooks.size());
         for (WebhookClient webhook : webhooks)
             callbacks.add(webhook.execute(body));
         return callbacks;
@@ -606,7 +608,7 @@ public class WebhookCluster implements AutoCloseable
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
      */
-    public List<Future<?>> broadcast(Message message)
+    public List<RequestFuture<?>> broadcast(Message message)
     {
         return broadcast(WebhookMessage.from(message));
     }
@@ -633,7 +635,7 @@ public class WebhookCluster implements AutoCloseable
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
      */
-    public List<Future<?>> broadcast(MessageEmbed... embeds)
+    public List<RequestFuture<?>> broadcast(MessageEmbed... embeds)
     {
         return broadcast(WebhookMessage.of(embeds));
     }
@@ -660,7 +662,7 @@ public class WebhookCluster implements AutoCloseable
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
      */
-    public List<Future<?>> broadcast(Collection<MessageEmbed> embeds)
+    public List<RequestFuture<?>> broadcast(Collection<MessageEmbed> embeds)
     {
         return broadcast(WebhookMessage.of(embeds));
     }
@@ -682,12 +684,12 @@ public class WebhookCluster implements AutoCloseable
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
      */
-    public List<Future<?>> broadcast(String content)
+    public List<RequestFuture<?>> broadcast(String content)
     {
         Checks.notBlank(content, "Content");
         Checks.check(content.length() <= 2000, "Content may not exceed 2000 characters!");
         final RequestBody body = WebhookClient.newBody(new JSONObject().put("content", content).toString());
-        final List<Future<?>> callbacks = new ArrayList<>(webhooks.size());
+        final List<RequestFuture<?>> callbacks = new ArrayList<>(webhooks.size());
         for (WebhookClient webhook : webhooks)
             callbacks.add(webhook.execute(body));
         return callbacks;
@@ -712,7 +714,7 @@ public class WebhookCluster implements AutoCloseable
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
      */
-    public List<Future<?>> broadcast(File file)
+    public List<RequestFuture<?>> broadcast(File file)
     {
         Checks.notNull(file, "File");
         return broadcast(file, file.getName());
@@ -739,7 +741,7 @@ public class WebhookCluster implements AutoCloseable
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
      */
-    public List<Future<?>> broadcast(File file, String fileName)
+    public List<RequestFuture<?>> broadcast(File file, String fileName)
     {
         Checks.notNull(file, "File");
         Checks.check(file.length() <= Message.MAX_FILE_SIZE, "Provided File exceeds the maximum size of 8MB!");
@@ -767,7 +769,7 @@ public class WebhookCluster implements AutoCloseable
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
      */
-    public List<Future<?>> broadcast(InputStream data, String fileName)
+    public List<RequestFuture<?>> broadcast(InputStream data, String fileName)
     {
         return broadcast(new WebhookMessageBuilder().setFile(data, fileName).build());
     }
@@ -793,7 +795,7 @@ public class WebhookCluster implements AutoCloseable
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
      */
-    public List<Future<?>> broadcast(byte[] data, String fileName)
+    public List<RequestFuture<?>> broadcast(byte[] data, String fileName)
     {
         Checks.notNull(data, "Data");
         Checks.check(data.length < Message.MAX_FILE_SIZE, "Provided data exceeds the maximum size of 8MB!");

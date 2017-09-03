@@ -634,13 +634,6 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    @Deprecated
-    public void shutdown(boolean free)
-    {
-        shutdown();
-    }
-
-    @Override
     public void shutdownNow()
     {
         shutdown();

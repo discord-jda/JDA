@@ -209,21 +209,22 @@ public class EntityBuilder
                 ChannelType type = ChannelType.fromId(channel.getInt("type"));
                 if (type == ChannelType.TEXT)
                 {
-                    TextChannel newChannel = createTextChannel(channel, guildObj.getIdLong(), false);
-                    if (newChannel.getIdLong() == guildObj.getIdLong())
-                        guildObj.setPublicChannel(newChannel);
+                    createTextChannel(channel, guildObj.getIdLong(), false);
                 }
                 else if (type == ChannelType.VOICE)
                 {
-                    VoiceChannel newChannel = createVoiceChannel(channel, guildObj.getIdLong(), false);
-                    if (!guild.isNull("afk_channel_id")
-                            && newChannel.getId().equals(guild.getString("afk_channel_id")))
-                        guildObj.setAfkChannel(newChannel);
+                    createVoiceChannel(channel, guildObj.getIdLong(), false);
                 }
                 else
                     WebSocketClient.LOG.fatal("Received a channel for a guild that isn't a text or voice channel. JSON: " + channel);
             }
         }
+
+        if (!guild.isNull("system_channel_id"))
+            guildObj.setSystemChannel(guildObj.getTextChannelsMap().get(guild.getLong("system_channel_id")));
+
+        if (!guild.isNull("afk_channel_id"))
+            guildObj.setAfkChannel(guildObj.getVoiceChannelMap().get(guild.getLong("afk_channel_id")));
 
         //If the members that we were provided with (and loaded above) were not all of the
         //  the members in this guild, then we need to request more users from Discord using

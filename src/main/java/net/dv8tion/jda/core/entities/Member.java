@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.Permission;
 
+import javax.annotation.Nullable;
 import java.awt.Color;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -200,4 +201,18 @@ public interface Member extends IMentionable, IPermissionHolder
      * @return True, if this member is the owner of the attached Guild.
      */
     boolean isOwner();
+
+    /**
+     * The default {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} for a {@link net.dv8tion.jda.core.entities.Member Member}.
+     * <br>This is the channel that the Discord client will default to opening when a Guild is opened for the first time
+     * after joining the guild.
+     * <br>The default channel is the channel with the highest position in which the member has
+     * {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ} permissions. If this requirement doesn't apply for
+     * any channel in the guild, this method returns {@code null}.
+     *
+     * @return The {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} representing the default channel for this member
+     *         or null if no such channel exists.
+     */
+    @Nullable
+    TextChannel getDefaultChannel();
 }

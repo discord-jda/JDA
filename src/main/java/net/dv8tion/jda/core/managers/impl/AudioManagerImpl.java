@@ -42,23 +42,28 @@ import java.io.IOException;
 
 public class AudioManagerImpl implements AudioManager
 {
-    public static final ThreadGroup AUDIO_THREADS = new ThreadGroup("jda-audio");
+    public static final ThreadGroup AUDIO_THREADS;
     //These values are set at the bottom of this file.
     public static boolean AUDIO_SUPPORTED;
     public static String OPUS_LIB_NAME;
-
     protected static boolean initialized = false;
+
+    static
+    {
+        AUDIO_THREADS = new ThreadGroup("jda-audio");
+        AUDIO_THREADS.setDaemon(true);
+    }
 
     public final Object CONNECTION_LOCK = new Object();
 
     protected final JDAImpl api;
-    protected GuildImpl guild;
+    protected final ListenerProxy connectionListener = new ListenerProxy();
+    protected final GuildImpl guild;
     protected AudioConnection audioConnection = null;
     protected VoiceChannel queuedAudioConnection = null;
 
     protected AudioSendHandler sendHandler;
     protected AudioReceiveHandler receiveHandler;
-    protected ListenerProxy connectionListener = new ListenerProxy();
     protected long queueTimeout = 100;
     protected boolean shouldReconnect = true;
 
@@ -74,9 +79,9 @@ public class AudioManagerImpl implements AudioManager
         init(); //Just to make sure that the audio libs have been initialized.
     }
 
-    public void setGuild(GuildImpl guild)
+    public AudioConnection getAudioConnection()
     {
-        this.guild = guild;
+        return audioConnection;
     }
 
     @Override
@@ -100,7 +105,7 @@ public class AudioManagerImpl implements AudioManager
         {
             //Start establishing connection, joining provided channel
             queuedAudioConnection = channel;
-            api.getClient().queueAudioConnect(channel);
+            api.getClient().queueAudioConnect(channel, false);
         }
         else
         {
@@ -122,7 +127,7 @@ public class AudioManagerImpl implements AudioManager
                             "Unable to connect to VoiceChannel due to userlimit! Requires permission VOICE_MOVE_OTHERS to bypass");
             }
 
-            api.getClient().queueAudioConnect(channel);
+            api.getClient().queueAudioConnect(channel, false);
             audioConnection.setChannel(channel);
         }
     }
