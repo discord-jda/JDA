@@ -60,6 +60,10 @@ public enum ConnectionStatus
      */
     DISCONNECTED_REMOVED_FROM_GUILD,
     /**
+     * Indicates that our token was not valid.
+     */
+    DISCONNECTED_AUTHENTICATION_FAILURE,
+    /**
      * Indicates that the audio connection was closed due to the {@link net.dv8tion.jda.core.Region Region} of the
      * audio connection being changed. JDA will automatically attempt to reconnect the audio connection regardless
      * of the value of the {@link net.dv8tion.jda.core.managers.AudioManager#isAutoReconnect() AudioManager.isAutoReconnect()}.
@@ -70,9 +74,14 @@ public enum ConnectionStatus
     /**
      * Indicates that the connection was lost, either via UDP socket problems or the audio Websocket disconnecting.
      * <br>This is typically caused by a brief loss of internet which results in connection loss.
-     * <br>JDA automatically attempts to reconnect when this error occurs.
+     * <br>JDA automatically attempts to resume the session when this error occurs.
      */
     ERROR_LOST_CONNECTION,
+    /**
+     * Indicates that the audio WebSocket was unable to resume an active session.
+     * <br>JDA automatically attempts to reconnect when this error occurs.
+     */
+    ERROR_CANNOT_RESUME,
     /**
      * Indicates that the audio Websocket was unable to connect to discord. This could be due to an internet
      * problem causing a connection problem or an error on Discord's side (possibly due to load)

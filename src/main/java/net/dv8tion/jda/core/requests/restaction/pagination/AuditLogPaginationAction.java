@@ -25,7 +25,7 @@ import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
-import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import org.json.JSONArray;
@@ -63,7 +63,7 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
         super(guild.getJDA(), Route.Guilds.GET_AUDIT_LOGS.compile(guild.getId()), 1, 100, 100);
 
         if (!guild.getSelfMember().hasPermission(Permission.VIEW_AUDIT_LOGS))
-            throw new PermissionException(Permission.VIEW_AUDIT_LOGS);
+            throw new InsufficientPermissionException(Permission.VIEW_AUDIT_LOGS);
         this.guild = guild;
         
         this.successTransformer = response ->

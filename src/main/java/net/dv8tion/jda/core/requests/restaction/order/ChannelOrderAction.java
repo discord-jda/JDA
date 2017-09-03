@@ -21,7 +21,7 @@ import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.RequestBody;
@@ -94,7 +94,7 @@ public class ChannelOrderAction<T extends Channel> extends OrderAction<T, Channe
     {
         final Member self = guild.getSelfMember();
         if (!self.hasPermission(Permission.MANAGE_CHANNEL))
-            throw new PermissionException(Permission.MANAGE_CHANNEL);
+            throw new InsufficientPermissionException(Permission.MANAGE_CHANNEL);
         JSONArray array = new JSONArray();
         for (int i = 0; i < orderList.size(); i++)
         {

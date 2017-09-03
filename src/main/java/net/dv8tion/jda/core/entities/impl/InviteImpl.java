@@ -19,7 +19,7 @@ package net.dv8tion.jda.core.entities.impl;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
@@ -107,7 +107,7 @@ public class InviteImpl implements Invite
         }
         else
         {
-            throw new PermissionException("You don't have the permission to view the full invite info");
+            throw new InsufficientPermissionException(Permission.MANAGE_CHANNEL, "You don't have the permission to view the full invite info");
         }
 
         return new RestAction<Invite>(this.api, route, response ->
@@ -118,10 +118,8 @@ public class InviteImpl implements Invite
             {
                 final JSONObject object = array.getJSONObject(i);
                 if (InviteImpl.this.code.equals(object.getString("code")))
-                {
                     return entityBuilder.createInvite(object);
-                }
-            }
+             }
             throw new RuntimeException("Missing the invite in the channel/guild invite list");
         });
     }

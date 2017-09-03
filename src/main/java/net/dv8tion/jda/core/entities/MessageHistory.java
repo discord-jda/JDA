@@ -18,7 +18,7 @@ package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.MiscUtil;
@@ -51,7 +51,7 @@ public class MessageHistory
         this.channel = channel;
         if (channel instanceof TextChannel &&
                 !((TextChannel) channel).getGuild().getSelfMember().hasPermission(Permission.MESSAGE_HISTORY))
-            throw new PermissionException(Permission.MESSAGE_HISTORY);
+            throw new InsufficientPermissionException(Permission.MESSAGE_HISTORY);
     }
 
     /**

@@ -116,7 +116,7 @@ public class JDAImpl implements JDA
         this.jdaBot = accountType == AccountType.BOT ? new JDABotImpl(this) : null;
     }
 
-    public void login(String token, ShardInfo shardInfo) throws LoginException, RateLimitedException
+    public void login(String token, ShardInfo shardInfo, SessionReconnectQueue reconnectQueue) throws LoginException, RateLimitedException
     {
         setStatus(Status.LOGGING_IN);
         if (token == null || token.isEmpty())
@@ -127,7 +127,7 @@ public class JDAImpl implements JDA
         this.shardInfo = shardInfo;
         LOG.info("Login Successful!");
 
-        client = new WebSocketClient(this);
+        client = new WebSocketClient(this, reconnectQueue);
 
         if (shutdownHook != null)
         {
@@ -546,13 +546,6 @@ public class JDAImpl implements JDA
     public SelfUser getSelfUser()
     {
         return selfUser;
-    }
-
-    @Override
-    @Deprecated
-    public void shutdown(boolean free)
-    {
-        shutdown();
     }
 
     @Override

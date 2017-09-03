@@ -17,13 +17,12 @@
 package net.dv8tion.jda.core.requests;
 
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.utils.Promise;
 import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
-
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
-public class RestFuture<T> extends CompletableFuture<T> implements RequestFuture<T>
+public class RestFuture<T> extends Promise<T>
 {
     final Request<T> request;
 
@@ -35,14 +34,14 @@ public class RestFuture<T> extends CompletableFuture<T> implements RequestFuture
 
     public RestFuture(final T t)
     {
+        super(t);
         this.request = null;
-        this.complete(t);
     }
 
     public RestFuture(final Throwable t)
     {
+        super(t);
         this.request = null;
-        this.completeExceptionally(t);
     }
 
     @Override
@@ -52,11 +51,5 @@ public class RestFuture<T> extends CompletableFuture<T> implements RequestFuture
             this.request.cancel();
 
         return super.cancel(mayInterrupt);
-    }
-
-    @Override
-    public CompletableFuture<T> toCompletableFuture()
-    {
-        throw new UnsupportedOperationException("Access to the CompletableFuture is not supported to secure JDA Requester integrity.");
     }
 }

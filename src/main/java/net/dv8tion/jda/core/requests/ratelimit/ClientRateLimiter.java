@@ -85,7 +85,7 @@ public class ClientRateLimiter extends RateLimiter
                 }
                 catch (IOException e)
                 {
-                    throw new RuntimeException(e);
+                    throw new IllegalStateException(e);
                 }
             }
             else

@@ -158,17 +158,14 @@ public class RestAction<T>
             return ErrorResponseException.create(ErrorResponse.fromJSON(response.getObject()), response);
     };
 
+    @SuppressWarnings("rawtypes")
     public static Consumer DEFAULT_SUCCESS = o -> {};
     public static Consumer<Throwable> DEFAULT_FAILURE = t ->
     {
         if (LOG.getEffectiveLevel().getPriority() <= SimpleLog.Level.DEBUG.getPriority())
-        {
             LOG.log(t);
-        }
         else
-        {
             LOG.fatal("RestAction queue returned failure: [" + t.getClass().getSimpleName() + "] " + t.getMessage());
-        }
     };
 
     protected final JDAImpl api;
@@ -391,6 +388,7 @@ public class RestAction<T>
         Checks.notNull(route, "Route");
         RequestBody data = finalizeData();
         CaseInsensitiveMap<String, String> headers = finalizeHeaders();
+        @SuppressWarnings("unchecked")
         final Consumer<T> successConsumer = success == null ? DEFAULT_SUCCESS : success;
         final Consumer<Throwable> failureConsumer = failure == null ? DEFAULT_FAILURE : failure;
         api.getRequester().request(new Request<T>(this, r -> successConsumer.accept(getSuccessTransformer().apply(r)), r -> failureConsumer.accept(getFailureTransformer().apply(r)), true, data, rawData, route, headers));
@@ -451,7 +449,7 @@ public class RestAction<T>
             //This is so beyond impossible, but on the off chance that the laws of nature are rewritten
             // after the writing of this code, I'm placing this here.
             //Better safe than sorry?
-            throw new RuntimeException(ignored);
+            throw new AssertionError(ignored);
         }
     }
 

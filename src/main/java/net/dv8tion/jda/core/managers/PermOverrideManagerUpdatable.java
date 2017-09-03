@@ -21,7 +21,7 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.PermissionOverride;
-import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.Checks;
@@ -117,7 +117,7 @@ public class PermOverrideManagerUpdatable
      * @param  permissions
      *         Raw permission bits to grant
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If any of the provided permissions are not accessible
      *
      * @return The current Manager instance for chaining convenience
@@ -135,7 +135,7 @@ public class PermOverrideManagerUpdatable
      * @param  permissions
      *         Permissions to grant
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If any of the provided permissions are not accessible
      * @throws IllegalArgumentException
      *         If any of the provided permissions is {@code null}
@@ -155,7 +155,7 @@ public class PermOverrideManagerUpdatable
      * @param  permissions
      *         Permissions to grant
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If any of the provided permissions are not accessible
      * @throws IllegalArgumentException
      *         If any of the provided permissions is {@code null}
@@ -187,7 +187,7 @@ public class PermOverrideManagerUpdatable
      * @param  permissions
      *         Raw permission bits to deny
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If any of the provided permissions are not accessible
      *
      * @return The current Manager instance for chaining convenience
@@ -205,7 +205,7 @@ public class PermOverrideManagerUpdatable
      * @param  permissions
      *         Permissions to deny
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If any of the provided permissions are not accessible
      * @throws IllegalArgumentException
      *         If any of the provided permissions is {@code null}
@@ -225,7 +225,7 @@ public class PermOverrideManagerUpdatable
      * @param  permissions
      *         Permissions to deny
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If any of the provided permissions are not accessible
      * @throws IllegalArgumentException
      *         If any of the provided permissions is {@code null}
@@ -258,7 +258,7 @@ public class PermOverrideManagerUpdatable
      * @param  permission
      *         Raw permission bits to clear
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If any of the provided permissions are not accessible
      *
      * @return The current Manager instance for chaining convenience
@@ -277,7 +277,7 @@ public class PermOverrideManagerUpdatable
      * @param  permissions
      *         Permissions to clear
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If any of the provided permissions are not accessible
      * @throws IllegalArgumentException
      *         If any of the provided permissions is {@code null}
@@ -298,7 +298,7 @@ public class PermOverrideManagerUpdatable
      * @param  permissions
      *         Permissions to clear
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If any of the provided permissions are not accessible
      * @throws IllegalArgumentException
      *         If any of the provided permissions is {@code null}
@@ -425,7 +425,7 @@ public class PermOverrideManagerUpdatable
      *      <br>If the currently logged in account loses the {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS Permission}</li>
      * </ul>
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS}
      *         in the {@link #getChannel() Channel}
      *
@@ -470,6 +470,6 @@ public class PermOverrideManagerUpdatable
     protected void checkPermission(Permission perm)
     {
         if (!getGuild().getSelfMember().hasPermission(getChannel(), perm))
-            throw new PermissionException(perm);
+            throw new InsufficientPermissionException(perm);
     }
 }

@@ -24,8 +24,9 @@ import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
-import okhttp3.OkHttpClient;
+import net.dv8tion.jda.core.requests.SessionReconnectQueue;
 import net.dv8tion.jda.core.utils.Checks;
+import okhttp3.OkHttpClient;
 
 import javax.security.auth.login.LoginException;
 import java.util.Arrays;
@@ -48,6 +49,7 @@ public class JDABuilder
 {
     protected final List<Object> listeners;
 
+    protected SessionReconnectQueue reconnectQueue = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
     protected WebSocketFactory wsFactory = null;
     protected AccountType accountType;
@@ -84,47 +86,17 @@ public class JDABuilder
     }
 
     /**
-     * Sets the proxy that will be used by <b>ALL</b> JDA instances.
-     * <br>Once this is set <b>IT CANNOT BE CHANGED.</b>
-     * <br>After a JDA instance as been created, this method can never be called again, even if you are creating a new JDA object.
-     * <br><b>Note:</b> currently this only supports HTTP proxies.
+     * Sets the queue that will be used to reconnect sessions.
+     * <br>This will ensure that sessions do not reconnect at the same time!
      *
-     * @deprecated Use {@link #setHttpClientBuilder(okhttp3.OkHttpClient.Builder)} instead.
-     *
-     * @param  proxy
-     *         The proxy to use.
-     *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this method is called after proxy settings have already been set or after at least 1 JDA object has been created.
-     *
-     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
-     */
-    @Deprecated
-    public JDABuilder setProxy(Object proxy)
-    {
-        return this;
-    }
-
-    /**
-     * Sets the timeout (in milliseconds) for all Websockets created by JDA (MainWS and AudioWS's) for this instance.
-     *
-     * <p>By default, this is set to <b>0</b> which is supposed to represent infinite-timeout, however due to how the JVM
-     * is implemented at the lower level (typically C), an infinite timeout will usually not be respected, and as such
-     * providing an explicitly defined timeout will typically work better.
-     *
-     * <p>Default: <b>0 - Infinite-Timeout (maybe?)</b>
-     *
-     * @deprecated
-     *         Use the more powerful {@link #setWebsocketFactory(WebSocketFactory)} instead
-     *
-     * @param  websocketTimeout
-     *         Non-negative int representing Websocket timeout in milliseconds.
+     * @param  queue
+     *         {@link java.util.concurrent.BlockingQueue BlockingQueue} to use
      *
      * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
      */
-    @Deprecated
-    public JDABuilder setWebSocketTimeout(int websocketTimeout)
+    public JDABuilder setReconnectQueue(SessionReconnectQueue queue)
     {
+        this.reconnectQueue = queue;
         return this;
     }
 
@@ -472,8 +444,10 @@ public class JDABuilder
     {
         if (accountType != AccountType.BOT)
             throw new AccountTypeException(AccountType.BOT);
-        if (shardId < 0 || shardTotal < 1 || shardId >= shardTotal)
-            throw new RuntimeException("This configuration of shardId and shardTotal is not allowed! 0 <= shardId < shardTotal with shardTotal > 0");
+        Checks.notNegative(shardId, "Shard ID");
+        Checks.positive(shardTotal, "Shard Total");
+        Checks.check(shardId < shardTotal,
+            "The shard ID must be lower than the shardTotal! Shard IDs are 0-based.");
         shardInfo = new JDA.ShardInfo(shardId, shardTotal);
         return this;
     }
@@ -521,7 +495,7 @@ public class JDABuilder
                 .setCacheGame(game)
                 .setCacheIdle(idle)
                 .setCacheStatus(status);
-        jda.login(token, shardInfo);
+        jda.login(token, shardInfo, reconnectQueue);
         return jda;
     }
 

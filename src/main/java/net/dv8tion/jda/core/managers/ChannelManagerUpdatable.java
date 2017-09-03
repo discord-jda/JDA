@@ -23,7 +23,7 @@ import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
-import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.fields.ChannelField;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
@@ -261,7 +261,7 @@ public class ChannelManagerUpdatable
      *          before finishing the task</li>
      * </ul>
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
      *         in the underlying {@link net.dv8tion.jda.core.entities.Channel Channel}.
      *
@@ -298,13 +298,14 @@ public class ChannelManagerUpdatable
         return name.shouldUpdate()
                 || (topic != null && topic.shouldUpdate())
                 || (userLimit != null && userLimit.shouldUpdate())
-                || (bitrate != null && bitrate.shouldUpdate());
+                || (bitrate != null && bitrate.shouldUpdate())
+                || (nsfw != null && nsfw.shouldUpdate());
     }
 
     protected void checkPermission(Permission perm)
     {
         if (!getGuild().getSelfMember().hasPermission(channel, perm))
-            throw new PermissionException(perm);
+            throw new InsufficientPermissionException(perm);
     }
 
     protected void setupFields()

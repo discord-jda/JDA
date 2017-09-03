@@ -91,7 +91,7 @@ public class BotRateLimiter extends RateLimiter
                     }
                     catch (IOException e)
                     {
-                        throw new RuntimeException(e);
+                        throw new IllegalStateException(e);
                     }
                 }
                 long retryAfter = Long.parseLong(retry);
