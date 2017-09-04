@@ -322,6 +322,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 }
             }
         });
+        ratelimitThread.setUncaughtExceptionHandler((thread, throwable) ->
+        {
+            handleCallbackError(socket, throwable);
+            setupSendingThread();
+        });
         ratelimitThread.setName(api.getIdentifierString() + " MainWS-Sending Thread");
         ratelimitThread.start();
     }
@@ -629,6 +634,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 }
             }
         });
+        keepAliveThread.setUncaughtExceptionHandler((thread, throwable) ->
+        {
+            handleCallbackError(socket, throwable);
+            setupKeepAlive(timeout);
+        });
         keepAliveThread.setName(api.getIdentifierString() + " MainWS-KeepAlive Thread");
         keepAliveThread.setPriority(Thread.MAX_PRIORITY);
         keepAliveThread.setDaemon(true);
@@ -690,8 +700,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             .put("d", new JSONObject()
                 .put("session_id", sessionId)
                 .put("token", getToken())
-                .put("seq", api.getResponseTotal())
-            );
+                .put("seq", api.getResponseTotal()));
         send(resume.toString(), true);
         sentAuthInfo = true;
     }
@@ -919,7 +928,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     @Override
     public void handleCallbackError(WebSocket websocket, Throwable cause)
     {
-        api.getEventManager().handle(new ExceptionEvent(api, cause, false));
+        LOG.log(cause);
+        api.getEventManager().handle(new ExceptionEvent(api, cause, true));
     }
 
     @Override
