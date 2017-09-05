@@ -583,6 +583,7 @@ public class JDAImpl implements JDA
 
         setStatus(Status.SHUTTING_DOWN);
         audioManagers.valueCollection().forEach(AudioManager::closeAudioConnection);
+        audioManagers.clear();
 
         if (audioKeepAlivePool != null)
             audioKeepAlivePool.shutdownNow();
