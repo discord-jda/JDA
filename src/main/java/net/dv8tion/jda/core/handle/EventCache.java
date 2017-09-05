@@ -82,6 +82,15 @@ public class EventCache
         eventCache.clear();
     }
 
+    public void clear(Type type, long id)
+    {
+        try
+        {
+            eventCache.get(type).remove(id);
+        }
+        catch (NullPointerException ignored) {}
+    }
+
     public enum Type
     {
         USER, GUILD, CHANNEL, ROLE, RELATIONSHIP, CALL
