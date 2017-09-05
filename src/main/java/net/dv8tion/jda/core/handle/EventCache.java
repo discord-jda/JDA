@@ -86,7 +86,8 @@ public class EventCache
     {
         try
         {
-            eventCache.get(type).remove(id);
+            List<Runnable> events = eventCache.get(type).remove(id);
+            LOG.debug("Clearing cache for type " + type + " with ID " + id + " (Size: " + events.size() + ')');
         }
         catch (NullPointerException ignored) {}
     }
