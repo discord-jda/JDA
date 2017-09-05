@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
@@ -64,18 +65,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected WebSocket socket;
     protected String gatewayUrl = null;
-
     protected String sessionId = null;
 
     protected volatile Thread keepAliveThread;
-    protected boolean connected;
-
-    protected volatile boolean chunkingAndSyncing = false;
-    protected boolean sentAuthInfo = false;
     protected boolean initiating;             //cache all events?
     protected final List<JSONObject> cachedEvents = new LinkedList<>();
 
-    protected boolean shouldReconnect = true;
     protected int reconnectTimeoutS = 2;
     protected long heartbeatStartTime;
 
@@ -88,11 +83,17 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected volatile Thread ratelimitThread = null;
     protected volatile long ratelimitResetTime;
     protected volatile int messagesSent;
-    protected volatile boolean printedRateLimitMessage = false;
 
+    protected volatile boolean shutdown = false;
+    protected boolean shouldReconnect = true;
+    protected boolean handleIdentifyRateLimit = false;
+    protected boolean connected = false;
+
+    protected volatile boolean chunkingAndSyncing = false;
+    protected volatile boolean printedRateLimitMessage = false;
+    protected boolean sentAuthInfo = false;
     protected boolean firstInit = true;
     protected boolean processingReady = true;
-    protected boolean handleIdentifyRateLimit = false;
 
     public WebSocketClient(JDAImpl api, SessionReconnectQueue reconnectQueue)
     {
@@ -346,6 +347,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         socket.sendClose(code, reason);
     }
 
+    public void shutdown()
+    {
+        shutdown = true;
+        shouldReconnect = false;
+        if (reconnectQueue != null) // remove if in queue
+            reconnectQueue.reconnectQueue.remove(this);
+        close(1000, "Shutting down");
+    }
+
     /*
         ### Start Internal methods ###
      */
@@ -354,6 +364,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         if (api.getStatus() != JDA.Status.ATTEMPTING_TO_RECONNECT)
             api.setStatus(JDA.Status.CONNECTING_TO_WEBSOCKET);
+        if (shutdown)
+            throw new RejectedExecutionException("JDA is shutdown!");
         initiating = true;
 
         try
@@ -520,6 +532,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     //shouldHandleIdentify - whether SessionReconnectQueue already handled an IDENTIFY rate limit for this session
     protected void reconnect(boolean callFromQueue, boolean shouldHandleIdentify)
     {
+        if (shutdown)
+        {
+            api.setStatus(JDA.Status.SHUTDOWN);
+            api.getEventManager().handle(new ShutdownEvent(api, OffsetDateTime.now(), 1000));
+            return;
+        }
         if (!handleIdentifyRateLimit)
         {
             if (callFromQueue)
@@ -552,6 +570,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             {
                 connect();
                 break;
+            }
+            catch (RejectedExecutionException ex)
+            {
+                // JDA has already been shutdown so we can stop here
+                api.setStatus(JDA.Status.SHUTDOWN);
+                api.getEventManager().handle(new ShutdownEvent(api, OffsetDateTime.now(), 1000));
+                return;
             }
             catch (RuntimeException ex)
             {
