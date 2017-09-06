@@ -25,6 +25,7 @@ import net.dv8tion.jda.client.entities.Relationship;
 import net.dv8tion.jda.client.entities.RelationshipType;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.core.AccountType;
+import net.dv8tion.jda.core.audio.ConnectionRequest;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
@@ -66,6 +67,12 @@ public class GuildDeleteHandler extends SocketHandler
                             guild)
             );
             return null;
+        }
+
+        final TLongObjectMap<ConnectionRequest> queuedAudioConnection = api.getClient().getQueuedAudioConnectionMap();
+        synchronized (queuedAudioConnection)
+        {
+            queuedAudioConnection.remove(id);
         }
 
         final TLongObjectMap<AudioManagerImpl> audioManagerMap = api.getAudioManagerMap();
