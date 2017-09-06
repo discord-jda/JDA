@@ -25,8 +25,8 @@ import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.WebSocketCode;
-import net.dv8tion.jda.core.audio.ConnectionStage;
 import net.dv8tion.jda.core.audio.ConnectionRequest;
+import net.dv8tion.jda.core.audio.ConnectionStage;
 import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.entities.Guild;
@@ -48,6 +48,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.concurrent.Semaphore;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
@@ -80,8 +81,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected int reconnectTimeoutS = 2;
     protected long heartbeatStartTime;
 
-    //GuildId, <TimeOfNextAttempt, ConnectionState, AudioConnection>
+    //GuildId, <TimeOfNextAttempt, ConnectionStage, AudioConnection>
     protected final TLongObjectMap<ConnectionRequest> queuedAudioConnections = MiscUtil.newLongMap();
+    protected final Semaphore audioQueueLock = new Semaphore(1, true);
 
     protected final LinkedList<String> chunkSyncQueue = new LinkedList<>();
     protected final LinkedList<String> ratelimitQueue = new LinkedList<>();
@@ -249,60 +251,59 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     }
                     attemptedToSend = false;
                     needRatelimit = false;
-                    synchronized (queuedAudioConnections)
-                    {
-                        ConnectionRequest audioRequest = getNextAudioConnectRequest();
+                    audioQueueLock.acquire();
+                    ConnectionRequest audioRequest = getNextAudioConnectRequest();
 
-                        String chunkOrSyncRequest = chunkSyncQueue.peekFirst();
-                        if (chunkOrSyncRequest != null)
+                    String chunkOrSyncRequest = chunkSyncQueue.peekFirst();
+                    if (chunkOrSyncRequest != null)
+                    {
+                        needRatelimit = !send(chunkOrSyncRequest, false);
+                        if (!needRatelimit)
+                            chunkSyncQueue.removeFirst();
+                        attemptedToSend = true;
+                    }
+                    else if (audioRequest != null)
+                    {
+                        VoiceChannel channel = audioRequest.getChannel();
+                        ConnectionStage stage = audioRequest.getStage();
+                        AudioManager audioManager = channel.getGuild().getAudioManager();
+                        JSONObject packet;
+                        switch (stage)
                         {
-                            needRatelimit = !send(chunkOrSyncRequest, false);
-                            if (!needRatelimit)
-                                chunkSyncQueue.removeFirst();
-                            attemptedToSend = true;
+                            case RECONNECT:
+                                audioRequest.setState(ConnectionStage.CONNECT);
+                            case DISCONNECT:
+                                packet = newVoiceClose(channel);
+                                break;
+                            default:
+                            case CONNECT:
+                                //If we didn't get RateLimited, Next allowed connect request will be 2 seconds from now
+                                audioRequest.setNextAttemptEpoch(System.currentTimeMillis() + 2000);
+                                packet = newVoiceOpen(audioManager, channel);
                         }
-                        else if (audioRequest != null)
+                        needRatelimit = !send(packet.toString(), false);
+                        if (!needRatelimit)
                         {
-                            VoiceChannel channel = audioRequest.getChannel();
-                            ConnectionStage stage = audioRequest.getState();
-                            boolean forRemoval = stage != ConnectionStage.RECONNECT;
-                            AudioManager audioManager = channel.getGuild().getAudioManager();
-                            JSONObject packet;
-                            switch (stage)
-                            {
-                                case RECONNECT:
-                                    audioRequest.setState(ConnectionStage.CONNECT);
-                                case DISCONNECT:
-                                    packet = newVoiceClose(channel);
-                                    break;
-                                default:
-                                case CONNECT:
-                                    //If we didn't get RateLimited, Next allowed connect request will be 2 seconds from now
-                                    audioRequest.setNextAttemptEpoch(System.currentTimeMillis() + 2000);
-                                    packet = newVoiceOpen(audioManager, channel);
-                            }
-                            needRatelimit = !send(packet.toString(), false);
-                            if (!needRatelimit)
-                            {
-                                //If the connection is already established, then the packet just sent
-                                // was a move channel packet, thus, it won't trigger the removal from
-                                // queuedAudioConnections in VoiceServerUpdateHandler because we won't receive
-                                // that event just for a move, so we remove it here after successfully sending.
-                                if (audioManager.isConnected() && forRemoval)
-                                    queuedAudioConnections.remove(channel.getGuild().getIdLong());
-                            }
-                            attemptedToSend = true;
+                            //If the connection is already established, then the packet just sent
+                            // was a move channel packet, thus, it won't trigger the removal from
+                            // queuedAudioConnections in VoiceServerUpdateHandler because we won't receive
+                            // that event just for a move, so we remove it here after successfully sending.
+                            if (stage == ConnectionStage.DISCONNECT)
+                                queuedAudioConnections.remove(channel.getGuild().getIdLong());
+                            else if (audioManager.isConnected() && stage == ConnectionStage.CONNECT)
+                                queuedAudioConnections.remove(channel.getGuild().getIdLong());
                         }
-                        else
+                        attemptedToSend = true;
+                    }
+                    else
+                    {
+                        String message = ratelimitQueue.peekFirst();
+                        if (message != null)
                         {
-                            String message = ratelimitQueue.peekFirst();
-                            if (message != null)
-                            {
-                                needRatelimit = !send(message, false);
-                                if (!needRatelimit)
-                                    ratelimitQueue.removeFirst();
-                                attemptedToSend = true;
-                            }
+                            needRatelimit = !send(message, false);
+                            if (!needRatelimit)
+                                ratelimitQueue.removeFirst();
+                            attemptedToSend = true;
                         }
                     }
 
@@ -313,6 +314,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 {
                     LOG.debug("Main WS send thread interrupted. Most likely JDA is disconnecting the websocket.");
                     break;
+                }
+                finally
+                {
+                    // on any exception that might cause this semaphore to not release
+                    if (audioQueueLock.availablePermits() == 0)
+                        audioQueueLock.release();
                 }
             }
         });
@@ -978,8 +985,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     public void queueAudioReconnect(VoiceChannel channel)
     {
-        synchronized (queuedAudioConnections)
+        try
         {
+            audioQueueLock.acquire();
             final long guildId = channel.getGuild().getIdLong();
             ConnectionRequest update = queuedAudioConnections.get(guildId);
 
@@ -992,12 +1000,18 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             // in all cases, update to this channel
             update.setChannel(channel);
         }
+        catch (InterruptedException ignored) {}
+        finally
+        {
+            audioQueueLock.release();
+        }
     }
 
     public void queueAudioConnect(VoiceChannel channel)
     {
-        synchronized (queuedAudioConnections)
+        try
         {
+            audioQueueLock.acquire();
             final long guildId = channel.getGuild().getIdLong();
             ConnectionRequest update = queuedAudioConnections.get(guildId);
 
@@ -1005,35 +1019,60 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             if (update == null)
                 queuedAudioConnections.put(guildId, update = new ConnectionRequest(channel, ConnectionStage.CONNECT));
             // if planned to disconnect, we want to reconnect
-            else if (update.getState() == ConnectionStage.DISCONNECT)
+            else if (update.getStage() == ConnectionStage.DISCONNECT)
                 update.setState(ConnectionStage.RECONNECT);
             // in all cases, update to this channel
             update.setChannel(channel);
+        }
+        catch (InterruptedException ignored) {}
+        finally
+        {
+            audioQueueLock.release();
         }
     }
 
     public void queueAudioDisconnect(VoiceChannel disconnectedChannel)
     {
-        synchronized (queuedAudioConnections)
+        try
         {
+            audioQueueLock.acquire();
             final long guildId = disconnectedChannel.getGuild().getIdLong();
             ConnectionRequest update = queuedAudioConnections.get(guildId);
 
             // If we do not have a DISCONNECT or CONNECT request
-            if (update == null || update.getState() == ConnectionStage.RECONNECT)
+            if (update == null || update.getStage() == ConnectionStage.RECONNECT)
                 queuedAudioConnections.put(guildId, new ConnectionRequest(disconnectedChannel, ConnectionStage.DISCONNECT));
             // If we have a CONNECT request, dequeue it
-            else if (update.getState() != ConnectionStage.DISCONNECT)
+            else if (update.getStage() != ConnectionStage.DISCONNECT)
                 queuedAudioConnections.remove(guildId);
             // channel is not relevant here
         }
+        catch (InterruptedException ignored) {}
+        finally
+        {
+            audioQueueLock.release();
+        }
     }
 
-
-    public TLongObjectMap<ConnectionRequest> getQueuedAudioConnectionMap()
+    public ConnectionRequest removeAudioConnection(long guildId)
     {
-        return queuedAudioConnections;
+        try
+        {
+            audioQueueLock.acquire();
+            return queuedAudioConnections.remove(guildId);
+        }
+        catch (InterruptedException ignored) {}
+        finally
+        {
+            audioQueueLock.release();
+        }
+        return null;
     }
+
+//    public TLongObjectMap<ConnectionRequest> getQueuedAudioConnectionMap()
+//    {
+//        return queuedAudioConnections;
+//    }
 
     protected ConnectionRequest getNextAudioConnectRequest()
     {

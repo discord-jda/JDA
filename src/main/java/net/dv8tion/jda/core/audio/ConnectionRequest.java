@@ -51,7 +51,7 @@ public class ConnectionRequest
         return channel;
     }
 
-    public ConnectionStage getState()
+    public ConnectionStage getStage()
     {
         return state;
     }

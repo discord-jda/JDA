@@ -35,7 +35,7 @@ public class VoiceServerUpdateHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long guildId = content.getLong("guild_id");
-        api.getClient().getQueuedAudioConnectionMap().remove(guildId);
+        api.getClient().removeAudioConnection(guildId);
 
         if (api.getGuildLock().isLocked(guildId))
             return guildId;
