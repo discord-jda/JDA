@@ -105,7 +105,7 @@ public class AudioManagerImpl implements AudioManager
         {
             //Start establishing connection, joining provided channel
             queuedAudioConnection = channel;
-            api.getClient().queueAudioConnect(channel, false);
+            api.getClient().queueAudioConnect(channel);
         }
         else
         {
@@ -127,7 +127,7 @@ public class AudioManagerImpl implements AudioManager
                             "Unable to connect to VoiceChannel due to userlimit! Requires permission VOICE_MOVE_OTHERS to bypass");
             }
 
-            api.getClient().queueAudioConnect(channel, false);
+            api.getClient().queueAudioConnect(channel);
             audioConnection.setChannel(channel);
         }
     }
