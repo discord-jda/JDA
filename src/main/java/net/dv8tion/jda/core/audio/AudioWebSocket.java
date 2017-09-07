@@ -447,7 +447,7 @@ public class AudioWebSocket extends WebSocketAdapter
         }
         else if (closeStatus != ConnectionStatus.AUDIO_REGION_CHANGE)
         {
-            api.getClient().queueAudioDisconnect(disconnectedChannel);
+            api.getClient().queueAudioDisconnect(guild);
         }
     }
 
