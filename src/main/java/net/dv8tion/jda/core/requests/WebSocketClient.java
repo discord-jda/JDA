@@ -265,8 +265,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     else if (audioRequest != null)
                     {
                         VoiceChannel channel = audioRequest.getChannel();
+                        Guild guild = api.getGuildById(audioRequest.getGuildIdLong());
+                        if (guild == null)
+                        {
+                            // race condition on guild delete, avoid NPE on DISCONNECT requests
+                            queuedAudioConnections.remove(audioRequest.getGuildIdLong());
+                            continue;
+                        }
                         ConnectionStage stage = audioRequest.getStage();
-                        AudioManager audioManager = channel.getGuild().getAudioManager();
+                        AudioManager audioManager = guild.getAudioManager();
                         JSONObject packet;
                         switch (stage)
                         {
@@ -307,6 +314,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                         }
                     }
 
+                    audioQueueLock.release();
                     if (needRatelimit || !attemptedToSend)
                         Thread.sleep(1000);
                 }
