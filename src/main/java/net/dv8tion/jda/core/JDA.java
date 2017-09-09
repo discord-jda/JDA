@@ -451,6 +451,12 @@ public interface JDA
      */
     List<Role> getRolesByName(String name, boolean ignoreCase);
 
+    //TODO docs
+    Category getCategoryById(String id);
+    Category getCategoryById(long id);
+    List<Category> getCategories();
+    List<Category> getCategoriesByName(String name, boolean ignoreCase);
+
     /**
      * An unmodifiable List of all {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} of all connected
      * {@link net.dv8tion.jda.core.entities.Guild Guilds}.

@@ -296,6 +296,11 @@ public interface Guild extends ISnowflake
      */
     List<Member> getMembersWithRoles(Collection<Role> roles);
 
+    Category getCategoryById(String id);
+    Category getCategoryById(long id);
+    List<Category> getCategories();
+    List<Category> getCategoriesByName(String name, boolean ignoreCase);
+
     /**
      * Gets a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} from this guild that has the same id as the
      * one provided. This method is similar to {@link net.dv8tion.jda.core.JDA#getTextChannelById(String)}, but it only

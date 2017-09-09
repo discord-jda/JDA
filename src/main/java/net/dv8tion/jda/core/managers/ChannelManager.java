@@ -17,6 +17,7 @@
 package net.dv8tion.jda.core.managers;
 
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.Category;
 import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
@@ -109,6 +110,13 @@ public class ChannelManager
     public AuditableRestAction<Void> setName(String name)
     {
         return updatable.getNameField().setValue(name).update();
+    }
+
+    //TODO docs
+    @CheckReturnValue
+    public AuditableRestAction<Void> setParent(Category category)
+    {
+        return updatable.getParentField().setValue(category).update();
     }
 
     /**

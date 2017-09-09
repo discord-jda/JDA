@@ -54,6 +54,9 @@ public interface Channel extends ISnowflake
      */
     Guild getGuild();
 
+    //TODO docs
+    Category getParent();
+
     /**
      * A List of all {@link net.dv8tion.jda.core.entities.Member Members} that are in this Channel
      * For {@link net.dv8tion.jda.core.entities.TextChannel TextChannels},
