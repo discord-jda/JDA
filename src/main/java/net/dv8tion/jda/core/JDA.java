@@ -452,6 +452,71 @@ public interface JDA
     List<Role> getRolesByName(String name, boolean ignoreCase);
 
     /**
+     * An unmodifiable List of all {@link net.dv8tion.jda.core.entities.CategoryChannel CategoryChannels} of all connected
+     * {@link net.dv8tion.jda.core.entities.Guild Guilds}.
+     *
+     * <p><b>Note:</b> If you log into this account on the discord client, it is possible that you will see fewer channels than this
+     * returns. This is because the discord client hides any {@link net.dv8tion.jda.core.entities.CategoryChannel CategoryChannel}
+     * that you don't have the {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ} permission in.
+     *
+     * @return Possibly-empty list of all known {@link net.dv8tion.jda.core.entities.CategoryChannel CategoryChannels}.
+     */
+    List<CategoryChannel> getCategoryChannels();
+
+    /**
+     * This returns the {@link net.dv8tion.jda.core.entities.CategoryChannel CategoryChannel} which has the same id as the one provided.
+     * <br>If there is no known {@link net.dv8tion.jda.core.entities.CategoryChannel CategoryChannel} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * <p><b>Note:</b> If you log into this account on the discord client, it is possible that you will see fewer channels than this
+     * returns. This is because the discord client hides any {@link net.dv8tion.jda.core.entities.CategoryChannel CategoryChannel}
+     * that you don't have the {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ} permission in.
+     *
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.core.entities.CategoryChannel CategoryChannel}.
+     *
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.CategoryChannel CategoryChannel} with matching id.
+     */
+    CategoryChannel getCategoryChannelById(String id);
+
+    /**
+     * This returns the {@link net.dv8tion.jda.core.entities.CategoryChannel CategoryChannel} which has the same id as the one provided.
+     * <br>If there is no known {@link net.dv8tion.jda.core.entities.CategoryChannel CategoryChannel} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * <p><b>Note:</b> If you log into this account on the discord client, it is possible that you will see fewer channels than this
+     * returns. This is because the discord client hides any {@link net.dv8tion.jda.core.entities.CategoryChannel CategoryChannel}
+     * that you don't have the {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ} permission in.
+     *
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.core.entities.CategoryChannel CategoryChannel}.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.CategoryChannel CategoryChannel} with matching id.
+     */
+    CategoryChannel getCategoryChannelById(long id);
+
+    /**
+     * An unmodifiable list of all {@link net.dv8tion.jda.core.entities.CategoryChannel CategoryChannels} that have the same name as the one provided.
+     * <br>If there are no {@link net.dv8tion.jda.core.entities.CategoryChannel CategoryChannels} with the provided name, then this returns an empty list.
+     *
+     * <p><b>Note:</b> If you log into this account on the discord client, it is possible that you will see fewer channels than this
+     * returns. This is because the discord client hides any {@link net.dv8tion.jda.core.entities.CategoryChannel CategoryChannel}
+     * that you don't have the {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ} permission in.
+     *
+     * @param  name
+     *         The name of the requested {@link net.dv8tion.jda.core.entities.CategoryChannel CategoryChannels}.
+     * @param  ignoreCase
+     *         Whether to ignore case or not when comparing the provided name to each {@link net.dv8tion.jda.core.entities.CategoryChannel#getName()}.
+     *
+     * @return Possibly-empty list of all the {@link net.dv8tion.jda.core.entities.CategoryChannel CategoryChannels} that all have the
+     *      same name as the provided name.
+     */
+    List<CategoryChannel> getCategoryChannelsByName(String name, boolean ignoreCase);
+
+    /**
      * An unmodifiable List of all {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} of all connected
      * {@link net.dv8tion.jda.core.entities.Guild Guilds}.
      *

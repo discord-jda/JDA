@@ -63,7 +63,19 @@ public class ChannelOrderAction<T extends Channel> extends OrderAction<T, Channe
         this.guild = guild;
         this.type = type;
 
-        Collection chans = type == ChannelType.TEXT ? guild.getTextChannels() : guild.getVoiceChannels();
+        Collection chans;
+        if (type == ChannelType.TEXT)
+        {
+            chans = guild.getTextChannels();
+        }
+        else if (type == ChannelType.CATEGORY)
+        {
+            chans = guild.getCategoryChannels();
+        }
+        else
+        {
+            chans = guild.getVoiceChannels();
+        }
         this.orderList.addAll(chans);
     }
 

@@ -26,6 +26,9 @@ import net.dv8tion.jda.client.events.group.update.GroupUpdateNameEvent;
 import net.dv8tion.jda.client.events.group.update.GroupUpdateOwnerEvent;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.*;
+import net.dv8tion.jda.core.events.channel.category.update.CategoryChannelUpdateNameEvent;
+import net.dv8tion.jda.core.events.channel.category.update.CategoryChannelUpdatePermissionsEvent;
+import net.dv8tion.jda.core.events.channel.category.update.CategoryChannelUpdatePositionEvent;
 import net.dv8tion.jda.core.events.channel.text.update.*;
 import net.dv8tion.jda.core.events.channel.voice.update.*;
 import org.json.JSONArray;
@@ -184,6 +187,48 @@ public class ChannelUpdateHandler extends SocketHandler
                                     voiceChannel, changed));
                 }
                 break;  //Finish the VoiceChannelUpdate case
+            }
+            case CATEGORY:
+            {
+                CategoryChannelImpl categoryChannel = (CategoryChannelImpl) api.getCategoryChannelMap().get(channelId);
+                if (categoryChannel == null)
+                {
+                    api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a CategoryChannel that does not exist. JSON: " + content);
+                    return null;
+                }
+
+                //If any properties changed, update the values and fire the proper events.
+                final String oldName = categoryChannel.getName();
+                final int oldPosition = categoryChannel.getPositionRaw();
+                if (!Objects.equals(oldName, name))
+                {
+                    categoryChannel.setName(name);
+                    api.getEventManager().handle(
+                        new CategoryChannelUpdateNameEvent(
+                            api, responseNumber,
+                            categoryChannel, oldName));
+                }
+                if (oldPosition != position)
+                {
+                    categoryChannel.setRawPosition(position);
+                    api.getEventManager().handle(
+                        new CategoryChannelUpdatePositionEvent(
+                            api, responseNumber,
+                            categoryChannel, oldPosition));
+                }
+
+                applyPermissions(categoryChannel, content, permOverwrites, contained, changed);
+
+                //If this update modified permissions in any way.
+                if (!changed.isEmpty())
+                {
+                    api.getEventManager().handle(
+                        new CategoryChannelUpdatePermissionsEvent(
+                            api, responseNumber,
+                            categoryChannel, changed));
+                }
+                break;  //Finish the CategoryChannelUpdate case
             }
             default:
                 throw new IllegalArgumentException("CHANNEL_UPDATE provided an unrecognized channel type JSON: " + content);

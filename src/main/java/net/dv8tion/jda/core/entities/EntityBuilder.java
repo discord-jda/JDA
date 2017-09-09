@@ -215,6 +215,10 @@ public class EntityBuilder
                 {
                     createVoiceChannel(channel, guildObj.getIdLong(), false);
                 }
+                else if (type == ChannelType.CATEGORY)
+                {
+                    createCategoryChannel(channel, guildObj.getIdLong(), false);
+                }
                 else
                     WebSocketClient.LOG.fatal("Received a channel for a guild that isn't a text or voice channel. JSON: " + channel);
             }
@@ -379,6 +383,10 @@ public class EntityBuilder
             else if (type == ChannelType.VOICE)
             {
                 channelObj = api.getVoiceChannelById(channel.getLong("id"));
+            }
+            else if (type == ChannelType.CATEGORY)
+            {
+                channelObj = api.getCategoryChannelById(channel.getLong("id"));
             }
             else
                 WebSocketClient.LOG.fatal("Received a channel for a guild that isn't a text or voice channel (ChannelPass). JSON: " + channel);
@@ -574,6 +582,37 @@ public class EntityBuilder
             throw new IllegalArgumentException("An object was provided to EntityBuilder#createPresence that wasn't a Member or Friend. JSON: " + presenceJson);
     }
 
+    public CategoryChannel createCategoryChannel(JSONObject json, long guildId)
+    {
+        return createCategoryChannel(json, guildId, true);
+
+    }
+    public CategoryChannel createCategoryChannel(JSONObject json, long guildId, boolean guildIsLoaded)
+    {
+        final long id = json.getLong("id");
+        CategoryChannelImpl channel = (CategoryChannelImpl) api.getCategoryChannelMap().get(id);
+        if (channel == null)
+        {
+            GuildImpl guild = ((GuildImpl) api.getGuildMap().get(guildId));
+            channel = new CategoryChannelImpl(id, guild);
+            guild.getCategoryChannelsMap().put(id, channel);
+            api.getCategoryChannelMap().put(id, channel);
+        }
+
+        if (!json.isNull("permission_overwrites") && guildIsLoaded)
+        {
+            JSONArray overrides = json.getJSONArray("permission_overwrites");
+            for (int i = 0; i < overrides.length(); i++)
+            {
+                createPermissionOverride(overrides.getJSONObject(i), channel);
+            }
+        }
+
+        return channel
+            .setName(json.getString("name"))
+            .setRawPosition(json.getInt("position"));
+    }
+
     public TextChannel createTextChannel(JSONObject json, long guildId)
     {
         return createTextChannel(json, guildId, true);
@@ -590,6 +629,8 @@ public class EntityBuilder
             guild.getTextChannelsMap().put(id, channel);
             api.getTextChannelMap().put(id, channel);
         }
+
+        //final long parentId = json.getLong("parent_id");
 
         if (!json.isNull("permission_overwrites") && guildIsLoaded)
         {

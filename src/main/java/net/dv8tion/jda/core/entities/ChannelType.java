@@ -37,6 +37,10 @@ public enum ChannelType
      */
     GROUP(3),
     /**
+     * A {@link net.dv8tion.jda.core.entities.CategoryChannel CategoryChannel}, Guild-Only.
+     */
+    CATEGORY(4, true),
+    /**
      * Unknown Discord channel type. Should never happen and would only possibly happen if Discord implemented a new
      * channel type and JDA had yet to implement support for it.
      */

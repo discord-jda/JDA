@@ -260,6 +260,19 @@ public interface Message extends ISnowflake, Formattable
     TextChannel getTextChannel();
 
     /**
+     * Returns the {@link net.dv8tion.jda.core.entities.CategoryChannel CategoryChannel} that this message was sent in.
+     * <br><b>This is only valid if the Message was actually sent in a TextChannel.</b> This will return {@code null}
+     * if it was not sent from a TextChannel.
+     * <br>You can check the type of channel this message was sent from using {@link #isFromType(ChannelType)} or {@link #getChannelType()}.
+     *
+     * <p>Use {@link #getChannel()} for an ambiguous {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}
+     * if you do not need functionality specific to {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
+     *
+     * @return The CategoryChannel this message was sent in, or {@code null} if it was not sent from a TextChannel.
+     */
+    CategoryChannel getCategoryChannel();
+
+    /**
      * Returns the {@link net.dv8tion.jda.core.entities.Guild Guild} that this message was sent in.
      * <br>This is just a shortcut to {@link #getTextChannel()}{@link net.dv8tion.jda.core.entities.TextChannel#getGuild() .getGuild()}.
      * <br><b>This is only valid if the Message was actually sent in a TextChannel.</b> This will return {@code null}
