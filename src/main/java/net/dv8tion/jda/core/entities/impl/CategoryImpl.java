@@ -94,6 +94,7 @@ public class CategoryImpl extends AbstractChannelImpl<CategoryImpl> implements C
     public List<TextChannel> getTextChannels()
     {
         return Collections.unmodifiableList(getGuild().getTextChannels().stream()
+                    .filter(channel -> channel.getParent() != null)
                     .filter(channel -> channel.getParent().equals(this))
                     .collect(Collectors.toList()));
     }
@@ -102,6 +103,7 @@ public class CategoryImpl extends AbstractChannelImpl<CategoryImpl> implements C
     public List<VoiceChannel> getVoiceChannels()
     {
         return Collections.unmodifiableList(getGuild().getVoiceChannels().stream()
+                    .filter(channel -> channel.getParent() != null)
                     .filter(channel -> channel.getParent().equals(this))
                     .collect(Collectors.toList()));
     }

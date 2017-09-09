@@ -451,10 +451,55 @@ public interface JDA
      */
     List<Role> getRolesByName(String name, boolean ignoreCase);
 
-    //TODO docs
+    /**
+     * Gets the {@link net.dv8tion.jda.core.entities.Category Category} that matches the provided id.
+     * <br>If there is no matching {@link net.dv8tion.jda.core.entities.Category Category} this returns {@code null}.
+     *
+     * @param  id
+     *         The snowflake ID of the wanted Category
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided ID is not a valid {@code long}
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.Category Category} for
+     *         the provided ID.
+     */
     Category getCategoryById(String id);
+
+    /**
+     * Gets the {@link net.dv8tion.jda.core.entities.Category Category} that matches the provided id.
+     * <br>If there is no matching {@link net.dv8tion.jda.core.entities.Category Category} this returns {@code null}.
+     *
+     * @param  id
+     *         The snowflake ID of the wanted Category
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.Category Category} for
+     *         the provided ID.
+     */
     Category getCategoryById(long id);
+
+    /**
+     * Gets all {@link net.dv8tion.jda.core.entities.Category Categories} visible to the currently logged in account.
+     *
+     * @return An immutable list of all visible {@link net.dv8tion.jda.core.entities.Category Categories}.
+     */
     List<Category> getCategories();
+
+    /**
+     * Gets a list of all {@link net.dv8tion.jda.core.entities.Category Categories} that have the same
+     * name as the one provided.
+     * <br>If there are no matching categories this will return an empty list.
+     *
+     * @param  name
+     *         The name to check
+     * @param  ignoreCase
+     *         Whether to ignore case on name checking
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided name is {@code null}
+     *
+     * @return Immutable list of all categories matching the provided name
+     */
     List<Category> getCategoriesByName(String name, boolean ignoreCase);
 
     /**

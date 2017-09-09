@@ -25,6 +25,12 @@ import net.dv8tion.jda.core.entities.Role;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * <b><u>CategoryUpdatePermissionEvent</u></b>
+ * <p>Fired when the permissions of a {@link net.dv8tion.jda.core.entities.Category Category} are updated.
+ *
+ * <p>Use: Retrieve the changed permissions
+ */
 public class CategoryUpdatePermissionsEvent extends GenericCategoryUpdateEvent
 {
     protected final List<IPermissionHolder> changed;
@@ -35,11 +41,21 @@ public class CategoryUpdatePermissionsEvent extends GenericCategoryUpdateEvent
         this.changed = changed;
     }
 
+    /**
+     * List of all affected {@link net.dv8tion.jda.core.entities.IPermissionHolder IPermissionHolders}
+     *
+     * @return Immutable list of permission holders affected by this event
+     */
     public List<IPermissionHolder> getChangedPermissionHolders()
     {
         return changed;
     }
 
+    /**
+     * Filtered list of affected {@link net.dv8tion.jda.core.entities.Role Roles}
+     *
+     * @return Immutable list of affected roles
+     */
     public List<Role> getChangedRoles()
     {
         return changed.stream()
@@ -48,6 +64,11 @@ public class CategoryUpdatePermissionsEvent extends GenericCategoryUpdateEvent
             .collect(Collectors.toList());
     }
 
+    /**
+     * Filtered list of affected {@link net.dv8tion.jda.core.entities.Member Members}
+     *
+     * @return Immutable list of affected members
+     */
     public List<Member> getMembersWithPermissionChanges()
     {
         return changed.stream()

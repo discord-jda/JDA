@@ -13,5 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+/**
+ * Events for {@link net.dv8tion.jda.core.entities.Category Categories}
+ */
 package net.dv8tion.jda.core.events.channel.category;

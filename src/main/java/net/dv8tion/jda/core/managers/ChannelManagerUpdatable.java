@@ -120,7 +120,20 @@ public class ChannelManagerUpdatable
         return name;
     }
 
-    //TODO docs
+    /**
+     * An {@link net.dv8tion.jda.core.managers.fields.ChannelField ChannelField}
+     * for the <b><u>{@link net.dv8tion.jda.core.entities.Category Parent Category}</u></b>
+     * of the selected {@link net.dv8tion.jda.core.entities.Channel Channel}.
+     *
+     * <p>To set the value use {@link net.dv8tion.jda.core.managers.fields.Field#setValue(Object) setValue(Category)}
+     * on the returned {@link net.dv8tion.jda.core.managers.fields.ChannelField ChannelField} instance.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is the manager of a {@link net.dv8tion.jda.core.entities.Category Category}
+     *
+     * @return {@link net.dv8tion.jda.core.managers.fields.ChannelField ChannelField}
+     *         - Type: {@link net.dv8tion.jda.core.entities.Category Category}
+     */
     public ChannelField<Category> getParentField()
     {
         if (channel instanceof Category)

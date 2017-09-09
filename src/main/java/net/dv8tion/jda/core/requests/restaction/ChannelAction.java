@@ -102,7 +102,20 @@ public class ChannelAction extends AuditableRestAction<Channel>
         return this;
     }
 
-    //TODO docs
+    /**
+     * Sets the {@link net.dv8tion.jda.core.entities.Category Category} for the new Channel
+     *
+     * @param  category
+     *         The parent for the new Channel
+     *
+     * @throws UnsupportedOperationException
+     *         If this ChannelAction is for a Category
+     * @throws IllegalArgumentException
+     *         If the provided category is {@code null}
+     *         or not from this Guild
+     *
+     * @return The current ChannelAction, for chaining convenience
+     */
     @CheckReturnValue
     public ChannelAction setParent(Category category)
     {
@@ -118,7 +131,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
      *         The topic for the new Channel (max 1024 chars)
      *
      * @throws UnsupportedOperationException
-     *         If this ChannelAction is for a VoiceChannel
+     *         If this ChannelAction is not for a TextChannel
      * @throws IllegalArgumentException
      *         If the provided topic is longer than 1024 chars
      *
@@ -142,10 +155,11 @@ public class ChannelAction extends AuditableRestAction<Channel>
      *         The NSFW flag for the new Channel
      *
      * @throws UnsupportedOperationException
-     *         If this ChannelAction is for a VoiceChannel
+     *         If this ChannelAction is not for a TextChannel
      *
      * @return The current ChannelAction, for chaining convenience
      */
+    @CheckReturnValue
     public ChannelAction setNSFW(boolean nsfw)
     {
         if (type != ChannelType.TEXT)
@@ -300,7 +314,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
      *         The bitrate for the new Channel (min 8000) or null to use default (64000)
      *
      * @throws UnsupportedOperationException
-     *         If this ChannelAction is for a TextChannel
+     *         If this ChannelAction is not for a VoiceChannel
      * @throws IllegalArgumentException
      *         If the provided bitrate is less than 8000 or greater than 128000
      *
@@ -330,7 +344,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
      *         The userlimit for the new VoiceChannel or {@code null}/{@code 0} to use no limit,
      *
      * @throws UnsupportedOperationException
-     *         If this ChannelAction is for a TextChannel
+     *         If this ChannelAction is not for a VoiceChannel
      * @throws IllegalArgumentException
      *         If the provided userlimit is negative or above {@code 99}
      *
