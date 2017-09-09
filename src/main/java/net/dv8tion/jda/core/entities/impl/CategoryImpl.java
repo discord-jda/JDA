@@ -49,15 +49,25 @@ public class CategoryImpl extends AbstractChannelImpl<CategoryImpl> implements C
     @Override
     public List<Member> getMembers()
     {
-        //TODO
-        return null;
+        return Collections.unmodifiableList(getChannels().stream()
+                    .map(Channel::getMembers)
+                    .flatMap(List::stream)
+                    .distinct()
+                    .collect(Collectors.toList()));
     }
 
     @Override
     public int getPosition()
     {
-        //TODO
-        return 0;
+        //We call getCategories instead of directly accessing the GuildImpl.getCategories because
+        // getCategories does the sorting logic.
+        List<Category> channels = guild.getCategories();
+        for (int i = 0; i < channels.size(); i++)
+        {
+            if (channels.get(i) == this)
+                return i;
+        }
+        throw new AssertionError("Somehow when determining position we never found the Category in the Guild's channels? wtf?");
     }
 
     @Override

@@ -299,7 +299,9 @@ public class GuildImpl implements Guild
     @Override
     public List<Category> getCategories()
     {
-        return Arrays.asList(categories.values(new CategoryImpl[categories.size()]));
+        ArrayList<Category> list = new ArrayList<>(categories.valueCollection());
+        list.sort(Comparator.reverseOrder());
+        return Collections.unmodifiableList(list);
     }
 
     @Override
