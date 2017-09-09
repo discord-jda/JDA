@@ -297,6 +297,59 @@ public interface Guild extends ISnowflake
     List<Member> getMembersWithRoles(Collection<Role> roles);
 
     /**
+     * Gets a {@link net.dv8tion.jda.core.entities.CategoryChannel CategoryChannel} from this guild that has the same id as the
+     * one provided. This method is similar to {@link net.dv8tion.jda.core.JDA#getCategoryChannelById(String)}, but it only
+     * checks this specific Guild for a CategoryChannel.
+     * <br>If there is no {@link net.dv8tion.jda.core.entities.CategoryChannel CategoryChannel} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.core.entities.CategoryChannel CategoryChannel}.
+     *
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.CategoryChannel CategoryChannel} with matching id.
+     */
+    CategoryChannel getCategoryChannelById(String id);
+
+    /**
+     * Gets a {@link net.dv8tion.jda.core.entities.CategoryChannel CategoryChannel} from this guild that has the same id as the
+     * one provided. This method is similar to {@link net.dv8tion.jda.core.JDA#getCategoryChannelById(long)}, but it only
+     * checks this specific Guild for a CategoryChannel.
+     * <br>If there is no {@link net.dv8tion.jda.core.entities.CategoryChannel CategoryChannel} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.core.entities.CategoryChannel CategoryChannel}.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.CategoryChannel CategoryChannel} with matching id.
+     */
+    CategoryChannel getCategoryChannelById(long id);
+
+    /**
+     * Gets all {@link net.dv8tion.jda.core.entities.CategoryChannel CategoryChannels} in this {@link net.dv8tion.jda.core.entities.Guild Guild}.
+     * <br>The channels returned will be sorted according to their position.
+     *
+     * @return An immutable List of all {@link net.dv8tion.jda.core.entities.CategoryChannel CategoryChannels} in this Guild.
+     */
+    List<CategoryChannel> getCategoryChannels();
+
+    /**
+     * Gets a list of all {@link net.dv8tion.jda.core.entities.CategoryChannel CategoryChannels} in this Guild that have the same
+     * name as the one provided.
+     * <br>If there are no {@link net.dv8tion.jda.core.entities.CategoryChannel CategoryChannels} with the provided name, then this returns an empty list.
+     *
+     * @param  name
+     *         The name used to filter the returned {@link net.dv8tion.jda.core.entities.CategoryChannel CategoryChannels}.
+     * @param  ignoreCase
+     *         Determines if the comparison ignores case when comparing. True - case insensitive.
+     *
+     * @return Possibly-empty immutable list of all CategoryChannels names that match the provided name.
+     */
+    List<CategoryChannel> getCategoryChannelsByName(String name, boolean ignoreCase);
+    
+    /**
      * Gets a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} from this guild that has the same id as the
      * one provided. This method is similar to {@link net.dv8tion.jda.core.JDA#getTextChannelById(String)}, but it only
      * checks this specific Guild for a TextChannel.

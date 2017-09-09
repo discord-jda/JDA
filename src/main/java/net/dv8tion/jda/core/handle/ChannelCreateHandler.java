@@ -19,6 +19,7 @@ package net.dv8tion.jda.core.handle;
 import net.dv8tion.jda.client.events.group.GroupJoinEvent;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.events.channel.category.CategoryChannelCreateEvent;
 import net.dv8tion.jda.core.events.channel.priv.PrivateChannelCreateEvent;
 import net.dv8tion.jda.core.events.channel.text.TextChannelCreateEvent;
 import net.dv8tion.jda.core.events.channel.voice.VoiceChannelCreateEvent;
@@ -76,6 +77,14 @@ public class ChannelCreateHandler extends SocketHandler
                         new GroupJoinEvent(
                                 api, responseNumber,
                                 api.getEntityBuilder().createGroup(content)));
+                break;
+            }
+            case CATEGORY:
+            {
+                api.getEventManager().handle(
+                        new CategoryChannelCreateEvent(
+                                api, responseNumber,
+                                api.getEntityBuilder().createCategoryChannel(content, guildId)));
                 break;
             }
             default:

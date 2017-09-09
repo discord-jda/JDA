@@ -20,13 +20,11 @@ import net.dv8tion.jda.client.entities.impl.GroupImpl;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.client.events.group.GroupLeaveEvent;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.entities.PrivateChannel;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.entities.impl.UserImpl;
+import net.dv8tion.jda.core.events.channel.category.CategoryChannelDeleteEvent;
 import net.dv8tion.jda.core.events.channel.priv.PrivateChannelDeleteEvent;
 import net.dv8tion.jda.core.events.channel.text.TextChannelDeleteEvent;
 import net.dv8tion.jda.core.events.channel.voice.VoiceChannelDeleteEvent;
@@ -156,6 +154,24 @@ public class ChannelDeleteHandler extends SocketHandler
                         new GroupLeaveEvent(
                                 api, responseNumber,
                                 group));
+                break;
+            }
+            case CATEGORY:
+            {
+                GuildImpl guild = (GuildImpl) api.getGuildMap().get(guildId);
+                CategoryChannel channel = api.getCategoryChannelMap().remove(channelId);
+                if (channel == null)
+                {
+                    api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+                    EventCache.LOG.debug("CHANNEL_DELETE attempted to delete a category channel that is not yet cached. JSON: " + content);
+                    return null;
+                }
+
+                guild.getTextChannelsMap().remove(channel.getIdLong());
+                api.getEventManager().handle(
+                        new CategoryChannelDeleteEvent(
+                                api, responseNumber,
+                                channel));
                 break;
             }
             default:

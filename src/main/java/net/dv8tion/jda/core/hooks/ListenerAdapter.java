@@ -35,6 +35,11 @@ import net.dv8tion.jda.client.events.message.group.react.GroupMessageReactionRem
 import net.dv8tion.jda.client.events.relationship.*;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.events.*;
+import net.dv8tion.jda.core.events.channel.category.CategoryChannelCreateEvent;
+import net.dv8tion.jda.core.events.channel.category.CategoryChannelDeleteEvent;
+import net.dv8tion.jda.core.events.channel.category.update.CategoryChannelUpdateNameEvent;
+import net.dv8tion.jda.core.events.channel.category.update.CategoryChannelUpdatePermissionsEvent;
+import net.dv8tion.jda.core.events.channel.category.update.CategoryChannelUpdatePositionEvent;
 import net.dv8tion.jda.core.events.channel.priv.PrivateChannelCreateEvent;
 import net.dv8tion.jda.core.events.channel.priv.PrivateChannelDeleteEvent;
 import net.dv8tion.jda.core.events.channel.text.GenericTextChannelEvent;
@@ -159,6 +164,13 @@ public abstract class ListenerAdapter implements EventListener
     public void onMessageReactionRemoveAll(MessageReactionRemoveAllEvent event) {}
 
 //    public void onInviteReceived(InviteReceivedEvent event) {}
+
+    //CategoryChannel Events
+    public void onCategoryChannelDelete(CategoryChannelDeleteEvent event) {}
+    public void onCategoryChannelUpdateName(CategoryChannelUpdateNameEvent event) {}
+    public void onCategoryChannelUpdatePosition(CategoryChannelUpdatePositionEvent event) {}
+    public void onCategoryChannelUpdatePermissions(CategoryChannelUpdatePermissionsEvent event) {}
+    public void onCategoryChannelCreate(CategoryChannelCreateEvent event) {}
 
     //TextChannel Events
     public void onTextChannelDelete(TextChannelDeleteEvent event) {}
@@ -426,6 +438,18 @@ public abstract class ListenerAdapter implements EventListener
             onSelfUpdateName((SelfUpdateNameEvent) event);
         else if (event instanceof SelfUpdateVerifiedEvent)
             onSelfUpdateVerified((SelfUpdateVerifiedEvent) event);
+
+        //CategoryChannel Events
+        else if (event instanceof CategoryChannelCreateEvent)
+            onCategoryChannelCreate((CategoryChannelCreateEvent) event);
+        else if (event instanceof CategoryChannelUpdateNameEvent)
+            onCategoryChannelUpdateName((CategoryChannelUpdateNameEvent) event);
+        else if (event instanceof CategoryChannelUpdatePositionEvent)
+            onCategoryChannelUpdatePosition((CategoryChannelUpdatePositionEvent) event);
+        else if (event instanceof CategoryChannelDeleteEvent)
+            onCategoryChannelDelete((CategoryChannelDeleteEvent) event);
+        else if (event instanceof CategoryChannelUpdatePermissionsEvent)
+            onCategoryChannelUpdatePermissions((CategoryChannelUpdatePermissionsEvent) event);
 
         //TextChannel Events
         else if (event instanceof TextChannelCreateEvent)

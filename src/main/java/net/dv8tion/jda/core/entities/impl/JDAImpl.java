@@ -59,6 +59,7 @@ public class JDAImpl implements JDA
 
     protected final TLongObjectMap<User> users = MiscUtil.newLongMap();
     protected final TLongObjectMap<Guild> guilds = MiscUtil.newLongMap();
+    protected final TLongObjectMap<CategoryChannel> categoryChannels = MiscUtil.newLongMap();
     protected final TLongObjectMap<TextChannel> textChannels = MiscUtil.newLongMap();
     protected final TLongObjectMap<VoiceChannel> voiceChannels = MiscUtil.newLongMap();
     protected final TLongObjectMap<PrivateChannel> privateChannels = MiscUtil.newLongMap();
@@ -454,6 +455,35 @@ public class JDAImpl implements JDA
     }
 
     @Override
+    public List<CategoryChannel> getCategoryChannels()
+    {
+        return Collections.unmodifiableList(new ArrayList<>(categoryChannels.valueCollection()));
+    }
+
+    @Override
+    public CategoryChannel getCategoryChannelById(String id)
+    {
+        return categoryChannels.get(MiscUtil.parseSnowflake(id));
+    }
+
+    @Override
+    public CategoryChannel getCategoryChannelById(long id)
+    {
+        return categoryChannels.get(id);
+    }
+
+    @Override
+    public List<CategoryChannel> getCategoryChannelsByName(String name, boolean ignoreCase)
+    {
+        return categoryChannels.valueCollection().stream().filter(tc ->
+            ignoreCase
+                ? name.equalsIgnoreCase(tc.getName())
+                : name.equals(tc.getName()))
+            .collect(Collectors.toList());
+    }
+
+
+    @Override
     public List<TextChannel> getTextChannels()
     {
         return Collections.unmodifiableList(new ArrayList<>(textChannels.valueCollection()));
@@ -742,6 +772,11 @@ public class JDAImpl implements JDA
     public TLongObjectMap<Guild> getGuildMap()
     {
         return guilds;
+    }
+
+    public TLongObjectMap<CategoryChannel> getCategoryChannelMap()
+    {
+        return categoryChannels;
     }
 
     public TLongObjectMap<TextChannel> getTextChannelMap()

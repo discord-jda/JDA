@@ -53,6 +53,7 @@ public class GuildImpl implements Guild
 {
     private final long id;
     private final JDAImpl api;
+    private final TLongObjectMap<CategoryChannel> categoryChannels = MiscUtil.newLongMap();
     private final TLongObjectMap<TextChannel> textChannels = MiscUtil.newLongMap();
     private final TLongObjectMap<VoiceChannel> voiceChannels = MiscUtil.newLongMap();
     private final TLongObjectMap<Member> members = MiscUtil.newLongMap();
@@ -281,6 +282,38 @@ public class GuildImpl implements Guild
         return Collections.unmodifiableList(members.valueCollection().stream()
                         .filter(m -> m.getRoles().containsAll(roles))
                         .collect(Collectors.toList()));
+    }
+
+    @Override
+    public CategoryChannel getCategoryChannelById(String id)
+    {
+        return categoryChannels.get(MiscUtil.parseSnowflake(id));
+    }
+
+    @Override
+    public CategoryChannel getCategoryChannelById(long id)
+    {
+        return categoryChannels.get(id);
+    }
+
+    @Override
+    public List<CategoryChannel> getCategoryChannelsByName(String name, boolean ignoreCase)
+    {
+        Checks.notNull(name, "name");
+        return Collections.unmodifiableList(categoryChannels.valueCollection().stream()
+            .filter(tc ->
+                ignoreCase
+                    ? name.equalsIgnoreCase(tc.getName())
+                    : name.equals(tc.getName()))
+            .collect(Collectors.toList()));
+    }
+
+    @Override
+    public List<CategoryChannel> getCategoryChannels()
+    {
+        ArrayList<CategoryChannel> channels = new ArrayList<>(categoryChannels.valueCollection());
+        channels.sort(Comparator.reverseOrder());
+        return Collections.unmodifiableList(channels);
     }
 
     @Override
@@ -795,6 +828,11 @@ public class GuildImpl implements Guild
     }
 
     // -- Map getters --
+
+    public TLongObjectMap<CategoryChannel> getCategoryChannelsMap()
+    {
+        return categoryChannels;
+    }
 
     public TLongObjectMap<TextChannel> getTextChannelsMap()
     {
