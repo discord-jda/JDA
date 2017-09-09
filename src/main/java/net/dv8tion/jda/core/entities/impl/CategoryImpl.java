@@ -3,7 +3,6 @@ package net.dv8tion.jda.core.entities.impl;
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.InviteAction;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
@@ -79,7 +78,7 @@ public class CategoryImpl extends AbstractChannelImpl<CategoryImpl> implements C
     @Override
     public RestAction<List<Invite>> getInvites()
     {
-        return new AuditableRestAction.EmptyRestAction<>(getJDA(), Collections.emptyList());
+        return new RestAction.EmptyRestAction<>(getJDA(), Collections.emptyList());
     }
 
     @Override
