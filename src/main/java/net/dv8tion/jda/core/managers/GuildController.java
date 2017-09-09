@@ -1801,13 +1801,13 @@ public class GuildController
     {
         checkAvailable();
         checkPermission(Permission.MANAGE_CHANNEL);
-        Checks.notNull(name, "name");
+        Checks.notBlank(name, "name");
 
         if (name.length() < 2 || name.length() > 100)
             throw new IllegalArgumentException("Provided name must be 2 - 100 characters in length");
 
         Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(guild.getId());
-        return new ChannelAction(route, name, guild, false);
+        return new ChannelAction(route, name, guild, ChannelType.TEXT);
     }
 
     /**
@@ -1842,13 +1842,27 @@ public class GuildController
     {
         checkAvailable();
         checkPermission(Permission.MANAGE_CHANNEL);
-        Checks.notNull(name, "name");
+        Checks.notBlank(name, "name");
 
         if (name.length() < 2 || name.length() > 100)
             throw new IllegalArgumentException("Provided name must be 2 to 100 characters in length");
 
         Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(guild.getId());
-        return new ChannelAction(route, name, guild, true);
+        return new ChannelAction(route, name, guild, ChannelType.VOICE);
+    }
+
+    @CheckReturnValue
+    public ChannelAction createCategory(String name)
+    {
+        checkAvailable();
+        checkPermission(Permission.MANAGE_CHANNEL);
+        Checks.notBlank(name, "name");
+
+        if (name.length() < 2 || name.length() > 100)
+            throw new IllegalArgumentException("Provided name must be 2 to 100 characters in length");
+
+        Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(guild.getId());
+        return new ChannelAction(route, name, guild, ChannelType.CATEGORY);
     }
 
     /**
@@ -1896,29 +1910,22 @@ public class GuildController
     {
         Checks.notNull(channel, "Channel");
         checkPermission(Permission.MANAGE_CHANNEL);
-        boolean isVoice = channel instanceof VoiceChannel;
 
         Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(guild.getId());
-        final ChannelAction action = new ChannelAction(route, channel.getName(), guild, isVoice);
+        final ChannelAction action = new ChannelAction(route, channel.getName(), guild, channel.getType());
 
-        if (isVoice)
+        switch (channel.getType())
         {
-            VoiceChannel voice = (VoiceChannel) channel;
-            action.setBitrate(voice.getBitrate())
-                  .setUserlimit(voice.getUserLimit());
-        }
-        else
-        {
-            TextChannel text = (TextChannel) channel;
-            action.setTopic(text.getTopic());
-        }
-
-        for (PermissionOverride o : channel.getPermissionOverrides())
-        {
-            if (o.isMemberOverride())
-                action.addPermissionOverride(o.getMember(), o.getAllowedRaw(), o.getDeniedRaw());
-            else
-                action.addPermissionOverride(o.getRole(), o.getAllowedRaw(), o.getDeniedRaw());
+            case VOICE:
+                VoiceChannel voice = (VoiceChannel) channel;
+                action.setBitrate(voice.getBitrate())
+                      .setUserlimit(voice.getUserLimit());
+                break;
+            case TEXT:
+                TextChannel text = (TextChannel) channel;
+                action.setTopic(text.getTopic())
+                      .setNSFW(text.isNSFW());
+                break;
         }
 
         return action;
@@ -2133,6 +2140,30 @@ public class GuildController
                     request.onFailure(response);
             }
         };
+    }
+
+    /**
+     * Modifies the positional order of {@link net.dv8tion.jda.core.entities.Guild#getCategories() Guild.getCategories()}
+     * using a specific {@link net.dv8tion.jda.core.requests.RestAction RestAction} extension to allow moving Channels
+     * {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveDown(int) down}
+     * or {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveTo(int) to} a specific position.
+     * <br>This uses <b>ascending</b> order with a 0 based index.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNNKOWN_CHANNEL}
+     *     <br>One of the channels has been deleted before the completion of the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The currently logged in account was removed from the Guild</li>
+     * </ul>
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.order.ChannelOrderAction ChannelOrderAction} - Type: {@link net.dv8tion.jda.core.entities.Category Category}
+     */
+    @CheckReturnValue
+    public ChannelOrderAction<Category> modifyCategoryPositions()
+    {
+        return new ChannelOrderAction<>(guild, ChannelType.CATEGORY);
     }
 
     /**

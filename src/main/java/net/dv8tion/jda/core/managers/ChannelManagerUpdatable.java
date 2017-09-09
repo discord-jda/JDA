@@ -19,10 +19,7 @@ package net.dv8tion.jda.core.managers;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Channel;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.fields.ChannelField;
 import net.dv8tion.jda.core.requests.Request;
@@ -58,6 +55,7 @@ public class ChannelManagerUpdatable
     protected ChannelField<Integer> userLimit;
     protected ChannelField<Integer> bitrate;
     protected ChannelField<Boolean> nsfw;
+    protected ChannelField<Category> parent;
 
     /**
      * Creates a new ChannelManagerUpdatable instance
@@ -122,6 +120,14 @@ public class ChannelManagerUpdatable
         return name;
     }
 
+    //TODO docs
+    public ChannelField<Category> getParentField()
+    {
+        if (channel instanceof Category)
+            throw new UnsupportedOperationException("Setting the parent is not allowed on categories!");
+        return parent;
+    }
+
     /**
      * An {@link net.dv8tion.jda.core.managers.fields.ChannelField ChannelField}
      * for the <b><u>topic</u></b> of the selected {@link net.dv8tion.jda.core.entities.Channel Channel}.
@@ -142,8 +148,8 @@ public class ChannelManagerUpdatable
      */
     public ChannelField<String> getTopicField()
     {
-        if (channel instanceof VoiceChannel)
-            throw new UnsupportedOperationException("Setting a Topic on VoiceChannels is not allowed!");
+        if (channel.getType() != ChannelType.TEXT)
+            throw new UnsupportedOperationException("Setting a Topic is only allowed on TextChannels!");
 
         return topic;
     }
@@ -168,8 +174,8 @@ public class ChannelManagerUpdatable
      */
     public ChannelField<Integer> getUserLimitField()
     {
-        if (channel instanceof TextChannel)
-            throw new UnsupportedOperationException("Setting user limit for TextChannels is not allowed!");
+        if (channel.getType() != ChannelType.VOICE)
+            throw new UnsupportedOperationException("Setting user limit is only allowed on VoiceChannels!");
 
         return userLimit;
     }
@@ -190,8 +196,8 @@ public class ChannelManagerUpdatable
      */
     public ChannelField<Boolean> getNSFWField()
     {
-        if (channel instanceof VoiceChannel)
-            throw new UnsupportedOperationException("Setting the nsfw flag on VoiceChannels is not allowed!");
+        if (channel.getType() != ChannelType.TEXT)
+            throw new UnsupportedOperationException("Setting the nsfw flag is only allowed on TextChannels!");
 
         return nsfw;
     }
@@ -216,8 +222,8 @@ public class ChannelManagerUpdatable
      */
     public ChannelField<Integer> getBitrateField()
     {
-        if (channel instanceof TextChannel)
-            throw new UnsupportedOperationException("Setting user limit for TextChannels is not allowed!");
+        if (channel.getType() != ChannelType.VOICE)
+            throw new UnsupportedOperationException("Setting user limit is only allowed on VoiceChannels!");
 
         return bitrate;
     }
@@ -232,10 +238,12 @@ public class ChannelManagerUpdatable
         this.name.reset();
         if (channel instanceof TextChannel)
         {
+            this.parent.reset();
             this.topic.reset();
         }
-        else
+        else if (channel instanceof VoiceChannel)
         {
+            this.parent.reset();
             this.bitrate.reset();
             this.userLimit.reset();
         }
@@ -289,6 +297,8 @@ public class ChannelManagerUpdatable
             frame.put("user_limit", userLimit.getValue());
         if (bitrate != null && bitrate.shouldUpdate())
             frame.put("bitrate", bitrate.getValue());
+        if (parent != null && parent.shouldUpdate())
+            frame.put("parent_id", parent.getValue() == null ? JSONObject.NULL : parent.getValue().getIdLong());
 
         reset();    //now that we've built our JSON object, reset the manager back to the non-modified state
         Route.CompiledRoute route = Route.Channels.MODIFY_CHANNEL.compile(channel.getId());
@@ -308,6 +318,7 @@ public class ChannelManagerUpdatable
     protected boolean needToUpdate()
     {
         return name.shouldUpdate()
+                || (parent != null && parent.shouldUpdate())
                 || (topic != null && topic.shouldUpdate())
                 || (userLimit != null && userLimit.shouldUpdate())
                 || (bitrate != null && bitrate.shouldUpdate())
@@ -333,6 +344,19 @@ public class ChannelManagerUpdatable
             }
         };
 
+        if (!(channel instanceof Category))
+        {
+            this.parent = new ChannelField<Category>(this, channel::getParent)
+            {
+                @Override
+                public void checkValue(Category value)
+                {
+                    if (value != null)
+                        Checks.check(value.getGuild().equals(getGuild()), "Category is not from same Guild!");
+                }
+            };
+        }
+
         if (channel instanceof TextChannel)
         {
             TextChannel tc = (TextChannel) channel;
@@ -356,7 +380,7 @@ public class ChannelManagerUpdatable
                 }
             };
         }
-        else
+        else if (channel instanceof VoiceChannel)
         {
             VoiceChannel vc = (VoiceChannel) channel;
             this.userLimit = new ChannelField<Integer>(this, vc::getUserLimit)

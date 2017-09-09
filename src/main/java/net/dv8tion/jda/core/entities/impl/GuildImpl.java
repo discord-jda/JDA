@@ -53,6 +53,7 @@ public class GuildImpl implements Guild
 {
     private final long id;
     private final JDAImpl api;
+    private final TLongObjectMap<CategoryImpl> categories = MiscUtil.newLongMap();
     private final TLongObjectMap<TextChannel> textChannels = MiscUtil.newLongMap();
     private final TLongObjectMap<VoiceChannel> voiceChannels = MiscUtil.newLongMap();
     private final TLongObjectMap<Member> members = MiscUtil.newLongMap();
@@ -281,6 +282,35 @@ public class GuildImpl implements Guild
         return Collections.unmodifiableList(members.valueCollection().stream()
                         .filter(m -> m.getRoles().containsAll(roles))
                         .collect(Collectors.toList()));
+    }
+
+    @Override
+    public Category getCategoryById(String id)
+    {
+        return categories.get(MiscUtil.parseSnowflake(id));
+    }
+
+    @Override
+    public Category getCategoryById(long id)
+    {
+        return categories.get(id);
+    }
+
+    @Override
+    public List<Category> getCategories()
+    {
+        return Arrays.asList(categories.values(new CategoryImpl[categories.size()]));
+    }
+
+    @Override
+    public List<Category> getCategoriesByName(String name, boolean ignoreCase)
+    {
+        Checks.notNull(name, "Name");
+        return Collections.unmodifiableList(categories.valueCollection().stream()
+                    .filter(category -> ignoreCase
+                            ? category.getName().equalsIgnoreCase(name)
+                            : category.getName().equals(name))
+                    .collect(Collectors.toList()));
     }
 
     @Override
@@ -796,12 +826,17 @@ public class GuildImpl implements Guild
 
     // -- Map getters --
 
+    public TLongObjectMap<CategoryImpl> getCategoriesMap()
+    {
+        return categories;
+    }
+
     public TLongObjectMap<TextChannel> getTextChannelsMap()
     {
         return textChannels;
     }
 
-    public TLongObjectMap<VoiceChannel> getVoiceChannelMap()
+    public TLongObjectMap<VoiceChannel> getVoiceChannelsMap()
     {
         return voiceChannels;
     }
