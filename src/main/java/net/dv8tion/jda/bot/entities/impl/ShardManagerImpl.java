@@ -372,12 +372,14 @@ public class ShardManagerImpl implements ShardManager
     @Override
     public void restart(final int shardId)
     {
+        Checks.notNegative(shardId, "shardId");
+        Checks.check(shardId < this.shardsTotal, "shardId must be lower than shardsTotal");
+
         final JDAImpl jda = this.shards.remove(shardId);
         if (jda != null)
-        {
             jda.shutdown();
-            this.queue.offer(shardId);
-        }
+
+        this.queue.offer(shardId);
     }
 
     @Override

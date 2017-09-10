@@ -310,9 +310,10 @@ public interface ShardManager
 
     /**
      * Restarts the shards with the given id only.
+     * <br> If there is no shard with the given Id this method acts like {@link #start(int)}. 
      *
      * @throws IllegalArgumentException
-     *         if shardId is lower than minShardId or higher than maxShardId
+     *         if shardId is negative or higher than maxShardId
      */
     void restart(int shardId);
 
