@@ -1067,6 +1067,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         handlers.put("VOICE_SERVER_UPDATE",         new VoiceServerUpdateHandler(api));
         handlers.put("VOICE_STATE_UPDATE",          new VoiceStateUpdateHandler(api));
 
+        // Unused events
+        handlers.put("CHANNEL_PINS_UPDATE",         new SocketHandler.NOPHandler(api));
+        handlers.put("WEBHOOKS_UPDATE",             new SocketHandler.NOPHandler(api));
+
         if (api.getAccountType() == AccountType.CLIENT)
         {
             handlers.put("CALL_CREATE",              new CallCreateHandler(api));
@@ -1077,14 +1081,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             handlers.put("RELATIONSHIP_ADD",         new RelationshipAddHandler(api));
             handlers.put("RELATIONSHIP_REMOVE",      new RelationshipRemoveHandler(api));
 
-            handlers.put("MESSAGE_ACK", new SocketHandler(api)
-            {
-                @Override
-                protected Long handleInternally(JSONObject content)
-                {
-                    return null;
-                }
-            });
+            // Unused client events
+            handlers.put("MESSAGE_ACK", new SocketHandler.NOPHandler(api));
         }
     }
 

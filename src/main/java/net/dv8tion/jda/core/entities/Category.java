@@ -2,6 +2,10 @@ package net.dv8tion.jda.core.entities;
 
 import java.util.List;
 
+/**
+ * Represents a channel category in the official Discord API.
+ * <br>Categories are used to keep order in a Guild by dividing the channels into groups.
+ */
 public interface Category extends Channel, Comparable<Category>
 {
     /**
