@@ -77,7 +77,6 @@ public class ShardManagerImpl implements ShardManager
 
     protected ScheduledFuture<?> worker;
 
-
     public ShardManagerImpl(final int shardsTotal, final TIntSet shardIds, final List<Object> listeners, final String token, final IEventManager eventManager, final IAudioSendFactory audioSendFactory, final Game game, final OnlineStatus status, final OkHttpClient.Builder httpClientBuilder, final WebSocketFactory wsFactory, final int maxReconnectDelay, final int corePoolSize, final boolean enableVoice, final boolean enableShutdownHook, final boolean enableBulkDeleteSplitting, final boolean autoReconnect, final boolean idle)
     {
         this.shardsTotal = shardsTotal;
@@ -87,8 +86,8 @@ public class ShardManagerImpl implements ShardManager
         this.audioSendFactory = audioSendFactory;
         this.game = game;
         this.status = status;
-        this.httpClientBuilder = httpClientBuilder;
-        this.wsFactory = wsFactory;
+        this.httpClientBuilder = httpClientBuilder == null ? new OkHttpClient.Builder() : httpClientBuilder;
+        this.wsFactory = wsFactory == null ? new WebSocketFactory() : wsFactory;
         this.maxReconnectDelay = maxReconnectDelay;
         this.corePoolSize = corePoolSize;
         this.enableVoice = enableVoice;
@@ -456,7 +455,7 @@ public class ShardManagerImpl implements ShardManager
 
     protected JDAImpl buildInstance(final int shardId) throws LoginException, RateLimitedException
     {
-        final JDAImpl jda = new JDAImpl(AccountType.BOT, httpClientBuilder, wsFactory, this.autoReconnect, this.enableVoice, false, this.enableBulkDeleteSplitting, this.corePoolSize, this.maxReconnectDelay);
+        final JDAImpl jda = new JDAImpl(AccountType.BOT, this.httpClientBuilder, this.wsFactory, this.autoReconnect, this.enableVoice, false, this.enableBulkDeleteSplitting, this.corePoolSize, this.maxReconnectDelay);
 
         jda.asBot().setShardManager(this);
 
