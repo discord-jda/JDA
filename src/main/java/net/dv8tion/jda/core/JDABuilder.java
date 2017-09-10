@@ -91,8 +91,11 @@ public class JDABuilder
      * Sets the queue that will be used to reconnect sessions.
      * <br>This will ensure that sessions do not reconnect at the same time!
      *
+     * <p><b>It is required to use the same instance of this queue for all JDA sessions of the same bot account!
+     * <br>Not doing that may result in <u>API spam and finally an IP ban.</u></b>
+     *
      * @param  queue
-     *         {@link java.util.concurrent.BlockingQueue BlockingQueue} to use
+     *         {@link net.dv8tion.jda.core.requests.SessionReconnectQueue SessionReconnectQueue} to use
      *
      * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
      */
@@ -424,6 +427,9 @@ public class JDABuilder
      * <br><b>PMs are only sent to shard 0.</b>
      *
      * <p>Please note, that a shard will not know about guilds which are not assigned to it.
+     *
+     * <p><u><b>When sharding it is a required to use a {@link net.dv8tion.jda.core.requests.SessionReconnectQueue SessionReconnectQueue}
+     * to ensure that shards will not reconnect at the same time and cause API spam. See {@link #setReconnectQueue(SessionReconnectQueue)}</b></u>
      *
      * <p><b>It is not possible to use sharding with an account for {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}!</b>
      *

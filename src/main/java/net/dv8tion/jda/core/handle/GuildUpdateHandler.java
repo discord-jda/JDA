@@ -54,7 +54,7 @@ public class GuildUpdateHandler extends SocketHandler
         Guild.ExplicitContentLevel explicitContentLevel = Guild.ExplicitContentLevel.fromKey(content.getInt("explicit_content_filter"));
         Guild.Timeout afkTimeout = Guild.Timeout.fromKey(content.getInt("afk_timeout"));
         VoiceChannel afkChannel = !content.isNull("afk_channel_id")
-                ? guild.getVoiceChannelMap().get(content.getLong("afk_channel_id"))
+                ? guild.getVoiceChannelsMap().get(content.getLong("afk_channel_id"))
                 : null;
         TextChannel systemChannel = !content.isNull("system_channel_id")
                 ? guild.getTextChannelsMap().get(content.getLong("system_channel_id"))
