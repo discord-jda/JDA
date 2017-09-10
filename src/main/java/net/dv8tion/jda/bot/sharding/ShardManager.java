@@ -309,7 +309,7 @@ public interface ShardManager
     void restart();
 
     /**
-     * Restarts the shards with the given id.
+     * Restarts the shards with the given id only.
      *
      * @throws IllegalArgumentException
      *         if shardId is lower than minShardId or higher than maxShardId
@@ -366,27 +366,25 @@ public interface ShardManager
 
     /**
      * Shuts down all JDA shards, closing all their connections.
-     * After this command is issShardManageragerImpl instance can not be used anymore.
-     *
-     * <p>This is the same as calling {@link #shutdown(boolean) shutdown(true)}.
+     * After this method has been called the ShardManager instance can not be used anymore.
      */
     void shutdown();
 
     /**
-     * Shuts down all JDA shards, closing all their connections.
-     * After this command is issued the ShardManager instance can not be used anymore.
-     *
-     * <p>Depending on the value of {@code free}, this will also close the background-thread used for requests by Unirest.
-     * <br>If the background-thread is closed, the system can exit properly, but no further JDA requests are possible (includes other JDA instances).
-     * If you want to create any new instances or if you have any other instances running in parallel, then {@code free}
-     * should be set to false.
-     *
-     * @param  free If true, shuts down JDA's rest system permanently for all current and future instances.
+     * Shuts down the shard with the given id only.
+     * <br> This does nothing if there is no shard with the given id.
+     * 
+     * @param shardId
+     *        The id of the shard that should be stopped
      */
-    void shutdown(boolean free);
+    void shutdown(int shardId);
 
-    void shutdown(int shardId); // TODO: docs shutdown(int shardId)
-
-    void start(int shardId); // TODO: docs start(int shardId)
+    /**
+     * Adds a new shard with the given id to this ShardManager and starts it.
+     * 
+     * @param shardId
+     *        The id of the shard that should be started
+     */
+    void start(int shardId);
 
 }

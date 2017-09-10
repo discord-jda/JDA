@@ -91,7 +91,7 @@ public class ShardManagerImpl implements ShardManager
         this.maxReconnectDelay = maxReconnectDelay;
         this.corePoolSize = corePoolSize;
         this.enableVoice = enableVoice;
-        this.shutdownHook = enableShutdownHook ? new Thread(() -> ShardManagerImpl.this.shutdown(true), "JDA Shutdown Hook") : null;;
+        this.shutdownHook = enableShutdownHook ? new Thread(() -> ShardManagerImpl.this.shutdown(), "JDA Shutdown Hook") : null;
         this.enableBulkDeleteSplitting = enableBulkDeleteSplitting;
         this.autoReconnect = autoReconnect;
         this.idle = idle;
@@ -409,12 +409,6 @@ public class ShardManagerImpl implements ShardManager
     @Override
     public void shutdown()
     {
-        this.shutdown(true);
-    }
-
-    @Override
-    public void shutdown(final boolean free)
-    {
         if (this.shutdown.getAndSet(true))
             return; // shutdown has already been requested
 
@@ -429,7 +423,7 @@ public class ShardManagerImpl implements ShardManager
             catch (final Exception ignored)
             {}
 
-        this.executor.shutdownNow();
+        this.executor.shutdown();
 
         if (this.shards != null)
             for (final JDA jda : this.shards.valueCollection())
