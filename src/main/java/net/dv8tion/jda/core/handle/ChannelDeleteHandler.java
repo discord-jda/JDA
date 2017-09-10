@@ -20,13 +20,11 @@ import net.dv8tion.jda.client.entities.impl.GroupImpl;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.client.events.group.GroupLeaveEvent;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.entities.PrivateChannel;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.entities.impl.UserImpl;
+import net.dv8tion.jda.core.events.channel.category.CategoryDeleteEvent;
 import net.dv8tion.jda.core.events.channel.priv.PrivateChannelDeleteEvent;
 import net.dv8tion.jda.core.events.channel.text.TextChannelDeleteEvent;
 import net.dv8tion.jda.core.events.channel.voice.VoiceChannelDeleteEvent;
@@ -78,7 +76,7 @@ public class ChannelDeleteHandler extends SocketHandler
             case VOICE:
             {
                 GuildImpl guild = (GuildImpl) api.getGuildMap().get(guildId);
-                VoiceChannel channel = guild.getVoiceChannelMap().remove(channelId);
+                VoiceChannel channel = guild.getVoiceChannelsMap().remove(channelId);
                 if (channel == null)
                 {
                     api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
@@ -93,11 +91,29 @@ public class ChannelDeleteHandler extends SocketHandler
                 {
                     manager.closeAudioConnection(ConnectionStatus.DISCONNECTED_CHANNEL_DELETED);
                 }
-                guild.getVoiceChannelMap().remove(channel.getIdLong());
+                guild.getVoiceChannelsMap().remove(channel.getIdLong());
                 api.getEventManager().handle(
                         new VoiceChannelDeleteEvent(
                                 api, responseNumber,
                                 channel));
+                break;
+            }
+            case CATEGORY:
+            {
+                GuildImpl guild = (GuildImpl) api.getGuildMap().get(guildId);
+                Category category = api.getCategoryMap().remove(channelId);
+                if (category == null)
+                {
+                    api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+                    EventCache.LOG.debug("CHANNEL_DELETE attempted to delete a category channel that is not yet cached. JSON: " + content);
+                    return null;
+                }
+
+                guild.getCategoriesMap().remove(channelId);
+                api.getEventManager().handle(
+                        new CategoryDeleteEvent(
+                                api, responseNumber,
+                                category));
                 break;
             }
             case PRIVATE:
@@ -161,6 +177,7 @@ public class ChannelDeleteHandler extends SocketHandler
             default:
                 throw new IllegalArgumentException("CHANNEL_DELETE provided an unknown channel type. JSON: " + content);
         }
+        api.getEventCache().clear(EventCache.Type.CHANNEL, channelId);
         return null;
     }
 }
