@@ -303,7 +303,7 @@ public class ShardManagerImpl implements ShardManager
             throw e;
         }
 
-        this.worker = this.executor.scheduleAtFixedRate(() ->
+        this.worker = this.executor.scheduleWithFixedDelay(() ->
         {
             if (this.queue.isEmpty())
                 return;
@@ -343,7 +343,7 @@ public class ShardManagerImpl implements ShardManager
                     api.shutdown();
                 throw new RuntimeException(e);
             }
-        }, 0, 5, TimeUnit.SECONDS);
+        }, 0, 5200, TimeUnit.MILLISECONDS); // 5s for ratelimit, 200ms for safety
 
         if (this.shutdownHook != null)
             Runtime.getRuntime().addShutdownHook(this.shutdownHook);
