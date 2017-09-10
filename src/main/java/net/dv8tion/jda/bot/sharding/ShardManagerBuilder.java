@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.security.auth.login.LoginException;
 import net.dv8tion.jda.bot.entities.impl.ShardManagerImpl;
+import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.Game;
@@ -35,6 +36,7 @@ import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.EventListener;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.hooks.SubscribeEvent;
+import net.dv8tion.jda.core.requests.SessionReconnectQueue;
 import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.OkHttpClient;
 
@@ -66,6 +68,7 @@ public class ShardManagerBuilder
     protected int maxReconnectDelay = 900;
     protected OnlineStatus status = OnlineStatus.ONLINE;
     protected String token = null;
+    private SessionReconnectQueue reconnectQueue;
 
     /**
      * Creates a completely empty ShardManagerBuilder.
@@ -121,7 +124,7 @@ public class ShardManagerBuilder
      */
     public ShardManager buildAsync() throws LoginException, IllegalArgumentException, RateLimitedException
     {
-        final ShardManagerImpl manager = new ShardManagerImpl(this.shardsTotal, this.shards, this.listeners, this.token, this.eventManager, this.audioSendFactory, this.game, this.status, this.httpClientBuilder, this.wsFactory, this.maxReconnectDelay, this.corePoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting, this.autoReconnect, this.idle);
+        final ShardManagerImpl manager = new ShardManagerImpl(this.shardsTotal, this.shards, this.listeners, this.token, this.eventManager, this.audioSendFactory, this.game, this.status, this.httpClientBuilder, this.wsFactory, this.maxReconnectDelay, this.corePoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting, this.autoReconnect, this.idle, reconnectQueue);
 
         manager.login();
 
@@ -307,6 +310,21 @@ public class ShardManagerBuilder
     }
 
     /**
+     * Sets the {@link okhttp3.OkHttpClient.Builder Builder} that will be used by JDA's requester.
+     * This can be used to set things such as connection timeout and proxy. 
+     *
+     * @param  builder
+     *         The new {@link okhttp3.OkHttpClient.Builder Builder} to use.
+     *
+     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public ShardManagerBuilder setHttpClientBuilder(OkHttpClient.Builder builder)
+    {
+        this.httpClientBuilder = builder;
+        return this;
+    }
+
+    /**
      * Sets whether or not we should mark our sessions as afk
      * <br>This value can be changed at any time using
      * {@link net.dv8tion.jda.bot.entities.impl.ShardManagerImpl#setIdle(boolean) ShardManagerImpl#setIdle(boolean)}.
@@ -345,32 +363,51 @@ public class ShardManagerBuilder
     }
 
     /**
-     * Sets the {@link okhttp3.OkHttpClient.Builder Builder} that will be used by JDA's requester.
-     * This can be used to set things such as connection timeout and proxy. 
+     * THis can be used to set a custom queue that will be used to reconnect sessions.
+     * <br>This will ensure that sessions do not reconnect at the same time!
+     * 
+     * <p>If none is provided the ShardManager will use fall back to JDA's default implementation!
      *
-     * @param  builder
-     *         The new {@link okhttp3.OkHttpClient.Builder Builder} to use.
+     * @param  queue
+     *         {@link java.util.concurrent.BlockingQueue BlockingQueue} to use
      *
-     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return The {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder ShardManagerBuilder} instance. Useful for chaining.
      */
-    public ShardManagerBuilder setHttpClientBuilder(OkHttpClient.Builder builder)
+    public ShardManagerBuilder setReconnectQueue(SessionReconnectQueue queue)
     {
-        this.httpClientBuilder = builder;
+        this.reconnectQueue = queue;
         return this;
     }
 
     /**
-     * Sets the {@link com.neovisionaries.ws.client.WebSocketFactory WebSocketFactory} that will be used by JDA's websocket client.
-     * This can be used to set things such as connection timeout and proxy.
+     * Sets the range of shards the {@link net.dv8tion.jda.bot.entities.impl.ShardManagerImpl ShardManagerImpl} should contain.
+     * This is usefull if you want to split your shards between multiple JVMs or servers.
      *
-     * @param  factory
-     *         The new {@link com.neovisionaries.ws.client.WebSocketFactory WebSocketFactory} to use.
+     * <p><b>This does not have any effect if the total shard count is set to {@code -1} (get recommended shards from discord).</b>
      *
-     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @param  minShardId
+     *         The lowest shard id the ShardManagerImpl should contain
+     *
+     * @param  maxShardId
+     *         The highest shard id the ShardManagerImpl should contain
+     *
+     * @throws IllegalArgumentException
+     *         If either minShardId is negative, maxShardId is lower than shardsTotal or
+     *         minShardId is lower than or equal to maxShardId
+     *
+     * @return The {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder ShardManagerBuilder} instance. Useful for chaining.
      */
-    public ShardManagerBuilder setWebsocketFactory(WebSocketFactory factory)
+    public ShardManagerBuilder setShards(final int... shardIds)
     {
-        this.wsFactory = factory;
+        Checks.notNull(shardIds, "shardIds");
+        for (int id : shardIds)
+        {
+            Checks.notNegative(id, "minShardId");
+            Checks.check(id < this.shardsTotal, "maxShardId must be lower than shardsTotal");
+        }
+
+        this.shards = new TIntHashSet(shardIds);
+
         return this;
     }
 
@@ -403,38 +440,6 @@ public class ShardManagerBuilder
             shards.add(i);
 
         this.shards = shards;
-
-        return this;
-    }
-
-    /**
-     * Sets the range of shards the {@link net.dv8tion.jda.bot.entities.impl.ShardManagerImpl ShardManagerImpl} should contain.
-     * This is usefull if you want to split your shards between multiple JVMs or servers.
-     *
-     * <p><b>This does not have any effect if the total shard count is set to {@code -1} (get recommended shards from discord).</b>
-     *
-     * @param  minShardId
-     *         The lowest shard id the ShardManagerImpl should contain
-     *
-     * @param  maxShardId
-     *         The highest shard id the ShardManagerImpl should contain
-     *
-     * @throws IllegalArgumentException
-     *         If either minShardId is negative, maxShardId is lower than shardsTotal or
-     *         minShardId is lower than or equal to maxShardId
-     *
-     * @return The {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder ShardManagerBuilder} instance. Useful for chaining.
-     */
-    public ShardManagerBuilder setShards(final int... shardIds)
-    {
-        Checks.notNull(shardIds, "shardIds");
-        for (int id : shardIds)
-        {
-            Checks.notNegative(id, "minShardId");
-            Checks.check(id < this.shardsTotal, "maxShardId must be lower than shardsTotal");
-        }
-
-        this.shards = new TIntHashSet(shardIds);
 
         return this;
     }
@@ -545,6 +550,21 @@ public class ShardManagerBuilder
         Checks.notBlank(token, "token");
 
         this.token = token;
+        return this;
+    }
+
+    /**
+     * Sets the {@link com.neovisionaries.ws.client.WebSocketFactory WebSocketFactory} that will be used by JDA's websocket client.
+     * This can be used to set things such as connection timeout and proxy.
+     *
+     * @param  factory
+     *         The new {@link com.neovisionaries.ws.client.WebSocketFactory WebSocketFactory} to use.
+     *
+     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public ShardManagerBuilder setWebsocketFactory(WebSocketFactory factory)
+    {
+        this.wsFactory = factory;
         return this;
     }
 
