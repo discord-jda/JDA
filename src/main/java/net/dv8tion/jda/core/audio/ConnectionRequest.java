@@ -40,7 +40,7 @@ public class ConnectionRequest
         this.nextAttemptEpoch = System.currentTimeMillis();
     }
 
-    public void setState(ConnectionStage stage)
+    public void setStage(ConnectionStage stage)
     {
         this.stage = stage;
     }

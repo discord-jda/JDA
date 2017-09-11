@@ -258,6 +258,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     String chunkOrSyncRequest = chunkSyncQueue.peekFirst();
                     if (chunkOrSyncRequest != null)
                     {
+                        audioQueueLock.release();
                         needRatelimit = !send(chunkOrSyncRequest, false);
                         if (!needRatelimit)
                             chunkSyncQueue.removeFirst();
@@ -279,7 +280,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                         switch (stage)
                         {
                             case RECONNECT:
-                                audioRequest.setState(ConnectionStage.CONNECT);
+                                audioRequest.setStage(ConnectionStage.CONNECT);
                             case DISCONNECT:
                                 packet = newVoiceClose(channel);
                                 break;
@@ -296,15 +297,25 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                             // was a move channel packet, thus, it won't trigger the removal from
                             // queuedAudioConnections in VoiceServerUpdateHandler because we won't receive
                             // that event just for a move, so we remove it here after successfully sending.
-                            if (stage == ConnectionStage.DISCONNECT)
-                                queuedAudioConnections.remove(channel.getGuild().getIdLong());
-                            else if (audioManager.isConnected() && stage == ConnectionStage.CONNECT)
-                                queuedAudioConnections.remove(channel.getGuild().getIdLong());
+                            if (audioManager.isConnected() && stage == ConnectionStage.CONNECT
+                                || stage == ConnectionStage.DISCONNECT)
+                                queuedAudioConnections.remove(audioRequest.getGuildIdLong());
                         }
+                        else
+                        {
+                            //If stage was RECONNECT before it was now changed to CONNECT,
+                            // since we failed to send the DISCONNECT packet we want to try again thus
+                            // we change back to RECONNECT and try again in the next iteration after
+                            // the backoff of 2 seconds happened (see above)
+                            if (stage == ConnectionStage.RECONNECT)
+                                audioRequest.setStage(ConnectionStage.RECONNECT);
+                        }
+                        audioQueueLock.release();
                         attemptedToSend = true;
                     }
                     else
                     {
+                        audioQueueLock.release();
                         String message = ratelimitQueue.peekFirst();
                         if (message != null)
                         {
@@ -1029,7 +1040,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 queuedAudioConnections.put(guildId, update = new ConnectionRequest(channel, ConnectionStage.RECONNECT));
             // If there is a request we change it to reconnect, no matter what it is
             else
-                update.setState(ConnectionStage.RECONNECT);
+                update.setStage(ConnectionStage.RECONNECT);
             // in all cases, update to this channel
             update.setChannel(channel);
         }
@@ -1053,7 +1064,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 queuedAudioConnections.put(guildId, update = new ConnectionRequest(channel, ConnectionStage.CONNECT));
             // if planned to disconnect, we want to reconnect
             else if (update.getStage() == ConnectionStage.DISCONNECT)
-                update.setState(ConnectionStage.RECONNECT);
+                update.setStage(ConnectionStage.RECONNECT);
             // in all cases, update to this channel
             update.setChannel(channel);
         }
@@ -1219,4 +1230,3 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     }
 
 }
-
