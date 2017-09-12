@@ -3,6 +3,7 @@ package net.dv8tion.jda.core.entities.impl;
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.restaction.ChannelAction;
 import net.dv8tion.jda.core.requests.restaction.InviteAction;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
@@ -67,6 +68,24 @@ public class CategoryImpl extends AbstractChannelImpl<CategoryImpl> implements C
                 return i;
         }
         throw new AssertionError("Somehow when determining position we never found the Category in the Guild's channels? wtf?");
+    }
+
+    @Override
+    public ChannelAction createCopy(Guild guild)
+    {
+        Checks.notNull(guild, "Guild");
+        ChannelAction action = guild.getController().createCategory(name);
+        if (guild.equals(getGuild()))
+        {
+            for (PermissionOverride o : overrides.valueCollection())
+            {
+                if (o.isMemberOverride())
+                    action.addPermissionOverride(o.getMember(), o.getAllowedRaw(), o.getDeniedRaw());
+                else
+                    action.addPermissionOverride(o.getRole(), o.getAllowedRaw(), o.getDeniedRaw());
+            }
+        }
+        return action;
     }
 
     @Override

@@ -170,6 +170,7 @@ public interface Channel extends ISnowflake
      * <p>This copies the following elements:
      * <ol>
      *     <li>Name</li>
+     *     <li>Parent Category (if present)</li>
      *     <li>Voice Elements (Bitrate, Userlimit)</li>
      *     <li>Text Elements (Topic, NSFW)</li>
      *     <li>All permission overrides for Members/Roles</li>
