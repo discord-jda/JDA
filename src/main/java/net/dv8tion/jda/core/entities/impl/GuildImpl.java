@@ -43,6 +43,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -52,6 +53,7 @@ public class GuildImpl implements Guild
 {
     private final long id;
     private final JDAImpl api;
+    private final TLongObjectMap<CategoryImpl> categories = MiscUtil.newLongMap();
     private final TLongObjectMap<TextChannel> textChannels = MiscUtil.newLongMap();
     private final TLongObjectMap<VoiceChannel> voiceChannels = MiscUtil.newLongMap();
     private final TLongObjectMap<Member> members = MiscUtil.newLongMap();
@@ -70,8 +72,8 @@ public class GuildImpl implements Guild
     private String iconId;
     private String splashId;
     private Region region;
-    private TextChannel publicChannel;
     private VoiceChannel afkChannel;
+    private TextChannel systemChannel;
     private Role publicRole;
     private VerificationLevel verificationLevel;
     private NotificationLevel defaultNotificationLevel;
@@ -121,6 +123,12 @@ public class GuildImpl implements Guild
     public VoiceChannel getAfkChannel()
     {
         return afkChannel;
+    }
+
+    @Override
+    public TextChannel getSystemChannel()
+    {
+        return systemChannel;
     }
 
     @Override
@@ -277,6 +285,37 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    public Category getCategoryById(String id)
+    {
+        return categories.get(MiscUtil.parseSnowflake(id));
+    }
+
+    @Override
+    public Category getCategoryById(long id)
+    {
+        return categories.get(id);
+    }
+
+    @Override
+    public List<Category> getCategories()
+    {
+        ArrayList<Category> list = new ArrayList<>(categories.valueCollection());
+        list.sort(Comparator.reverseOrder());
+        return Collections.unmodifiableList(list);
+    }
+
+    @Override
+    public List<Category> getCategoriesByName(String name, boolean ignoreCase)
+    {
+        Checks.notNull(name, "Name");
+        return Collections.unmodifiableList(categories.valueCollection().stream()
+                    .filter(category -> ignoreCase
+                            ? category.getName().equalsIgnoreCase(name)
+                            : category.getName().equals(name))
+                    .collect(Collectors.toList()));
+    }
+
+    @Override
     public TextChannel getTextChannelById(String id)
     {
         return textChannels.get(MiscUtil.parseSnowflake(id));
@@ -304,7 +343,7 @@ public class GuildImpl implements Guild
     public List<TextChannel> getTextChannels()
     {
         ArrayList<TextChannel> channels = new ArrayList<>(textChannels.valueCollection());
-        channels.sort(Comparator.reverseOrder());
+        channels.sort(Comparator.naturalOrder());
         return Collections.unmodifiableList(channels);
     }
 
@@ -336,7 +375,7 @@ public class GuildImpl implements Guild
     public List<VoiceChannel> getVoiceChannels()
     {
         List<VoiceChannel> channels = new ArrayList<>(voiceChannels.valueCollection());
-        channels.sort(Comparator.reverseOrder());
+        channels.sort(Comparator.naturalOrder());
         return Collections.unmodifiableList(channels);
     }
 
@@ -470,7 +509,18 @@ public class GuildImpl implements Guild
     @Override
     public TextChannel getPublicChannel()
     {
-        return publicChannel;
+        return textChannels.get(id);
+    }
+
+    @Nullable
+    @Override
+    public TextChannel getDefaultChannel()
+    {
+        final Role role = getPublicRole();
+        return getTextChannelsMap().valueCollection().stream()
+                .filter(c -> role.hasPermission(c, Permission.MESSAGE_READ))
+                .sorted(Comparator.naturalOrder())
+                .findFirst().orElse(null);
     }
 
     @Override
@@ -612,8 +662,6 @@ public class GuildImpl implements Guild
                 }
             }
         }
-        // set guild again to make sure the manager references this instance! Avoiding invalid member cache
-        mng.setGuild(this);
         return mng;
     }
 
@@ -729,15 +777,15 @@ public class GuildImpl implements Guild
         return this;
     }
 
-    public GuildImpl setPublicChannel(TextChannel publicChannel)
-    {
-        this.publicChannel = publicChannel;
-        return this;
-    }
-
     public GuildImpl setAfkChannel(VoiceChannel afkChannel)
     {
         this.afkChannel = afkChannel;
+        return this;
+    }
+
+    public GuildImpl setSystemChannel(TextChannel systemChannel)
+    {
+        this.systemChannel = systemChannel;
         return this;
     }
 
@@ -780,12 +828,17 @@ public class GuildImpl implements Guild
 
     // -- Map getters --
 
+    public TLongObjectMap<CategoryImpl> getCategoriesMap()
+    {
+        return categories;
+    }
+
     public TLongObjectMap<TextChannel> getTextChannelsMap()
     {
         return textChannels;
     }
 
-    public TLongObjectMap<VoiceChannel> getVoiceChannelMap()
+    public TLongObjectMap<VoiceChannel> getVoiceChannelsMap()
     {
         return voiceChannels;
     }

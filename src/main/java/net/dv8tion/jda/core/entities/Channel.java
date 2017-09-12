@@ -56,6 +56,16 @@ public interface Channel extends ISnowflake
     Guild getGuild();
 
     /**
+     * Parent {@link net.dv8tion.jda.core.entities.Category Category} of this
+     * Channel. Channels need not have a parent Category.
+     * <br>Note that an {@link net.dv8tion.jda.core.entities.Category Category} will
+     * always return {@code null} for this method as nested categories are not supported.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.Category Category} for this Channel
+     */
+    Category getParent();
+
+    /**
      * A List of all {@link net.dv8tion.jda.core.entities.Member Members} that are in this Channel
      * For {@link net.dv8tion.jda.core.entities.TextChannel TextChannels},
      * this returns all Members with the {@link net.dv8tion.jda.core.Permission#MESSAGE_READ} Permission.
@@ -336,7 +346,9 @@ public interface Channel extends ISnowflake
      * <br>Requires {@link net.dv8tion.jda.core.Permission#CREATE_INSTANT_INVITE CREATE_INSTANT_INVITE} in this channel.
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
-     *         if the account does not have {@link net.dv8tion.jda.core.Permission#CREATE_INSTANT_INVITE CREATE_INSTANT_INVITE} in this channel
+     *         If the account does not have {@link net.dv8tion.jda.core.Permission#CREATE_INSTANT_INVITE CREATE_INSTANT_INVITE} in this channel
+     * @throws java.lang.IllegalArgumentException
+     *         If this is an instance of a {@link net.dv8tion.jda.core.entities.Category Category}
      *
      * @return A new {@link net.dv8tion.jda.core.requests.restaction.InviteAction InviteAction}
      * 

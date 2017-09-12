@@ -107,7 +107,7 @@ public class PresenceUpdateHandler extends SocketHandler
             }
             Game nextGame = (gameName == null
                     ? null
-                    : new GameImpl(gameName, gameUrl, type));
+                    : api.getEntityBuilder().createGame(gameName, gameUrl, type));
             OnlineStatus status = OnlineStatus.fromKey(content.getString("status"));
 
             //If we are in a Guild, then we will use Member.

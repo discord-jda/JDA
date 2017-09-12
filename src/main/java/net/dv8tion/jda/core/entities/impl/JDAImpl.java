@@ -59,6 +59,7 @@ public class JDAImpl implements JDA
 
     protected final TLongObjectMap<User> users = MiscUtil.newLongMap();
     protected final TLongObjectMap<Guild> guilds = MiscUtil.newLongMap();
+    protected final TLongObjectMap<CategoryImpl> categories = MiscUtil.newLongMap();
     protected final TLongObjectMap<TextChannel> textChannels = MiscUtil.newLongMap();
     protected final TLongObjectMap<VoiceChannel> voiceChannels = MiscUtil.newLongMap();
     protected final TLongObjectMap<PrivateChannel> privateChannels = MiscUtil.newLongMap();
@@ -116,7 +117,7 @@ public class JDAImpl implements JDA
         this.jdaBot = accountType == AccountType.BOT ? new JDABotImpl(this) : null;
     }
 
-    public void login(String token, ShardInfo shardInfo) throws LoginException, RateLimitedException
+    public void login(String token, ShardInfo shardInfo, SessionReconnectQueue reconnectQueue) throws LoginException, RateLimitedException
     {
         setStatus(Status.LOGGING_IN);
         if (token == null || token.isEmpty())
@@ -127,7 +128,7 @@ public class JDAImpl implements JDA
         this.shardInfo = shardInfo;
         LOG.info("Login Successful!");
 
-        client = new WebSocketClient(this);
+        client = new WebSocketClient(this, reconnectQueue);
 
         if (shutdownHook != null)
         {
@@ -454,6 +455,35 @@ public class JDAImpl implements JDA
     }
 
     @Override
+    public Category getCategoryById(String id)
+    {
+        return categories.get(MiscUtil.parseSnowflake(id));
+    }
+
+    @Override
+    public Category getCategoryById(long id)
+    {
+        return categories.get(id);
+    }
+
+    @Override
+    public List<Category> getCategories()
+    {
+        return Arrays.asList(categories.values(new CategoryImpl[categories.size()]));
+    }
+
+    @Override
+    public List<Category> getCategoriesByName(String name, boolean ignoreCase)
+    {
+        Checks.notNull(name, "Name");
+        return Collections.unmodifiableList(categories.valueCollection().stream()
+                .filter(category -> ignoreCase
+                        ? category.getName().equalsIgnoreCase(name)
+                        : category.getName().equals(name))
+                .collect(Collectors.toList()));
+    }
+
+    @Override
     public List<TextChannel> getTextChannels()
     {
         return Collections.unmodifiableList(new ArrayList<>(textChannels.valueCollection()));
@@ -567,13 +597,6 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    @Deprecated
-    public void shutdown(boolean free)
-    {
-        shutdown();
-    }
-
-    @Override
     public void shutdownNow()
     {
         shutdown();
@@ -594,8 +617,7 @@ public class JDAImpl implements JDA
         if (audioKeepAlivePool != null)
             audioKeepAlivePool.shutdownNow();
 
-        getClient().setAutoReconnect(false);
-        getClient().close();
+        getClient().shutdown();
 
         final long time = 5L;
         final TimeUnit unit = TimeUnit.SECONDS;
@@ -749,6 +771,11 @@ public class JDAImpl implements JDA
     public TLongObjectMap<Guild> getGuildMap()
     {
         return guilds;
+    }
+
+    public TLongObjectMap<CategoryImpl> getCategoryMap()
+    {
+        return categories;
     }
 
     public TLongObjectMap<TextChannel> getTextChannelMap()

@@ -24,8 +24,9 @@ import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
-import okhttp3.OkHttpClient;
+import net.dv8tion.jda.core.requests.SessionReconnectQueue;
 import net.dv8tion.jda.core.utils.Checks;
+import okhttp3.OkHttpClient;
 
 import javax.security.auth.login.LoginException;
 import java.util.Arrays;
@@ -48,6 +49,7 @@ public class JDABuilder
 {
     protected final List<Object> listeners;
 
+    protected SessionReconnectQueue reconnectQueue = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
     protected WebSocketFactory wsFactory = null;
     protected AccountType accountType;
@@ -84,47 +86,20 @@ public class JDABuilder
     }
 
     /**
-     * Sets the proxy that will be used by <b>ALL</b> JDA instances.
-     * <br>Once this is set <b>IT CANNOT BE CHANGED.</b>
-     * <br>After a JDA instance as been created, this method can never be called again, even if you are creating a new JDA object.
-     * <br><b>Note:</b> currently this only supports HTTP proxies.
+     * Sets the queue that will be used to reconnect sessions.
+     * <br>This will ensure that sessions do not reconnect at the same time!
      *
-     * @deprecated Use {@link #setHttpClientBuilder(okhttp3.OkHttpClient.Builder)} instead.
+     * <p><b>It is required to use the same instance of this queue for all JDA sessions of the same bot account!
+     * <br>Not doing that may result in <u>API spam and finally an IP ban.</u></b>
      *
-     * @param  proxy
-     *         The proxy to use.
-     *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this method is called after proxy settings have already been set or after at least 1 JDA object has been created.
-     *
-     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
-     */
-    @Deprecated
-    public JDABuilder setProxy(Object proxy)
-    {
-        return this;
-    }
-
-    /**
-     * Sets the timeout (in milliseconds) for all Websockets created by JDA (MainWS and AudioWS's) for this instance.
-     *
-     * <p>By default, this is set to <b>0</b> which is supposed to represent infinite-timeout, however due to how the JVM
-     * is implemented at the lower level (typically C), an infinite timeout will usually not be respected, and as such
-     * providing an explicitly defined timeout will typically work better.
-     *
-     * <p>Default: <b>0 - Infinite-Timeout (maybe?)</b>
-     *
-     * @deprecated
-     *         Use the more powerful {@link #setWebsocketFactory(WebSocketFactory)} instead
-     *
-     * @param  websocketTimeout
-     *         Non-negative int representing Websocket timeout in milliseconds.
+     * @param  queue
+     *         {@link net.dv8tion.jda.core.requests.SessionReconnectQueue SessionReconnectQueue} to use
      *
      * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
      */
-    @Deprecated
-    public JDABuilder setWebSocketTimeout(int websocketTimeout)
+    public JDABuilder setReconnectQueue(SessionReconnectQueue queue)
     {
+        this.reconnectQueue = queue;
         return this;
     }
 
@@ -451,6 +426,9 @@ public class JDABuilder
      *
      * <p>Please note, that a shard will not know about guilds which are not assigned to it.
      *
+     * <p><u><b>When sharding it is a required to use a {@link net.dv8tion.jda.core.requests.SessionReconnectQueue SessionReconnectQueue}
+     * to ensure that shards will not reconnect at the same time and cause API spam. See {@link #setReconnectQueue(SessionReconnectQueue)}</b></u>
+     *
      * <p><b>It is not possible to use sharding with an account for {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}!</b>
      *
      * @param  shardId
@@ -523,7 +501,7 @@ public class JDABuilder
                 .setCacheGame(game)
                 .setCacheIdle(idle)
                 .setCacheStatus(status);
-        jda.login(token, shardInfo);
+        jda.login(token, shardInfo, reconnectQueue);
         return jda;
     }
 

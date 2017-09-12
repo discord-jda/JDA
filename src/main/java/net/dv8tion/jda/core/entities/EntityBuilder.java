@@ -86,6 +86,11 @@ public class EntityBuilder
                 .setBot(self.has("bot") && self.getBoolean("bot"));
     }
 
+    public Game createGame(String name, String url, Game.GameType type)
+    {
+        return new Game(name, url, type);
+    }
+
     public void createGuildFirstPass(JSONObject guild, Consumer<Guild> secondPassCallback)
     {
         final long id = guild.getLong("id");
@@ -202,23 +207,28 @@ public class EntityBuilder
             {
                 JSONObject channel = channels.getJSONObject(i);
                 ChannelType type = ChannelType.fromId(channel.getInt("type"));
-                if (type == ChannelType.TEXT)
+                switch (type)
                 {
-                    TextChannel newChannel = createTextChannel(channel, guildObj.getIdLong(), false);
-                    if (newChannel.getIdLong() == guildObj.getIdLong())
-                        guildObj.setPublicChannel(newChannel);
+                    case TEXT:
+                        createTextChannel(channel, guildObj.getIdLong(), false);
+                        break;
+                    case VOICE:
+                        createVoiceChannel(channel, guildObj.getIdLong(), false);
+                        break;
+                    case CATEGORY:
+                        createCategory(channel, guildObj.getIdLong(), false);
+                        break;
+                    default:
+                        WebSocketClient.LOG.fatal("Received a channel for a guild that isn't a text, voice or category channel. JSON: " + channel);
                 }
-                else if (type == ChannelType.VOICE)
-                {
-                    VoiceChannel newChannel = createVoiceChannel(channel, guildObj.getIdLong(), false);
-                    if (!guild.isNull("afk_channel_id")
-                            && newChannel.getId().equals(guild.getString("afk_channel_id")))
-                        guildObj.setAfkChannel(newChannel);
-                }
-                else
-                    WebSocketClient.LOG.fatal("Received a channel for a guild that isn't a text or voice channel. JSON: " + channel);
             }
         }
+
+        if (!guild.isNull("system_channel_id"))
+            guildObj.setSystemChannel(guildObj.getTextChannelsMap().get(guild.getLong("system_channel_id")));
+
+        if (!guild.isNull("afk_channel_id"))
+            guildObj.setAfkChannel(guildObj.getVoiceChannelsMap().get(guild.getLong("afk_channel_id")));
 
         //If the members that we were provided with (and loaded above) were not all of the
         //  the members in this guild, then we need to request more users from Discord using
@@ -366,16 +376,20 @@ public class EntityBuilder
             JSONObject channel = channels.getJSONObject(i);
             ChannelType type = ChannelType.fromId(channel.getInt("type"));
             Channel channelObj = null;
-            if (type == ChannelType.TEXT)
+            switch (type)
             {
-                channelObj = api.getTextChannelById(channel.getLong("id"));
+                case TEXT:
+                    channelObj = api.getTextChannelById(channel.getLong("id"));
+                    break;
+                case VOICE:
+                    channelObj = api.getVoiceChannelById(channel.getLong("id"));
+                    break;
+                case CATEGORY:
+                    channelObj = guildObj.getCategoriesMap().get(channel.getLong("id"));
+                    break;
+                default:
+                    WebSocketClient.LOG.fatal("Received a channel for a guild that isn't a text, voice or category channel (ChannelPass). JSON: " + channel);
             }
-            else if (type == ChannelType.VOICE)
-            {
-                channelObj = api.getVoiceChannelById(channel.getLong("id"));
-            }
-            else
-                WebSocketClient.LOG.fatal("Received a channel for a guild that isn't a text or voice channel (ChannelPass). JSON: " + channel);
 
             if (channelObj != null)
             {
@@ -416,7 +430,7 @@ public class EntityBuilder
 
             final long channelId = voiceStateJson.getLong("channel_id");
             VoiceChannelImpl voiceChannel =
-                    (VoiceChannelImpl) guildObj.getVoiceChannelMap().get(channelId);
+                    (VoiceChannelImpl) guildObj.getVoiceChannelsMap().get(channelId);
             voiceChannel.getConnectedMembersMap().put(member.getUser().getIdLong(), member);
 
             GuildVoiceStateImpl voiceState = (GuildVoiceStateImpl) member.getVoiceState();
@@ -544,7 +558,7 @@ public class EntityBuilder
                 gameType = Game.GameType.DEFAULT;
             }
 
-            game = new GameImpl(gameName, url, gameType);
+            game = createGame(gameName, url, gameType);
         }
         if (memberOrFriend instanceof Member)
         {
@@ -568,11 +582,43 @@ public class EntityBuilder
             throw new IllegalArgumentException("An object was provided to EntityBuilder#createPresence that wasn't a Member or Friend. JSON: " + presenceJson);
     }
 
+    public Category createCategory(JSONObject json, long guildId)
+    {
+        return createCategory(json, guildId, true);
+    }
+
+    public Category createCategory(JSONObject json, long guildId, boolean guildIsLoaded)
+    {
+        final long id = json.getLong("id");
+        CategoryImpl channel = api.getCategoryMap().get(id);
+        if (channel == null)
+        {
+            GuildImpl guild = ((GuildImpl) api.getGuildMap().get(guildId));
+            channel = new CategoryImpl(id, guild);
+            guild.getCategoriesMap().put(id, channel);
+            api.getCategoryMap().put(id, channel);
+        }
+
+        if (!json.isNull("permission_overwrites") && guildIsLoaded)
+        {
+            JSONArray overrides = json.getJSONArray("permission_overwrites");
+            for (int i = 0; i < overrides.length(); i++)
+            {
+                createPermissionOverride(overrides.getJSONObject(i), channel);
+            }
+        }
+
+        return channel
+                .setName(json.getString("name"))
+                .setRawPosition(json.getInt("position"));
+    }
+
     public TextChannel createTextChannel(JSONObject json, long guildId)
     {
         return createTextChannel(json, guildId, true);
 
     }
+
     public TextChannel createTextChannel(JSONObject json, long guildId, boolean guildIsLoaded)
     {
         final long id = json.getLong("id");
@@ -595,7 +641,8 @@ public class EntityBuilder
         }
 
         return channel
-                .setLastMessageId(json.isNull("last_message_id") ? -1 : json.getLong("last_message_id"))
+                .setParent(json.isNull("parent_id") ? 0 : json.getLong("parent_id"))
+                .setLastMessageId(json.isNull("last_message_id") ? 0 : json.getLong("last_message_id"))
                 .setName(json.getString("name"))
                 .setTopic(json.isNull("topic") ? "" : json.getString("topic"))
                 .setRawPosition(json.getInt("position"))
@@ -606,6 +653,7 @@ public class EntityBuilder
     {
         return createVoiceChannel(json, guildId, true);
     }
+
     public VoiceChannel createVoiceChannel(JSONObject json, long guildId, boolean guildIsLoaded)
     {
         final long id = json.getLong("id");
@@ -614,7 +662,7 @@ public class EntityBuilder
         {
             GuildImpl guild = (GuildImpl) api.getGuildMap().get(guildId);
             channel = new VoiceChannelImpl(id, guild);
-            guild.getVoiceChannelMap().put(id, channel);
+            guild.getVoiceChannelsMap().put(id, channel);
             api.getVoiceChannelMap().put(id, channel);
         }
 
@@ -628,6 +676,7 @@ public class EntityBuilder
         }
 
         return channel
+                .setParent(json.isNull("parent_id") ? 0 : json.getLong("parent_id"))
                 .setName(json.getString("name"))
                 .setRawPosition(json.getInt("position"))
                 .setUserLimit(json.getInt("user_limit"))
@@ -976,7 +1025,7 @@ public class EntityBuilder
 
     public PermissionOverride createPermissionOverride(JSONObject override, Channel chan)
     {
-        PermissionOverrideImpl permOverride = null;
+        PermissionOverrideImpl permOverride;
         final long id = override.getLong("id");
         long allow = override.getLong("allow");
         long deny = override.getLong("deny");
@@ -1010,8 +1059,7 @@ public class EntityBuilder
             default:
                 throw new IllegalArgumentException("Provided with an unknown PermissionOverride type! JSON: " + override);
         }
-        return permOverride.setAllow(allow)
-                .setDeny(deny);
+        return permOverride.setAllow(allow).setDeny(deny);
     }
 
     public Webhook createWebhook(JSONObject object)
