@@ -240,6 +240,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             boolean needRatelimit;
             boolean attemptedToSend;
+            boolean queueLocked = false;
             while (!Thread.currentThread().isInterrupted())
             {
                 try
@@ -253,12 +254,16 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     attemptedToSend = false;
                     needRatelimit = false;
                     audioQueueLock.acquire();
+                    queueLocked = true;
+                    //synchronized (queuedAudioConnections) {
                     ConnectionRequest audioRequest = getNextAudioConnectRequest();
 
                     String chunkOrSyncRequest = chunkSyncQueue.peekFirst();
                     if (chunkOrSyncRequest != null)
                     {
                         audioQueueLock.release();
+                        queueLocked = false;
+                        // } end synchronized
                         needRatelimit = !send(chunkOrSyncRequest, false);
                         if (!needRatelimit)
                             chunkSyncQueue.removeFirst();
@@ -270,6 +275,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                         Guild guild = api.getGuildById(audioRequest.getGuildIdLong());
                         if (guild == null)
                         {
+                            audioQueueLock.release();
+                            queueLocked = false;
+                            // } end synchronized
                             // race condition on guild delete, avoid NPE on DISCONNECT requests
                             queuedAudioConnections.remove(audioRequest.getGuildIdLong());
                             continue;
@@ -282,7 +290,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                             case RECONNECT:
                                 audioRequest.setStage(ConnectionStage.CONNECT);
                             case DISCONNECT:
-                                packet = newVoiceClose(channel);
+                                packet = newVoiceClose(audioRequest.getGuildIdLong());
                                 break;
                             default:
                             case CONNECT:
@@ -311,11 +319,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                                 audioRequest.setStage(ConnectionStage.RECONNECT);
                         }
                         audioQueueLock.release();
+                        queueLocked = false;
+                        // } end synchronized
                         attemptedToSend = true;
                     }
                     else
                     {
                         audioQueueLock.release();
+                        queueLocked = false;
+                        // } end synchronized
                         String message = ratelimitQueue.peekFirst();
                         if (message != null)
                         {
@@ -326,7 +338,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                         }
                     }
 
-                    audioQueueLock.release();
                     if (needRatelimit || !attemptedToSend)
                         Thread.sleep(1000);
                 }
@@ -338,7 +349,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 finally
                 {
                     // on any exception that might cause this semaphore to not release
-                    if (audioQueueLock.availablePermits() == 0)
+                    if (queueLocked)
                         audioQueueLock.release();
                 }
             }
@@ -352,12 +363,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         ratelimitThread.start();
     }
 
-    private JSONObject newVoiceClose(VoiceChannel channel)
+    private JSONObject newVoiceClose(long guildId)
     {
         return new JSONObject()
             .put("op", WebSocketCode.VOICE_STATE)
             .put("d", new JSONObject()
-                .put("guild_id", channel.getGuild().getId())
+                .put("guild_id", Long.toUnsignedString(guildId))
                 .put("channel_id", JSONObject.NULL)
                 .put("self_mute", false)
                 .put("self_deaf", false));
@@ -1136,28 +1147,31 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 if (guild == null)
                 {
                     it.remove();
-//                    if (listener != null)
-//                        listener.onStatusChange(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD);
+                    //if (listener != null)
+                    //    listener.onStatusChange(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD);
                     //already handled by event handling
                     continue;
                 }
 
                 ConnectionListener listener = guild.getAudioManager().getConnectionListener();
-                VoiceChannel channel = guild.getVoiceChannelById(audioRequest.getChannel().getIdLong());
-                if (channel == null)
+                if (audioRequest.getStage() != ConnectionStage.DISCONNECT)
                 {
-                    it.remove();
-                    if (listener != null)
-                        listener.onStatusChange(ConnectionStatus.DISCONNECTED_CHANNEL_DELETED);
-                    continue;
-                }
+                    VoiceChannel channel = guild.getVoiceChannelById(audioRequest.getChannel().getIdLong());
+                    if (channel == null)
+                    {
+                        it.remove();
+                        if (listener != null)
+                            listener.onStatusChange(ConnectionStatus.DISCONNECTED_CHANNEL_DELETED);
+                        continue;
+                    }
 
-                if (!guild.getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT))
-                {
-                    it.remove();
-                    if (listener != null)
-                        listener.onStatusChange(ConnectionStatus.DISCONNECTED_LOST_PERMISSION);
-                    continue;
+                    if (!guild.getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT))
+                    {
+                        it.remove();
+                        if (listener != null)
+                            listener.onStatusChange(ConnectionStatus.DISCONNECTED_LOST_PERMISSION);
+                        continue;
+                    }
                 }
 
                 return audioRequest;
