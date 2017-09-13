@@ -1046,12 +1046,17 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             final long guildId = channel.getGuild().getIdLong();
             ConnectionRequest update = queuedAudioConnections.get(guildId);
 
-            // If no request, then just reconnect
             if (update == null)
-                queuedAudioConnections.put(guildId, update = new ConnectionRequest(channel, ConnectionStage.RECONNECT));
-            // If there is a request we change it to reconnect, no matter what it is
+            {
+                // If no request, then just reconnect
+                update = new ConnectionRequest(channel, ConnectionStage.RECONNECT);
+                queuedAudioConnections.put(guildId, update);
+            }
             else
+            {
+                // If there is a request we change it to reconnect, no matter what it is
                 update.setStage(ConnectionStage.RECONNECT);
+            }
             // in all cases, update to this channel
             update.setChannel(channel);
         }
@@ -1070,12 +1075,17 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             final long guildId = channel.getGuild().getIdLong();
             ConnectionRequest update = queuedAudioConnections.get(guildId);
 
-            // starting a whole new connection
             if (update == null)
-                queuedAudioConnections.put(guildId, update = new ConnectionRequest(channel, ConnectionStage.CONNECT));
-            // if planned to disconnect, we want to reconnect
+            {
+                // starting a whole new connection
+                update = new ConnectionRequest(channel, ConnectionStage.CONNECT);
+                queuedAudioConnections.put(guildId, update);
+            }
             else if (update.getStage() == ConnectionStage.DISCONNECT)
+            {
+                // if planned to disconnect, we want to reconnect
                 update.setStage(ConnectionStage.RECONNECT);
+            }
             // in all cases, update to this channel
             update.setChannel(channel);
         }
@@ -1094,12 +1104,16 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             final long guildId = guild.getIdLong();
             ConnectionRequest update = queuedAudioConnections.get(guildId);
 
-            // If we do not have a DISCONNECT or CONNECT request
-            if (update == null || update.getStage() == ConnectionStage.RECONNECT)
+            if (update == null)
+            {
+                // If we do not have a request
                 queuedAudioConnections.put(guildId, new ConnectionRequest(guild));
-            // If we have a CONNECT request, dequeue it
-            else if (update.getStage() != ConnectionStage.DISCONNECT)
-                queuedAudioConnections.remove(guildId);
+            }
+            else
+            {
+                // If we have a request, change to DISCONNECT
+                update.setStage(ConnectionStage.DISCONNECT);
+            }
             // channel is not relevant here
         }
         catch (InterruptedException ignored) {}
