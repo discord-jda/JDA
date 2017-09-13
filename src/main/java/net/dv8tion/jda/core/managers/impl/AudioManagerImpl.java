@@ -40,17 +40,11 @@ import java.io.IOException;
 
 public class AudioManagerImpl implements AudioManager
 {
-    public static final ThreadGroup AUDIO_THREADS;
+    public static final ThreadGroup AUDIO_THREADS = new ThreadGroup("jda-audio");
     //These values are set at the bottom of this file.
     public static boolean AUDIO_SUPPORTED;
     public static String OPUS_LIB_NAME;
     protected static boolean initialized = false;
-
-    static
-    {
-        AUDIO_THREADS = new ThreadGroup("jda-audio");
-        AUDIO_THREADS.setDaemon(true);
-    }
 
     public final Object CONNECTION_LOCK = new Object();
 
