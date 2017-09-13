@@ -18,8 +18,8 @@ package net.dv8tion.jda.core.utils.cache;
 
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.core.entities.ISnowflake;
+import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
-import org.apache.http.util.Args;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -52,7 +52,7 @@ public class SnowflakeCacheViewImpl<T extends ISnowflake> implements SnowflakeCa
     }
 
     @Override
-    public int size()
+    public long size()
     {
         return elements.size();
     }
@@ -66,7 +66,7 @@ public class SnowflakeCacheViewImpl<T extends ISnowflake> implements SnowflakeCa
     @Override
     public List<T> getElementsByName(String name, boolean ignoreCase)
     {
-        Args.notEmpty(name, "Name");
+        Checks.notEmpty(name, "Name");
         if (elements.isEmpty())
             return Collections.emptyList();
         Iterator<T> iter = iterator();

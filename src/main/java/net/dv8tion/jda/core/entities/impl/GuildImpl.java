@@ -37,13 +37,8 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAction;
 import net.dv8tion.jda.core.utils.Checks;
-import net.dv8tion.jda.core.utils.Helpers;
 import net.dv8tion.jda.core.utils.MiscUtil;
-import net.dv8tion.jda.core.utils.cache.MemberCacheView;
-import net.dv8tion.jda.core.utils.cache.MemberCacheViewImpl;
-import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
-import net.dv8tion.jda.core.utils.cache.SnowflakeCacheViewImpl;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.cache.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -51,10 +46,7 @@ import org.json.JSONObject;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class GuildImpl implements Guild
@@ -67,12 +59,12 @@ public class GuildImpl implements Guild
 //    private final TLongObjectMap<Role> roles = MiscUtil.newLongMap();
 //    private final TLongObjectMap<Emote> emotes = MiscUtil.newLongMap();
 
-    private final SnowflakeCacheViewImpl<VoiceChannel> voiceChannelCache = new SnowflakeCacheViewImpl<>();
-    private final SnowflakeCacheViewImpl<TextChannel> textChannelCache = new SnowflakeCacheViewImpl<>();
+    private final SortedSnowflakeCacheView<Category> categoryCache = new SortedSnowflakeCacheView<Category>(Comparator.naturalOrder());
+    private final SortedSnowflakeCacheView<VoiceChannel> voiceChannelCache = new SortedSnowflakeCacheView<VoiceChannel>(Comparator.naturalOrder());
+    private final SortedSnowflakeCacheView<TextChannel> textChannelCache = new SortedSnowflakeCacheView<TextChannel>(Comparator.naturalOrder());
+    private final SortedSnowflakeCacheView<Role> roleCache = new SortedSnowflakeCacheView<Role>(Comparator.reverseOrder());
     private final SnowflakeCacheViewImpl<Emote> emoteCache = new SnowflakeCacheViewImpl<>();
-    private final SnowflakeCacheViewImpl<Role> roleCache = new SnowflakeCacheViewImpl<>();
     private final MemberCacheViewImpl memberCache = new MemberCacheViewImpl();
-    private final TLongObjectMap<CategoryImpl> categories = MiscUtil.newLongMap(); //TODO
 
     private final TLongObjectMap<JSONObject> cachedPresences = MiscUtil.newLongMap();
 
@@ -228,6 +220,12 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    public SnowflakeCacheView<Category> getCategoryCache()
+    {
+        return categoryCache;
+    }
+
+    @Override
     public SnowflakeCacheView<TextChannel> getTextChannelCache()
     {
         return textChannelCache;
@@ -319,7 +317,7 @@ public class GuildImpl implements Guild
     @Override
     public TextChannel getPublicChannel()
     {
-        return textChannels.get(id);
+        return textChannelCache.getElementById(id);
     }
 
     @Nullable
@@ -638,9 +636,9 @@ public class GuildImpl implements Guild
 
     // -- Map getters --
 
-    public TLongObjectMap<CategoryImpl> getCategoriesMap()
+    public TLongObjectMap<Category> getCategoriesMap()
     {
-        return categories;
+        return categoryCache.getMap();
     }
 
     public TLongObjectMap<TextChannel> getTextChannelsMap()

@@ -385,7 +385,7 @@ public class EntityBuilder
                     channelObj = api.getVoiceChannelById(channel.getLong("id"));
                     break;
                 case CATEGORY:
-                    channelObj = guildObj.getCategoriesMap().get(channel.getLong("id"));
+                    channelObj = api.getCategoryMap().get(channel.getLong("id"));
                     break;
                 default:
                     WebSocketClient.LOG.fatal("Received a channel for a guild that isn't a text, voice or category channel (ChannelPass). JSON: " + channel);
@@ -590,7 +590,7 @@ public class EntityBuilder
     public Category createCategory(JSONObject json, long guildId, boolean guildIsLoaded)
     {
         final long id = json.getLong("id");
-        CategoryImpl channel = api.getCategoryMap().get(id);
+        CategoryImpl channel = (CategoryImpl) api.getCategoryMap().get(id);
         if (channel == null)
         {
             GuildImpl guild = ((GuildImpl) api.getGuildMap().get(guildId));

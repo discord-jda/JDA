@@ -325,35 +325,36 @@ public interface Guild extends ISnowflake
     MemberCacheView getMemberCache();
 
     /**
-     * Gets the {@link net.dv8tion.jda.core.entities.Category Category} from this guild
-     * that matches the provided id. This method is similar to {@link net.dv8tion.jda.core.JDA#getCategoryById(String)}, but
-     * it only checks in this specific Guild.
-     * <br>If there is no matching {@link net.dv8tion.jda.core.entities.Category Category} this returns {@code null}.
+     * Gets the {@link net.dv8tion.jda.core.entities.Category Category} from this guild that matches the provided id.
+     * This method is similar to {@link net.dv8tion.jda.core.JDA#getCategoryById(String)}, but it only checks in this
+     * specific Guild. <br>If there is no matching {@link net.dv8tion.jda.core.entities.Category Category} this returns
+     * {@code null}.
      *
-     * @param  id
+     * @param id
      *         The snowflake ID of the wanted Category
-     *
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.Category Category} for the provided ID.
      * @throws java.lang.IllegalArgumentException
      *         If the provided ID is not a valid {@code long}
-     *
-     * @return Possibly-null {@link net.dv8tion.jda.core.entities.Category Category} for
-     *         the provided ID.
      */
-    Category getCategoryById(String id);
+    default Category getCategoryById(String id)
+    {
+        return getCategoryCache().getElementById(id);
+    }
 
     /**
-     * Gets the {@link net.dv8tion.jda.core.entities.Category Category} from this guild
-     * that matches the provided id. This method is similar to {@link net.dv8tion.jda.core.JDA#getCategoryById(String)}, but
-     * it only checks in this specific Guild.
-     * <br>If there is no matching {@link net.dv8tion.jda.core.entities.Category Category} this returns {@code null}.
+     * Gets the {@link net.dv8tion.jda.core.entities.Category Category} from this guild that matches the provided id.
+     * This method is similar to {@link net.dv8tion.jda.core.JDA#getCategoryById(String)}, but it only checks in this
+     * specific Guild. <br>If there is no matching {@link net.dv8tion.jda.core.entities.Category Category} this returns
+     * {@code null}.
      *
-     * @param  id
+     * @param id
      *         The snowflake ID of the wanted Category
-     *
-     * @return Possibly-null {@link net.dv8tion.jda.core.entities.Category Category} for
-     *         the provided ID.
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.Category Category} for the provided ID.
      */
-    Category getCategoryById(long id);
+    default Category getCategoryById(long id)
+    {
+        return getCategoryCache().getElementById(id);
+    }
 
     /**
      * Gets all {@link net.dv8tion.jda.core.entities.Category Categories} in this {@link net.dv8tion.jda.core.entities.Guild Guild}.
@@ -361,24 +362,29 @@ public interface Guild extends ISnowflake
      *
      * @return An immutable list of all {@link net.dv8tion.jda.core.entities.Category Categories} in this Guild.
      */
-    List<Category> getCategories();
+    default List<Category> getCategories()
+    {
+        return getCategoryCache().asList();
+    }
 
     /**
      * Gets a list of all {@link net.dv8tion.jda.core.entities.Category Categories} in this Guild that have the same
-     * name as the one provided.
-     * <br>If there are no matching categories this will return an empty list.
+     * name as the one provided. <br>If there are no matching categories this will return an empty list.
      *
-     * @param  name
+     * @param name
      *         The name to check
-     * @param  ignoreCase
+     * @param ignoreCase
      *         Whether to ignore case on name checking
-     *
+     * @return Immutable list of all categories matching the provided name
      * @throws java.lang.IllegalArgumentException
      *         If the provided name is {@code null}
-     *
-     * @return Immutable list of all categories matching the provided name
      */
-    List<Category> getCategoriesByName(String name, boolean ignoreCase);
+    default List<Category> getCategoriesByName(String name, boolean ignoreCase)
+    {
+        return getCategoryCache().getElementsByName(name, ignoreCase);
+    }
+
+    SnowflakeCacheView<Category> getCategoryCache();
 
     /**
      * Gets a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} from this guild that has the same id as the

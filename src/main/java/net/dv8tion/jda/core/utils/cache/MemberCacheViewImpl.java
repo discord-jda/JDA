@@ -19,8 +19,8 @@ package net.dv8tion.jda.core.utils.cache;
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
-import org.apache.http.util.Args;
 
 import java.util.*;
 
@@ -67,7 +67,7 @@ public class MemberCacheViewImpl implements MemberCacheView
     @Override
     public List<Member> getElementsByUsername(String name, boolean ignoreCase)
     {
-        Args.notEmpty(name, "Name");
+        Checks.notEmpty(name, "Name");
         List<Member> members = new LinkedList<>();
         for (Member member : elements.valueCollection())
         {
@@ -117,7 +117,7 @@ public class MemberCacheViewImpl implements MemberCacheView
     @Override
     public List<Member> getElementsByEffectiveName(String name, boolean ignoreCase)
     {
-        Args.notEmpty(name, "Name");
+        Checks.notEmpty(name, "Name");
         List<Member> members = new LinkedList<>();
         for (Member member : elements.valueCollection())
         {
@@ -139,9 +139,9 @@ public class MemberCacheViewImpl implements MemberCacheView
     @Override
     public List<Member> getElementsWithRoles(Role... roles)
     {
-        Args.notNull(roles, "Roles");
+        Checks.notNull(roles, "Roles");
         for (Role role : roles)
-            Args.notNull(role, "Roles");
+            Checks.notNull(role, "Roles");
         List<Member> members = new LinkedList<>();
         memberLoop: for (Member member : elements.valueCollection())
         {
@@ -158,9 +158,7 @@ public class MemberCacheViewImpl implements MemberCacheView
     @Override
     public List<Member> getElementsWithRoles(Collection<Role> roles)
     {
-        Args.notNull(roles, "Roles");
-        for (Role role : roles)
-            Args.notNull(role, "Roles");
+        Checks.noneNull(roles, "Roles");
         List<Member> members = new LinkedList<>();
         for (Member member : elements.valueCollection())
         {

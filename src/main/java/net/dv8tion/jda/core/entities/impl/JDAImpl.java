@@ -40,17 +40,20 @@ import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.SimpleLog;
+import net.dv8tion.jda.core.utils.cache.ProjectedCacheViewImpl;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheViewImpl;
 import okhttp3.OkHttpClient;
-import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
 import javax.security.auth.login.LoginException;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class JDAImpl implements JDA
@@ -61,7 +64,7 @@ public class JDAImpl implements JDA
 
     protected final SnowflakeCacheViewImpl<User> userCache = new SnowflakeCacheViewImpl<>();
     protected final SnowflakeCacheViewImpl<Guild> guildCache = new SnowflakeCacheViewImpl<>();
-    protected final TLongObjectMap<CategoryImpl> categories = MiscUtil.newLongMap(); //TODO
+    protected final SnowflakeCacheViewImpl<Category> categories = new SnowflakeCacheViewImpl<>();
     protected final SnowflakeCacheViewImpl<TextChannel> textChannelCache = new SnowflakeCacheViewImpl<>();
     protected final SnowflakeCacheViewImpl<VoiceChannel> voiceChannelCache = new SnowflakeCacheViewImpl<>();
     protected final SnowflakeCacheViewImpl<PrivateChannel> privateChannelCache = new SnowflakeCacheViewImpl<>();
@@ -373,66 +376,15 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public List<Role> getRoles()
+    public SnowflakeCacheView<Role> getRoleCache()
     {
-        return guildCache.stream()
-                .flatMap(guild -> guild.getRoles().stream())
-                .collect(Collectors.toList());
+        return new ProjectedCacheViewImpl<>(() -> getGuilds().stream().map(Guild::getRoleCache));
     }
 
     @Override
-    public Role getRoleById(String id)
+    public SnowflakeCacheView<Category> getCategoryCache()
     {
-        return getRoleById(MiscUtil.parseSnowflake(id));
-    }
-
-    @Override
-    public Role getRoleById(long id)
-    {
-        for (Guild guild : guildCache)
-        {
-            Role r = guild.getRoleById(id);
-            if (r != null)
-                return r;
-        }
-        return null;
-    }
-
-    @Override
-    public List<Role> getRolesByName(String name, boolean ignoreCase)
-    {
-        return guildCache.stream()
-                .flatMap(guild -> guild.getRolesByName(name, ignoreCase).stream())
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public Category getCategoryById(String id)
-    {
-        return categories.get(MiscUtil.parseSnowflake(id));
-    }
-
-    @Override
-    public Category getCategoryById(long id)
-    {
-        return categories.get(id);
-    }
-
-    @Override
-    public List<Category> getCategories()
-    {
-        return Arrays.asList(categories.values(new CategoryImpl[categories.size()]));
-    }
-
-    @Override
-    public List<Category> getCategoriesByName(String name, boolean ignoreCase)
-    {
-        Checks.notNull(name, "Name");
-        return Collections.unmodifiableList(categories.valueCollection().stream()
-                .filter(category -> ignoreCase
-                        ? category.getName().equalsIgnoreCase(name)
-                        : category.getName().equals(name))
-                .collect(Collectors.toList()));
+        return categories;
     }
 
     @Override
@@ -675,9 +627,9 @@ public class JDAImpl implements JDA
         return guildCache.getMap();
     }
 
-    public TLongObjectMap<CategoryImpl> getCategoryMap()
+    public TLongObjectMap<Category> getCategoryMap()
     {
-        return categories;
+        return categories.getMap();
     }
 
     public TLongObjectMap<TextChannel> getTextChannelMap()

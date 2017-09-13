@@ -29,7 +29,7 @@ public interface SnowflakeCacheView<T extends ISnowflake> extends Iterable<T>
 
     Set<T> asSet();
 
-    int size();
+    long size();
 
     boolean isEmpty();
 
@@ -57,6 +57,7 @@ public interface SnowflakeCacheView<T extends ISnowflake> extends Iterable<T>
         return StreamSupport.stream(spliterator(), true);
     }
 
+    @Override
     default CacheIterator<T> iterator()
     {
         return new CacheIterator<>(this);

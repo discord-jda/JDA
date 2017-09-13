@@ -429,40 +429,49 @@ public interface JDA
         return getGuildCache().getElementsByName(name, ignoreCase);
     }
 
+    SnowflakeCacheView<Role> getRoleCache();
+
     /**
-     * All {@link net.dv8tion.jda.core.entities.Role Roles} this JDA instance can see.
-     * <br>This will iterate over each {@link net.dv8tion.jda.core.entities.Guild Guild} retrieved from
-     * {@link #getGuilds()} and collect its {@link net.dv8tion.jda.core.entities.Guild#getRoles() Guild.getRoles()}.
+     * All {@link net.dv8tion.jda.core.entities.Role Roles} this JDA instance can see. <br>This will iterate over each
+     * {@link net.dv8tion.jda.core.entities.Guild Guild} retrieved from {@link #getGuilds()} and collect its {@link
+     * net.dv8tion.jda.core.entities.Guild#getRoles() Guild.getRoles()}.
      *
      * @return Immutable List of all visible Roles
      */
-    List<Role> getRoles();
+    default List<Role> getRoles()
+    {
+        return getRoleCache().asList();
+    }
 
     /**
-     * Retrieves the {@link net.dv8tion.jda.core.entities.Role Role} associated to the provided id.
-     * <br>This iterates over all {@link net.dv8tion.jda.core.entities.Guild Guilds} and check whether
-     * a Role from that Guild is assigned to the specified ID and will return the first that can be found.
+     * Retrieves the {@link net.dv8tion.jda.core.entities.Role Role} associated to the provided id. <br>This iterates
+     * over all {@link net.dv8tion.jda.core.entities.Guild Guilds} and check whether a Role from that Guild is assigned
+     * to the specified ID and will return the first that can be found.
      *
-     * @param  id
+     * @param id
      *         The id of the searched Role
-     *
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.Role Role} for the specified ID
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
-     *
-     * @return Possibly-null {@link net.dv8tion.jda.core.entities.Role Role} for the specified ID
      */
-    Role getRoleById(String id);
+    default Role getRoleById(String id)
+    {
+        return getRoleCache().getElementById(id);
+    }
 
     /**
-     * Retrieves the {@link net.dv8tion.jda.core.entities.Role Role} associated to the provided id.
-     * <br>This iterates over all {@link net.dv8tion.jda.core.entities.Guild Guilds} and check whether
-     * a Role from that Guild is assigned to the specified ID and will return the first that can be found.
-     * @param  id
-     *         The id of the searched Role
+     * Retrieves the {@link net.dv8tion.jda.core.entities.Role Role} associated to the provided id. <br>This iterates
+     * over all {@link net.dv8tion.jda.core.entities.Guild Guilds} and check whether a Role from that Guild is assigned
+     * to the specified ID and will return the first that can be found.
      *
+     * @param id
+     *         The id of the searched Role
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Role Role} for the specified ID
      */
-    Role getRoleById(long id);
+    default Role getRoleById(long id)
+    {
+        return getRoleCache().getElementById(id);
+    }
 
     /**
      * Retrieves all {@link net.dv8tion.jda.core.entities.Role Roles} visible to this JDA instance.
@@ -473,61 +482,69 @@ public interface JDA
      *         The name for the Roles
      * @param  ignoreCase
      *         Whether to use {@link String#equalsIgnoreCase(String)}
-     *
      * @return Immutable List of all Roles matching the parameters provided.
      */
-    List<Role> getRolesByName(String name, boolean ignoreCase);
+    default List<Role> getRolesByName(String name, boolean ignoreCase)
+    {
+        return getRoleCache().getElementsByName(name, ignoreCase);
+    }
+
+    SnowflakeCacheView<Category> getCategoryCache();
 
     /**
-     * Gets the {@link net.dv8tion.jda.core.entities.Category Category} that matches the provided id.
-     * <br>If there is no matching {@link net.dv8tion.jda.core.entities.Category Category} this returns {@code null}.
+     * Gets the {@link net.dv8tion.jda.core.entities.Category Category} that matches the provided id. <br>If there is no
+     * matching {@link net.dv8tion.jda.core.entities.Category Category} this returns {@code null}.
      *
-     * @param  id
+     * @param id
      *         The snowflake ID of the wanted Category
-     *
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.Category Category} for the provided ID.
      * @throws java.lang.IllegalArgumentException
      *         If the provided ID is not a valid {@code long}
-     *
-     * @return Possibly-null {@link net.dv8tion.jda.core.entities.Category Category} for
-     *         the provided ID.
      */
-    Category getCategoryById(String id);
+    default Category getCategoryById(String id)
+    {
+        return getCategoryCache().getElementById(id);
+    }
 
     /**
-     * Gets the {@link net.dv8tion.jda.core.entities.Category Category} that matches the provided id.
-     * <br>If there is no matching {@link net.dv8tion.jda.core.entities.Category Category} this returns {@code null}.
+     * Gets the {@link net.dv8tion.jda.core.entities.Category Category} that matches the provided id. <br>If there is no
+     * matching {@link net.dv8tion.jda.core.entities.Category Category} this returns {@code null}.
      *
-     * @param  id
+     * @param id
      *         The snowflake ID of the wanted Category
-     *
-     * @return Possibly-null {@link net.dv8tion.jda.core.entities.Category Category} for
-     *         the provided ID.
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.Category Category} for the provided ID.
      */
-    Category getCategoryById(long id);
+    default Category getCategoryById(long id)
+    {
+        return getCategoryCache().getElementById(id);
+    }
 
     /**
      * Gets all {@link net.dv8tion.jda.core.entities.Category Categories} visible to the currently logged in account.
      *
      * @return An immutable list of all visible {@link net.dv8tion.jda.core.entities.Category Categories}.
      */
-    List<Category> getCategories();
+    default List<Category> getCategories()
+    {
+        return getCategoryCache().asList();
+    }
 
     /**
-     * Gets a list of all {@link net.dv8tion.jda.core.entities.Category Categories} that have the same
-     * name as the one provided.
-     * <br>If there are no matching categories this will return an empty list.
+     * Gets a list of all {@link net.dv8tion.jda.core.entities.Category Categories} that have the same name as the one
+     * provided. <br>If there are no matching categories this will return an empty list.
      *
-     * @param  name
+     * @param name
      *         The name to check
-     * @param  ignoreCase
+     * @param ignoreCase
      *         Whether to ignore case on name checking
-     *
+     * @return Immutable list of all categories matching the provided name
      * @throws java.lang.IllegalArgumentException
      *         If the provided name is {@code null}
-     *
-     * @return Immutable list of all categories matching the provided name
      */
-    List<Category> getCategoriesByName(String name, boolean ignoreCase);
+    default List<Category> getCategoriesByName(String name, boolean ignoreCase)
+    {
+        return getCategoryCache().getElementsByName(name, ignoreCase);
+    }
 
     SnowflakeCacheView<TextChannel> getTextChannelCache();
 
