@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.managers.PermOverrideManager;
 import net.dv8tion.jda.core.managers.PermOverrideManagerUpdatable;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
+import javax.annotation.CheckReturnValue;
 import java.util.List;
 
 /**
@@ -173,10 +174,11 @@ public interface PermissionOverride
      *     <br>If we were removed from the Guild</li>
      * </ul>
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         if we don't have the permission to {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @CheckReturnValue
     AuditableRestAction<Void> delete();
 }

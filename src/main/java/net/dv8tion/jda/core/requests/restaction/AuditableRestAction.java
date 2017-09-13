@@ -17,14 +17,13 @@
 package net.dv8tion.jda.core.requests.restaction;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.utils.MiscUtil;
+import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
+import org.json.JSONObject;
 
-import java.util.concurrent.Future;
+import javax.annotation.CheckReturnValue;
 import java.util.function.Consumer;
 
 public abstract class AuditableRestAction<T> extends RestAction<T>
@@ -32,7 +31,17 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
 
     protected String reason = null;
 
-    public AuditableRestAction(JDA api, Route.CompiledRoute route, Object data)
+    public AuditableRestAction(JDA api, Route.CompiledRoute route)
+    {
+        super(api, route);
+    }
+
+    public AuditableRestAction(JDA api, Route.CompiledRoute route, RequestBody data)
+    {
+        super(api, route, data);
+    }
+
+    public AuditableRestAction(JDA api, Route.CompiledRoute route, JSONObject data)
     {
         super(api, route, data);
     }
@@ -56,6 +65,7 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
      *
      * @return The current AuditableRestAction instance for chaining convenience
      */
+    @CheckReturnValue
     public AuditableRestAction<T> reason(String reason)
     {
         this.reason = reason;
@@ -65,12 +75,17 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
     @Override
     protected CaseInsensitiveMap<String, String> finalizeHeaders()
     {
+        CaseInsensitiveMap<String, String> headers = super.finalizeHeaders();
+
         if (reason == null || reason.isEmpty())
-            return null;
-        CaseInsensitiveMap<String, String> map = new CaseInsensitiveMap<>();
-        String encodedReason = uriEncode(reason);
-        map.put("X-Audit-Log-Reason", encodedReason);
-        return map;
+            return headers;
+
+        if (headers == null)
+            headers = new CaseInsensitiveMap<>();
+
+        headers.put("X-Audit-Log-Reason", uriEncode(reason));
+
+        return headers;
     }
 
     private String uriEncode(String input)
@@ -79,13 +94,26 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
         return formEncode.replace('+', ' ');
     }
 
+    /**
+     * Specialized form of {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction} that is used to provide information that
+     * has already been retrieved or generated so that another request does not need to be made to Discord.
+     * <br>Basically: Allows you to provide a value directly to the success returns.
+     *
+     * @param <T>
+     *        The generic response type for this RestAction
+     */
     public static class EmptyRestAction<T> extends AuditableRestAction<T>
     {
         protected final T content;
 
+        public EmptyRestAction(JDA api)
+        {
+            this(api, null);
+        }
+
         public EmptyRestAction(JDA api, T content)
         {
-            super(api, null, null);
+            super(api, null);
             this.content = content;
         }
 
@@ -97,12 +125,53 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
         }
 
         @Override
-        public Future<T> submit(boolean shouldQueue)
+        public RequestFuture<T> submit(boolean shouldQueue)
         {
-            return new CompletedFuture<>(content);
+            return new RestFuture<>(content);
         }
 
         @Override
         protected void handleResponse(Response response, Request<T> request) { }
+    }
+
+    /**
+     * Specialized form of {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction} that is used to provide information that
+     * an error has occurred while attempting to execute a request.
+     * <br>Basically: Allows you to provide an exception directly to the failure consumer.
+     *
+     * @param <T>
+     *        The generic response type for this RestAction
+     */
+    public static class FailedRestAction<T> extends AuditableRestAction<T>
+    {
+        private final Throwable throwable;
+
+        public FailedRestAction(Throwable throwable)
+        {
+            super(null, null);
+            this.throwable = throwable;
+        }
+
+        @Override
+        public void queue(Consumer<T> success, Consumer<Throwable> failure)
+        {
+            if (failure != null)
+                failure.accept(throwable);
+        }
+
+        @Override
+        public RequestFuture<T> submit(boolean shouldQueue)
+        {
+            return new RestFuture<>(throwable);
+        }
+
+        @Override
+        public T complete(boolean shouldQueue)
+        {
+            throw new RuntimeException(throwable);
+        }
+
+        @Override
+        protected void handleResponse(Response response, Request<T> request) {}
     }
 }

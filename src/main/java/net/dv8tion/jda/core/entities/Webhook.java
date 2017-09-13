@@ -20,6 +20,9 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.managers.WebhookManager;
 import net.dv8tion.jda.core.managers.WebhookManagerUpdatable;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.webhook.WebhookClientBuilder;
+
+import javax.annotation.CheckReturnValue;
 
 /**
  * An object representing Webhooks in Discord
@@ -123,6 +126,7 @@ public interface Webhook extends ISnowflake
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>The rest action to delete this Webhook.
      */
+    @CheckReturnValue
     AuditableRestAction<Void> delete();
 
     /**
@@ -146,4 +150,14 @@ public interface Webhook extends ISnowflake
      *         for this Webhook
      */
     WebhookManagerUpdatable getManagerUpdatable();
+
+    /**
+     * Creates a new {@link net.dv8tion.jda.webhook.WebhookClientBuilder WebhookClientBuilder} instance
+     * for this Webhook instance.
+     *
+     * <p><b><u>Remember to close the WebhookClient once you don't need it anymore to free resources!</u></b>
+     *
+     * @return The new WebhookClientBuilder
+     */
+    WebhookClientBuilder newClient();
 }

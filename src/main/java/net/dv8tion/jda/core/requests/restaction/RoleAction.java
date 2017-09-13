@@ -19,14 +19,15 @@ package net.dv8tion.jda.core.requests.restaction;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
+import okhttp3.RequestBody;
 import org.json.JSONObject;
 
+import javax.annotation.CheckReturnValue;
 import java.awt.Color;
 import java.util.Collection;
 
@@ -59,7 +60,7 @@ public class RoleAction extends AuditableRestAction<Role>
      */
     public RoleAction(Route.CompiledRoute route, Guild guild)
     {
-        super(guild.getJDA(), route, null);
+        super(guild.getJDA(), route);
         this.guild = guild;
     }
 
@@ -71,6 +72,7 @@ public class RoleAction extends AuditableRestAction<Role>
      *
      * @return The current RoleAction, for chaining convenience
      */
+    @CheckReturnValue
     public RoleAction setName(String name)
     {
         this.name = name;
@@ -85,6 +87,7 @@ public class RoleAction extends AuditableRestAction<Role>
      *
      * @return The current RoleAction, for chaining convenience
      */
+    @CheckReturnValue
     public RoleAction setHoisted(Boolean hoisted)
     {
         this.hoisted = hoisted;
@@ -100,6 +103,7 @@ public class RoleAction extends AuditableRestAction<Role>
      *
      * @return The current RoleAction, for chaining convenience
      */
+    @CheckReturnValue
     public RoleAction setMentionable(Boolean mentionable)
     {
         this.mentionable = mentionable;
@@ -114,6 +118,7 @@ public class RoleAction extends AuditableRestAction<Role>
      *
      * @return The current RoleAction, for chaining convenience
      */
+    @CheckReturnValue
     public RoleAction setColor(Color color)
     {
         return this.setColor(color != null ? color.getRGB() : null);
@@ -129,6 +134,7 @@ public class RoleAction extends AuditableRestAction<Role>
      *
      * @return The current RoleAction, for chaining convenience
      */
+    @CheckReturnValue
     public RoleAction setColor(Integer rgb)
     {
         this.color = rgb;
@@ -143,20 +149,21 @@ public class RoleAction extends AuditableRestAction<Role>
      * @param  permissions
      *         The varargs {@link net.dv8tion.jda.core.Permission Permissions} for the new role
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not hold one of the specified permissions
      * @throws IllegalArgumentException
      *         If any of the provided permissions is {@code null}
      *
      * @return The current RoleAction, for chaining convenience
      */
+    @CheckReturnValue
     public RoleAction setPermissions(Permission... permissions)
     {
         if (permissions != null)
         {
             for (Permission p : permissions)
             {
-                Args.notNull(p, "Permissions");
+                Checks.notNull(p, "Permissions");
                 checkPermission(p);
             }
         }
@@ -173,20 +180,21 @@ public class RoleAction extends AuditableRestAction<Role>
      * @param  permissions
      *         A {@link java.util.Collection Collection} of {@link net.dv8tion.jda.core.Permission Permissions} for the new role
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not hold one of the specified permissions
      * @throws IllegalArgumentException
      *         If any of the provided permissions is {@code null}
      *
      * @return The current RoleAction, for chaining convenience
      */
+    @CheckReturnValue
     public RoleAction setPermissions(Collection<Permission> permissions)
     {
         if (permissions != null)
         {
             for (Permission p : permissions)
             {
-                Args.notNull(p, "Permissions");
+                Checks.notNull(p, "Permissions");
                 checkPermission(p);
             }
         }
@@ -206,7 +214,7 @@ public class RoleAction extends AuditableRestAction<Role>
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided permission value is invalid
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not hold one of the specified permissions
      *
      * @return The current RoleAction, for chaining convenience
@@ -215,10 +223,11 @@ public class RoleAction extends AuditableRestAction<Role>
      * @see    net.dv8tion.jda.core.Permission#getRaw(java.util.Collection)
      * @see    net.dv8tion.jda.core.Permission#getRaw(net.dv8tion.jda.core.Permission...)
      */
+    @CheckReturnValue
     public RoleAction setPermissions(long permissions)
     {
-        Args.notNegative(permissions, "Raw Permissions");
-        Args.check(permissions <= Permission.ALL_PERMISSIONS, "Provided permissions may not be greater than a full permission set!");
+        Checks.notNegative(permissions, "Raw Permissions");
+        Checks.check(permissions <= Permission.ALL_PERMISSIONS, "Provided permissions may not be greater than a full permission set!");
         for (Permission p : Permission.getPermissions(permissions))
             checkPermission(p);
         this.permissions = permissions;
@@ -226,7 +235,7 @@ public class RoleAction extends AuditableRestAction<Role>
     }
 
     @Override
-    protected void finalizeData()
+    protected RequestBody finalizeData()
     {
         JSONObject object = new JSONObject();
         if (name != null)
@@ -240,8 +249,7 @@ public class RoleAction extends AuditableRestAction<Role>
         if (mentionable != null)
             object.put("mentionable", mentionable.booleanValue());
 
-        super.data = object;
-        super.finalizeData();
+        return getRequestBody(object);
     }
 
     @Override
@@ -256,6 +264,6 @@ public class RoleAction extends AuditableRestAction<Role>
     private void checkPermission(Permission permission)
     {
         if (!guild.getSelfMember().hasPermission(permission))
-            throw new PermissionException(permission);
+            throw new InsufficientPermissionException(permission);
     }
 }

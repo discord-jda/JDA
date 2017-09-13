@@ -19,6 +19,7 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
 
+import javax.annotation.CheckReturnValue;
 import java.util.Collection;
 import java.util.FormattableFlags;
 import java.util.Formatter;
@@ -65,6 +66,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.core.entities.Webhook Webhook}{@literal >}
      *         <br>An immutable list of Webhook attached to this channel
      */
+    @CheckReturnValue
     RestAction<List<Webhook>> getWebhooks();
 
     /**
@@ -102,13 +104,14 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *
      * @throws IllegalArgumentException
      *         If the size of the list less than 2 or more than 100 messages.
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *         If this account does not have MANAGE_MESSAGES
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If this account does not have {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *
      * @see    #deleteMessagesByIds(Collection)
      */
+    @CheckReturnValue
     RestAction<Void> deleteMessages(Collection<Message> messages);
 
     /**
@@ -149,13 +152,14 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *         If the size of the list less than 2 or more than 100 messages.
      * @throws java.lang.NumberFormatException
      *         If any of the provided ids cannot be parsed by {@link Long#parseLong(String)}
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *         If this account does not have MANAGE_MESSAGES
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If this account does not have {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *
      * @see    #deleteMessages(Collection)
      */
+    @CheckReturnValue
     RestAction<Void> deleteMessagesByIds(Collection<String> messageIds);
 
     /**
@@ -184,12 +188,13 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided {@code id} is {@code null} or empty.
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MANAGE_WEBHOOKS Permission.MANAGE_WEBHOOKS} in this channel.
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @CheckReturnValue
     AuditableRestAction<Void> deleteWebhookById(String id);
 
     /**
@@ -215,7 +220,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * @param  messageId
      *         The not-empty valid message id
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in this channel.
      * @throws java.lang.IllegalArgumentException
@@ -223,6 +228,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @CheckReturnValue
     RestAction<Void> clearReactionsById(String messageId);
 
     /**
@@ -248,12 +254,13 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * @param  messageId
      *         The message id
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in this channel.
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @CheckReturnValue
     default RestAction<Void> clearReactionsById(long messageId)
     {
         return clearReactionsById(Long.toUnsignedString(messageId));

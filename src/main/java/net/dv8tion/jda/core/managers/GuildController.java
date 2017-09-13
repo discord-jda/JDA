@@ -23,9 +23,7 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.EmoteImpl;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.MemberImpl;
-import net.dv8tion.jda.core.exceptions.AccountTypeException;
-import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
-import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.exceptions.*;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
@@ -38,10 +36,11 @@ import net.dv8tion.jda.core.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.core.requests.restaction.order.RoleOrderAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.PermissionUtil;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.annotation.CheckReturnValue;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -125,7 +124,7 @@ public class GuildController
      *             <li>If the provided Member isn't part of this {@link net.dv8tion.jda.core.entities.Guild Guild}</li>
      *             <li>If the provided VoiceChannel isn't part of this {@link net.dv8tion.jda.core.entities.Guild Guild}</li>
      *         </ul>
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         <ul>
      *             <li>If this account doesn't have {@link net.dv8tion.jda.core.Permission#VOICE_MOVE_OTHERS}
      *                 in the VoiceChannel that the Member is currently in.</li>
@@ -137,11 +136,12 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
      */
+    @CheckReturnValue
     public RestAction<Void> moveVoiceMember(Member member, VoiceChannel voiceChannel)
     {
         checkAvailable();
-        Args.notNull(member, "member");
-        Args.notNull(member, "voiceChannel");
+        Checks.notNull(member, "member");
+        Checks.notNull(member, "voiceChannel");
         checkGuild(member.getGuild(), "member");
         checkGuild(voiceChannel.getGuild(), "voiceChannel");
 
@@ -150,11 +150,11 @@ public class GuildController
             throw new IllegalStateException("You cannot move a Member who isn't in a VoiceChannel!");
 
         if (!PermissionUtil.checkPermission(vState.getChannel(), guild.getSelfMember(), Permission.VOICE_MOVE_OTHERS))
-            throw new PermissionException(Permission.VOICE_MOVE_OTHERS, "This account does not have Permission to MOVE_OTHERS out of the channel that the Member is currently in.");
+            throw new InsufficientPermissionException(Permission.VOICE_MOVE_OTHERS, "This account does not have Permission to MOVE_OTHERS out of the channel that the Member is currently in.");
 
         if (!PermissionUtil.checkPermission(voiceChannel, guild.getSelfMember(), Permission.VOICE_CONNECT)
                 && !PermissionUtil.checkPermission(voiceChannel, member, Permission.VOICE_CONNECT))
-            throw new PermissionException(Permission.VOICE_CONNECT,
+            throw new InsufficientPermissionException(Permission.VOICE_CONNECT,
                     "Neither this account nor the Member that is attempting to be moved have the VOICE_CONNECT permission " +
                             "for the destination VoiceChannel, so the move cannot be done.");
 
@@ -206,30 +206,32 @@ public class GuildController
      *         If the specified {@link net.dv8tion.jda.core.entities.Member Member}
      *         is not from the same {@link net.dv8tion.jda.core.entities.Guild Guild}.
      *         Or if the provided member is {@code null}
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         <ul>
      *             <li>If attempting to set nickname for self and the logged in account has neither {@link net.dv8tion.jda.core.Permission#NICKNAME_CHANGE}
-     *                 nor {@link net.dv8tion.jda.core.Permission#NICKNAME_MANAGE}</li>
+     *                 or {@link net.dv8tion.jda.core.Permission#NICKNAME_MANAGE}</li>
      *             <li>If attempting to set nickname for another member and the logged in account does not have {@link net.dv8tion.jda.core.Permission#NICKNAME_MANAGE}</li>
-     *             <li>If attempting to set nickname for another member and the logged in account cannot manipulate the other user due to permission hierarchy position.
-     *             <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
+     *         If attempting to set nickname for another member and the logged in account cannot manipulate the other user due to permission hierarchy position.
+     *         <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @CheckReturnValue
     public AuditableRestAction<Void> setNickname(Member member, String nickname)
     {
         checkAvailable();
-        Args.notNull(member, "member");
+        Checks.notNull(member, "member");
         checkGuild(member.getGuild(), "member");
 
         if(member.equals(guild.getSelfMember()))
         {
             if(!member.hasPermission(Permission.NICKNAME_CHANGE)
                     && !member.hasPermission(Permission.NICKNAME_MANAGE))
-                throw new PermissionException(Permission.NICKNAME_CHANGE, "You neither have NICKNAME_CHANGE nor NICKNAME_MANAGE permission!");
+                throw new InsufficientPermissionException(Permission.NICKNAME_CHANGE, "You neither have NICKNAME_CHANGE nor NICKNAME_MANAGE permission!");
         }
         else
         {
@@ -283,7 +285,7 @@ public class GuildController
      * @param  days
      *         Minimum number of days since a member has been offline to get affected.
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the account doesn't have {@link net.dv8tion.jda.core.Permission#KICK_MEMBERS KICK_MEMBER} Permission.
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
@@ -293,6 +295,7 @@ public class GuildController
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction} - Type: Integer
      *         <br>The amount of Members that were pruned from the Guild.
      */
+    @CheckReturnValue
     public AuditableRestAction<Integer> prune(int days)
     {
         checkAvailable();
@@ -301,8 +304,8 @@ public class GuildController
         if (days < 1)
             throw new IllegalArgumentException("Days amount must be at minimum 1 day.");
 
-        Route.CompiledRoute route = Route.Guilds.PRUNE_MEMBERS.compile(guild.getId(), Integer.toString(days));
-        return new AuditableRestAction<Integer>(guild.getJDA(), route, null)
+        Route.CompiledRoute route = Route.Guilds.PRUNE_MEMBERS.compile(guild.getId()).withQueryParams("days", Integer.toString(days));
+        return new AuditableRestAction<Integer>(guild.getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Integer> request)
@@ -313,42 +316,6 @@ public class GuildController
                     request .onFailure(response);
             }
         };
-    }
-
-    /**
-     * The method calculates the amount of Members that would be pruned if {@link #prune(int)} was executed.
-     * Prunability is determined by a Member being offline for at least <i>days</i> days.
-     *
-     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The prune count cannot be fetched due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>We were removed from the Guild before finishing the task</li>
-     * </ul>
-     *
-     * @param  days
-     *         Minimum number of days since a member has been offline to get affected.
-     *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *         If the account doesn't have {@link net.dv8tion.jda.core.Permission#KICK_MEMBERS KICK_MEMBER} Permission.
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
-     * @throws IllegalArgumentException
-     *         If the provided days are less than {@code 1}
-     *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Integer
-     *         <br>The amount of Members that would be affected.
-     *
-     * @deprecated
-     *         Use {@link net.dv8tion.jda.core.entities.Guild#getPrunableMemberCount(int) Guild.getPrunableMemberCount(int)} instead
-     */
-    @Deprecated
-    public RestAction<Integer> getPrunableMemberCount(int days)
-    {
-        return getGuild().getPrunableMemberCount(days);
     }
 
     /**
@@ -380,32 +347,32 @@ public class GuildController
      *         If the provided member is not a Member of this Guild or is {@code null}
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *         <ul>
-     *             <li>If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#KICK_MEMBERS} permission.</li>
-     *             <li>If the logged in account cannot kick the other member due to permission hierarchy position.
-     *             <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}</li>
-     *         </ul>
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#KICK_MEMBERS} permission.
+     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
+     *         If the logged in account cannot kick the other member due to permission hierarchy position.
+     *         <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         Kicks the provided Member from the current Guild
      */
+    @CheckReturnValue
     public AuditableRestAction<Void> kick(Member member, String reason)
     {
         checkAvailable();
-        Args.notNull(member, "member");
+        Checks.notNull(member, "member");
         checkGuild(member.getGuild(), "member");
         checkPermission(Permission.KICK_MEMBERS);
         checkPosition(member);
 
         final String userId = member.getUser().getId();
         final String guildId = guild.getId();
-        final Route.CompiledRoute route;
+
+        Route.CompiledRoute route = Route.Guilds.KICK_MEMBER.compile(guildId, userId);
         if (reason != null && !reason.isEmpty())
-            route = Route.Guilds.KICK_MEMBER_REASON.compile(guildId, userId, MiscUtil.encodeUTF8(reason));
-        else
-            route = Route.Guilds.KICK_MEMBER.compile(guildId, userId);
-        return new AuditableRestAction<Void>(guild.getJDA(), route, null)
+            route = route.withQueryParams("reason", MiscUtil.encodeUTF8(reason));
+
+        return new AuditableRestAction<Void>(guild.getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -443,12 +410,11 @@ public class GuildController
      * @param  reason
      *         The reason for this action or {@code null} if there is no specified reason
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *         <ul>
-     *             <li>If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#KICK_MEMBERS} permission.</li>
-     *             <li>If the logged in account cannot kick the other member due to permission hierarchy position.
-     *             <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}</li>
-     *         </ul>
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#KICK_MEMBERS} permission.
+     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
+     *         If the logged in account cannot kick the other member due to permission hierarchy position.
+     *         <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
      * @throws java.lang.IllegalArgumentException
      *         If the userId provided does not correspond to a Member in this Guild or the provided {@code userId} is blank/null.
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
@@ -456,9 +422,10 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @CheckReturnValue
     public AuditableRestAction<Void> kick(String userId, String reason)
     {
-        Args.notBlank(userId, "userId");
+        Checks.notBlank(userId, "userId");
 
         Member member = guild.getMemberById(userId);
         if (member == null)
@@ -493,16 +460,16 @@ public class GuildController
      *         If the provided member is not a Member of this Guild or is {@code null}
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *         <ul>
-     *             <li>If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#KICK_MEMBERS} permission.</li>
-     *             <li>If the logged in account cannot kick the other member due to permission hierarchy position.
-     *             <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}</li>
-     *         </ul>
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#KICK_MEMBERS} permission.
+     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
+     *         If the logged in account cannot kick the other member due to permission hierarchy position.
+     *         <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         Kicks the provided Member from the current Guild
      */
+    @CheckReturnValue
     public AuditableRestAction<Void> kick(Member member)
     {
         return kick(member, null);
@@ -530,12 +497,11 @@ public class GuildController
      * @param  userId
      *         The id of the {@link net.dv8tion.jda.core.entities.User User} to kick from the from the {@link net.dv8tion.jda.core.entities.Guild Guild}.
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *         <ul>
-     *             <li>If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#KICK_MEMBERS} permission.</li>
-     *             <li>If the logged in account cannot kick the other member due to permission hierarchy position.
-     *             <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}</li>
-     *         </ul>
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#KICK_MEMBERS} permission.
+     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
+     *         If the logged in account cannot kick the other member due to permission hierarchy position.
+     *         <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
      * @throws java.lang.IllegalArgumentException
      *         If the userId provided does not correspond to a Member in this Guild or the provided {@code userId} is blank/null.
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
@@ -543,6 +509,7 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @CheckReturnValue
     public AuditableRestAction<Void> kick(String userId)
     {
         return kick(userId, null);
@@ -578,12 +545,11 @@ public class GuildController
      * @param  reason
      *         The reason for this action or {@code null} if there is no specified reason
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *         <ul>
-     *             <li>If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.</li>
-     *             <li>If the logged in account cannot ban the other user due to permission hierarchy position.
-     *             <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}</li>
-     *         </ul>
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.
+     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
+     *         If the logged in account cannot ban the other user due to permission hierarchy position.
+     *         <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If the provided amount of days (delDays) is less than 0.</li>
@@ -595,10 +561,11 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @CheckReturnValue
     public AuditableRestAction<Void> ban(Member member, int delDays, String reason)
     {
         checkAvailable();
-        Args.notNull(member, "member");
+        Checks.notNull(member, "member");
         //Don't check if the provided member is from this guild. It doesn't matter if they are or aren't.
 
         return ban(member.getUser(), delDays, reason);
@@ -634,12 +601,11 @@ public class GuildController
      * @param  reason
      *         The reason for this action or {@code null} if there is no specified reason
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *         <ul>
-     *             <li>If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.</li>
-     *             <li>If the logged in account cannot ban the other user due to permission hierarchy position.
-     *             <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}</li>
-     *         </ul>
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.
+     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
+     *         If the logged in account cannot ban the other user due to permission hierarchy position.
+     *         <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If the provided amount of days (delDays) is less than 0.</li>
@@ -650,10 +616,11 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @CheckReturnValue
     public AuditableRestAction<Void> ban(User user, int delDays, String reason)
     {
         checkAvailable();
-        Args.notNull(user, "User");
+        Checks.notNull(user, "user");
         checkPermission(Permission.BAN_MEMBERS);
 
         if (guild.isMember(user)) // If user is in guild. Check if we are able to ban.
@@ -663,28 +630,14 @@ public class GuildController
             throw new IllegalArgumentException("Provided delDays cannot be less that 0. How can you delete messages that are -1 days old?");
 
         final String userId = user.getId();
-        final boolean isReason = reason != null && !reason.isEmpty();
-        if (isReason)
-            reason = MiscUtil.encodeUTF8(reason);
 
-        final Route.CompiledRoute route;
+        Route.CompiledRoute route = Route.Guilds.BAN.compile(guild.getId(), userId);
+        if (reason != null && !reason.isEmpty())
+            route = route.withQueryParams("reason", MiscUtil.encodeUTF8(reason));
         if (delDays > 0)
-        {
-            final String days = Integer.toString(delDays);
-            if (isReason)
-                route = Route.Guilds.BAN_WITH_DELETE_REASON.compile(guild.getId(), userId, days, reason);
-            else
-                route = Route.Guilds.BAN_WITH_DELETE.compile(guild.getId(), userId, days);
-        }
-        else
-        {
-            if (isReason)
-                route = Route.Guilds.BAN_REASON.compile(guild.getId(), userId, reason);
-            else
-                route = Route.Guilds.BAN.compile(guild.getId(), userId);
-        }
+            route = route.withQueryParams("delete-message-days", Integer.toString(delDays));
 
-        return new AuditableRestAction<Void>(guild.getJDA(), route, null)
+        return new AuditableRestAction<Void>(guild.getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -727,12 +680,11 @@ public class GuildController
      * @param  reason
      *         The reason for this action or {@code null} if there is no specified reason
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *         <ul>
-     *             <li>If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.</li>
-     *             <li>If the logged in account cannot ban the other user due to permission hierarchy position.
-     *             <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}</li>
-     *         </ul>
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.
+     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
+     *         If the logged in account cannot ban the other user due to permission hierarchy position.
+     *         <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
      * @throws IllegalArgumentException
      *         If the provided amount of days (delDays) is less than 0.
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
@@ -740,10 +692,11 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @CheckReturnValue
     public AuditableRestAction<Void> ban(String userId, int delDays, String reason)
     {
         checkAvailable();
-        Args.notBlank(userId, "UserId");
+        Checks.notBlank(userId, "userId");
         checkPermission(Permission.BAN_MEMBERS);
 
         User user = guild.getJDA().getUserById(userId);
@@ -752,29 +705,13 @@ public class GuildController
             return ban(user, delDays, reason);
         }
 
-        final boolean isReason = reason != null && !reason.isEmpty();
-        if (isReason)
-            reason = MiscUtil.encodeUTF8(reason);
-
-        final String guildId = guild.getId();
-        final Route.CompiledRoute route;
+        Route.CompiledRoute route = Route.Guilds.BAN.compile(guild.getId(), userId);
+        if (reason != null && !reason.isEmpty())
+            route = route.withQueryParams("reason", MiscUtil.encodeUTF8(reason));
         if (delDays > 0)
-        {
-            final String days = Integer.toString(delDays);
-            if (isReason)
-                route = Route.Guilds.BAN_WITH_DELETE_REASON.compile(guildId, userId, days, reason);
-            else
-                route = Route.Guilds.BAN_WITH_DELETE.compile(guildId, userId, days);
-        }
-        else
-        {
-            if (isReason)
-                route = Route.Guilds.BAN_REASON.compile(guildId, userId, reason);
-            else
-                route = Route.Guilds.BAN.compile(guildId, userId);
-        }
+            route = route.withQueryParams("delete-message-days", Integer.toString(delDays));
 
-        return new AuditableRestAction<Void>(guild.getJDA(), route, null)
+        return new AuditableRestAction<Void>(guild.getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -817,12 +754,11 @@ public class GuildController
      * @param  delDays
      *         The history of messages, in days, that will be deleted.
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *         <ul>
-     *             <li>If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.</li>
-     *             <li>If the logged in account cannot ban the other user due to permission hierarchy position.
-     *             <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}</li>
-     *         </ul>
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.
+     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
+     *         If the logged in account cannot ban the other user due to permission hierarchy position.
+     *         <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If the provided amount of days (delDays) is less than 0.</li>
@@ -834,6 +770,7 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @CheckReturnValue
     public AuditableRestAction<Void> ban(Member member, int delDays)
     {
         return ban(member, delDays, null);
@@ -867,12 +804,11 @@ public class GuildController
      * @param  delDays
      *         The history of messages, in days, that will be deleted.
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *         <ul>
-     *             <li>If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.</li>
-     *             <li>If the logged in account cannot ban the other user due to permission hierarchy position.
-     *             <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}</li>
-     *         </ul>
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.
+     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
+     *         If the logged in account cannot ban the other user due to permission hierarchy position.
+     *         <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If the provided amount of days (delDays) is less than 0.</li>
@@ -884,6 +820,7 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @CheckReturnValue
     public AuditableRestAction<Void> ban(User user, int delDays)
     {
         return ban(user, delDays, null);
@@ -917,12 +854,11 @@ public class GuildController
      * @param  delDays
      *         The history of messages, in days, that will be deleted.
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *         <ul>
-     *             <li>If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.</li>
-     *             <li>If the logged in account cannot ban the other user due to permission hierarchy position.
-     *             <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}</li>
-     *         </ul>
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.
+     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
+     *         If the logged in account cannot ban the other user due to permission hierarchy position.
+     *         <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
      * @throws IllegalArgumentException
      *         If the provided amount of days (delDays) is less than 0.
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
@@ -930,6 +866,7 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @CheckReturnValue
     public AuditableRestAction<Void> ban(String userId, int delDays)
     {
         return ban(userId, delDays, null);
@@ -954,7 +891,7 @@ public class GuildController
      * @param  user
      *         The id of the {@link net.dv8tion.jda.core.entities.User User} to unban.
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
@@ -963,9 +900,10 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @CheckReturnValue
     public AuditableRestAction<Void> unban(User user)
     {
-        Args.notNull(user, "user");
+        Checks.notNull(user, "user");
 
         return unban(user.getId());
     }
@@ -989,7 +927,7 @@ public class GuildController
      * @param  userId
      *         The id of the {@link net.dv8tion.jda.core.entities.User User} to unban.
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
@@ -998,14 +936,16 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @CheckReturnValue
     public AuditableRestAction<Void> unban(String userId)
     {
         checkAvailable();
-        Args.notBlank(userId, "userId");
+        Checks.notBlank(userId, "userId");
         checkPermission(Permission.BAN_MEMBERS);
 
         Route.CompiledRoute route = Route.Guilds.UNBAN.compile(guild.getId(), userId);
-        return new AuditableRestAction<Void>(guild.getJDA(), route, null)
+
+        return new AuditableRestAction<Void>(guild.getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -1045,11 +985,10 @@ public class GuildController
      * @param  deafen
      *         Whether this {@link net.dv8tion.jda.core.entities.Member Member} should be deafened or undeafened.
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *         <ul>
-     *             <li>If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#VOICE_DEAF_OTHERS} permission.</li>
-     *             <li>If the provided member is the Guild's owner. You cannot modify the owner of a Guild.</li>
-     *         </ul>
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#VOICE_DEAF_OTHERS} permission.
+     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
+     *         If the provided member is the Guild's owner. You cannot modify the owner of a Guild.
      * @throws IllegalArgumentException
      *         If the provided member is not from this Guild or null.
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
@@ -1057,17 +996,18 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @CheckReturnValue
     public AuditableRestAction<Void> setDeafen(Member member, boolean deafen)
     {
         checkAvailable();
-        Args.notNull(member, "member");
+        Checks.notNull(member, "member");
         checkGuild(member.getGuild(), "member");
         checkPermission(Permission.VOICE_DEAF_OTHERS);
 
         //We check the owner instead of Position because, apparently, Discord doesn't care about position for
         // muting and deafening, only whether the affected Member is the owner.
         if (guild.getOwner().equals(member))
-            throw new PermissionException("Cannot modified Guild Deafen status the Owner of the Guild");
+            throw new HierarchyException("Cannot modify Guild Deafen status the Owner of the Guild");
 
         if (member.getVoiceState().isGuildDeafened() == deafen)
             return new AuditableRestAction.EmptyRestAction<>(getJDA(), null);
@@ -1112,11 +1052,10 @@ public class GuildController
      * @param  mute
      *         Whether this {@link net.dv8tion.jda.core.entities.Member Member} should be muted or unmuted.
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *         <ul>
-     *             <li>If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#VOICE_MUTE_OTHERS} permission.</li>
-     *             <li>If the provided member is the Guild's owner. You cannot modify the owner of a Guild.</li>
-     *         </ul>
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#VOICE_DEAF_OTHERS} permission.
+     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
+     *         If the provided member is the Guild's owner. You cannot modify the owner of a Guild.
      * @throws java.lang.IllegalArgumentException
      *         If the provided member is not from this Guild or null.
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
@@ -1124,17 +1063,18 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @CheckReturnValue
     public AuditableRestAction<Void> setMute(Member member, boolean mute)
     {
         checkAvailable();
-        Args.notNull(member, "member");
+        Checks.notNull(member, "member");
         checkGuild(member.getGuild(), "member");
         checkPermission(Permission.VOICE_MUTE_OTHERS);
 
         //We check the owner instead of Position because, apparently, Discord doesn't care about position for
         // muting and deafening, only whether the affected Member is the owner.
         if (guild.getOwner().equals(member))
-            throw new PermissionException("Cannot modified Guild Mute status the Owner of the Guild");
+            throw new HierarchyException("Cannot modify Guild Mute status the Owner of the Guild");
 
         if (member.getVoiceState().isGuildMuted() == mute)
             return new AuditableRestAction.EmptyRestAction<>(getJDA(), null);
@@ -1155,35 +1095,137 @@ public class GuildController
     }
 
     /**
-     * Gets an unmodifiable list of the currently banned {@link net.dv8tion.jda.core.entities.User Users}.
-     * <br>If you wish to ban or unban a user, please {@link #ban(net.dv8tion.jda.core.entities.User, int)} or
-     * {@link #unban(net.dv8tion.jda.core.entities.User)}.
+     * Atomically assigns the provided {@link net.dv8tion.jda.core.entities.Role Role} to the specified {@link net.dv8tion.jda.core.entities.Member Member}.
+     * <br><b>This can be used together with other role modification methods as it does not require an updated cache!</b>
+     *
+     * <p>If multiple roles should be added/removed (efficiently) in one request
+     * you may use {@link #modifyMemberRoles(Member, Collection, Collection) modifyMemberRoles(Member, Collection, Collection)} or similar methods.
+     *
+     * <p>If the specified role is already present in the member's set of roles this does nothing.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The ban list cannot be fetched due to a permission discrepancy</li>
+     *     <br>The Members Roles could not be modified due to a permission discrepancy</li>
      *
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>We were removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
+     *     <br>The target Member was removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_ROLE UNKNOWN_ROLE}
+     *     <br>If the specified Role does not exist</li>
      * </ul>
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
+     * @param  member
+     *         The target member who will receive the new role
+     * @param  role
+     *         The role which should be assigned atomically
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@literal List<}{@link net.dv8tion.jda.core.entities.User User}{@literal >}
-     *         <br>An unmodifiable list of all users currently banned from this Guild
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the specified member/role are not from the current Guild</li>
+     *             <li>Either member or role are {@code null}</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
+     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
+     *         If the provided roles are higher in the Guild's hierarchy
+     *         and thus cannot be modified by the currently logged in account
      *
-     * @deprecated
-     *         Use {@link net.dv8tion.jda.core.entities.Guild#getBans() Guild.getBans()} instead
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
-    @Deprecated
-    public RestAction<List<User>> getBans()
+    @CheckReturnValue
+    public AuditableRestAction<Void> addSingleRoleToMember(Member member, Role role)
     {
-        return getGuild().getBans();
+        Checks.notNull(member, "Member");
+        Checks.notNull(role, "Role");
+        checkGuild(member.getGuild(), "Member is not from the same Guild!");
+        checkGuild(role.getGuild(), "Role is not from the same Guild!");
+        checkPermission(Permission.MANAGE_ROLES);
+        checkPosition(role);
+
+        Route.CompiledRoute route = Route.Guilds.ADD_MEMBER_ROLE.compile(guild.getId(), member.getUser().getId(), role.getId());
+        return new AuditableRestAction<Void>(getJDA(), route)
+        {
+            @Override
+            protected void handleResponse(Response response, Request<Void> request)
+            {
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
+    }
+
+    /**
+     * Atomically removes the provided {@link net.dv8tion.jda.core.entities.Role Role} from the specified {@link net.dv8tion.jda.core.entities.Member Member}.
+     * <br><b>This can be used together with other role modification methods as it does not require an updated cache!</b>
+     *
+     * <p>If multiple roles should be added/removed (efficiently) in one request
+     * you may use {@link #modifyMemberRoles(Member, Collection, Collection) modifyMemberRoles(Member, Collection, Collection)} or similar methods.
+     *
+     * <p>If the specified role is not present in the member's set of roles this does nothing.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The Members Roles could not be modified due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>We were removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
+     *     <br>The target Member was removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_ROLE UNKNOWN_ROLE}
+     *     <br>If the specified Role does not exist</li>
+     * </ul>
+     *
+     * @param  member
+     *         The target member who will lose the specified role
+     * @param  role
+     *         The role which should be removed atomically
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the specified member/role are not from the current Guild</li>
+     *             <li>Either member or role are {@code null}</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
+     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
+     *         If the provided roles are higher in the Guild's hierarchy
+     *         and thus cannot be modified by the currently logged in account
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     */
+    @CheckReturnValue
+    public AuditableRestAction<Void> removeSingleRoleFromMember(Member member, Role role)
+    {
+        Checks.notNull(member, "Member");
+        Checks.notNull(role, "Role");
+        checkGuild(member.getGuild(), "Member is not from the same Guild!");
+        checkGuild(role.getGuild(), "Role is not from the same Guild!");
+        checkPermission(Permission.MANAGE_ROLES);
+        checkPosition(role);
+
+        Route.CompiledRoute route = Route.Guilds.REMOVE_MEMBER_ROLE.compile(guild.getId(), member.getUser().getId(), role.getId());
+        return new AuditableRestAction<Void>(getJDA(), route)
+        {
+            @Override
+            protected void handleResponse(Response response, Request<Void> request)
+            {
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
     }
 
     /**
@@ -1217,7 +1259,9 @@ public class GuildController
      *
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
+     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
      *         If the provided roles are higher in the Guild's hierarchy
      *         and thus cannot be modified by the currently logged in account
      * @throws IllegalArgumentException
@@ -1234,6 +1278,7 @@ public class GuildController
      * @see    #addRolesToMember(Member, Collection)
      * @see    #modifyMemberRoles(Member, Role...)
      */
+    @CheckReturnValue
     public AuditableRestAction<Void> addRolesToMember(Member member, Role... roles)
     {
         return modifyMemberRoles(member, Arrays.asList(roles), Collections.emptyList());
@@ -1270,7 +1315,9 @@ public class GuildController
      *
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
+     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
      *         If the provided roles are higher in the Guild's hierarchy
      *         and thus cannot be modified by the currently logged in account
      * @throws IllegalArgumentException
@@ -1287,6 +1334,7 @@ public class GuildController
      * @see    #addRolesToMember(Member, Role...)
      * @see    #modifyMemberRoles(Member, Collection)
      */
+    @CheckReturnValue
     public AuditableRestAction<Void> addRolesToMember(Member member, Collection<Role> roles)
     {
         return modifyMemberRoles(member, roles, Collections.emptyList());
@@ -1323,7 +1371,9 @@ public class GuildController
      *
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
+     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
      *         If the provided roles are higher in the Guild's hierarchy
      *         and thus cannot be modified by the currently logged in account
      * @throws IllegalArgumentException
@@ -1340,6 +1390,7 @@ public class GuildController
      * @see    #addRolesToMember(Member, Collection)
      * @see    #modifyMemberRoles(Member, Role...)
      */
+    @CheckReturnValue
     public AuditableRestAction<Void> removeRolesFromMember(Member member, Role... roles)
     {
         return modifyMemberRoles(member, Collections.emptyList(), Arrays.asList(roles));
@@ -1376,7 +1427,9 @@ public class GuildController
      *
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
+     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
      *         If the provided roles are higher in the Guild's hierarchy
      *         and thus cannot be modified by the currently logged in account
      * @throws IllegalArgumentException
@@ -1393,6 +1446,7 @@ public class GuildController
      * @see    #addRolesToMember(Member, Role...)
      * @see    #modifyMemberRoles(Member, Collection)
      */
+    @CheckReturnValue
     public AuditableRestAction<Void> removeRolesFromMember(Member member, Collection<Role> roles)
     {
         return modifyMemberRoles(member, Collections.emptyList(), roles);
@@ -1437,7 +1491,9 @@ public class GuildController
      *
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
+     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
      *         If the provided roles are higher in the Guild's hierarchy
      *         and thus cannot be modified by the currently logged in account
      * @throws IllegalArgumentException
@@ -1448,17 +1504,18 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @CheckReturnValue
     public AuditableRestAction<Void> modifyMemberRoles(Member member, Collection<Role> rolesToAdd, Collection<Role> rolesToRemove)
     {
         checkAvailable();
-        Args.notNull(member, "member");
-        Args.notNull(rolesToAdd, "Collection containing roles to be added to the member");
-        Args.notNull(rolesToRemove, "Collection containing roles to be removed from the member");
+        Checks.notNull(member, "member");
+        Checks.notNull(rolesToAdd, "Collection containing roles to be added to the member");
+        Checks.notNull(rolesToRemove, "Collection containing roles to be removed from the member");
         checkGuild(member.getGuild(), "member");
         checkPermission(Permission.MANAGE_ROLES);
         rolesToAdd.forEach(role ->
         {
-            Args.notNull(role, "role in rolesToAdd");
+            Checks.notNull(role, "role in rolesToAdd");
             checkGuild(role.getGuild(), "role: " + role.toString());
             checkPosition(role);
             if (role.isManaged())
@@ -1466,7 +1523,7 @@ public class GuildController
         });
         rolesToRemove.forEach(role ->
         {
-            Args.notNull(role, "role in rolesToRemove");
+            Checks.notNull(role, "role in rolesToRemove");
             checkGuild(role.getGuild(), "role: " + role.toString());
             checkPosition(role);
             if (role.isManaged())
@@ -1529,7 +1586,9 @@ public class GuildController
      *
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
+     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
      *         If the provided roles are higher in the Guild's hierarchy
      *         and thus cannot be modified by the currently logged in account
      * @throws IllegalArgumentException
@@ -1544,6 +1603,7 @@ public class GuildController
      *
      * @see    #modifyMemberRoles(Member, Collection)
      */
+    @CheckReturnValue
     public AuditableRestAction<Void> modifyMemberRoles(Member member, Role... roles)
     {
         return modifyMemberRoles(member, Arrays.asList(roles));
@@ -1581,7 +1641,9 @@ public class GuildController
      *
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
+     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
      *         If the provided roles are higher in the Guild's hierarchy
      *         and thus cannot be modified by the currently logged in account
      * @throws IllegalArgumentException
@@ -1596,15 +1658,16 @@ public class GuildController
      *
      * @see    #modifyMemberRoles(Member, Collection)
      */
+    @CheckReturnValue
     public AuditableRestAction<Void> modifyMemberRoles(Member member, Collection<Role> roles)
     {
         checkAvailable();
-        Args.notNull(member, "member");
-        Args.notNull(roles, "roles");
+        Checks.notNull(member, "member");
+        Checks.notNull(roles, "roles");
         checkGuild(member.getGuild(), "member");
         roles.forEach(role ->
         {
-            Args.notNull(role, "role in collection");
+            Checks.notNull(role, "role in collection");
             checkGuild(role.getGuild(), "role: " + role.toString());
             checkPosition(role);
         });
@@ -1676,10 +1739,11 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @CheckReturnValue
     public AuditableRestAction<Void> transferOwnership(Member newOwner)
     {
         checkAvailable();
-        Args.notNull(newOwner, "newOwner member");
+        Checks.notNull(newOwner, "newOwner member");
         checkGuild(newOwner.getGuild(), "newOwner member");
         if (!guild.getOwner().equals(guild.getSelfMember()))
             throw new PermissionException("The logged in account must be the owner of this Guild to be able to transfer ownership");
@@ -1722,7 +1786,7 @@ public class GuildController
      * @param  name
      *         The name of the TextChannel to create
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL} permission
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
@@ -1732,20 +1796,18 @@ public class GuildController
      * @return A specific {@link net.dv8tion.jda.core.requests.restaction.ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new TextChannel before creating it
      */
+    @CheckReturnValue
     public ChannelAction createTextChannel(String name)
     {
         checkAvailable();
         checkPermission(Permission.MANAGE_CHANNEL);
-        Args.notNull(name, "name");
+        Checks.notBlank(name, "name");
 
         if (name.length() < 2 || name.length() > 100)
             throw new IllegalArgumentException("Provided name must be 2 - 100 characters in length");
 
-        JSONObject body = new JSONObject()
-                .put("type", "text")
-                .put("name", name);
         Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(guild.getId());
-        return new ChannelAction(route, name, guild, false);
+        return new ChannelAction(route, name, guild, ChannelType.TEXT);
     }
 
     /**
@@ -1765,7 +1827,7 @@ public class GuildController
      * @param  name
      *         The name of the VoiceChannel to create
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL} permission
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
@@ -1775,20 +1837,59 @@ public class GuildController
      * @return A specific {@link net.dv8tion.jda.core.requests.restaction.ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new VoiceChannel before creating it
      */
+    @CheckReturnValue
     public ChannelAction createVoiceChannel(String name)
     {
         checkAvailable();
         checkPermission(Permission.MANAGE_CHANNEL);
-        Args.notNull(name, "name");
+        Checks.notBlank(name, "name");
 
         if (name.length() < 2 || name.length() > 100)
             throw new IllegalArgumentException("Provided name must be 2 to 100 characters in length");
 
-        JSONObject body = new JSONObject()
-                .put("type", "voice")
-                .put("name", name);
         Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(guild.getId());
-        return new ChannelAction(route, name, guild, true);
+        return new ChannelAction(route, name, guild, ChannelType.VOICE);
+    }
+
+    /**
+     * Creates a new {@link net.dv8tion.jda.core.entities.Category Category} in this Guild.
+     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The channel could not be created due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>We were removed from the Guild before finishing the task</li>
+     * </ul>
+     *
+     * @param  name
+     *         The name of the Category to create
+     *
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL} permission
+     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
+     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
+     * @throws IllegalArgumentException
+     *         If the provided name is {@code null} or less than 2 characters or greater than 100 characters in length
+     *
+     * @return A specific {@link net.dv8tion.jda.core.requests.restaction.ChannelAction ChannelAction}
+     *         <br>This action allows to set fields for the new Category before creating it
+     */
+    @CheckReturnValue
+    public ChannelAction createCategory(String name)
+    {
+        checkAvailable();
+        checkPermission(Permission.MANAGE_CHANNEL);
+        Checks.notBlank(name, "name");
+
+        if (name.length() < 2 || name.length() > 100)
+            throw new IllegalArgumentException("Provided name must be 2 to 100 characters in length");
+
+        Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(guild.getId());
+        return new ChannelAction(route, name, guild, ChannelType.CATEGORY);
     }
 
     /**
@@ -1819,7 +1920,7 @@ public class GuildController
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided channel is {@code null}
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission
      *
      * @return A specific {@link net.dv8tion.jda.core.requests.restaction.ChannelAction ChannelAction}
@@ -1831,33 +1932,27 @@ public class GuildController
      * @see    #createVoiceChannel(String)
      * @see    net.dv8tion.jda.core.requests.restaction.ChannelAction ChannelAction
      */
+    @CheckReturnValue
     public ChannelAction createCopyOfChannel(Channel channel)
     {
-        Args.notNull(channel, "Channel");
+        Checks.notNull(channel, "Channel");
         checkPermission(Permission.MANAGE_CHANNEL);
-        boolean isVoice = channel instanceof VoiceChannel;
 
         Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(guild.getId());
-        final ChannelAction action = new ChannelAction(route, channel.getName(), guild, isVoice);
+        final ChannelAction action = new ChannelAction(route, channel.getName(), guild, channel.getType());
 
-        if (isVoice)
+        switch (channel.getType())
         {
-            VoiceChannel voice = (VoiceChannel) channel;
-            action.setBitrate(voice.getBitrate())
-                  .setUserlimit(voice.getUserLimit());
-        }
-        else
-        {
-            TextChannel text = (TextChannel) channel;
-            action.setTopic(text.getTopic());
-        }
-
-        for (PermissionOverride o : channel.getPermissionOverrides())
-        {
-            if (o.isMemberOverride())
-                action.addPermissionOverride(o.getMember(), o.getAllowedRaw(), o.getDeniedRaw());
-            else
-                action.addPermissionOverride(o.getRole(), o.getAllowedRaw(), o.getDeniedRaw());
+            case VOICE:
+                VoiceChannel voice = (VoiceChannel) channel;
+                action.setBitrate(voice.getBitrate())
+                      .setUserlimit(voice.getUserLimit());
+                break;
+            case TEXT:
+                TextChannel text = (TextChannel) channel;
+                action.setTopic(text.getTopic())
+                      .setNSFW(text.isNSFW());
+                break;
         }
 
         return action;
@@ -1882,7 +1977,7 @@ public class GuildController
      * @param  name
      *         The default name for the new Webhook.
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If you do not hold the permission {@link net.dv8tion.jda.core.Permission#MANAGE_WEBHOOKS Manage Webhooks}
      *         on the selected channel
      * @throws IllegalArgumentException
@@ -1894,13 +1989,14 @@ public class GuildController
      * @return A specific {@link net.dv8tion.jda.core.requests.restaction.WebhookAction WebhookAction}
      *         <br>This action allows to set fields for the new webhook before creating it
      */
+    @CheckReturnValue
     public WebhookAction createWebhook(TextChannel channel, String name)
     {
-        Args.notNull(name, "Webhook name");
-        Args.notNull(channel, "TextChannel");
+        Checks.notNull(name, "Webhook name");
+        Checks.notNull(channel, "TextChannel");
         checkGuild(channel.getGuild(), "channel");
         if (!guild.getSelfMember().hasPermission(channel, Permission.MANAGE_WEBHOOKS))
-            throw new PermissionException(Permission.MANAGE_WEBHOOKS);
+            throw new InsufficientPermissionException(Permission.MANAGE_WEBHOOKS);
 
         Route.CompiledRoute route = Route.Channels.CREATE_WEBHOOK.compile(channel.getId());
         return new WebhookAction(getJDA(), route, name);
@@ -1924,7 +2020,7 @@ public class GuildController
      *     <br>There are too many roles in this Guild</li>
      * </ul>
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES} Permission
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
@@ -1932,6 +2028,7 @@ public class GuildController
      * @return {@link net.dv8tion.jda.core.requests.restaction.RoleAction RoleAction}
      *         <br>Creates a new role with previously selected field values
      */
+    @CheckReturnValue
     public RoleAction createRole()
     {
         checkAvailable();
@@ -1966,7 +2063,7 @@ public class GuildController
      * @param  role
      *         The {@link net.dv8tion.jda.core.entities.Role Role} that should be copied
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES} Permission and every Permission the provided Role has
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
@@ -1976,10 +2073,9 @@ public class GuildController
      * @return {@link net.dv8tion.jda.core.requests.restaction.RoleAction RoleAction}
      *         <br>RoleAction with already copied values from the specified {@link net.dv8tion.jda.core.entities.Role Role}
      */
+    @CheckReturnValue
     public RoleAction createCopyOfRole(Role role)
     {
-        Route.CompiledRoute route = Route.Roles.CREATE_ROLE.compile(guild.getId());
-
         return createRole()
                 .setColor(role.getColor())
                 .setPermissions(role.getPermissionsRaw())
@@ -2014,7 +2110,7 @@ public class GuildController
      *         The {@link net.dv8tion.jda.core.entities.Role Roles} the new Emote should be restricted to
      *         <br>If no roles are provided the Emote will be available to all Members of this Guild
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES MANAGE_EMOTES} Permission
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
@@ -2024,12 +2120,13 @@ public class GuildController
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction} - Type: {@link net.dv8tion.jda.core.entities.Emote Emote}
      *         <br>The newly created Emote
      */
+    @CheckReturnValue
     public AuditableRestAction<Emote> createEmote(String name, Icon icon, Role... roles)
     {
         checkAvailable();
         checkPermission(Permission.MANAGE_EMOTES);
-        Args.notNull(name, "emote name");
-        Args.notNull(icon, "emote icon");
+        Checks.notNull(name, "emote name");
+        Checks.notNull(icon, "emote icon");
 
         if (getJDA().getAccountType() != AccountType.CLIENT)
             throw new AccountTypeException(AccountType.CLIENT);
@@ -2073,6 +2170,30 @@ public class GuildController
     }
 
     /**
+     * Modifies the positional order of {@link net.dv8tion.jda.core.entities.Guild#getCategories() Guild.getCategories()}
+     * using a specific {@link net.dv8tion.jda.core.requests.RestAction RestAction} extension to allow moving Channels
+     * {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveDown(int) down}
+     * or {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveTo(int) to} a specific position.
+     * <br>This uses <b>ascending</b> order with a 0 based index.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNNKOWN_CHANNEL}
+     *     <br>One of the channels has been deleted before the completion of the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The currently logged in account was removed from the Guild</li>
+     * </ul>
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.order.ChannelOrderAction ChannelOrderAction} - Type: {@link net.dv8tion.jda.core.entities.Category Category}
+     */
+    @CheckReturnValue
+    public ChannelOrderAction<Category> modifyCategoryPositions()
+    {
+        return new ChannelOrderAction<>(guild, ChannelType.CATEGORY);
+    }
+
+    /**
      * Modifies the positional order of {@link net.dv8tion.jda.core.entities.Guild#getTextChannels() Guild.getTextChannels()}
      * using a specific {@link net.dv8tion.jda.core.requests.RestAction RestAction} extension to allow moving Channels
      * {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveDown(int) down}
@@ -2090,6 +2211,7 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.order.ChannelOrderAction ChannelOrderAction} - Type: {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      */
+    @CheckReturnValue
     public ChannelOrderAction<TextChannel> modifyTextChannelPositions()
     {
         return new ChannelOrderAction<>(guild, ChannelType.TEXT);
@@ -2113,6 +2235,7 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.order.ChannelOrderAction ChannelOrderAction} - Type: {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
      */
+    @CheckReturnValue
     public ChannelOrderAction<VoiceChannel> modifyVoiceChannelPositions()
     {
         return new ChannelOrderAction<>(guild, ChannelType.VOICE);
@@ -2142,6 +2265,7 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.order.RoleOrderAction RoleOrderAction}
      */
+    @CheckReturnValue
     public RoleOrderAction modifyRolePositions()
     {
         return modifyRolePositions(true);
@@ -2172,6 +2296,7 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.order.RoleOrderAction RoleOrderAction}
      */
+    @CheckReturnValue
     public RoleOrderAction modifyRolePositions(boolean useDiscordOrder)
     {
         return new RoleOrderAction(guild, useDiscordOrder);
@@ -2192,18 +2317,18 @@ public class GuildController
     protected void checkPermission(Permission perm)
     {
         if (!guild.getSelfMember().hasPermission(perm))
-            throw new PermissionException(perm);
+            throw new InsufficientPermissionException(perm);
     }
 
     protected void checkPosition(Member member)
     {
         if(!guild.getSelfMember().canInteract(member))
-            throw new PermissionException("Can't modify a member with higher or equal highest role than yourself!");
+            throw new HierarchyException("Can't modify a member with higher or equal highest role than yourself!");
     }
 
     protected void checkPosition(Role role)
     {
         if(!guild.getSelfMember().canInteract(role))
-            throw new PermissionException("Can't modify a role with higher or equal highest role than yourself! Role: " + role.toString());
+            throw new HierarchyException("Can't modify a role with higher or equal highest role than yourself! Role: " + role.toString());
     }
 }

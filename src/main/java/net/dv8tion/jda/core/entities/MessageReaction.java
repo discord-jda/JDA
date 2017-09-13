@@ -19,6 +19,7 @@ package net.dv8tion.jda.core.entities;
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
@@ -27,6 +28,7 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
 
+import javax.annotation.CheckReturnValue;
 import java.util.Objects;
 
 /**
@@ -233,6 +235,7 @@ public class MessageReaction
      * @return {@link net.dv8tion.jda.core.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction}
      *         <br>Retrieves an immutable list of users that reacted with this Reaction.
      */
+    @CheckReturnValue
     public ReactionPaginationAction getUsers()
     {
         return getUsers(100);
@@ -264,6 +267,7 @@ public class MessageReaction
      * @return {@link net.dv8tion.jda.core.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction}
      *         <br>Retrieves an immutable list of users that reacted with this Reaction.
      */
+    @CheckReturnValue
     public ReactionPaginationAction getUsers(int amount)
     {
         return new ReactionPaginationAction(this).limit(amount);
@@ -289,6 +293,7 @@ public class MessageReaction
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
      *         Nothing is returned on success
      */
+    @CheckReturnValue
     public RestAction<Void> removeReaction()
     {
         return removeReaction(getJDA().getSelfUser());
@@ -318,7 +323,7 @@ public class MessageReaction
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided {@code user} is null.
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         if the provided User is not us and we do not have permission to
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE manage messages}
      *         in the channel this reaction was used in
@@ -326,6 +331,7 @@ public class MessageReaction
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
      *         Nothing is returned on success
      */
+    @CheckReturnValue
     public RestAction<Void> removeReaction(User user)
     {
         if (user == null)
@@ -336,7 +342,7 @@ public class MessageReaction
             {
                 Channel channel = (Channel) this.channel;
                 if (!channel.getGuild().getSelfMember().hasPermission(channel, Permission.MESSAGE_MANAGE))
-                    throw new PermissionException(Permission.MESSAGE_MANAGE);
+                    throw new InsufficientPermissionException(Permission.MESSAGE_MANAGE);
             }
             else
             {
@@ -348,7 +354,7 @@ public class MessageReaction
                     ? emote.getName() + ":" + emote.getId()
                     : MiscUtil.encodeUTF8(emote.getName());
         Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(channel.getId(), getMessageId(), code, user.getId());
-        return new RestAction<Void>(getJDA(), route, null)
+        return new RestAction<Void>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)

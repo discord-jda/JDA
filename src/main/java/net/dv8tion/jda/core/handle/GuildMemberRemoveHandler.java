@@ -47,6 +47,11 @@ public class GuildMemberRemoveHandler extends SocketHandler
         }
 
         final long userId = content.getJSONObject("user").getLong("id");
+        if (userId == api.getSelfUser().getIdLong())
+        {
+            //We probably just left the guild and this event is trying to remove us from the guild, therefore ignore
+            return null;
+        }
         MemberImpl member = (MemberImpl) guild.getMembersMap().remove(userId);
 
         if (member == null)
@@ -57,7 +62,6 @@ public class GuildMemberRemoveHandler extends SocketHandler
 
         if (member.getVoiceState().inVoiceChannel())//If this user was in a VoiceChannel, fire VoiceLeaveEvent.
         {
-
             GuildVoiceStateImpl vState = (GuildVoiceStateImpl) member.getVoiceState();
             VoiceChannel channel = vState.getChannel();
             vState.setConnectedChannel(null);
@@ -98,6 +102,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
                     }
                 }
             }
+            api.getEventCache().clear(EventCache.Type.USER, userId);
         }
         api.getEventManager().handle(
                 new GuildMemberLeaveEvent(

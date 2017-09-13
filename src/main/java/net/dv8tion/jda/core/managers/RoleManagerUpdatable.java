@@ -20,16 +20,18 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.exceptions.HierarchyException;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.fields.PermissionField;
 import net.dv8tion.jda.core.managers.fields.RoleField;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
+import javax.annotation.CheckReturnValue;
 import java.awt.Color;
 
 /**
@@ -225,13 +227,16 @@ public class RoleManagerUpdatable
      *          positional power before finishing the task</li>
      * </ul>
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES}
-     *         or does not have the power to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
+     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
+     *         If the currently logged in account does not meet the required hierarchy position
+     *         to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Applies all changes that have been made in a single api-call.
      */
+    @CheckReturnValue
     public AuditableRestAction<Void> update()
     {
         checkPermission(Permission.MANAGE_ROLES);
@@ -281,13 +286,13 @@ public class RoleManagerUpdatable
     protected void checkPermission(Permission perm)
     {
         if (!getGuild().getSelfMember().hasPermission(perm))
-            throw new PermissionException(perm);
+            throw new InsufficientPermissionException(perm);
     }
 
     protected void checkPosition()
     {
         if(!getGuild().getSelfMember().canInteract(role))
-            throw new PermissionException("Can't modify role >= highest self-role");
+            throw new HierarchyException("Can't modify role >= highest self-role");
     }
 
     protected void setupFields()
@@ -297,7 +302,7 @@ public class RoleManagerUpdatable
             @Override
             public void checkValue(String value)
             {
-                Args.notNull(value, "name");
+                Checks.notNull(value, "name");
                 if (value.isEmpty() || value.length() > 32)
                     throw new IllegalArgumentException("Provided role name must be 1 to 32 characters in length");
             }
@@ -324,7 +329,7 @@ public class RoleManagerUpdatable
             @Override
             public void checkValue(Boolean value)
             {
-                Args.notNull(value, "hoisted Boolean");
+                Checks.notNull(value, "hoisted Boolean");
             }
         };
 
@@ -333,7 +338,7 @@ public class RoleManagerUpdatable
             @Override
             public void checkValue(Boolean value)
             {
-                Args.notNull(value, "mentionable Boolean");
+                Checks.notNull(value, "mentionable Boolean");
             }
         };
 

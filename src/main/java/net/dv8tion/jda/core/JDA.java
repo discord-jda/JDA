@@ -23,8 +23,9 @@ import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
-import org.apache.http.HttpHost;
+import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
+import javax.annotation.CheckReturnValue;
 import java.util.Collection;
 import java.util.List;
 
@@ -55,6 +56,9 @@ public interface JDA
         /**JDA's main websocket has been disconnected. This <b>DOES NOT</b> mean JDA has shutdown permanently.
          * This is an in-between status. Most likely ATTEMPTING_TO_RECONNECT or SHUTTING_DOWN/SHUTDOWN will soon follow.*/
         DISCONNECTED,
+        /** JDA session has been added to {@link net.dv8tion.jda.core.requests.SessionReconnectQueue SessionReconnectQueue}
+         * and is awaiting to be dequeued for reconnecting.*/
+        RECONNECT_QUEUED,
         /**When trying to reconnect to Discord JDA encountered an issue, most likely related to a lack of internet connection,
          * and is waiting to try reconnecting again.*/
         WAITING_TO_RECONNECT,
@@ -167,6 +171,15 @@ public interface JDA
      * @return Immutable list of all cf-ray values for this session
      */
     List<String> getCloudflareRays();
+
+    /**
+     * Receives all valid {@code _trace} lines that have been sent to us
+     * in this session.
+     * <br>These values reset on every reconnect! (not resume)
+     *
+     * @return List of all websocket traces
+     */
+    List<String> getWebSocketTrace();
 
     /**
      * Changes the internal EventManager.
@@ -323,6 +336,7 @@ public interface JDA
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.User User}
      *         <br>On request, gets the User with id matching provided id from Discord.
      */
+    @CheckReturnValue
     RestAction<User> retrieveUserById(String id);
 
     /**
@@ -346,6 +360,7 @@ public interface JDA
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.User User}
      *         <br>On request, gets the User with id matching provided id from Discord.
      */
+    @CheckReturnValue
     RestAction<User> retrieveUserById(long id);
 
     SnowflakeCacheView<Guild> getGuildCache();
@@ -462,6 +477,57 @@ public interface JDA
      * @return Immutable List of all Roles matching the parameters provided.
      */
     List<Role> getRolesByName(String name, boolean ignoreCase);
+
+    /**
+     * Gets the {@link net.dv8tion.jda.core.entities.Category Category} that matches the provided id.
+     * <br>If there is no matching {@link net.dv8tion.jda.core.entities.Category Category} this returns {@code null}.
+     *
+     * @param  id
+     *         The snowflake ID of the wanted Category
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided ID is not a valid {@code long}
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.Category Category} for
+     *         the provided ID.
+     */
+    Category getCategoryById(String id);
+
+    /**
+     * Gets the {@link net.dv8tion.jda.core.entities.Category Category} that matches the provided id.
+     * <br>If there is no matching {@link net.dv8tion.jda.core.entities.Category Category} this returns {@code null}.
+     *
+     * @param  id
+     *         The snowflake ID of the wanted Category
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.Category Category} for
+     *         the provided ID.
+     */
+    Category getCategoryById(long id);
+
+    /**
+     * Gets all {@link net.dv8tion.jda.core.entities.Category Categories} visible to the currently logged in account.
+     *
+     * @return An immutable list of all visible {@link net.dv8tion.jda.core.entities.Category Categories}.
+     */
+    List<Category> getCategories();
+
+    /**
+     * Gets a list of all {@link net.dv8tion.jda.core.entities.Category Categories} that have the same
+     * name as the one provided.
+     * <br>If there are no matching categories this will return an empty list.
+     *
+     * @param  name
+     *         The name to check
+     * @param  ignoreCase
+     *         Whether to ignore case on name checking
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided name is {@code null}
+     *
+     * @return Immutable list of all categories matching the provided name
+     */
+    List<Category> getCategoriesByName(String name, boolean ignoreCase);
 
     SnowflakeCacheView<TextChannel> getTextChannelCache();
 
@@ -761,14 +827,6 @@ public interface JDA
     int getMaxReconnectDelay();
 
     /**
-     * The proxy settings used by all JDA instances.
-     *
-     * @return The proxy settings used by all JDA instances. If JDA currently isn't using a proxy,
-     *         {@link java.net.Proxy#NO_PROXY Proxy.NO_PROXY} is returned.
-     */
-    HttpHost getGlobalProxy();
-
-    /**
      * Sets whether or not JDA should try to automatically reconnect if a connection-error is encountered.
      * <br>This will use an incremental reconnect (timeouts are increased each time an attempt fails).
      *
@@ -807,35 +865,33 @@ public interface JDA
     boolean isBulkDeleteSplittingEnabled();
 
     /**
-     * Shuts down JDA, closing all its connections.
+     * Shuts down this JDA instance, closing all its connections.
+     * After this command is issued the JDA Instance can not be used anymore.
+     * Already enqueued {@link net.dv8tion.jda.core.requests.RestAction RestActions} are still going to be executed.
      *
-     * <p>This is the same as calling {@link #shutdown(boolean) shutdown(true)}.
+     * <p>If you want this instance to shutdown without executing, use {@link #shutdownNow() shutdownNow()}
+     *
+     * @see #shutdownNow()
      */
     void shutdown();
 
     /**
-     * Shuts down JDA, closing all its connections.
-     * After this command is issued the JDA Instance can not be used anymore.
+     * Shuts down this JDA instance instantly.
+     * This will also cancel all queued {@link net.dv8tion.jda.core.requests.RestAction RestActions}.
      *
-     * <p>Depending on the value of {@code free}, this will also close the background-thread used for requests by Unirest.
-     * <br>If the background-thread is closed, the system can exit properly, but no further JDA requests are possible (includes other JDA instances).
-     * If you want to create any new instances or if you have any other instances running in parallel, then {@code free}
-     * should be set to false.
-     *
-     * @param  free If true, shuts down JDA's rest system permanently for all current and future instances.
+     * @see #shutdown()
      */
-    void shutdown(boolean free);
+    void shutdownNow();
 
     /**
-     * Installs an auxiliary cable into your system.
+     * Installs an auxiliary cable into the given port of your system.
      *
      * @param  port
-     *         the port to install to.
+     *         The port in which the cable should be installed.
      *
-     * @throws UnsupportedOperationException
-     *         when you don't read the docs
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}{@literal <}{@link Void}{@literal >}
      */
-    void installAuxiliaryCable(int port) throws UnsupportedOperationException;
+    AuditableRestAction<Void> installAuxiliaryCable(int port);
 
     /**
      * The {@link net.dv8tion.jda.core.AccountType} of the currently logged in account.

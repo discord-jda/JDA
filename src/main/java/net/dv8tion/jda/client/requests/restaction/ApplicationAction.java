@@ -24,6 +24,7 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
+import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 /**
@@ -42,13 +43,13 @@ public class ApplicationAction extends RestAction<Application>
 
     public ApplicationAction(final JDAImpl api, String name)
     {
-        super(api, Route.Applications.CREATE_APPLICATION.compile(), null);
+        super(api, Route.Applications.CREATE_APPLICATION.compile());
 
        this.setName(name);
     }
 
     @Override
-    protected void finalizeData()
+    protected RequestBody finalizeData()
     {
         final JSONObject object = new JSONObject();
 
@@ -59,7 +60,7 @@ public class ApplicationAction extends RestAction<Application>
         if (this.icon != null)
             object.put("icon", this.icon.getEncoding());
 
-        this.data = object;
+        return getRequestBody(object);
     }
 
     @Override

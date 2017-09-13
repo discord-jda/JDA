@@ -21,9 +21,10 @@ import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.Route;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
+import okhttp3.RequestBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -62,7 +63,21 @@ public class ChannelOrderAction<T extends Channel> extends OrderAction<T, Channe
         this.guild = guild;
         this.type = type;
 
-        Collection chans = type == ChannelType.TEXT ? guild.getTextChannels() : guild.getVoiceChannels();
+        Collection chans;
+        switch (type)
+        {
+            case TEXT:
+                chans = guild.getTextChannels();
+                break;
+            case VOICE:
+                chans = guild.getVoiceChannels();
+                break;
+            case CATEGORY:
+                chans = guild.getCategories();
+                break;
+            default:
+                throw new IllegalArgumentException("Cannot order specified channel type " + type);
+        }
         this.orderList.addAll(chans);
     }
 
@@ -89,11 +104,11 @@ public class ChannelOrderAction<T extends Channel> extends OrderAction<T, Channe
     }
 
     @Override
-    protected void finalizeData()
+    protected RequestBody finalizeData()
     {
         final Member self = guild.getSelfMember();
         if (!self.hasPermission(Permission.MANAGE_CHANNEL))
-            throw new PermissionException(Permission.MANAGE_CHANNEL);
+            throw new InsufficientPermissionException(Permission.MANAGE_CHANNEL);
         JSONArray array = new JSONArray();
         for (int i = 0; i < orderList.size(); i++)
         {
@@ -103,13 +118,13 @@ public class ChannelOrderAction<T extends Channel> extends OrderAction<T, Channe
                     .put("position", i));
         }
 
-        this.data = array;
+        return getRequestBody(array);
     }
 
     @Override
     protected void validateInput(T entity)
     {
-        Args.check(entity.getGuild().equals(guild), "Provided channel is not from this Guild!");
-        Args.check(orderList.contains(entity), "Provided channel is not in the list of orderable channels!");
+        Checks.check(entity.getGuild().equals(guild), "Provided channel is not from this Guild!");
+        Checks.check(orderList.contains(entity), "Provided channel is not in the list of orderable channels!");
     }
 }

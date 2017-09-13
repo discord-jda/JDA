@@ -18,6 +18,7 @@ package net.dv8tion.jda.core.managers.impl;
 import com.sun.jna.Platform;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.WebSocketCode;
 import net.dv8tion.jda.core.audio.AudioConnection;
 import net.dv8tion.jda.core.audio.AudioReceiveHandler;
 import net.dv8tion.jda.core.audio.AudioSendHandler;
@@ -30,33 +31,39 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
-import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.AudioManager;
+import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.NativeUtil;
 import net.dv8tion.jda.core.utils.PermissionUtil;
-import org.apache.http.util.Args;
 import org.json.JSONObject;
 
 import java.io.IOException;
 
 public class AudioManagerImpl implements AudioManager
 {
+    public static final ThreadGroup AUDIO_THREADS;
     //These values are set at the bottom of this file.
     public static boolean AUDIO_SUPPORTED;
     public static String OPUS_LIB_NAME;
-
     protected static boolean initialized = false;
+
+    static
+    {
+        AUDIO_THREADS = new ThreadGroup("jda-audio");
+        AUDIO_THREADS.setDaemon(true);
+    }
 
     public final Object CONNECTION_LOCK = new Object();
 
     protected final JDAImpl api;
-    protected GuildImpl guild;
+    protected final ListenerProxy connectionListener = new ListenerProxy();
+    protected final GuildImpl guild;
     protected AudioConnection audioConnection = null;
     protected VoiceChannel queuedAudioConnection = null;
 
     protected AudioSendHandler sendHandler;
     protected AudioReceiveHandler receiveHandler;
-    protected ListenerProxy connectionListener = new ListenerProxy();
     protected long queueTimeout = 100;
     protected boolean shouldReconnect = true;
 
@@ -72,15 +79,15 @@ public class AudioManagerImpl implements AudioManager
         init(); //Just to make sure that the audio libs have been initialized.
     }
 
-    public void setGuild(GuildImpl guild)
+    public AudioConnection getAudioConnection()
     {
-        this.guild = guild;
+        return audioConnection;
     }
 
     @Override
     public void openAudioConnection(VoiceChannel channel)
     {
-        Args.notNull(channel, "Provided VoiceChannel");
+        Checks.notNull(channel, "Provided VoiceChannel");
 
         if (!AUDIO_SUPPORTED)
             throw new UnsupportedOperationException("Sorry! Audio is disabled due to an internal JDA error! Contact Dev!");
@@ -92,13 +99,13 @@ public class AudioManagerImpl implements AudioManager
                     "Please wait until this Guild is available to open a connection.");
         final Member self = guild.getSelfMember();
         if (!self.hasPermission(channel, Permission.VOICE_CONNECT) && !self.hasPermission(channel, Permission.VOICE_MOVE_OTHERS))
-            throw new PermissionException(Permission.VOICE_CONNECT);
+            throw new InsufficientPermissionException(Permission.VOICE_CONNECT);
 
         if (audioConnection == null)
         {
             //Start establishing connection, joining provided channel
             queuedAudioConnection = channel;
-            api.getClient().queueAudioConnect(channel);
+            api.getClient().queueAudioConnect(channel, false);
         }
         else
         {
@@ -116,11 +123,11 @@ public class AudioManagerImpl implements AudioManager
                 if (userLimit > 0                                               // If there is a userlimit
                     && userLimit <= channel.getMembers().size()                 // if that userlimit is reached
                     && (perms & voicePerm) != voicePerm)                        // If we don't have voice move others permissions
-                    throw new PermissionException(Permission.VOICE_MOVE_OTHERS, // then throw exception!
+                    throw new InsufficientPermissionException(Permission.VOICE_MOVE_OTHERS, // then throw exception!
                             "Unable to connect to VoiceChannel due to userlimit! Requires permission VOICE_MOVE_OTHERS to bypass");
             }
 
-            api.getClient().queueAudioConnect(channel);
+            api.getClient().queueAudioConnect(channel, false);
             audioConnection.setChannel(channel);
         }
     }
@@ -338,7 +345,7 @@ public class AudioManagerImpl implements AudioManager
 
             //This is technically equivalent to an audio open/move packet.
             JSONObject voiceStateChange = new JSONObject()
-                    .put("op", 4)
+                    .put("op", WebSocketCode.VOICE_STATE)
                     .put("d", new JSONObject()
                             .put("guild_id", guild.getId())
                             .put("channel_id", channel.getId())

@@ -21,15 +21,16 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.exceptions.HierarchyException;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.RoleManager;
 import net.dv8tion.jda.core.managers.RoleManagerUpdatable;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.PermissionUtil;
-import org.apache.http.util.Args;
 
 import java.awt.Color;
 import java.time.OffsetDateTime;
@@ -74,7 +75,7 @@ public class RoleImpl implements Role
                 return i;
             i--;
         }
-        throw new RuntimeException("Somehow when determining position we never found the role in the Guild's roles? wtf?");
+        throw new AssertionError("Somehow when determining position we never found the role in the Guild's roles? wtf?");
     }
 
     @Override
@@ -148,7 +149,7 @@ public class RoleImpl implements Role
     @Override
     public boolean hasPermission(Collection<Permission> permissions)
     {
-        Args.notNull(permissions, "Permission Collection");
+        Checks.notNull(permissions, "Permission Collection");
 
         return hasPermission(permissions.toArray(new Permission[permissions.size()]));
     }
@@ -169,7 +170,7 @@ public class RoleImpl implements Role
     @Override
     public boolean hasPermission(Channel channel, Collection<Permission> permissions)
     {
-        Args.notNull(permissions, "Permission Collection");
+        Checks.notNull(permissions, "Permission Collection");
 
         return hasPermission(channel, permissions.toArray(new Permission[permissions.size()]));
     }
@@ -222,14 +223,14 @@ public class RoleImpl implements Role
     public AuditableRestAction<Void> delete()
     {
         if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_ROLES))
-            throw new PermissionException(Permission.MANAGE_ROLES);
+            throw new InsufficientPermissionException(Permission.MANAGE_ROLES);
         if(!PermissionUtil.canInteract(getGuild().getSelfMember(), this))
-            throw new PermissionException("Can't delete role >= highest self-role");
+            throw new HierarchyException("Can't delete role >= highest self-role");
         if (managed)
             throw new UnsupportedOperationException("Cannot delete a Role that is managed. ");
 
         Route.CompiledRoute route = Route.Roles.DELETE_ROLE.compile(guild.getId(), getId());
-        return new AuditableRestAction<Void>(getJDA(), route, null)
+        return new AuditableRestAction<Void>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)

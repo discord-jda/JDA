@@ -21,13 +21,12 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import okhttp3.Request;
+import okhttp3.Response;
 
+import javax.annotation.CheckReturnValue;
 import java.io.File;
 import java.io.InputStream;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.URL;
-import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.OffsetDateTime;
@@ -64,6 +63,7 @@ import java.util.List;
  */
 public interface Message extends ISnowflake, Formattable
 {
+    int MAX_FILE_SIZE = 8 << 20; // 8mb
     /**
      * A immutable list of all mentioned users. if no user was mentioned, this list is empty.
      * <br>In {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel's}, this always returns an empty List
@@ -260,6 +260,15 @@ public interface Message extends ISnowflake, Formattable
     TextChannel getTextChannel();
 
     /**
+     * The {@link net.dv8tion.jda.core.entities.Category Category} this
+     * message was sent in. This will always be {@code null} for DMs and Groups.
+     * <br>Equivalent to {@code getTextChannel().getParent()}.
+     *
+     * @return {@link net.dv8tion.jda.core.entities.Category Category} for this message
+     */
+    Category getCategory();
+
+    /**
      * Returns the {@link net.dv8tion.jda.core.entities.Guild Guild} that this message was sent in.
      * <br>This is just a shortcut to {@link #getTextChannel()}{@link net.dv8tion.jda.core.entities.TextChannel#getGuild() .getGuild()}.
      * <br><b>This is only valid if the Message was actually sent in a TextChannel.</b> This will return {@code null}
@@ -344,6 +353,7 @@ public interface Message extends ISnowflake, Formattable
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
      *     <br>The {@link net.dv8tion.jda.core.entities.Message Message} with the updated content
      */
+    @CheckReturnValue
     RestAction<Message> editMessage(String newContent);
 
     /**
@@ -376,6 +386,7 @@ public interface Message extends ISnowflake, Formattable
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
      *     <br>The {@link net.dv8tion.jda.core.entities.Message Message} with the updated content
      */
+    @CheckReturnValue
     RestAction<Message> editMessage(MessageEmbed newContent);
 
     /**
@@ -413,6 +424,7 @@ public interface Message extends ISnowflake, Formattable
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
      *     <br>The {@link net.dv8tion.jda.core.entities.Message Message} with the updated content
      */
+    @CheckReturnValue
     RestAction<Message> editMessageFormat(String format, Object... args);
 
     /**
@@ -447,6 +459,7 @@ public interface Message extends ISnowflake, Formattable
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
      *     <br>The {@link net.dv8tion.jda.core.entities.Message Message} with the updated content
      */
+    @CheckReturnValue
     RestAction<Message> editMessage(Message newContent);
 
     /**
@@ -472,7 +485,7 @@ public interface Message extends ISnowflake, Formattable
      *         The pin was attempted after the Message had been deleted.</li>
      * </ul>
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this Message was not sent by the currently logged in account, the Message was sent in a
      *         {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}, and the currently logged in account
      *         does not have {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in
@@ -483,6 +496,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @CheckReturnValue
     AuditableRestAction<Void> delete();
 
     /**
@@ -521,7 +535,7 @@ public interface Message extends ISnowflake, Formattable
      *         The pin request was attempted after the Message had been deleted.</li>
      * </ul>
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this Message is from a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and:
      *         <br><ul>
      *             <li>Missing {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}.
@@ -532,6 +546,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
+    @CheckReturnValue
     RestAction<Void> pin();
 
     /**
@@ -556,7 +571,7 @@ public interface Message extends ISnowflake, Formattable
      *         The unpin request was attempted after the Message had been deleted.</li>
      * </ul>
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this Message is from a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and:
      *         <br><ul>
      *             <li>Missing {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}.
@@ -567,6 +582,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
+    @CheckReturnValue
     RestAction<Void> unpin();
 
     /**
@@ -599,7 +615,7 @@ public interface Message extends ISnowflake, Formattable
      * @param emote
      *        The {@link net.dv8tion.jda.core.entities.Emote Emote} to add as a reaction to this Message.
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      *         and the logged in account does not have
      *         <ul>
@@ -616,6 +632,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
+    @CheckReturnValue
     RestAction<Void> addReaction(Emote emote);
 
     /**
@@ -648,7 +665,7 @@ public interface Message extends ISnowflake, Formattable
      * @param unicode
      *        The UTF8 emoji to add as a reaction to this Message.
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      *         and the logged in account does not have
      *         <ul>
@@ -662,6 +679,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
+    @CheckReturnValue
     RestAction<Void> addReaction(String unicode);
 
     /**
@@ -686,7 +704,7 @@ public interface Message extends ISnowflake, Formattable
      *         The clear-reactions request was attempted after the Message had been deleted.</li>
      * </ul>
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      *         and the currently logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in the channel.
@@ -695,6 +713,7 @@ public interface Message extends ISnowflake, Formattable
      *         {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
+    @CheckReturnValue
     RestAction<Void> clearReactions();
 
     /**
@@ -720,7 +739,7 @@ public interface Message extends ISnowflake, Formattable
         private final int size;
         private final int height;
         private final int width;
-        private final JDA jda;
+        private final JDAImpl jda;
 
         public Attachment(String id, String url, String proxyUrl, String fileName, int size, int height, int width, JDA jda)
         {
@@ -731,7 +750,7 @@ public interface Message extends ISnowflake, Formattable
             this.size = size;
             this.height = height;
             this.width = width;
-            this.jda = jda;
+            this.jda = (JDAImpl) jda;
         }
 
         /**
@@ -789,19 +808,9 @@ public interface Message extends ISnowflake, Formattable
             InputStream in = null;
             try
             {
-                URL url = new URL(getUrl());
-                URLConnection con;
-                if (jda.getGlobalProxy() == null)
-                {
-                    con = url.openConnection();
-                }
-                else
-                {
-                    con = url.openConnection(new Proxy(Proxy.Type.HTTP,
-                            new InetSocketAddress(jda.getGlobalProxy().getAddress(), jda.getGlobalProxy().getPort())));
-                }
-                con.addRequestProperty("user-agent", Requester.USER_AGENT);
-                in = con.getInputStream();
+                Request request = new Request.Builder().addHeader("user-agent", Requester.USER_AGENT).url(getUrl()).build();
+                Response response = jda.getRequester().getHttpClient().newCall(request).execute();
+                in = response.body().byteStream();
                 Files.copy(in, Paths.get(file.getAbsolutePath()));
                 return true;
             }

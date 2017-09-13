@@ -23,6 +23,8 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.Webhook;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
+import javax.annotation.CheckReturnValue;
+
 /**
  * Facade for a {@link net.dv8tion.jda.core.managers.WebhookManagerUpdatable WebhookManagerUpdatable} instance.
  * <br>Simplifies managing flow for convenience.
@@ -98,7 +100,7 @@ public class WebhookManager
      * @param  name
      *         The new default name for the selected {@link net.dv8tion.jda.core.entities.Webhook Webhook}
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_WEBHOOKS MANAGE_WEBHOOKS}
      * @throws IllegalArgumentException
      *         If the provided name is {@code null}
@@ -109,6 +111,7 @@ public class WebhookManager
      * @see    net.dv8tion.jda.core.managers.WebhookManagerUpdatable#getNameField()
      * @see    net.dv8tion.jda.core.managers.WebhookManagerUpdatable#update()
      */
+    @CheckReturnValue
     public AuditableRestAction<Void> setName(String name)
     {
         return manager.getNameField().setValue(name).update();
@@ -122,7 +125,7 @@ public class WebhookManager
      *         The new default avatar {@link net.dv8tion.jda.core.entities.Icon Icon}
      *         for the selected {@link net.dv8tion.jda.core.entities.Webhook Webhook}
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_WEBHOOKS MANAGE_WEBHOOKS}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
@@ -131,6 +134,7 @@ public class WebhookManager
      * @see    net.dv8tion.jda.core.managers.WebhookManagerUpdatable#getAvatarField()
      * @see    net.dv8tion.jda.core.managers.WebhookManagerUpdatable#update()
      */
+    @CheckReturnValue
     public AuditableRestAction<Void> setAvatar(Icon icon)
     {
         return manager.getAvatarField().setValue(icon).update();
@@ -146,7 +150,7 @@ public class WebhookManager
      *         The new {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      *         for the selected {@link net.dv8tion.jda.core.entities.Webhook Webhook}
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_WEBHOOKS MANAGE_WEBHOOKS}
      *         in either the current or the specified TextChannel
      * @throws IllegalArgumentException
@@ -158,6 +162,7 @@ public class WebhookManager
      * @see    net.dv8tion.jda.core.managers.WebhookManagerUpdatable#getChannelField()
      * @see    net.dv8tion.jda.core.managers.WebhookManagerUpdatable#update()
      */
+    @CheckReturnValue
     public AuditableRestAction<Void> setChannel(TextChannel channel)
     {
         return manager.getChannelField().setValue(channel).update();

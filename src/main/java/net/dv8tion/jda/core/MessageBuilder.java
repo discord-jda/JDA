@@ -17,7 +17,7 @@ package net.dv8tion.jda.core;
 
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.MessageImpl;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -221,7 +221,7 @@ public class MessageBuilder implements Appendable
      */
     public MessageBuilder appendFormat(String format, Object... args)
     {
-        Args.notEmpty(format, "Format String");
+        Checks.notEmpty(format, "Format String");
         this.append(String.format(format, args));
         return this;
     }
@@ -373,7 +373,9 @@ public class MessageBuilder implements Appendable
      */
     public MessageBuilder stripMentions(JDA jda)
     {
-        return this.stripMentions(jda, (Guild) null, MentionType.EVERYONE, MentionType.HERE, MentionType.CHANNEL, MentionType.ROLE, MentionType.USER);
+        // Note: Users can rename to "everyone" or "here", so those
+        // should be stripped after the USER mention is stripped.
+        return this.stripMentions(jda, (Guild) null, MentionType.CHANNEL, MentionType.ROLE, MentionType.USER, MentionType.EVERYONE, MentionType.HERE);
     }
 
     /**
@@ -390,7 +392,9 @@ public class MessageBuilder implements Appendable
      */
     public MessageBuilder stripMentions(Guild guild)
     {
-        return this.stripMentions(guild.getJDA(), guild, MentionType.EVERYONE, MentionType.HERE, MentionType.CHANNEL, MentionType.ROLE, MentionType.USER);
+        // Note: Users can rename to "everyone" or "here", so those
+        // should be stripped after the USER mention is stripped.
+        return this.stripMentions(guild.getJDA(), guild, MentionType.CHANNEL, MentionType.ROLE, MentionType.USER, MentionType.EVERYONE, MentionType.HERE);
     }
 
     /**
@@ -734,7 +738,7 @@ public class MessageBuilder implements Appendable
                     continue messageLoop;
                 }
             }
-            throw new RuntimeException("failed to split the messages");
+            throw new IllegalStateException("Failed to split the messages");
         }
 
         if (currentBeginIndex < builder.length() - 1)
@@ -830,7 +834,7 @@ public class MessageBuilder implements Appendable
          *
          * @return the end Index of the next {@link net.dv8tion.jda.core.entities.Message Message}
          * 
-         * @throws java.lang.RuntimeException when splitting fails
+         * @throws java.lang.IllegalStateException when splitting fails
          * 
          */
         int nextMessage(int currentBeginIndex, MessageBuilder builder);

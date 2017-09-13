@@ -27,6 +27,8 @@ import net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAct
 import net.dv8tion.jda.core.utils.cache.MemberCacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 
@@ -106,6 +108,18 @@ public interface Guild extends ISnowflake
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} that is the AFK Channel.
      */
     VoiceChannel getAfkChannel();
+
+    /**
+     * Provides the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} that has been set as the channel
+     * which newly joined {@link net.dv8tion.jda.core.entities.Member Members} will be announced in.
+     * <br>If no channel has been set as the system channel, this returns {@code null}.
+     * <p>
+     * This value can be modified using {@link net.dv8tion.jda.core.managers.GuildManager#setSystemChannel(TextChannel)}
+     * or {@link net.dv8tion.jda.core.managers.GuildManagerUpdatable#getSystemChannelField()}.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} that is the system Channel.
+     */
+    TextChannel getSystemChannel();
 
     /**
      * The {@link net.dv8tion.jda.core.entities.Member Member} object of the owner of this {@link net.dv8tion.jda.core.entities.Guild Guild}.
@@ -309,6 +323,62 @@ public interface Guild extends ISnowflake
     }
 
     MemberCacheView getMemberCache();
+
+    /**
+     * Gets the {@link net.dv8tion.jda.core.entities.Category Category} from this guild
+     * that matches the provided id. This method is similar to {@link net.dv8tion.jda.core.JDA#getCategoryById(String)}, but
+     * it only checks in this specific Guild.
+     * <br>If there is no matching {@link net.dv8tion.jda.core.entities.Category Category} this returns {@code null}.
+     *
+     * @param  id
+     *         The snowflake ID of the wanted Category
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided ID is not a valid {@code long}
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.Category Category} for
+     *         the provided ID.
+     */
+    Category getCategoryById(String id);
+
+    /**
+     * Gets the {@link net.dv8tion.jda.core.entities.Category Category} from this guild
+     * that matches the provided id. This method is similar to {@link net.dv8tion.jda.core.JDA#getCategoryById(String)}, but
+     * it only checks in this specific Guild.
+     * <br>If there is no matching {@link net.dv8tion.jda.core.entities.Category Category} this returns {@code null}.
+     *
+     * @param  id
+     *         The snowflake ID of the wanted Category
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.Category Category} for
+     *         the provided ID.
+     */
+    Category getCategoryById(long id);
+
+    /**
+     * Gets all {@link net.dv8tion.jda.core.entities.Category Categories} in this {@link net.dv8tion.jda.core.entities.Guild Guild}.
+     * <br>The returned categories will be sorted according to their position.
+     *
+     * @return An immutable list of all {@link net.dv8tion.jda.core.entities.Category Categories} in this Guild.
+     */
+    List<Category> getCategories();
+
+    /**
+     * Gets a list of all {@link net.dv8tion.jda.core.entities.Category Categories} in this Guild that have the same
+     * name as the one provided.
+     * <br>If there are no matching categories this will return an empty list.
+     *
+     * @param  name
+     *         The name to check
+     * @param  ignoreCase
+     *         Whether to ignore case on name checking
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided name is {@code null}
+     *
+     * @return Immutable list of all categories matching the provided name
+     */
+    List<Category> getCategoriesByName(String name, boolean ignoreCase);
 
     /**
      * Gets a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} from this guild that has the same id as the
@@ -597,7 +667,7 @@ public interface Guild extends ISnowflake
      *     <br>We were removed from the Guild before finishing the task</li>
      * </ul>
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link #isAvailable() available}
@@ -605,6 +675,7 @@ public interface Guild extends ISnowflake
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@literal List<}{@link net.dv8tion.jda.core.entities.User User}{@literal >}
      *         <br>An unmodifiable list of all users currently banned from this Guild
      */
+    @CheckReturnValue
     RestAction<List<User>> getBans();
 
     /**
@@ -624,7 +695,7 @@ public interface Guild extends ISnowflake
      * @param  days
      *         Minimum number of days since a member has been offline to get affected.
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the account doesn't have {@link net.dv8tion.jda.core.Permission#KICK_MEMBERS KICK_MEMBER} Permission.
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link #isAvailable() available}
@@ -634,6 +705,7 @@ public interface Guild extends ISnowflake
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Integer
      *         <br>The amount of Members that would be affected.
      */
+    @CheckReturnValue
     RestAction<Integer> getPrunableMemberCount(int days);
 
     /**
@@ -654,9 +726,32 @@ public interface Guild extends ISnowflake
      * <br>This channel cannot be deleted and the {@link #getPublicRole() Public Role} always has the ability to
      * {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ} this channel.
      *
+     * @deprecated
+     *         As the concept of a public channel has been removed from discord this method may return null for newer guild.
+     *         <br>The default channel is now different for each user and depends on their permissions, see
+     *         {@link net.dv8tion.jda.core.entities.Member#getDefaultChannel() Member#getDefaultChannel()} for more details.
+     *         <br>If you want to get the default channel of old guilds you can use {@code guild.getTextChannelById(guild.getIdLong())}.
+     *         <br><b>This will be removed in a future version!</b>
+     *
      * @return The {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} representing the public channel for this guild.
+     *
+     * @see    net.dv8tion.jda.core.entities.Member#getDefaultChannel()
      */
+    @Deprecated
     TextChannel getPublicChannel();
+
+    /**
+     * The default {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} for a {@link net.dv8tion.jda.core.entities.Guild Guild}.
+     * <br>This is the channel that the Discord client will default to opening when a Guild is opened for the first time when accepting an invite
+     * that is not directed at a specific {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
+     *
+     * <p>Note: This channel is the first channel in the guild (ordered by position) that the {@link #getPublicRole()}
+     * has the {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ} in.
+     *
+     * @return The {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} representing the default channel for this guild
+     */
+    @Nullable
+    TextChannel getDefaultChannel();
 
     /**
      * Returns the {@link net.dv8tion.jda.core.managers.GuildManager GuildManager} for this Guild, used to modify
@@ -713,6 +808,7 @@ public interface Guild extends ISnowflake
      * @see    net.dv8tion.jda.core.JDA#asClient()
      * @see    net.dv8tion.jda.client.JDAClient#getRecentMentions(Guild)
      */
+    @CheckReturnValue
     MentionPaginationAction getRecentMentions();
 
     /**
@@ -741,12 +837,13 @@ public interface Guild extends ISnowflake
      * }
      * </code></pre>
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account
      *         does not have the permission {@link net.dv8tion.jda.core.Permission#VIEW_AUDIT_LOGS VIEW_AUDIT_LOGS}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAction AuditLogPaginationAction}
      */
+    @CheckReturnValue
     AuditLogPaginationAction getAuditLogs();
 
     /**
@@ -759,6 +856,7 @@ public interface Guild extends ISnowflake
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
+    @CheckReturnValue
     RestAction<Void> leave();
 
     /**
@@ -772,6 +870,7 @@ public interface Guild extends ISnowflake
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: {@link java.lang.Void}
      */
+    @CheckReturnValue
     RestAction<Void> delete();
 
     /**
@@ -791,6 +890,7 @@ public interface Guild extends ISnowflake
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: {@link java.lang.Void}
      */
+    @CheckReturnValue
     RestAction<Void> delete(String mfaCode);
 
     /**
@@ -811,12 +911,12 @@ public interface Guild extends ISnowflake
     /**
      * Retrieves all {@link net.dv8tion.jda.core.entities.Invite Invites} for this guild.
      * <br>Requires {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER MANAGE_SERVER} in this guild.
-     * Will throw a {@link net.dv8tion.jda.core.exceptions.PermissionException PermissionException} otherwise.
+     * Will throw a {@link net.dv8tion.jda.core.exceptions.InsufficientPermissionException InsufficientPermissionException} otherwise.
      *
      * <p>To get all invites for a {@link net.dv8tion.jda.core.entities.Channel Channel}
      * use {@link net.dv8tion.jda.core.entities.Channel#getInvites() Channel.getInvites()}
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         if the account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER MANAGE_SERVER} in this Guild.
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.core.entities.Invite Invite}{@literal >}
@@ -824,6 +924,7 @@ public interface Guild extends ISnowflake
      *
      * @see     net.dv8tion.jda.core.entities.Channel#getInvites()
      */
+    @CheckReturnValue
     RestAction<List<Invite>> getInvites();
 
     /**
@@ -833,7 +934,7 @@ public interface Guild extends ISnowflake
      * <p>To get all webhooks for a specific {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}, use
      * {@link TextChannel#getWebhooks()}
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         if the account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_WEBHOOKS MANAGE_WEBHOOKS} in this Guild.
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.core.entities.Webhook Webhook}{@literal >}
@@ -841,6 +942,7 @@ public interface Guild extends ISnowflake
      *
      * @see     TextChannel#getWebhooks()
      */
+    @CheckReturnValue
     RestAction<List<Webhook>> getWebhooks();
 
     /**

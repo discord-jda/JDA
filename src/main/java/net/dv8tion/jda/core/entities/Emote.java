@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 
+import javax.annotation.CheckReturnValue;
 import java.util.List;
 
 /**
@@ -97,7 +98,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      *         if this Emote is fake ({@link #isFake()})
      * @throws java.lang.UnsupportedOperationException
      *         If this emote is managed by discord ({@link #isManaged()})
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         if the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES MANAGE_EMOTES} is not given
      * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
      *         if the current account is not from {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType#CLIENT}
@@ -105,6 +106,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         The RestAction to delete this Emote.
      */
+    @CheckReturnValue
     AuditableRestAction<Void> delete();
 
     /**

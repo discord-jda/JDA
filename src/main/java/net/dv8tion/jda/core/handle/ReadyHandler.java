@@ -16,11 +16,15 @@
 
 package net.dv8tion.jda.core.handle;
 
+import gnu.trove.iterator.TLongIterator;
+import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.client.entities.Relationship;
 import net.dv8tion.jda.client.entities.impl.FriendImpl;
 import net.dv8tion.jda.client.entities.impl.UserSettingsImpl;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.OnlineStatus;
+import net.dv8tion.jda.core.WebSocketCode;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Guild;
@@ -30,16 +34,13 @@ import net.dv8tion.jda.core.requests.WebSocketClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.HashSet;
-import java.util.Set;
-
 public class ReadyHandler extends SocketHandler
 {
-    private final Set<String> incompleteGuilds = new HashSet<>();
-    private final Set<String> acknowledgedGuilds = new HashSet<>();
-    private final Set<String> unavailableGuilds = new HashSet<>();
-    private final Set<String> guildsRequiringChunking = new HashSet<>();
-    private final Set<String> guildsRequiringSyncing = new HashSet<>();
+    private final TLongSet incompleteGuilds = new TLongHashSet();
+    private final TLongSet acknowledgedGuilds = new TLongHashSet();
+    private final TLongSet unavailableGuilds = new TLongHashSet();
+    private final TLongSet guildsRequiringChunking = new TLongHashSet();
+    private final TLongSet guildsRequiringSyncing = new TLongHashSet();
 
     public ReadyHandler(JDAImpl api)
     {
@@ -79,7 +80,7 @@ public class ReadyHandler extends SocketHandler
         for (int i = 0; i < guilds.length(); i++)
         {
             JSONObject guild = guilds.getJSONObject(i);
-            incompleteGuilds.add(guild.getString("id"));
+            incompleteGuilds.add(guild.getLong("id"));
         }
 
         //We use two different for-loops here so that we cache all of the ids before sending them off to the EntityBuilder
@@ -167,26 +168,27 @@ public class ReadyHandler extends SocketHandler
 
     public void acknowledgeGuild(Guild guild, boolean available, boolean requiresChunking, boolean requiresSync)
     {
-        acknowledgedGuilds.add(guild.getId());
+        acknowledgedGuilds.add(guild.getIdLong());
         if (available)
         {
             //We remove from unavailable guilds because it is possible that we were told it was unavailable, but
             // during a long READY load it could have become available and was sent to us.
-            unavailableGuilds.remove(guild.getId());
+            unavailableGuilds.remove(guild.getIdLong());
             if (requiresChunking)
-                guildsRequiringChunking.add(guild.getId());
+                guildsRequiringChunking.add(guild.getIdLong());
             if (requiresSync)
-                guildsRequiringSyncing.add(guild.getId());
+                guildsRequiringSyncing.add(guild.getIdLong());
         }
         else
-            unavailableGuilds.add(guild.getId());
+            unavailableGuilds.add(guild.getIdLong());
 
         checkIfReadyToSendRequests();
     }
 
     public void guildSetupComplete(Guild guild)
     {
-        incompleteGuilds.remove(guild.getId());
+        if (!incompleteGuilds.remove(guild.getIdLong()))
+            WebSocketClient.LOG.fatal("Completed the setup for Guild: " + guild + " without matching id in ReadyHandler cache");
         if (incompleteGuilds.size() == unavailableGuilds.size())
             guildLoadComplete(allContent.getJSONObject("d"));
         else
@@ -220,16 +222,17 @@ public class ReadyHandler extends SocketHandler
             return;
 
         JSONArray guildIds = new JSONArray();
-        for (String guildId : guildsRequiringSyncing)
+
+        for (TLongIterator it = guildsRequiringSyncing.iterator(); it.hasNext(); )
         {
-            guildIds.put(guildId);
+            guildIds.put(it.next());
 
             //We can only request 50 guilds in a single request, so after we've reached 50, send them
             // and reset the
             if (guildIds.length() == 50)
             {
                 api.getClient().chunkOrSyncRequest(new JSONObject()
-                        .put("op", 12)
+                        .put("op", WebSocketCode.GUILD_SYNC)
                         .put("d", guildIds));
                 guildIds = new JSONArray();
             }
@@ -239,7 +242,7 @@ public class ReadyHandler extends SocketHandler
         if (guildIds.length() > 0)
         {
             api.getClient().chunkOrSyncRequest(new JSONObject()
-                    .put("op", 12)
+                    .put("op", WebSocketCode.GUILD_SYNC)
                     .put("d", guildIds));
         }
         guildsRequiringSyncing.clear();
@@ -251,9 +254,9 @@ public class ReadyHandler extends SocketHandler
             return;
 
         JSONArray guildIds = new JSONArray();
-        for (String guildId : guildsRequiringChunking)
+        for (TLongIterator it = guildsRequiringChunking.iterator(); it.hasNext(); )
         {
-            guildIds.put(guildId);
+            guildIds.put(it.next());
 
             //We can only request 50 guilds in a single request, so after we've reached 50, send them
             // and reset the

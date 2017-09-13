@@ -18,10 +18,11 @@ package net.dv8tion.jda.core.managers.impl;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
+import net.dv8tion.jda.core.WebSocketCode;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.managers.Presence;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
 /**
@@ -105,7 +106,7 @@ public class PresenceImpl implements Presence
     {
         JSONObject gameObj = getGameJson(game);
 
-        Args.check(status != OnlineStatus.UNKNOWN,
+        Checks.check(status != OnlineStatus.UNKNOWN,
                 "Cannot set the presence status to an unknown OnlineStatus!");
         if (status == OnlineStatus.OFFLINE || status == null)
             status = OnlineStatus.INVISIBLE;
@@ -130,7 +131,7 @@ public class PresenceImpl implements Presence
     {
         JSONObject gameObj = getGameJson(game);
 
-        Args.check(status != OnlineStatus.UNKNOWN,
+        Checks.check(status != OnlineStatus.UNKNOWN,
                 "Cannot set the presence status to an unknown OnlineStatus!");
         if (status == OnlineStatus.OFFLINE || status == null)
             status = OnlineStatus.INVISIBLE;
@@ -151,7 +152,7 @@ public class PresenceImpl implements Presence
     @Override
     public void setPresence(OnlineStatus status, boolean idle)
     {
-        Args.check(status != OnlineStatus.UNKNOWN,
+        Checks.check(status != OnlineStatus.UNKNOWN,
                 "Cannot set the presence status to an unknown OnlineStatus!");
         if (status == OnlineStatus.OFFLINE || status == null)
             status = OnlineStatus.INVISIBLE;
@@ -230,7 +231,7 @@ public class PresenceImpl implements Presence
         JSONObject gameObj = new JSONObject();
         gameObj.put("name", game.getName());
         gameObj.put("type", game.getType().getKey());
-        if (game.getType() == Game.GameType.TWITCH && game.getUrl() != null)
+        if (game.getUrl() != null)
             gameObj.put("url", game.getUrl());
 
         return gameObj;
@@ -244,7 +245,7 @@ public class PresenceImpl implements Presence
     {
         api.getClient().send(new JSONObject()
             .put("d", data)
-            .put("op", 3).toString());
+            .put("op", WebSocketCode.PRESENCE).toString());
     }
 
 }

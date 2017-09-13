@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.managers.RoleManager;
 import net.dv8tion.jda.core.managers.RoleManagerUpdatable;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
+import javax.annotation.CheckReturnValue;
 import java.awt.Color;
 
 /**
@@ -161,11 +162,14 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      *     <br>If we were removed from the Guild</li>
      * </ul>
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *         if we don't have the permission to {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES}
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If we don't have the permission to {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES}
+     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
+     *         If the role is too high in the role hierarchy to be deleted
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: Void
+     * @return {@link net.dv8tion.jda.core.requests.RestAction}
      */
+    @CheckReturnValue
     AuditableRestAction<Void> delete();
 
     /**

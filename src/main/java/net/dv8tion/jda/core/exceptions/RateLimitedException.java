@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.core.exceptions;
 
-import net.dv8tion.jda.core.requests.Route.CompiledRoute;
+import net.dv8tion.jda.core.requests.Route;
 
 /**
  * Indicates that we received a {@code 429: Too Many Requests} response
@@ -26,7 +26,7 @@ public class RateLimitedException extends Exception
     private final String rateLimitedRoute;
     private final long retryAfter;
 
-    public RateLimitedException(CompiledRoute route, long retryAfter)
+    public RateLimitedException(Route.CompiledRoute route, long retryAfter)
     {
         this(route.getRatelimitRoute(), retryAfter);
     }

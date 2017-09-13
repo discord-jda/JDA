@@ -19,14 +19,16 @@ package net.dv8tion.jda.core.managers;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.fields.WebhookField;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
+
+import javax.annotation.CheckReturnValue;
 
 /**
  * An {@link #update() updatable} manager that allows
@@ -194,20 +196,21 @@ public class WebhookManagerUpdatable
      *      <br>If the currently logged in account loses the {@link net.dv8tion.jda.core.Permission#MANAGE_WEBHOOKS MANAGE_WEBHOOKS Permission}</li>
      * </ul>
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_WEBHOOKS MANAGE_WEBHOOKS}
      *         in either the current or selected new TextChannel.
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Applies all changes that have been made in a single api-call.
      */
+    @CheckReturnValue
     public AuditableRestAction<Void> update()
     {
         Member self = getGuild().getSelfMember();
         if (!self.hasPermission(webhook.getChannel(), Permission.MANAGE_WEBHOOKS))
-            throw new PermissionException(Permission.MANAGE_WEBHOOKS);
+            throw new InsufficientPermissionException(Permission.MANAGE_WEBHOOKS);
         if (channel.isSet() && !self.hasPermission(channel.getValue(), Permission.MANAGE_WEBHOOKS))
-            throw new PermissionException(Permission.MANAGE_WEBHOOKS, "Permission not available in selected new channel");
+            throw new InsufficientPermissionException(Permission.MANAGE_WEBHOOKS, "Permission not available in selected new channel");
         if (!shouldUpdate())
             return new AuditableRestAction.EmptyRestAction<>(getJDA(), null);
 
@@ -252,7 +255,7 @@ public class WebhookManagerUpdatable
             @Override
             public void checkValue(String value)
             {
-                Args.notNull(value, "default name");
+                Checks.notNull(value, "default name");
             }
         };
 
@@ -279,8 +282,8 @@ public class WebhookManagerUpdatable
             @Override
             public void checkValue(TextChannel value)
             {
-                Args.notNull(value, "channel");
-                Args.check(value.equals(getChannel()), "Channel is not from the same Guild!");
+                Checks.notNull(value, "channel");
+                Checks.check(value.getGuild().equals(getGuild()), "Channel is not from the same Guild!");
             }
         };
     }

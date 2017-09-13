@@ -21,11 +21,11 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.Helpers;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -101,7 +101,7 @@ public class MessageImpl implements Message
     @Override
     public RestAction<Void> addReaction(Emote emote)
     {
-        Args.notNull(emote, "Emote");
+        Checks.notNull(emote, "Emote");
 
         MessageReaction reaction = reactions.parallelStream()
                 .filter(r -> Objects.equals(r.getEmote().getId(), emote.getId()))
@@ -124,7 +124,7 @@ public class MessageImpl implements Message
     @Override
     public RestAction<Void> addReaction(String unicode)
     {
-        Args.notEmpty(unicode, "Provided Unicode");
+        Checks.notEmpty(unicode, "Provided Unicode");
 
         MessageReaction reaction = reactions.parallelStream()
                 .filter(r -> Objects.equals(r.getEmote().getName(), unicode))
@@ -374,6 +374,12 @@ public class MessageImpl implements Message
     }
 
     @Override
+    public Category getCategory()
+    {
+        return isFromType(ChannelType.TEXT) ? getTextChannel().getParent() : null;
+    }
+
+    @Override
     public Guild getGuild()
     {
         return isFromType(ChannelType.TEXT) ? getTextChannel().getGuild() : null;
@@ -446,7 +452,7 @@ public class MessageImpl implements Message
     @Override
     public RestAction<Message> editMessageFormat(String format, Object... args)
     {
-        Args.notBlank(format, "Format String");
+        Checks.notBlank(format, "Format String");
         return editMessage(new MessageBuilder().appendFormat(format, args).build());
     }
 
@@ -468,7 +474,7 @@ public class MessageImpl implements Message
                 throw new IllegalStateException("Cannot delete another User's messages in a Group or PrivateChannel.");
             else if (!getGuild().getSelfMember()
                     .hasPermission((TextChannel) getChannel(), Permission.MESSAGE_MANAGE))
-                throw new PermissionException(Permission.MESSAGE_MANAGE);
+                throw new InsufficientPermissionException(Permission.MESSAGE_MANAGE);
         }
         return channel.deleteMessageById(getIdLong());
     }
@@ -569,7 +575,9 @@ public class MessageImpl implements Message
     @Override
     public String toString()
     {
-        return String.format("M:%#s:%.20s(%s)", author, this, getId());
+        return author != null
+            ? String.format("M:%#s:%.20s(%s)", author, this, getId())
+            : String.format("M:%.20s", this); // this message was made using MessageBuilder
     }
 
     public JSONObject toJSONObject()
@@ -588,7 +596,7 @@ public class MessageImpl implements Message
         {
             Channel location = (Channel) channel;
             if (!location.getGuild().getSelfMember().hasPermission(location, permission))
-                throw new PermissionException(permission);
+                throw new InsufficientPermissionException(permission);
         }
     }
 
@@ -615,14 +623,14 @@ public class MessageImpl implements Message
             Appendable appendable = formatter.out();
             if (precision > -1 && out.length() > precision)
             {
-                appendable.append(StringUtils.truncate(out, precision - 3)).append("...");
+                appendable.append(Helpers.truncate(out, precision - 3)).append("...");
                 return;
             }
 
             if (leftJustified)
-                appendable.append(StringUtils.rightPad(out, width));
+                appendable.append(Helpers.rightPad(out, width));
             else
-                appendable.append(StringUtils.leftPad(out, width));
+                appendable.append(Helpers.leftPad(out, width));
         }
         catch (IOException e)
         {

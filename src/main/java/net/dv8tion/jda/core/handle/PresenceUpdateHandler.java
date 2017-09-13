@@ -22,8 +22,9 @@ import net.dv8tion.jda.core.events.user.UserAvatarUpdateEvent;
 import net.dv8tion.jda.core.events.user.UserGameUpdateEvent;
 import net.dv8tion.jda.core.events.user.UserNameUpdateEvent;
 import net.dv8tion.jda.core.events.user.UserOnlineStatusUpdateEvent;
-import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
+
+import java.util.Objects;
 
 public class PresenceUpdateHandler extends SocketHandler
 {
@@ -73,7 +74,7 @@ public class PresenceUpdateHandler extends SocketHandler
                                     user, oldUsername, oldDiscriminator));
                 }
                 String oldAvatar = user.getAvatarId();
-                if (!(avatarId == null && oldAvatar == null) && !StringUtils.equals(avatarId, oldAvatar))
+                if (!(avatarId == null && oldAvatar == null) && !Objects.equals(avatarId, oldAvatar))
                 {
                     String oldAvatarId = user.getAvatarId();
                     user.setAvatarId(avatarId);
@@ -106,7 +107,7 @@ public class PresenceUpdateHandler extends SocketHandler
             }
             Game nextGame = (gameName == null
                     ? null
-                    : new GameImpl(gameName, gameUrl, type));
+                    : api.getEntityBuilder().createGame(gameName, gameUrl, type));
             OnlineStatus status = OnlineStatus.fromKey(content.getString("status"));
 
             //If we are in a Guild, then we will use Member.

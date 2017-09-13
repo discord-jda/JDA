@@ -18,7 +18,7 @@ package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
@@ -27,6 +27,7 @@ import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.commons.collections4.map.ListOrderedMap;
 import org.json.JSONArray;
 
+import javax.annotation.CheckReturnValue;
 import java.util.*;
 
 /**
@@ -52,7 +53,7 @@ public class MessageHistory
         this.channel = channel;
         if (channel instanceof TextChannel &&
                 !((TextChannel) channel).getGuild().getSelfMember().hasPermission(Permission.MESSAGE_HISTORY))
-            throw new PermissionException(Permission.MESSAGE_HISTORY);
+            throw new InsufficientPermissionException(Permission.MESSAGE_HISTORY);
     }
 
     /**
@@ -151,17 +152,18 @@ public class MessageHistory
      *         <br>Retrieved Messages are placed in a List and provided in order of most recent to oldest with most recent
      *         starting at index 0. If the list is empty, there were no more messages left to retrieve.
      */
+    @CheckReturnValue
     public RestAction<List<Message>> retrievePast(int amount)
     {
         if (amount > 100 || amount < 1)
             throw new IllegalArgumentException("Message retrieval limit is between 1 and 100 messages. No more, no less. Limit provided: " + amount);
 
-        Route.CompiledRoute route;
-        if (history.isEmpty())
-            route = Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId(), Integer.toString(amount));
-        else
-            route = Route.Messages.GET_MESSAGE_HISTORY_BEFORE.compile(channel.getId(), Integer.toString(amount), String.valueOf(history.lastKey()));
-        return new RestAction<List<Message>>(getJDA(), route, null)
+        Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId()).withQueryParams("limit", Integer.toString(amount));
+
+        if (!history.isEmpty())
+            route = route.withQueryParams("before", String.valueOf(history.lastKey()));
+
+        return new RestAction<List<Message>>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<List<Message>> request)
@@ -229,6 +231,7 @@ public class MessageHistory
      *         <br>Retrieved Messages are placed in a List and provided in order of most recent to oldest with most recent
      *         starting at index 0. If the list is empty, there were no more messages left to retrieve.
      */
+    @CheckReturnValue
     public RestAction<List<Message>> retrieveFuture(int amount)
     {
         if (amount > 100 || amount < 1)
@@ -237,8 +240,8 @@ public class MessageHistory
         if (history.isEmpty())
             throw new IllegalStateException("No messages have been retrieved yet, so there is no message to act as a marker to retrieve more recent messages based on.");
 
-        Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY_AFTER.compile(channel.getId(), Integer.toString(amount), String.valueOf(history.firstKey()));
-        return new RestAction<List<Message>>(getJDA(), route, null)
+        Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId()).withQueryParams("limit", Integer.toString(amount), "after", String.valueOf(history.firstKey()));
+        return new RestAction<List<Message>>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<List<Message>> request)

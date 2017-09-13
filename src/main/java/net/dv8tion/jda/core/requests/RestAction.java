@@ -21,12 +21,12 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
-import net.dv8tion.jda.core.requests.restaction.CompletedFuture;
-import net.dv8tion.jda.core.requests.restaction.RequestFuture;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
-import org.apache.http.util.Args;
-
+import okhttp3.RequestBody;
+import net.dv8tion.jda.core.utils.Checks;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
 
@@ -161,8 +161,25 @@ public abstract class RestAction<T>
     };
 
     protected final JDAImpl api;
-    protected Route.CompiledRoute route;
-    protected Object data;
+
+    private final Route.CompiledRoute route;
+    private final RequestBody data;
+
+    private Object rawData;
+
+    /**
+     * Creates a new RestAction instance
+     *
+     * @param  api
+     *         The current JDA instance
+     * @param  route
+     *         The {@link net.dv8tion.jda.core.requests.Route.CompiledRoute Route.CompiledRoute}
+     *         to be used for rate limit handling
+     */
+    public RestAction(JDA api, Route.CompiledRoute route)
+    {
+        this(api, route, (RequestBody) null);
+    }
 
     /**
      * Creates a new RestAction instance
@@ -175,11 +192,31 @@ public abstract class RestAction<T>
      * @param  data
      *         The data that should be sent to the specified route. (can be null)
      */
-    public RestAction(JDA api, Route.CompiledRoute route, Object data)
+    public RestAction(JDA api, Route.CompiledRoute route, RequestBody data)
     {
+        Checks.notNull(api, "api");
+
         this.api = (JDAImpl) api;
         this.route = route;
-        this.data = data != null ? data : "";
+        this.data = data;
+    }
+
+    /**
+     * Creates a new RestAction instance
+     *
+     * @param  api
+     *         The current JDA instance
+     * @param  route
+     *         The {@link net.dv8tion.jda.core.requests.Route.CompiledRoute Route.CompiledRoute}
+     *         to be used for rate limit handling
+     * @param  data
+     *         The data that should be sent to the specified route. (can be null)
+     */
+    public RestAction(JDA api, Route.CompiledRoute route, JSONObject data)
+    {
+        this(api, route, data == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, data.toString()));
+
+        this.rawData = data;
     }
 
     /**
@@ -234,46 +271,50 @@ public abstract class RestAction<T>
      */
     public void queue(Consumer<T> success, Consumer<Throwable> failure)
     {
-        finalizeData();
-        finalizeRoute();
+        Route.CompiledRoute route = finalizeRoute();
+        Checks.notNull(route, "Route");
+        RequestBody data = finalizeData();
+        CaseInsensitiveMap<String, String> headers = finalizeHeaders();
         if (success == null)
             success = DEFAULT_SUCCESS;
         if (failure == null)
             failure = DEFAULT_FAILURE;
-        api.getRequester().request(new Request<>(this, success, failure, true, finalizeHeaders()));
+        api.getRequester().request(new Request<>(this, success, failure, true, data, rawData, route, headers));
     }
 
     /**
-     * Submits a Request for execution and provides
-     * an {@link java.util.concurrent.Future Future} representing
-     * its completion task.
-     * <br>Cancelling the returned Future will result in the cancellation
-     * of the Request!
+     * Submits a Request for execution and provides a {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture}
+     * representing its completion task.
+     * <br>Cancelling the returned Future will result in the cancellation of the Request!
      *
-     * @return Never-null {@link java.util.concurrent.Future Future} task representing the completion promise
+     * <p>Note: The usage of {@link java.util.concurrent.CompletionStage#toCompletableFuture() CompletionStage.toCompletableFuture()} is not supported.
+     *
+     * @return Never-null {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the completion promise
      */
-    public Future<T> submit()
+    public RequestFuture<T> submit()
     {
         return submit(true);
     }
 
     /**
-     * Submits a Request for execution and provides
-     * an {@link java.util.concurrent.Future Future} representing
-     * its completion task.
-     * <br>Cancelling the returned Future will result in the cancellation
-     * of the Request!
+     * Submits a Request for execution and provides a {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture}
+     * representing its completion task.
+     * <br>Cancelling the returned Future will result in the cancellation of the Request!
+     *
+     * <p>Note: The usage of {@link java.util.concurrent.CompletionStage#toCompletableFuture() CompletionStage.toCompletableFuture()} is not supported.
      *
      * @param  shouldQueue
      *         Whether the Request should automatically handle rate limitations. (default true)
      *
-     * @return Never-null {@link java.util.concurrent.Future Future} task representing the completion promise
+     * @return Never-null {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} task representing the completion promise
      */
-    public Future<T> submit(boolean shouldQueue)
+    public RequestFuture<T> submit(boolean shouldQueue)
     {
-        finalizeData();
-        finalizeRoute();
-        return new RequestFuture<>(this, shouldQueue, finalizeHeaders());
+        Route.CompiledRoute route = finalizeRoute();
+        Checks.notNull(route, "Route");
+        RequestBody data = finalizeData();
+        CaseInsensitiveMap<String, String> headers = finalizeHeaders();
+        return new RestFuture<>(this, shouldQueue, data, rawData, route, headers);
     }
 
     /**
@@ -296,7 +337,7 @@ public abstract class RestAction<T>
             //This is so beyond impossible, but on the off chance that the laws of nature are rewritten
             // after the writing of this code, I'm placing this here.
             //Better safe than sorry?
-            throw new RuntimeException(ignored);
+            throw new AssertionError(ignored);
         }
     }
 
@@ -391,8 +432,8 @@ public abstract class RestAction<T>
      */
     public ScheduledFuture<T> submitAfter(long delay, TimeUnit unit, ScheduledExecutorService executor)
     {
-        Args.notNull(executor, "Scheduler");
-        Args.notNull(unit, "TimeUnit");
+        Checks.notNull(executor, "Scheduler");
+        Checks.notNull(unit, "TimeUnit");
         return executor.schedule((Callable<T>) this::complete, delay, unit);
     }
 
@@ -416,7 +457,7 @@ public abstract class RestAction<T>
      */
     public T completeAfter(long delay, TimeUnit unit)
     {
-        Args.notNull(unit, "TimeUnit");
+        Checks.notNull(unit, "TimeUnit");
         try
         {
             unit.sleep(delay);
@@ -615,18 +656,27 @@ public abstract class RestAction<T>
      */
     public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<T> success, Consumer<Throwable> failure, ScheduledExecutorService executor)
     {
-        Args.notNull(executor, "Scheduler");
-        Args.notNull(unit, "TimeUnit");
+        Checks.notNull(executor, "Scheduler");
+        Checks.notNull(unit, "TimeUnit");
         return executor.schedule(() -> queue(success, failure), delay, unit);
     }
 
-    protected void finalizeData() { }
+    protected RequestBody finalizeData() { return data; }
+    protected Route.CompiledRoute finalizeRoute() { return route; }
+    protected CaseInsensitiveMap<String, String> finalizeHeaders() { return null; }
 
-    protected void finalizeRoute() { }
-
-    protected CaseInsensitiveMap<String, String> finalizeHeaders()
+    protected RequestBody getRequestBody(JSONObject object)
     {
-        return null;
+        this.rawData = object;
+
+        return object == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, object.toString());
+    }
+
+    protected RequestBody getRequestBody(JSONArray array)
+    {
+        this.rawData = array;
+
+        return array == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, array.toString());
     }
 
     protected abstract void handleResponse(Response response, Request<T> request);
@@ -641,12 +691,11 @@ public abstract class RestAction<T>
      */
     public static class EmptyRestAction<T> extends RestAction<T>
     {
-
         private final T returnObj;
 
         public EmptyRestAction(JDA api, T returnObj)
         {
-            super(api, null, null);
+            super(api, null);
             this.returnObj = returnObj;
         }
 
@@ -658,9 +707,9 @@ public abstract class RestAction<T>
         }
 
         @Override
-        public Future<T> submit(boolean shouldQueue)
+        public RequestFuture<T> submit(boolean shouldQueue)
         {
-            return new CompletedFuture<>(returnObj);
+            return new RestFuture<>(returnObj);
         }
 
         @Override
@@ -671,5 +720,46 @@ public abstract class RestAction<T>
 
         @Override
         protected void handleResponse(Response response, Request<T> request) { }
+    }
+
+    /**
+     * Specialized form of {@link net.dv8tion.jda.core.requests.RestAction} that is used to provide information that
+     * an error has occurred while attempting to execute a request.
+     * <br>Basically: Allows you to provide an exception directly to the failure consumer.
+     *
+     * @param <T>
+     *        The generic response type for this RestAction
+     */
+    public static class FailedRestAction<T> extends RestAction<T>
+    {
+        private final Exception exception;
+
+        public FailedRestAction(Exception exception)
+        {
+            super(null, null);
+            this.exception = exception;
+        }
+
+        @Override
+        public void queue(Consumer<T> success, Consumer<Throwable> failure)
+        {
+            if (failure != null)
+                failure.accept(exception);
+        }
+
+        @Override
+        public RequestFuture<T> submit(boolean shouldQueue)
+        {
+            return new RestFuture<>(exception);
+        }
+
+        @Override
+        public T complete(boolean shouldQueue)
+        {
+            throw new RuntimeException(exception);
+        }
+
+        @Override
+        protected void handleResponse(Response response, Request<T> request) {}
     }
 }

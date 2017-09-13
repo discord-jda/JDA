@@ -20,9 +20,10 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.Route;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
+import okhttp3.RequestBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -95,7 +96,7 @@ public class RoleOrderAction extends OrderAction<Role, RoleOrderAction>
     }
 
     @Override
-    protected void finalizeData()
+    protected RequestBody finalizeData()
     {
         final Member self = guild.getSelfMember();
         final boolean isOwner = self.isOwner();
@@ -105,7 +106,7 @@ public class RoleOrderAction extends OrderAction<Role, RoleOrderAction>
             if (self.getRoles().isEmpty())
                 throw new IllegalStateException("Cannot move roles above your highest role unless you are the guild owner");
             if (!self.hasPermission(Permission.MANAGE_ROLES))
-                throw new PermissionException(Permission.MANAGE_ROLES);
+                throw new InsufficientPermissionException(Permission.MANAGE_ROLES);
         }
 
         JSONArray array = new JSONArray();
@@ -129,14 +130,14 @@ public class RoleOrderAction extends OrderAction<Role, RoleOrderAction>
                     .put("position", i + 1)); //plus 1 because position 0 is the @everyone position.
         }
 
-        this.data = array;
+        return getRequestBody(array);
     }
 
     @Override
     protected void validateInput(Role entity)
     {
-        Args.check(entity.getGuild().equals(guild), "Provided selected role is not from this Guild!");
-        Args.check(orderList.contains(entity), "Provided role is not in the list of orderable roles!");
+        Checks.check(entity.getGuild().equals(guild), "Provided selected role is not from this Guild!");
+        Checks.check(orderList.contains(entity), "Provided role is not in the list of orderable roles!");
     }
 }
 

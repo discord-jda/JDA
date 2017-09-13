@@ -16,17 +16,18 @@
 
 package net.dv8tion.jda.core.requests.ratelimit;
 
-import com.mashape.unirest.http.HttpResponse;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.requests.RateLimiter;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.core.requests.Route;
-import net.dv8tion.jda.core.requests.Route.CompiledRoute;
 import net.dv8tion.jda.core.requests.Route.RateLimit;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -55,8 +56,6 @@ public class ClientRateLimiter extends RateLimiter
     @Override
     protected void queueRequest(Request request)
     {
-        if (isShutdown)
-            throw new RejectedExecutionException("Cannot queue a request after shutdown");
         Bucket bucket = getBucket(request.getRoute());
         synchronized (bucket)
         {
@@ -65,26 +64,31 @@ public class ClientRateLimiter extends RateLimiter
     }
 
     @Override
-    protected Long handleResponse(Route.CompiledRoute route, HttpResponse<String> response)
+    protected Long handleResponse(Route.CompiledRoute route, okhttp3.Response response)
     {
         Bucket bucket = getBucket(route);
         synchronized (bucket)
         {
             long now = System.currentTimeMillis();
-            int code = response.getStatus();
+            int code = response.code();
             if (code == 429)
             {
-                JSONObject limitObj = new JSONObject(response.getBody());
-                long retryAfter = limitObj.getLong("retry_after");
-                if (limitObj.has("global") && limitObj.getBoolean("global"))    //Global ratelimit
+                try (InputStream in = Requester.getBody(response))
                 {
-                    globalCooldown = now + retryAfter;
+                    JSONObject limitObj = new JSONObject(new JSONTokener(in));
+                    long retryAfter = limitObj.getLong("retry_after");
+
+                    if (limitObj.has("global") && limitObj.getBoolean("global"))    //Global ratelimit
+                        globalCooldown = now + retryAfter;
+                    else
+                        bucket.retryAfter = now + retryAfter;
+
+                    return retryAfter;                    
                 }
-                else
+                catch (IOException e)
                 {
-                    bucket.retryAfter = now + retryAfter;
+                    throw new IllegalStateException(e);
                 }
-                return retryAfter;
             }
             else
             {
@@ -93,7 +97,7 @@ public class ClientRateLimiter extends RateLimiter
         }
     }
 
-    private Bucket getBucket(CompiledRoute route)
+    private Bucket getBucket(Route.CompiledRoute route)
     {
         String baseRoute = route.getBaseRoute().getRoute();
         Bucket bucket = (Bucket) buckets.get(baseRoute);
@@ -201,13 +205,9 @@ public class ClientRateLimiter extends RateLimiter
                             request = it.next();
                             Long retryAfter = requester.execute(request);
                             if (retryAfter != null)
-                            {
                                 break;
-                            }
                             else
-                            {
                                 it.remove();
-                            }
                         }
                         catch (Throwable t)
                         {

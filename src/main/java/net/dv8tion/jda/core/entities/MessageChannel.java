@@ -15,24 +15,27 @@
  */
 package net.dv8tion.jda.core.entities;
 
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.request.body.MultipartBody;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.impl.MessageImpl;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
-import net.dv8tion.jda.core.requests.*;
+import net.dv8tion.jda.core.requests.Request;
+import net.dv8tion.jda.core.requests.Response;
+import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.pagination.MessagePaginationAction;
-import net.dv8tion.jda.core.utils.IOUtil;
+import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
-import org.apache.http.util.Args;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.annotation.CheckReturnValue;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
@@ -159,7 +162,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @param  text
      *         the text to build into a Message to send to the MessageChannel.
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does
      *         not have
      *         <ul>
@@ -181,10 +184,11 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @see net.dv8tion.jda.core.MessageBuilder
      */
+    @CheckReturnValue
     default RestAction<Message> sendMessage(String text)
     {
-        Args.notEmpty(text, "Provided text for message");
-        Args.check(text.length() <= 2000, "Provided text for message must be less than 2000 characters in length");
+        Checks.notEmpty(text, "Provided text for message");
+        Checks.check(text.length() <= 2000, "Provided text for message must be less than 2000 characters in length");
 
         return sendMessage(new MessageBuilder().append(text).build());
     }
@@ -208,7 +212,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @param  args
      *         The arguments for your format
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does
      *         not have
      *         <ul>
@@ -228,9 +232,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
      *         <br>The newly created Message after it has been sent to Discord.
      */
+    @CheckReturnValue
     default RestAction<Message> sendMessageFormat(String format, Object... args)
     {
-        Args.notEmpty(format, "Format");
+        Checks.notEmpty(format, "Format");
         return sendMessage(new MessageBuilder().appendFormat(format, args).build());
     }
 
@@ -251,7 +256,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @param  embed
      *         the {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} to send
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does
      *         not have
      *         <ul>
@@ -276,9 +281,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @see    net.dv8tion.jda.core.MessageBuilder
      * @see    net.dv8tion.jda.core.EmbedBuilder
      */
+    @CheckReturnValue
     default RestAction<Message> sendMessage(MessageEmbed embed)
     {
-        Args.notNull(embed, "Provided embed");
+        Checks.notNull(embed, "Provided embed");
 
         return sendMessage(new MessageBuilder().setEmbed(embed).build());
     }
@@ -316,7 +322,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @param  msg
      *         the {@link net.dv8tion.jda.core.entities.Message Message} to send
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does
      *         not have
      *         <ul>
@@ -341,15 +347,16 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @see    net.dv8tion.jda.core.MessageBuilder
      */
+    @CheckReturnValue
     default RestAction<Message> sendMessage(Message msg)
     {
-        Args.notNull(msg, "Message");
+        Checks.notNull(msg, "Message");
 
         if (!msg.getEmbeds().isEmpty())
         {
             AccountType type = getJDA().getAccountType();
             MessageEmbed embed = msg.getEmbeds().get(0);
-            Args.check(embed.isSendable(type),
+            Checks.check(embed.isSendable(type),
                 "Provided Message contains an embed with a length greater than %d characters, which is the max for %s accounts!",
                     type == AccountType.BOT ? MessageEmbed.EMBED_MAX_LENGTH_BOT : MessageEmbed.EMBED_MAX_LENGTH_CLIENT, type);
         }
@@ -390,8 +397,6 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @param  message
      *         The message to be sent along with the uploaded file. This value can be {@code null}.
      *
-     * @throws IOException
-     *         If an I/O error occurs while reading the File.
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>Provided {@code file} is null.</li>
@@ -402,7 +407,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *                 contains a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} which
      *                 is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
      *         </ul>
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
@@ -416,9 +421,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
      *         <br>The {@link net.dv8tion.jda.core.entities.Message Message} created from this upload.
      */
-    default RestAction<Message> sendFile(File file, Message message) throws IOException
+    @CheckReturnValue
+    default RestAction<Message> sendFile(File file, Message message)
     {
-        Args.notNull(file, "file");
+        Checks.notNull(file, "file");
 
         return sendFile(file, file.getName(), message);
     }
@@ -471,8 +477,6 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @param  message
      *         The message to be sent along with the uploaded file. This value can be {@code null}.
      *
-     * @throws IOException
-     *         If an I/O error occurs while reading the File.
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>Provided {@code file} is null.</li>
@@ -483,7 +487,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *                 contains a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} which
      *                 is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
      *         </ul>
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
@@ -497,16 +501,48 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
      *         <br>The {@link net.dv8tion.jda.core.entities.Message Message} created from this upload.
      */
-    default RestAction<Message> sendFile(File file, String fileName, Message message) throws IOException
+    @CheckReturnValue
+    default RestAction<Message> sendFile(File file, String fileName, Message message)
     {
-        Args.notNull(file, "file");
-
-        Args.check(file.exists() && file.canRead(),
+        Checks.notNull(file, "file");
+        Checks.check(file.exists() && file.canRead(),
             "Provided file is either null, doesn't exist or is not readable!");
-        Args.check(file.length() <= 8<<20,   //8MB, TODO: deal with Discord Nitro allowing 50MB files.
+        Checks.check(file.length() <= Message.MAX_FILE_SIZE,// TODO: deal with Discord Nitro allowing 50MB files.
             "File is to big! Max file-size is 8MB");
 
-        return sendFile(IOUtil.readFully(file), fileName, message);
+        Checks.notNull(fileName, "fileName");
+
+        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
+        MultipartBody.Builder builder = new okhttp3.MultipartBody.Builder()
+                .setType(MultipartBody.FORM);
+
+        builder.addFormDataPart("file", fileName, RequestBody.create(MediaType.parse("application/octet-stream"), file));
+
+        if (message != null)
+        {
+            if (!message.getEmbeds().isEmpty())
+            {
+                AccountType type = getJDA().getAccountType();
+                MessageEmbed embed = message.getEmbeds().get(0);
+                Checks.check(embed.isSendable(type),
+                        "Provided Message contains an embed with a length greater than %d characters, which is the max for %s accounts!",
+                        type == AccountType.BOT ? MessageEmbed.EMBED_MAX_LENGTH_BOT : MessageEmbed.EMBED_MAX_LENGTH_CLIENT, type);
+            }
+
+            builder.addFormDataPart("payload_json", ((MessageImpl) message).toJSONObject().toString());
+        }
+
+        return new RestAction<Message>(getJDA(), route, builder.build())
+        {
+            @Override
+            protected void handleResponse(Response response, Request<Message> request)
+            {
+                if (response.isOk())
+                    request.onSuccess(api.getEntityBuilder().createMessage(response.getObject(), MessageChannel.this, false));
+                else
+                    request.onFailure(response);
+            }
+        };
     }
 
     /**
@@ -529,7 +565,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided filename is {@code null} or {@code empty}.
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
@@ -543,16 +579,17 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
      *         <br>The {@link net.dv8tion.jda.core.entities.Message Message} created from this upload.
      */
+    @CheckReturnValue
     default RestAction<Message> sendFile(InputStream data, String fileName, Message message)
     {
-        Args.notNull(data, "data InputStream");
-        Args.notNull(fileName, "fileName");
+        Checks.notNull(data, "data InputStream");
+        Checks.notNull(fileName, "fileName");
 
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
-        MultipartBody body = Unirest.post(Requester.DISCORD_API_PREFIX + route.getCompiledRoute())
-                .fields(null); //We use this to change from an HttpRequest to a MultipartBody
+        MultipartBody.Builder builder = new okhttp3.MultipartBody.Builder()
+                .setType(MultipartBody.FORM);
 
-        body.field("file", data, fileName);
+        builder.addFormDataPart("file", fileName, MiscUtil.createRequestBody(MediaType.parse("application/octet-stream"), data));
 
         if (message != null)
         {
@@ -560,15 +597,15 @@ public interface MessageChannel extends ISnowflake, Formattable
             {
                 AccountType type = getJDA().getAccountType();
                 MessageEmbed embed = message.getEmbeds().get(0);
-                Args.check(embed.isSendable(type),
+                Checks.check(embed.isSendable(type),
                         "Provided Message contains an embed with a length greater than %d characters, which is the max for %s accounts!",
                         type == AccountType.BOT ? MessageEmbed.EMBED_MAX_LENGTH_BOT : MessageEmbed.EMBED_MAX_LENGTH_CLIENT, type);
             }
 
-            body.field("payload_json", ((MessageImpl) message).toJSONObject().toString());
+            builder.addFormDataPart("payload_json", ((MessageImpl) message).toJSONObject().toString());
         }
 
-        return new RestAction<Message>(getJDA(), route, body)
+        return new RestAction<Message>(getJDA(), route, builder.build())
         {
             @Override
             protected void handleResponse(Response response, Request<Message> request)
@@ -606,7 +643,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *                 contains an {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed}
      *                 that is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
      *         </ul>
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
@@ -620,19 +657,19 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message Message}
      *         <br>The {@link net.dv8tion.jda.core.entities.Message Message} created from this upload.
      */
+    @CheckReturnValue
     default RestAction<Message> sendFile(byte[] data, String fileName, Message message)
     {
-        Args.notNull(data, "file data[]");
-        Args.notNull(fileName, "fileName");
+        Checks.notNull(data, "file data[]");
+        Checks.notNull(fileName, "fileName");
 
-        Args.check(data.length <= 8<<20,   //8MB
-            "Provided data is too large! Max file-size is 8MB");
+        Checks.check(data.length <= Message.MAX_FILE_SIZE,   //8MB
+                "Provided data is too large! Max file-size is 8MB (%d)", Message.MAX_FILE_SIZE);
 
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
-        MultipartBody body = Unirest.post(Requester.DISCORD_API_PREFIX + route.getCompiledRoute())
-                .fields(null); //We use this to change from an HttpRequest to a MultipartBody
-
-        body.field("file", data, fileName);
+        MultipartBody.Builder builder = new okhttp3.MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("file", fileName, RequestBody.create(MediaType.parse("application/octet-stream"), data));
 
         if (message != null)
         {
@@ -640,15 +677,15 @@ public interface MessageChannel extends ISnowflake, Formattable
             {
                 AccountType type = getJDA().getAccountType();
                 MessageEmbed embed = message.getEmbeds().get(0);
-                Args.check(embed.isSendable(type),
+                Checks.check(embed.isSendable(type),
                         "Provided Message contains an embed with a length greater than %d characters, which is the max for %s accounts!",
                         type == AccountType.BOT ? MessageEmbed.EMBED_MAX_LENGTH_BOT : MessageEmbed.EMBED_MAX_LENGTH_CLIENT, type);
             }
 
-            body.field("payload_json", ((MessageImpl) message).toJSONObject().toString());
+            builder.addFormDataPart("payload_json", ((MessageImpl) message).toJSONObject().toString());
         }
 
-        return new RestAction<Message>(getJDA(), route, body)
+        return new RestAction<Message>(getJDA(), route, builder.build())
         {
             @Override
             protected void handleResponse(Response response, Request<Message> request)
@@ -665,6 +702,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      * Attempts to get a {@link net.dv8tion.jda.core.entities.Message Message} from the Discord's servers that has
      * the same id as the id provided.
      * <br>Note: when retrieving a Message, you must retrieve it from the channel it was sent in!
+     *
+     * <p><b>Only bots can use this endpoint! A similar behaviour can be simulated using {@link #getHistoryAround(long, int)}!</b>
      *
      * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -688,9 +727,11 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @param  messageId
      *         The id of the sought after Message
      *
+     * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
+     *         If the currently logged in account is not from {@link net.dv8tion.jda.core.AccountType#BOT AccountType.BOT}
      * @throws IllegalArgumentException
      *         if the provided {@code messageId} is null or empty.
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
@@ -700,14 +741,15 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Message
      *         <br>The Message defined by the provided id.
      */
+    @CheckReturnValue
     default RestAction<Message> getMessageById(String messageId)
     {
         if (getJDA().getAccountType() != AccountType.BOT)
             throw new AccountTypeException(AccountType.BOT);
-        Args.notEmpty(messageId, "Provided messageId");
+        Checks.notEmpty(messageId, "Provided messageId");
 
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE.compile(getId(), messageId);
-        return new RestAction<Message>(getJDA(), route, null)
+        return new RestAction<Message>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Message> request)
@@ -729,6 +771,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      * the same id as the id provided.
      * <br>Note: when retrieving a Message, you must retrieve it from the channel it was sent in!
      *
+     * <p><b>Only bots can use this endpoint! A similar behaviour can be simulated using {@link #getHistoryAround(long, int)}!</b>
+     *
      * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
@@ -751,7 +795,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @param  messageId
      *         The id of the sought after Message
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
+     *         If the currently logged in account is not from {@link net.dv8tion.jda.core.AccountType#BOT AccountType.BOT}
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
@@ -761,6 +807,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Message
      *         <br>The Message defined by the provided id.
      */
+    @CheckReturnValue
     default RestAction<Message> getMessageById(long messageId)
     {
         return getMessageById(Long.toUnsignedString(messageId));
@@ -798,18 +845,19 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @throws IllegalArgumentException
      *         if the provided messageId is null
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}.
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
      */
+    @CheckReturnValue
     default AuditableRestAction<Void> deleteMessageById(String messageId)
     {
-        Args.notEmpty(messageId, "messageId");
+        Checks.notEmpty(messageId, "messageId");
 
         Route.CompiledRoute route = Route.Messages.DELETE_MESSAGE.compile(getId(), messageId);
-        return new AuditableRestAction<Void>(getJDA(), route, null) {
+        return new AuditableRestAction<Void>(getJDA(), route) {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
             {
@@ -853,12 +901,13 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @throws IllegalArgumentException
      *         if the provided messageId is not positive
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}.
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
      */
+    @CheckReturnValue
     default AuditableRestAction<Void> deleteMessageById(long messageId)
     {
         return deleteMessageById(Long.toUnsignedString(messageId));
@@ -868,7 +917,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * Creates a new {@link MessageHistory MessageHistory} object for each call of this method.
      * <br>MessageHistory is <b>NOT</b> an internal message cache, but rather it queries the Discord servers for previously sent messages.
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      *         and the currently logged in account does not have the permission {@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY MESSAGE_HISTORY}
      *
@@ -911,12 +960,13 @@ public interface MessageChannel extends ISnowflake, Formattable
      * }
      * </code></pre>
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      *         and the currently logged in account does not have the permission {@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY MESSAGE_HISTORY}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.pagination.MessagePaginationAction MessagePaginationAction}
      */
+    @CheckReturnValue
     default MessagePaginationAction getIterableHistory()
     {
         return new MessagePaginationAction(this);
@@ -971,7 +1021,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>Provided {@code message} is not from this MessageChannel.</li>
      *             <li>Provided {@code limit} is less than {@code 1} or greater than {@code 100}.</li>
      *         </ul>
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
@@ -981,10 +1031,11 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.MessageHistory MessageHistory}
      *         <br>Provides a MessageHistory object with message around the provided message loaded into it.
      */
+    @CheckReturnValue
     default RestAction<MessageHistory> getHistoryAround(Message message, int limit)
     {
-        Args.notNull(message, "Provided target message");
-        Args.check(message.getChannel().equals(this), "The provided Message is not from the MessageChannel!");
+        Checks.notNull(message, "Provided target message");
+        Checks.check(message.getChannel().equals(this), "The provided Message is not from the MessageChannel!");
 
         return getHistoryAround(message.getId(), limit);
     }
@@ -1037,7 +1088,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>Provided {@code messageId} is {@code null} or empty.</li>
      *             <li>Provided {@code limit} is less than {@code 1} or greater than {@code 100}.</li>
      *         </ul>
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
@@ -1047,13 +1098,15 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.MessageHistory MessageHistory}
      *         <br>Provides a MessageHistory object with message around the provided message loaded into it.
      */
+    @CheckReturnValue
     default RestAction<MessageHistory> getHistoryAround(String messageId, int limit)
     {
-        Args.notEmpty(messageId, "Provided messageId");
-        Args.check(limit >= 1 && limit <= 100, "Provided limit was out of bounds. Minimum: 1, Max: 100. Provided: %d", limit);
+        Checks.notEmpty(messageId, "Provided messageId");
+        Checks.check(limit >= 1 && limit <= 100, "Provided limit was out of bounds. Minimum: 1, Max: 100. Provided: %d", limit);
 
-        Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY_AROUND.compile(this.getId(), Integer.toString(limit), messageId);
-        return new RestAction<MessageHistory>(getJDA(), route, null)
+        Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY.compile(this.getId()).withQueryParams("limit", Integer.toString(limit), "around", messageId);
+
+        return new RestAction<MessageHistory>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<MessageHistory> request)
@@ -1127,7 +1180,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>Provided {@code messageId} is not positive.</li>
      *             <li>Provided {@code limit} is less than {@code 1} or greater than {@code 100}.</li>
      *         </ul>
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
@@ -1137,6 +1190,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.MessageHistory MessageHistory}
      *         <br>Provides a MessageHistory object with message around the provided message loaded into it.
      */
+    @CheckReturnValue
     default RestAction<MessageHistory> getHistoryAround(long messageId, int limit)
     {
         return getHistoryAround(Long.toUnsignedString(messageId), limit);
@@ -1162,7 +1216,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
@@ -1171,10 +1225,11 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
      */
+    @CheckReturnValue
     default RestAction<Void> sendTyping()
     {
         Route.CompiledRoute route = Route.Channels.SEND_TYPING.compile(getId());
-        return new RestAction<Void>(getJDA(), route, null)
+        return new RestAction<Void>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -1237,7 +1292,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         <ul>
      *             <li>If provided {@code messageId} is {@code null} or empty.</li>
      *         </ul>
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      *         and the logged in account does not have
      *         <ul>
@@ -1247,15 +1302,16 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction}
      */
+    @CheckReturnValue
     default RestAction<Void> addReactionById(String messageId, String unicode)
     {
-        Args.notEmpty(messageId, "MessageId");
-        Args.notEmpty(unicode, "Provided Unicode");
-        Args.containsNoBlanks(unicode, "Provided Unicode");
+        Checks.notEmpty(messageId, "MessageId");
+        Checks.notEmpty(unicode, "Provided Unicode");
+        Checks.noWhitespace(unicode, "Provided Unicode");
 
         String encoded = MiscUtil.encodeUTF8(unicode);
         Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, encoded);
-        return new RestAction<Void>(getJDA(), route, null)
+        return new RestAction<Void>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -1318,7 +1374,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         <ul>
      *             <li>If provided {@code messageId} is not positive.</li>
      *         </ul>
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      *         and the logged in account does not have
      *         <ul>
@@ -1328,6 +1384,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction}
      */
+    @CheckReturnValue
     default RestAction<Void> addReactionById(long messageId, String unicode)
     {
         return addReactionById(Long.toUnsignedString(messageId), unicode);
@@ -1377,7 +1434,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>If provided {@code messageId} is {@code null} or empty.</li>
      *             <li>If provided {@code emote} is {@code null}</li>
      *         </ul>
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      *         and the logged in account does not have
      *         <ul>
@@ -1387,13 +1444,14 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction}
      */
+    @CheckReturnValue
     default RestAction<Void> addReactionById(String messageId, Emote emote)
     {
-        Args.notEmpty(messageId, "MessageId");
-        Args.notNull(emote, "Emote");
+        Checks.notEmpty(messageId, "MessageId");
+        Checks.notNull(emote, "Emote");
 
         Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, String.format("%s:%s", emote.getName(), emote.getId()));
-        return new RestAction<Void>(getJDA(), route, null)
+        return new RestAction<Void>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -1452,7 +1510,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>If provided {@code messageId} is not positive.</li>
      *             <li>If provided {@code emote} is {@code null}</li>
      *         </ul>
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      *         and the logged in account does not have
      *         <ul>
@@ -1462,6 +1520,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction}
      */
+    @CheckReturnValue
     default RestAction<Void> addReactionById(long messageId, Emote emote)
     {
         return addReactionById(Long.toUnsignedString(messageId), emote);
@@ -1496,7 +1555,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @throws IllegalArgumentException
      *         if the provided messageId is {@code null} or empty.
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
@@ -1505,12 +1564,13 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
      */
+    @CheckReturnValue
     default RestAction<Void> pinMessageById(String messageId)
     {
-        Args.notEmpty(messageId, "messageId");
+        Checks.notEmpty(messageId, "messageId");
 
         Route.CompiledRoute route = Route.Messages.ADD_PINNED_MESSAGE.compile(getId(), messageId);
-        return new RestAction<Void>(getJDA(), route, null)
+        return new RestAction<Void>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -1552,7 +1612,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @throws IllegalArgumentException
      *         if the provided messageId is not positive.
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
@@ -1561,6 +1621,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
      */
+    @CheckReturnValue
     default RestAction<Void> pinMessageById(long messageId)
     {
         return pinMessageById(Long.toUnsignedString(messageId));
@@ -1595,7 +1656,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @throws IllegalArgumentException
      *         if the provided messageId is {@code null} or empty.
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
@@ -1604,12 +1665,13 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
      */
+    @CheckReturnValue
     default RestAction<Void> unpinMessageById(String messageId)
     {
-        Args.notEmpty(messageId, "messageId");
+        Checks.notEmpty(messageId, "messageId");
 
         Route.CompiledRoute route = Route.Messages.REMOVE_PINNED_MESSAGE.compile(getId(), messageId);
-        return new RestAction<Void>(getJDA(), route, null)
+        return new RestAction<Void>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -1651,7 +1713,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @throws IllegalArgumentException
      *         if the provided messageId is not positive.
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
@@ -1660,6 +1722,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
      */
+    @CheckReturnValue
     default RestAction<Void> unpinMessageById(long messageId)
     {
         return unpinMessageById(Long.toUnsignedString(messageId));
@@ -1681,17 +1744,18 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a TextChannel and this account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.core.entities.Message}{@literal >}
      *         <br>An immutable list of pinned messages
      */
+    @CheckReturnValue
     default RestAction<List<Message>> getPinnedMessages()
     {
         Route.CompiledRoute route = Route.Messages.GET_PINNED_MESSAGES.compile(getId());
-        return new RestAction<List<Message>>(getJDA(), route, null)
+        return new RestAction<List<Message>>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<List<Message>> request)
@@ -1752,17 +1816,18 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>If provided {@code newContent} is {@code null} or empty.</li>
      *             <li>If provided {@code newContent} length is greater than {@code 2000} characters.</li>
      *         </ul>
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a TextChannel and this account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message}
      *         <br>The modified Message after it has been sent to Discord.
      */
+    @CheckReturnValue
     default RestAction<Message> editMessageById(String messageId, String newContent)
     {
-        Args.notEmpty(newContent, "Provided message content");
-        Args.check(newContent.length() <= 2000, "Provided newContent length must be 2000 or less characters.");
+        Checks.notEmpty(newContent, "Provided message content");
+        Checks.check(newContent.length() <= 2000, "Provided newContent length must be 2000 or less characters.");
 
         return editMessageById(messageId, new MessageBuilder().append(newContent).build());
     }
@@ -1803,23 +1868,24 @@ public interface MessageChannel extends ISnowflake, Formattable
      *                 contains a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} which
      *                 is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
      *         </ul>
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a TextChannel and this account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message}
      *         <br>The modified Message
      */
+    @CheckReturnValue
     default RestAction<Message> editMessageById(String messageId, Message newContent)
     {
-        Args.notEmpty(messageId, "messageId");
-        Args.notNull(newContent, "message");
+        Checks.notEmpty(messageId, "messageId");
+        Checks.notNull(newContent, "message");
 
         if (!newContent.getEmbeds().isEmpty())
         {
             AccountType type = getJDA().getAccountType();
             MessageEmbed embed = newContent.getEmbeds().get(0);
-            Args.check(embed.isSendable(type),
+            Checks.check(embed.isSendable(type),
                     "Provided Message contains an embed with a length greater than %d characters, which is the max for %s accounts!",
                     type == AccountType.BOT ? MessageEmbed.EMBED_MAX_LENGTH_BOT : MessageEmbed.EMBED_MAX_LENGTH_CLIENT, type);
         }
@@ -1881,16 +1947,17 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         </ul>
      * @throws IllegalStateException
      *         If the resulting message is either empty or too long to be sent
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a TextChannel and this account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message}
      *         <br>The modified Message
      */
+    @CheckReturnValue
     default RestAction<Message> editMessageFormatById(String messageId, String format, Object... args)
     {
-        Args.notBlank(format, "Format String");
+        Checks.notBlank(format, "Format String");
         return editMessageById(messageId, new MessageBuilder().appendFormat(format, args).build());
     }
 
@@ -1932,16 +1999,17 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         </ul>
      * @throws IllegalStateException
      *         If the resulting message is either empty or too long to be sent
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a TextChannel and this account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message}
      *         <br>The modified Message
      */
+    @CheckReturnValue
     default RestAction<Message> editMessageFormatById(long messageId, String format, Object... args)
     {
-        Args.notBlank(format, "Format String");
+        Checks.notBlank(format, "Format String");
         return editMessageById(messageId, new MessageBuilder().appendFormat(format, args).build());
     }
 
@@ -1981,13 +2049,14 @@ public interface MessageChannel extends ISnowflake, Formattable
      *                 contains a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} which
      *                 is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
      *         </ul>
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a TextChannel and this account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message}
      *         <br>The modified Message
      */
+    @CheckReturnValue
     default RestAction<Message> editMessageById(long messageId, Message newContent)
     {
         return editMessageById(Long.toUnsignedString(messageId), newContent);
@@ -2029,7 +2098,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         </ul>
      * @throws IllegalStateException
      *         If the provided MessageEmbed is {@code null}
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a TextChannel and this account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         or {@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}
@@ -2037,6 +2106,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message}
      *         <br>The modified Message
      */
+    @CheckReturnValue
     default RestAction<Message> editMessageById(String messageId, MessageEmbed newEmbed)
     {
         return editMessageById(messageId, new MessageBuilder().setEmbed(newEmbed).build());
@@ -2078,7 +2148,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         </ul>
      * @throws IllegalStateException
      *         If the provided MessageEmbed is {@code null}
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a TextChannel and this account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         or {@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}
@@ -2086,6 +2156,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Message}
      *         <br>The modified Message
      */
+    @CheckReturnValue
     default RestAction<Message> editMessageById(long messageId, MessageEmbed newEmbed)
     {
         return editMessageById(Long.toUnsignedString(messageId), newEmbed);

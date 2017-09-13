@@ -17,8 +17,8 @@ package net.dv8tion.jda.core;
 
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.impl.MessageEmbedImpl;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.Helpers;
 
 import java.awt.Color;
 import java.time.*;
@@ -189,7 +189,7 @@ public class EmbedBuilder
                 throw new IllegalArgumentException("Title cannot be empty!");
             if (title.length() > MessageEmbed.TITLE_MAX_LENGTH)
                 throw new IllegalArgumentException("Title cannot be longer than " + MessageEmbed.TITLE_MAX_LENGTH + " characters.");
-            if (StringUtils.isBlank(url))
+            if (Helpers.isBlank(url))
                 url = null;
             urlCheck(url);
 
@@ -232,7 +232,7 @@ public class EmbedBuilder
         }
         else
         {
-            Args.check(description.length() <= MessageEmbed.TEXT_MAX_LENGTH,
+            Checks.check(description.length() <= MessageEmbed.TEXT_MAX_LENGTH,
                 "Description cannot be longer than %d characters.", MessageEmbed.TEXT_MAX_LENGTH);
             this.description = new StringBuilder(description);
         }
@@ -257,8 +257,8 @@ public class EmbedBuilder
      */
     public EmbedBuilder appendDescription(CharSequence description)
     {
-        Args.notNull(description, "description");
-        Args.check(this.description.length() + description.length() <= MessageEmbed.TEXT_MAX_LENGTH,
+        Checks.notNull(description, "description");
+        Checks.check(this.description.length() + description.length() <= MessageEmbed.TEXT_MAX_LENGTH,
                 "Description cannot be longer than %d characters.", MessageEmbed.TEXT_MAX_LENGTH);
         this.description.append(description);
         return this;
@@ -508,7 +508,7 @@ public class EmbedBuilder
      *         <ul>
      *             <li>If only {@code name} or {@code value} is set. Both must be set.</li>
      *             <li>If the length of {@code name} is greater than {@link net.dv8tion.jda.core.entities.MessageEmbed#TITLE_MAX_LENGTH}.</li>
-     *             <li>If the length of {@code value} is greater than {@link net.dv8tion.jda.core.entities.MessageEmbed#TEXT_MAX_LENGTH}.</li>
+     *             <li>If the length of {@code value} is greater than {@link net.dv8tion.jda.core.entities.MessageEmbed#VALUE_MAX_LENGTH}.</li>
      *         </ul>
      *
      * @return the builder after the field has been added

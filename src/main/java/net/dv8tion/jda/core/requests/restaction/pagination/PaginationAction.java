@@ -20,8 +20,10 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.utils.Checks;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -42,7 +44,6 @@ import java.util.stream.StreamSupport;
  */
 public abstract class PaginationAction<T, M extends PaginationAction<T, M>> extends RestAction<List<T>> implements Iterable<T>
 {
-
     protected final List<T> cached = new CopyOnWriteArrayList<>();
     protected final int maxLimit;
     protected final int minLimit;
@@ -56,6 +57,8 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>> exte
      *
      * @param api
      *        The current JDA instance
+     * @param route
+     *        The base route
      * @param maxLimit
      *        The inclusive maximum limit that can be used in {@link #limit(int)}
      * @param minLimit
@@ -63,9 +66,9 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>> exte
      * @param initialLimit
      *        The initial limit to use on the pagination endpoint
      */
-    public PaginationAction(JDA api, int minLimit, int maxLimit, int initialLimit)
+    public PaginationAction(JDA api, Route.CompiledRoute route, int minLimit, int maxLimit, int initialLimit)
     {
-        super(api, null, null);
+        super(api, route);
         this.maxLimit = maxLimit;
         this.minLimit = minLimit;
         this.limit = new AtomicInteger(initialLimit);
@@ -81,7 +84,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>> exte
      */
     public PaginationAction(JDA api)
     {
-        super(api, null, null);
+        super(api, null);
         this.maxLimit = 0;
         this.minLimit = 0;
         this.limit = new AtomicInteger(0);
@@ -178,8 +181,8 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>> exte
      */
     public M limit(int limit)
     {
-        Args.check(maxLimit == 0 || limit <= maxLimit, "Limit must not exceed %d!", maxLimit);
-        Args.check(minLimit == 0 || limit >= minLimit, "Limit must be greater or equal to %d", minLimit);
+        Checks.check(maxLimit == 0 || limit <= maxLimit, "Limit must not exceed %d!", maxLimit);
+        Checks.check(minLimit == 0 || limit >= minLimit, "Limit must be greater or equal to %d", minLimit);
 
         this.limit.set(limit);
         return (M) this;
@@ -267,6 +270,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>> exte
      *
      * @return new PaginationIterator
      */
+    @Nonnull
     @Override
     public PaginationIterator iterator()
     {
@@ -300,7 +304,6 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>> exte
         return StreamSupport.stream(spliterator(), true);
     }
 
-    protected abstract void finalizeRoute();
     protected abstract void handleResponse(Response response, Request<List<T>> request);
 
     /**

@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.requests.RestAction;
 
 import java.util.List;
+import javax.annotation.CheckReturnValue;
 
 /**
  * Represents a Discord User.
@@ -62,8 +63,8 @@ public interface User extends ISnowflake, IMentionable, IFakeable
 
     /**
      * <br>The discriminator of the {@link net.dv8tion.jda.core.entities.User User}. Used to differentiate between users with the same usernames.
-     * <br>This will be important when the friends list is released for human readable searching.
-     * Ex: DV8FromTheWorld#6297
+     * <br>This only contains the 4 digits after the username and the #.
+     * Ex: 6297
      *
      * @return Never-null String containing the {@link net.dv8tion.jda.core.entities.User User} discriminator.
      */
@@ -135,6 +136,7 @@ public interface User extends ISnowflake, IMentionable, IFakeable
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}
      *         <br>The PrivateChannel to use to directly message this User.
      */
+    @CheckReturnValue
     RestAction<PrivateChannel> openPrivateChannel();
 
     /**
@@ -144,25 +146,6 @@ public interface User extends ISnowflake, IMentionable, IFakeable
      * @return Unmodifiable list of all {@link net.dv8tion.jda.core.entities.Guild Guilds} that this user is a member of.
      */
     List<Guild> getMutualGuilds();
-
-    /**
-     * Gets the {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} of this
-     * {@link net.dv8tion.jda.core.entities.User User} for use in sending direct messages.
-     *
-     * @throws java.lang.IllegalStateException
-     *         If JDA does not have a private channel cached for this user. Use {@link #hasPrivateChannel()} to check
-     *         and {@link #openPrivateChannel()} to open a channel.
-     *
-     * @return Never-null {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} that is associated with this {@link net.dv8tion.jda.core.entities.User User}.
-     *
-     * @deprecated
-     *         This method will be removed in version <b>3.2</b> due to improper usage by most new users.
-     *         <br>Please use {@link #openPrivateChannel()} instead and use the response PrivateChannel.
-     *         More information can be found in the wiki:
-     *         <a target="_blank" href="https://github.com/DV8FromTheWorld/JDA/wiki/7%29-Using-RestAction">Using RestAction</a>
-     */
-    @Deprecated
-    PrivateChannel getPrivateChannel();
 
     /**
      * Returns whether or not the given user is a Bot-Account (special badge in client, some different behaviour)

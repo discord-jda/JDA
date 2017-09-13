@@ -24,9 +24,11 @@ import net.dv8tion.jda.core.entities.impl.PermissionOverrideImpl;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
-import org.apache.http.util.Args;
+import net.dv8tion.jda.core.utils.Checks;
+import okhttp3.RequestBody;
 import org.json.JSONObject;
 
+import javax.annotation.CheckReturnValue;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -64,7 +66,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      */
     public PermissionOverrideAction(JDA api, Route.CompiledRoute route, Channel channel, Member member)
     {
-        super(api, route, null);
+        super(api, route);
         this.channel = channel;
         this.member = member;
         this.role = null;
@@ -84,7 +86,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      */
     public PermissionOverrideAction(JDA api, Route.CompiledRoute route, Channel channel, Role role)
     {
-        super(api, route, null);
+        super(api, route);
         this.channel = channel;
         this.member = null;
         this.role = role;
@@ -220,10 +222,11 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *
      * @return The current PermissionOverrideAction - for chaining convenience
      */
+    @CheckReturnValue
     public PermissionOverrideAction setAllow(long allowBits)
     {
-        Args.notNegative(allowBits, "Granted permissions value");
-        Args.check(allowBits <= Permission.ALL_PERMISSIONS, "Specified allow value may not be greater than a full permission set");
+        Checks.notNegative(allowBits, "Granted permissions value");
+        Checks.check(allowBits <= Permission.ALL_PERMISSIONS, "Specified allow value may not be greater than a full permission set");
         this.allow = allowBits;
         return this;
     }
@@ -243,6 +246,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *
      * @return The current PermissionOverrideAction - for chaining convenience
      */
+    @CheckReturnValue
     public PermissionOverrideAction setAllow(Collection<Permission> permissions)
     {
         if (permissions == null || permissions.isEmpty())
@@ -266,6 +270,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *
      * @return The current PermissionOverrideAction - for chaining convenience
      */
+    @CheckReturnValue
     public PermissionOverrideAction setAllow(Permission... permissions)
     {
         if (permissions == null || permissions.length < 1)
@@ -291,10 +296,11 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *
      * @return The current PermissionOverrideAction - for chaining convenience
      */
+    @CheckReturnValue
     public PermissionOverrideAction setDeny(long denyBits)
     {
-        Args.notNegative(denyBits, "Denied permissions value");
-        Args.check(denyBits <= Permission.ALL_PERMISSIONS, "Specified allow value may not be greater than a full permission set");
+        Checks.notNegative(denyBits, "Denied permissions value");
+        Checks.check(denyBits <= Permission.ALL_PERMISSIONS, "Specified allow value may not be greater than a full permission set");
         this.deny = denyBits;
         return this;
     }
@@ -314,6 +320,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *
      * @return The current PermissionOverrideAction - for chaining convenience
      */
+    @CheckReturnValue
     public PermissionOverrideAction setDeny(Collection<Permission> permissions)
     {
         if (permissions == null || permissions.isEmpty())
@@ -337,6 +344,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *
      * @return The current PermissionOverrideAction - for chaining convenience
      */
+    @CheckReturnValue
     public PermissionOverrideAction setDeny(Permission... permissions)
     {
         if (permissions == null || permissions.length < 1)
@@ -362,6 +370,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *
      * @return The current PermissionOverrideAction - for chaining convenience
      */
+    @CheckReturnValue
     public PermissionOverrideAction setPermissions(long allowBits, long denyBits)
     {
         setAllow(allowBits);
@@ -385,6 +394,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *
      * @return The current PermissionOverrideAction - for chaining convenience
      */
+    @CheckReturnValue
     public PermissionOverrideAction setPermissions(Collection<Permission> grantPermissions, Collection<Permission> denyPermissions)
     {
         setAllow(grantPermissions);
@@ -392,17 +402,15 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
         return this;
     }
 
-
     @Override
-    protected void finalizeData()
+    protected RequestBody finalizeData()
     {
         JSONObject object = new JSONObject();
         object.put("type", isRole() ? "role" : "member");
         object.put("allow", allow);
         object.put("deny", deny);
 
-        super.data = object;
-        super.finalizeData();
+        return getRequestBody(object);
     }
 
     @Override
@@ -426,15 +434,15 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
 
     private void checkNull(Collection<?> collection, String name)
     {
-        Args.notNull(collection, name);
-        collection.forEach(e -> Args.notNull(e, name));
+        Checks.notNull(collection, name);
+        collection.forEach(e -> Checks.notNull(e, name));
     }
 
     private <T> void checkNull(T[] arr, String name)
     {
-        Args.notNull(arr, name);
+        Checks.notNull(arr, name);
         for (T e : arr)
-            Args.notNull(e, name);
+            Checks.notNull(e, name);
     }
 
 }

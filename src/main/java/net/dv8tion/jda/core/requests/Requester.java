@@ -16,33 +16,35 @@
 
 package net.dv8tion.jda.core.requests;
 
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
-import com.mashape.unirest.request.BaseRequest;
-import com.mashape.unirest.request.GetRequest;
-import com.mashape.unirest.request.HttpRequest;
-import com.mashape.unirest.request.body.MultipartBody;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDAInfo;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.requests.Route.CompiledRoute;
 import net.dv8tion.jda.core.requests.ratelimit.BotRateLimiter;
 import net.dv8tion.jda.core.requests.ratelimit.ClientRateLimiter;
 import net.dv8tion.jda.core.utils.SimpleLog;
+import okhttp3.*;
+import okhttp3.internal.http.HttpMethod;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
+import java.util.zip.GZIPInputStream;
 
 public class Requester
 {
     public static final SimpleLog LOG = SimpleLog.getLog("JDARequester");
-    public static final String DISCORD_API_PREFIX = "https://discordapp.com/api/";
-    public static String USER_AGENT = "JDA DiscordBot (" + JDAInfo.GITHUB + ", " + JDAInfo.VERSION + ")";
+    public static final String DISCORD_API_PREFIX = String.format("https://discordapp.com/api/v%d/", JDAInfo.DISCORD_REST_VERSION);
+    public static final String USER_AGENT = "DiscordBot (" + JDAInfo.GITHUB + ", " + JDAInfo.VERSION + ")";
+    public static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json; charset=utf-8");
+    public static final RequestBody EMPTY_BODY = RequestBody.create(null, new byte[]{});
 
     private final JDAImpl api;
     private final RateLimiter rateLimiter;
+
+    private final OkHttpClient httpClient;
 
     public Requester(JDA api)
     {
@@ -59,6 +61,8 @@ public class Requester
             rateLimiter = new BotRateLimiter(this, 5);
         else
             rateLimiter = new ClientRateLimiter(this, 5);
+        
+        this.httpClient = this.api.getHttpClientBuilder().build();
     }
 
     public JDAImpl getJDA()
@@ -68,18 +72,18 @@ public class Requester
 
     public <T> void request(Request<T> apiRequest)
     {
-        if (rateLimiter.isShutdown)
+        if (rateLimiter.isShutdown) 
             throw new IllegalStateException("The Requester has been shutdown! No new requests can be requested!");
+
         if (apiRequest.shouldQueue())
-        {
             rateLimiter.queueRequest(apiRequest);
-        }
         else
-        {
-            Long retryAfter = execute(apiRequest);
-            if (retryAfter != null)
-                apiRequest.getRestAction().handleResponse(new Response(429, null, retryAfter), apiRequest);
-        }
+            execute(apiRequest, true);
+    }
+
+    public Long execute(Request<?> apiRequest)
+    {
+        return execute(apiRequest, false);
     }
 
     /**
@@ -92,84 +96,119 @@ public class Requester
      *         the request can be made again. This could either be for the Per-Route ratelimit or the Global ratelimit.
      *         <br>Check if globalCooldown is {@code null} to determine if it was Per-Route or Global.
      */
-    public <T> Long execute(Request<T> apiRequest)
+    public Long execute(Request<?> apiRequest, boolean handleOnRatelimit)
     {
-        CompiledRoute route = apiRequest.getRoute();
+        Route.CompiledRoute route = apiRequest.getRoute();
         Long retryAfter = rateLimiter.getRateLimit(route);
         if (retryAfter != null)
+        {
+            if (handleOnRatelimit)
+                apiRequest.handleResponse(new Response(retryAfter, Collections.emptySet()));
             return retryAfter;
-
-        BaseRequest request;
-        Object body = apiRequest.getData();
-
-        //Special case handling for MessageChannel#sendFile.
-        // If a MultipartBody request was passed as the body then we assume it was constructed correctly
-        // and just wrap it in auth headers and allow processing.
-        if (body instanceof MultipartBody)
-        {
-            request = addHeaders((MultipartBody) body);
         }
-        else
-        {
-            String bodyData = body != null ? body.toString() : null;
-            request = createRequest(route, bodyData);
-        }
+
+        okhttp3.Request.Builder builder = new okhttp3.Request.Builder();
+
+        String url = DISCORD_API_PREFIX + route.getCompiledRoute();
+        builder.url(url);
+
+        String method = apiRequest.getRoute().getMethod().toString();
+        RequestBody body = apiRequest.getBody();
+
+        if (body == null && HttpMethod.requiresRequestBody(method))
+            body = EMPTY_BODY;
+
+        builder.method(method, body)
+               .header("user-agent", USER_AGENT)
+               .header("accept-encoding", "gzip");
+
+        //adding token to all requests to the discord api or cdn pages
+        //we can check for startsWith(DISCORD_API_PREFIX) because the cdn endpoints don't need any kind of authorization
+        if (url.startsWith(DISCORD_API_PREFIX) && api.getToken() != null)
+            builder.header("authorization", api.getToken());
 
         // Apply custom headers like X-Audit-Log-Reason
-        //If customHeaders is null this does nothing
-        request.getHttpRequest().headers(apiRequest.customHeaders);
+        // If customHeaders is null this does nothing
+        if (apiRequest.getHeaders() != null)
+        {
+            for (Entry<String, String> header : apiRequest.getHeaders().entrySet())
+                builder.addHeader(header.getKey(), header.getValue());
+        }
+
+        okhttp3.Request request = builder.build();
 
         Set<String> rays = new LinkedHashSet<>();
+        okhttp3.Response[] responses = new okhttp3.Response[4];
+        // we have an array of all responses to later close them all at once
+        //the response below this comment is used as the first successful response from the server
+        okhttp3.Response firstSuccess = null;
         try
         {
-            HttpResponse<String> response;
             int attempt = 0;
             do
             {
                 //If the request has been canceled via the Future, don't execute.
                 if (apiRequest.isCanceled())
                     return null;
-                response = request.asString();
-                String cfRay = response.getHeaders().getFirst("CF-RAY");
+                Call call = httpClient.newCall(request);
+                firstSuccess = call.execute();
+                responses[attempt] = firstSuccess;
+                String cfRay = firstSuccess.header("CF-RAY");
                 if (cfRay != null)
                     rays.add(cfRay);
 
-                if (response.getStatus() < 500)
-                    break;
+                if (firstSuccess.code() < 500)
+                    break; // break loop, got a successful response!
 
                 attempt++;
                 LOG.debug(String.format("Requesting %s -> %s returned status %d... retrying (attempt %d)",
-                        request.getHttpRequest().getHttpMethod().name(),
-                        request.getHttpRequest().getUrl(),
-                        response.getStatus(), attempt));
+                        apiRequest.getRoute().getMethod().toString(),
+                        url, firstSuccess.code(), attempt));
                 try
                 {
                     Thread.sleep(50 * attempt);
                 }
                 catch (InterruptedException ignored) {}
             }
-            while (attempt < 3 && response.getStatus() >= 500);
+            while (attempt < 3 && firstSuccess.code() >= 500);
 
-            if (response.getStatus() >= 500)
+            if (firstSuccess.code() >= 500)
             {
                 //Epic failure from other end. Attempted 4 times.
                 return null;
             }
 
-            retryAfter = rateLimiter.handleResponse(route, response);
+            retryAfter = rateLimiter.handleResponse(route, firstSuccess);
             if (!rays.isEmpty())
                 LOG.debug("Received response with following cf-rays: " + rays);
+
             if (retryAfter == null)
-                apiRequest.getRestAction().handleResponse(new Response(response.getStatus(), response.getBody(), -1), apiRequest);
+                apiRequest.handleResponse(new Response(firstSuccess, -1, rays));
+            else if (handleOnRatelimit)
+                apiRequest.handleResponse(new Response(firstSuccess, retryAfter, rays));
 
             return retryAfter;
         }
-        catch (UnirestException e)
+        catch (Exception e)
         {
             LOG.log(e); //This originally only printed on DEBUG in 2.x
-            apiRequest.getRestAction().handleResponse(new Response(e), apiRequest);
+            apiRequest.handleResponse(new Response(firstSuccess, e, rays));
             return null;
         }
+        finally
+        {
+            for (okhttp3.Response r : responses)
+            {
+                if (r == null)
+                    break;
+                r.close();
+            }
+        }
+    }
+
+    public OkHttpClient getHttpClient()
+    {
+        return this.httpClient;
     }
 
     public RateLimiter getRateLimiter()
@@ -177,52 +216,36 @@ public class Requester
         return rateLimiter;
     }
 
-    public void shutdown()
+    public void shutdown(long time, TimeUnit unit)
     {
-        rateLimiter.shutdown();
+        rateLimiter.shutdown(time, unit);
     }
 
-    private BaseRequest createRequest(Route.CompiledRoute route, String body)
+    public void shutdownNow()
     {
-        String url = DISCORD_API_PREFIX + route.getCompiledRoute();
-        BaseRequest request = null;
-        switch (route.getMethod())
-        {
-            case GET:
-                request = addHeaders(Unirest.get(url));
-                break;
-            case POST:
-                request = addHeaders(Unirest.post(url)).body(body);
-                break;
-            case PUT:
-                request = addHeaders(Unirest.put(url)).body(body);
-                break;
-            case DELETE:
-                request = addHeaders(Unirest.delete(url));
-                break;
-            case PATCH:
-                request = addHeaders(Unirest.patch(url)).body(body);
-                break;
-        }
-        return request;
+        rateLimiter.forceShutdown();
     }
 
-    protected <T extends BaseRequest> T addHeaders(T baseRequest)
+    /**
+     * Retrieves an {@link java.io.InputStream InputStream} for the provided {@link okhttp3.Response Response}.
+     * <br>When the header for {@code content-encoding} is set with {@code gzip} this will wrap the body
+     * in a {@link java.util.zip.GZIPInputStream GZIPInputStream} which decodes the data.
+     *
+     * <p>This is used to make usage of encoded responses more user-friendly in various parts of JDA.
+     *
+     * @param  response
+     *         The not-null Response object
+     *
+     * @throws IOException
+     *         If a GZIP format error has occurred or the compression method used is unsupported
+     *
+     * @return InputStream representing the body of this response
+     */
+    public static InputStream getBody(okhttp3.Response response) throws IOException
     {
-        HttpRequest request = baseRequest.getHttpRequest();
-
-        //adding token to all requests to the discord api or cdn pages
-        //can't check for startsWith(DISCORD_API_PREFIX) due to cdn endpoints
-        if (api.getToken() != null && request.getUrl().contains("discordapp.com"))
-        {
-            request.header("authorization", api.getToken());
-        }
-        if (!(request instanceof GetRequest) && !(baseRequest instanceof MultipartBody))
-        {
-            request.header("Content-Type", "application/json");
-        }
-        request.header("user-agent", USER_AGENT);
-        request.header("Accept-Encoding", "gzip");
-        return baseRequest;
+        String encoding = response.header("content-encoding", "");
+        if (encoding.equals("gzip"))
+            return new GZIPInputStream(response.body().byteStream());
+        return response.body().byteStream();
     }
 }

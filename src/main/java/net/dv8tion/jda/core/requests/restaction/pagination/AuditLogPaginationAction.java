@@ -18,14 +18,14 @@ package net.dv8tion.jda.core.requests.restaction.pagination;
 
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
-import net.dv8tion.jda.core.audit.ActionType;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.audit.ActionType;
 import net.dv8tion.jda.core.audit.AuditLogEntry;
 import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
-import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
@@ -37,17 +37,7 @@ import java.util.List;
 
 /**
  * {@link net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction PaginationAction}
- * that paginates the endpoints:
- * <ul>
- *     <li>{@link net.dv8tion.jda.core.requests.Route.AuditLogs#GET_AUDIT_LOGS Route.AuditLogs.GET_AUDIT_LOGS}</li>
- *     <li>{@link net.dv8tion.jda.core.requests.Route.AuditLogs#GET_AUDIT_LOGS_BEFORE Route.AuditLogs.GET_AUDIT_LOGS_BEFORE}</li>
- *     <li>{@link net.dv8tion.jda.core.requests.Route.AuditLogs#GET_AUDIT_LOGS_USER Route.AuditLogs.GET_AUDIT_LOGS_USER}</li>
- *     <li>{@link net.dv8tion.jda.core.requests.Route.AuditLogs#GET_AUDIT_LOGS_USER_BEFORE Route.AuditLogs.GET_AUDIT_LOGS_USER_BEFORE}</li>
- *     <li>{@link net.dv8tion.jda.core.requests.Route.AuditLogs#GET_AUDIT_LOGS_ACTION Route.AuditLogs.GET_AUDIT_LOGS_ACTION}</li>
- *     <li>{@link net.dv8tion.jda.core.requests.Route.AuditLogs#GET_AUDIT_LOGS_ACTION_BEFORE Route.AuditLogs.GET_AUDIT_LOGS_ACTION_BEFORE}</li>
- *     <li>{@link net.dv8tion.jda.core.requests.Route.AuditLogs#GET_AUDIT_LOGS_USER_ACTION Route.AuditLogs.GET_AUDIT_LOGS_USER_ACTION}</li>
- *     <li>{@link net.dv8tion.jda.core.requests.Route.AuditLogs#GET_AUDIT_LOGS_USER_ACTION_BEFORE Route.AuditLogs.GET_AUDIT_LOGS_USER_ACTION_BEFORE}</li>
- * </ul>
+ * that paginates the endpoint {@link net.dv8tion.jda.core.requests.Route.Guilds#GET_AUDIT_LOGS Route.Guilds.GET_AUDIT_LOGS}.
  *
  * <p><b>Must provide not-null {@link net.dv8tion.jda.core.entities.Guild Guild} to compile a valid guild audit logs
  * pagination route</b>
@@ -68,9 +58,9 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
 
     public AuditLogPaginationAction(Guild guild)
     {
-        super(guild.getJDA(), 1, 100, 100);
+        super(guild.getJDA(), Route.Guilds.GET_AUDIT_LOGS.compile(guild.getId()), 1, 100, 100);
         if (!guild.getSelfMember().hasPermission(Permission.VIEW_AUDIT_LOGS))
-            throw new PermissionException(Permission.VIEW_AUDIT_LOGS);
+            throw new InsufficientPermissionException(Permission.VIEW_AUDIT_LOGS);
         this.guild = guild;
     }
 
@@ -90,7 +80,8 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
     }
 
     /**
-     * Filters retrieved entities by the specified {@link net.dv8tion.jda.core.entities.User User}
+     * Filters retrieved entities by the specified {@link net.dv8tion.jda.core.entities.User User}.
+     * <br>This specified the action issuer and not the target of an action. (Targets need not be users)
      *
      * @param  user
      *         {@link net.dv8tion.jda.core.entities.User User} used to filter,
@@ -105,6 +96,7 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
 
     /**
      * Filters retrieved entities by the specified {@link net.dv8tion.jda.core.entities.User User} id.
+     * <br>This specified the action issuer and not the target of an action. (Targets need not be users)
      *
      * @param  userId
      *         {@link net.dv8tion.jda.core.entities.User User} id used to filter,
@@ -144,55 +136,25 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
     }
 
     @Override
-    protected void finalizeRoute()
+    protected Route.CompiledRoute finalizeRoute()
     {
+        Route.CompiledRoute route = super.finalizeRoute();
+
         final String limit = String.valueOf(this.limit.get());
-        final String id = guild.getId();
         final AuditLogEntry last = this.last;
-        final boolean beforeSet = last != null;
-        final boolean typeSet = type != null;
-        final boolean userSet = userId != null;
 
-        if (beforeSet)
-            finalizeRouteBefore(typeSet, userSet, id, limit, last.getId());
-        else
-            finalizeRouteDefault(typeSet, userSet, id, limit);
-    }
+        route = route.withQueryParams("limit", limit);
 
-    private void finalizeRouteBefore(boolean typeSet, boolean userSet, String guildId, String limit, String before)
-    {
-        if (typeSet)
-        {
-            if (userSet)
-                super.route = Route.AuditLogs.GET_AUDIT_LOGS_USER_ACTION_BEFORE.compile(guildId, limit, userId, String.valueOf(type.getKey()), before);
-            else
-                super.route = Route.AuditLogs.GET_AUDIT_LOGS_ACTION_BEFORE.compile(guildId, limit, String.valueOf(type.getKey()), before);
-        }
-        else
-        {
-            if (userSet)
-                super.route = Route.AuditLogs.GET_AUDIT_LOGS_USER_BEFORE.compile(guildId, limit, userId, before);
-            else
-                super.route = Route.AuditLogs.GET_AUDIT_LOGS_BEFORE.compile(guildId, limit, before);
-        }
-    }
+        if (type != null)
+            route = route.withQueryParams("action_type", String.valueOf(type.getKey()));
 
-    private void finalizeRouteDefault(boolean typeSet, boolean userSet, String id, String limit)
-    {
-        if (typeSet)
-        {
-            if (userSet)
-                super.route = Route.AuditLogs.GET_AUDIT_LOGS_USER_ACTION.compile(id, limit, userId, String.valueOf(type.getKey()));
-            else
-                super.route = Route.AuditLogs.GET_AUDIT_LOGS_ACTION.compile(id, limit, String.valueOf(type.getKey()));
-        }
-        else
-        {
-            if (userSet)
-                super.route = Route.AuditLogs.GET_AUDIT_LOGS_USER.compile(id, limit, userId);
-            else
-                super.route = Route.AuditLogs.GET_AUDIT_LOGS.compile(id, limit);
-        }
+        if (userId != null)
+            route = route.withQueryParams("action_type", userId);
+
+        if (last != null)
+            route = route.withQueryParams("before", last.getId());
+
+        return route;
     }
 
     @Override

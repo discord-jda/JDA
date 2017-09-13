@@ -21,6 +21,8 @@ import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.entities.SelfUser;
 import net.dv8tion.jda.core.requests.RestAction;
 
+import javax.annotation.CheckReturnValue;
+
 /**
  * Facade for an {@link net.dv8tion.jda.core.managers.AccountManagerUpdatable AccountManagerUpdatable} instance.
  * <br>Simplifies managing flow for convenience.
@@ -86,6 +88,7 @@ public class AccountManager
      *         The update RestAction that will set the provided name.
      *         <br>See {@link net.dv8tion.jda.core.managers.AccountManagerUpdatable#update(String) #update()} for more information
      */
+    @CheckReturnValue
     public RestAction<Void> setName(String name)
     {
         return setName(name, null);
@@ -114,6 +117,7 @@ public class AccountManager
      *         The update RestAction that will set the provided name.
      *         <br>See {@link net.dv8tion.jda.core.managers.AccountManagerUpdatable#update(String) #update()} for more information
      */
+    @CheckReturnValue
     public RestAction<Void> setName(String name, String currentPassword)
     {
         return updatable.getNameField().setValue(name).update(currentPassword);
@@ -134,6 +138,7 @@ public class AccountManager
      *         The update RestAction that will set the provided icon as the new avatar or reset the avatar.
      *         <br>See {@link net.dv8tion.jda.core.managers.AccountManagerUpdatable#update(String) #update()} for more information
      */
+    @CheckReturnValue
     public RestAction<Void> setAvatar(Icon avatar)
     {
         return setAvatar(avatar, null);
@@ -158,6 +163,7 @@ public class AccountManager
      *         The update RestAction that will set the provided icon as the new avatar or reset the avatar.
      *         <br>See {@link net.dv8tion.jda.core.managers.AccountManagerUpdatable#update(String) #update()} for more information
      */
+    @CheckReturnValue
     public RestAction<Void> setAvatar(Icon avatar, String currentPassword)
     {
         return updatable.getAvatarField().setValue(avatar).update(currentPassword);
@@ -184,6 +190,7 @@ public class AccountManager
      *         The update RestAction that will set the provided email.
      *         <br>See {@link net.dv8tion.jda.core.managers.AccountManagerUpdatable#update(String) #update()} for more information
      */
+    @CheckReturnValue
     public RestAction<Void> setEmail(String email, String currentPassword)
     {
         return updatable.getEmailField().setValue(email).update(currentPassword);
@@ -208,6 +215,7 @@ public class AccountManager
      *         The update RestAction that will set the provided email.
      *         <br>See {@link net.dv8tion.jda.core.managers.AccountManagerUpdatable#update(String) #update()} for more information
      */
+    @CheckReturnValue
     public RestAction<Void> setPassword(String newPassword, String currentPassword)
     {
         return updatable.getPasswordField().setValue(newPassword).update(currentPassword);
