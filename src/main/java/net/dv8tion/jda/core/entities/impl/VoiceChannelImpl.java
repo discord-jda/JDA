@@ -78,11 +78,11 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannelImpl> impl
     {
         Checks.notNull(guild, "Guild");
         ChannelAction action = guild.getController().createVoiceChannel(name).setBitrate(bitrate).setUserlimit(userLimit);
-        Category parent = getParent();
-        if (parent != null)
-            action.setParent(parent);
         if (guild.equals(getGuild()))
         {
+            Category parent = getParent();
+            if (parent != null)
+                action.setParent(parent);
             for (PermissionOverride o : overrides.valueCollection())
             {
                 if (o.isMemberOverride())

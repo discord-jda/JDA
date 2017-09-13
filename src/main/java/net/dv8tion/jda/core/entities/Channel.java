@@ -166,6 +166,8 @@ public interface Channel extends ISnowflake
     /**
      * Creates a copy of the specified {@link net.dv8tion.jda.core.entities.Channel Channel}
      * in the specified {@link net.dv8tion.jda.core.entities.Guild Guild}.
+     * <br>If the provided target guild is not the same Guild this channel is in then
+     * the parent category and permissions will not be copied due to technical difficulty and ambiguity.
      *
      * <p>This copies the following elements:
      * <ol>
@@ -206,6 +208,7 @@ public interface Channel extends ISnowflake
      * <p>This copies the following elements:
      * <ol>
      *     <li>Name</li>
+     *     <li>Parent Category (if present)</li>
      *     <li>Voice Elements (Bitrate, Userlimit)</li>
      *     <li>Text Elements (Topic, NSFW)</li>
      *     <li>All permission overrides for Members/Roles</li>

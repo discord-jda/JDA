@@ -240,11 +240,11 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     {
         Checks.notNull(guild, "Guild");
         ChannelAction action = guild.getController().createTextChannel(name).setNSFW(nsfw).setTopic(topic);
-        Category parent = getParent();
-        if (parent != null)
-            action.setParent(parent);
         if (guild.equals(getGuild()))
         {
+            Category parent = getParent();
+            if (parent != null)
+                action.setParent(parent);
             for (PermissionOverride o : overrides.valueCollection())
             {
                 if (o.isMemberOverride())
