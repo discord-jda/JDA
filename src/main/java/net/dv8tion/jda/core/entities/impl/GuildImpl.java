@@ -59,11 +59,11 @@ public class GuildImpl implements Guild
 //    private final TLongObjectMap<Role> roles = MiscUtil.newLongMap();
 //    private final TLongObjectMap<Emote> emotes = MiscUtil.newLongMap();
 
-    private final SortedSnowflakeCacheView<Category> categoryCache = new SortedSnowflakeCacheView<Category>(Comparator.naturalOrder());
-    private final SortedSnowflakeCacheView<VoiceChannel> voiceChannelCache = new SortedSnowflakeCacheView<VoiceChannel>(Comparator.naturalOrder());
-    private final SortedSnowflakeCacheView<TextChannel> textChannelCache = new SortedSnowflakeCacheView<TextChannel>(Comparator.naturalOrder());
-    private final SortedSnowflakeCacheView<Role> roleCache = new SortedSnowflakeCacheView<Role>(Comparator.reverseOrder());
-    private final SnowflakeCacheViewImpl<Emote> emoteCache = new SnowflakeCacheViewImpl<>();
+    private final SortedSnowflakeCacheView<Category> categoryCache = new SortedSnowflakeCacheView<Category>(Channel::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheView<VoiceChannel> voiceChannelCache = new SortedSnowflakeCacheView<VoiceChannel>(Channel::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheView<TextChannel> textChannelCache = new SortedSnowflakeCacheView<TextChannel>(Channel::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheView<Role> roleCache = new SortedSnowflakeCacheView<Role>(Role::getName, Comparator.reverseOrder());
+    private final SnowflakeCacheViewImpl<Emote> emoteCache = new SnowflakeCacheViewImpl<>(Emote::getName);
     private final MemberCacheViewImpl memberCache = new MemberCacheViewImpl();
 
     private final TLongObjectMap<JSONObject> cachedPresences = MiscUtil.newLongMap();

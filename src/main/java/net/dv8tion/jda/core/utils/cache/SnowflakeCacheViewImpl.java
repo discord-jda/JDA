@@ -21,13 +21,24 @@ import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.function.Function;
 
 public class SnowflakeCacheViewImpl<T extends ISnowflake> implements SnowflakeCacheView<T>
 {
     protected final TLongObjectMap<T> elements = MiscUtil.newLongMap();
+    protected final Function<T, String> nameMapper;
+
+    public SnowflakeCacheViewImpl()
+    {
+        this.nameMapper = null;
+    }
+
+    public SnowflakeCacheViewImpl(Function<T, String> nameMapper)
+    {
+        this.nameMapper = nameMapper;
+    }
 
     public void clear()
     {
@@ -71,14 +82,13 @@ public class SnowflakeCacheViewImpl<T extends ISnowflake> implements SnowflakeCa
             return Collections.emptyList();
         Iterator<T> iter = iterator();
         T elem = iter.next();
-        Method method = getNameGetter(elem);
-        if (method == null) // no getName method available
+        if (nameMapper == null) // no getName method available
             throw new UnsupportedOperationException("The contained elements are not assigned with names.");
 
         List<T> list = new LinkedList<>();
         do
         {
-            String elementName = getName(elem, method);
+            String elementName = nameMapper.apply(elem);
             if (elementName != null)
             {
                 if (ignoreCase)
@@ -120,15 +130,4 @@ public class SnowflakeCacheViewImpl<T extends ISnowflake> implements SnowflakeCa
         }
     }
 
-    protected String getName(T element, Method method)
-    {
-        try
-        {
-            return (String) method.invoke(element);
-        }
-        catch (IllegalAccessException | InvocationTargetException e)
-        {
-            return null;
-        }
-    }
 }

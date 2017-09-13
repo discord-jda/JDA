@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Function;
 
 public class SortedSnowflakeCacheView<T extends ISnowflake & Comparable<T>> extends SnowflakeCacheViewImpl<T>
 {
@@ -29,6 +30,12 @@ public class SortedSnowflakeCacheView<T extends ISnowflake & Comparable<T>> exte
 
     public SortedSnowflakeCacheView(Comparator<T> comparator)
     {
+        this(null, comparator);
+    }
+
+    public SortedSnowflakeCacheView(Function<T, String> nameMapper, Comparator<T> comparator)
+    {
+        super(nameMapper);
         this.comparator = comparator;
     }
 
