@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.security.auth.login.LoginException;
-import net.dv8tion.jda.bot.entities.impl.ShardManagerImpl;
+import net.dv8tion.jda.bot.entities.impl.DefaultShardManagerImpl;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
@@ -41,15 +41,15 @@ import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.OkHttpClient;
 
 /**
- * Used to create new {@link net.dv8tion.jda.bot.entities.impl.ShardManagerImpl ShardManagerImpl} instances.
+ * Used to create new {@link net.dv8tion.jda.bot.entities.impl.DefaultShardManagerImpl DefaultShardManagerImpl} instances.
  *
- * <p>A single ShardManagerBuilder can be reused multiple times. Each call to {@link #buildAsync()} or {@link #buildBlocking()}
- * creates a new {@link net.dv8tion.jda.bot.entities.impl.ShardManagerImpl ShardManagerImpl} instance using the same information.
+ * <p>A single DefaultShardManagerBuilder can be reused multiple times. Each call to {@link #buildAsync()} or {@link #buildBlocking()}
+ * creates a new {@link net.dv8tion.jda.bot.entities.impl.DefaultShardManagerImpl DefaultShardManagerImpl} instance using the same information.
  *
  * @since  3.1
  * @author Aljoscha Grebe
  */
-public class ShardManagerBuilder
+public class DefaultShardManagerBuilder
 {
     protected TIntSet shards = null;
     protected int shardsTotal = 1;
@@ -71,17 +71,17 @@ public class ShardManagerBuilder
     private SessionReconnectQueue reconnectQueue;
 
     /**
-     * Creates a completely empty ShardManagerBuilder.
+     * Creates a completely empty DefaultShardManagerBuilder.
      * <br>You need to set the token using
-     * {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder#setToken(String) setToken(String)}
-     * before calling {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder#buildAsync() buildAsync()}
-     * or {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder#buildBlocking() buildBlocking()}.
+     * {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder#setToken(String) setToken(String)}
+     * before calling {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder#buildAsync() buildAsync()}
+     * or {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder#buildBlocking() buildBlocking()}.
      */
-    public ShardManagerBuilder()
+    public DefaultShardManagerBuilder()
     {}
 
     /**
-     * Adds all provided listeners to the list of listeners that will be used to populate the {@link net.dv8tion.jda.bot.entities.impl.ShardManagerImpl ShardManagerImpl} object.
+     * Adds all provided listeners to the list of listeners that will be used to populate the {@link net.dv8tion.jda.bot.entities.impl.DefaultShardManagerImpl DefaultShardManagerImpl} object.
      * <br>This uses the {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventListener} by default.
      * <br>To switch to the {@link net.dv8tion.jda.core.hooks.AnnotatedEventManager AnnotatedEventManager},
      * use {@link #setEventManager(net.dv8tion.jda.core.hooks.IEventManager) setEventManager(new AnnotatedEventManager())}.
@@ -92,11 +92,11 @@ public class ShardManagerBuilder
      * @param   listeners
      *          The listener(s) to add to the list.
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder ShardManagerBuilder} instance. Useful for chaining.
+     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
      *
-     * @see    net.dv8tion.jda.bot.entities.impl.ShardManagerImpl#addEventListener(Object...) JDA.addEventListener(Object...)
+     * @see    net.dv8tion.jda.bot.entities.impl.DefaultShardManagerImpl#addEventListener(Object...) JDA.addEventListener(Object...)
      */
-    public ShardManagerBuilder addEventListener(final Object... listeners)
+    public DefaultShardManagerBuilder addEventListener(final Object... listeners)
     {
         Collections.addAll(this.listeners, listeners);
         return this;
@@ -110,7 +110,7 @@ public class ShardManagerBuilder
      * being performed like database connection or local resource loading.
      *
      * <p>If you wish to be sure that the {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} information is correct, please use
-     * {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder#buildBlocking() buildBlocking()}.
+     * {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder#buildBlocking() buildBlocking()}.
      *
      * @throws  LoginException
      *          If the provided token is invalid.
@@ -124,7 +124,7 @@ public class ShardManagerBuilder
      */
     public ShardManager buildAsync() throws LoginException, IllegalArgumentException, RateLimitedException
     {
-        final ShardManagerImpl manager = new ShardManagerImpl(this.shardsTotal, this.shards, this.listeners, this.token, this.eventManager, this.audioSendFactory, this.game, this.status, this.httpClientBuilder, this.wsFactory, this.maxReconnectDelay, this.corePoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting, this.autoReconnect, this.idle, reconnectQueue);
+        final DefaultShardManagerImpl manager = new DefaultShardManagerImpl(this.shardsTotal, this.shards, this.listeners, this.token, this.eventManager, this.audioSendFactory, this.game, this.status, this.httpClientBuilder, this.wsFactory, this.maxReconnectDelay, this.corePoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting, this.autoReconnect, this.idle, reconnectQueue);
 
         manager.login();
 
@@ -166,11 +166,11 @@ public class ShardManagerBuilder
      * @param  listeners
      *         The listener(s) to remove from the list.
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder ShardManagerBuilder} instance. Useful for chaining.
+     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
      *
      * @see    net.dv8tion.jda.core.JDA#removeEventListener(Object...) JDA.removeEventListener(Object...)
      */
-    public ShardManagerBuilder removeEventListener(final Object... listeners)
+    public DefaultShardManagerBuilder removeEventListener(final Object... listeners)
     {
         for (final Object listener : listeners)
             this.listeners.remove(listener);
@@ -186,9 +186,9 @@ public class ShardManagerBuilder
      * @param  enabled
      *         True - enables voice support.
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder ShardManagerBuilder} instance. Useful for chaining.
+     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
      */
-    public ShardManagerBuilder setAudioEnabled(final boolean enabled)
+    public DefaultShardManagerBuilder setAudioEnabled(final boolean enabled)
     {
         this.enableVoice = enabled;
         return this;
@@ -203,9 +203,9 @@ public class ShardManagerBuilder
      *         The new {@link net.dv8tion.jda.core.audio.factory.IAudioSendFactory IAudioSendFactory} to be used
      *         when creating new {@link net.dv8tion.jda.core.audio.factory.IAudioSendSystem} objects.
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder ShardManagerBuilder} instance. Useful for chaining.
+     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
      */
-    public ShardManagerBuilder setAudioSendFactory(final IAudioSendFactory factory)
+    public DefaultShardManagerBuilder setAudioSendFactory(final IAudioSendFactory factory)
     {
         this.audioSendFactory = factory;
         return this;
@@ -220,9 +220,9 @@ public class ShardManagerBuilder
      * @param  autoReconnect
      *         If true - enables autoReconnect
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder ShardManagerBuilder} instance. Useful for chaining.
+     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
      */
-    public ShardManagerBuilder setAutoReconnect(final boolean autoReconnect)
+    public DefaultShardManagerBuilder setAutoReconnect(final boolean autoReconnect)
     {
         this.autoReconnect = autoReconnect;
         return this;
@@ -238,9 +238,9 @@ public class ShardManagerBuilder
      * @param  enabled
      *         True - The MESSAGE_DELETE_BULK will be split into multiple individual MessageDeleteEvents.
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder ShardManagerBuilder} instance. Useful for chaining.
+     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
      */
-    public ShardManagerBuilder setBulkDeleteSplittingEnabled(final boolean enabled)
+    public DefaultShardManagerBuilder setBulkDeleteSplittingEnabled(final boolean enabled)
     {
         this.enableBulkDeleteSplitting = enabled;
         return this;
@@ -256,9 +256,9 @@ public class ShardManagerBuilder
      * @param  enable
      *         True (default) - use shutdown hook to clean up JDA if the Java program is closed.
      *
-     * @return Return the {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder ShardManagerBuilder} instance. Useful for chaining.
+     * @return Return the {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
      */
-    public ShardManagerBuilder setEnableShutdownHook(final boolean enable)
+    public DefaultShardManagerBuilder setEnableShutdownHook(final boolean enable)
     {
         this.enableShutdownHook = enable;
         return this;
@@ -280,9 +280,9 @@ public class ShardManagerBuilder
      * @param  manager
      *         The new {@link net.dv8tion.jda.core.hooks.IEventManager} to use.
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder ShardManagerBuilder} instance. Useful for chaining.
+     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
      */
-    public ShardManagerBuilder setEventManager(final IEventManager manager)
+    public DefaultShardManagerBuilder setEventManager(final IEventManager manager)
     {
         this.eventManager = manager;
         return this;
@@ -299,11 +299,11 @@ public class ShardManagerBuilder
      * @param  game
      *         An instance of {@link net.dv8tion.jda.core.entities.Game Game} (null allowed)
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder ShardManagerBuilder} instance. Useful for chaining.
+     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
      *
      * @see    net.dv8tion.jda.core.managers.Presence#setGame(Game)
      */
-    public ShardManagerBuilder setGame(final Game game)
+    public DefaultShardManagerBuilder setGame(final Game game)
     {
         this.game = game;
         return this;
@@ -318,7 +318,7 @@ public class ShardManagerBuilder
      *
      * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
      */
-    public ShardManagerBuilder setHttpClientBuilder(OkHttpClient.Builder builder)
+    public DefaultShardManagerBuilder setHttpClientBuilder(OkHttpClient.Builder builder)
     {
         this.httpClientBuilder = builder;
         return this;
@@ -327,16 +327,16 @@ public class ShardManagerBuilder
     /**
      * Sets whether or not we should mark our sessions as afk
      * <br>This value can be changed at any time using
-     * {@link net.dv8tion.jda.bot.entities.impl.ShardManagerImpl#setIdle(boolean) ShardManagerImpl#setIdle(boolean)}.
+     * {@link net.dv8tion.jda.bot.entities.impl.DefaultShardManagerImpl#setIdle(boolean) DefaultShardManagerImpl#setIdle(boolean)}.
      *
      * @param  idle
      *         boolean value that will be provided with our IDENTIFY packages to mark our sessions as afk or not. <b>(default false)</b>
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder ShardManagerBuilder} instance. Useful for chaining.
+     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
      *
      * @see    net.dv8tion.jda.core.managers.Presence#setIdle(boolean)
      */
-    public ShardManagerBuilder setIdle(final boolean idle)
+    public DefaultShardManagerBuilder setIdle(final boolean idle)
     {
         this.idle = idle;
         return this;
@@ -352,9 +352,9 @@ public class ShardManagerBuilder
      * @throws java.lang.IllegalArgumentException
      *         Thrown if the provided {@code maxReconnectDelay} is less than 32.
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder ShardManagerBuilder} instance. Useful for chaining.
+     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
      */
-    public ShardManagerBuilder setMaxReconnectDelay(final int maxReconnectDelay)
+    public DefaultShardManagerBuilder setMaxReconnectDelay(final int maxReconnectDelay)
     {
         Checks.check(maxReconnectDelay >= 32, "Max reconnect delay must be 32 seconds or greater. You provided %d.", maxReconnectDelay);
 
@@ -371,33 +371,33 @@ public class ShardManagerBuilder
      * @param  queue
      *         {@link java.util.concurrent.BlockingQueue BlockingQueue} to use
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder ShardManagerBuilder} instance. Useful for chaining.
+     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
      */
-    public ShardManagerBuilder setReconnectQueue(SessionReconnectQueue queue)
+    public DefaultShardManagerBuilder setReconnectQueue(SessionReconnectQueue queue)
     {
         this.reconnectQueue = queue;
         return this;
     }
 
     /**
-     * Sets the range of shards the {@link net.dv8tion.jda.bot.entities.impl.ShardManagerImpl ShardManagerImpl} should contain.
+     * Sets the range of shards the {@link net.dv8tion.jda.bot.entities.impl.DefaultShardManagerImpl DefaultShardManagerImpl} should contain.
      * This is usefull if you want to split your shards between multiple JVMs or servers.
      *
      * <p><b>This does not have any effect if the total shard count is set to {@code -1} (get recommended shards from discord).</b>
      *
      * @param  minShardId
-     *         The lowest shard id the ShardManagerImpl should contain
+     *         The lowest shard id the DefaultShardManagerImpl should contain
      *
      * @param  maxShardId
-     *         The highest shard id the ShardManagerImpl should contain
+     *         The highest shard id the DefaultShardManagerImpl should contain
      *
      * @throws IllegalArgumentException
      *         If either minShardId is negative, maxShardId is lower than shardsTotal or
      *         minShardId is lower than or equal to maxShardId
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder ShardManagerBuilder} instance. Useful for chaining.
+     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
      */
-    public ShardManagerBuilder setShards(final int... shardIds)
+    public DefaultShardManagerBuilder setShards(final int... shardIds)
     {
         Checks.notNull(shardIds, "shardIds");
         for (int id : shardIds)
@@ -412,24 +412,24 @@ public class ShardManagerBuilder
     }
 
     /**
-     * Sets the range of shards the {@link net.dv8tion.jda.bot.entities.impl.ShardManagerImpl ShardManagerImpl} should contain.
+     * Sets the range of shards the {@link net.dv8tion.jda.bot.entities.impl.DefaultShardManagerImpl DefaultShardManagerImpl} should contain.
      * This is usefull if you want to split your shards between multiple JVMs or servers.
      *
      * <p><b>This does not have any effect if the total shard count is set to {@code -1} (get recommended shards from discord).</b>
      *
      * @param  minShardId
-     *         The lowest shard id the ShardManagerImpl should contain
+     *         The lowest shard id the DefaultShardManagerImpl should contain
      *
      * @param  maxShardId
-     *         The highest shard id the ShardManagerImpl should contain
+     *         The highest shard id the DefaultShardManagerImpl should contain
      *
      * @throws IllegalArgumentException
      *         If either minShardId is negative, maxShardId is lower than shardsTotal or
      *         minShardId is lower than or equal to maxShardId
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder ShardManagerBuilder} instance. Useful for chaining.
+     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
      */
-    public ShardManagerBuilder setShards(final int minShardId, final int maxShardId)
+    public DefaultShardManagerBuilder setShards(final int minShardId, final int maxShardId)
     {
         Checks.notNegative(minShardId, "minShardId");
         Checks.check(maxShardId < this.shardsTotal, "maxShardId must be lower than shardsTotal");
@@ -445,24 +445,24 @@ public class ShardManagerBuilder
     }
 
     /**
-     * Sets the range of shards the {@link net.dv8tion.jda.bot.entities.impl.ShardManagerImpl ShardManagerImpl} should contain.
+     * Sets the range of shards the {@link net.dv8tion.jda.bot.entities.impl.DefaultShardManagerImpl DefaultShardManagerImpl} should contain.
      * This is usefull if you want to split your shards between multiple JVMs or servers.
      *
      * <p><b>This does not have any effect if the total shard count is set to {@code -1} (get recommended shards from discord).</b>
      *
      * @param  minShardId
-     *         The lowest shard id the ShardManagerImpl should contain
+     *         The lowest shard id the DefaultShardManagerImpl should contain
      *
      * @param  maxShardId
-     *         The highest shard id the ShardManagerImpl should contain
+     *         The highest shard id the DefaultShardManagerImpl should contain
      *
      * @throws IllegalArgumentException
      *         If either minShardId is negative, maxShardId is lower than shardsTotal or
      *         minShardId is lower than or equal to maxShardId
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder ShardManagerBuilder} instance. Useful for chaining.
+     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
      */
-    public ShardManagerBuilder setShards(TIntCollection shardIds)
+    public DefaultShardManagerBuilder setShards(TIntCollection shardIds)
     {
         Checks.notNull(shardIds, "shardIds");
         TIntIterator iterator = shards.iterator();
@@ -479,18 +479,18 @@ public class ShardManagerBuilder
     }
 
     /**
-     * This will set the total amount of shards the {@link net.dv8tion.jda.bot.entities.impl.ShardManagerImpl ShardManagerImpl} should use.
+     * This will set the total amount of shards the {@link net.dv8tion.jda.bot.entities.impl.DefaultShardManagerImpl DefaultShardManagerImpl} should use.
      *
      * <p> Of this is set to {@code -1}
      *
      * @param  shardTotal
      *         The number of overall shards or {@code -1} if JDA should use the recommended amount from discord.
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder ShardManagerBuilder} instance. Useful for chaining.
+     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
      *
      * @see    #setShardRange(int, int)
      */
-    public ShardManagerBuilder setShardTotal(final int shardsTotal)
+    public DefaultShardManagerBuilder setShardTotal(final int shardsTotal)
     {
         Checks.check(shardsTotal == -1 || shardsTotal > 0, "shardsTotal must either be -1 or more than 0");
         this.shardsTotal = shardsTotal;
@@ -511,11 +511,11 @@ public class ShardManagerBuilder
      * @throws IllegalArgumentException
      *         if the provided OnlineStatus is null or {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder ShardManagerBuilder} instance. Useful for chaining.
+     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
      *
      * @see    net.dv8tion.jda.core.managers.Presence#setStatus(OnlineStatus) Presence.setStatus(OnlineStatus)
      */
-    public ShardManagerBuilder setStatus(final OnlineStatus status)
+    public DefaultShardManagerBuilder setStatus(final OnlineStatus status)
     {
         Checks.check(status != null, "OnlineStatus cannot be null!");
         Checks.check(status != OnlineStatus.UNKNOWN, "OnlineStatus cannot be unknown!");
@@ -525,8 +525,8 @@ public class ShardManagerBuilder
 
     /**
      * Sets the token that will be used by the {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} instance to log in when
-     * {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder#buildAsync() buildAsync()}
-     * or {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder#buildBlocking() buildBlocking()}
+     * {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder#buildAsync() buildAsync()}
+     * or {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder#buildBlocking() buildBlocking()}
      * is called.
      *
      * <p>To get a bot token:
@@ -543,9 +543,9 @@ public class ShardManagerBuilder
      * @throws java.lang.IllegalArgumentException
      *         If the token is either null or empty
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.ShardManagerBuilder ShardManagerBuilder} instance. Useful for chaining.
+     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
      */
-    public ShardManagerBuilder setToken(final String token)
+    public DefaultShardManagerBuilder setToken(final String token)
     {
         Checks.notBlank(token, "token");
 
@@ -562,7 +562,7 @@ public class ShardManagerBuilder
      *
      * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
      */
-    public ShardManagerBuilder setWebsocketFactory(WebSocketFactory factory)
+    public DefaultShardManagerBuilder setWebsocketFactory(WebSocketFactory factory)
     {
         this.wsFactory = factory;
         return this;

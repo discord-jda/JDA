@@ -41,10 +41,13 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.SessionReconnectQueue;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.core.utils.SimpleLog;
 import okhttp3.OkHttpClient;
 
-public class ShardManagerImpl implements ShardManager
+public class DefaultShardManagerImpl implements ShardManager
 {
+    public static final SimpleLog LOG = SimpleLog.getLog("ShardManager"); 
+
     protected final IAudioSendFactory audioSendFactory;
 
     protected final boolean autoReconnect;
@@ -54,7 +57,7 @@ public class ShardManagerImpl implements ShardManager
     protected final IEventManager eventManager;
     protected final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor(r ->
     {
-        final Thread t = new Thread(r, "ShardManagerImpl");
+        final Thread t = new Thread(r, "DefaultShardManagerImpl");
         t.setDaemon(true);
         t.setPriority(Thread.NORM_PRIORITY + 1);
         return t;
@@ -77,7 +80,7 @@ public class ShardManagerImpl implements ShardManager
 
     protected ScheduledFuture<?> worker;
 
-    public ShardManagerImpl(final int shardsTotal, final TIntSet shardIds, final List<Object> listeners, final String token, final IEventManager eventManager, final IAudioSendFactory audioSendFactory, final Game game, final OnlineStatus status, final OkHttpClient.Builder httpClientBuilder, final WebSocketFactory wsFactory, final int maxReconnectDelay, final int corePoolSize, final boolean enableVoice, final boolean enableShutdownHook, final boolean enableBulkDeleteSplitting, final boolean autoReconnect, final boolean idle, final SessionReconnectQueue reconnectQueue)
+    public DefaultShardManagerImpl(final int shardsTotal, final TIntSet shardIds, final List<Object> listeners, final String token, final IEventManager eventManager, final IAudioSendFactory audioSendFactory, final Game game, final OnlineStatus status, final OkHttpClient.Builder httpClientBuilder, final WebSocketFactory wsFactory, final int maxReconnectDelay, final int corePoolSize, final boolean enableVoice, final boolean enableShutdownHook, final boolean enableBulkDeleteSplitting, final boolean autoReconnect, final boolean idle, final SessionReconnectQueue reconnectQueue)
     {
         this.shardsTotal = shardsTotal;
         this.listeners = listeners;
@@ -91,7 +94,7 @@ public class ShardManagerImpl implements ShardManager
         this.maxReconnectDelay = maxReconnectDelay;
         this.corePoolSize = corePoolSize;
         this.enableVoice = enableVoice;
-        this.shutdownHook = enableShutdownHook ? new Thread(() -> ShardManagerImpl.this.shutdown(), "JDA Shutdown Hook") : null;
+        this.shutdownHook = enableShutdownHook ? new Thread(() -> DefaultShardManagerImpl.this.shutdown(), "JDA Shutdown Hook") : null;
         this.enableBulkDeleteSplitting = enableBulkDeleteSplitting;
         this.autoReconnect = autoReconnect;
         this.idle = idle;
@@ -182,9 +185,9 @@ public class ShardManagerImpl implements ShardManager
     }
 
     @Override
-    public Collection<JDA> getShards()
+    public List<JDA> getShards()
     {
-        return Collections.unmodifiableCollection(new ArrayList<>(this.shards.valueCollection()));
+        return Collections.unmodifiableList(new ArrayList<>(this.shards.valueCollection()));
     }
 
     @Override
@@ -462,9 +465,6 @@ public class ShardManagerImpl implements ShardManager
 
         this.listeners.forEach(jda::addEventListener);
         jda.setStatus(JDA.Status.INITIALIZED); //This is already set by JDA internally, but this is to make sure the listeners catch it.
-
-        // Set the presence information before connecting to have the correct information ready when sending IDENTIFY
-        ((PresenceImpl) jda.getPresence()).setCacheGame(this.game).setCacheIdle(this.idle).setCacheStatus(this.status);
 
         final JDAImpl.ShardInfoImpl shardInfo = new JDAImpl.ShardInfoImpl(shardId, this.shardsTotal);
 

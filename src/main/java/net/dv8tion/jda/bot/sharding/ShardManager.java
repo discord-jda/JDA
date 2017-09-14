@@ -144,7 +144,7 @@ public interface ShardManager
      */
     JDA getShard(int shardId);
 
-    Collection<? extends JDA> getShards();
+    List<JDA> getShards(); // TODO: docs
 
     /**
      * Returns the amount of shards managed by this {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager}.
