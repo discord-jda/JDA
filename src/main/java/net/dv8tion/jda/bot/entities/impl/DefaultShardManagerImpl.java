@@ -69,6 +69,7 @@ public class DefaultShardManagerImpl implements ShardManager
     protected final Queue<Integer> queue = new ConcurrentLinkedQueue<>();
     protected TIntObjectMap<JDAImpl> shards = new TIntObjectHashMap<>();
     protected int shardsTotal;
+    protected final int backoff;
     protected final OkHttpClient.Builder httpClientBuilder;
     protected final WebSocketFactory wsFactory;
     protected final SessionReconnectQueue reconnectQueue;
@@ -80,7 +81,7 @@ public class DefaultShardManagerImpl implements ShardManager
 
     protected ScheduledFuture<?> worker;
 
-    public DefaultShardManagerImpl(final int shardsTotal, final TIntSet shardIds, final List<Object> listeners, final String token, final IEventManager eventManager, final IAudioSendFactory audioSendFactory, final Game game, final OnlineStatus status, final OkHttpClient.Builder httpClientBuilder, final WebSocketFactory wsFactory, final int maxReconnectDelay, final int corePoolSize, final boolean enableVoice, final boolean enableShutdownHook, final boolean enableBulkDeleteSplitting, final boolean autoReconnect, final boolean idle, final SessionReconnectQueue reconnectQueue)
+    public DefaultShardManagerImpl(final int shardsTotal, final TIntSet shardIds, final List<Object> listeners, final String token, final IEventManager eventManager, final IAudioSendFactory audioSendFactory, final Game game, final OnlineStatus status, final OkHttpClient.Builder httpClientBuilder, final WebSocketFactory wsFactory, final int maxReconnectDelay, final int corePoolSize, final boolean enableVoice, final boolean enableShutdownHook, final boolean enableBulkDeleteSplitting, final boolean autoReconnect, final boolean idle, final SessionReconnectQueue reconnectQueue, int backoff)
     {
         this.shardsTotal = shardsTotal;
         this.listeners = listeners;
@@ -99,6 +100,7 @@ public class DefaultShardManagerImpl implements ShardManager
         this.autoReconnect = autoReconnect;
         this.idle = idle;
         this.reconnectQueue = reconnectQueue == null ? new SessionReconnectQueue() : reconnectQueue;
+        this.backoff = backoff;
 
         if (shardsTotal != -1)
         {
@@ -346,7 +348,7 @@ public class DefaultShardManagerImpl implements ShardManager
                     api.shutdown();
                 throw new RuntimeException(e);
             }
-        }, 0, 5200, TimeUnit.MILLISECONDS); // 5s for ratelimit, 200ms for safety
+        }, 0, 5000 + this.backoff, TimeUnit.MILLISECONDS); // 5s for ratelimit + backoff for safety
 
         if (this.shutdownHook != null)
             Runtime.getRuntime().addShutdownHook(this.shutdownHook);

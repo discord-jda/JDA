@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.security.auth.login.LoginException;
 import net.dv8tion.jda.bot.entities.impl.DefaultShardManagerImpl;
-import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.Game;
@@ -57,6 +56,7 @@ public class DefaultShardManagerBuilder
     protected OkHttpClient.Builder httpClientBuilder = null;
     protected WebSocketFactory wsFactory = null;
     protected boolean autoReconnect = true;
+    protected int backoff = 200;
     protected int corePoolSize = 2;
     protected boolean enableBulkDeleteSplitting = true;
     protected boolean enableShutdownHook = true;
@@ -124,7 +124,7 @@ public class DefaultShardManagerBuilder
      */
     public ShardManager buildAsync() throws LoginException, IllegalArgumentException, RateLimitedException
     {
-        final DefaultShardManagerImpl manager = new DefaultShardManagerImpl(this.shardsTotal, this.shards, this.listeners, this.token, this.eventManager, this.audioSendFactory, this.game, this.status, this.httpClientBuilder, this.wsFactory, this.maxReconnectDelay, this.corePoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting, this.autoReconnect, this.idle, reconnectQueue);
+        final DefaultShardManagerImpl manager = new DefaultShardManagerImpl(this.shardsTotal, this.shards, this.listeners, this.token, this.eventManager, this.audioSendFactory, this.game, this.status, this.httpClientBuilder, this.wsFactory, this.maxReconnectDelay, this.corePoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting, this.autoReconnect, this.idle, this.reconnectQueue, this.backoff);
 
         manager.login();
 
@@ -565,6 +565,22 @@ public class DefaultShardManagerBuilder
     public DefaultShardManagerBuilder setWebsocketFactory(WebSocketFactory factory)
     {
         this.wsFactory = factory;
+        return this;
+    }
+
+    /**
+     * Sets the the backoff in milliseconds that is used as safety between logging into shards.
+     * The final delay will be {@code ratelimit + backoff}, while the ratelimit currently being 5 seconds.
+     * The default backoff is 200 ms. 
+     *
+     * @param  backoff
+     *         The new backoff in ms to use.
+     *
+     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public DefaultShardManagerBuilder setLoginBackoff(int backoff)
+    {
+        this.backoff = backoff;
         return this;
     }
 
