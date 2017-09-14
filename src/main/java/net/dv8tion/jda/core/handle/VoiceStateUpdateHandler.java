@@ -124,6 +124,8 @@ public class VoiceStateUpdateHandler extends SocketHandler
             else if (channel == null)
             {
                 oldChannel.getConnectedMembersMap().remove(userId);
+                if (guild.getSelfMember().equals(member))
+                    api.getClient().updateAudioConnection(guildId, null);
                 api.getEventManager().handle(
                         new GuildVoiceLeaveEvent(
                                 api, responseNumber,
@@ -144,9 +146,10 @@ public class VoiceStateUpdateHandler extends SocketHandler
                     //If we have connected (VOICE_SERVER_UPDATE received and AudioConnection created (actual connection might still be setting up)),
                     // then we need to stop sending audioOpen/Move requests through the MainWS if the channel
                     // we have just joined / moved to is the same as the currently queued audioRequest
-                    // (handled by removeAudioConnection
+                    // (handled by updateAudioConnection)
                     if (mng.isConnected())
-                        api.getClient().removeAudioConnection(guildId, channel);
+                        api.getClient().updateAudioConnection(guildId, channel);
+                    //If we are not already connected this will be removed by VOICE_SERVER_UPDATE
                 }
 
                 channel.getConnectedMembersMap().put(userId, member);

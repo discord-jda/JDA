@@ -39,7 +39,7 @@ public class VoiceServerUpdateHandler extends SocketHandler
         if (guild == null)
             throw new IllegalArgumentException("Attempted to start audio connection with Guild that doesn't exist! JSON: " + content);
 
-        api.getClient().removeAudioConnection(guildId, guild.getSelfMember().getVoiceState().getChannel());
+        api.getClient().updateAudioConnection(guildId, guild.getSelfMember().getVoiceState().getChannel());
 
         if (api.getGuildLock().isLocked(guildId))
             return guildId;

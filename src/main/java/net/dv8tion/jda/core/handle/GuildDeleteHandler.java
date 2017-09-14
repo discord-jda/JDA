@@ -68,7 +68,7 @@ public class GuildDeleteHandler extends SocketHandler
             return null;
         }
 
-        api.getClient().removeAudioConnection(id, null);
+        api.getClient().removeAudioConnection(id);
         final TLongObjectMap<AudioManagerImpl> audioManagerMap = api.getAudioManagerMap();
         synchronized (audioManagerMap)
         {

@@ -299,25 +299,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                         needRatelimit = !send(packet.toString(), false);
                         if (!needRatelimit)
                         {
-                            //If we didn't get RateLimited, Next allowed connect request will be 2 seconds from now
+                            //If we didn't get RateLimited, Next request attempt will be 2 seconds from now
+                            // we remove it in VoiceStateUpdateHandler once we hear that it has updated our status
+                            // in 2 seconds we will attempt again in case we did not receive an update
                             audioRequest.setNextAttemptEpoch(System.currentTimeMillis() + 2000);
-
-                            //If the packet we just sent was a DISCONNECT, then we will not get any form of acknowledgement,
-                            // so we assume that the connection was successfully closed.
-                            //If it was a RECONNECT that was successfully sent, then we change the state to CONNECT
-                            // to move to the next stage of the reconnect process.
-                            if (stage == ConnectionStage.DISCONNECT)
-                            {
-                                //TODO: Technically, with the correct logic, we could determine if the connection was actually
-                                //TODO:  properly disconnected using the VOICE_STATE_UPDATE dispatch. Perhaps use like we do for audio move?
-                                queuedAudioConnections.remove(audioRequest.getGuildIdLong());
-                            }
-                            else if (stage == ConnectionStage.RECONNECT)
-                            {
-                                audioRequest.setStage(ConnectionStage.CONNECT);
-                            }
                         }
-
                         audioQueueLock.release();
                         queueLocked = false;
                         attemptedToSend = true;
@@ -1123,26 +1109,63 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
-    public ConnectionRequest removeAudioConnection(long guildId, VoiceChannel channel)
+    public ConnectionRequest removeAudioConnection(long guildId)
     {
+        //This will only be used by GuildDeleteHandler to ensure that
+        // no further voice state updates are sent for this Guild
+        //TODO: users may still queue new requests via the old AudioManager, how could we prevent this?
+        try
+        {
+            audioQueueLock.acquire();
+            return queuedAudioConnections.remove(guildId);
+        }
+        catch (InterruptedException ignored) {}
+        finally
+        {
+            audioQueueLock.release();
+        }
+        return null;
+    }
+
+    public ConnectionRequest updateAudioConnection(long guildId, VoiceChannel connectedChannel)
+    {
+        //Called by VoiceStateUpdateHandler when we receive a response from discord
+        // about our request to CONNECT or DISCONNECT.
+        // "stage" should never be RECONNECT here thus we don't check for that case
         try
         {
             audioQueueLock.acquire();
             ConnectionRequest request = queuedAudioConnections.get(guildId);
 
-            //Don't remove the request if it is attempting to disconnect.
-            if (request == null || request.getStage() == ConnectionStage.DISCONNECT)
+            if (request == null)
                 return null;
-
-            if (channel != null)
+            ConnectionStage requestStage = request.getStage();
+            if (connectedChannel == null)
+            {
+                //If we got an update that DISCONNECT happened
+                // -> If it was on RECONNECT we now switch to CONNECT
+                // -> If it was on DISCONNECT we can now remove it
+                // -> Otherwise we ignore it
+                switch (requestStage)
+                {
+                    case DISCONNECT:
+                        return queuedAudioConnections.remove(guildId);
+                    case RECONNECT:
+                        request.setStage(ConnectionStage.CONNECT);
+                        request.setNextAttemptEpoch(System.currentTimeMillis());
+                    default:
+                        return null;
+                }
+            }
+            else if (requestStage == ConnectionStage.CONNECT)
             {
                 //If the removeRequest was related to a channel that isn't the currently queued
                 // request, then don't remove it.
-                if (!request.getChannel().getId().equals(channel.getId()))
-                    return null;
+                if (request.getChannel().getIdLong() == connectedChannel.getIdLong())
+                    return queuedAudioConnections.remove(guildId);
             }
-
-            return queuedAudioConnections.remove(guildId);
+            //If the channel is not the one we are looking for!
+            return null;
         }
         catch (InterruptedException ignored) {}
         finally
