@@ -348,7 +348,7 @@ public class DefaultShardManagerImpl implements ShardManager
                     api.shutdown();
                 throw new RuntimeException(e);
             }
-        }, 0, 5000 + this.backoff, TimeUnit.MILLISECONDS); // 5s for ratelimit + backoff for safety
+        }, 5000 + this.backoff, 5000 + this.backoff, TimeUnit.MILLISECONDS); // 5s for ratelimit + backoff for safety
 
         if (this.shutdownHook != null)
             Runtime.getRuntime().addShutdownHook(this.shutdownHook);
