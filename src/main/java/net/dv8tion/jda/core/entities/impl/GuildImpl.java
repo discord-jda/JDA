@@ -343,7 +343,7 @@ public class GuildImpl implements Guild
     public List<TextChannel> getTextChannels()
     {
         ArrayList<TextChannel> channels = new ArrayList<>(textChannels.valueCollection());
-        channels.sort(Comparator.reverseOrder());
+        channels.sort(Comparator.naturalOrder());
         return Collections.unmodifiableList(channels);
     }
 
@@ -375,7 +375,7 @@ public class GuildImpl implements Guild
     public List<VoiceChannel> getVoiceChannels()
     {
         List<VoiceChannel> channels = new ArrayList<>(voiceChannels.valueCollection());
-        channels.sort(Comparator.reverseOrder());
+        channels.sort(Comparator.naturalOrder());
         return Collections.unmodifiableList(channels);
     }
 
@@ -518,8 +518,8 @@ public class GuildImpl implements Guild
     {
         final Role role = getPublicRole();
         return getTextChannelsMap().valueCollection().stream()
-                .sorted(Comparator.reverseOrder())
                 .filter(c -> role.hasPermission(c, Permission.MESSAGE_READ))
+                .sorted(Comparator.naturalOrder())
                 .findFirst().orElse(null);
     }
 

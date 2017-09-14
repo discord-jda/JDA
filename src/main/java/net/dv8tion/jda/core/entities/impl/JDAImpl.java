@@ -684,8 +684,7 @@ public class JDAImpl implements JDA
         if (audioKeepAlivePool != null)
             audioKeepAlivePool.shutdownNow();
 
-        getClient().setAutoReconnect(false);
-        getClient().close();
+        getClient().shutdown();
 
         final long time = 5L;
         final TimeUnit unit = TimeUnit.SECONDS;

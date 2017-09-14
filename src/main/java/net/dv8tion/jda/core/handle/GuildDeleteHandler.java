@@ -137,17 +137,18 @@ public class GuildDeleteHandler extends SocketHandler
                     }
                 }
             }
-
+            api.getEventCache().clear(EventCache.Type.USER, memberId);
             return true;
         });
 
-        api.getGuildMap().remove(guild.getIdLong());
+        api.getGuildMap().remove(id);
         guild.getTextChannels().forEach(chan -> api.getTextChannelMap().remove(chan.getIdLong()));
         guild.getVoiceChannels().forEach(chan -> api.getVoiceChannelMap().remove(chan.getIdLong()));
         api.getEventManager().handle(
                 new GuildLeaveEvent(
                         api, responseNumber,
                         guild));
+        api.getEventCache().clear(EventCache.Type.GUILD, id);
         return null;
     }
 }
