@@ -16,13 +16,8 @@
 package net.dv8tion.jda.bot.sharding;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
-import gnu.trove.TIntCollection;
-import gnu.trove.iterator.TIntIterator;
-import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 import javax.security.auth.login.LoginException;
 import net.dv8tion.jda.bot.entities.impl.DefaultShardManagerImpl;
 import net.dv8tion.jda.core.OnlineStatus;
@@ -45,7 +40,7 @@ import okhttp3.OkHttpClient;
  */
 public class DefaultShardManagerBuilder
 {
-    protected TIntSet shards = null;
+    protected Collection<Integer> shards = null;
     protected int shardsTotal = 1;
     protected IAudioSendFactory audioSendFactory = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
@@ -372,7 +367,7 @@ public class DefaultShardManagerBuilder
             Checks.check(id < this.shardsTotal, "maxShardId must be lower than shardsTotal");
         }
 
-        this.shards = new TIntHashSet(shardIds);
+        this.shards = Arrays.stream(shardIds).boxed().collect(Collectors.toSet());
 
         return this;
     }
@@ -401,7 +396,7 @@ public class DefaultShardManagerBuilder
         Checks.check(maxShardId < this.shardsTotal, "maxShardId must be lower than shardsTotal");
         Checks.check(minShardId <= maxShardId, "minShardId must be lower than or equal to maxShardId");
 
-        TIntSet shards = new TIntHashSet(maxShardId - minShardId + 1);
+        List<Integer> shards = new ArrayList<>(maxShardId - minShardId + 1);
         for (int i = minShardId; i <= maxShardId; i++)
             shards.add(i);
 
@@ -428,10 +423,10 @@ public class DefaultShardManagerBuilder
      *
      * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
      */
-    public DefaultShardManagerBuilder setShards(TIntCollection shardIds)
+    public DefaultShardManagerBuilder setShards(Collection<Integer> shardIds)
     {
         Checks.notNull(shardIds, "shardIds");
-        TIntIterator iterator = shards.iterator();
+        Iterator<Integer> iterator = shards.iterator();
         while (iterator.hasNext())
         {
             int id = iterator.next();
@@ -439,7 +434,7 @@ public class DefaultShardManagerBuilder
             Checks.check(id < this.shardsTotal, "maxShardId must be lower than shardsTotal");
         }
 
-        this.shards = new TIntHashSet(shardIds);
+        this.shards = new ArrayList<>(shardIds);
 
         return this;
     }

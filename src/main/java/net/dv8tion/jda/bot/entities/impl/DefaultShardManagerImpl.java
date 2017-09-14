@@ -18,7 +18,6 @@ package net.dv8tion.jda.bot.entities.impl;
 import com.neovisionaries.ws.client.WebSocketFactory;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
-import gnu.trove.set.TIntSet;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -81,7 +80,7 @@ public class DefaultShardManagerImpl implements ShardManager
 
     protected ScheduledFuture<?> worker;
 
-    public DefaultShardManagerImpl(final int shardsTotal, final TIntSet shardIds, final List<Object> listeners, final String token, final IEventManager eventManager, final IAudioSendFactory audioSendFactory, final Game game, final OnlineStatus status, final OkHttpClient.Builder httpClientBuilder, final WebSocketFactory wsFactory, final int maxReconnectDelay, final int corePoolSize, final boolean enableVoice, final boolean enableShutdownHook, final boolean enableBulkDeleteSplitting, final boolean autoReconnect, final boolean idle, final SessionReconnectQueue reconnectQueue, int backoff)
+    public DefaultShardManagerImpl(final int shardsTotal, final Collection<Integer> shardIds, final List<Object> listeners, final String token, final IEventManager eventManager, final IAudioSendFactory audioSendFactory, final Game game, final OnlineStatus status, final OkHttpClient.Builder httpClientBuilder, final WebSocketFactory wsFactory, final int maxReconnectDelay, final int corePoolSize, final boolean enableVoice, final boolean enableShutdownHook, final boolean enableBulkDeleteSplitting, final boolean autoReconnect, final boolean idle, final SessionReconnectQueue reconnectQueue, int backoff)
     {
         this.shardsTotal = shardsTotal;
         this.listeners = listeners;
@@ -113,7 +112,7 @@ public class DefaultShardManagerImpl implements ShardManager
             else
             {
                 this.shards = new TIntObjectHashMap<>(shardIds.size());
-                shardIds.forEach(queue::offer);
+                shardIds.stream().distinct().sorted().forEach(queue::offer);
             }
         }
     }
