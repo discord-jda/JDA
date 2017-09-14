@@ -23,18 +23,13 @@ import gnu.trove.set.hash.TIntHashSet;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import javax.security.auth.login.LoginException;
 import net.dv8tion.jda.bot.entities.impl.DefaultShardManagerImpl;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.Game;
-import net.dv8tion.jda.core.events.Event;
-import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
-import net.dv8tion.jda.core.hooks.EventListener;
 import net.dv8tion.jda.core.hooks.IEventManager;
-import net.dv8tion.jda.core.hooks.SubscribeEvent;
 import net.dv8tion.jda.core.requests.SessionReconnectQueue;
 import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.OkHttpClient;
@@ -128,35 +123,6 @@ public class DefaultShardManagerBuilder
 
         manager.login();
 
-        return manager;
-    }
-
-    /**
-     * Builds a new {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} instance and uses the provided token to start the login process.
-     * <br>This method will block until all JDA insatnces have logged in and finished loading all resources.
-     *
-     * @throws  LoginException
-     *          If the provided token is invalid.
-     * @throws  IllegalArgumentException
-     *          If the provided token is empty or null.
-     * @throws  InterruptedException
-     *          If an interrupt request is received while waiting for {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} to finish logging in.
-     *          This would most likely be caused by a JVM shutdown request.
-     * @throws  RateLimitedException
-     *          If we are being Rate limited.
-     *
-     * @return A {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} Object that is <b>guaranteed</b> to be logged in and finished loading all shards.
-     */
-    public ShardManager buildBlocking() throws LoginException, IllegalArgumentException, InterruptedException, RateLimitedException
-    {
-        final ShardsReadyListener listener = new ShardsReadyListener(shards.size());
-        this.addEventListener(listener);
-        final ShardManager manager = this.buildAsync();
-        synchronized (listener)
-        {
-            while (!listener.allReady())
-                listener.wait();
-        }
         return manager;
     }
 
@@ -480,8 +446,7 @@ public class DefaultShardManagerBuilder
 
     /**
      * This will set the total amount of shards the {@link net.dv8tion.jda.bot.entities.impl.DefaultShardManagerImpl DefaultShardManagerImpl} should use.
-     *
-     * <p> Of this is set to {@code -1}
+     * <p> If this is set to {@code -1} JDA will automatically retrieve the recommended amount of shards from discord.
      *
      * @param  shardTotal
      *         The number of overall shards or {@code -1} if JDA should use the recommended amount from discord.
@@ -582,36 +547,5 @@ public class DefaultShardManagerBuilder
     {
         this.backoff = backoff;
         return this;
-    }
-
-    private static class ShardsReadyListener implements EventListener
-    {
-        private final AtomicInteger numReady = new AtomicInteger(0);
-        private final int shardsTotal;
-
-        public ShardsReadyListener(final int shardsTotal)
-        {
-            this.shardsTotal = shardsTotal;
-        }
-
-        public boolean allReady()
-        {
-            return this.numReady.get() == this.shardsTotal;
-        }
-
-        @Override
-        @SubscribeEvent
-        public void onEvent(final Event event)
-        {
-            if (event instanceof ReadyEvent)
-            {
-                event.getJDA().removeEventListener(this);
-                if (this.numReady.incrementAndGet() == this.shardsTotal)
-                    synchronized (this)
-                    {
-                        this.notifyAll();
-                    }
-            }
-        }
     }
 }
