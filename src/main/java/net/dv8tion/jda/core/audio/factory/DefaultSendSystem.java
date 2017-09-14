@@ -102,6 +102,7 @@ public class DefaultSendSystem implements IAudioSendSystem
             SimpleLog.getLog("DefaultSendSystem").log(throwable);
             start();
         });
+        sendThread.setDaemon(true);
         sendThread.setName(packetProvider.getIdentifier() + " Sending Thread");
         sendThread.setPriority((Thread.NORM_PRIORITY + Thread.MAX_PRIORITY) / 2);
         sendThread.start();
