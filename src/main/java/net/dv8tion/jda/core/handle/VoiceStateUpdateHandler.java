@@ -131,13 +131,22 @@ public class VoiceStateUpdateHandler extends SocketHandler
             }
             else
             {
-                //If the connect account is the one that is being moved, and this instance of JDA
-                // is connected or attempting to connect, them change the channel we expect to be connected to.
-                if (guild.getSelfMember().equals(member))
+                AudioManagerImpl mng = api.getAudioManagerMap().get(guildId);
+
+                //If the currently connected account is the one that is being moved
+                if (guild.getSelfMember().equals(member) && mng != null)
                 {
-                    AudioManagerImpl mng = api.getAudioManagerMap().get(guildId);
-                    if (mng != null && (mng.isConnected() || mng.isAttemptingToConnect()))
+                    //And this instance of JDA is connected or attempting to connect,
+                    // then change the channel we expect to be connected to.
+                    if (mng.isConnected() || mng.isAttemptingToConnect())
                         mng.setConnectedChannel(channel);
+
+                    //If we have connected (VOICE_SERVER_UPDATE received and AudioConnection created (actual connection might still be setting up)),
+                    // then we need to stop sending audioOpen/Move requests through the MainWS if the channel
+                    // we have just joined / moved to is the same as the currently queued audioRequest
+                    // (handled by removeAudioConnection
+                    if (mng.isConnected())
+                        api.getClient().removeAudioConnection(guildId, channel);
                 }
 
                 channel.getConnectedMembersMap().put(userId, member);
