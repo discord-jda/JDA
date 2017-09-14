@@ -30,6 +30,7 @@ import net.dv8tion.jda.core.audio.ConnectionStage;
 import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.GuildVoiceState;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
@@ -304,6 +305,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                             // we remove it in VoiceStateUpdateHandler once we hear that it has updated our status
                             // in 2 seconds we will attempt again in case we did not receive an update
                             audioRequest.setNextAttemptEpoch(System.currentTimeMillis() + 2000);
+                            //If we are already in the correct state according to voice state
+                            // we will not receive a VOICE_STATE_UPDATE that would remove it
+                            // thus we update it here
+                            final GuildVoiceState voiceState = guild.getSelfMember().getVoiceState();
+                            updateAudioConnection0(guild.getIdLong(), voiceState.getChannel());
                         }
                         audioQueueLock.release();
                         queueLocked = false;
@@ -1129,49 +1135,55 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     public ConnectionRequest updateAudioConnection(long guildId, VoiceChannel connectedChannel)
     {
-        //Called by VoiceStateUpdateHandler when we receive a response from discord
-        // about our request to CONNECT or DISCONNECT.
-        // "stage" should never be RECONNECT here thus we don't check for that case
         try
         {
             audioQueueLock.acquire();
-            ConnectionRequest request = queuedAudioConnections.get(guildId);
-
-            if (request == null)
-                return null;
-            ConnectionStage requestStage = request.getStage();
-            if (connectedChannel == null)
-            {
-                //If we got an update that DISCONNECT happened
-                // -> If it was on RECONNECT we now switch to CONNECT
-                // -> If it was on DISCONNECT we can now remove it
-                // -> Otherwise we ignore it
-                switch (requestStage)
-                {
-                    case DISCONNECT:
-                        return queuedAudioConnections.remove(guildId);
-                    case RECONNECT:
-                        request.setStage(ConnectionStage.CONNECT);
-                        request.setNextAttemptEpoch(System.currentTimeMillis());
-                    default:
-                        return null;
-                }
-            }
-            else if (requestStage == ConnectionStage.CONNECT)
-            {
-                //If the removeRequest was related to a channel that isn't the currently queued
-                // request, then don't remove it.
-                if (request.getChannel().getIdLong() == connectedChannel.getIdLong())
-                    return queuedAudioConnections.remove(guildId);
-            }
-            //If the channel is not the one we are looking for!
-            return null;
+            return updateAudioConnection0(guildId, connectedChannel);
         }
         catch (InterruptedException ignored) {}
         finally
         {
             audioQueueLock.release();
         }
+        return null;
+    }
+
+
+    public ConnectionRequest updateAudioConnection0(long guildId, VoiceChannel connectedChannel)
+    {
+        //Called by VoiceStateUpdateHandler when we receive a response from discord
+        // about our request to CONNECT or DISCONNECT.
+        // "stage" should never be RECONNECT here thus we don't check for that case
+        ConnectionRequest request = queuedAudioConnections.get(guildId);
+
+        if (request == null)
+            return null;
+        ConnectionStage requestStage = request.getStage();
+        if (connectedChannel == null)
+        {
+            //If we got an update that DISCONNECT happened
+            // -> If it was on RECONNECT we now switch to CONNECT
+            // -> If it was on DISCONNECT we can now remove it
+            // -> Otherwise we ignore it
+            switch (requestStage)
+            {
+                case DISCONNECT:
+                    return queuedAudioConnections.remove(guildId);
+                case RECONNECT:
+                    request.setStage(ConnectionStage.CONNECT);
+                    request.setNextAttemptEpoch(System.currentTimeMillis());
+                default:
+                    return null;
+            }
+        }
+        else if (requestStage == ConnectionStage.CONNECT)
+        {
+            //If the removeRequest was related to a channel that isn't the currently queued
+            // request, then don't remove it.
+            if (request.getChannel().getIdLong() == connectedChannel.getIdLong())
+                return queuedAudioConnections.remove(guildId);
+        }
+        //If the channel is not the one we are looking for!
         return null;
     }
 
