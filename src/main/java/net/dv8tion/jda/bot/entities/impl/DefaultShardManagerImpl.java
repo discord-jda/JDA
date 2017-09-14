@@ -468,6 +468,9 @@ public class DefaultShardManagerImpl implements ShardManager
         this.listeners.forEach(jda::addEventListener);
         jda.setStatus(JDA.Status.INITIALIZED); //This is already set by JDA internally, but this is to make sure the listeners catch it.
 
+        // Set the presence information before connecting to have the correct information ready when sending IDENTIFY 
+        ((PresenceImpl) jda.getPresence()).setCacheGame(this.game).setCacheIdle(this.idle).setCacheStatus(this.status); 
+
         final JDAImpl.ShardInfoImpl shardInfo = new JDAImpl.ShardInfoImpl(shardId, this.shardsTotal);
 
         final int shardTotal = jda.login(this.token, shardInfo, this.reconnectQueue);
