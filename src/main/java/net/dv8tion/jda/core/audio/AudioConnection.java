@@ -137,6 +137,7 @@ public class AudioConnection
             JDAImpl api = (JDAImpl) getJDA();
             api.getEventManager().handle(new ExceptionEvent(api, throwable, true));
         });
+        readyThread.setDaemon(true);
         readyThread.setName(threadIdentifier + " Ready Thread");
         readyThread.start();
     }
@@ -423,6 +424,7 @@ public class AudioConnection
                 JDAImpl api = (JDAImpl) getJDA();
                 api.getEventManager().handle(new ExceptionEvent(api, throwable, true));
             });
+            receiveThread.setDaemon(true);
             receiveThread.setName(threadIdentifier + " Receiving Thread");
             receiveThread.start();
         }
@@ -440,6 +442,7 @@ public class AudioConnection
             combinedAudioExecutor = Executors.newSingleThreadScheduledExecutor((task) ->
             {
                 final Thread t = new Thread(AudioManagerImpl.AUDIO_THREADS, task, threadIdentifier + " Combined Thread");
+                t.setDaemon(true);
                 t.setUncaughtExceptionHandler((thread, throwable) ->
                 {
                     LOG.log(throwable);
